@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCOMPILER
 
 #include "GuiInstanceLoader.h"
+#include "../GacWorkflowReferences.h"
 
 namespace vl
 {

@@ -6,9 +6,9 @@ GacUI Vczh Library++ 3.0 References
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_GACVLPPREFERENCES
-#define VCZH_PRESENTATION_GACVLPPREFERENCES
+#ifndef VCZH_PRESENTATION_GACWORKFLOWREFERENCES
+#define VCZH_PRESENTATION_GACWORKFLOWREFERENCES
 
-#include "../Import/Vlpp.h"
+#include "../Import/VlppWorkflow.h"
 
 #endif

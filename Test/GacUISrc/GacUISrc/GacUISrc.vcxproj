@@ -257,6 +257,7 @@
     <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripMenu.h" />
     <ClInclude Include="..\..\..\Source\GacUI.h" />
     <ClInclude Include="..\..\..\Source\GacVlppReferences.h" />
+    <ClInclude Include="..\..\..\Source\GacWorkflowReferences.h" />
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.h" />
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsComposition.h" />
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.h" />
