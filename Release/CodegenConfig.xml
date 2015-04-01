@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<codegen>
+  <folders>
+    <folder path="..\Source" />
+    <folder path="..\Import" />
+  </folders>
+  <categories>
+    <category name="vlpp" pattern="\Import\Vlpp."/>
+    <category name="workflow" pattern="\Import\VlppWorkflow."/>
+    <category name="gacui" pattern="\Source\">
+      <except pattern="\Windows\" />
+      <except pattern="\WindowsDirect2D\" />
+      <except pattern="\WindowsGDI\" />
+      <except pattern="\Reflection\" />
+    </category>
+    <category name="windows" pattern="\Source\GraphicsElement\WindowsDirect2D\" />
+    <category name="windows" pattern="\Source\GraphicsElement\WindowsGDI\" />
+    <category name="windows" pattern="\Source\NativeWindow\Windows\" />
+    <category name="reflection" pattern="\Source\Reflection\" />
+  </categories>
+  <output path=".">
+    <codepair category="vlpp" filename="Vlpp" generate="false"/>
+    <codepair category="workflow" filename="VlppWorkflow" generate="false"/>
+    <codepair category="gacui" filename="GacUI" generate="true"/>
+    <codepair category="windows" filename="GacUIWindows" generate="true"/>
+    <codepair category="reflection" filename="GacUIReflection" generate="true"/>
+  </output>
+</codegen>

@@ -1,0 +1,1 @@
+..\..\Tools\Tools\Codepack.exe CodegenConfig.xml
