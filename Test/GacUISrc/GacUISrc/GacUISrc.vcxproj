@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{407401EB-C968-42B2-AEE9-47AA1658E1FF}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GacUISrc</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Import\Vlpp.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflow.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\GuiApplication.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\GuiBasicControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\GuiContainerControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\GuiDateTimeControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\GuiWindowControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControl.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridStructured.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiCommonStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiWin7Styles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiWin8Styles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ButtonStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ControlStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ListStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7MenuStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ScrollableStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7StylesCommon.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7TabStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ToolstripStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ButtonStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ControlStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ListStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8MenuStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ScrollableStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8StylesCommon.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8TabStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ToolstripStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplateStyles.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextColorizer.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextGeneralOperations.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\GuiTextCommonInterface.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\GuiTextControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageAutoComplete.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageColorizer.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageOperations.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiMenuControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripCommand.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripMenu.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsComposition.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsEventReceiver.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsStackComposition.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\GuiGraphicsElement.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\GuiGraphicsHost.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsLayoutProviderWindowsDirect2D.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsRenderersWindowsDirect2D.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsLayoutProviderWindowsGDI.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsRenderersWindowsGDI.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsUniscribe.cpp" />
+    <ClCompile Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsWindowsGDI.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\GuiNativeWindow.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\Direct2D\WinDirect2DApplication.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\GDI\WinGDI.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\GDI\WinGDIApplication.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsAsyncService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsCallbackService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsClipboardService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsDialogService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsImageService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsInputService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsResourceService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.cpp" />
+    <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceHelperTypes.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_LoadInstance.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_Log.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceBinders.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceLoaders.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_WorkflowCompiler.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSchemaRepresentation.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionElements.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocument.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Edit.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Load.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Save.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiParserManager.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiResource.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp" />
+    <ClCompile Include="AutoComplete_Grammar.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TsfTestWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Import\Vlpp.h" />
+    <ClInclude Include="..\..\..\Import\VlppWorkflow.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiApplication.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiBasicControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiContainerControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiDateTimeControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiWindowControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControl.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridInterfaces.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridStructured.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiCommonStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiWin7Styles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiWin8Styles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ButtonStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ControlStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ListStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7MenuStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ScrollableStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7StylesCommon.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7TabStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ToolstripStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ButtonStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ControlStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ListStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8MenuStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ScrollableStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8StylesCommon.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8TabStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ToolstripStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.h" />
+    <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplateStyles.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextColorizer.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextGeneralOperations.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextUndoRedo.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\GuiTextCommonInterface.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\GuiTextControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageAutoComplete.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageColorizer.h" />
+    <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageOperations.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiMenuControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripCommand.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ToolstripPackage\GuiToolstripMenu.h" />
+    <ClInclude Include="..\..\..\Source\GacUI.h" />
+    <ClInclude Include="..\..\..\Source\GacVlppReferences.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsComposition.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsEventReceiver.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsStackComposition.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsDocumentInterfaces.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsElement.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsElementInterfaces.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsHost.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsLayoutProviderWindowsDirect2D.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsRenderersWindowsDirect2D.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsLayoutProviderWindowsGDI.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsRenderersWindowsGDI.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsUniscribe.h" />
+    <ClInclude Include="..\..\..\Source\GraphicsElement\WindowsGDI\GuiGraphicsWindowsGDI.h" />
+    <ClInclude Include="..\..\..\Source\GuiTypes.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\GuiNativeWindow.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\Direct2D\WinDirect2DApplication.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\GDI\WinGDI.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\GDI\WinGDIApplication.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsAsyncService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsCallbackService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsClipboardService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsDialogService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsImageService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsInputService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsResourceService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.h" />
+    <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceHelperTypes.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceLoader.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceLoader_WorkflowCompiler.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSchemaRepresentation.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionElements.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.h" />
+    <ClInclude Include="..\..\..\Source\Resources\GuiDocument.h" />
+    <ClInclude Include="..\..\..\Source\Resources\GuiParserManager.h" />
+    <ClInclude Include="..\..\..\Source\Resources\GuiResource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Source\Reflection\InstanceQuery\Codegen.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.parser.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
