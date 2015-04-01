@@ -1,5 +1,6 @@
-include
-	../../Workflow/Source/makefile.workflow.makegen
+folder VLPP = ../Import
+	h = *.h
+	cpp = *.cpp
 
 folder GACUI_BASIC = .
 	h = *.h
