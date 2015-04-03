@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F3003270-4090-446D-8500-10A6A8F24E6D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GacStudio</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\..\..\Release;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\..\..\Release;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Import\Vlpp.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflow.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Release\GacUI.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Release\GacUIReflection.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Release\GacUIWindows.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Studio\EditorContentModel.cpp" />
+    <ClCompile Include="Studio\EditorModel.cpp" />
+    <ClCompile Include="Studio\SolutionModel.cpp" />
+    <ClCompile Include="Studio\StudioModel.cpp" />
+    <ClCompile Include="UI\GacStudioUIPartialClasses.cpp" />
+    <ClCompile Include="UI\GsAddExistingFilesWindow.cpp" />
+    <ClCompile Include="UI\GsHScrollTemplate.cpp" />
+    <ClCompile Include="UI\GsHTrackerTemplate.cpp" />
+    <ClCompile Include="UI\GsMainWindow.cpp" />
+    <ClCompile Include="UI\GsNewFileWindow.cpp" />
+    <ClCompile Include="UI\GsNewProjectWindow.cpp" />
+    <ClCompile Include="UI\GsRenameFileWindow.cpp" />
+    <ClCompile Include="UI\GsVScrollTemplate.cpp" />
+    <ClCompile Include="UI\GsVTrackerTemplate.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Import\Vlpp.h" />
+    <ClInclude Include="..\..\..\Import\VlppWorkflow.h" />
+    <ClInclude Include="..\..\..\Release\GacUI.h" />
+    <ClInclude Include="..\..\..\Release\GacUIReflection.h" />
+    <ClInclude Include="..\..\..\Release\GacUIWindows.h" />
+    <ClInclude Include="Studio\EditorContentModel.h" />
+    <ClInclude Include="Studio\EditorModel.h" />
+    <ClInclude Include="Studio\SolutionModel.h" />
+    <ClInclude Include="Studio\StudioModel.h" />
+    <ClInclude Include="UI\GacStudioUI.h" />
+    <ClInclude Include="UI\GacStudioUIPartialClasses.h" />
+    <ClInclude Include="UI\GsAddExistingFilesWindow.h" />
+    <ClInclude Include="UI\GsHScrollTemplate.h" />
+    <ClInclude Include="UI\GsHTrackerTemplate.h" />
+    <ClInclude Include="UI\GsMainWindow.h" />
+    <ClInclude Include="UI\GsNewFileWindow.h" />
+    <ClInclude Include="UI\GsNewProjectWindow.h" />
+    <ClInclude Include="UI\GsRenameFileWindow.h" />
+    <ClInclude Include="UI\GsVScrollTemplate.h" />
+    <ClInclude Include="UI\GsVTrackerTemplate.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="UI\About.xml" />
+    <Xml Include="UI\CommandImages\Folder.xml" />
+    <Xml Include="UI\Config.xml" />
+    <Xml Include="UI\FileImages\Folder.xml" />
+    <Xml Include="UI\ProjectImages\Folder.xml" />
+    <Xml Include="UI\Resources.xml" />
+    <Xml Include="UI\Skin.xml" />
+    <Xml Include="UI\UserInterfaces\AboutWindow.xml" />
+    <Xml Include="UI\UserInterfaces\AddExistingFilesWindow.xml" />
+    <Xml Include="UI\UserInterfaces\MainWindow.xml" />
+    <Xml Include="UI\UserInterfaces\NewFileWindow.xml" />
+    <Xml Include="UI\UserInterfaces\NewProjectWindow.xml" />
+    <Xml Include="UI\UserInterfaces\RenameFileWindow.xml" />
+    <Xml Include="UI\ViewModels\ActionModel.xml" />
+    <Xml Include="UI\ViewModels\EditorModel.xml" />
+    <Xml Include="UI\ViewModels\SolutionModel.xml" />
+    <Xml Include="UI\ViewModels\StudioModel.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="UI\Codegen.bat" />
+    <None Include="UI\Resources.bin" />
+    <None Include="UI\ResourcesUncompressed.bin" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="UI\CommandImages\EditCopy.png" />
+    <Image Include="UI\CommandImages\EditCut.png" />
+    <Image Include="UI\CommandImages\EditDelete.png" />
+    <Image Include="UI\CommandImages\EditFind.png" />
+    <Image Include="UI\CommandImages\EditFindInFiles.png" />
+    <Image Include="UI\CommandImages\EditOpen.png" />
+    <Image Include="UI\CommandImages\EditPaste.png" />
+    <Image Include="UI\CommandImages\EditRedo.png" />
+    <Image Include="UI\CommandImages\EditRename.png" />
+    <Image Include="UI\CommandImages\EditUndo.png" />
+    <Image Include="UI\CommandImages\Gaclib.png" />
+    <Image Include="UI\CommandImages\New.png" />
+    <Image Include="UI\CommandImages\NewProject.png" />
+    <Image Include="UI\CommandImages\Open.png" />
+    <Image Include="UI\CommandImages\Save.png" />
+    <Image Include="UI\CommandImages\SaveAll.png" />
+    <Image Include="UI\FileImages\Class.png" />
+    <Image Include="UI\FileImages\ClassSmall.png" />
+    <Image Include="UI\FileImages\Control.png" />
+    <Image Include="UI\FileImages\ControlSmall.png" />
+    <Image Include="UI\FileImages\Dialog.png" />
+    <Image Include="UI\FileImages\DialogSmall.png" />
+    <Image Include="UI\FileImages\Document.png" />
+    <Image Include="UI\FileImages\DocumentSmall.png" />
+    <Image Include="UI\FileImages\FolderSmall.png" />
+    <Image Include="UI\FileImages\Gaclib.png" />
+    <Image Include="UI\FileImages\GraphDatabase.png" />
+    <Image Include="UI\FileImages\GraphDatabaseSmall.png" />
+    <Image Include="UI\FileImages\Image.png" />
+    <Image Include="UI\FileImages\ImageSmall.png" />
+    <Image Include="UI\FileImages\Parser.png" />
+    <Image Include="UI\FileImages\ParserSmall.png" />
+    <Image Include="UI\FileImages\RichDocument.png" />
+    <Image Include="UI\FileImages\RichDocumentSmall.png" />
+    <Image Include="UI\FileImages\Schema.png" />
+    <Image Include="UI\FileImages\SchemaSmall.png" />
+    <Image Include="UI\FileImages\SQLDatabase.png" />
+    <Image Include="UI\FileImages\SQLDatabaseSmall.png" />
+    <Image Include="UI\FileImages\Style.png" />
+    <Image Include="UI\FileImages\StyleSmall.png" />
+    <Image Include="UI\FileImages\Template.png" />
+    <Image Include="UI\FileImages\TemplateSmall.png" />
+    <Image Include="UI\FileImages\XmlDocument.png" />
+    <Image Include="UI\FileImages\XmlDocumentSmall.png" />
+    <Image Include="UI\ProjectImages\AllSmall.png" />
+    <Image Include="UI\ProjectImages\Database.png" />
+    <Image Include="UI\ProjectImages\DatabaseSmall.png" />
+    <Image Include="UI\ProjectImages\Dialog.png" />
+    <Image Include="UI\ProjectImages\DialogSmall.png" />
+    <Image Include="UI\ProjectImages\Parser.png" />
+    <Image Include="UI\ProjectImages\ParserSmall.png" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

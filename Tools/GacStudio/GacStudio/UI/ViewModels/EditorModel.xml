@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Schemas>
+  <Interface ref.Class="vm::IMacroEnvironment">
+    <Property Name="Parent" Type="vm::IMacroEnvironment*" Readonly="true"/>
+    <Method Name="HasMacro" Type="bool">
+      <Argument Name="name" Type="string"/>
+      <Argument Name="inherit" Type="bool"/>
+    </Method>
+    <Method Name="GetMacroValue" Type="string">
+      <Argument Name="name" Type="string"/>
+      <Argument Name="inherit" Type="bool"/>
+    </Method>
+  </Interface>
+
+  <Interface ref.Class="vm::ITextTemplate">
+    <Method Name="Generate" Type="string">
+      <Argument Name="macroEnvironment" Type="vm::IMacroEnvironment^"/>
+    </Method>
+  </Interface>
+
+  <Interface ref.Class="vm::IEditorContentFactoryModel">
+    <Property Name="Name" Type="string" Readonly="true"/>
+    <Property Name="Id" Type="string" Readonly="true"/>
+    <Property Name="BaseContentFactory" Type="vm::IEditorContentFactoryModel*" Readonly="true"/>
+
+    <Method Name="CreateContent" Type="vm::IEditorContentModel^">
+      <Argument Name="baseContent" Type="vm::IEditorContentModel^"/>
+    </Method>
+  </Interface>
+  
+  <Interface ref.Class="vm::IEditorContentModel">
+    <Property Name="ContentFactory" Type="vm::IEditorContentFactoryModel^" Readonly="true"/>
+    <Property Name="BaseContent" Type="vm::IEditorContentModel*" Readonly="true"/>
+    <Property Name="SubContent" Type="vm::IEditorContentModel*" Readonly="true"/>
+    <Property Name="PersistedContent" Type="object" Readonly="true" Observable="true"/>
+    <Property Name="EditingContent" Type="object" Readonly="true"/>
+    <Property Name="CurrentEditor" Type="vm::IEditorModel*" Readonly="true" Observable="true"/>
+
+    <Method Name="Persist" Type="void">
+      <Argument Name="content" Type="object"/>
+    </Method>
+    <Method Name="BeginEdit" Type="void">
+      <Argument Name="editor" Type="vm::IEditorModel*"/>
+    </Method>
+    <Method Name="EndEdit" Type="void"/>
+  </Interface>
+
+  <Interface ref.Class="vm::IEditorFileContentModel" Parent="vm::IEditorContentModel">
+    <Property Name="FileName" Type="string" Readonly="true"/>
+
+    <Method Name="LoadFile" Type="void">
+      <Argument Name="fileName" Type="string"/>
+    </Method>
+    <Method Name="RenameFile" Type="void">
+      <Argument Name="fileName" Type="string"/>
+    </Method>
+  </Interface>
+
+  <Interface ref.Class="vm::IEditorFactoryModel">
+    <Property Name="Name" Type="string" Readonly="true"/>
+    <Property Name="Id" Type="string" Readonly="true"/>
+    <Property Name="RequiredContentFactory" Type="vm::IEditorContentFactoryModel^" Readonly="true"/>
+    <Property Name="EditingContentFactory" Type="vm::IEditorContentFactoryModel^" Readonly="true"/>
+
+    <Method Name="CreateEditor" Type="vm::IEditorModel^"/>
+  </Interface>
+
+  <Interface ref.Class="vm::IEditorModel">
+    <Property Name="EditorFactory" Type="vm::IEditorFactoryModel^" Readonly="true"/>
+    <Property Name="EditorAction" Type="vm::IOpenInEditorItemAction^" Readonly="true"/>
+    <Property Name="EditorControl" Type="Control*" Readonly="true"/>
+    <Property Name="EditingContent" Type="object" Readonly="true"/>
+
+    <Method Name="Open" Type="void">
+      <Argument Name="content" Type="vm::IEditorContentModel^"/>
+    </Method>
+    <Method Name="Save" Type="void"/>
+    <Method Name="Close" Type="void"/>
+  </Interface>
+</Schemas>

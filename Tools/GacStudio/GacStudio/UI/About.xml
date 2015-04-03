@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Doc>
+  <Content>
+    <p>
+      <font face="Segoe UI" size="14">
+        <nop/>GacStudio powered by <a href="http://www.gaclib.net">http://www.gaclib.net</a>
+      </font>
+    </p>
+    <p>
+      <font face="Segoe UI" size="14">
+        <nop/>Version: 1.0<nop/>
+      </font>
+    </p>
+    <p>
+      <font face="Segoe UI" size="14">
+        <nop/>Author: Zihan Chen (vczh)<nop/>
+      </font>
+    </p>
+    <p>
+      <font face="Segoe UI" size="14">
+        <nop/>All right reserved.<nop/>
+      </font>
+    </p>
+    <p>
+      <font face="Segoe UI" size="14">
+        <nop/>GacStudio is an IDE to create, edit and debug:<nop/>
+        <br/>    GacUI resources (<a href="http://www.gaclib.net">http://www.gaclib.net</a>)<nop/>
+        <br/>    Parsers using Vlpp (Vczh Library++ 3.0, <a href="https://gac.codeplex.com">https://gac.codeplex.com</a>)<nop/>
+        <br/>    HeroDB databases (<a href="https://github.com/vczh/herodb">https://github.com/vczh/herodb</a>)<nop/>
+        <br/>    Plugin with auto complete for your programming language<nop/>
+      </font>
+    </p>
+  </Content>
+</Doc>

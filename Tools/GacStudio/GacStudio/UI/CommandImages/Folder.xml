@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Folder>
+  <Image content="File">Gaclib.png</Image>
+  <Image content="File">New.png</Image>
+  <Image content="File">NewProject.png</Image>
+  <Image content="File">Open.png</Image>
+  <Image content="File">Save.png</Image>
+  <Image content="File">SaveAll.png</Image>
+  <Image content="File">EditCopy.png</Image>
+  <Image content="File">EditCut.png</Image>
+  <Image content="File">EditDelete.png</Image>
+  <Image content="File">EditFind.png</Image>
+  <Image content="File">EditFindInFiles.png</Image>
+  <Image content="File">EditOpen.png</Image>
+  <Image content="File">EditPaste.png</Image>
+  <Image content="File">EditRedo.png</Image>
+  <Image content="File">EditRename.png</Image>
+  <Image content="File">EditUndo.png</Image>
+</Folder>

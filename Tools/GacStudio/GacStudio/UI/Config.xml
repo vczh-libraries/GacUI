@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Folder>
+  <Folder name="Projects">
+    <Xml name="GACUI_RESOURCE_PROJECT">
+      <Project>
+        <Image>ProjectImages/Dialog.png</Image>
+        <SmallImage>ProjectImages/DialogSmall.png</SmallImage>
+        <Display>GacUI Resource</Display>
+        <Description>Create an embedded resource for your GacUI program.</Description>
+      </Project>
+    </Xml>
+    <Xml name="PARSER_PROJECT">
+      <Project>
+        <Image>ProjectImages/Parser.png</Image>
+        <SmallImage>ProjectImages/ParserSmall.png</SmallImage>
+        <Display>Parser</Display>
+        <Description>Create a parser.</Description>
+      </Project>
+    </Xml>
+    <Xml name="HERODB_PROJECT">
+      <Project>
+        <Image>ProjectImages/Database.png</Image>
+        <SmallImage>ProjectImages/DatabaseSmall.png</SmallImage>
+        <Display>HeroDB Database</Display>
+        <Description>Create a HeroDB database instance.</Description>
+      </Project>
+    </Xml>
+  </Folder>
+
+  <Folder name="Contents">
+    <Xml name="GACUI_TEXT_CONTENT">
+      <Content>
+        <Display>Text Content</Display>
+        <Class>vm::TextContentModel</Class>
+      </Content>
+    </Xml>
+    <Xml name="GACUI_XML_CONTENT">
+      <Content>
+        <Display>XML Content</Display>
+        <BaseContent>GACUI_TEXT_CONTENT</BaseContent>
+      </Content>
+    </Xml>
+    <Xml name="GACUI_RICHTEXT_CONTENT">
+      <Content>
+        <Display>Rich Document Content</Display>
+        <BaseContent>GACUI_XML_CONTENT</BaseContent>
+      </Content>
+    </Xml>
+    <Xml name="GACUI_STYLE_CONTENT">
+      <Content>
+        <Display>Style Content</Display>
+        <BaseContent>GACUI_XML_CONTENT</BaseContent>
+      </Content>
+    </Xml>
+    <Xml name="GACUI_SCHEMA_CONTENT">
+      <Content>
+        <Display>Schema Content</Display>
+        <BaseContent>GACUI_XML_CONTENT</BaseContent>
+      </Content>
+    </Xml>
+    <Xml name="GACUI_INSTANCE_CONTENT">
+      <Content>
+        <Display>GacUI Instance Content</Display>
+        <BaseContent>GACUI_XML_CONTENT</BaseContent>
+      </Content>
+    </Xml>
+  </Folder>
+
+  <Folder name="Editors">
+    <Xml name="GACUI_TEXT_EDITOR">
+      <Editor>
+        <Display>Text Editor</Display>
+        <Required>GACUI_TEXT_CONTENT</Required>
+        <Editing>GACUI_TEXT_CONTENT</Editing>
+      </Editor>
+    </Xml>
+    <Xml name="GACUI_XML_EDITOR">
+      <Editor>
+        <Display>XML Editor</Display>
+        <Required>GACUI_XML_CONTENT</Required>
+        <Editing>GACUI_TEXT_CONTENT</Editing>
+      </Editor>
+    </Xml>
+    <Xml name="GACUI_RICHTEXT_EDITOR">
+      <Editor>
+        <Display>Rich Document Editor</Display>
+        <Required>GACUI_RICHTEXT_CONTENT</Required>
+        <Editing>GACUI_RICHTEXT_CONTENT</Editing>
+      </Editor>
+    </Xml>
+    <Xml name="GACUI_STYLE_EDITOR">
+      <Editor>
+        <Display>Style Editor</Display>
+        <Required>GACUI_STYLE_CONTENT</Required>
+        <Editing>GACUI_STYLE_CONTENT</Editing>
+      </Editor>
+    </Xml>
+    <Xml name="GACUI_SCHEMA_EDITOR">
+      <Editor>
+        <Display>Schema Editor</Display>
+        <Required>GACUI_SCHEMA_CONTENT</Required>
+        <Editing>GACUI_SCHEMA_CONTENT</Editing>
+      </Editor>
+    </Xml>
+    <Xml name="GACUI_INSTANCE_EDITOR">
+      <Editor>
+        <Display>GacUI Instance Editor</Display>
+        <Required>GACUI_INSTANCE_CONTENT</Required>
+        <Editing>GACUI_INSTANCE_CONTENT</Editing>
+      </Editor>
+    </Xml>
+  </Folder>
+  
+  <Folder name="Files">
+    <Xml name="GACUI_WINDOW_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/Dialog.png</Image>
+        <SmallImage>FileImages/DialogSmall.png</SmallImage>
+        <Display>Window Resource</Display>
+        <Description>Create a window for your GacUI program.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.window.xml</DefaultFileExt>
+        <TextTemplate>
+<![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<Instance ref.Class="ui::{$FILENAME}">
+  <Window Text="{$FILENAME}" ClientSize="x:800 y:600">
+  </Window>
+</Instance>]]>
+        </TextTemplate>
+        <Content>GACUI_INSTANCE_CONTENT</Content>
+      </File>
+    </Xml>
+    <Xml name="GACUI_CONTROL_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/Control.png</Image>
+        <SmallImage>FileImages/ControlSmall.png</SmallImage>
+        <Display>Control Resource</Display>
+        <Description>Create a control for your GacUI program.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.control.xml</DefaultFileExt>
+        <TextTemplate>
+<![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<Instance ref.Class="ui::{$FILENAME}">
+  <CustomControl>
+  </CustomControl>
+</Instance>]]>
+        </TextTemplate>
+        <Content>GACUI_INSTANCE_CONTENT</Content>
+      </File>
+    </Xml>
+    <Xml name="GACUI_CONTROL_TEMPLATE_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/Template.png</Image>
+        <SmallImage>FileImages/TemplateSmall.png</SmallImage>
+        <Display>Control Template Resource</Display>
+        <Description>Create a control template for your GacUI program.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.template.xml</DefaultFileExt>
+        <Content>GACUI_INSTANCE_CONTENT</Content>
+      </File>
+    </Xml>
+    <Xml name="GACUI_STYLE_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/Style.png</Image>
+        <SmallImage>FileImages/StyleSmall.png</SmallImage>
+        <Display>Style Resource</Display>
+        <Description>Create a style resource to contain common configurations and apply to one or more objects in your UI resource files.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.style.xml</DefaultFileExt>
+        <TextTemplate>
+          <![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<InstanceStyle name="{$FILENAME}Style">
+  <Style ref.Path="//Button" Text="SampleButton">
+    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+  </Style>
+</InstanceStyle>]]>
+        </TextTemplate>
+        <Content>GACUI_STYLE_CONTENT</Content>
+      </File>
+    </Xml>
+    <Xml name="GACUI_SCHEMA_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/Schema.png</Image>
+        <SmallImage>FileImages/SchemaSmall.png</SmallImage>
+        <Display>Schema Resource</Display>
+        <Description>Create a schema resource to declare model interfaces for data bindings.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.schema.xml</DefaultFileExt>
+        <TextTemplate>
+          <![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<Schemas>
+  <Interface ref.Class="vm::I{$FILENAME}Model">
+    <Property Name="SampleProperty" Type="string" Readonly="false" Observable="true"/>
+    <Method Name="SampleFunction" Type="string">
+      <Argument Name="argument" Type="string"/>
+    </Method>
+  </Interface>
+</Schemas>]]>
+        </TextTemplate>
+        <Content>GACUI_SCHEMA_CONTENT</Content>
+      </File>
+    </Xml>
+    <Xml name="GACUI_IMAGE_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/Image.png</Image>
+        <SmallImage>FileImages/ImageSmall.png</SmallImage>
+        <Display>Image Resource</Display>
+        <Description>Create an image resource for your GacUI program.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.bmp</DefaultFileExt>
+      </File>
+    </Xml>
+    <Xml name="GACUI_TEXT_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/Document.png</Image>
+        <SmallImage>FileImages/DocumentSmall.png</SmallImage>
+        <Display>Text Resource</Display>
+        <Description>Create a text resource for your GacUI program.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.txt</DefaultFileExt>
+        <TextTemplate/>
+        <Content>GACUI_TEXT_CONTENT</Content>
+      </File>
+    </Xml>
+    <Xml name="GACUI_RICHTEXT_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/RichDocument.png</Image>
+        <SmallImage>FileImages/RichDocumentSmall.png</SmallImage>
+        <Display>Rich Text Resource</Display>
+        <Description>Create a rich text resource for your GacUI program.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.document.xml</DefaultFileExt>
+        <TextTemplate>
+<![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<Doc>
+  <Content>
+    <p></p>
+  </Content>
+</Doc>]]>
+        </TextTemplate>
+      </File>
+    </Xml>
+    <Xml name="GACUI_XML_RESOURCE_FILE">
+      <File>
+        <Image>FileImages/XmlDocument.png</Image>
+        <SmallImage>FileImages/XmlDocumentSmall.png</SmallImage>
+        <Display>XML Resource</Display>
+        <Description>Create an xml resource for your GacUI program.</Description>
+        <Category>GACUI_RESOURCE_PROJECT</Category>
+        <DefaultFileExt>.xml</DefaultFileExt>
+        <TextTemplate>
+<![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<Resource>
+</Resource>]]>
+        </TextTemplate>
+        <Content>GACUI_RICHTEXT_CONTENT</Content>
+      </File>
+    </Xml>
+    <Xml name="PARSER_FILE">
+      <File>
+        <Image>FileImages/Parser.png</Image>
+        <SmallImage>FileImages/ParserSmall.png</SmallImage>
+        <Display>Parser</Display>
+        <Description>Create a parser from a grammar.</Description>
+        <Category>PARSER_PROJECT</Category>
+        <DefaultFileExt>.parser.txt</DefaultFileExt>
+        <TextTemplate/>
+      </File>
+    </Xml>
+    <Xml name="PARSER_TEST_FILE">
+      <File>
+        <Image>FileImages/Parser.png</Image>
+        <SmallImage>FileImages/ParserSmall.png</SmallImage>
+        <Display>Parser Test</Display>
+        <Description>Create a parser test.</Description>
+        <Category>PARSER_PROJECT</Category>
+        <DefaultFileExt>.parsertest.txt</DefaultFileExt>
+        <TextTemplate/>
+      </File>
+    </Xml>
+    <Xml name="HERODB_SQL_DATABASE">
+      <File>
+        <Image>FileImages/SQLDatabase.png</Image>
+        <SmallImage>FileImages/SQLDatabaseSmall.png</SmallImage>
+        <Display>SQL Database</Display>
+        <Description>Create a SQL Database in a HeroDB database instance.</Description>
+        <Category>HERODB_PROJECT</Category>
+        <DefaultFileExt>.herosql.txt</DefaultFileExt>
+        <TextTemplate/>
+      </File>
+    </Xml>
+    <Xml name="HERODB_GRAPH_DATABASE">
+      <File>
+        <Image>FileImages/GraphDatabase.png</Image>
+        <SmallImage>FileImages/GraphDatabaseSmall.png</SmallImage>
+        <Display>Graph Database</Display>
+        <Description>Create a Graph Database in a HeroDB database instance.</Description>
+        <Category>HERODB_PROJECT</Category>
+        <DefaultFileExt>.herograph.txt</DefaultFileExt>
+        <TextTemplate/>
+      </File>
+    </Xml>
+  </Folder>
+</Folder>

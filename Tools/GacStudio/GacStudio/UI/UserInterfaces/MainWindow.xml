@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Instance ref.Class="ui::MainWindow" ref.Styles="res://DarkSkin/Apply">
+  <ref.Parameter Name="ViewModel" Class="vm::IStudioModel"/>
+  <Window Text="GacStudio 1.0 (http://gaclib.net)" ClientSize="x:800 y:600">
+    <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+
+    <ToolstripCommand ref.Name="commandFileNewProject" Text="New Project..." Image-uri="res://CommandImages/NewProject.png" ShortcutBuilder="Ctrl+Shift+N">
+      <ev.Executed>commandFileNewProject_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileAddNewFile" Text="Add New File..." Image-uri="res://CommandImages/New.png" ShortcutBuilder="Ctrl+N" Enabled="false">
+      <ev.Executed>commandFileAddNewFile_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileAddExistingFiles" Text="Add Existing Files..." Image-uri="res://CommandImages/New.png" ShortcutBuilder="Ctrl+N" Enabled="false">
+      <ev.Executed>commandFileAddExistingFiles_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileOpenProject" Text="Open Project..." Image-uri="res://CommandImages/Open.png" ShortcutBuilder="Ctrl+Shift+O">
+      <ev.Executed>commandFileOpenProject_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileCloseSolution" Text="Close Solution" Enabled-bind="ViewModel.OpenedSolution is not null">
+      <ev.Executed>commandFileCloseSolution_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileSave" Text="Save" Image-uri="res://CommandImages/Save.png" ShortcutBuilder="Ctrl+S">
+      <ev.Executed>commandFileSave_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileSaveAll" Text="Save All" Image-uri="res://CommandImages/SaveAll.png" ShortcutBuilder="Ctrl+Shift+S">
+      <ev.Executed>commandFileSaveAll_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileOpen" Text="Open Selected File" Image-uri="res://CommandImages/EditOpen.png" Enabled="false">
+      <ev.Executed>commandFileOpen_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileOpenWith" Text="Open Selected File With..." Image-uri="res://CommandImages/EditOpen.png" Enabled="false">
+      <ev.Executed>commandFileOpenWith_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileRename" Text="Rename Selected File" Image-uri="res://CommandImages/EditRename.png" Enabled="false">
+      <ev.Executed>commandFileRename_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileRemove" Text="Remove Selected File" Image-uri="res://CommandImages/EditDelete.png" Enabled="false">
+      <ev.Executed>commandFileRemove_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandFileExit" Text="Exit">
+      <ev.Executed>commandFileExit_Executed</ev.Executed>
+    </ToolstripCommand>
+    <ToolstripCommand ref.Name="commandHelpAbout" Text="About GacStudio 1.0...">
+      <ev.Executed>commandHelpAbout_Executed</ev.Executed>
+    </ToolstripCommand>
+
+    <ToolstripMenu ref.Name="toolstripMenuSolutionItem">
+      <MenuItemButton Command-ref="commandFileAddNewFile" Alt="F"/>
+      <MenuItemButton Command-ref="commandFileAddExistingFiles" Alt="E"/>
+      <MenuSplitter/>
+      <MenuItemButton Command-ref="commandFileOpen" Alt="O"/>
+      <MenuItemButton Command-ref="commandFileOpenWith" Alt="W"/>
+      <MenuSplitter/>
+      <MenuItemButton Command-ref="commandFileRename" Alt="R"/>
+      <MenuItemButton Command-ref="commandFileRemove" Alt="D"/>
+    </ToolstripMenu>
+
+    <Table ref.Name="tableMain" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+      <att.Rows>
+        <CellOption>composeType:MinSize</CellOption>
+        <CellOption>composeType:MinSize</CellOption>
+        <CellOption>composeType:Percentage percentage:1.0</CellOption>
+      </att.Rows>
+      <att.Columns>
+        <CellOption>composeType:Absolute absolute:300</CellOption>
+        <CellOption>composeType:Absolute absolute:5</CellOption>
+        <CellOption>composeType:Percentage percentage:1.0</CellOption>
+      </att.Columns>
+
+      <Cell Site="row:0 column:0 columnSpan:3" InternalMargin="left:1 right:1">
+        <ToolstripMenuBar>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <MenuBarButton Text="File" Alt="F">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandFileNewProject" Alt="N"/>
+              <MenuItemButton Command-ref="commandFileOpenProject" Alt="O"/>
+              <MenuItemButton Text="Add" Alt="A" Image-uri="res://CommandImages/New.png">
+                <att.SubMenu-set>
+                  <MenuItemButton Command-ref="commandFileAddNewFile" Alt="F"/>
+                  <MenuItemButton Command-ref="commandFileAddExistingFiles" Alt="E"/>
+                </att.SubMenu-set>
+              </MenuItemButton>
+              <MenuSplitter/>
+              <MenuItemButton Command-ref="commandFileCloseSolution" Alt="L"/>
+              <MenuSplitter/>
+              <MenuItemButton Command-ref="commandFileSave" Alt="S"/>
+              <MenuItemButton Command-ref="commandFileSaveAll" Alt="A"/>
+              <MenuSplitter/>
+              <MenuItemButton Command-ref="commandFileOpen" Alt="A"/>
+              <MenuItemButton Command-ref="commandFileOpenWith" Alt="A"/>
+              <MenuSplitter/>
+              <MenuItemButton Command-ref="commandFileRename" Alt="A"/>
+              <MenuItemButton Command-ref="commandFileRemove" Alt="A"/>
+              <MenuSplitter/>
+              <MenuItemButton Command-ref="commandFileExit" Alt="X"/>
+            </att.SubMenu-set>
+          </MenuBarButton>
+          <MenuBarButton Text="Help" Alt="H">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandHelpAbout" Alt="A"/>
+            </att.SubMenu-set>
+          </MenuBarButton>
+        </ToolstripMenuBar>
+      </Cell>
+
+      <Cell Site="row:1 column:0 columnSpan:3" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <ToolstripToolBar>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ToolstripSplitButton Command-ref="commandFileNewProject">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandFileNewProject"/>
+              <MenuItemButton Command-ref="commandFileAddNewFile"/>
+              <MenuItemButton Command-ref="commandFileAddExistingFiles"/>
+            </att.SubMenu-set>
+          </ToolstripSplitButton>
+          <ToolstripButton Command-ref="commandFileOpenProject"/>
+          <ToolstripButton Command-ref="commandFileSave"/>
+          <ToolstripButton Command-ref="commandFileSaveAll"/>
+        </ToolstripToolBar>
+      </Cell>
+
+      <Cell Site="row:2 column:0" InternalMargin="left:5 top:0 right:0 bottom:5">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <TabPage Text="Solution Explorer">
+            <BindableTreeView ref.Name="treeViewSolutionItem" VerticalAlwaysVisible="false" ItemSource-eval="ViewModel.RootSolutionItem" ImageProperty="Image" TextProperty="Name" ChildrenProperty="Children">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Enabled-bind>ViewModel.OpenedSolution is not null</att.Enabled-bind>
+              <ev.SelectionChanged>treeViewSolutionItem_SelectionChanged</ev.SelectionChanged>
+              <ev.NodeRightButtonUp>treeViewSolutionItem_NodeRightButtonUp</ev.NodeRightButtonUp>
+            </BindableTreeView>
+          </TabPage>
+
+          <TabPage Text="Toolbox">
+          </TabPage>
+
+          <TabPage Text="Properties">
+          </TabPage>
+
+          <TabPage Text="Document Layout">
+          </TabPage>
+        </Tab>
+      </Cell>
+
+      <Cell ref.Name="cellSplitter" Site="row:2 column:1">
+        <ev.leftButtonDown>cellSplitter_leftButtonDown</ev.leftButtonDown>
+        <ev.leftButtonUp>cellSplitter_leftButtonUp</ev.leftButtonUp>
+        <ev.mouseMove>cellSplitter_mouseMove</ev.mouseMove>
+      </Cell>
+
+      <Cell Site="row:2 column:2" InternalMargin="left:0 top:0 right:5 bottom:5">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <TabPage Text="Start Page"/>
+        </Tab>
+      </Cell>
+    </Table>
+  </Window>
+</Instance>

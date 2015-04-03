@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Instance ref.CodeBehind="false" ref.Class="ui::AboutWindow" ref.Styles="res://DarkSkin/Apply">
+  <ref.Parameter Name="ViewModel" Class="vm::IStudioModel"/>
+  <Window ref.Name="self" Text="About GacStudio 1.0" ClientSize="x:640 y:480" MinimizedBox="false" MaximizedBox="false" SizeBox="false">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+      <att.Rows>
+        <CellOption>composeType:MinSize</CellOption>
+        <CellOption>composeType:Percentage percentage:1.0</CellOption>
+        <CellOption>composeType:MinSize</CellOption>
+      </att.Rows>
+      <att.Columns>
+        <CellOption>composeType:Percentage percentage:1.0</CellOption>
+        <CellOption>composeType:MinSize</CellOption>
+        <CellOption>composeType:Percentage percentage:1.0</CellOption>
+      </att.Columns>
+
+      <Cell Site="row:0 column:1">
+        <Bounds PreferredMinSize="x:500 y:200">
+          <ImageFrameElement Stretch="true" Image-uri="res://CommandImages/Gaclib.png"/>
+        </Bounds>
+      </Cell>
+
+      <Cell Site="row:1 column:1">
+        <DocumentViewer ref.Name="documentViewer" EditMode="ViewOnly" Document-uri="res://Documents/AboutDocument" ev.ActiveHyperlinkExecuted-eval="ViewModel.OpenBrowser(documentViewer.ActiveHyperlinkReference);">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </DocumentViewer>
+      </Cell>
+
+      <Cell Site="row:2 column:0 columnSpan:3">
+        <Button Text="Close" Alt="X" ev.Clicked-eval="self.Close();">
+          <att.BoundsComposition-set PreferredMinSize="x:100 y:30" AlignmentToParent="left:-1 top:0 right:0 bottom:0"/>
+        </Button>
+      </Cell>
+    </Table>
+  </Window>
+</Instance>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Schemas>
+  <Interface ref.Class="vm::ISolutionItemModel">
+    <Property Name="Parent" Type="vm::ISolutionItemModel*" Readonly="true"/>
+    <Property Name="Image" Type="presentation::GuiImageData^" Readonly="true" Observable="true"/>
+    <Property Name="Name" Type="string" Readonly="true" Observable="true"/>
+    <Property Name="Children" Type="ObservableList^" Readonly="true"/>
+    <Property Name="FilePath" Type="string" Readonly="true" Observable="true"/>
+    <Property Name="FileDirectory" Type="string" Readonly="true" Observable="true"/>
+    
+    <Property Name="ErrorCount" Type="int" Readonly="true" Observable="true"/>
+    <Method Name="GetErrorText" Type="string">
+      <Argument Name="index" Type="int"/>
+    </Method>
+  </Interface>
+
+  <Interface ref.Class="vm::IFileModel" Parent="vm::ISolutionItemModel">
+    <Property Name="FileFactory" Type="vm::IFileFactoryModel^" Readonly="true"/>
+    <Method Name="InitializeFileAndSave" Type="void"/>
+  </Interface>
+
+  <Interface ref.Class="vm::IFolderModel" Parent="vm::ISolutionItemModel">
+  </Interface>
+
+  <Interface ref.Class="vm::IProjectModel" Parent="vm::ISolutionItemModel">
+    <Property Name="ProjectFactory" Type="vm::IProjectFactoryModel^" Readonly="true"/>
+    <Method Name="OpenProject" Type="void"/>
+    <Method Name="InitializeProjectAndSave" Type="void"/>
+  </Interface>
+
+  <Interface ref.Class="vm::ISolutionModel" Parent="vm::ISolutionItemModel">
+    <Method Name="OpenSolution" Type="void"/>
+    <Method Name="NewSolution" Type="void"/>
+    <Method Name="AddProject" Type="void">
+      <Argument Name="project" Type="vm::IProjectModel^"/>
+    </Method>
+    <Method Name="RemoveProject" Type="void">
+      <Argument Name="project" Type="vm::IProjectModel^"/>
+    </Method>
+  </Interface>
+</Schemas>

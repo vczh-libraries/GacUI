@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Folder>
+  <Image content="File">FolderSmall.png</Image>
+  <Image content="File">Class.png</Image>
+  <Image content="File">ClassSmall.png</Image>
+  <Image content="File">Dialog.png</Image>
+  <Image content="File">DialogSmall.png</Image>
+  <Image content="File">Control.png</Image>
+  <Image content="File">ControlSmall.png</Image>
+  <Image content="File">Template.png</Image>
+  <Image content="File">TemplateSmall.png</Image>
+  <Image content="File">Image.png</Image>
+  <Image content="File">ImageSmall.png</Image>
+  <Image content="File">Document.png</Image>
+  <Image content="File">DocumentSmall.png</Image>
+  <Image content="File">RichDocument.png</Image>
+  <Image content="File">RichDocumentSmall.png</Image>
+  <Image content="File">XmlDocument.png</Image>
+  <Image content="File">XmlDocumentSmall.png</Image>
+  <Image content="File">Parser.png</Image>
+  <Image content="File">ParserSmall.png</Image>
+  <Image content="File">Schema.png</Image>
+  <Image content="File">SchemaSmall.png</Image>
+  <Image content="File">SQLDatabase.png</Image>
+  <Image content="File">SQLDatabaseSmall.png</Image>
+  <Image content="File">Style.png</Image>
+  <Image content="File">StyleSmall.png</Image>
+  <Image content="File">GraphDatabase.png</Image>
+  <Image content="File">GraphDatabaseSmall.png</Image>
+</Folder>

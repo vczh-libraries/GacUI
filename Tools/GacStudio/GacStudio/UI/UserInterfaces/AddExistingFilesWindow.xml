@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Folder>
+  <Instance name="FileReferenceNameColumnTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="ui::FileReferenceNameColumnTemplate" ref.Styles="res://DarkSkin/Apply">
+      <GridVisualizerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:2 right:5 bottom:2">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:0" PreferredMinSize="x:24">
+            <ImageFrame>
+              <att.Image-bind>(cast (vm::StudioFileReference^) self.RowValue).fileFactory.SmallImage.Image ?? null</att.Image-bind>
+              <att.FrameIndex-bind>(cast (vm::StudioFileReference^) self.RowValue).fileFactory.SmallImage.FrameIndex ?? 0</att.FrameIndex-bind>
+            </ImageFrame>
+          </Cell>
+
+          <Cell Site="row:0 column:1 rowSpan:3">
+            <SolidLabel Color="#FFFFFF" Ellipse="true" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+          </Cell>
+        </Table>
+      </GridVisualizerTemplate>
+    </Instance>
+  </Instance>
+  
+  <Instance name="FileReferenceFolderColumnTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="ui::FileReferenceFolderColumnTemplate" ref.Styles="res://DarkSkin/Apply">
+      <GridVisualizerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <BoundsComposition AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElement">
+          <SolidLabel Color="#FFFFFF" Ellipse="true" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </BoundsComposition>
+      </GridVisualizerTemplate>
+    </Instance>
+  </Instance>
+  
+  <Instance name="FileReferenceFactoryColumnTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="ui::FileReferenceFactoryColumnTemplate" ref.Styles="res://DarkSkin/Apply">
+      <GridVisualizerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <BoundsComposition AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElement">
+          <SolidLabel Ellipse="true" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <att.Text-bind>(cast (vm::IFileFactoryModel^) self.CellValue).Name ?? "Not Recognized"</att.Text-bind>
+            <att.Color-bind>cast Color ((cast (vm::IFileFactoryModel^) self.CellValue) is null ? "#AAAAAA" : "#FFFFFF")</att.Color-bind>
+          </SolidLabel>
+        </BoundsComposition>
+      </GridVisualizerTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="FileReferenceFactoryEditorTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="ui::FileReferenceFactoryEditorTemplate" ref.Styles="res://DarkSkin/Apply">
+      <ref.Parameter Name="OperationModel" Class="vm::IStudioAddExistingFilesModel"/>
+      <GridEditorTemplate ref.Name="self" CellValue-bind="OperationModel.FilteredFileFactories.Get(comboBoxFactory.SelectedIndex) ?? null">
+        <BoundsComposition AlignmentToParent="left:1 top:1 right:1 bottom:1" Visible-bind="self.CellValue is not null">
+          <ComboBox ref.Name="comboBoxFactory" SelectedIndex-bind="OperationModel.FilteredFileFactories.IndexOf(self.CellValue)">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <att.ListControl>
+              <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" ItemSource-eval="OperationModel.FilteredFileFactories" TextProperty="Name"/>
+            </att.ListControl>
+          </ComboBox>
+        </BoundsComposition>
+      </GridEditorTemplate>
+    </Instance>
+  </Instance>
+  
+  <Instance name="AddExistingFilesWindowResource">
+    <Instance ref.Class="ui::AddExistingFilesWindow" ref.Styles="res://DarkSkin/Apply">
+      <ref.Parameter Name="ViewModel" Class="vm::IStudioModel"/>
+      <ref.Parameter Name="OperationModel" Class="vm::IStudioAddExistingFilesModel"/>
+      <ref.Parameter Name="Action" Class="vm::IAddFileItemAction"/>
+      <Window ref.Name="self" Text="Add Existing Files" ClientSize="x:480 y:320">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+        <att.OperationModel-set CurrentFileName-bind="(cast (vm::StudioFileReference^) dataGridFiles.SelectedRowValue).name ?? ''"/>
+
+        <OpenFileDialog ref.Name="dialogOpen" Title="Add Existing Files">
+          <att.Options>FileDialogAllowMultipleSelection|FileDialogFileMustExist|FileDialogDereferenceLinks|FileDialogDirectoryMustExist</att.Options>
+        </OpenFileDialog>
+
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0" Margin="left:4 top:4 right:4 bottom:4">
+            <Label Text="Select Files to Add:"/>
+          </Cell>
+
+          <Cell Site="row:1 column:0 columnSpan:5">
+            <BindableDataGrid ref.Name="dataGridFiles" Alt="F" HorizontalAlwaysVisible="false" MultiSelect="true" VerticalAlwaysVisible="false">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+
+              <att.ItemSource-eval>OperationModel.SelectedFiles</att.ItemSource-eval>
+              <att.ViewModelContext-eval>OperationModel</att.ViewModelContext-eval>
+
+              <att.Columns>
+                <BindableDataColumn Text="File Name" Size="160" ValueProperty="name" VisualizerTemplates="ui::FileReferenceNameColumnTemplate"/>
+                <BindableDataColumn Text="Folder" Size="280" ValueProperty="folder" VisualizerTemplates="ui::FileReferenceFolderColumnTemplate"/>
+                <BindableDataColumn Text="Type" Size="120" ValueProperty="fileFactory" VisualizerTemplates="ui::FileReferenceFactoryColumnTemplate" EditorTemplate="ui::FileReferenceFactoryEditorTemplate"/>
+              </att.Columns>
+            </BindableDataGrid>
+          </Cell>
+
+          <Cell Site="row:2 column:0">
+            <Button ref.Name="buttonAdd" Text="Add Files ..." Alt="A" ev.Clicked="buttonAdd_Clicked">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:24"/>
+            </Button>
+          </Cell>
+          <Cell Site="row:2 column:1">
+            <Button ref.Name="buttonRemove" Text="Remove Selected Files" Alt="R" ev.Clicked="buttonRemove_Clicked">
+              <att.Enabled-bind><![CDATA[dataGridFiles.SelectedItems.Count > 0]]></att.Enabled-bind>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:24"/>
+            </Button>
+          </Cell>
+          <Cell Site="row:2 column:3">
+            <Button ref.Name="buttonOK" Text="OK" Alt="O" ev.Clicked="buttonOK_Clicked">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:24"/>
+            </Button>
+          </Cell>
+          <Cell Site="row:2 column:4">
+            <Button ref.Name="buttonCancel" Text="Cancel" Alt="X" ev.Clicked="buttonCancel_Clicked">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:24"/>
+            </Button>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+</Folder>

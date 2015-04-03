@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Resource>
+  <Folder name="GacGenConfig">
+    <Text name="Include">GacUIReflection.h</Text>
+    <Text name="Name">GacStudioUI</Text>
+    <Text name="Prefix">Gs</Text>
+    <Text name="PrecompiledBinary">ResourcesUncompressed.bin</Text>
+    <Text name="PrecompiledCompressed">Resources.bin</Text>
+  </Folder>
+  <Folder name="CommandImages" content="Link">CommandImages\Folder.xml</Folder>
+  <Folder name="ProjectImages" content="Link">ProjectImages\Folder.xml</Folder>
+  <Folder name="FileImages" content="Link">FileImages\Folder.xml</Folder>
+  <Folder name="UI">
+    <InstanceSchema content="File">ViewModels\SolutionModel.xml</InstanceSchema>
+    <InstanceSchema content="File">ViewModels\StudioModel.xml</InstanceSchema>
+    <InstanceSchema content="File">ViewModels\EditorModel.xml</InstanceSchema>
+    <InstanceSchema content="File">ViewModels\ActionModel.xml</InstanceSchema>
+    <Instance content="File">UserInterfaces\MainWindow.xml</Instance>
+    <Instance content="File">UserInterfaces\NewProjectWindow.xml</Instance>
+    <Instance content="File">UserInterfaces\NewFileWindow.xml</Instance>
+    <Instance content="File">UserInterfaces\AboutWindow.xml</Instance>
+    <Instance content="File">UserInterfaces\RenameFileWindow.xml</Instance>
+    <Folder name="AddExistingFilesWindowFolder" content="Link">UserInterfaces\AddExistingFilesWindow.xml</Folder>
+  </Folder>
+  <Folder name="DarkSkin" content="Link">Skin.xml</Folder>
+  <Folder name="Config" content="Link">Config.xml</Folder>
+  <Folder name="Documents">
+    <Doc name="AboutDocument" content="File">About.xml</Doc>
+  </Folder>
+</Resource>
