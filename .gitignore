@@ -5,6 +5,8 @@
 Test/Output/
 Test/Linux/Coverage/
 Tools/.Output/
+Tools/*.exe
+Tools/*.dll
 
 # User-specific files
 *.suo
