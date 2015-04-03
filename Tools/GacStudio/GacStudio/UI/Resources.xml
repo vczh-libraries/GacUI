@@ -4,7 +4,6 @@
     <Text name="Include">GacUIReflection.h</Text>
     <Text name="Name">GacStudioUI</Text>
     <Text name="Prefix">Gs</Text>
-    <Text name="PrecompiledBinary">ResourcesUncompressed.bin</Text>
     <Text name="PrecompiledCompressed">Resources.bin</Text>
   </Folder>
   <Folder name="CommandImages" content="Link">CommandImages\Folder.xml</Folder>
