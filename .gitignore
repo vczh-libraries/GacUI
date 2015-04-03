@@ -4,6 +4,7 @@
 #Vczh Libraries
 Test/Output/
 Test/Linux/Coverage/
+Tools/.Output/
 
 # User-specific files
 *.suo

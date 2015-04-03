@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Import">
+      <UniqueIdentifier>{8632b5b4-2334-4f34-96fa-fc76cb48960d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Release\GacUIWindows.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Release\GacUI.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Release\GacUIReflection.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\Vlpp.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="GacGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Release\GacUI.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Release\GacUIReflection.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Release\GacUIWindows.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\Vlpp.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflow.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="CodegenControlClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodegenControlClassContent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodegenEventHandlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodegenGlobalHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodegenPartialClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodegenUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GacGenObjectModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GacGenSearch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GacGenTypeTransformation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GacGenUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
