@@ -197,7 +197,8 @@ DocumentModel
 
 			auto indexDst = styles.Keys().IndexOf(styleName);
 			auto csp = baselineDocument->styles.Values()[indexSrc]->styles;
-			Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties(*csp.Obj());
+			Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
+			MergeStyle(sp, csp);
 			if (indexDst != -1)
 			{
 				MergeStyle(sp, styles.Values()[indexDst]->styles);

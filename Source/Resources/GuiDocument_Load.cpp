@@ -388,22 +388,21 @@ DocumentModel
 							model->styles.Add(styleName, style);
 							if (styleName.Length() > 9 && styleName.Right(9) == L"-Override")
 							{
-								{
-									auto sp = new DocumentStyleProperties(*style->styles.Obj());
-									style = new DocumentStyle;
-									style->styles = sp;
-								}
+								auto overridedStyle = MakePtr<DocumentStyle>();
+								overridedStyle->styles = new DocumentStyleProperties;
+								MergeStyle(overridedStyle->styles, style->styles);
+
 								styleName = styleName.Left(styleName.Length() - 9);
 								auto index = model->styles.Keys().IndexOf(styleName);
 								if (index == -1)
 								{
-									model->styles.Add(styleName, style);
+									model->styles.Add(styleName, overridedStyle);
 								}
 								else
 								{
 									auto originalStyle = model->styles.Values()[index];
-									MergeStyle(style->styles, originalStyle->styles);
-									originalStyle->styles = style->styles;
+									MergeStyle(overridedStyle->styles, originalStyle->styles);
+									originalStyle->styles = overridedStyle->styles;
 								}
 							}
 						}

@@ -2086,7 +2086,6 @@ Locale
 /***********************************************************************
 STRING.CPP
 ***********************************************************************/
-#include <stdlib.h>
 #if defined VCZH_MSVC
 #elif defined VCZH_GCC
 #define _strtoi64 strtoll
