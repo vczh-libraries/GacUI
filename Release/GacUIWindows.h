@@ -1093,11 +1093,15 @@ Raw API Rendering Element
 
 			class GuiGDIElement;
 
+			/// <summary>GDI Rendering event arguments.</summary>
 			struct GuiGDIElementEventArgs : compositions::GuiEventArgs
 			{
 			public:
+				/// <summary>The element that raised this event.</summary>
 				GuiGDIElement*				element;
+				/// <summary>The device context to draw. The HDC handle can be retrived using dc->GetHandle(), but it is recommended that using the WinDC class directly.</summary>
 				windows::WinDC*				dc;
+				/// <summary>The range for rendering.</summary>
 				Rect						bounds;
 
 				GuiGDIElementEventArgs(GuiGDIElement* _element, windows::WinDC* _dc, Rect _bounds)
@@ -1108,6 +1112,9 @@ Raw API Rendering Element
 				}
 			};
 
+			/// <summary>
+			/// Defines an element for customized rendering using GDI.
+			/// </summary>
 			class GuiGDIElement : public Object, public IGuiGraphicsElement, public Description<GuiGDIElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGDIElement, L"GDIElement")
@@ -1116,6 +1123,7 @@ Raw API Rendering Element
 			public:
 				~GuiGDIElement();
 
+				/// <summary>Rendering event.</summary>
 				compositions::GuiGraphicsEvent<GuiGDIElementEventArgs>		Rendering;
 			};
 		}
@@ -1824,13 +1832,19 @@ Raw API Rendering Element
 
 			class GuiDirect2DElement;
 			
+			/// <summary>Direct2D Rendering event arguments.</summary>
 			struct GuiDirect2DElementEventArgs : compositions::GuiEventArgs
 			{
 			public:
+				/// <summary>The element that raised this event.</summary>
 				GuiDirect2DElement*				element;
+				/// <summary>Direct2D render target object.</summary>
 				ID2D1RenderTarget*				rt;
+				/// <summary>DirectWrite factory object.</summary>
 				IDWriteFactory*					factoryDWrite;
+				/// <summary>Direct2D factory object.</summary>
 				ID2D1Factory*					factoryD2D;
+				/// <summary>The range for rendering.</summary>
 				Rect							bounds;
 
 				GuiDirect2DElementEventArgs(GuiDirect2DElement* _element, ID2D1RenderTarget* _rt, IDWriteFactory* _fdw, ID2D1Factory* _fd2d, Rect _bounds)
@@ -1843,6 +1857,9 @@ Raw API Rendering Element
 				}
 			};
 
+			/// <summary>
+			/// Defines an element for customized rendering using Direct2D.
+			/// </summary>
 			class GuiDirect2DElement : public Object, public IGuiGraphicsElement, public Description<GuiDirect2DElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDirect2DElement, L"Direct2DElement")
@@ -1851,8 +1868,11 @@ Raw API Rendering Element
 			public:
 				~GuiDirect2DElement();
 				
+				/// <summary>Render target changed (before) event. Resources that binded to the render target can be released at this moment.</summary>
 				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		BeforeRenderTargetChanged;
+				/// <summary>Render target changed (after) event. Resources that binded to the render target can be recreated at this moment.</summary>
 				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		AfterRenderTargetChanged;
+				/// <summary>Rendering event.</summary>
 				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		Rendering;
 			};
 		}
