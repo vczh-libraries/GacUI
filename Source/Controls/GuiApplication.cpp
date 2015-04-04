@@ -431,6 +431,7 @@ GuiApplicationMain
 				theme::SetCurrentTheme(0);
 				DestroyGlobalTypeManager();
 				DestroyPluginManager();
+				ThreadLocalStorage::DisposeStorages();
 			}
 		}
 	}
