@@ -9,6 +9,7 @@ cd ..
 MSBuild RemoveSystemInclude\RemoveSystemInclude\RemoveSystemInclude.csproj /p:Configuration=Release;OutputPath=..\..\.Output\Tools\
 MSBuild RemoveEmptyLines\RemoveEmptyLines\RemoveEmptyLines.csproj /p:Configuration=Release;OutputPath=..\..\.Output\Tools\
 MSBuild Tokenizer\Tokenizer\Tokenizer.csproj /p:Configuration=Release;OutputPath=..\..\.Output\Tools\
+MSBuild Parser\Parser\Parser.csproj /p:Configuration=Release;OutputPath=..\..\.Output\Tools\
 copy ..\Release\*.h .Output\Source\*.h
 copy ..\Release\*.cpp .Output\Source\*.cpp
 copy ..\Import\*.h .Output\Source\*.h
