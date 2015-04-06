@@ -149,5 +149,26 @@ namespace ParserTest
                 Convert("int [ sizeof ( double ) ] [ call ( 1 , 2 , 3 ) ]")
                 );
         }
+
+        [TestMethod]
+        public void TestFunctionType()
+        {
+            Assert.AreEqual(
+                "function (a : int, float, double) : int",
+                Convert("int ( int a , float , double )")
+                );
+            Assert.AreEqual(
+                "function __stdcall (a : int, float, double) : int",
+                Convert("int __stdcall ( int a , float , double )")
+                );
+            Assert.AreEqual(
+                "* Class::(function __thiscall const (a : int, float, double) : int)",
+                Convert("int ( __thiscall Class : : * ) ( int a , float , double ) const")
+                );
+            Assert.AreEqual(
+                "callback : * Class::(function __thiscall (a : int, float, double) : int)",
+                Convert("int ( __thiscall Class : : * callback ) ( int a , float , double )")
+                );
+        }
     }
 }
