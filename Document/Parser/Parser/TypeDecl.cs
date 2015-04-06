@@ -299,6 +299,10 @@ namespace Parser
                     }
                     funcDecl.Const = Parser.Token(tokens, ref index, "const");
                 }
+                else
+                {
+                    break;
+                }
             }
         }
 
