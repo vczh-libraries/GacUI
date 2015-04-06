@@ -33,5 +33,48 @@ namespace ParserTest
                 Convert("int")
                 );
         }
+
+        [TestMethod]
+        public void TestDecoratedType()
+        {
+            Assert.AreEqual(
+                "const int",
+                Convert("const int")
+                );
+            Assert.AreEqual(
+                "const int",
+                Convert("int const")
+                );
+
+            Assert.AreEqual(
+                "volatile int",
+                Convert("volatile int")
+                );
+            Assert.AreEqual(
+                "volatile int",
+                Convert("int volatile")
+                );
+
+            Assert.AreEqual(
+                "signed int",
+                Convert("signed int")
+                );
+            Assert.AreEqual(
+                "unsigned int",
+                Convert("unsigned int")
+                );
+            Assert.AreEqual(
+                "* int",
+                Convert("int *")
+                );
+            Assert.AreEqual(
+                "& int",
+                Convert("int &")
+                );
+            Assert.AreEqual(
+                "&& int",
+                Convert("int &&")
+                );
+        }
     }
 }
