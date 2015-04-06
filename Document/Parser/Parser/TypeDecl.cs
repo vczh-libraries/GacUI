@@ -125,7 +125,8 @@ namespace Parser
                             }
                             else
                             {
-                                throw new ArgumentException("Failed to parse.");
+                                index -= 2;
+                                break;
                             }
                         }
                         else
@@ -141,6 +142,99 @@ namespace Parser
                     return false;
                 }
             }
+        }
+
+        public static void ParseTypeContinueBeforeName(string[] tokens, ref int index, out TypeDecl decl, out Action<TypeDecl> continuation, out string name)
+        {
+            decl = null;
+            continuation = null;
+            name = null;
+
+            while (true)
+            {
+                Decoration? decoration = null;
+                if (Parser.Token(tokens, ref index, "const"))
+                {
+                    decoration = Decoration.Const;
+                }
+                else if (Parser.Token(tokens, ref index, "volatile"))
+                {
+                    decoration = Decoration.Volatile;
+                }
+                else if (Parser.Token(tokens, ref index, "*"))
+                {
+                    decoration = Decoration.Pointer;
+                }
+                else if (Parser.Token(tokens, ref index, "&"))
+                {
+                    decoration = Decoration.LeftRef;
+                }
+                else if (Parser.Token(tokens, ref index, "&&"))
+                {
+                    decoration = Decoration.RightRef;
+                }
+                else
+                {
+                    TypeDecl classType = null;
+                    if (ParseMiniType(tokens, ref index, out classType))
+                    {
+                        if (Parser.Token(tokens, ref index, ":"))
+                        {
+                            if (Parser.Token(tokens, ref index, ":"))
+                            {
+                                var classMemberTypeDecl = new ClassMemberTypeDecl
+                                {
+                                    ClassType = classType,
+                                };
+                                if (decl == null)
+                                {
+                                    continuation = x => classMemberTypeDecl.Element = x;
+                                }
+                                else
+                                {
+                                    classMemberTypeDecl.Element = decl;
+                                }
+                                decl = classMemberTypeDecl;
+                            }
+                            else
+                            {
+                                throw new ArgumentException("Failed to parse.");
+                            }
+                        }
+                        else
+                        {
+                            name = ((RefTypeDecl)classType).Name;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (decoration != null)
+                {
+                    var decorateDecl = new DecorateTypeDecl
+                    {
+                        Decoration = decoration.Value,
+                    };
+                    if (decl == null)
+                    {
+                        continuation = x => decorateDecl.Element = x;
+                    }
+                    else
+                    {
+                        decorateDecl.Element = decl;
+                    }
+                    decl = decorateDecl;
+                }
+            }
+        }
+
+        public static bool ParseTypeContinueAfterName(string[] tokens, ref int index, out TypeDecl decl, out Action<TypeDecl> continuation)
+        {
+            throw new NotImplementedException();
         }
 
         public static bool ParseType(string[] tokens, ref int index, out TypeDecl decl, out string name)
@@ -164,8 +258,9 @@ namespace Parser
     {
         Const,
         Volatile,
-        Reference,
         Pointer,
+        LeftRef,
+        RightRef,
         Signed,
         Unsigned,
     }
@@ -196,8 +291,13 @@ namespace Parser
     {
         public CallingConvention CallingConvention { get; set; }
         public TypeDecl ReturnType { get; set; }
-        public TypeDecl ClassType { get; set; }
         public List<VarDecl> Parameters { get; set; }
+    }
+
+    class ClassMemberTypeDecl : TypeDecl
+    {
+        public TypeDecl Element { get; set; }
+        public TypeDecl ClassType { get; set; }
     }
 
     class GenericTypeDecl : TypeDecl
