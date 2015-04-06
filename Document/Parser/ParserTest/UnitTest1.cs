@@ -76,5 +76,22 @@ namespace ParserTest
                 Convert("int &&")
                 );
         }
+
+        [TestMethod]
+        public void TestDecoratedTypeProperity()
+        {
+            Assert.AreEqual(
+                "* const int",
+                Convert("const int *")
+                );
+            Assert.AreEqual(
+                "const * int",
+                Convert("int * const")
+                );
+            Assert.AreEqual(
+                "const * const int",
+                Convert("const int * const")
+                );
+        }
     }
 }
