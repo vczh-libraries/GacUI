@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Parser
 {
-    class TypeDecl
+    public class TypeDecl
     {
-        public static bool ParseMiniType(string[] tokens, ref int index, out TypeDecl decl)
+        static bool ParseMiniType(string[] tokens, ref int index, out TypeDecl decl)
         {
             decl = null;
             if (Parser.Token(tokens, ref index, "const"))
@@ -146,7 +146,7 @@ namespace Parser
             }
         }
 
-        public static void ParseTypeContinueBeforeName(string[] tokens, ref int index, out TypeDecl decl, out Action<TypeDecl> continuation, out string name)
+        static void ParseTypeContinueBeforeName(string[] tokens, ref int index, out TypeDecl decl, out Action<TypeDecl> continuation, out string name)
         {
             decl = null;
             continuation = null;
@@ -234,7 +234,7 @@ namespace Parser
             }
         }
 
-        public static void ParseTypeContinueAfterName(string[] tokens, ref int index, CallingConvention callingConvention, out TypeDecl decl, out Action<TypeDecl> continuation)
+        static void ParseTypeContinueAfterName(string[] tokens, ref int index, CallingConvention callingConvention, out TypeDecl decl, out Action<TypeDecl> continuation)
         {
             decl = null;
             continuation = null;
@@ -297,13 +297,136 @@ namespace Parser
                             throw new ArgumentException("Failed to parse.");
                         }
                     }
+                    funcDecl.Const = Parser.Token(tokens, ref index, "const");
                 }
+            }
+        }
+
+        static void ParseTypeContinue(string[] tokens, ref int index, out TypeDecl decl, out Action<TypeDecl> continuation, out string name)
+        {
+            decl = null;
+            continuation = null;
+            name = null;
+            CallingConvention callingConvention = CallingConvention.Default;
+
+            if (Parser.Token(tokens, ref index, "__cdecl"))
+            {
+                callingConvention = CallingConvention.CDecl;
+            }
+            else if (Parser.Token(tokens, ref index, "__clrcall"))
+            {
+                callingConvention = CallingConvention.ClrCall;
+            }
+            else if (Parser.Token(tokens, ref index, "__stdcall"))
+            {
+                callingConvention = CallingConvention.StdCall;
+            }
+            else if (Parser.Token(tokens, ref index, "__fastcall"))
+            {
+                callingConvention = CallingConvention.FastCall;
+            }
+            else if (Parser.Token(tokens, ref index, "__thiscall"))
+            {
+                callingConvention = CallingConvention.ThisCall;
+            }
+            else if (Parser.Token(tokens, ref index, "__vectorcall"))
+            {
+                callingConvention = CallingConvention.VectorCall;
+            }
+
+            TypeDecl beforeDecl = null;
+            Action<TypeDecl> beforeContinuation = null;
+            ParseTypeContinueBeforeName(tokens, ref index, out beforeDecl, out beforeContinuation, out name);
+
+            TypeDecl middleDecl = null;
+            Action<TypeDecl> middleContinuation = null;
+            if (name == null)
+            {
+                int middleIndex = index;
+                bool recursive = false;
+                if (Parser.Token(tokens, ref middleIndex, "("))
+                {
+                    string token = null;
+                    Parser.SkipUntil(tokens, ref middleIndex, out token, ",", ")");
+                    if (token == ")")
+                    {
+                        recursive = tokens[middleIndex] == "(" || tokens[middleIndex] == "[";
+                    }
+                }
+
+                if (recursive)
+                {
+                    if (!Parser.Token(tokens, ref index, "("))
+                    {
+                        throw new ArgumentException("Failed to parse.");
+                    }
+                    ParseTypeContinue(tokens, ref index, out middleDecl, out middleContinuation, out name);
+                    if (!Parser.Token(tokens, ref index, ")"))
+                    {
+                        throw new ArgumentException("Failed to parse.");
+                    }
+                }
+            }
+
+            TypeDecl afterDecl = null;
+            Action<TypeDecl> afterContinuation = null;
+            ParseTypeContinueAfterName(tokens, ref index, callingConvention, out afterDecl, out afterContinuation);
+
+            decl = middleDecl;
+            continuation = middleContinuation;
+
+            if (afterDecl != null)
+            {
+                if (decl == null)
+                {
+                    decl = afterDecl;
+                }
+                else
+                {
+                    continuation(afterDecl);
+                }
+                continuation = afterContinuation;
+            }
+
+            if (beforeDecl != null)
+            {
+                if (decl == null)
+                {
+                    decl = beforeDecl;
+                }
+                else
+                {
+                    continuation(beforeDecl);
+                }
+                continuation = beforeContinuation;
             }
         }
 
         public static bool ParseType(string[] tokens, ref int index, out TypeDecl decl, out string name)
         {
-            throw new NotImplementedException();
+            decl = null;
+            name = null;
+            TypeDecl miniType = null;
+            if (ParseMiniType(tokens, ref index, out miniType))
+            {
+                TypeDecl continuationDecl = null;
+                Action<TypeDecl> continuation = null;
+                ParseTypeContinue(tokens, ref index, out continuationDecl, out continuation, out name);
+                if (continuationDecl != null)
+                {
+                    continuation(miniType);
+                    decl = continuationDecl;
+                }
+                else
+                {
+                    decl = miniType;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -356,6 +479,7 @@ namespace Parser
         public CallingConvention CallingConvention { get; set; }
         public TypeDecl ReturnType { get; set; }
         public List<VarDecl> Parameters { get; set; }
+        public bool Const { get; set; }
     }
 
     class ClassMemberTypeDecl : TypeDecl
