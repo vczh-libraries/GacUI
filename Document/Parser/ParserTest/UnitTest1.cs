@@ -93,5 +93,31 @@ namespace ParserTest
                 Convert("const int * const")
                 );
         }
+
+        [TestMethod]
+        public void TestGenericType()
+        {
+            Assert.AreEqual(
+                "vector<int>",
+                Convert("vector < int >")
+                );
+            Assert.AreEqual(
+                "vector<int, float>",
+                Convert("vector < int , float >")
+                );
+        }
+
+        [TestMethod]
+        public void TestSubType()
+        {
+            Assert.AreEqual(
+                "Outer::Inner",
+                Convert("Outer : : Inner")
+                );
+            Assert.AreEqual(
+                "Outer::Inner::MostInner",
+                Convert("Outer : : Inner : : MostInner")
+                );
+        }
     }
 }
