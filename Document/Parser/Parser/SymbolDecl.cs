@@ -43,6 +43,27 @@ namespace Parser
                     ParseSymbols(tokens, ref index, decl);
                     Parser.EnsureToken(tokens, ref index, "}");
                 }
+                else if (Parser.Token(tokens, ref index, "using"))
+                {
+                    if (Parser.Token(tokens, ref index, "namespace"))
+                    {
+                        var decl = new UsingNamespaceDecl();
+                        decl.Path = new List<string>();
+                        decl.Path.Add(Parser.EnsureId(tokens, ref index));
+                        parent.Children.Add(decl);
+
+                        while (!Parser.Token(tokens, ref index, ";"))
+                        {
+                            Parser.EnsureToken(tokens, ref index, ":");
+                            Parser.EnsureToken(tokens, ref index, ":");
+                            decl.Path.Add(Parser.EnsureId(tokens, ref index));
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Failed to parse.");
+                    }
+                }
                 else
                 {
                     break;
@@ -62,6 +83,11 @@ namespace Parser
     class UsingNamespaceDecl : SymbolDecl
     {
         public List<string> Path { get; set; }
+
+        public override string ToString()
+        {
+            return "using namespace " + this.Path.Aggregate("", (a, b) => a == "" ? b : a + "::" + b);
+        }
     }
 
     class TemplateDecl : SymbolDecl

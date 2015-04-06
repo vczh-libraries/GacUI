@@ -11,7 +11,7 @@ namespace ParserTest
     {
         static SymbolDecl Convert(string input)
         {
-            var tokens = input.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            var tokens = input.Split(" \r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             int index = 0;
 
             var decl = new SymbolDecl();
@@ -24,7 +24,9 @@ namespace ParserTest
         [TestMethod]
         public void TestNamespace()
         {
-            var global = Convert("namespace vl { }");
+            var global = Convert(@"
+                namespace vl { }
+                ");
             Assert.AreEqual(1, global.Children.Count);
             Assert.AreEqual("namespace vl", global.Children[0].ToString());
         }
@@ -32,7 +34,15 @@ namespace ParserTest
         [TestMethod]
         public void TestUsingNamespace()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                using namespace vl ;
+                using namespace vl : : collections ;
+                using namespace vl : : parsing : : xml ;
+                ");
+            Assert.AreEqual(3, global.Children.Count);
+            Assert.AreEqual("using namespace vl", global.Children[0].ToString());
+            Assert.AreEqual("using namespace vl::collections", global.Children[1].ToString());
+            Assert.AreEqual("using namespace vl::parsing::xml", global.Children[2].ToString());
         }
 
         [TestMethod]
