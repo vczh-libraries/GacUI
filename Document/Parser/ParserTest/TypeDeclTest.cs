@@ -327,5 +327,14 @@ namespace ParserTest
                 Convert("int ( __thiscall Class : : * callback ) ( int a , float , double )")
                 );
         }
+
+        [TestMethod]
+        public void TestBossType()
+        {
+            Assert.AreEqual(
+                "var : && array array * Class::(function __thiscall const (a : * array int, b : * function () : void) : & array int)",
+                Convert("int ( & ( __thiscall Class : : * ( && var ) [ 10 ] [ 20 ] ) ( int ( * a ) [ 30 ] , void ( * b ) ( ) ) const ) [ 40 ]")
+                );
+        }
     }
 }
