@@ -24,6 +24,61 @@ namespace Parser
             this.Access = global::Parser.Access.Public;
         }
 
+        static SymbolDecl ParseSymbol(string[] tokens, ref int index)
+        {
+            if (Parser.Token(tokens, ref index, "friend"))
+            {
+                Parser.SkipUntil(tokens, ref index, ";");
+            }
+            else if (Parser.Token(tokens, ref index, "template"))
+            {
+                var decl = new TemplateDecl();
+                Parser.EnsureToken(tokens, ref index, "<");
+                Parser.SkipUntil(tokens, ref index, ">");
+
+                var element = ParseSymbol(tokens, ref index);
+                if (element != null)
+                {
+                    decl.Element = element;
+                    return decl;
+                }
+            }
+            else if (Parser.Token(tokens, ref index, "namespace"))
+            {
+                var decl = new NamespaceDecl();
+                decl.Name = Parser.EnsureId(tokens, ref index);
+
+                Parser.EnsureToken(tokens, ref index, "{");
+                ParseSymbols(tokens, ref index, decl);
+                Parser.EnsureToken(tokens, ref index, "}");
+
+                return decl;
+            }
+            else if (Parser.Token(tokens, ref index, "using"))
+            {
+                if (Parser.Token(tokens, ref index, "namespace"))
+                {
+                    var decl = new UsingNamespaceDecl();
+                    decl.Path = new List<string>();
+                    decl.Path.Add(Parser.EnsureId(tokens, ref index));
+
+                    while (!Parser.Token(tokens, ref index, ";"))
+                    {
+                        Parser.EnsureToken(tokens, ref index, ":");
+                        Parser.EnsureToken(tokens, ref index, ":");
+                        decl.Path.Add(Parser.EnsureId(tokens, ref index));
+                    }
+
+                    return decl;
+                }
+                else
+                {
+                    throw new ArgumentException("Failed to parse.");
+                }
+            }
+            return null;
+        }
+
         public static void ParseSymbols(string[] tokens, ref int index, SymbolDecl parent)
         {
             if (parent.Children == null)
@@ -33,38 +88,13 @@ namespace Parser
 
             while (true)
             {
-                if (Parser.Token(tokens, ref index, "namespace"))
+                int oldIndex = index;
+                var decl = ParseSymbol(tokens, ref index);
+                if (decl != null)
                 {
-                    var decl = new NamespaceDecl();
-                    decl.Name = Parser.EnsureId(tokens, ref index);
                     parent.Children.Add(decl);
-
-                    Parser.EnsureToken(tokens, ref index, "{");
-                    ParseSymbols(tokens, ref index, decl);
-                    Parser.EnsureToken(tokens, ref index, "}");
                 }
-                else if (Parser.Token(tokens, ref index, "using"))
-                {
-                    if (Parser.Token(tokens, ref index, "namespace"))
-                    {
-                        var decl = new UsingNamespaceDecl();
-                        decl.Path = new List<string>();
-                        decl.Path.Add(Parser.EnsureId(tokens, ref index));
-                        parent.Children.Add(decl);
-
-                        while (!Parser.Token(tokens, ref index, ";"))
-                        {
-                            Parser.EnsureToken(tokens, ref index, ":");
-                            Parser.EnsureToken(tokens, ref index, ":");
-                            decl.Path.Add(Parser.EnsureId(tokens, ref index));
-                        }
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Failed to parse.");
-                    }
-                }
-                else
+                else if (index == oldIndex)
                 {
                     break;
                 }
@@ -99,6 +129,15 @@ namespace Parser
             get
             {
                 return this.Children[0];
+            }
+            set
+            {
+                if (this.Children == null)
+                {
+                    this.Children = new List<SymbolDecl>();
+                }
+                this.Children.Clear();
+                this.Children.Add(value);
             }
         }
     }

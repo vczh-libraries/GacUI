@@ -54,13 +54,25 @@ namespace ParserTest
         [TestMethod]
         public void TestFriendClass()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                friend class Class ;
+                friend class Outer : : Inner ;
+                friend class typename List < T > : : Inner ;
+                friend class typename List < T > : : template Inner < T > ;
+                template < typename T > friend class Ptr ;
+                ");
+            Assert.AreEqual(0, global.Children.Count);
         }
 
         [TestMethod]
         public void TestFriendFunction()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                friend void Func ( void ) ;
+                friend int Class : : Func ( int ) ;
+                template < typename T > friend T Class : : Func ( T ) ;
+                ");
+            Assert.AreEqual(0, global.Children.Count);
         }
 
         [TestMethod]
