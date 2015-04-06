@@ -119,5 +119,14 @@ namespace ParserTest
                 Convert("Outer : : Inner : : MostInner")
                 );
         }
+
+        [TestMethod]
+        public void TestClassMemberType()
+        {
+            Assert.AreEqual(
+                "Class::(int)",
+                Convert("int Class : :")
+                );
+        }
     }
 }
