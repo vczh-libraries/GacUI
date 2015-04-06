@@ -77,5 +77,11 @@ namespace Parser
                 index++;
             }
         }
+
+        public static void SkipUntil(string[] tokens, ref int index, params string[] expectedTokens)
+        {
+            string token = null;
+            SkipUntil(tokens, ref index, out token, expectedTokens);
+        }
     }
 }

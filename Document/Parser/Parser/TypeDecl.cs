@@ -87,13 +87,10 @@ namespace Parser
                                 TypeArguments = new List<TypeDecl>(),
                             };
                             decl = genericDecl;
-                            while (true)
+
+                            if (!Parser.Token(tokens, ref index, ">"))
                             {
-                                if (Parser.Token(tokens, ref index, ">"))
-                                {
-                                    break;
-                                }
-                                else if (Parser.Token(tokens, ref index, ","))
+                                while (true)
                                 {
                                     TypeDecl typeArgument = null;
                                     string name = null;
@@ -102,10 +99,15 @@ namespace Parser
                                         throw new ArgumentException("Failed to parse");
                                     }
                                     genericDecl.TypeArguments.Add(typeArgument);
-                                }
-                                else
-                                {
-                                    throw new ArgumentException("Failed to parse.");
+
+                                    if (Parser.Token(tokens, ref index, ">"))
+                                    {
+                                        break;
+                                    }
+                                    else if (!Parser.Token(tokens, ref index, ","))
+                                    {
+                                        throw new ArgumentException("Failed to parse.");
+                                    }
                                 }
                             }
                         }
@@ -232,9 +234,71 @@ namespace Parser
             }
         }
 
-        public static bool ParseTypeContinueAfterName(string[] tokens, ref int index, out TypeDecl decl, out Action<TypeDecl> continuation)
+        public static void ParseTypeContinueAfterName(string[] tokens, ref int index, CallingConvention callingConvention, out TypeDecl decl, out Action<TypeDecl> continuation)
         {
-            throw new NotImplementedException();
+            decl = null;
+            continuation = null;
+
+            while (true)
+            {
+                if (Parser.Token(tokens, ref index, "["))
+                {
+                    Parser.SkipUntil(tokens, ref index, "]");
+                    var arrayDecl = new ArrayTypeDecl();
+                    if (decl == null)
+                    {
+                        continuation = x => arrayDecl.Element = x;
+                    }
+                    else
+                    {
+                        arrayDecl.Element = decl;
+                    }
+                    decl = arrayDecl;
+                }
+                else if (Parser.Token(tokens, ref index, "("))
+                {
+                    var funcDecl = new FunctionTypeDecl
+                    {
+                        CallingConvention = callingConvention,
+                        Parameters = new List<VarDecl>(),
+                    };
+                    callingConvention = CallingConvention.Default;
+
+                    if (decl == null)
+                    {
+                        continuation = x => funcDecl.ReturnType = x;
+                    }
+                    else
+                    {
+                        funcDecl.ReturnType = decl;
+                    }
+                    decl = funcDecl;
+
+                    if (!Parser.Token(tokens, ref index, ")"))
+                    {
+                        TypeDecl parameterType = null;
+                        string name = null;
+                        if (!ParseType(tokens, ref index, out parameterType, out name))
+                        {
+                            throw new ArgumentException("Failed to parse.");
+                        }
+
+                        funcDecl.Parameters.Add(new VarDecl
+                        {
+                            Name = name,
+                            Type = parameterType,
+                        });
+                        if (Parser.Token(tokens, ref index, ")"))
+                        {
+                            break;
+                        }
+                        if (!Parser.Token(tokens, ref index, ","))
+                        {
+                            throw new ArgumentException("Failed to parse.");
+                        }
+                    }
+                }
+            }
         }
 
         public static bool ParseType(string[] tokens, ref int index, out TypeDecl decl, out string name)
