@@ -73,8 +73,33 @@ namespace Parser
                 }
                 else
                 {
-                    throw new ArgumentException("Failed to parse.");
+                    string name = null;
+                    if (Parser.Id(tokens, ref index, out name))
+                    {
+                        if (Parser.Token(tokens, ref index, "="))
+                        {
+                            var decl = new TypedefDecl
+                            {
+                                Name = name,
+                                Type = TypeDecl.EnsureTypeWithoutName(tokens, ref index),
+                            };
+                            Parser.EnsureToken(tokens, ref index, ";");
+                            return decl;
+                        }
+                    }
+                    Parser.SkipUntil(tokens, ref index, ";");
                 }
+            }
+            else if (Parser.Token(tokens, ref index, "typedef"))
+            {
+                string name = null;
+                var type = TypeDecl.EnsureTypeWithName(tokens, ref index, out name);
+                Parser.EnsureToken(tokens, ref index, ";");
+
+                var decl = new TypedefDecl();
+                decl.Name = name;
+                decl.Type = type;
+                return decl;
             }
             return null;
         }
@@ -168,5 +193,10 @@ namespace Parser
     class TypedefDecl : SymbolDecl
     {
         public TypeDecl Type { get; set; }
+
+        public override string ToString()
+        {
+            return "typedef " + this.Name + " : " + this.Type.ToString();
+        }
     }
 }

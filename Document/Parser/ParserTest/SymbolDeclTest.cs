@@ -78,7 +78,11 @@ namespace ParserTest
         [TestMethod]
         public void TestUsingFunction()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                using Class : : Func ;
+                using Class < T > : : operator [ ] ;
+                ");
+            Assert.AreEqual(0, global.Children.Count);
         }
 
         [TestMethod]
@@ -100,13 +104,39 @@ namespace ParserTest
         }
 
         [TestMethod]
-        public void TestTypedefUsing()
+        public void TestTypedef()
+        {
+            var global = Convert(@"
+                typedef int a ;
+                typedef int ( * a ) ( int ) ;
+                typedef int ( * a ) ( void ) ;
+                using a = int ;
+                using a = int ( * ) ( int ) ;
+                using a = int ( * ) ( void ) ;
+                ");
+            Assert.AreEqual(6, global.Children.Count);
+            Assert.AreEqual("typedef a : int", global.Children[0].ToString());
+            Assert.AreEqual("typedef a : * function (int) : int", global.Children[1].ToString());
+            Assert.AreEqual("typedef a : * function () : int", global.Children[2].ToString());
+            Assert.AreEqual("typedef a : int", global.Children[3].ToString());
+            Assert.AreEqual("typedef a : * function (int) : int", global.Children[4].ToString());
+            Assert.AreEqual("typedef a : * function () : int", global.Children[5].ToString());
+        }
+
+        [TestMethod]
+        public void TestTemplateFunction()
         {
             Assert.IsTrue(false);
         }
 
         [TestMethod]
-        public void TestTemplate()
+        public void TestTemplateClass()
+        {
+            Assert.IsTrue(false);
+        }
+
+        [TestMethod]
+        public void TestTemplateTypedef()
         {
             Assert.IsTrue(false);
         }

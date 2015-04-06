@@ -73,7 +73,7 @@ namespace Parser
                             {
                                 while (true)
                                 {
-                                    genericDecl.TypeArguments.Add(EnsureType(tokens, ref index));
+                                    genericDecl.TypeArguments.Add(EnsureTypeWithoutName(tokens, ref index));
 
                                     if (Parser.Token(tokens, ref index, ">"))
                                     {
@@ -299,7 +299,11 @@ namespace Parser
                     }
                     decl = funcDecl;
 
-                    if (!Parser.Token(tokens, ref index, ")"))
+                    if (Parser.Token(tokens, ref index, "void"))
+                    {
+                        Parser.EnsureToken(tokens, ref index, ")");
+                    }
+                    else if (!Parser.Token(tokens, ref index, ")"))
                     {
                         while (true)
                         {
@@ -490,11 +494,21 @@ namespace Parser
             return decl;
         }
 
-        static TypeDecl EnsureType(string[] tokens, ref int index)
+        public static TypeDecl EnsureTypeWithoutName(string[] tokens, ref int index)
         {
             string name = null;
             var decl = EnsureType(tokens, ref index, out name);
             if (name != null)
+            {
+                throw new ArgumentException("Failed to parse.");
+            }
+            return decl;
+        }
+
+        public static TypeDecl EnsureTypeWithName(string[] tokens, ref int index, out string name)
+        {
+            var decl = EnsureType(tokens, ref index, out name);
+            if (name == null)
             {
                 throw new ArgumentException("Failed to parse.");
             }
