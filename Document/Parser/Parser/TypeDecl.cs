@@ -50,6 +50,7 @@ namespace Parser
             else
             {
                 string token = null;
+                Parser.Token(tokens, ref index, "typename");
                 if (Parser.Id(tokens, ref index, out token))
                 {
                     decl = new RefTypeDecl
@@ -88,6 +89,7 @@ namespace Parser
                         else if (Parser.Token(tokens, ref index, ":"))
                         {
                             Parser.EnsureToken(tokens, ref index, ":");
+                            Parser.Token(tokens, ref index, "template");
                             if (Parser.Id(tokens, ref index, out token))
                             {
                                 decl = new SubTypeDecl

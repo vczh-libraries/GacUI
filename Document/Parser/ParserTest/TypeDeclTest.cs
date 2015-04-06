@@ -195,6 +195,24 @@ namespace ParserTest
                 "a : Outer::Inner::MostInner",
                 Convert("Outer : : Inner : : MostInner a")
                 );
+
+            Assert.AreEqual(
+                "Outer<T>::Inner",
+                Convert("typename Outer < T > : : Inner")
+                );
+            Assert.AreEqual(
+                "a : Outer<T>::Inner",
+                Convert("typename Outer < T > : : Inner a")
+                );
+
+            Assert.AreEqual(
+                "Outer<T>::Inner<U>",
+                Convert("typename Outer < T > : : template Inner < U >")
+                );
+            Assert.AreEqual(
+                "a : Outer<T>::Inner<U>",
+                Convert("typename Outer < T > : : template Inner < U > a")
+                );
         }
 
         [TestMethod]
@@ -207,6 +225,24 @@ namespace ParserTest
             Assert.AreEqual(
                 "a : Class::(int)",
                 Convert("int Class : : a")
+                );
+
+            Assert.AreEqual(
+                "Class::Inner::(int)",
+                Convert("int Class : : Inner : :")
+                );
+            Assert.AreEqual(
+                "a : Class::Inner::(int)",
+                Convert("int Class : : Inner : : a")
+                );
+
+            Assert.AreEqual(
+                "Class::Inner<U>::(int)",
+                Convert("int Class : : template Inner < U > : :")
+                );
+            Assert.AreEqual(
+                "a : Class::Inner<U>::(int)",
+                Convert("int Class : : template Inner < U > : : a")
                 );
         }
 
@@ -338,8 +374,8 @@ namespace ParserTest
         public void TestBossType()
         {
             Assert.AreEqual(
-                "var : && array array * Class::(function __thiscall const (a : * array int, b : * function () : void) : & array int)",
-                Convert("int ( & ( __thiscall Class : : * ( && var ) [ 10 ] [ 20 ] ) ( int ( * a ) [ 30 ] , void ( * b ) ( ) ) const ) [ 40 ]")
+                "var : && array array * Class<T>::Inner<U>::(function __thiscall const (a : * array int, b : * function () : void) : & array int)",
+                Convert("int ( & ( __thiscall typename Class < T > : : template Inner < U > : : * ( && var ) [ 10 ] [ 20 ] ) ( int ( * a ) [ 30 ] , void ( * b ) ( ) ) const ) [ 40 ]")
                 );
         }
     }
