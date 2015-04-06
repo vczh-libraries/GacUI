@@ -57,21 +57,21 @@ namespace Parser
                         break;
                     case ")":
                         if (brackets == 0) throw new ArgumentException("Failed to parse.");
-                        brackets++;
+                        brackets--;
                         break;
                     case "[":
                         squares++;
                         break;
                     case "]":
                         if (squares == 0) throw new ArgumentException("Failed to parse.");
-                        squares++;
+                        squares--;
                         break;
                     case "{":
                         braces++;
                         break;
                     case "}":
                         if (braces == 0) throw new ArgumentException("Failed to parse.");
-                        braces++;
+                        braces--;
                         break;
                 }
                 index++;

@@ -128,5 +128,26 @@ namespace ParserTest
                 Convert("int Class : :")
                 );
         }
+
+        [TestMethod]
+        public void TestArrayType()
+        {
+            Assert.AreEqual(
+                "array int",
+                Convert("int [ ]")
+                );
+            Assert.AreEqual(
+                "array int",
+                Convert("int [ 10 ]")
+                );
+            Assert.AreEqual(
+                "array array int",
+                Convert("int [ 10 ] [ 20 ]")
+                );
+            Assert.AreEqual(
+                "array array int",
+                Convert("int [ sizeof ( double ) ] [ call ( 1 , 2 , 3 ) ]")
+                );
+        }
     }
 }
