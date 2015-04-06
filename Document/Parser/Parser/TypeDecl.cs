@@ -205,7 +205,34 @@ namespace Parser
                         }
                         else
                         {
-                            name = ((RefTypeDecl)classType).Name;
+                            var subType = classType as SubTypeDecl;
+                            var refType = classType as RefTypeDecl;
+                            if (subType != null)
+                            {
+                                name = subType.Name;
+
+                                var classMemberTypeDecl = new ClassMemberTypeDecl
+                                {
+                                    ClassType = subType.Parent,
+                                };
+                                if (decl == null)
+                                {
+                                    continuation = x => classMemberTypeDecl.Element = x;
+                                }
+                                else
+                                {
+                                    classMemberTypeDecl.Element = decl;
+                                }
+                                decl = classMemberTypeDecl;
+                            }
+                            else if (refType != null)
+                            {
+                                name = refType.Name;
+                            }
+                            else
+                            {
+                                throw new ArgumentException("Failed to parse.");
+                            }
                             break;
                         }
                     }
