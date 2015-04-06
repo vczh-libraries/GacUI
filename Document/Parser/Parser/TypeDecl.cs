@@ -13,57 +13,37 @@ namespace Parser
             decl = null;
             if (Parser.Token(tokens, ref index, "const"))
             {
-                TypeDecl element = null;
-                if (!ParseMiniType(tokens, ref index, out element))
-                {
-                    throw new ArgumentException("Failed to parse.");
-                }
                 decl = new DecorateTypeDecl
                 {
                     Decoration = Decoration.Const,
-                    Element = element,
+                    Element = EnsureMiniType(tokens, ref index),
                 };
                 return true;
             }
             else if (Parser.Token(tokens, ref index, "volatile"))
             {
-                TypeDecl element = null;
-                if (!ParseMiniType(tokens, ref index, out element))
-                {
-                    throw new ArgumentException("Failed to parse.");
-                }
                 decl = new DecorateTypeDecl
                 {
                     Decoration = Decoration.Volatile,
-                    Element = element,
+                    Element = EnsureMiniType(tokens, ref index),
                 };
                 return true;
             }
             else if (Parser.Token(tokens, ref index, "signed"))
             {
-                TypeDecl element = null;
-                if (!ParseMiniType(tokens, ref index, out element))
-                {
-                    throw new ArgumentException("Failed to parse.");
-                }
                 decl = new DecorateTypeDecl
                 {
                     Decoration = Decoration.Signed,
-                    Element = element,
+                    Element = EnsureMiniType(tokens, ref index),
                 };
                 return true;
             }
             else if (Parser.Token(tokens, ref index, "unsigned"))
             {
-                TypeDecl element = null;
-                if (!ParseMiniType(tokens, ref index, out element))
-                {
-                    throw new ArgumentException("Failed to parse.");
-                }
                 decl = new DecorateTypeDecl
                 {
                     Decoration = Decoration.Unsigned,
-                    Element = element,
+                    Element = EnsureMiniType(tokens, ref index),
                 };
                 return true;
             }
@@ -92,31 +72,22 @@ namespace Parser
                             {
                                 while (true)
                                 {
-                                    TypeDecl typeArgument = null;
-                                    string name = null;
-                                    if (!ParseType(tokens, ref index, out typeArgument, out name))
-                                    {
-                                        throw new ArgumentException("Failed to parse");
-                                    }
-                                    genericDecl.TypeArguments.Add(typeArgument);
+                                    genericDecl.TypeArguments.Add(EnsureType(tokens, ref index));
 
                                     if (Parser.Token(tokens, ref index, ">"))
                                     {
                                         break;
                                     }
-                                    else if (!Parser.Token(tokens, ref index, ","))
+                                    else
                                     {
-                                        throw new ArgumentException("Failed to parse.");
+                                        Parser.EnsureToken(tokens, ref index, ",");
                                     }
                                 }
                             }
                         }
                         else if (Parser.Token(tokens, ref index, ":"))
                         {
-                            if (!Parser.Token(tokens, ref index, ":"))
-                            {
-                                throw new ArgumentException("Failed to parse.");
-                            }
+                            Parser.EnsureToken(tokens, ref index, ":");
                             if (Parser.Id(tokens, ref index, out token))
                             {
                                 decl = new SubTypeDecl
@@ -146,6 +117,15 @@ namespace Parser
             }
         }
 
+        static TypeDecl EnsureMiniType(string[] tokens, ref int index)
+        {
+            TypeDecl decl = null;
+            if (!ParseMiniType(tokens, ref index, out decl))
+            {
+                throw new ArgumentException("Failed to parse.");
+            }
+            return decl;
+        }
         static void ParseTypeContinueBeforeName(string[] tokens, ref int index, out TypeDecl decl, out Action<TypeDecl> continuation, out string name)
         {
             decl = null;
@@ -182,26 +162,20 @@ namespace Parser
                     {
                         if (Parser.Token(tokens, ref index, ":"))
                         {
-                            if (Parser.Token(tokens, ref index, ":"))
+                            Parser.EnsureToken(tokens, ref index, ":");
+                            var classMemberTypeDecl = new ClassMemberTypeDecl
                             {
-                                var classMemberTypeDecl = new ClassMemberTypeDecl
-                                {
-                                    ClassType = classType,
-                                };
-                                if (decl == null)
-                                {
-                                    continuation = x => classMemberTypeDecl.Element = x;
-                                }
-                                else
-                                {
-                                    classMemberTypeDecl.Element = decl;
-                                }
-                                decl = classMemberTypeDecl;
+                                ClassType = classType,
+                            };
+                            if (decl == null)
+                            {
+                                continuation = x => classMemberTypeDecl.Element = x;
                             }
                             else
                             {
-                                throw new ArgumentException("Failed to parse.");
+                                classMemberTypeDecl.Element = decl;
                             }
+                            decl = classMemberTypeDecl;
                         }
                         else
                         {
@@ -232,6 +206,28 @@ namespace Parser
                             else
                             {
                                 throw new ArgumentException("Failed to parse.");
+                            }
+
+                            if (name == "operator")
+                            {
+                                if (Parser.Token(tokens, ref index, "["))
+                                {
+                                    Parser.EnsureToken(tokens, ref index, "]");
+                                    name += " []";
+                                }
+                                else if (Parser.Token(tokens, ref index, "("))
+                                {
+                                    Parser.EnsureToken(tokens, ref index, ")");
+                                    name += " ()";
+                                }
+                                else
+                                {
+                                    if (index >= tokens.Length)
+                                    {
+                                        throw new ArgumentException("Failed to parse.");
+                                    }
+                                    name += " " + tokens[index++];
+                                }
                             }
                             break;
                         }
@@ -305,12 +301,8 @@ namespace Parser
                     {
                         while (true)
                         {
-                            TypeDecl parameterType = null;
                             string name = null;
-                            if (!ParseType(tokens, ref index, out parameterType, out name))
-                            {
-                                throw new ArgumentException("Failed to parse.");
-                            }
+                            var parameterType = EnsureType(tokens, ref index, out name);
 
                             funcDecl.Parameters.Add(new VarDecl
                             {
@@ -321,13 +313,24 @@ namespace Parser
                             {
                                 break;
                             }
-                            if (!Parser.Token(tokens, ref index, ","))
-                            {
-                                throw new ArgumentException("Failed to parse.");
-                            }
+                            Parser.EnsureToken(tokens, ref index, ",");
                         }
                     }
-                    funcDecl.Const = Parser.Token(tokens, ref index, "const");
+                    while (true)
+                    {
+                        if (Parser.Token(tokens, ref index, "const"))
+                        {
+                            funcDecl.Const = true;
+                        }
+                        else if (Parser.Token(tokens, ref index, "override"))
+                        {
+
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
                 else
                 {
@@ -390,16 +393,11 @@ namespace Parser
 
                 if (recursive)
                 {
-                    if (!Parser.Token(tokens, ref index, "("))
-                    {
-                        throw new ArgumentException("Failed to parse.");
-                    }
+                    Parser.EnsureToken(tokens, ref index, "(");
                     var middleCallingConvention = CallingConvention.Default;
                     ParseTypeContinue(tokens, ref index, out middleCallingConvention, out middleDecl, out middleContinuation, out name);
-                    if (!Parser.Token(tokens, ref index, ")"))
-                    {
-                        throw new ArgumentException("Failed to parse.");
-                    }
+                    Parser.EnsureToken(tokens, ref index, ")");
+
                     if (middleCallingConvention != CallingConvention.Default)
                     {
                         if (callingConvention == CallingConvention.Default)
@@ -478,6 +476,27 @@ namespace Parser
             {
                 return false;
             }
+        }
+
+        static TypeDecl EnsureType(string[] tokens, ref int index, out string name)
+        {
+            TypeDecl decl = null;
+            if (!ParseType(tokens, ref index, out decl, out name))
+            {
+                throw new ArgumentException("Failed to parse.");
+            }
+            return decl;
+        }
+
+        static TypeDecl EnsureType(string[] tokens, ref int index)
+        {
+            string name = null;
+            var decl = EnsureType(tokens, ref index, out name);
+            if (name != null)
+            {
+                throw new ArgumentException("Failed to parse.");
+            }
+            return decl;
         }
     }
 

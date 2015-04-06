@@ -14,6 +14,7 @@ namespace ParserTest
             TypeDecl decl = null;
             string name = null;
             Assert.IsTrue(TypeDecl.ParseType(tokens, ref index, out decl, out name));
+            Assert.AreEqual(tokens.Length, index);
 
             if (name == null)
             {
@@ -325,6 +326,11 @@ namespace ParserTest
             Assert.AreEqual(
                 "callback : * Class::(function __thiscall (a : int, float, double) : int)",
                 Convert("int ( __thiscall Class : : * callback ) ( int a , float , double )")
+                );
+
+            Assert.AreEqual(
+                "operator [] : function (index : int) : T",
+                Convert("T operator [ ] ( int index ) override")
                 );
         }
 

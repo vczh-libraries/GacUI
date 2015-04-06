@@ -17,6 +17,14 @@ namespace Parser
             return true;
         }
 
+        public static void EnsureToken(string[] tokens, ref int index, string expectedToken)
+        {
+            if (!Token(tokens, ref index, expectedToken))
+            {
+                throw new ArgumentException("Failed to parse");
+            }
+        }
+
         public static bool Id(string[] tokens, ref int index, out string token)
         {
             token = null;
@@ -28,6 +36,16 @@ namespace Parser
                 return true;
             }
             return false;
+        }
+
+        public static string EnsureId(string[] tokens, ref int index)
+        {
+            string id = null;
+            if (!Id(tokens, ref index, out id))
+            {
+                throw new ArgumentException("Failed to parse");
+            }
+            return id;
         }
 
         public static void SkipUntil(string[] tokens, ref int index, out string token, params string[] expectedTokens)

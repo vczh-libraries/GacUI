@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="SymbolDeclTest.cs" />
     <Compile Include="TypeDeclTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
