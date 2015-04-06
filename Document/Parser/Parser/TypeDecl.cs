@@ -433,12 +433,22 @@ namespace Parser
     class RefTypeDecl : TypeDecl
     {
         public string Name { get; set; }
+
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 
     class SubTypeDecl : TypeDecl
     {
         public TypeDecl Parent { get; set; }
         public string Name { get; set; }
+
+        public override string ToString()
+        {
+            return this.Parent.ToString() + "::" + this.Name;
+        }
     }
 
     enum Decoration
@@ -456,12 +466,39 @@ namespace Parser
     {
         public TypeDecl Element { get; set; }
         public Decoration Decoration { get; set; }
+
+        public override string ToString()
+        {
+            switch (this.Decoration)
+            {
+                case global::Parser.Decoration.Const:
+                    return "const " + this.Element.ToString();
+                case global::Parser.Decoration.Volatile:
+                    return "volatile " + this.Element.ToString();
+                case global::Parser.Decoration.Pointer:
+                    return "* " + this.Element.ToString();
+                case global::Parser.Decoration.LeftRef:
+                    return "& " + this.Element.ToString();
+                case global::Parser.Decoration.RightRef:
+                    return "&& " + this.Element.ToString();
+                case global::Parser.Decoration.Signed:
+                    return "signed " + this.Element.ToString();
+                case global::Parser.Decoration.Unsigned:
+                    return "unsigned " + this.Element.ToString();
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
 
     class ArrayTypeDecl : TypeDecl
     {
         public TypeDecl Element { get; set; }
-        public int? Size { get; set; }
+
+        public override string ToString()
+        {
+            return "array " + this.Element.ToString();
+        }
     }
 
     enum CallingConvention
@@ -480,17 +517,85 @@ namespace Parser
         public TypeDecl ReturnType { get; set; }
         public List<VarDecl> Parameters { get; set; }
         public bool Const { get; set; }
+
+        public override string ToString()
+        {
+            string result = "function ";
+            switch (this.CallingConvention)
+            {
+                case global::Parser.CallingConvention.CDecl:
+                    result += "__cdecl ";
+                    break;
+                case global::Parser.CallingConvention.ClrCall:
+                    result += "__clrcall ";
+                    break;
+                case global::Parser.CallingConvention.StdCall:
+                    result += "__stdcall ";
+                    break;
+                case global::Parser.CallingConvention.FastCall:
+                    result += "__fastcall ";
+                    break;
+                case global::Parser.CallingConvention.ThisCall:
+                    result += "__thiscall ";
+                    break;
+                case global::Parser.CallingConvention.VectorCall:
+                    result += "__vectorcall ";
+                    break;
+            }
+            if (this.Const)
+            {
+                result += "const ";
+            }
+
+            result += "(";
+            for (int i = 0; i < this.Parameters.Count; i++)
+            {
+                if (i > 0)
+                {
+                    result += ", ";
+                }
+                if (this.Parameters[i].Name != null)
+                {
+                    result += this.Parameters[i].Name + " : ";
+                }
+                result += this.Parameters[i].Type.ToString();
+            }
+
+            result += ") : " + this.ReturnType.ToString();
+            return result;
+        }
     }
 
     class ClassMemberTypeDecl : TypeDecl
     {
         public TypeDecl Element { get; set; }
         public TypeDecl ClassType { get; set; }
+
+        public override string ToString()
+        {
+            return this.ClassType.ToString() + "::(" + this.Element.ToString() + ")";
+        }
     }
 
     class GenericTypeDecl : TypeDecl
     {
         public TypeDecl Element { get; set; }
         public List<TypeDecl> TypeArguments { get; set; }
+
+        public override string ToString()
+        {
+            string result = this.Element.ToString();
+            result += "<";
+            for (int i = 0; i < this.TypeArguments.Count; i++)
+            {
+                if (i > 0)
+                {
+                    result += ", ";
+                }
+                result += this.TypeArguments[i].ToString();
+            }
+            result += ">";
+            return result;
+        }
     }
 }
