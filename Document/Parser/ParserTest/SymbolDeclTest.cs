@@ -100,7 +100,33 @@ namespace ParserTest
         [TestMethod]
         public void TestEnum()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                enum A ;
+                enum A : int ;
+                enum A
+                {
+                    X , Y , Z ,
+                } ;
+                enum A : int
+                {
+                    X = 1 , Y = 2 , Z = 3
+                } a ;
+                ");
+            Assert.AreEqual(3, global.Children.Count);
+
+            Assert.AreEqual("enum A", global.Children[0].ToString());
+            Assert.AreEqual(3, global.Children[0].Children.Count);
+            Assert.AreEqual("enum_item X", global.Children[0].Children[0].ToString());
+            Assert.AreEqual("enum_item Y", global.Children[0].Children[1].ToString());
+            Assert.AreEqual("enum_item Z", global.Children[0].Children[2].ToString());
+
+            Assert.AreEqual("enum A", global.Children[1].ToString());
+            Assert.AreEqual(3, global.Children[1].Children.Count);
+            Assert.AreEqual("enum_item X", global.Children[1].Children[0].ToString());
+            Assert.AreEqual("enum_item Y", global.Children[1].Children[1].ToString());
+            Assert.AreEqual("enum_item Z", global.Children[1].Children[2].ToString());
+
+            Assert.AreEqual("var a : A", global.Children[2].ToString());
         }
 
         [TestMethod]
