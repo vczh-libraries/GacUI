@@ -65,9 +65,21 @@ namespace Parser
 
             if (Parser.Token(tokens, ref index, "friend"))
             {
-                Parser.SkipUntil(tokens, ref index, ";");
+                int oldIndex = index - 1;
+                string token = null;
+                Parser.SkipUntil(tokens, ref index, out token, ";", "{");
+                if (token == ";")
+                {
+                    return null;
+                }
+                else
+                {
+                    index = oldIndex;
+                    tokens[index] = "static";
+                }
             }
-            else if (Parser.Token(tokens, ref index, "namespace"))
+
+            if (Parser.Token(tokens, ref index, "namespace"))
             {
                 if (templateDecl != null)
                 {
@@ -369,6 +381,8 @@ namespace Parser
                 if (function == Function.Function)
                 {
                     Virtual virtualFunction = Virtual.Normal;
+                    Parser.Token(tokens, ref index, "extern");
+                    Parser.Token(tokens, ref index, "mutable");
                     if (Parser.Token(tokens, ref index, "virtual"))
                     {
                         virtualFunction = Virtual.Virtual;
@@ -377,6 +391,8 @@ namespace Parser
                     {
                         virtualFunction = Virtual.Static;
                     }
+                    Parser.Token(tokens, ref index, "inline");
+                    Parser.Token(tokens, ref index, "__forceinline");
 
                     string name = null;
                     TypeDecl type = null;

@@ -53,7 +53,7 @@ namespace Parser
                 int oldIndex = index;
                 Parser.SkipUntil(tokens, ref index, ")");
 
-                decl = new DecltypeDecl
+                decl = new DeclTypeDecl
                 {
                     Expression = tokens
                         .Skip(oldIndex)
@@ -174,6 +174,24 @@ namespace Parser
                 else if (Parser.Token(tokens, ref index, "&&"))
                 {
                     decoration = Decoration.RightRef;
+                }
+                else if (Parser.Token(tokens, ref index, "."))
+                {
+                    Parser.EnsureToken(tokens, ref index, ".");
+                    Parser.EnsureToken(tokens, ref index, ".");
+
+                    var vaDecl = new VariadicArgumentTypeDecl
+                    {
+                    };
+                    if (decl == null)
+                    {
+                        continuation = x => vaDecl.Element = x;
+                    }
+                    else
+                    {
+                        vaDecl.Element = decl;
+                    }
+                    decl = vaDecl;
                 }
                 else
                 {
@@ -716,13 +734,23 @@ namespace Parser
         }
     }
 
-    class DecltypeDecl : TypeDecl
+    class DeclTypeDecl : TypeDecl
     {
         public string Expression { get; set; }
 
         public override string ToString()
         {
             return "decltype( " + this.Expression + " )";
+        }
+    }
+
+    class VariadicArgumentTypeDecl : TypeDecl
+    {
+        public TypeDecl Element { get; set; }
+
+        public override string ToString()
+        {
+            return "... " + this.Element.ToString();
         }
     }
 }
