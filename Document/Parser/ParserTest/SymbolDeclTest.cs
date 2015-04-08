@@ -104,13 +104,29 @@ namespace ParserTest
         [TestMethod]
         public void TestClassField()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                int a ;
+                int ( * a ) ( int ) ;
+                int ( * a ) ( void ) ;
+                ");
+            Assert.AreEqual(3, global.Children.Count);
+            Assert.AreEqual("var a : int", global.Children[0].ToString());
+            Assert.AreEqual("var a : * function (int) : int", global.Children[1].ToString());
+            Assert.AreEqual("var a : * function () : int", global.Children[2].ToString());
         }
 
         [TestMethod]
         public void TestClassFunction()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                int a ( int ) override ;
+                virtual int a ( void ) const ;
+                virtual int a ( void ) const = 0 ;
+                ");
+            Assert.AreEqual(3, global.Children.Count);
+            Assert.AreEqual("function a : function (int) : int", global.Children[0].ToString());
+            Assert.AreEqual("virtual function a : function const () : int", global.Children[1].ToString());
+            Assert.AreEqual("abstract function a : function const () : int", global.Children[2].ToString());
         }
 
         [TestMethod]

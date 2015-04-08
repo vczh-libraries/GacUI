@@ -323,6 +323,67 @@ namespace Parser
                     }
                 }
             }
+            else if (index < tokens.Length)
+            {
+                Virtual virtualFunction = Virtual.Normal;
+                if (Parser.Token(tokens, ref index, "virtual"))
+                {
+                    virtualFunction = Virtual.Virtual;
+                }
+
+                string name = null;
+                TypeDecl type = null;
+                if (TypeDecl.ParseType(tokens, ref index, out type, out name))
+                {
+                    if (name == null)
+                    {
+                        throw new ArgumentException("Failed to parse.");
+                    }
+
+                    if (type is FunctionTypeDecl)
+                    {
+                        if (Parser.Token(tokens, ref index, "="))
+                        {
+                            if (Parser.Token(tokens, ref index, "0"))
+                            {
+                                virtualFunction = Virtual.Abstract;
+                            }
+                            else
+                            {
+                                Parser.EnsureToken(tokens, ref index, "default", "delete");
+                            }
+                        }
+
+                        var decl = new FuncDecl
+                        {
+                            Virtual = virtualFunction,
+                            Name = name,
+                            Type = type,
+                        };
+                        if (!Parser.Token(tokens, ref index, ";"))
+                        {
+                            Parser.EnsureToken(tokens, ref index, "{");
+                            Parser.SkipUntil(tokens, ref index, "}");
+                        }
+                        return new SymbolDecl[] { decl };
+                    }
+                    else
+                    {
+                        if (virtualFunction != Virtual.Normal)
+                        {
+                            throw new ArgumentException("Failed to parse.");
+                        }
+                        Parser.EnsureToken(tokens, ref index, ";");
+
+                        var decl = new VarDecl
+                        {
+                            Name = name,
+                            Type = type,
+                        };
+                        return new SymbolDecl[] { decl };
+                    }
+                }
+            }
             return null;
         }
 
@@ -467,9 +528,33 @@ namespace Parser
         }
     }
 
+    enum Virtual
+    {
+        Normal,
+        Virtual,
+        Abstract,
+    }
+
     class FuncDecl : SymbolDecl
     {
         public TypeDecl Type { get; set; }
+        public Virtual Virtual { get; set; }
+
+        public override string ToString()
+        {
+            var result = "";
+            switch (this.Virtual)
+            {
+                case global::Parser.Virtual.Virtual:
+                    result = "virtual ";
+                    break;
+                case global::Parser.Virtual.Abstract:
+                    result = "abstract ";
+                    break;
+            }
+            result += "function " + this.Name + " : " + this.Type.ToString();
+            return result;
+        }
     }
 
     class EnumItemDecl : SymbolDecl

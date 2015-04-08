@@ -17,12 +17,16 @@ namespace Parser
             return true;
         }
 
-        public static void EnsureToken(string[] tokens, ref int index, string expectedToken)
+        public static void EnsureToken(string[] tokens, ref int index, params string[] expectedTokens)
         {
-            if (!Token(tokens, ref index, expectedToken))
+            foreach (var token in expectedTokens)
             {
-                throw new ArgumentException("Failed to parse");
+                if (Token(tokens, ref index, token))
+                {
+                    return;
+                }
             }
+            throw new ArgumentException("Failed to parse");
         }
 
         public static bool Id(string[] tokens, ref int index, out string token)
