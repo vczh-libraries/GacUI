@@ -58,55 +58,58 @@ namespace Parser
                         Name = token,
                     };
 
-                    while (true)
+                    if (token != "operator")
                     {
-                        if (Parser.Token(tokens, ref index, "<"))
+                        while (true)
                         {
-                            var genericDecl = new GenericTypeDecl
+                            if (Parser.Token(tokens, ref index, "<"))
                             {
-                                Element = decl,
-                                TypeArguments = new List<TypeDecl>(),
-                            };
-                            decl = genericDecl;
-
-                            if (!Parser.Token(tokens, ref index, ">"))
-                            {
-                                while (true)
+                                var genericDecl = new GenericTypeDecl
                                 {
-                                    genericDecl.TypeArguments.Add(EnsureTypeWithoutName(tokens, ref index));
+                                    Element = decl,
+                                    TypeArguments = new List<TypeDecl>(),
+                                };
+                                decl = genericDecl;
 
-                                    if (Parser.Token(tokens, ref index, ">"))
+                                if (!Parser.Token(tokens, ref index, ">"))
+                                {
+                                    while (true)
                                     {
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        Parser.EnsureToken(tokens, ref index, ",");
+                                        genericDecl.TypeArguments.Add(EnsureTypeWithoutName(tokens, ref index));
+
+                                        if (Parser.Token(tokens, ref index, ">"))
+                                        {
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Parser.EnsureToken(tokens, ref index, ",");
+                                        }
                                     }
                                 }
                             }
-                        }
-                        else if (Parser.Token(tokens, ref index, ":"))
-                        {
-                            Parser.EnsureToken(tokens, ref index, ":");
-                            Parser.Token(tokens, ref index, "template");
-                            if (Parser.Id(tokens, ref index, out token))
+                            else if (Parser.Token(tokens, ref index, ":"))
                             {
-                                decl = new SubTypeDecl
+                                Parser.EnsureToken(tokens, ref index, ":");
+                                Parser.Token(tokens, ref index, "template");
+                                if (Parser.Id(tokens, ref index, out token))
                                 {
-                                    Parent = decl,
-                                    Name = token,
-                                };
+                                    decl = new SubTypeDecl
+                                    {
+                                        Parent = decl,
+                                        Name = token,
+                                    };
+                                }
+                                else
+                                {
+                                    index -= 2;
+                                    break;
+                                }
                             }
                             else
                             {
-                                index -= 2;
                                 break;
                             }
-                        }
-                        else
-                        {
-                            break;
                         }
                     }
 
@@ -212,23 +215,19 @@ namespace Parser
 
                             if (name == "operator")
                             {
-                                if (Parser.Token(tokens, ref index, "["))
+                                if (tokens[index + 1] == "(")
                                 {
-                                    Parser.EnsureToken(tokens, ref index, "]");
-                                    name += " []";
+                                    name += " " + tokens[index];
+                                    index += 1;
                                 }
-                                else if (Parser.Token(tokens, ref index, "("))
+                                else if (tokens[index + 2] == "(")
                                 {
-                                    Parser.EnsureToken(tokens, ref index, ")");
-                                    name += " ()";
+                                    name += " " + tokens[index] + tokens[index + 1];
+                                    index += 2;
                                 }
                                 else
                                 {
-                                    if (index >= tokens.Length)
-                                    {
-                                        throw new ArgumentException("Failed to parse.");
-                                    }
-                                    name += " " + tokens[index++];
+                                    throw new ArgumentException("Failed to parse.");
                                 }
                             }
                             break;
@@ -312,6 +311,7 @@ namespace Parser
 
                             funcDecl.Parameters.Add(new VarDecl
                             {
+                                Static = false,
                                 Name = name,
                                 Type = parameterType,
                             });

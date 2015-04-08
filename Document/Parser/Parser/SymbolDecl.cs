@@ -31,6 +31,11 @@ namespace Parser
                 index++;
             }
 
+            if (Parser.Token(tokens, ref index, "public") || Parser.Token(tokens, ref index, "protected") || Parser.Token(tokens, ref index, "private"))
+            {
+                index--;
+                return null;
+            }
             TemplateDecl templateDecl = null;
             if (Parser.Token(tokens, ref index, "template"))
             {
@@ -40,17 +45,20 @@ namespace Parser
                     Specialization = new List<TypeDecl>(),
                 };
                 Parser.EnsureToken(tokens, ref index, "<");
-                while (true)
+                if (!Parser.Token(tokens, ref index, ">"))
                 {
-                    string token = null;
-                    Parser.SkipUntilInTemplate(tokens, ref index, out token, ",", ">");
-                    index -= 2;
-                    templateDecl.TypeParameters.Add(Parser.EnsureId(tokens, ref index));
-
-                    index++;
-                    if (token == ">")
+                    while (true)
                     {
-                        break;
+                        string token = null;
+                        Parser.SkipUntilInTemplate(tokens, ref index, out token, ",", ">");
+                        index -= 2;
+                        templateDecl.TypeParameters.Add(Parser.EnsureId(tokens, ref index));
+
+                        index++;
+                        if (token == ">")
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -199,6 +207,7 @@ namespace Parser
                     {
                         var varDecl = new VarDecl
                         {
+                            Static = false,
                             Name = name,
                             Type = new RefTypeDecl
                             {
@@ -316,6 +325,7 @@ namespace Parser
                     {
                         var varDecl = new VarDecl
                         {
+                            Static = false,
                             Name = name,
                             Type = new RefTypeDecl
                             {
@@ -343,7 +353,7 @@ namespace Parser
                         if (Parser.Token(tokens, ref index, "("))
                         {
                             Parser.SkipUntil(tokens, ref index, ")");
-                            if (Parser.Token(tokens, ref index, ";") || Parser.Token(tokens, ref index, "=") || Parser.Token(tokens, ref index, "{"))
+                            if (Parser.Token(tokens, ref index, ";") || Parser.Token(tokens, ref index, "=") || Parser.Token(tokens, ref index, ":") || Parser.Token(tokens, ref index, "{"))
                             {
                                 function = Function.Constructor;
                             }
@@ -362,6 +372,10 @@ namespace Parser
                     if (Parser.Token(tokens, ref index, "virtual"))
                     {
                         virtualFunction = Virtual.Virtual;
+                    }
+                    else if (Parser.Token(tokens, ref index, "static"))
+                    {
+                        virtualFunction = Virtual.Static;
                     }
 
                     string name = null;
@@ -412,14 +426,22 @@ namespace Parser
                         }
                         else
                         {
-                            if (virtualFunction != Virtual.Normal)
+                            if (virtualFunction != Virtual.Normal && virtualFunction != Virtual.Static)
                             {
                                 throw new ArgumentException("Failed to parse.");
                             }
-                            Parser.EnsureToken(tokens, ref index, ";");
+                            if (Parser.Token(tokens, ref index, "="))
+                            {
+                                Parser.SkipUntil(tokens, ref index, ";");
+                            }
+                            else
+                            {
+                                Parser.EnsureToken(tokens, ref index, ";");
+                            }
 
                             var decl = new VarDecl
                             {
+                                Static = virtualFunction == Virtual.Static,
                                 Name = name,
                                 Type = type,
                             };
@@ -454,10 +476,11 @@ namespace Parser
                             string name = null;
                             var type = TypeDecl.EnsureType(tokens, ref index, out name);
                             functionType.Parameters.Add(new VarDecl
-                                {
-                                    Name = name,
-                                    Type = type,
-                                });
+                            {
+                                Static = false,
+                                Name = name,
+                                Type = type,
+                            });
                             if (Parser.Token(tokens, ref index, ")"))
                             {
                                 break;
@@ -473,8 +496,15 @@ namespace Parser
 
                     if (!Parser.Token(tokens, ref index, ";"))
                     {
-                        Parser.EnsureToken(tokens, ref index, "(");
-                        Parser.SkipUntil(tokens, ref index, ")");
+                        if (Parser.Token(tokens, ref index, ":"))
+                        {
+                            Parser.SkipUntil(tokens, ref index, "{");
+                        }
+                        else
+                        {
+                            Parser.EnsureToken(tokens, ref index, "{");
+                        }
+                        Parser.SkipUntil(tokens, ref index, "}");
                     }
                     return new SymbolDecl[] { decl };
                 }
@@ -616,6 +646,7 @@ namespace Parser
     class VarDecl : SymbolDecl
     {
         public TypeDecl Type { get; set; }
+        public bool Static { get; set; }
 
         public override string ToString()
         {
@@ -625,6 +656,7 @@ namespace Parser
 
     enum Virtual
     {
+        Static,
         Normal,
         Virtual,
         Abstract,
