@@ -365,7 +365,16 @@ namespace Parser
                             Parser.EnsureToken(tokens, ref index, "{");
                             Parser.SkipUntil(tokens, ref index, "}");
                         }
-                        return new SymbolDecl[] { decl };
+
+                        if (templateDecl != null)
+                        {
+                            templateDecl.Element = decl;
+                            return new SymbolDecl[] { templateDecl };
+                        }
+                        else
+                        {
+                            return new SymbolDecl[] { decl };
+                        }
                     }
                     else
                     {

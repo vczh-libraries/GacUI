@@ -184,7 +184,15 @@ namespace ParserTest
         [TestMethod]
         public void TestTemplateFunction()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                template < typename T > T a ( T ) override ;
+                template < typename T > virtual T a ( void ) const ;
+                template < typename T > virtual T a ( void ) const = 0 ;
+                ");
+            Assert.AreEqual(3, global.Children.Count);
+            Assert.AreEqual("template<T> function a : function (T) : T", global.Children[0].ToString());
+            Assert.AreEqual("template<T> virtual function a : function const () : T", global.Children[1].ToString());
+            Assert.AreEqual("template<T> abstract function a : function const () : T", global.Children[2].ToString());
         }
 
         [TestMethod]
