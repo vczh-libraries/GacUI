@@ -50,11 +50,17 @@ namespace Parser
                     while (true)
                     {
                         string token = null;
-                        Parser.SkipUntilInTemplate(tokens, ref index, out token, ",", ">");
+                        Parser.SkipUntilInTemplate(tokens, ref index, out token, ",", ">", "=");
+
                         index -= 2;
                         templateDecl.TypeParameters.Add(Parser.EnsureId(tokens, ref index));
-
                         index++;
+
+                        if (token == "=")
+                        {
+                            Parser.SkipUntilInTemplate(tokens, ref index, out token, ",", ">");
+                        }
+
                         if (token == ">")
                         {
                             break;
@@ -251,6 +257,44 @@ namespace Parser
                         Name = name,
                     };
 
+                    if (templateDecl != null)
+                    {
+                        if (Parser.Token(tokens, ref index, "<"))
+                        {
+                            if (!Parser.Token(tokens, ref index, ">"))
+                            {
+                                while (true)
+                                {
+                                    int oldIndex = index;
+                                    try
+                                    {
+                                        templateDecl.Specialization.Add(TypeDecl.EnsureTypeWithoutName(tokens, ref index));
+                                    }
+                                    catch (ArgumentException)
+                                    {
+                                        index = oldIndex;
+                                        Parser.SkipUntilInTemplate(tokens, ref index, ",", ">");
+                                        index--;
+
+                                        templateDecl.Specialization.Add(new ConstantTypeDecl
+                                            {
+                                                Value = tokens
+                                                    .Skip(oldIndex)
+                                                    .Take(index - oldIndex)
+                                                    .Aggregate((a, b) => a + " " + b),
+                                            });
+                                    }
+                                    if (Parser.Token(tokens, ref index, ">"))
+                                    {
+                                        break;
+                                    }
+                                    Parser.EnsureToken(tokens, ref index, ",");
+                                }
+                            }
+                        }
+                    }
+
+                    Parser.Token(tokens, ref index, "abstract");
                     if (Parser.Token(tokens, ref index, ":"))
                     {
                         while (true)
@@ -268,6 +312,7 @@ namespace Parser
                             {
                                 access = Access.Public;
                             }
+                            Parser.Token(tokens, ref index, "virtual");
                             classDecl.BaseTypes.Add(new BaseTypeDecl
                             {
                                 Access = access,
@@ -276,25 +321,6 @@ namespace Parser
                             if (!Parser.Token(tokens, ref index, ","))
                             {
                                 break;
-                            }
-                        }
-                    }
-
-                    if (templateDecl != null)
-                    {
-                        if (Parser.Token(tokens, ref index, "<"))
-                        {
-                            if (!Parser.Token(tokens, ref index, ">"))
-                            {
-                                while (true)
-                                {
-                                    templateDecl.Specialization.Add(TypeDecl.EnsureTypeWithoutName(tokens, ref index));
-                                    if (Parser.Token(tokens, ref index, ">"))
-                                    {
-                                        break;
-                                    }
-                                    Parser.EnsureToken(tokens, ref index, ",");
-                                }
                             }
                         }
                     }
@@ -394,116 +420,145 @@ namespace Parser
                     Parser.Token(tokens, ref index, "inline");
                     Parser.Token(tokens, ref index, "__forceinline");
 
-                    string name = null;
-                    TypeDecl type = null;
-                    if (TypeDecl.ParseType(tokens, ref index, out type, out name))
+                    if (Parser.Token(tokens, ref index, "operator"))
                     {
-                        if (name == null)
+                        TypeDecl returnType = null;
                         {
-                            throw new ArgumentException("Failed to parse.");
-                        }
+                            int oldIndex = index;
+                            Parser.SkipUntilInTemplate(tokens, ref index, "(");
+                            int modify = --index;
 
-                        if (type is FunctionTypeDecl)
-                        {
-                            if (Parser.Token(tokens, ref index, "="))
-                            {
-                                if (Parser.Token(tokens, ref index, "0"))
-                                {
-                                    virtualFunction = Virtual.Abstract;
-                                }
-                                else
-                                {
-                                    Parser.EnsureToken(tokens, ref index, "default", "delete");
-                                }
-                            }
-
-                            var decl = new FuncDecl
-                            {
-                                Virtual = virtualFunction,
-                                Name = name,
-                                Type = type,
-                                Function = Function.Function,
-                            };
-                            if (!Parser.Token(tokens, ref index, ";"))
-                            {
-                                Parser.EnsureToken(tokens, ref index, "{");
-                                Parser.SkipUntil(tokens, ref index, "}");
-                            }
-
-                            if (templateDecl != null)
-                            {
-                                templateDecl.Element = decl;
-                                return new SymbolDecl[] { templateDecl };
-                            }
-                            else
-                            {
-                                return new SymbolDecl[] { decl };
-                            }
-                        }
-                        else
-                        {
-                            if (virtualFunction != Virtual.Normal && virtualFunction != Virtual.Static)
+                            tokens[modify] = "$";
+                            index = oldIndex;
+                            returnType = TypeDecl.EnsureTypeWithoutName(tokens, ref index);
+                            if (index != modify)
                             {
                                 throw new ArgumentException("Failed to parse.");
                             }
-                            if (Parser.Token(tokens, ref index, "="))
+                            tokens[modify] = "(";
+                        }
+                        var decl = new FuncDecl
+                        {
+                            Virtual = global::Parser.Virtual.Normal,
+                            Name = "operator",
+                            Function = function,
+                        };
+
+                        TypeDecl functionType = null;
+                        Action<TypeDecl> continuation = null;
+                        CallingConvention callingConvention = CallingConvention.Default;
+                        TypeDecl.ParseTypeContinueAfterName(tokens, ref index, ref callingConvention, out functionType, out continuation);
+                        continuation(returnType);
+                        decl.Type = functionType;
+
+                        if (!Parser.Token(tokens, ref index, ";"))
+                        {
+                            Parser.EnsureToken(tokens, ref index, "{");
+                            Parser.SkipUntil(tokens, ref index, "}");
+                        }
+
+                        if (templateDecl != null)
+                        {
+                            templateDecl.Element = decl;
+                            return new SymbolDecl[] { templateDecl };
+                        }
+                        else
+                        {
+                            return new SymbolDecl[] { decl };
+                        }
+                    }
+                    else
+                    {
+                        string name = null;
+                        TypeDecl type = null;
+                        if (TypeDecl.ParseType(tokens, ref index, out type, out name))
+                        {
+                            if (name == null)
                             {
-                                Parser.SkipUntil(tokens, ref index, ";");
+                                throw new ArgumentException("Failed to parse.");
+                            }
+
+                            if (type is FunctionTypeDecl)
+                            {
+                                if (Parser.Token(tokens, ref index, "="))
+                                {
+                                    if (Parser.Token(tokens, ref index, "0"))
+                                    {
+                                        virtualFunction = Virtual.Abstract;
+                                    }
+                                    else
+                                    {
+                                        Parser.EnsureToken(tokens, ref index, "default", "delete");
+                                    }
+                                }
+
+                                var decl = new FuncDecl
+                                {
+                                    Virtual = virtualFunction,
+                                    Name = name,
+                                    Type = type,
+                                    Function = Function.Function,
+                                };
+                                if (!Parser.Token(tokens, ref index, ";"))
+                                {
+                                    Parser.EnsureToken(tokens, ref index, "{");
+                                    Parser.SkipUntil(tokens, ref index, "}");
+                                }
+
+                                if (templateDecl != null)
+                                {
+                                    templateDecl.Element = decl;
+                                    return new SymbolDecl[] { templateDecl };
+                                }
+                                else
+                                {
+                                    return new SymbolDecl[] { decl };
+                                }
                             }
                             else
                             {
-                                Parser.EnsureToken(tokens, ref index, ";");
-                            }
+                                if (virtualFunction != Virtual.Normal && virtualFunction != Virtual.Static)
+                                {
+                                    throw new ArgumentException("Failed to parse.");
+                                }
+                                if (Parser.Token(tokens, ref index, "="))
+                                {
+                                    Parser.SkipUntil(tokens, ref index, ";");
+                                }
+                                else
+                                {
+                                    Parser.EnsureToken(tokens, ref index, ";");
+                                }
 
-                            var decl = new VarDecl
-                            {
-                                Static = virtualFunction == Virtual.Static,
-                                Name = name,
-                                Type = type,
-                            };
-                            return new SymbolDecl[] { decl };
+                                var decl = new VarDecl
+                                {
+                                    Static = virtualFunction == Virtual.Static,
+                                    Name = name,
+                                    Type = type,
+                                };
+                                return new SymbolDecl[] { decl };
+                            }
                         }
                     }
                 }
                 else
                 {
-                    var functionType = new FunctionTypeDecl
-                    {
-                        Const = false,
-                        ReturnType = new RefTypeDecl
-                        {
-                            Name = "void"
-                        },
-                        Parameters = new List<VarDecl>(),
-                    };
-
                     var decl = new FuncDecl
                     {
                         Virtual = global::Parser.Virtual.Normal,
                         Name = (function == Function.Constructor ? "" : "~") + Parser.EnsureId(tokens, ref index),
                         Function = function,
-                        Type = functionType,
                     };
-                    Parser.EnsureToken(tokens, ref index, "(");
-                    if (!Parser.Token(tokens, ref index, ")"))
+
+                    TypeDecl functionType = null;
+                    Action<TypeDecl> continuation = null;
+                    CallingConvention callingConvention = CallingConvention.Default;
+                    TypeDecl.ParseTypeContinueAfterName(tokens, ref index, ref callingConvention, out functionType, out continuation);
+                    continuation(new RefTypeDecl
                     {
-                        while (true)
-                        {
-                            string name = null;
-                            var type = TypeDecl.EnsureType(tokens, ref index, out name);
-                            functionType.Parameters.Add(new VarDecl
-                            {
-                                Static = false,
-                                Name = name,
-                                Type = type,
-                            });
-                            if (Parser.Token(tokens, ref index, ")"))
-                            {
-                                break;
-                            }
-                            Parser.EnsureToken(tokens, ref index, ",");
-                        }
-                    }
+                        Name = "void"
+                    });
+                    decl.Type = functionType;
 
                     if (Parser.Token(tokens, ref index, "="))
                     {

@@ -96,10 +96,23 @@ namespace Parser
                         if (braces == 0) throw new ArgumentException("Failed to parse.");
                         braces--;
                         break;
+                    case "-":
+                        if (index + 1 < tokens.Length && tokens[index + 1] == ">")
+                        {
+                            index++;
+                        }
+                        break;
                     case "<":
                         if (inTemplate)
                         {
-                            angles++;
+                            if (index + 1 < tokens.Length && tokens[index + 1] == "<")
+                            {
+                                index++;
+                            }
+                            else
+                            {
+                                angles++;
+                            }
                         }
                         break;
                     case ">":
@@ -128,6 +141,12 @@ namespace Parser
         {
             string token = null;
             SkipUntil(tokens, ref index, out token, expectedTokens);
+        }
+
+        public static void SkipUntilInTemplate(string[] tokens, ref int index, params string[] expectedTokens)
+        {
+            string token = null;
+            SkipUntilInTemplate(tokens, ref index, out token, expectedTokens);
         }
     }
 }

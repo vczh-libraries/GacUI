@@ -62,8 +62,30 @@ namespace Parser
                 };
                 return true;
             }
+            else if (Parser.Token(tokens, ref index, "false") || Parser.Token(tokens, ref index, "true"))
+            {
+                decl = new ConstantTypeDecl
+                {
+                    Value = tokens[index - 1],
+                };
+                return true;
+            }
             else
             {
+                if (index < tokens.Length)
+                {
+                    int value = 0;
+                    if (int.TryParse(tokens[index], out value))
+                    {
+                        index++;
+                        decl = new ConstantTypeDecl
+                        {
+                            Value = tokens[index - 1],
+                        };
+                        return true;
+                    }
+                }
+
                 string token = null;
                 Parser.Token(tokens, ref index, "typename");
                 if (Parser.Id(tokens, ref index, out token))
@@ -263,12 +285,6 @@ namespace Parser
                                     throw new ArgumentException("Failed to parse.");
                                 }
                             }
-
-                            if (Parser.Token(tokens, ref index, "="))
-                            {
-                                Parser.SkipUntil(tokens, ref index, ",", ")", ";");
-                                index--;
-                            }
                             break;
                         }
                     }
@@ -297,7 +313,7 @@ namespace Parser
             }
         }
 
-        static void ParseTypeContinueAfterName(string[] tokens, ref int index, ref CallingConvention callingConvention, out TypeDecl decl, out Action<TypeDecl> continuation)
+        internal static void ParseTypeContinueAfterName(string[] tokens, ref int index, ref CallingConvention callingConvention, out TypeDecl decl, out Action<TypeDecl> continuation)
         {
             decl = null;
             continuation = null;
@@ -322,6 +338,7 @@ namespace Parser
                 {
                     var funcDecl = new FunctionTypeDecl
                     {
+                        Const = false,
                         CallingConvention = callingConvention,
                         Parameters = new List<VarDecl>(),
                     };
@@ -363,6 +380,13 @@ namespace Parser
                                 Name = name,
                                 Type = parameterType,
                             });
+
+                            if (Parser.Token(tokens, ref index, "="))
+                            {
+                                Parser.SkipUntilInTemplate(tokens, ref index, ",", ")", ";");
+                                index--;
+                            }
+
                             if (Parser.Token(tokens, ref index, ")"))
                             {
                                 break;
@@ -751,6 +775,16 @@ namespace Parser
         public override string ToString()
         {
             return "... " + this.Element.ToString();
+        }
+    }
+
+    class ConstantTypeDecl : TypeDecl
+    {
+        public string Value { get; set; }
+
+        public override string ToString()
+        {
+            return "<" + this.Value + ">";
         }
     }
 }

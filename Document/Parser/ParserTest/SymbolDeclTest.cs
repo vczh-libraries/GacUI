@@ -106,13 +106,15 @@ namespace ParserTest
         {
             var global = Convert(@"
                 int a ;
+                int a = 0 ;
                 int ( * a ) ( int ) ;
                 int ( * a ) ( void ) ;
                 ");
-            Assert.AreEqual(3, global.Children.Count);
+            Assert.AreEqual(4, global.Children.Count);
             Assert.AreEqual("var a : int", global.Children[0].ToString());
-            Assert.AreEqual("var a : * function (int) : int", global.Children[1].ToString());
-            Assert.AreEqual("var a : * function () : int", global.Children[2].ToString());
+            Assert.AreEqual("var a : int", global.Children[1].ToString());
+            Assert.AreEqual("var a : * function (int) : int", global.Children[2].ToString());
+            Assert.AreEqual("var a : * function () : int", global.Children[3].ToString());
         }
 
         [TestMethod]
@@ -122,11 +124,17 @@ namespace ParserTest
                 int a ( int ) override ;
                 virtual int a ( void ) const ;
                 virtual int a ( void ) const = 0 ;
+                virtual int a ( int ( * x ) ( ) = 0 ) const = 0 ;
+                bool operator < < ( int ) ;
+                operator bool ( int ) ;
                 ");
-            Assert.AreEqual(3, global.Children.Count);
+            Assert.AreEqual(6, global.Children.Count);
             Assert.AreEqual("function a : function (int) : int", global.Children[0].ToString());
             Assert.AreEqual("virtual function a : function const () : int", global.Children[1].ToString());
             Assert.AreEqual("abstract function a : function const () : int", global.Children[2].ToString());
+            Assert.AreEqual("abstract function a : function const (x : * function () : int) : int", global.Children[3].ToString());
+            Assert.AreEqual("function operator << : function (int) : bool", global.Children[4].ToString());
+            Assert.AreEqual("function operator : function (int) : bool", global.Children[5].ToString());
         }
 
         [TestMethod]
@@ -213,7 +221,7 @@ namespace ParserTest
             var global = Convert(@"
                 template < typename T > struct IsPOD { } ;
                 template < typename T > struct IsPOD < int > { } ;
-                template < typename T > struct IsPOD < shared_ptr < T > > { } ;
+                template < typename T = U > struct IsPOD < shared_ptr < T > > { } ;
                 ");
             Assert.AreEqual(3, global.Children.Count);
             Assert.AreEqual("template<T> struct IsPOD", global.Children[0].ToString());
@@ -227,7 +235,7 @@ namespace ParserTest
             var global = Convert(@"
                 template < typename T > using X = vector < T > ;
                 template < typename T > using X < int > = list < int > ;
-                template < typename T > using X < shared_ptr < T > > = vector < unique_ptr < T > > ;
+                template < typename T = U > using X < shared_ptr < T > > = vector < unique_ptr < T > > ;
                 ");
             Assert.AreEqual(3, global.Children.Count);
             Assert.AreEqual("template<T> typedef X : vector<T>", global.Children[0].ToString());
