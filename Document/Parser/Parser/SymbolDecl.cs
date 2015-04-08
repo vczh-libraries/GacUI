@@ -26,6 +26,11 @@ namespace Parser
 
         static SymbolDecl[] ParseSymbol(string[] tokens, ref int index)
         {
+            while (index < tokens.Length && tokens[index].Length >= 3 && tokens[index].StartsWith("///"))
+            {
+                index++;
+            }
+
             TemplateDecl templateDecl = null;
             if (Parser.Token(tokens, ref index, "template"))
             {
@@ -155,6 +160,7 @@ namespace Parser
                 {
                     throw new ArgumentException("Failed to parse.");
                 }
+                Parser.Token(tokens, ref index, "class");
                 string name = Parser.EnsureId(tokens, ref index);
                 if (Parser.Token(tokens, ref index, ":"))
                 {

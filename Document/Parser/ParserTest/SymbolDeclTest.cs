@@ -134,12 +134,12 @@ namespace ParserTest
         {
             var global = Convert(@"
                 enum A ;
-                enum A : int ;
+                enum class A : int ;
                 enum A
                 {
                     X , Y , Z ,
                 } ;
-                enum A : int
+                enum class A : int
                 {
                     X = 1 , Y = 2 , Z = 3
                 } a ;
@@ -221,6 +221,29 @@ namespace ParserTest
             Assert.AreEqual("template<T> typedef X : vector<T>", global.Children[0].ToString());
             Assert.AreEqual("template<T> specialization<int> typedef X : list<int>", global.Children[1].ToString());
             Assert.AreEqual("template<T> specialization<shared_ptr<T>> typedef X : vector<unique_ptr<T>>", global.Children[2].ToString());
+        }
+
+        [TestMethod]
+        public void TestComment()
+        {
+            var global = Convert(@"
+                ///<summary>
+                ///This_is_a_comment
+                ///</summary>
+                class A
+                {
+                public :
+                    ///<summary>
+                    ///This_is_also_a_comment
+                    ///</summary>
+                    void B ( ) ;
+                } ;
+                ");
+            Assert.AreEqual(1, global.Children.Count);
+            Assert.AreEqual("class A", global.Children[0].ToString());
+
+            Assert.AreEqual(1, global.Children[0].Children.Count);
+            Assert.AreEqual("function B : function () : void", global.Children[0].Children[0].ToString());
         }
     }
 }
