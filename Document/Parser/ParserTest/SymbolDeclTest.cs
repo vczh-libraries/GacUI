@@ -130,6 +130,18 @@ namespace ParserTest
         }
 
         [TestMethod]
+        public void TestClassCtorDtor()
+        {
+            var global = Convert(@"
+                A ( ) ;
+                ~ A ( ) ;
+                ");
+            Assert.AreEqual(2, global.Children.Count);
+            Assert.AreEqual("ctor A : function () : void", global.Children[0].ToString());
+            Assert.AreEqual("dtor ~A : function () : void", global.Children[1].ToString());
+        }
+
+        [TestMethod]
         public void TestEnum()
         {
             var global = Convert(@"

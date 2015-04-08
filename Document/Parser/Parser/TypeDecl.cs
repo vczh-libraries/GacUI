@@ -484,7 +484,7 @@ namespace Parser
             }
         }
 
-        static TypeDecl EnsureType(string[] tokens, ref int index, out string name)
+        public static TypeDecl EnsureType(string[] tokens, ref int index, out string name)
         {
             TypeDecl decl = null;
             if (!ParseType(tokens, ref index, out decl, out name))

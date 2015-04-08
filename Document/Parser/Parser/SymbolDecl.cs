@@ -263,14 +263,17 @@ namespace Parser
                     {
                         if (Parser.Token(tokens, ref index, "<"))
                         {
-                            while (true)
+                            if (!Parser.Token(tokens, ref index, ">"))
                             {
-                                templateDecl.Specialization.Add(TypeDecl.EnsureTypeWithoutName(tokens, ref index));
-                                if (Parser.Token(tokens, ref index, ">"))
+                                while (true)
                                 {
-                                    break;
+                                    templateDecl.Specialization.Add(TypeDecl.EnsureTypeWithoutName(tokens, ref index));
+                                    if (Parser.Token(tokens, ref index, ">"))
+                                    {
+                                        break;
+                                    }
+                                    Parser.EnsureToken(tokens, ref index, ",");
                                 }
-                                Parser.EnsureToken(tokens, ref index, ",");
                             }
                         }
                     }
@@ -331,72 +334,149 @@ namespace Parser
             }
             else if (index < tokens.Length)
             {
-                Virtual virtualFunction = Virtual.Normal;
-                if (Parser.Token(tokens, ref index, "virtual"))
+                Function function = Function.Function;
                 {
-                    virtualFunction = Virtual.Virtual;
+                    int oldIndex = index;
+                    string name = null;
+                    if (Parser.Id(tokens, ref index, out name))
+                    {
+                        if (Parser.Token(tokens, ref index, "("))
+                        {
+                            Parser.SkipUntil(tokens, ref index, ")");
+                            if (Parser.Token(tokens, ref index, ";") || Parser.Token(tokens, ref index, "=") || Parser.Token(tokens, ref index, "{"))
+                            {
+                                function = Function.Constructor;
+                            }
+                        }
+                        index = oldIndex;
+                    }
+                    else if (Parser.Token(tokens, ref index, "~"))
+                    {
+                        function = Function.Destructor;
+                    }
                 }
 
-                string name = null;
-                TypeDecl type = null;
-                if (TypeDecl.ParseType(tokens, ref index, out type, out name))
+                if (function == Function.Function)
                 {
-                    if (name == null)
+                    Virtual virtualFunction = Virtual.Normal;
+                    if (Parser.Token(tokens, ref index, "virtual"))
                     {
-                        throw new ArgumentException("Failed to parse.");
+                        virtualFunction = Virtual.Virtual;
                     }
 
-                    if (type is FunctionTypeDecl)
+                    string name = null;
+                    TypeDecl type = null;
+                    if (TypeDecl.ParseType(tokens, ref index, out type, out name))
                     {
-                        if (Parser.Token(tokens, ref index, "="))
-                        {
-                            if (Parser.Token(tokens, ref index, "0"))
-                            {
-                                virtualFunction = Virtual.Abstract;
-                            }
-                            else
-                            {
-                                Parser.EnsureToken(tokens, ref index, "default", "delete");
-                            }
-                        }
-
-                        var decl = new FuncDecl
-                        {
-                            Virtual = virtualFunction,
-                            Name = name,
-                            Type = type,
-                        };
-                        if (!Parser.Token(tokens, ref index, ";"))
-                        {
-                            Parser.EnsureToken(tokens, ref index, "{");
-                            Parser.SkipUntil(tokens, ref index, "}");
-                        }
-
-                        if (templateDecl != null)
-                        {
-                            templateDecl.Element = decl;
-                            return new SymbolDecl[] { templateDecl };
-                        }
-                        else
-                        {
-                            return new SymbolDecl[] { decl };
-                        }
-                    }
-                    else
-                    {
-                        if (virtualFunction != Virtual.Normal)
+                        if (name == null)
                         {
                             throw new ArgumentException("Failed to parse.");
                         }
-                        Parser.EnsureToken(tokens, ref index, ";");
 
-                        var decl = new VarDecl
+                        if (type is FunctionTypeDecl)
                         {
-                            Name = name,
-                            Type = type,
-                        };
-                        return new SymbolDecl[] { decl };
+                            if (Parser.Token(tokens, ref index, "="))
+                            {
+                                if (Parser.Token(tokens, ref index, "0"))
+                                {
+                                    virtualFunction = Virtual.Abstract;
+                                }
+                                else
+                                {
+                                    Parser.EnsureToken(tokens, ref index, "default", "delete");
+                                }
+                            }
+
+                            var decl = new FuncDecl
+                            {
+                                Virtual = virtualFunction,
+                                Name = name,
+                                Type = type,
+                                Function = Function.Function,
+                            };
+                            if (!Parser.Token(tokens, ref index, ";"))
+                            {
+                                Parser.EnsureToken(tokens, ref index, "{");
+                                Parser.SkipUntil(tokens, ref index, "}");
+                            }
+
+                            if (templateDecl != null)
+                            {
+                                templateDecl.Element = decl;
+                                return new SymbolDecl[] { templateDecl };
+                            }
+                            else
+                            {
+                                return new SymbolDecl[] { decl };
+                            }
+                        }
+                        else
+                        {
+                            if (virtualFunction != Virtual.Normal)
+                            {
+                                throw new ArgumentException("Failed to parse.");
+                            }
+                            Parser.EnsureToken(tokens, ref index, ";");
+
+                            var decl = new VarDecl
+                            {
+                                Name = name,
+                                Type = type,
+                            };
+                            return new SymbolDecl[] { decl };
+                        }
                     }
+                }
+                else
+                {
+                    var functionType = new FunctionTypeDecl
+                    {
+                        Const = false,
+                        ReturnType = new RefTypeDecl
+                        {
+                            Name = "void"
+                        },
+                        Parameters = new List<VarDecl>(),
+                    };
+
+                    var decl = new FuncDecl
+                    {
+                        Virtual = global::Parser.Virtual.Normal,
+                        Name = (function == Function.Constructor ? "" : "~") + Parser.EnsureId(tokens, ref index),
+                        Function = function,
+                        Type = functionType,
+                    };
+                    Parser.EnsureToken(tokens, ref index, "(");
+                    if (!Parser.Token(tokens, ref index, ")"))
+                    {
+                        while (true)
+                        {
+                            string name = null;
+                            var type = TypeDecl.EnsureType(tokens, ref index, out name);
+                            functionType.Parameters.Add(new VarDecl
+                                {
+                                    Name = name,
+                                    Type = type,
+                                });
+                            if (Parser.Token(tokens, ref index, ")"))
+                            {
+                                break;
+                            }
+                            Parser.EnsureToken(tokens, ref index, ",");
+                        }
+                    }
+
+                    if (Parser.Token(tokens, ref index, "="))
+                    {
+                        Parser.EnsureToken(tokens, ref index, "default", "delete");
+                    }
+
+                    if (!Parser.Token(tokens, ref index, ";"))
+                    {
+                        Parser.EnsureToken(tokens, ref index, "(");
+                        Parser.SkipUntil(tokens, ref index, ")");
+                    }
+                    return new SymbolDecl[] { decl };
                 }
             }
             return null;
@@ -550,24 +630,46 @@ namespace Parser
         Abstract,
     }
 
+    enum Function
+    {
+        Constructor,
+        Destructor,
+        Function,
+    }
+
     class FuncDecl : SymbolDecl
     {
         public TypeDecl Type { get; set; }
         public Virtual Virtual { get; set; }
+        public Function Function { get; set; }
 
         public override string ToString()
         {
             var result = "";
-            switch (this.Virtual)
+            switch (this.Function)
             {
-                case global::Parser.Virtual.Virtual:
-                    result = "virtual ";
+                case global::Parser.Function.Constructor:
+                    result = "ctor ";
                     break;
-                case global::Parser.Virtual.Abstract:
-                    result = "abstract ";
+                case global::Parser.Function.Destructor:
+                    result = "dtor ";
+                    break;
+                default:
+                    switch (this.Virtual)
+                    {
+                        case global::Parser.Virtual.Virtual:
+                            result = "virtual function ";
+                            break;
+                        case global::Parser.Virtual.Abstract:
+                            result = "abstract function ";
+                            break;
+                        default:
+                            result = "function ";
+                            break;
+                    }
                     break;
             }
-            result += "function " + this.Name + " : " + this.Type.ToString();
+            result += this.Name + " : " + this.Type.ToString();
             return result;
         }
     }
