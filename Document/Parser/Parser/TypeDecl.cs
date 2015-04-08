@@ -47,6 +47,21 @@ namespace Parser
                 };
                 return true;
             }
+            else if (Parser.Token(tokens, ref index, "decltype"))
+            {
+                Parser.EnsureToken(tokens, ref index, "(");
+                int oldIndex = index;
+                Parser.SkipUntil(tokens, ref index, ")");
+
+                decl = new DecltypeDecl
+                {
+                    Expression = tokens
+                        .Skip(oldIndex)
+                        .Take(index - 1 - oldIndex)
+                        .Aggregate((a, b) => a + " " + b),
+                };
+                return true;
+            }
             else
             {
                 string token = null;
@@ -230,6 +245,12 @@ namespace Parser
                                     throw new ArgumentException("Failed to parse.");
                                 }
                             }
+
+                            if (Parser.Token(tokens, ref index, "="))
+                            {
+                                Parser.SkipUntil(tokens, ref index, ",", ")", ";");
+                                index--;
+                            }
                             break;
                         }
                     }
@@ -298,11 +319,20 @@ namespace Parser
                     }
                     decl = funcDecl;
 
+                    bool skipParameters = false;
                     if (Parser.Token(tokens, ref index, "void"))
                     {
-                        Parser.EnsureToken(tokens, ref index, ")");
+                        if (Parser.Token(tokens, ref index, ")"))
+                        {
+                            skipParameters = true;
+                        }
+                        else
+                        {
+                            index--;
+                        }
                     }
-                    else if (!Parser.Token(tokens, ref index, ")"))
+
+                    if (!skipParameters && !Parser.Token(tokens, ref index, ")"))
                     {
                         while (true)
                         {
@@ -322,6 +352,7 @@ namespace Parser
                             Parser.EnsureToken(tokens, ref index, ",");
                         }
                     }
+
                     while (true)
                     {
                         if (Parser.Token(tokens, ref index, "const"))
@@ -682,6 +713,16 @@ namespace Parser
             }
             result += ">";
             return result;
+        }
+    }
+
+    class DecltypeDecl : TypeDecl
+    {
+        public string Expression { get; set; }
+
+        public override string ToString()
+        {
+            return "decltype( " + this.Expression + " )";
         }
     }
 }

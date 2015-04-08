@@ -176,6 +176,15 @@ namespace ParserTest
         }
 
         [TestMethod]
+        public void TestDecltypeType()
+        {
+            Assert.AreEqual(
+                "decltype( a + b )",
+                Convert("decltype ( a + b )")
+                );
+        }
+
+        [TestMethod]
         public void TestSubType()
         {
             Assert.AreEqual(
