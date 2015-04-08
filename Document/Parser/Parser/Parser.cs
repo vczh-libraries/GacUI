@@ -48,19 +48,20 @@ namespace Parser
             return id;
         }
 
-        public static void SkipUntil(string[] tokens, ref int index, out string token, params string[] expectedTokens)
+        static void SkipUntilInternal(string[] tokens, ref int index, bool inTemplate, out string token, params string[] expectedTokens)
         {
             token = null;
             var set = new HashSet<string>(expectedTokens);
             int brackets = 0;
             int squares = 0;
             int braces = 0;
+            int angles = 0;
 
             while (true)
             {
                 if (set.Contains(tokens[index]))
                 {
-                    if (brackets == 0 && squares == 0 && braces == 0)
+                    if (brackets == 0 && squares == 0 && braces == 0 && angles == 0)
                     {
                         token = tokens[index];
                         index++;
@@ -91,9 +92,32 @@ namespace Parser
                         if (braces == 0) throw new ArgumentException("Failed to parse.");
                         braces--;
                         break;
+                    case "<":
+                        if (inTemplate)
+                        {
+                            angles++;
+                        }
+                        break;
+                    case ">":
+                        if (inTemplate)
+                        {
+                            if (angles == 0) throw new ArgumentException("Failed to parse.");
+                            angles--;
+                        }
+                        break;
                 }
                 index++;
             }
+        }
+
+        public static void SkipUntil(string[] tokens, ref int index, out string token, params string[] expectedTokens)
+        {
+            SkipUntilInternal(tokens, ref index, false, out token, expectedTokens);
+        }
+
+        public static void SkipUntilInTemplate(string[] tokens, ref int index, out string token, params string[] expectedTokens)
+        {
+            SkipUntilInternal(tokens, ref index, true, out token, expectedTokens);
         }
 
         public static void SkipUntil(string[] tokens, ref int index, params string[] expectedTokens)

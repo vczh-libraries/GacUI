@@ -26,25 +26,40 @@ namespace Parser
 
         static SymbolDecl[] ParseSymbol(string[] tokens, ref int index)
         {
+            TemplateDecl templateDecl = null;
+            if (Parser.Token(tokens, ref index, "template"))
+            {
+                templateDecl = new TemplateDecl
+                {
+                    TypeParameters = new List<string>(),
+                    Specialization = new List<TypeDecl>(),
+                };
+                Parser.EnsureToken(tokens, ref index, "<");
+                while (true)
+                {
+                    string token = null;
+                    Parser.SkipUntilInTemplate(tokens, ref index, out token, ",", ">");
+                    index -= 2;
+                    templateDecl.TypeParameters.Add(Parser.EnsureId(tokens, ref index));
+
+                    index++;
+                    if (token == ">")
+                    {
+                        break;
+                    }
+                }
+            }
+
             if (Parser.Token(tokens, ref index, "friend"))
             {
                 Parser.SkipUntil(tokens, ref index, ";");
             }
-            else if (Parser.Token(tokens, ref index, "template"))
-            {
-                var decl = new TemplateDecl();
-                Parser.EnsureToken(tokens, ref index, "<");
-                Parser.SkipUntil(tokens, ref index, ">");
-
-                var elements = ParseSymbol(tokens, ref index);
-                if (elements != null)
-                {
-                    decl.Element = elements[0];
-                    return new SymbolDecl[] { decl };
-                }
-            }
             else if (Parser.Token(tokens, ref index, "namespace"))
             {
+                if (templateDecl != null)
+                {
+                    throw new ArgumentException("Failed to parse.");
+                }
                 var decl = new NamespaceDecl();
                 decl.Name = Parser.EnsureId(tokens, ref index);
 
@@ -58,6 +73,10 @@ namespace Parser
             {
                 if (Parser.Token(tokens, ref index, "namespace"))
                 {
+                    if (templateDecl != null)
+                    {
+                        throw new ArgumentException("Failed to parse.");
+                    }
                     var decl = new UsingNamespaceDecl();
                     decl.Path = new List<string>();
                     decl.Path.Add(Parser.EnsureId(tokens, ref index));
@@ -76,22 +95,51 @@ namespace Parser
                     string name = null;
                     if (Parser.Id(tokens, ref index, out name))
                     {
+                        if (templateDecl != null)
+                        {
+                            if (Parser.Token(tokens, ref index, "<"))
+                            {
+                                while (true)
+                                {
+                                    templateDecl.Specialization.Add(TypeDecl.EnsureTypeWithoutName(tokens, ref index));
+                                    if (Parser.Token(tokens, ref index, ">"))
+                                    {
+                                        break;
+                                    }
+                                    Parser.EnsureToken(tokens, ref index, ",");
+                                }
+                            }
+                        }
                         if (Parser.Token(tokens, ref index, "="))
                         {
-                            var decl = new TypedefDecl
+                            SymbolDecl decl = new TypedefDecl
                             {
                                 Name = name,
                                 Type = TypeDecl.EnsureTypeWithoutName(tokens, ref index),
                             };
                             Parser.EnsureToken(tokens, ref index, ";");
+
+                            if (templateDecl != null)
+                            {
+                                templateDecl.Element = decl;
+                                decl = templateDecl;
+                            }
                             return new SymbolDecl[] { decl };
                         }
+                    }
+                    if (templateDecl != null)
+                    {
+                        throw new ArgumentException("Failed to parse.");
                     }
                     Parser.SkipUntil(tokens, ref index, ";");
                 }
             }
             else if (Parser.Token(tokens, ref index, "typedef"))
             {
+                if (templateDecl != null)
+                {
+                    throw new ArgumentException("Failed to parse.");
+                }
                 string name = null;
                 var type = TypeDecl.EnsureTypeWithName(tokens, ref index, out name);
                 Parser.EnsureToken(tokens, ref index, ";");
@@ -103,6 +151,10 @@ namespace Parser
             }
             else if (Parser.Token(tokens, ref index, "enum"))
             {
+                if (templateDecl != null)
+                {
+                    throw new ArgumentException("Failed to parse.");
+                }
                 string name = Parser.EnsureId(tokens, ref index);
                 if (Parser.Token(tokens, ref index, ":"))
                 {
@@ -162,7 +214,7 @@ namespace Parser
                 string name = Parser.EnsureId(tokens, ref index);
                 if (!Parser.Token(tokens, ref index, ";"))
                 {
-                    var decl = new ClassDecl
+                    var classDecl = new ClassDecl
                     {
                         ClassType =
                             tokens[index - 2] == "struct" ? ClassType.Struct :
@@ -176,7 +228,7 @@ namespace Parser
                     {
                         while (true)
                         {
-                            Access access = decl.ClassType == ClassType.Class ? Access.Private : Access.Public;
+                            Access access = classDecl.ClassType == ClassType.Class ? Access.Private : Access.Public;
                             if (Parser.Token(tokens, ref index, "private"))
                             {
                                 access = Access.Private;
@@ -189,7 +241,7 @@ namespace Parser
                             {
                                 access = Access.Public;
                             }
-                            decl.BaseTypes.Add(new BaseTypeDecl
+                            classDecl.BaseTypes.Add(new BaseTypeDecl
                             {
                                 Access = access,
                                 Type = TypeDecl.EnsureTypeWithoutName(tokens, ref index),
@@ -197,6 +249,22 @@ namespace Parser
                             if (!Parser.Token(tokens, ref index, ","))
                             {
                                 break;
+                            }
+                        }
+                    }
+
+                    if (templateDecl != null)
+                    {
+                        if (Parser.Token(tokens, ref index, "<"))
+                        {
+                            while (true)
+                            {
+                                templateDecl.Specialization.Add(TypeDecl.EnsureTypeWithoutName(tokens, ref index));
+                                if (Parser.Token(tokens, ref index, ">"))
+                                {
+                                    break;
+                                }
+                                Parser.EnsureToken(tokens, ref index, ",");
                             }
                         }
                     }
@@ -209,7 +277,7 @@ namespace Parser
                             break;
                         }
 
-                        Access access = decl.ClassType == ClassType.Class ? Access.Private : Access.Public;
+                        Access access = classDecl.ClassType == ClassType.Class ? Access.Private : Access.Public;
                         if (Parser.Token(tokens, ref index, "private"))
                         {
                             access = Access.Private;
@@ -225,7 +293,14 @@ namespace Parser
                             access = Access.Public;
                             Parser.EnsureToken(tokens, ref index, ":");
                         }
-                        ParseSymbols(tokens, ref index, decl, access);
+                        ParseSymbols(tokens, ref index, classDecl, access);
+                    }
+
+                    SymbolDecl decl = classDecl;
+                    if (templateDecl != null)
+                    {
+                        templateDecl.Element = decl;
+                        decl = templateDecl;
                     }
 
                     if (Parser.Id(tokens, ref index, out name))
@@ -235,7 +310,7 @@ namespace Parser
                             Name = name,
                             Type = new RefTypeDecl
                             {
-                                Name = decl.Name,
+                                Name = classDecl.Name,
                             },
                         };
                         Parser.EnsureToken(tokens, ref index, ";");
@@ -298,7 +373,7 @@ namespace Parser
 
     class TemplateDecl : SymbolDecl
     {
-        public List<SymbolDecl> TypeParameters { get; set; }
+        public List<string> TypeParameters { get; set; }
         public List<TypeDecl> Specialization { get; set; }
         public SymbolDecl Element
         {
@@ -315,6 +390,20 @@ namespace Parser
                 this.Children.Clear();
                 this.Children.Add(value);
             }
+        }
+
+        public override string ToString()
+        {
+            string result = "template<" + this.TypeParameters.Aggregate("", (a, b) => a == "" ? b : a + ", " + b) + "> ";
+            if (this.Specialization.Count > 0)
+            {
+                result += this.Specialization
+                    .Select(t => t.ToString())
+                    .Aggregate("", (a, b) => a == "" ? "specialization<" + b : a + ", " + b)
+                    + "> ";
+            }
+            result += this.Element.ToString();
+            return result;
         }
     }
 

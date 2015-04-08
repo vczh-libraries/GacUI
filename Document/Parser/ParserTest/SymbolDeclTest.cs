@@ -174,13 +174,29 @@ namespace ParserTest
         [TestMethod]
         public void TestTemplateClass()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                template < typename T > struct IsPOD { } ;
+                template < typename T > struct IsPOD < int > { } ;
+                template < typename T > struct IsPOD < shared_ptr < T > > { } ;
+                ");
+            Assert.AreEqual(3, global.Children.Count);
+            Assert.AreEqual("template<T> struct IsPOD", global.Children[0].ToString());
+            Assert.AreEqual("template<T> specialization<int> struct IsPOD", global.Children[1].ToString());
+            Assert.AreEqual("template<T> specialization<shared_ptr<T>> struct IsPOD", global.Children[2].ToString());
         }
 
         [TestMethod]
         public void TestTemplateTypedef()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                template < typename T > using X = vector < T > ;
+                template < typename T > using X < int > = list < int > ;
+                template < typename T > using X < shared_ptr < T > > = vector < unique_ptr < T > > ;
+                ");
+            Assert.AreEqual(3, global.Children.Count);
+            Assert.AreEqual("template<T> typedef X : vector<T>", global.Children[0].ToString());
+            Assert.AreEqual("template<T> specialization<int> typedef X : list<int>", global.Children[1].ToString());
+            Assert.AreEqual("template<T> specialization<shared_ptr<T>> typedef X : vector<unique_ptr<T>>", global.Children[2].ToString());
         }
     }
 }
