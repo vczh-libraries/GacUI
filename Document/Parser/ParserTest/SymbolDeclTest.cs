@@ -48,7 +48,23 @@ namespace ParserTest
         [TestMethod]
         public void TestClass()
         {
-            Assert.IsTrue(false);
+            var global = Convert(@"
+                class A ;
+                struct A ;
+                union A ;
+                class A { } ;
+                struct A { } ;
+                union A { } ;
+                class A : public B , protected C < D > , private typename E < F > : : template G < H > , I { } ;
+                struct A : public B , protected C < D > , private typename E < F > : : template G < H > , I { } a ;
+                ");
+            Assert.AreEqual(6, global.Children.Count);
+            Assert.AreEqual("class A", global.Children[0].ToString());
+            Assert.AreEqual("struct A", global.Children[1].ToString());
+            Assert.AreEqual("union A", global.Children[2].ToString());
+            Assert.AreEqual("class A : public B, protected C<D>, private E<F>::G<H>, private I", global.Children[3].ToString());
+            Assert.AreEqual("struct A : public B, protected C<D>, private E<F>::G<H>, public I", global.Children[4].ToString());
+            Assert.AreEqual("var a : A", global.Children[5].ToString());
         }
 
         [TestMethod]

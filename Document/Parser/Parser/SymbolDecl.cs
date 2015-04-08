@@ -157,10 +157,101 @@ namespace Parser
                     }
                 }
             }
+            else if (Parser.Token(tokens, ref index, "struct") || Parser.Token(tokens, ref index, "class") || Parser.Token(tokens, ref index, "union"))
+            {
+                string name = Parser.EnsureId(tokens, ref index);
+                if (!Parser.Token(tokens, ref index, ";"))
+                {
+                    var decl = new ClassDecl
+                    {
+                        ClassType =
+                            tokens[index - 2] == "struct" ? ClassType.Struct :
+                            tokens[index - 2] == "class" ? ClassType.Class :
+                            ClassType.Union,
+                        BaseTypes = new List<BaseTypeDecl>(),
+                        Name = name,
+                    };
+
+                    if (Parser.Token(tokens, ref index, ":"))
+                    {
+                        while (true)
+                        {
+                            Access access = decl.ClassType == ClassType.Class ? Access.Private : Access.Public;
+                            if (Parser.Token(tokens, ref index, "private"))
+                            {
+                                access = Access.Private;
+                            }
+                            else if (Parser.Token(tokens, ref index, "protected"))
+                            {
+                                access = Access.Protected;
+                            }
+                            else if (Parser.Token(tokens, ref index, "public"))
+                            {
+                                access = Access.Public;
+                            }
+                            decl.BaseTypes.Add(new BaseTypeDecl
+                            {
+                                Access = access,
+                                Type = TypeDecl.EnsureTypeWithoutName(tokens, ref index),
+                            });
+                            if (!Parser.Token(tokens, ref index, ","))
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    Parser.EnsureToken(tokens, ref index, "{");
+                    while (true)
+                    {
+                        if (Parser.Token(tokens, ref index, "}"))
+                        {
+                            break;
+                        }
+
+                        Access access = decl.ClassType == ClassType.Class ? Access.Private : Access.Public;
+                        if (Parser.Token(tokens, ref index, "private"))
+                        {
+                            access = Access.Private;
+                            Parser.EnsureToken(tokens, ref index, ":");
+                        }
+                        else if (Parser.Token(tokens, ref index, "protected"))
+                        {
+                            access = Access.Protected;
+                            Parser.EnsureToken(tokens, ref index, ":");
+                        }
+                        else if (Parser.Token(tokens, ref index, "public"))
+                        {
+                            access = Access.Public;
+                            Parser.EnsureToken(tokens, ref index, ":");
+                        }
+                        ParseSymbols(tokens, ref index, decl, access);
+                    }
+
+                    if (Parser.Id(tokens, ref index, out name))
+                    {
+                        var varDecl = new VarDecl
+                        {
+                            Name = name,
+                            Type = new RefTypeDecl
+                            {
+                                Name = decl.Name,
+                            },
+                        };
+                        Parser.EnsureToken(tokens, ref index, ";");
+                        return new SymbolDecl[] { decl, varDecl };
+                    }
+                    else
+                    {
+                        Parser.EnsureToken(tokens, ref index, ";");
+                        return new SymbolDecl[] { decl };
+                    }
+                }
+            }
             return null;
         }
 
-        public static void ParseSymbols(string[] tokens, ref int index, SymbolDecl parent)
+        public static void ParseSymbols(string[] tokens, ref int index, SymbolDecl parent, Access access = Access.Public)
         {
             if (parent.Children == null)
             {
@@ -173,6 +264,10 @@ namespace Parser
                 var decls = ParseSymbol(tokens, ref index);
                 if (decls != null)
                 {
+                    foreach (var decl in decls)
+                    {
+                        decl.Access = access;
+                    }
                     parent.Children.AddRange(decls);
                 }
                 else if (index == oldIndex)
@@ -230,10 +325,47 @@ namespace Parser
         Union,
     }
 
+    class BaseTypeDecl : SymbolDecl
+    {
+        public TypeDecl Type { get; set; }
+
+        public override string ToString()
+        {
+            switch (this.Access)
+            {
+                case global::Parser.Access.Private:
+                    return "private " + this.Type.ToString();
+                case global::Parser.Access.Protected:
+                    return "protected " + this.Type.ToString();
+                default:
+                    return "public " + this.Type.ToString();
+            }
+        }
+    }
+
     class ClassDecl : SymbolDecl
     {
         public ClassType ClassType { get; set; }
-        public List<TypeDecl> BaseTypes { get; set; }
+        public List<BaseTypeDecl> BaseTypes { get; set; }
+
+        public override string ToString()
+        {
+            string result = "";
+            switch (this.ClassType)
+            {
+                case global::Parser.ClassType.Class:
+                    result = "class " + this.Name;
+                    break;
+                case global::Parser.ClassType.Struct:
+                    result = "struct " + this.Name;
+                    break;
+                case global::Parser.ClassType.Union:
+                    result = "union " + this.Name;
+                    break;
+            }
+            result += this.BaseTypes.Aggregate("", (a, b) => a == "" ? " : " + b.ToString() : a + ", " + b.ToString());
+            return result;
+        }
     }
 
     class VarDecl : SymbolDecl
