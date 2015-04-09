@@ -4311,7 +4311,8 @@ Elements
 					Backslash,
 				};
 			protected:
-				Color					color1, color2;
+				Color					color1;
+				Color					color2;
 				Direction				direction;
 				ElementShape			shape;
 

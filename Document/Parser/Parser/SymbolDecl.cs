@@ -208,6 +208,10 @@ namespace Parser
                             break;
                         }
 
+                        while (index < tokens.Length && tokens[index].Length >= 3 && tokens[index].StartsWith("///"))
+                        {
+                            index++;
+                        }
                         decl.Children.Add(new EnumItemDecl
                         {
                             Name = Parser.EnsureId(tokens, ref index),
@@ -318,6 +322,7 @@ namespace Parser
                             while (true)
                             {
                                 Access access = classDecl.ClassType == ClassType.Class ? Access.Private : Access.Public;
+                                Parser.Token(tokens, ref index, "virtual");
                                 if (Parser.Token(tokens, ref index, "private"))
                                 {
                                     access = Access.Private;
