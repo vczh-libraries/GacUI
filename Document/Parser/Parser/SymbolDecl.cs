@@ -244,143 +244,162 @@ namespace Parser
             }
             else if (Parser.Token(tokens, ref index, "struct") || Parser.Token(tokens, ref index, "class") || Parser.Token(tokens, ref index, "union"))
             {
-                string name = Parser.EnsureId(tokens, ref index);
-                if (!Parser.Token(tokens, ref index, ";"))
+                if (Parser.Token(tokens, ref index, "{"))
                 {
-                    var classDecl = new ClassDecl
+                    if (tokens[index - 2] == "class")
                     {
-                        ClassType =
-                            tokens[index - 2] == "struct" ? ClassType.Struct :
-                            tokens[index - 2] == "class" ? ClassType.Class :
-                            ClassType.Union,
-                        BaseTypes = new List<BaseTypeDecl>(),
-                        Name = name,
+                        throw new ArgumentException("Failed to parse.");
+                    }
+
+                    var decl = new GroupedFieldDecl
+                    {
+                        Grouping = tokens[index - 2] == "struct" ? Grouping.Struct : Grouping.Union,
                     };
-
-                    if (templateDecl != null)
+                    ParseSymbols(tokens, ref index, decl);
+                    Parser.EnsureToken(tokens, ref index, "}");
+                    Parser.EnsureToken(tokens, ref index, ";");
+                    return new SymbolDecl[] { decl };
+                }
+                else
+                {
+                    string name = Parser.EnsureId(tokens, ref index);
+                    if (!Parser.Token(tokens, ref index, ";"))
                     {
-                        if (Parser.Token(tokens, ref index, "<"))
+                        var classDecl = new ClassDecl
                         {
-                            if (!Parser.Token(tokens, ref index, ">"))
-                            {
-                                while (true)
-                                {
-                                    int oldIndex = index;
-                                    try
-                                    {
-                                        templateDecl.Specialization.Add(TypeDecl.EnsureTypeWithoutName(tokens, ref index));
-                                    }
-                                    catch (ArgumentException)
-                                    {
-                                        index = oldIndex;
-                                        Parser.SkipUntilInTemplate(tokens, ref index, ",", ">");
-                                        index--;
+                            ClassType =
+                                tokens[index - 2] == "struct" ? ClassType.Struct :
+                                tokens[index - 2] == "class" ? ClassType.Class :
+                                ClassType.Union,
+                            BaseTypes = new List<BaseTypeDecl>(),
+                            Name = name,
+                        };
 
-                                        templateDecl.Specialization.Add(new ConstantTypeDecl
+                        if (templateDecl != null)
+                        {
+                            if (Parser.Token(tokens, ref index, "<"))
+                            {
+                                if (!Parser.Token(tokens, ref index, ">"))
+                                {
+                                    while (true)
+                                    {
+                                        int oldIndex = index;
+                                        try
+                                        {
+                                            templateDecl.Specialization.Add(TypeDecl.EnsureTypeWithoutName(tokens, ref index));
+                                        }
+                                        catch (ArgumentException)
+                                        {
+                                            index = oldIndex;
+                                            Parser.SkipUntilInTemplate(tokens, ref index, ",", ">");
+                                            index--;
+
+                                            templateDecl.Specialization.Add(new ConstantTypeDecl
                                             {
                                                 Value = tokens
                                                     .Skip(oldIndex)
                                                     .Take(index - oldIndex)
                                                     .Aggregate((a, b) => a + " " + b),
                                             });
+                                        }
+                                        if (Parser.Token(tokens, ref index, ">"))
+                                        {
+                                            break;
+                                        }
+                                        Parser.EnsureToken(tokens, ref index, ",");
                                     }
-                                    if (Parser.Token(tokens, ref index, ">"))
-                                    {
-                                        break;
-                                    }
-                                    Parser.EnsureToken(tokens, ref index, ",");
                                 }
                             }
                         }
-                    }
 
-                    Parser.Token(tokens, ref index, "abstract");
-                    if (Parser.Token(tokens, ref index, ":"))
-                    {
+                        Parser.Token(tokens, ref index, "abstract");
+                        if (Parser.Token(tokens, ref index, ":"))
+                        {
+                            while (true)
+                            {
+                                Access access = classDecl.ClassType == ClassType.Class ? Access.Private : Access.Public;
+                                if (Parser.Token(tokens, ref index, "private"))
+                                {
+                                    access = Access.Private;
+                                }
+                                else if (Parser.Token(tokens, ref index, "protected"))
+                                {
+                                    access = Access.Protected;
+                                }
+                                else if (Parser.Token(tokens, ref index, "public"))
+                                {
+                                    access = Access.Public;
+                                }
+                                Parser.Token(tokens, ref index, "virtual");
+                                classDecl.BaseTypes.Add(new BaseTypeDecl
+                                {
+                                    Access = access,
+                                    Type = TypeDecl.EnsureTypeWithoutName(tokens, ref index),
+                                });
+                                if (!Parser.Token(tokens, ref index, ","))
+                                {
+                                    break;
+                                }
+                            }
+                        }
+
+                        Parser.EnsureToken(tokens, ref index, "{");
                         while (true)
                         {
+                            if (Parser.Token(tokens, ref index, "}"))
+                            {
+                                break;
+                            }
+
                             Access access = classDecl.ClassType == ClassType.Class ? Access.Private : Access.Public;
                             if (Parser.Token(tokens, ref index, "private"))
                             {
                                 access = Access.Private;
+                                Parser.EnsureToken(tokens, ref index, ":");
                             }
                             else if (Parser.Token(tokens, ref index, "protected"))
                             {
                                 access = Access.Protected;
+                                Parser.EnsureToken(tokens, ref index, ":");
                             }
                             else if (Parser.Token(tokens, ref index, "public"))
                             {
                                 access = Access.Public;
+                                Parser.EnsureToken(tokens, ref index, ":");
                             }
-                            Parser.Token(tokens, ref index, "virtual");
-                            classDecl.BaseTypes.Add(new BaseTypeDecl
+                            ParseSymbols(tokens, ref index, classDecl, access);
+                        }
+
+                        SymbolDecl decl = classDecl;
+                        if (templateDecl != null)
+                        {
+                            templateDecl.Element = decl;
+                            decl = templateDecl;
+                        }
+
+                        if (Parser.Id(tokens, ref index, out name))
+                        {
+                            var varDecl = new VarDecl
                             {
-                                Access = access,
-                                Type = TypeDecl.EnsureTypeWithoutName(tokens, ref index),
-                            });
-                            if (!Parser.Token(tokens, ref index, ","))
-                            {
-                                break;
-                            }
+                                Static = false,
+                                Name = name,
+                                Type = new RefTypeDecl
+                                {
+                                    Name = classDecl.Name,
+                                },
+                            };
+                            Parser.EnsureToken(tokens, ref index, ";");
+                            return new SymbolDecl[] { decl, varDecl };
                         }
-                    }
-
-                    Parser.EnsureToken(tokens, ref index, "{");
-                    while (true)
-                    {
-                        if (Parser.Token(tokens, ref index, "}"))
+                        else
                         {
-                            break;
+                            Parser.EnsureToken(tokens, ref index, ";");
+                            return new SymbolDecl[] { decl };
                         }
-
-                        Access access = classDecl.ClassType == ClassType.Class ? Access.Private : Access.Public;
-                        if (Parser.Token(tokens, ref index, "private"))
-                        {
-                            access = Access.Private;
-                            Parser.EnsureToken(tokens, ref index, ":");
-                        }
-                        else if (Parser.Token(tokens, ref index, "protected"))
-                        {
-                            access = Access.Protected;
-                            Parser.EnsureToken(tokens, ref index, ":");
-                        }
-                        else if (Parser.Token(tokens, ref index, "public"))
-                        {
-                            access = Access.Public;
-                            Parser.EnsureToken(tokens, ref index, ":");
-                        }
-                        ParseSymbols(tokens, ref index, classDecl, access);
-                    }
-
-                    SymbolDecl decl = classDecl;
-                    if (templateDecl != null)
-                    {
-                        templateDecl.Element = decl;
-                        decl = templateDecl;
-                    }
-
-                    if (Parser.Id(tokens, ref index, out name))
-                    {
-                        var varDecl = new VarDecl
-                        {
-                            Static = false,
-                            Name = name,
-                            Type = new RefTypeDecl
-                            {
-                                Name = classDecl.Name,
-                            },
-                        };
-                        Parser.EnsureToken(tokens, ref index, ";");
-                        return new SymbolDecl[] { decl, varDecl };
-                    }
-                    else
-                    {
-                        Parser.EnsureToken(tokens, ref index, ";");
-                        return new SymbolDecl[] { decl };
                     }
                 }
             }
-            else if (index < tokens.Length)
+            else if (!Parser.Token(tokens, ref index, ";"))
             {
                 Function function = Function.Function;
                 {
@@ -774,6 +793,22 @@ namespace Parser
             }
             result += this.Name + " : " + this.Type.ToString();
             return result;
+        }
+    }
+
+    enum Grouping
+    {
+        Union,
+        Struct,
+    }
+
+    class GroupedFieldDecl : SymbolDecl
+    {
+        public Grouping Grouping { get; set; }
+
+        public override string ToString()
+        {
+            return this.Grouping == global::Parser.Grouping.Struct ? "struct" : "union";
         }
     }
 

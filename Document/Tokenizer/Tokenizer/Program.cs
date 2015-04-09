@@ -26,6 +26,22 @@ namespace Tokenizer
                     {
                         index++;
                     }
+                    else if (code[index] == '#')
+                    {
+                        int end = index + 1;
+                        while (true)
+                        {
+                            if (code[end] == '\r' || code[end] == '\n')
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                end++;
+                            }
+                        }
+                        index = end;
+                    }
                     else if (code[index] == '/')
                     {
                         if (code[index + 1] == '*')

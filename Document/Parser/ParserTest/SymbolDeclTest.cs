@@ -150,6 +150,32 @@ namespace ParserTest
         }
 
         [TestMethod]
+        public void TestClassGroupedField()
+        {
+            var global = Convert(@"
+                union
+                {
+                    int a ;
+                    struct
+                    {
+                        int b ;
+                        int c ;
+                    } ;
+                } ;
+                ");
+            Assert.AreEqual(1, global.Children.Count);
+            Assert.AreEqual("union", global.Children[0].ToString());
+
+            Assert.AreEqual(2, global.Children[0].Children.Count);
+            Assert.AreEqual("var a : int", global.Children[0].Children[0].ToString());
+            Assert.AreEqual("struct", global.Children[0].Children[1].ToString());
+
+            Assert.AreEqual(2, global.Children[0].Children[1].Children.Count);
+            Assert.AreEqual("var b : int", global.Children[0].Children[1].Children[0].ToString());
+            Assert.AreEqual("var c : int", global.Children[0].Children[1].Children[1].ToString());
+        }
+
+        [TestMethod]
         public void TestEnum()
         {
             var global = Convert(@"
