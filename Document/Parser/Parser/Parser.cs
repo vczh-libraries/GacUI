@@ -73,6 +73,10 @@ namespace Parser
                     }
                 }
 
+                if (tokens[index].StartsWith("///"))
+                {
+                    throw new ArgumentException("Failed to parse.");
+                }
                 switch (tokens[index])
                 {
                     case "(":
