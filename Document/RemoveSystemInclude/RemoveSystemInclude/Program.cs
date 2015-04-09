@@ -32,8 +32,6 @@ namespace RemoveSystemInclude
                             path = Path.GetFullPath(referenceFolder + path).ToUpper();
                         }
                         keep = path.StartsWith(nonSystemSourceFolder);
-                        Console.WriteLine(path);
-                        Console.WriteLine(nonSystemSourceFolder);
                     }
                     else if (keep)
                     {

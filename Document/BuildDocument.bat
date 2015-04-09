@@ -22,7 +22,7 @@ call ..\..\BuildDocumentForSinglePlatform.bat
 cd ..\..
 
 cl.exe Headers.h /I ".Output\Source" /D "_WIN64" /D "WIN32" /D "_DEBUG" /D "WINDOWS" /D "_UNICODE" /D "UNICODE" /P /C
-copy Headers.i .Output\x64\Headers.txt
+move Headers.i .Output\x64\Headers.txt
 cd .Output\x64
-move ..\..\BuildDocumentForSinglePlatform.bat
+call ..\..\BuildDocumentForSinglePlatform.bat
 cd ..\..
