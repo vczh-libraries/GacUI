@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DocParser
 {
@@ -49,6 +50,9 @@ namespace DocParser
                     Console.WriteLine("Duplicate key founds: " + key);
                 }
             }
+
+            var xml = new XDocument(global.Serialize());
+            xml.Save(args[1]);
         }
     }
 }

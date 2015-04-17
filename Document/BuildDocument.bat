@@ -18,9 +18,11 @@ move Headers.i .Output\x86\Headers.txt
 cd .Output\x86
 call ..\..\ParseCppHeader.bat
 cd ..\..
+copy .Output\x86\Headers.ast.txt .Output\x86.ast.txt
 
 cl.exe Headers.h /I ".Output\Source" /D "_WIN64" /D "WIN32" /D "_DEBUG" /D "WINDOWS" /D "_UNICODE" /D "UNICODE" /P /C
 move Headers.i .Output\x64\Headers.txt
 cd .Output\x64
 call ..\..\ParseCppHeader.bat
 cd ..\..
+copy .Output\x64\Headers.ast.txt .Output\x64.ast.txt
