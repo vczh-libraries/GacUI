@@ -15,7 +15,7 @@ namespace UnitTest
             var tokens = input.Split(" \r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             int index = 0;
 
-            var decl = new SymbolDecl();
+            var decl = new GlobalDesc();
             CppDeclParser.ParseSymbols(tokens, ref index, decl);
             Assert.AreEqual(tokens.Length, index);
 

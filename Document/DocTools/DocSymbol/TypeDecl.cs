@@ -6,17 +6,39 @@ using System.Threading.Tasks;
 
 namespace DocSymbol
 {
-    public class TypeDecl
+    public abstract class TypeDecl
     {
+        public interface IVisitor
+        {
+            void Visit(RefTypeDecl decl);
+            void Visit(SubTypeDecl decl);
+            void Visit(DecorateTypeDecl decl);
+            void Visit(ArrayTypeDecl decl);
+            void Visit(FunctionTypeDecl decl);
+            void Visit(ClassMemberTypeDecl decl);
+            void Visit(GenericTypeDecl decl);
+            void Visit(DeclTypeDecl decl);
+            void Visit(VariadicArgumentTypeDecl decl);
+            void Visit(ConstantTypeDecl decl);
+        }
+
+        public abstract void Accept(IVisitor visitor);
+
+        public override string ToString()
+        {
+            var visitor = new PrintTypeDeclVisitor();
+            Accept(visitor);
+            return visitor.Result;
+        }
     }
 
     public class RefTypeDecl : TypeDecl
     {
         public string Name { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            return this.Name;
+            visitor.Visit(this);
         }
     }
 
@@ -25,9 +47,9 @@ namespace DocSymbol
         public TypeDecl Parent { get; set; }
         public string Name { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            return this.Parent.ToString() + "::" + this.Name;
+            visitor.Visit(this);
         }
     }
 
@@ -47,27 +69,9 @@ namespace DocSymbol
         public TypeDecl Element { get; set; }
         public Decoration Decoration { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            switch (this.Decoration)
-            {
-                case global::DocSymbol.Decoration.Const:
-                    return "const " + this.Element.ToString();
-                case global::DocSymbol.Decoration.Volatile:
-                    return "volatile " + this.Element.ToString();
-                case global::DocSymbol.Decoration.Pointer:
-                    return "* " + this.Element.ToString();
-                case global::DocSymbol.Decoration.LeftRef:
-                    return "& " + this.Element.ToString();
-                case global::DocSymbol.Decoration.RightRef:
-                    return "&& " + this.Element.ToString();
-                case global::DocSymbol.Decoration.Signed:
-                    return "signed " + this.Element.ToString();
-                case global::DocSymbol.Decoration.Unsigned:
-                    return "unsigned " + this.Element.ToString();
-                default:
-                    throw new NotSupportedException();
-            }
+            visitor.Visit(this);
         }
     }
 
@@ -75,9 +79,9 @@ namespace DocSymbol
     {
         public TypeDecl Element { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            return "array " + this.Element.ToString();
+            visitor.Visit(this);
         }
     }
 
@@ -98,51 +102,9 @@ namespace DocSymbol
         public List<VarDecl> Parameters { get; set; }
         public bool Const { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            string result = "function ";
-            switch (this.CallingConvention)
-            {
-                case global::DocSymbol.CallingConvention.CDecl:
-                    result += "__cdecl ";
-                    break;
-                case global::DocSymbol.CallingConvention.ClrCall:
-                    result += "__clrcall ";
-                    break;
-                case global::DocSymbol.CallingConvention.StdCall:
-                    result += "__stdcall ";
-                    break;
-                case global::DocSymbol.CallingConvention.FastCall:
-                    result += "__fastcall ";
-                    break;
-                case global::DocSymbol.CallingConvention.ThisCall:
-                    result += "__thiscall ";
-                    break;
-                case global::DocSymbol.CallingConvention.VectorCall:
-                    result += "__vectorcall ";
-                    break;
-            }
-            if (this.Const)
-            {
-                result += "const ";
-            }
-
-            result += "(";
-            for (int i = 0; i < this.Parameters.Count; i++)
-            {
-                if (i > 0)
-                {
-                    result += ", ";
-                }
-                if (this.Parameters[i].Name != null)
-                {
-                    result += this.Parameters[i].Name + " : ";
-                }
-                result += this.Parameters[i].Type.ToString();
-            }
-
-            result += ") : " + this.ReturnType.ToString();
-            return result;
+            visitor.Visit(this);
         }
     }
 
@@ -151,9 +113,9 @@ namespace DocSymbol
         public TypeDecl Element { get; set; }
         public TypeDecl ClassType { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            return this.ClassType.ToString() + "::(" + this.Element.ToString() + ")";
+            visitor.Visit(this);
         }
     }
 
@@ -162,20 +124,9 @@ namespace DocSymbol
         public TypeDecl Element { get; set; }
         public List<TypeDecl> TypeArguments { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            string result = this.Element.ToString();
-            result += "<";
-            for (int i = 0; i < this.TypeArguments.Count; i++)
-            {
-                if (i > 0)
-                {
-                    result += ", ";
-                }
-                result += this.TypeArguments[i].ToString();
-            }
-            result += ">";
-            return result;
+            visitor.Visit(this);
         }
     }
 
@@ -183,9 +134,9 @@ namespace DocSymbol
     {
         public string Expression { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            return "decltype( " + this.Expression + " )";
+            visitor.Visit(this);
         }
     }
 
@@ -193,9 +144,9 @@ namespace DocSymbol
     {
         public TypeDecl Element { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            return "... " + this.Element.ToString();
+            visitor.Visit(this);
         }
     }
 
@@ -203,9 +154,9 @@ namespace DocSymbol
     {
         public string Value { get; set; }
 
-        public override string ToString()
+        public override void Accept(IVisitor visitor)
         {
-            return "<" + this.Value + ">";
+            visitor.Visit(this);
         }
     }
 }

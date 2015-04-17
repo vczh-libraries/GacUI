@@ -13,7 +13,7 @@ namespace DocSymbol
         Private,
     }
 
-    public class SymbolDecl
+    public abstract class SymbolDecl
     {
         public Access Access { get; set; }
         public string Name { get; set; }
@@ -23,9 +23,34 @@ namespace DocSymbol
         public string OverloadKey { get; set; }
         public string Document { get; set; }
 
+        public interface IVisitor
+        {
+            void Visit(GlobalDesc decl);
+            void Visit(NamespaceDecl decl);
+            void Visit(UsingNamespaceDecl decl);
+            void Visit(TemplateDecl decl);
+            void Visit(BaseTypeDecl decl);
+            void Visit(ClassDecl decl);
+            void Visit(VarDecl decl);
+            void Visit(FuncDecl decl);
+            void Visit(GroupedFieldDecl decl);
+            void Visit(EnumItemDecl decl);
+            void Visit(EnumDecl decl);
+            void Visit(TypedefDecl decl);
+        }
+
+        public abstract void Accept(IVisitor visitor);
+
         public SymbolDecl()
         {
             this.Access = global::DocSymbol.Access.Public;
+        }
+
+        public override string ToString()
+        {
+            var visitor = new PrintSymbolDeclVisitor();
+            Accept(visitor);
+            return visitor.Result;
         }
 
         protected static string GetKeyOfScopeParent(SymbolDecl decl)
@@ -67,11 +92,19 @@ namespace DocSymbol
         }
     }
 
+    public class GlobalDesc : SymbolDecl
+    {
+        public override void Accept(SymbolDecl.IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+    }
+
     public class NamespaceDecl : SymbolDecl
     {
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            return "namespace " + this.Name;
+            visitor.Visit(this);
         }
 
         internal override string GenerateNameKey()
@@ -84,9 +117,9 @@ namespace DocSymbol
     {
         public List<string> Path { get; set; }
 
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            return "using namespace " + this.Path.Aggregate("", (a, b) => a == "" ? b : a + "::" + b);
+            visitor.Visit(this);
         }
     }
 
@@ -111,18 +144,9 @@ namespace DocSymbol
             }
         }
 
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            string result = "template<" + this.TypeParameters.Aggregate("", (a, b) => a == "" ? b : a + ", " + b) + "> ";
-            if (this.Specialization.Count > 0)
-            {
-                result += this.Specialization
-                    .Select(t => t.ToString())
-                    .Aggregate("", (a, b) => a == "" ? "specialization<" + b : a + ", " + b)
-                    + "> ";
-            }
-            result += this.Element.ToString();
-            return result;
+            visitor.Visit(this);
         }
 
         internal override SymbolDecl GetScopeParent()
@@ -142,17 +166,9 @@ namespace DocSymbol
     {
         public TypeDecl Type { get; set; }
 
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            switch (this.Access)
-            {
-                case global::DocSymbol.Access.Private:
-                    return "private " + this.Type.ToString();
-                case global::DocSymbol.Access.Protected:
-                    return "protected " + this.Type.ToString();
-                default:
-                    return "public " + this.Type.ToString();
-            }
+            visitor.Visit(this);
         }
     }
 
@@ -161,23 +177,9 @@ namespace DocSymbol
         public ClassType ClassType { get; set; }
         public List<BaseTypeDecl> BaseTypes { get; set; }
 
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            string result = "";
-            switch (this.ClassType)
-            {
-                case global::DocSymbol.ClassType.Class:
-                    result = "class " + this.Name;
-                    break;
-                case global::DocSymbol.ClassType.Struct:
-                    result = "struct " + this.Name;
-                    break;
-                case global::DocSymbol.ClassType.Union:
-                    result = "union " + this.Name;
-                    break;
-            }
-            result += this.BaseTypes.Aggregate("", (a, b) => a == "" ? " : " + b.ToString() : a + ", " + b.ToString());
-            return result;
+            visitor.Visit(this);
         }
 
         internal override string GenerateNameKey()
@@ -213,9 +215,9 @@ namespace DocSymbol
         public TypeDecl Type { get; set; }
         public bool Static { get; set; }
 
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            return "var " + this.Name + " : " + this.Type.ToString();
+            visitor.Visit(this);
         }
 
         internal override string GenerateNameKey()
@@ -245,34 +247,9 @@ namespace DocSymbol
         public Virtual Virtual { get; set; }
         public Function Function { get; set; }
 
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            var result = "";
-            switch (this.Function)
-            {
-                case global::DocSymbol.Function.Constructor:
-                    result = "ctor ";
-                    break;
-                case global::DocSymbol.Function.Destructor:
-                    result = "dtor ";
-                    break;
-                default:
-                    switch (this.Virtual)
-                    {
-                        case global::DocSymbol.Virtual.Virtual:
-                            result = "virtual function ";
-                            break;
-                        case global::DocSymbol.Virtual.Abstract:
-                            result = "abstract function ";
-                            break;
-                        default:
-                            result = "function ";
-                            break;
-                    }
-                    break;
-            }
-            result += this.Name + " : " + this.Type.ToString();
-            return result;
+            visitor.Visit(this);
         }
 
         internal override string GenerateNameKey()
@@ -330,9 +307,9 @@ namespace DocSymbol
     {
         public Grouping Grouping { get; set; }
 
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            return this.Grouping == global::DocSymbol.Grouping.Struct ? "struct" : "union";
+            visitor.Visit(this);
         }
 
         internal override SymbolDecl GetScopeParent()
@@ -343,9 +320,9 @@ namespace DocSymbol
 
     public class EnumItemDecl : SymbolDecl
     {
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            return "enum_item " + this.Name;
+            visitor.Visit(this);
         }
 
         internal override string GenerateNameKey()
@@ -356,9 +333,9 @@ namespace DocSymbol
 
     public class EnumDecl : SymbolDecl
     {
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            return "enum " + this.Name;
+            visitor.Visit(this);
         }
 
         internal override string GenerateNameKey()
@@ -371,9 +348,9 @@ namespace DocSymbol
     {
         public TypeDecl Type { get; set; }
 
-        public override string ToString()
+        public override void Accept(SymbolDecl.IVisitor visitor)
         {
-            return "typedef " + this.Name + " : " + this.Type.ToString();
+            visitor.Visit(this);
         }
 
         internal override string GenerateNameKey()

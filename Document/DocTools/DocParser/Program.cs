@@ -25,7 +25,7 @@ namespace DocParser
         static void Main(string[] args)
         {
             var tokens = File.ReadAllLines(args[0]);
-            var global = new SymbolDecl();
+            var global = new GlobalDesc();
             {
                 int index = 0;
                 CppDeclParser.ParseSymbols(tokens, ref index, global);
