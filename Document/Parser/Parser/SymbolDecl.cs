@@ -742,13 +742,6 @@ namespace Parser
         {
             return this.Parent == null ? null : this.Parent.GetScopeParent();
         }
-
-        public override void BuildSymbolTree(SymbolDecl parent)
-        {
-            base.BuildSymbolTree(parent);
-            this.Element.Parent = this;
-            this.Element.BuildSymbolTree(this);
-        }
     }
 
     enum ClassType
@@ -910,7 +903,8 @@ namespace Parser
 
         internal override string GenerateOverloadKey()
         {
-            var postfix = "(" + ((FunctionTypeDecl)this.Type).Parameters.Aggregate("", (a, b) => a == "" ? b.Type.ToString() : a + "," + b.Type.ToString()) + ")";
+            var func = (FunctionTypeDecl)this.Type;
+            var postfix = "(" + func.Parameters.Aggregate("", (a, b) => a == "" ? b.Type.ToString() : a + "," + b.Type.ToString()) + ")" + (func.Const ? "const" : "");
             var template = this.Parent as TemplateDecl;
             if (template == null)
             {
@@ -924,13 +918,10 @@ namespace Parser
 
         public override void BuildSymbolTree(SymbolDecl parent)
         {
-            base.BuildSymbolTree(parent);
             foreach (var decl in ((FunctionTypeDecl)this.Type).Parameters)
             {
                 if (decl.Name != "")
                 {
-                    decl.Parent = this;
-                    decl.BuildSymbolTree(this);
                     if (this.Children == null)
                     {
                         this.Children = new List<SymbolDecl>();
@@ -938,6 +929,7 @@ namespace Parser
                     this.Children.Add(decl);
                 }
             }
+            base.BuildSymbolTree(parent);
         }
     }
 
