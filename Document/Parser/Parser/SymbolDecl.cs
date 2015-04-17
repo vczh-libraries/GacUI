@@ -18,11 +18,55 @@ namespace Parser
         public Access Access { get; set; }
         public string Name { get; set; }
         public List<SymbolDecl> Children { get; set; }
+        public SymbolDecl Parent { get; set; }
+        public string NameKey { get; set; }
+        public string OverloadKey { get; set; }
+        public string Document { get; set; }
 
         public SymbolDecl()
         {
             this.Access = global::Parser.Access.Public;
         }
+
+        protected static string GetKeyOfScopeParent(SymbolDecl decl)
+        {
+            if (decl != null)
+            {
+                decl = decl.GetScopeParent();
+            }
+            return decl == null ? "" : decl.OverloadKey;
+        }
+
+        internal virtual string GenerateNameKey()
+        {
+            return null;
+        }
+
+        internal virtual string GenerateOverloadKey()
+        {
+            return GenerateNameKey();
+        }
+
+        internal virtual SymbolDecl GetScopeParent()
+        {
+            return this;
+        }
+
+        public virtual void BuildSymbolTree(SymbolDecl parent = null)
+        {
+            this.Parent = parent;
+            this.NameKey = GenerateNameKey();
+            this.OverloadKey = GenerateOverloadKey();
+            if (this.Children != null)
+            {
+                foreach (var decl in this.Children)
+                {
+                    decl.BuildSymbolTree(this);
+                }
+            }
+        }
+
+        #region Parser
 
         static SymbolDecl[] ParseSymbol(string[] tokens, ref int index)
         {
@@ -632,6 +676,8 @@ namespace Parser
                 }
             }
         }
+
+        #endregion
     }
 
     class NamespaceDecl : SymbolDecl
@@ -639,6 +685,11 @@ namespace Parser
         public override string ToString()
         {
             return "namespace " + this.Name;
+        }
+
+        internal override string GenerateNameKey()
+        {
+            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
         }
     }
 
@@ -685,6 +736,18 @@ namespace Parser
             }
             result += this.Element.ToString();
             return result;
+        }
+
+        internal override SymbolDecl GetScopeParent()
+        {
+            return this.Parent == null ? null : this.Parent.GetScopeParent();
+        }
+
+        public override void BuildSymbolTree(SymbolDecl parent)
+        {
+            base.BuildSymbolTree(parent);
+            this.Element.Parent = this;
+            this.Element.BuildSymbolTree(this);
         }
     }
 
@@ -736,6 +799,33 @@ namespace Parser
             result += this.BaseTypes.Aggregate("", (a, b) => a == "" ? " : " + b.ToString() : a + ", " + b.ToString());
             return result;
         }
+
+        internal override string GenerateNameKey()
+        {
+            var template = this.Parent as TemplateDecl;
+            if (template == null)
+            {
+                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
+            }
+            else
+            {
+                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + "`" + template.TypeParameters.Count.ToString();
+            }
+        }
+
+        internal override string GenerateOverloadKey()
+        {
+            var template = this.Parent as TemplateDecl;
+            if (template == null)
+            {
+                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
+            }
+            else
+            {
+                var postfix = "<" + template.Specialization.Aggregate("", (a, b) => a == "" ? b.ToString() : a + "," + b.ToString()) + ">";
+                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + "`" + template.TypeParameters.Count.ToString() + (postfix == "<>" ? "" : postfix);
+            }
+        }
     }
 
     class VarDecl : SymbolDecl
@@ -746,6 +836,11 @@ namespace Parser
         public override string ToString()
         {
             return "var " + this.Name + " : " + this.Type.ToString();
+        }
+
+        internal override string GenerateNameKey()
+        {
+            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
         }
     }
 
@@ -799,6 +894,51 @@ namespace Parser
             result += this.Name + " : " + this.Type.ToString();
             return result;
         }
+
+        internal override string GenerateNameKey()
+        {
+            var template = this.Parent as TemplateDecl;
+            if (template == null)
+            {
+                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
+            }
+            else
+            {
+                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + "`" + template.TypeParameters.Count.ToString();
+            }
+        }
+
+        internal override string GenerateOverloadKey()
+        {
+            var postfix = "(" + ((FunctionTypeDecl)this.Type).Parameters.Aggregate("", (a, b) => a == "" ? b.Type.ToString() : a + "," + b.Type.ToString()) + ")";
+            var template = this.Parent as TemplateDecl;
+            if (template == null)
+            {
+                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + postfix;
+            }
+            else
+            {
+                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + "`" + template.TypeParameters.Count.ToString() + postfix;
+            }
+        }
+
+        public override void BuildSymbolTree(SymbolDecl parent)
+        {
+            base.BuildSymbolTree(parent);
+            foreach (var decl in ((FunctionTypeDecl)this.Type).Parameters)
+            {
+                if (decl.Name != "")
+                {
+                    decl.Parent = this;
+                    decl.BuildSymbolTree(this);
+                    if (this.Children == null)
+                    {
+                        this.Children = new List<SymbolDecl>();
+                    }
+                    this.Children.Add(decl);
+                }
+            }
+        }
     }
 
     enum Grouping
@@ -815,6 +955,11 @@ namespace Parser
         {
             return this.Grouping == global::Parser.Grouping.Struct ? "struct" : "union";
         }
+
+        internal override SymbolDecl GetScopeParent()
+        {
+            return this.Parent == null ? null : this.Parent.GetScopeParent();
+        }
     }
 
     class EnumItemDecl : SymbolDecl
@@ -823,6 +968,11 @@ namespace Parser
         {
             return "enum_item " + this.Name;
         }
+
+        internal override string GenerateNameKey()
+        {
+            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
+        }
     }
 
     class EnumDecl : SymbolDecl
@@ -830,6 +980,11 @@ namespace Parser
         public override string ToString()
         {
             return "enum " + this.Name;
+        }
+
+        internal override string GenerateNameKey()
+        {
+            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
         }
     }
 
@@ -840,6 +995,11 @@ namespace Parser
         public override string ToString()
         {
             return "typedef " + this.Name + " : " + this.Type.ToString();
+        }
+
+        internal override string GenerateNameKey()
+        {
+            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
         }
     }
 }

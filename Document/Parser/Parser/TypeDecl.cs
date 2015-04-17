@@ -8,6 +8,8 @@ namespace Parser
 {
     public class TypeDecl
     {
+        #region Parser
+
         static bool ParseMiniType(string[] tokens, ref int index, out TypeDecl decl)
         {
             decl = null;
@@ -191,11 +193,14 @@ namespace Parser
                 }
                 else if (Parser.Token(tokens, ref index, "&"))
                 {
-                    decoration = Decoration.LeftRef;
-                }
-                else if (Parser.Token(tokens, ref index, "&&"))
-                {
-                    decoration = Decoration.RightRef;
+                    if (Parser.Token(tokens, ref index, "&"))
+                    {
+                        decoration = Decoration.RightRef;
+                    }
+                    else
+                    {
+                        decoration = Decoration.LeftRef;
+                    }
                 }
                 else if (Parser.Token(tokens, ref index, "."))
                 {
@@ -587,6 +592,8 @@ namespace Parser
             }
             return decl;
         }
+
+        #endregion
     }
 
     class RefTypeDecl : TypeDecl
