@@ -26,7 +26,7 @@ namespace DocSymbol
 
         public interface IVisitor
         {
-            void Visit(GlobalDesc decl);
+            void Visit(GlobalDecl decl);
             void Visit(NamespaceDecl decl);
             void Visit(UsingNamespaceDecl decl);
             void Visit(TemplateDecl decl);
@@ -123,7 +123,7 @@ namespace DocSymbol
         }
     }
 
-    public class GlobalDesc : SymbolDecl
+    public class GlobalDecl : SymbolDecl
     {
         public override void Accept(SymbolDecl.IVisitor visitor)
         {

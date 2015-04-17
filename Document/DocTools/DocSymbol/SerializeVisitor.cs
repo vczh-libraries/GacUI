@@ -90,7 +90,7 @@ namespace DocSymbol
             }
         }
 
-        public void Visit(GlobalDesc decl)
+        public void Visit(GlobalDecl decl)
         {
             Serialize(decl);
         }

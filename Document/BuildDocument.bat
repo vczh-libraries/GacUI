@@ -26,3 +26,7 @@ cd .Output\x64
 call ..\..\ParseCppHeader.bat
 cd ..\..
 copy .Output\x64\Headers.ast.txt .Output\x64.ast.txt
+
+cd .Output
+Tools\DocResolver "x86, Windows" x86.ast.txt "x64, Windows" x64.ast.txt Resolved.ast.txt
+cd ..

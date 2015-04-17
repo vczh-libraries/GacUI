@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocSymbol", "DocSymbol\DocS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{46BE33D9-77E1-4EF2-8F35-BCC1F0121A8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocResolver", "DocResolver\DocResolver.csproj", "{94BCB39A-EB13-4C57-8B9B-2E49B1D42041}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{46BE33D9-77E1-4EF2-8F35-BCC1F0121A8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46BE33D9-77E1-4EF2-8F35-BCC1F0121A8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46BE33D9-77E1-4EF2-8F35-BCC1F0121A8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94BCB39A-EB13-4C57-8B9B-2E49B1D42041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94BCB39A-EB13-4C57-8B9B-2E49B1D42041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94BCB39A-EB13-4C57-8B9B-2E49B1D42041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94BCB39A-EB13-4C57-8B9B-2E49B1D42041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

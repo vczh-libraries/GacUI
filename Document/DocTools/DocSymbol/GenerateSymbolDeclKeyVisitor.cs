@@ -10,7 +10,7 @@ namespace DocSymbol
     {
         public string Result { get; set; }
 
-        public void Visit(GlobalDesc decl)
+        public void Visit(GlobalDecl decl)
         {
         }
 
@@ -86,7 +86,7 @@ namespace DocSymbol
     {
         public string Result { get; set; }
 
-        public void Visit(GlobalDesc decl)
+        public void Visit(GlobalDecl decl)
         {
         }
 
