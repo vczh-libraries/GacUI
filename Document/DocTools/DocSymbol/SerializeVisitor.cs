@@ -13,52 +13,59 @@ namespace DocSymbol
 
         public void Visit(RefTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XAttribute("Name", decl.Name));
         }
 
         public void Visit(SubTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XAttribute("Name", decl.Name));
+            this.Element.Add(new XElement("Parent", decl.Parent.Serialize()));
         }
 
         public void Visit(DecorateTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XAttribute("Decoration", decl.Decoration.ToString()));
+            this.Element.Add(new XElement("Element", decl.Element.Serialize()));
         }
 
         public void Visit(ArrayTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XElement("Element", decl.Element.Serialize()));
         }
 
         public void Visit(FunctionTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XAttribute("CallingConvention", decl.CallingConvention.ToString()));
+            this.Element.Add(new XAttribute("Const", decl.Const.ToString()));
+            this.Element.Add(new XElement("ReturnType", decl.ReturnType.Serialize()));
+            this.Element.Add(new XElement("Parameters", decl.Parameters.Select(x => x.Serialize())));
         }
 
         public void Visit(ClassMemberTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XElement("Element", decl.Element.Serialize()));
+            this.Element.Add(new XElement("ClassType", decl.ClassType.Serialize()));
         }
 
         public void Visit(GenericTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XElement("Element", decl.Element.Serialize()));
+            this.Element.Add(new XElement("TypeArguments", decl.TypeArguments.Select(x => x.Serialize())));
         }
 
         public void Visit(DeclTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XAttribute("Expression", decl.Expression));
         }
 
         public void Visit(VariadicArgumentTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XElement("Element", decl.Element.Serialize()));
         }
 
         public void Visit(ConstantTypeDecl decl)
         {
-            throw new NotImplementedException();
+            this.Element.Add(new XAttribute("Value", decl.Value));
         }
     }
 

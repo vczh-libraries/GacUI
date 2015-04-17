@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -11,54 +12,66 @@ namespace DocSymbol
     {
         public XElement Element;
 
+        private static T LoadEnum<T>(string name)
+        {
+            return (T)typeof(T).GetField(name, BindingFlags.Public | BindingFlags.Static).GetValue(null);
+        }
+
         public void Visit(RefTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Name = Element.Attribute("Name").Value;
         }
 
         public void Visit(SubTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Name = Element.Attribute("Name").Value;
+            decl.Parent = TypeDecl.Deserialize(this.Element.Element("Parent").Elements().First());
         }
 
         public void Visit(DecorateTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Decoration = LoadEnum<Decoration>(this.Element.Attribute("Decoration").Value);
+            decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
         }
 
         public void Visit(ArrayTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
         }
 
         public void Visit(FunctionTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.CallingConvention = LoadEnum<CallingConvention>(this.Element.Attribute("CallingConvention").Value);
+            decl.Const = bool.Parse(this.Element.Attribute("Const").Value);
+            decl.ReturnType = TypeDecl.Deserialize(this.Element.Element("ReturnType").Elements().First());
+            decl.Parameters = this.Element.Element("Parameters").Elements().Select(x => (VarDecl)SymbolDecl.Deserialize(x)).ToList();
         }
 
         public void Visit(ClassMemberTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
+            decl.ClassType = TypeDecl.Deserialize(this.Element.Element("ClassType").Elements().First());
         }
 
         public void Visit(GenericTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
+            decl.TypeArguments = this.Element.Element("TypeArguments").Elements().Select(x => TypeDecl.Deserialize(x)).ToList();
         }
 
         public void Visit(DeclTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Expression = this.Element.Attribute("Expression").Value;
         }
 
         public void Visit(VariadicArgumentTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
         }
 
         public void Visit(ConstantTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Value = this.Element.Attribute("Value").Value;
         }
     }
 
