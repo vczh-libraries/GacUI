@@ -73,64 +73,95 @@ namespace DocSymbol
     {
         public XElement Element;
 
+        private void Serialize(SymbolDecl decl, bool serializeChildren = true)
+        {
+            this.Element.Add(new XAttribute("Access", decl.Access.ToString()));
+            if (decl.Name != null)
+            {
+                this.Element.Add(new XAttribute("Name", decl.Name));
+            }
+            if (decl.Document != null)
+            {
+                this.Element.Add(new XAttribute("Document", decl.Document));
+            }
+            if (serializeChildren)
+            {
+                this.Element.Add(new XElement("Children"), decl.Children.Select(x => x.Serialize()));
+            }
+        }
+
         public void Visit(GlobalDesc decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
         }
 
         public void Visit(NamespaceDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
         }
 
         public void Visit(UsingNamespaceDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
+            this.Element.Add(new XElement("Path", decl.Path.Select(x => new XElement("Item", new XAttribute("Value", x)))));
         }
 
         public void Visit(TemplateDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl, false);
+            this.Element.Add(new XElement("TypeParameters", decl.TypeParameters.Select(x => new XElement("Item", new XAttribute("Value", x)))));
+            this.Element.Add(new XElement("Specialization", decl.Specialization.Select(x => x.Serialize())));
+            this.Element.Add(new XElement("Element"), decl.Element.Serialize());
         }
 
         public void Visit(BaseTypeDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
+            this.Element.Add(new XElement("Type"), decl.Type.Serialize());
         }
 
         public void Visit(ClassDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
+            this.Element.Add(new XAttribute("ClassType", decl.ClassType.ToString()));
+            this.Element.Add(new XElement("BaseTypes", decl.BaseTypes.Select(x => x.Serialize())));
         }
 
         public void Visit(VarDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
+            this.Element.Add(new XAttribute("Static", decl.Static.ToString()));
+            this.Element.Add(new XElement("Type"), decl.Type.Serialize());
         }
 
         public void Visit(FuncDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl, false);
+            this.Element.Add(new XAttribute("Virtual", decl.Virtual.ToString()));
+            this.Element.Add(new XAttribute("Function", decl.Function.ToString()));
+            this.Element.Add(new XElement("Type"), decl.Type.Serialize());
         }
 
         public void Visit(GroupedFieldDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
+            this.Element.Add(new XAttribute("Grouping", decl.Grouping.ToString()));
         }
 
         public void Visit(EnumItemDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
         }
 
         public void Visit(EnumDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
         }
 
         public void Visit(TypedefDecl decl)
         {
-            throw new NotImplementedException();
+            Serialize(decl);
+            this.Element.Add(new XElement("Type"), decl.Type.Serialize());
         }
     }
 }

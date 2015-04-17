@@ -10,6 +10,21 @@ namespace UnitTest
     [TestClass]
     public class SymbolDeclTest
     {
+        static void TestSymbolDeclSerialization(SymbolDecl decl)
+        {
+            var xml = decl.Serialize();
+            var newDecl = SymbolDecl.Deserialize(xml);
+            Assert.AreEqual(decl.ToString(), newDecl.ToString());
+
+            if (decl.Children != null)
+            {
+                foreach (var child in decl.Children)
+                {
+                    TestSymbolDeclSerialization(child);
+                }
+            }
+        }
+
         static SymbolDecl Convert(string input)
         {
             var tokens = input.Split(" \r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -19,10 +34,7 @@ namespace UnitTest
             CppDeclParser.ParseSymbols(tokens, ref index, decl);
             Assert.AreEqual(tokens.Length, index);
 
-            var xml = decl.Serialize();
-            var newDecl = SymbolDecl.Deserialize(xml);
-            Assert.AreEqual(decl.ToString(), newDecl.ToString());
-
+            TestSymbolDeclSerialization(decl);
             return decl;
         }
 

@@ -79,64 +79,100 @@ namespace DocSymbol
     {
         public XElement Element;
 
+        private static T LoadEnum<T>(string name)
+        {
+            return (T)typeof(T).GetField(name, BindingFlags.Public | BindingFlags.Static).GetValue(null);
+        }
+
+        private void Deserialize(SymbolDecl decl)
+        {
+            decl.Access = LoadEnum<Access>(this.Element.Attribute("Access").Value);
+            if (this.Element.Attribute("Name") != null)
+            {
+                decl.Name = this.Element.Attribute("Name").Value;
+            }
+            if (this.Element.Attribute("Document") != null)
+            {
+                decl.Document = this.Element.Attribute("Document").Value;
+            }
+            if (this.Element.Element("Children") != null)
+            {
+                decl.Children = this.Element.Element("Children").Elements().Select(x => SymbolDecl.Deserialize(x)).ToList();
+            }
+        }
+
         public void Visit(GlobalDesc decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
         }
 
         public void Visit(NamespaceDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
         }
 
         public void Visit(UsingNamespaceDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
+            decl.Path = this.Element.Element("Path").Elements("Item").Select(x => x.Attribute("Value").Value).ToList();
         }
 
         public void Visit(TemplateDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
+            decl.TypeParameters = this.Element.Element("TypeParameters").Elements("Item").Select(x => x.Attribute("Value").Value).ToList();
+            decl.Specialization = this.Element.Element("Specialization").Elements().Select(x => TypeDecl.Deserialize(x)).ToList();
+            decl.Element = SymbolDecl.Deserialize(this.Element.Element("Element").Elements().First());
         }
 
         public void Visit(BaseTypeDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
+            decl.Type = TypeDecl.Deserialize(this.Element.Element("Type").Elements().First());
         }
 
         public void Visit(ClassDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
+            decl.ClassType = LoadEnum<ClassType>(this.Element.Attribute("ClassType").Value);
+            decl.BaseTypes = this.Element.Element("BaseTypes").Elements().Select(x => (BaseTypeDecl)SymbolDecl.Deserialize(x)).ToList();
         }
 
         public void Visit(VarDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
+            decl.Static = bool.Parse(this.Element.Attribute("Static").Value);
+            decl.Type = TypeDecl.Deserialize(this.Element.Element("Type").Elements().First());
         }
 
         public void Visit(FuncDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
+            decl.Virtual = LoadEnum<Virtual>(this.Element.Attribute("Virtual").Value);
+            decl.Function = LoadEnum<Function>(this.Element.Attribute("Function").Value);
+            decl.Type = TypeDecl.Deserialize(this.Element.Element("Type").Elements().First());
         }
 
         public void Visit(GroupedFieldDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
+            decl.Grouping = LoadEnum<Grouping>(this.Element.Attribute("Grouping").Value);
         }
 
         public void Visit(EnumItemDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
         }
 
         public void Visit(EnumDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
         }
 
         public void Visit(TypedefDecl decl)
         {
-            throw new NotImplementedException();
+            Deserialize(decl);
+            decl.Type = TypeDecl.Deserialize(this.Element.Element("Type").Elements().First());
         }
     }
 }
