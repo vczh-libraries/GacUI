@@ -9,13 +9,8 @@ namespace DocParser
 {
     public static class CppDeclParser
     {
-        static SymbolDecl[] ParseSymbol(string[] tokens, ref int index)
+        static SymbolDecl[] ParseSymbolInternal(string[] tokens, ref int index)
         {
-            while (index < tokens.Length && tokens[index].Length >= 3 && tokens[index].StartsWith("///"))
-            {
-                index++;
-            }
-
             if (CppParser.Token(tokens, ref index, "public") || CppParser.Token(tokens, ref index, "protected") || CppParser.Token(tokens, ref index, "private"))
             {
                 index--;
@@ -590,6 +585,31 @@ namespace DocParser
                 }
             }
             return null;
+        }
+        static SymbolDecl[] ParseSymbol(string[] tokens, ref int index)
+        {
+            string document = null;
+            while (index < tokens.Length && tokens[index].Length >= 3 && tokens[index].StartsWith("///"))
+            {
+                var token = tokens[index];
+                if (document == null)
+                {
+                    document = "";
+                }
+
+                document += token.StartsWith("/// ") || token.StartsWith("///\t")
+                    ? token.Substring(4)
+                    : token.Substring(3);
+                document += "\r\n";
+                index++;
+            }
+
+            var symbols = ParseSymbolInternal(tokens, ref index);
+            if (symbols != null && document != null)
+            {
+                symbols[0].Document = document;
+            }
+            return symbols;
         }
 
         public static void ParseSymbols(string[] tokens, ref int index, SymbolDecl parent, Access access = Access.Public)
