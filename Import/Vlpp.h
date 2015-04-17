@@ -83,13 +83,21 @@ namespace vl
 ***********************************************************************/
 
 #if defined VCZH_MSVC
+	/// <summary>1-byte signed integer.</summary>
 	typedef signed __int8			vint8_t;
+	/// <summary>1-byte unsigned integer.</summary>
 	typedef unsigned __int8			vuint8_t;
+	/// <summary>2-bytes signed integer.</summary>
 	typedef signed __int16			vint16_t;
+	/// <summary>2-bytes unsigned integer.</summary>
 	typedef unsigned __int16		vuint16_t;
+	/// <summary>4-bytes signed integer.</summary>
 	typedef signed __int32			vint32_t;
+	/// <summary>4-bytes unsigned integer.</summary>
 	typedef unsigned __int32		vuint32_t;
+	/// <summary>8-bytes signed integer.</summary>
 	typedef signed __int64			vint64_t;
+	/// <summary>8-bytes unsigned integer.</summary>
 	typedef unsigned __int64		vuint64_t;
 #elif defined VCZH_GCC
 	typedef int8_t					vint8_t;
@@ -103,14 +111,21 @@ namespace vl
 #endif
 
 #ifdef VCZH_64
+	/// <summary>Signed interface whose size is equal to sizeof(void*).</summary>
 	typedef vint64_t				vint;
+	/// <summary>Signed interface whose size is equal to sizeof(void*).</summary>
 	typedef vint64_t				vsint;
+	/// <summary>Unsigned interface whose size is equal to sizeof(void*).</summary>
 	typedef vuint64_t				vuint;
 #else
+	/// <summary>Signed interface whose size is equal to sizeof(void*).</summary>
 	typedef vint32_t				vint;
+	/// <summary>Signed interface whose size is equal to sizeof(void*).</summary>
 	typedef vint32_t				vsint;
+	/// <summary>Unsigned interface whose size is equal to sizeof(void*).</summary>
 	typedef vuint32_t				vuint;
 #endif
+	/// <summary>Signed interger representing position.</summary>
 	typedef vint64_t				pos_t;
 
 #ifdef VCZH_64
@@ -159,7 +174,8 @@ namespace vl
 	public:
 		NotCopyable();
 	};
-
+	
+	/// <summary>Base type of all errors. An error is an exception that you are not allowed to catch. Raising it means there is a fatal error in the code.</summary>
 	class Error
 	{
 	private:
@@ -185,7 +201,7 @@ namespace vl
 /***********************************************************************
 类型计算
 ***********************************************************************/
-
+	
 	template<typename T>
 	struct RemoveReference
 	{
@@ -285,88 +301,121 @@ namespace vl
 基础
 ***********************************************************************/
 
+	/// <summary>Base type of all classes.</summary>
 	class Object
 	{
 	public:
 		virtual ~Object();
 	};
-
+	
+	/// <summary>Type for storing a value to wherever requiring a [T:vl.Ptr`1] to [T:vl.Object].</summary>
+	/// <typeparam name="T">Type of the value.</typeparam>
 	template<typename T>
 	class ObjectBox : public Object
 	{
 	private:
 		T					object;
 	public:
+		/// <summary>Box a value.</summary>
+		/// <param name="_object">The value to box.</param>
 		ObjectBox(const T& _object)
 			:object(_object)
 		{
 		}
-
+		
+		/// <summary>Box a movable value.</summary>
+		/// <param name="_object">The value to box.</param>
 		ObjectBox(T&& _object)
 			:object(MoveValue(_object))
 		{
 		}
-
+		
+		/// <summary>Copy a box.</summary>
+		/// <param name="value">The box.</param>
 		ObjectBox(const ObjectBox<T>& value)
 			:object(value.object)
 		{
 		}
-
+		
+		/// <summary>Move a box.</summary>
+		/// <param name="value">The box.</param>
 		ObjectBox(ObjectBox<T>&& value)
 			:object(MoveValue(value.object))
 		{
 		}
-
+		
+		/// <summary>Box a value.</summary>
+		/// <returns>The boxed value.</returns>
+		/// <param name="_object">The value to box.</param>
 		ObjectBox<T>& operator=(const T& _object)
 		{
 			object=_object;
 			return *this;
 		}
-
+		
+		/// <summary>Copy a box.</summary>
+		/// <returns>The boxed value.</returns>
+		/// <param name="value">The box.</param>
 		ObjectBox<T>& operator=(const ObjectBox<T>& value)
 		{
 			object=value.object;
 			return *this;
 		}
-
+		
+		/// <summary>Move a box.</summary>
+		/// <returns>The boxed value.</returns>
+		/// <param name="value">The box.</param>
 		ObjectBox<T>& operator=(ObjectBox<T>&& value)
 		{
 			object=MoveValue(value.object);
 			return *this;
 		}
 
+		/// <summary>Unbox the value.</summary>
+		/// <returns>The original value.</summary>
 		const T& Unbox()
 		{
 			return object;
 		}
 	};
 
+	/// <summary>Type for optionally storing a value.</summary>
+	/// <typeparam name="T">Type of the value.</typeparam>
 	template<typename T>
 	class Nullable
 	{
 	private:
 		T*					object;
 	public:
+		/// <summary>Create a null value.</summary>
 		Nullable()
 			:object(0)
 		{
 		}
 
+		/// <summary>Create a non-null value.</summary>
+		/// <param name="value">The value to copy.</param>
 		Nullable(const T& value)
 			:object(new T(value))
 		{
 		}
-
+		
+		/// <summary>Create a non-null value.</summary>
+		/// <param name="value">The value to move.</param>
 		Nullable(T&& value)
 			:object(new T(MoveValue(value)))
 		{
 		}
 
+		/// <summary>Copy a nullable value.</summary>
+		/// <param name="nullable">The nullable value to copy.</param>
 		Nullable(const Nullable<T>& nullable)
 			:object(nullable.object?new T(*nullable.object):0)
 		{
 		}
-
+		
+		/// <summary>Move a nullable value.</summary>
+		/// <param name="nullable">The nullable value to move.</param>
 		Nullable(Nullable<T>&& nullable)
 			:object(nullable.object)
 		{
@@ -381,7 +430,10 @@ namespace vl
 				object=0;
 			}
 		}
-
+		
+		/// <summary>Create a non-null value.</summary>
+		/// <returns>The created nullable value.</summary>
+		/// <param name="value">The value to copy.</param>
 		Nullable<T>& operator=(const T& value)
 		{
 			if(object)
@@ -392,7 +444,10 @@ namespace vl
 			object=new T(value);
 			return *this;
 		}
-
+		
+		/// <summary>Copy a nullable value.</summary>
+		/// <returns>The created nullable value.</summary>
+		/// <param name="nullable">The nullable value to copy.</param>
 		Nullable<T>& operator=(const Nullable<T>& nullable)
 		{
 			if(this!=&nullable)
@@ -409,7 +464,10 @@ namespace vl
 			}
 			return *this;
 		}
-
+		
+		/// <summary>Move a nullable value.</summary>
+		/// <returns>The created nullable value.</summary>
+		/// <param name="nullable">The nullable value to move.</param>
 		Nullable<T>& operator=(Nullable<T>&& nullable)
 		{
 			if(this!=&nullable)
@@ -479,11 +537,15 @@ namespace vl
 			return Compare(*this, nullable)>=0;
 		}
 
+		/// <summary>Convert the nullable value to a bool value.</summary>
+		/// <returns>Returns true if it is not null.</returns>
 		operator bool()const
 		{
 			return object!=0;
 		}
-
+		
+		/// <summary>Unbox the value. This operation will cause an access violation of it is null.</summary>
+		/// <returns>The original value.</returns>
 		const T& Value()const
 		{
 			return *object;
@@ -501,21 +563,30 @@ namespace vl
 配置
 ***********************************************************************/
 
+	/// <summary>Get the index type of a value for containers.</summary>
+	/// <typeparam name="T">Type of the value.</typeparam>
 	template<typename T>
 	struct KeyType
 	{
 	public:
+		/// <summary>The index type of a value for containers.</summary>
 		typedef T Type;
 
+		/// <summary>Convert a value to its index type.</summary>
+		/// <returns>The corresponding index value.</returns>
+		/// <param name="value">The value.</param>
 		static T GetKeyValue(const T& value)
 		{
 			return value;
 		}
 	};
 
+	/// <summary>Test is a type a Plain-Old-Data type for containers.</summary>
+	/// <typeparam name="T">The type to test.</typeparam>
 	template<typename T>
 	struct POD
 	{
+		/// <summary>Returns true if the type is a Plain-Old-Data type.</summary>
 		static const bool Result=false;
 	};
 
@@ -542,6 +613,7 @@ namespace vl
 时间
 ***********************************************************************/
 
+	/// <summary>A type representing the combination of date and time.</summary>
 	struct DateTime
 	{
 		vint				year;
@@ -558,19 +630,43 @@ namespace vl
 		// in gcc, this will be mktime(t) * 1000 + gettimeofday().tv_usec / 1000
 		vuint64_t			filetime;
 
-
+		/// <summary>Get the current local time.</summary>
+		/// <returns>The current local time.</returns>
 		static DateTime		LocalTime();
+
+		/// <summary>Get the current UTC time.</summary>
+		/// <returns>The current UTC time.</returns>
 		static DateTime		UtcTime();
+
+		/// <summary>Create a date time value.</summary>
+		/// <returns>The created date time value.</returns>
+		/// <param name="_year">The year.</param>
+		/// <param name="_month">The month.</param>
+		/// <param name="_day">The day.</param>
+		/// <param name="_hour">The hour.</param>
+		/// <param name="_minute">The minute.</param>
+		/// <param name="_second">The second.</param>
+		/// <param name="_milliseconds">The millisecond.</param>
 		static DateTime		FromDateTime(vint _year, vint _month, vint _day, vint _hour=0, vint _minute=0, vint _second=0, vint _milliseconds=0);
 	
 		static DateTime		FromFileTime(vuint64_t filetime);
 
-
+		/// <summary>Create an empty date time value.</summary>
 		DateTime();
 
+		/// <summary>Convert the UTC time to the local time.</summary>
+		/// <returns>The UTC time.</returns>
 		DateTime			ToLocalTime();
+		/// <summary>Convert the local time to the UTC time.</summary>
+		/// <returns>The local time.</returns>
 		DateTime			ToUtcTime();
+		/// <summary>Move forward.</summary>
+		/// <returns>The moved time.</returns>
+		/// <param name="milliseconds">The delta in milliseconds.</param>
 		DateTime			Forward(vuint64_t milliseconds);
+		/// <summary>Move Backward.</summary>
+		/// <returns>The moved time.</returns>
+		/// <param name="milliseconds">The delta in milliseconds.</param>
 		DateTime			Backward(vuint64_t milliseconds);
 
 		bool operator==(const DateTime& value)const { return filetime==value.filetime; }
@@ -584,7 +680,8 @@ namespace vl
 /***********************************************************************
 接口
 ***********************************************************************/
-
+	
+	/// <summary>Base type of all interfaces. All interface types are encouraged to be virtual inherited.</summary>
 	class Interface : private NotCopyable
 	{
 	public:
@@ -653,6 +750,8 @@ Classes:
 
 namespace vl
 {
+	/// <summary>A type representing a string.</summary>
+	/// <typeparam name="T>Type of a character.</typeparam>
 	template<typename T>
 	class ObjectString : public Object
 	{
@@ -775,6 +874,7 @@ namespace vl
 	public:
 		static ObjectString<T>	Empty;
 
+		/// <summary>Create an empty string.</summary>
 		ObjectString()
 		{
 			buffer=(T*)&zero;
@@ -784,6 +884,8 @@ namespace vl
 			realLength=0;
 		}
 
+		/// <summary>Create a string continaing one character.</summary>
+		/// <param name="_char">The character.</param>
 		ObjectString(const T& _char)
 		{
 			counter=new vint(1);
@@ -795,6 +897,9 @@ namespace vl
 			realLength=length;
 		}
 
+		/// <summary>Copy a string.</summary>
+		/// <param name="_buffer">Memory to copy. It does not have to contain the zero terminator.</param>
+		/// <param name="length">Size of the content in characters.</param>
 		ObjectString(const T* _buffer, vint _length)
 		{
 			if(_length<=0)
@@ -816,7 +921,10 @@ namespace vl
 				realLength=_length;
 			}
 		}
-
+		
+		/// <summary>Copy a string.</summary>
+		/// <param name="_buffer">Memory to copy. It should have to contain the zero terminator.</param>
+		/// <param name="copy">Set to true to copy the memory. Set to false to use the memory directly.</param>
 		ObjectString(const T* _buffer, bool copy = true)
 		{
 			CHECK_ERROR(_buffer!=0, L"ObjectString<T>::ObjectString(const T*, bool)#Cannot construct a string from nullptr.");
@@ -838,7 +946,9 @@ namespace vl
 				realLength=length;
 			}
 		}
-
+		
+		/// <summary>Copy a string.</summary>
+		/// <param name="string">The string to copy.</param>
 		ObjectString(const ObjectString<T>& string)
 		{
 			buffer=string.buffer;
@@ -848,7 +958,9 @@ namespace vl
 			realLength=string.realLength;
 			Inc();
 		}
-
+		
+		/// <summary>Move a string.</summary>
+		/// <param name="string">The string to move.</param>
 		ObjectString(ObjectString<T>&& string)
 		{
 			buffer=string.buffer;
@@ -869,6 +981,8 @@ namespace vl
 			Dec();
 		}
 
+		/// <summary>Get the zero-terminated buffer in the string. Copying parts of a string does not necessarily create a new buffer, so in some situation the string will not actually points to a zero-terminated buffer. In this case, this function will copy the content to a new buffer with a zero terminator and return.</summary>
+		/// <returns>Returns the buffer.</returns>
 		const T* Buffer()const
 		{
 			if(start+length!=realLength)
@@ -996,11 +1110,16 @@ namespace vl
 			return buffer[start+index];
 		}
 
+		/// <summary>Get the size of the string in characters.</summary>
+		/// <returns>The size.</returns>
 		vint Length()const
 		{
 			return length;
 		}
 
+		/// <summary>Find a character.</summary>
+		/// <returns>The position of the character. Returns -1 if it doesn not exist.</returns>
+		/// <param name="c">The character to find.</param>
 		vint IndexOf(T c)const
 		{
 			const T* reading=buffer+start;
@@ -1012,18 +1131,28 @@ namespace vl
 			return -1;
 		}
 
+		/// <summary>Copy the beginning of the string.</summary>
+		/// <returns>The copied string.</returns>
+		/// <param name="count">Size of characters to copy.</param>
 		ObjectString<T> Left(vint count)const
 		{
 			CHECK_ERROR(count>=0 && count<=length, L"ObjectString<T>::Left(vint)#Argument count not in range.");
 			return ObjectString<T>(*this, 0, count);
 		}
-
+		
+		/// <summary>Copy the ending of the string.</summary>
+		/// <returns>The copied string.</returns>
+		/// <param name="count">Size of characters to copy.</param>
 		ObjectString<T> Right(vint count)const
 		{
 			CHECK_ERROR(count>=0 && count<=length, L"ObjectString<T>::Right(vint)#Argument count not in range.");
 			return ObjectString<T>(*this, length-count, count);
 		}
-
+		
+		/// <summary>Copy the middle of the string.</summary>
+		/// <returns>The copied string.</returns>
+		/// <param name="index">Position of characters to copy.</param>
+		/// <param name="count">Size of characters to copy.</param>
 		ObjectString<T> Sub(vint index, vint count)const
 		{
 			CHECK_ERROR(index>=0 && index<=length, L"ObjectString<T>::Sub(vint, vint)#Argument index not in range.");
@@ -1031,6 +1160,10 @@ namespace vl
 			return ObjectString<T>(*this, index, count);
 		}
 
+		/// <summary>Copy the beginning and the end of the string.</summary>
+		/// <returns>The copied string.</returns>
+		/// <param name="index">Position of characters NOT to copy.</param>
+		/// <param name="count">Size of characters NOT to copy.</param>
 		ObjectString<T> Remove(vint index, vint count)const
 		{
 			CHECK_ERROR(index>=0 && index<length, L"ObjectString<T>::Remove(vint, vint)#Argument index not in range.");
@@ -1038,6 +1171,10 @@ namespace vl
 			return ObjectString<T>(*this, ObjectString<T>(), index, count);
 		}
 
+		/// <summary>Make a new string by inserting a string in this string.</summary>
+		/// <returns>The copied string.</returns>
+		/// <param name="index">Position of characters to insert.</param>
+		/// <param name="string">The string to be inserted in this string.</param>
 		ObjectString<T> Insert(vint index, const ObjectString<T>& string)const
 		{
 			CHECK_ERROR(index>=0 && index<=length, L"ObjectString<T>::Insert(vint)#Argument count not in range.");
@@ -1085,49 +1222,169 @@ namespace vl
 	template<typename T>
 	const T ObjectString<T>::zero=0;
 
+	/// <summary>Ansi string.</summary>
 	typedef ObjectString<char>		AString;
+	/// <summary>Unicode string.</summary>
 	typedef ObjectString<wchar_t>	WString;
 
+	/// <summary>Convert a string to an signed integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern vint					atoi_test(const AString& string, bool& success);
+	/// <summary>Convert a string to an signed integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern vint					wtoi_test(const WString& string, bool& success);
+	/// <summary>Convert a string to an signed 64-bits integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern vint64_t				atoi64_test(const AString& string, bool& success);
+	/// <summary>Convert a string to an signed 64-bits integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern vint64_t				wtoi64_test(const WString& string, bool& success);
+	/// <summary>Convert a string to an unsigned integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern vuint				atou_test(const AString& string, bool& success);
+	/// <summary>Convert a string to an unsigned integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern vuint				wtou_test(const WString& string, bool& success);
+	/// <summary>Convert a string to a 64-bits unsigned integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern vuint64_t			atou64_test(const AString& string, bool& success);
+	/// <summary>Convert a string to a 64-bits unsigned integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern vuint64_t			wtou64_test(const WString& string, bool& success);
+	/// <summary>Convert a string to 64-bits floating point number.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern double				atof_test(const AString& string, bool& success);
+	/// <summary>Convert a string to 64-bits floating point number.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
+	/// <param name="success">Returns true if this operation succeeded.</param>
 	extern double				wtof_test(const WString& string, bool& success);
 
+	/// <summary>Convert a string to an signed integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern vint					atoi(const AString& string);
+	/// <summary>Convert a string to an signed integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern vint					wtoi(const WString& string);
+	/// <summary>Convert a string to an signed 64-bits integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern vint64_t				atoi64(const AString& string);
+	/// <summary>Convert a string to an signed 64-bits integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern vint64_t				wtoi64(const WString& string);
+	/// <summary>Convert a string to an unsigned integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern vuint				atou(const AString& string);
+	/// <summary>Convert a string to an unsigned integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern vuint				wtou(const WString& string);
+	/// <summary>Convert a string to a 64-bits unsigned integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern vuint64_t			atou64(const AString& string);
+	/// <summary>Convert a string to a 64-bits unsigned integer.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern vuint64_t			wtou64(const WString& string);
+	/// <summary>Convert a string to a 64-bits floating point number.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern double				atof(const AString& string);
+	/// <summary>Convert a string to a 64-bits floating point number.</summary>
+	/// <returns>The converted number. If the convert failed, the result is undefined.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern double				wtof(const WString& string);
 
+	/// <summary>Convert a signed interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern AString				itoa(vint number);
+	/// <summary>Convert a signed interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern WString				itow(vint number);
+	/// <summary>Convert a 64-bits signed interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern AString				i64toa(vint64_t number);
+	/// <summary>Convert a 64-bits signed interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern WString				i64tow(vint64_t number);
+	/// <summary>Convert an unsigned interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern AString				utoa(vuint number);
+	/// <summary>Convert an unsigned interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern WString				utow(vuint number);
+	/// <summary>Convert a 64-bits unsigned interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern AString				u64toa(vuint64_t number);
+	/// <summary>Convert a 64-bits unsigned interger to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern WString				u64tow(vuint64_t number);
+	/// <summary>Convert a 64-bits floating pointer number to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern AString				ftoa(double number);
+	/// <summary>Convert a 64-bits floating pointer number to a string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="number">The number to convert.</param>
 	extern WString				ftow(double number);
 
 	extern vint					_wtoa(const wchar_t* w, char* a, vint chars);
+	/// <summary>Convert an Unicode string to an Ansi string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern AString				wtoa(const WString& string);
 	extern vint					_atow(const char* a, wchar_t* w, vint chars);
+	/// <summary>Convert an Ansi string to an Unicode string.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern WString				atow(const AString& string);
+	/// <summary>Convert all letters to lower case letters.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern AString				alower(const AString& string);
+	/// <summary>Convert all letters to lower case letters.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern WString				wlower(const WString& string);
+	/// <summary>Convert all letters to upper case letters.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern AString				aupper(const AString& string);
+	/// <summary>Convert all letters to upper case letters.</summary>
+	/// <returns>The converted string.</returns>
+	/// <param name="string">The string to convert.</param>
 	extern WString				wupper(const WString& string);
 
 #if defined VCZH_GCC
@@ -1172,14 +1429,23 @@ namespace vl
 ReferenceCounterOperator
 ***********************************************************************/
 
+	/// <summary>The strategy to get the pointer to the reference counter from an object. If you get the same pointer multiple times from the same object by calling [M:vl.ReferenceCounterOperator`2.CreateCounter], than it is safe to convert a object pointer to a [T:vl.Ptr`1]. Currently for reflectable C++ types which inherit from [T:vl.reflection.DescriptableObject] it is yet. For others it is no.</summary>
+	/// <typeparam name="T">The type of the object.</typeparam>
+	/// <typeparam name="Enabled">[T:vl.Ptr`1] will always use [T:vl.YesType] as the second type parameter. This parameter is useful when you want to do partial specialization in the SFINAE way.</typeparam>
 	template<typename T, typename Enabled=YesType>
 	struct ReferenceCounterOperator
 	{
+		/// <summary>Create a pointer to the reference counter from an object.</summary>
+		/// <returns>The pointer to the reference counter.</returns>
+		/// <param name="reference">The object.</param>
 		static __forceinline volatile vint* CreateCounter(T* reference)
 		{
 			return new vint(0);
 		}
 
+		/// <summary>Destroy a pointer to the reference counter from an object.</summary>
+		/// <param name="counter">The pointer to the reference counter.</param>
+		/// <param name="reference">The object.</param>
 		static __forceinline void DeleteReference(volatile vint* counter, void* reference)
 		{
 			delete counter;
@@ -1191,6 +1457,8 @@ ReferenceCounterOperator
 Ptr
 ***********************************************************************/
 
+	/// <summary>A smart pointer. It is always safe to convert a pointer to an object to a smart pointer once. If you do it multiple times, it may be wrong due to different implementation of [T:vl.ReferenceCounterOperator`2]. In case of wrong, disposing the smart pointer will cause an access violation.</summary>
+	/// <typeparam name="T">The type of the object.</typeparam>
 	template<typename T>
 	class Ptr
 	{
@@ -1242,6 +1510,7 @@ Ptr
 		}
 	public:
 
+		/// <summary>Create a null pointer.</summary>
 		Ptr()
 			:counter(0)
 			,reference(0)
@@ -1249,7 +1518,9 @@ Ptr
 			,originalDestructor(0)
 		{
 		}
-
+		
+		/// <summary>Convert a pointer to an object to a smart pointer.</summary>
+		/// <param name="pointer">The pointer to the object.</param>
 		Ptr(T* pointer)
 			:counter(0)
 			,reference(0)
@@ -1265,7 +1536,9 @@ Ptr
 				Inc();
 			}
 		}
-
+		
+		/// <summary>Copy a smart pointer.</summary>
+		/// <param name="pointer">The smart pointer to copy.</param>
 		Ptr(const Ptr<T>& pointer)
 			:counter(pointer.counter)
 			,reference(pointer.reference)
@@ -1274,7 +1547,9 @@ Ptr
 		{
 			Inc();
 		}
-
+		
+		/// <summary>Move a smart pointer.</summary>
+		/// <param name="pointer">The smart pointer to Move.</param>
 		Ptr(Ptr<T>&& pointer)
 			:counter(pointer.counter)
 			,reference(pointer.reference)
@@ -1286,7 +1561,10 @@ Ptr
 			pointer.originalReference=0;
 			pointer.originalDestructor=0;
 		}
-
+		
+		/// <summary>Cast a smart pointer.</summary>
+		/// <typeparam name="C">The type of the object before casting.</typeparam>
+		/// <param name="pointer">The smart pointer to cast.</param>
 		template<typename C>
 		Ptr(const Ptr<C>& pointer)
 			:counter(0)
@@ -1309,14 +1587,20 @@ Ptr
 		{
 			Dec();
 		}
-
+		
+		/// <summary>Cast a smart pointer.</summary>
+		/// <typeparam name="C">The type of the object after casting.</typeparam>
+		/// <returns>The casted smart pointer. Returns null if failed.</returns>
 		template<typename C>
 		Ptr<C> Cast()const
 		{
 			C* converted=dynamic_cast<C*>(reference);
 			return Ptr<C>((converted?counter:0), converted, originalReference, originalDestructor);
 		}
-
+		
+		/// <summary>Convert a pointer to an object to a smart pointer.</summary>
+		/// <returns>The converted smart pointer.</returns>
+		/// <param name="pointer">The pointer to the object.</param>
 		Ptr<T>& operator=(T* pointer)
 		{
 			Dec();
@@ -1337,7 +1621,10 @@ Ptr
 			}
 			return *this;
 		}
-
+		
+		/// <summary>Copy a smart pointer.</summary>
+		/// <returns>The copied smart pointer.</returns>
+		/// <param name="pointer">The smart pointer to copy.</param>
 		Ptr<T>& operator=(const Ptr<T>& pointer)
 		{
 			if(this!=&pointer)
@@ -1351,7 +1638,10 @@ Ptr
 			}
 			return *this;
 		}
-
+		
+		/// <summary>Move a smart pointer.</summary>
+		/// <returns>The moved smart pointer.</returns>
+		/// <param name="pointer">The smart pointer to Move.</param>
 		Ptr<T>& operator=(Ptr<T>&& pointer)
 		{
 			if(this!=&pointer)
@@ -1369,7 +1659,11 @@ Ptr
 			}
 			return *this;
 		}
-
+		
+		/// <summary>Cast a smart pointer.</summary>
+		/// <typeparam name="C">The type of the object before casting.</typeparam>
+		/// <returns>The smart pointer after casting.</returns>
+		/// <param name="pointer">The smart pointer to cast.</param>
 		template<typename C>
 		Ptr<T>& operator=(const Ptr<C>& pointer)
 		{
@@ -1453,16 +1747,22 @@ Ptr
 			return reference<=pointer.reference;
 		}
 
+		/// <summary>Test if it is a null pointer.</summary>
+		/// <returns>Returns true if it is not null.</returns>
 		operator bool()const
 		{
 			return reference!=0;
 		}
 
+		/// <summary>Get the pointer to the object.</summary>
+		/// <returns>The pointer to the object.</returns>
 		T* Obj()const
 		{
 			return reference;
 		}
-
+		
+		/// <summary>Get the pointer to the object.</summary>
+		/// <returns>The pointer to the object.</returns>
 		T* operator->()const
 		{
 			return reference;
@@ -1842,6 +2142,9 @@ vl::Func<R(TArgs...)>
 		};
 	}
 
+	/// <summary>A type representing a function reference.</summary>
+	/// <typeparam name="R">The return type.</typeparam>
+	/// <typeparam name="TArgs">Types of parameters.</typeparam>
 	template<typename R, typename ...TArgs>
 	class Func<R(TArgs...)> : public Object
 	{
@@ -1851,32 +2154,47 @@ vl::Func<R(TArgs...)>
 		typedef R FunctionType(TArgs...);
 		typedef R ResultType;
 
+		/// <summary>Create a null function reference.</summary>
 		Func()
 		{
 		}
-
+		
+		/// <summary>Copy a function reference.</summary>
+		/// <param name="function">The function reference to copy.</param>
 		Func(const Func<R(TArgs...)>& function)
 		{
 			invoker=function.invoker;
 		}
-
+		
+		/// <summary>Create a reference using a function pointer.</summary>
+		/// <param name="function">The function pointer.</param>
 		Func(R(*function)(TArgs...))
 		{
 			invoker=new internal_invokers::StaticInvoker<R, TArgs...>(function);
 		}
-
+		
+		/// <summary>Create a reference using a method.</summary>
+		/// <typeparam name="C">Type of the class that has the method.</typeparam>
+		/// <param name="sender">The object that has the method.</param>
+		/// <param name="function">The function pointer.</param>
 		template<typename C>
 		Func(C* sender, R(C::*function)(TArgs...))
 		{
 			invoker=new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function);
 		}
-
+		
+		/// <summary>Create a reference using a function object.</summary>
+		/// <typeparam name="C">Type of the function object.</typeparam>
+		/// <param name="function">The function object. It could be a lambda expression.</param>
 		template<typename C>
 		Func(const C& function)
 		{
 			invoker=new internal_invokers::ObjectInvoker<C, R, TArgs...>(function);
 		}
 
+		/// <summary>Invoke the function.</summary>
+		/// <returns>Returns the function result.</returns>
+		/// <param name="args">Arguments to invoke the function.</param>
 		R operator()(TArgs ...args)const
 		{
 			return invoker->Invoke(ForwardValue<TArgs>(args)...);
@@ -1892,6 +2210,8 @@ vl::Func<R(TArgs...)>
 			return invoker != function.invoker;
 		}
 
+		/// <summary>Test is the reference a null reference.</summary>
+		/// <returns>Returns true if it is not a null reference.</returns>
 		operator bool()const
 		{
 			return invoker;
@@ -1944,12 +2264,20 @@ vl::function_lambda::LambdaRetriveType<R(TArgs...)>
 			typedef R ResultType;
 		}; 
  
+		/// <summary>Create a function reference to a function object or a lambda expression, with all type information autotimatically inferred. You can use the macro called "LAMBDA" to refer to this function.</summary>
+		/// <typeparam name="T">Type of the function object or the lambda expression.</typeparam>
+		/// <returns>The function reference.</returns>
+		/// <param name="functionObject">The function object or the lambda expression.</param>
 		template<typename T>
 		typename LambdaRetriveType<decltype(&T::operator())>::Type Lambda(T functionObject)
 		{
 			return functionObject;
 		}
-
+		
+		/// <summary>Create a function reference to a function pointer, with all type information autotimatically inferred. You can use the macro called "FUNCTION" to refer to this function.</summary>
+		/// <typeparam name="T">Type of the function pointer.</typeparam>
+		/// <returns>The function reference.</returns>
+		/// <param name="functionObject">The function pointer.</param>
 		template<typename T>
 		typename FunctionObjectRetriveType<T>::Type ConvertToFunction(T functionObject)
 		{
@@ -2025,6 +2353,10 @@ vl::function_binding::Binding<R(TArgs...)>
 		}; 
 	}
  
+	/// <summary>Currize a function. Currizing means to create a new function whose argument is the first argument of the original function. Calling this function will return another function reference whose arguments is all remain arguments of the original function. Calling the returned function will call the original function.</summary>
+	/// <typeparam name="T">Type of the function.</typeparam>
+	/// <returns>The currized function.</returns>
+	/// <param name="function">The function pointer to currize.</param>
 	template<typename T>
 	Func<Func<typename function_binding::Binding<T>::CurriedType>(typename function_binding::Binding<T>::FirstParameterType)>
 	Curry(T* function)
@@ -2032,6 +2364,10 @@ vl::function_binding::Binding<R(TArgs...)>
 		return typename function_binding::Binding<T>::Currier(function);
 	}
  
+	/// <summary>Currize a function. Currizing means to create a new function whose argument is the first argument of the original function. Calling this function will return another function reference whose arguments is all remain arguments of the original function. Calling the returned function will call the original function.</summary>
+	/// <typeparam name="T">Type of the function.</typeparam>
+	/// <returns>The currized function.</returns>
+	/// <param name="function">The function reference to currize.</param>
 	template<typename T>
 	Func<Func<typename function_binding::Binding<T>::CurriedType>(typename function_binding::Binding<T>::FirstParameterType)>
 	Curry(const Func<T>& function)
@@ -2077,6 +2413,14 @@ vl::function_combining::Combining<R1(TArgs...), R2(TArgs...), R(R1,R2)>
 		};
 	}
 
+	/// <summary>Combine two functions with a converter function. The two functions to combine should have the same argument types. The converter function will use the return values of the two function to calculate the final value.</summary>
+	/// <typeparam name="F1">Type of the first function.</typeparam>
+	/// <typeparam name="F2">Type of the second function.</typeparam>
+	/// <typeparam name="C">Type of the converter function.</typeparam>
+	/// <returns>A new function whose argument list are the same of the two functions to provide. Calling this function will call function1, function2 and converter in order to calculate the final value.</returns>
+	/// <param name="converter">The converter function.</param>
+	/// <param name="function1">The first function.</param>
+	/// <param name="function2">The second function.</param>
 	template<typename F1, typename F2, typename C>
 	Func<typename function_combining::Combining<F1, F2, C>::FinalFunctionType>
 	Combine(Func<C> converter, Func<F1> function1, Func<F2> function2)
@@ -2084,6 +2428,10 @@ vl::function_combining::Combining<R1(TArgs...), R2(TArgs...), R(R1,R2)>
 		return function_combining::Combining<F1, F2, C>(function1, function2, converter);
 	}
 
+	/// <summary>Use the converter function to create a combiner, who will receive two function and use <see cref="Combine"> to create a combined function. This function assumes the result types of the two provided function in the future are the same, and the converter function will not change the result type.</summary>
+	/// <typeparam name="T">Type of the two functions to combine.</typeparam>
+	/// <returns>The combiner.</returns>
+	/// <param name="converter">The converter function.</param>
 	template<typename T>
 	Func<Func<T>(Func<T>,Func<T>)> Combiner(const Func<typename Func<T>::ResultType(typename Func<T>::ResultType,typename Func<T>::ResultType)>& converter)
 	{
@@ -2113,11 +2461,16 @@ namespace vl
 {
 	namespace collections
 	{
+		/// <summary>A type representing a pair of key and value.</summary>
+		/// <typeparam name="K">Type of the key.</typeparam>
+		/// <typeparam name="V">Type of the value.</typeparam>
 		template<typename K, typename V>
 		class Pair
 		{
 		public:
+			/// <summary>The key.</summary>
 			K				key;
+			/// <summary>The value.</summary>
 			V				value;
 
 			Pair()
@@ -2227,27 +2580,42 @@ namespace vl
 接口
 ***********************************************************************/
 
+		/// <summary>Enumerator.</summary>
+		/// <typeparam name="T">Type of the elements in the enumerator.</typeparam>
 		template<typename T>
 		class IEnumerator : public virtual Interface
 		{
 		public:
 			typedef T									ElementType;
 
+			/// <summary>Copy the enumerator with the current state.</summary>
+			/// <returns>The copied enumerator.</returns>
 			virtual IEnumerator<T>*						Clone()const=0;
+			/// <summary>Get the reference to the current element in the enumerator.</summary>
+			/// <returns>The reference to the current element.</returns>
 			virtual const T&							Current()const=0;
+			/// <summary>Get the position of the current element in the enumerator.</summary>
+			/// <returns>The position of the current element.</returns>
 			virtual vint								Index()const=0;
+			/// <summary>Step forward.</summary>
+			/// <returns>Returns false if the enumerator reaches the end.</returns>
 			virtual bool								Next()=0;
+			/// <summary>Reset the enumerator.</summary>
 			virtual void								Reset()=0;
 
 			virtual bool								Evaluated()const{return false;}
 		};
-
+		
+		/// <summary>Enumerable.</summary>
+		/// <typeparam name="T">Type of the elements in the enumerator.</typeparam>
 		template<typename T>
 		class IEnumerable : public virtual Interface
 		{
 		public:
 			typedef T									ElementType;
 
+			/// <summary>Create an enumerator. [M:vl.collections.IEnumeratlr`1.Next] should be called to get the first element.</summary>
+			/// <returns>The enumerator.</returns>
 			virtual IEnumerator<T>*						CreateEnumerator()const=0;
 		};
 
@@ -2383,6 +2751,8 @@ namespace vl
 		public:
 		};
 		
+		/// <summary>Base type of all linear container.</summary>
+		/// <typeparam name="T">Type of elements.</typeparam>
 		template<typename T>
 		class ArrayBase abstract : public ListStore<T,POD<T>::Result>, public virtual IEnumerable<T>
 		{
@@ -2441,17 +2811,25 @@ namespace vl
 				return new Enumerator(this);
 			}
 
+			/// <summary>Get the number of elements in the container.</summary>
+			/// <returns>The number of elements.</returns>
 			vint Count()const
 			{
 				return count;
 			}
 
+			/// <summary>Get the reference to the specified element.</summary>
+			/// <returns>The reference to the specified element.</returns>
+			/// <param name="index">The index of the element.</param>
 			const T& Get(vint index)const
 			{
 				CHECK_ERROR(index>=0 && index<count, L"ArrayBase<T, K>::Get(vint)#Argument index not in range.");
 				return buffer[index];
 			}
-
+			
+			/// <summary>Get the reference to the specified element.</summary>
+			/// <returns>The reference to the specified element.</returns>
+			/// <param name="index">The index of the element.</param>
 			const T& operator[](vint index)const
 			{
 				CHECK_ERROR(index>=0 && index<count, L"ArrayBase<T, K>::operator[](vint)#Argument index not in range.");
@@ -2459,6 +2837,9 @@ namespace vl
 			}
 		};
 
+		/// <summary>Base type for a list container.</summary>
+		/// <typeparam name="T">Type of elements.</typeparam>
+		/// <typeparam name="K">Type of the key type of elements.</typeparam>
 		template<typename T, typename K=typename KeyType<T>::Type>
 		class ListBase abstract : public ArrayBase<T>
 		{
@@ -2529,11 +2910,16 @@ namespace vl
 				delete[] ArrayBase<T>::buffer;
 			}
 
+			/// <summary>Set a preference of using memory.</summary>
+			/// <returns>Set to true (by default) to let the container efficiently reduce memory usage when necessary.</returns>
 			void SetLessMemoryMode(bool mode)
 			{
 				lessMemoryMode=mode;
 			}
 
+			/// <summary>Remove an element.</summary>
+			/// <returns>Returns true if the element is removed.</returns>
+			/// <param name="index">The index of the element to remove.</param>
 			bool RemoveAt(vint index)
 			{
 				vint previousCount=ArrayBase<T>::count;
@@ -2543,7 +2929,11 @@ namespace vl
 				ReleaseUnnecessaryBuffer(previousCount);
 				return true;
 			}
-
+			
+			/// <summary>Remove elements.</summary>
+			/// <returns>Returns true if the element is removed.</returns>
+			/// <param name="index">The index of the first element to remove.</param>
+			/// <param name="count">The number of elements to remove.</param>
 			bool RemoveRange(vint index, vint _count)
 			{
 				vint previousCount=ArrayBase<T>::count;
@@ -2555,6 +2945,8 @@ namespace vl
 				return true;
 			}
 
+			/// <summary>Remove all elements.</summary>
+			/// <returns>Returns true if all elements are removed.</returns>
 			bool Clear()
 			{
 				vint previousCount=ArrayBase<T>::count;
@@ -2577,6 +2969,9 @@ namespace vl
 列表对象
 ***********************************************************************/
 
+		/// <summary>Array.</summary>
+		/// <typeparam name="T">Type of elements.</typeparam>
+		/// <typeparam name="K">Type of the key type of elements.</typeparam>
 		template<typename T, typename K=typename KeyType<T>::Type>
 		class Array : public ArrayBase<T>
 		{
@@ -2602,11 +2997,16 @@ namespace vl
 				ArrayBase<T>::buffer=0;
 			}
 		public:
+			/// <summary>Create an array.</summary>
+			/// <param name="size">The size of the array.</param>
 			Array(vint size=0)
 			{
 				Create(size);
 			}
-
+			
+			/// <summary>Create an array.</summary>
+			/// <param name="_buffer">Pointer to an array to copy.</param>
+			/// <param name="size">The size of the array.</param>
 			Array(const T* _buffer, vint size)
 			{
 				Create(size);
@@ -2618,11 +3018,17 @@ namespace vl
 				Destroy();
 			}
 
+			/// <summary>Test does the array contain an item or not.</summary>
+			/// <returns>Returns true if the array contains the specified item.</returns>
+			/// <param name="item">The item to test.</param>
 			bool Contains(const K& item)const
 			{
 				return IndexOf(item)!=-1;
 			}
-
+			
+			/// <summary>Get the position of an item in this array.</summary>
+			/// <returns>Returns the position. Returns -1 if not exists</returns>
+			/// <param name="item">The item to find.</param>
 			vint IndexOf(const K& item)const
 			{
 				for(vint i=0;i<ArrayBase<T>::count;i++)
@@ -2635,12 +3041,18 @@ namespace vl
 				return -1;
 			}
 
+			/// <summary>Replace an item.</summary>
+			/// <param name="index">The position of the item.</param>
+			/// <param name="item">The new item to put into the array.</param>
 			void Set(vint index, const T& item)
 			{
 				CHECK_ERROR(index>=0 && index<ArrayBase<T>::count, L"Array<T, K>::Set(vint)#Argument index not in range.");
 				ArrayBase<T>::buffer[index]=item;
 			}
-
+			
+			/// <summary>Get the reference to the specified element.</summary>
+			/// <returns>The reference to the specified element.</returns>
+			/// <param name="index">The index of the element.</param>
 			using ArrayBase<T>::operator[];
 			T& operator[](vint index)
 			{
@@ -2648,6 +3060,8 @@ namespace vl
 				return ArrayBase<T>::buffer[index];
 			}
 
+			/// <summary>Change the size of the array.</summary>
+			/// <param name="size">The new size of the array.</param>
 			void Resize(vint size)
 			{
 				vint oldCount=ArrayBase<T>::count;
@@ -2658,19 +3072,29 @@ namespace vl
 			}
 		};
 
+		/// <summary>List.</summary>
+		/// <typeparam name="T">Type of elements.</typeparam>
+		/// <typeparam name="K">Type of the key type of elements.</typeparam>
 		template<typename T, typename K=typename KeyType<T>::Type>
 		class List : public ListBase<T, K>
 		{
 		public:
+			/// <summary>Create a list.</summary>
 			List()
 			{
 			}
-
+			
+			/// <summary>Test does the list contain an item or not.</summary>
+			/// <returns>Returns true if the list contains the specified item.</returns>
+			/// <param name="item">The item to test.</param>
 			bool Contains(const K& item)const
 			{
 				return IndexOf(item)!=-1;
 			}
-
+			
+			/// <summary>Get the position of an item in this list.</summary>
+			/// <returns>Returns the position. Returns -1 if not exists</returns>
+			/// <param name="item">The item to find.</param>
 			vint IndexOf(const K& item)const
 			{
 				for(vint i=0;i<ArrayBase<T>::count;i++)
@@ -2683,13 +3107,20 @@ namespace vl
 				return -1;
 			}
 
+			/// <summary>Add an item at the end of the list.</summary>
+			/// <returns>The index of the added item.</returns>
+			/// <param name="item">The item to add.</param>
 			vint Add(const T& item)
 			{
 				ListBase<T, K>::MakeRoom(ArrayBase<T>::count, 1);
 				ArrayBase<T>::buffer[ArrayBase<T>::count-1]=item;
 				return ArrayBase<T>::count-1;
 			}
-
+			
+			/// <summary>Add an item at the specified position.</summary>
+			/// <returns>The index of the added item.</returns>
+			/// <param name="index">The position of the item to add.</param>
+			/// <param name="item">The item to add.</param>
 			vint Insert(vint index, const T& item)
 			{
 				CHECK_ERROR(index>=0 && index<=ArrayBase<T>::count, L"List<T, K>::Insert(vint, const T&)#Argument index not in range.");
@@ -2698,6 +3129,9 @@ namespace vl
 				return index;
 			}
 
+			/// <summary>Remove an item.</summary>
+			/// <returns>Returns true if the item is removed.</returns>
+			/// <param name="item">The item to remove.</param>
 			bool Remove(const K& item)
 			{
 				vint index=IndexOf(item);
@@ -2711,7 +3145,10 @@ namespace vl
 					return false;
 				}
 			}
-
+			
+			/// <summary>Replace an item.</summary>
+			/// <param name="index">The position of the item.</param>
+			/// <param name="item">The new item to put into the array.</param>
 			bool Set(vint index, const T& item)
 			{
 				CHECK_ERROR(index>=0 && index<ArrayBase<T>::count, L"List<T, K>::Set(vint)#Argument index not in range.");
@@ -2719,6 +3156,9 @@ namespace vl
 				return true;
 			}
 			
+			/// <summary>Get the reference to the specified element.</summary>
+			/// <returns>The reference to the specified element.</returns>
+			/// <param name="index">The index of the element.</param>
 			using ListBase<T, K>::operator[];
 			T& operator[](vint index)
 			{
@@ -2727,19 +3167,30 @@ namespace vl
 			}
 		};
 
+		/// <summary>List that keeps everything in order.</summary>
+		/// <typeparam name="T">Type of elements.</typeparam>
+		/// <typeparam name="K">Type of the key type of elements.</typeparam>
 		template<typename T, typename K=typename KeyType<T>::Type>
 		class SortedList : public ListBase<T, K>
 		{
 		public:
+			/// <summary>Create a list.</summary>
 			SortedList()
 			{
 			}
-
+			
+			/// <summary>Test does the list contain an item or not.</summary>
+			/// <returns>Returns true if the list contains the specified item.</returns>
+			/// <param name="item">The item to test.</param>
 			bool Contains(const K& item)const
 			{
 				return IndexOf(item)!=-1;
 			}
-
+			
+			/// <summary>Get the position of an item in this list.</summary>
+			/// <typeparam name="key">Type of the item to find.</typeparam>
+			/// <returns>Returns the position. Returns -1 if not exists</returns>
+			/// <param name="item">The item to find.</param>
 			template<typename Key>
 			vint IndexOf(const Key& item)const
 			{
@@ -2763,12 +3214,18 @@ namespace vl
 				}
 				return -1;
 			}
-
+			
+			/// <summary>Get the position of an item in this list.</summary>
+			/// <returns>Returns the position. Returns -1 if not exists</returns>
+			/// <param name="item">The item to find.</param>
 			vint IndexOf(const K& item)const
 			{
 				return IndexOf<K>(item);
 			}
-
+			
+			/// <summary>Add an item at a correct position to keep everying in order.</summary>
+			/// <returns>The index of the added item.</returns>
+			/// <param name="item">The item to add.</param>
 			vint Add(const T& item)
 			{
 				if(ArrayBase<T>::count==0)
@@ -2809,7 +3266,10 @@ SORTED_LIST_INSERT:
 					return index;
 				}
 			}
-
+			
+			/// <summary>Remove an item.</summary>
+			/// <returns>Returns true if the item is removed.</returns>
+			/// <param name="item">The item to remove.</param>
 			bool Remove(const K& item)
 			{
 				vint index=IndexOf(item);
@@ -3005,6 +3465,11 @@ namespace vl
 {
 	namespace collections
 	{
+		/// <summary>Dictionary.</summary>
+		/// <typeparam name="KT">Type of keys.</typeparam>
+		/// <typeparam name="VT">Type of values.</typeparam>
+		/// <typeparam name="KK">Type of the key type of keys.</typeparam>
+		/// <typeparam name="VK">Type of the key type of values.</typeparam>
 		template<
 			typename KT,
 			typename VT,
@@ -3071,6 +3536,7 @@ namespace vl
 			KeyContainer						keys;
 			ValueContainer						values;
 		public:
+			/// <summary>Create a dictionary.</summary>
 			Dictionary()
 			{
 			}
@@ -3079,38 +3545,56 @@ namespace vl
 			{
 				return new Enumerator(this);
 			}
-
+			
+			/// <summary>Set a preference of using memory.</summary>
+			/// <returns>Set to true (by default) to let the container efficiently reduce memory usage when necessary.</returns>
 			void SetLessMemoryMode(bool mode)
 			{
 				keys.SetLessMemoryMode(mode);
 				values.SetLessMemoryMode(mode);
 			}
 
+			/// <summary>Get all keys.</summary>
+			/// <returns>All keys.</returns>
 			const KeyContainer& Keys()const
 			{
 				return keys;
 			}
-
+			
+			/// <summary>Get all values.</summary>
+			/// <returns>All values.</returns>
 			const ValueContainer& Values()const
 			{
 				return values;
 			}
 
+			/// <summary>Get the number of keys.</summary>
+			/// <returns>The number of keys.</summary>
 			vint Count()const
 			{
 				return keys.Count();
 			}
 
+			/// <summary>Get the reference to the value associated with a key.</summary>
+			/// <returns>The reference to the value.</returns>
+			/// <param name="key">The key to find.</param>
 			const VT& Get(const KK& key)const
 			{
 				return values.Get(keys.IndexOf(key));
 			}
-
+			
+			/// <summary>Get the reference to the value associated with a key.</summary>
+			/// <returns>The reference to the value.</returns>
+			/// <param name="key">The key to find.</param>
 			const VT& operator[](const KK& key)const
 			{
 				return values.Get(keys.IndexOf(key));
 			}
-
+			
+			/// <summary>Replace the value associated with a key.</summary>
+			/// <returns>Returns true if the value is replaced.</returns>
+			/// <param name="key">The key to find.</param>
+			/// <param name="value">The key to replace.</param>
 			bool Set(const KT& key, const VT& value)
 			{
 				vint index=keys.IndexOf(KeyType<KT>::GetKeyValue(key));
@@ -3126,11 +3610,18 @@ namespace vl
 				return true;
 			}
 
+			/// <summary>Add a key with an associated value. Exception will raise if the key already exists.</summary>
+			/// <returns>Returns true if the pair is added.</returns>
+			/// <param name="value">The pair of key and value.</param>
 			bool Add(const Pair<KT, VT>& value)
 			{
 				return Add(value.key, value.value);
 			}
-
+			
+			/// <summary>Add a key with an associated value. Exception will raise if the key already exists.</summary>
+			/// <returns>Returns true if the pair is added.</returns>
+			/// <param name="key">The key.</param>
+			/// <param name="value">The value.</param>
 			bool Add(const KT& key, const VT& value)
 			{
 				CHECK_ERROR(!keys.Contains(KeyType<KT>::GetKeyValue(key)), L"Dictionary<KT, KK, ValueContainer, VT, VK>::Add(const KT&, const VT&)#Key already exists.");
@@ -3139,6 +3630,9 @@ namespace vl
 				return true;
 			}
 
+			/// <summary>Remove a key with the associated value.</summary>
+			/// <returns>Returns true if the key and the value is removed.</returns>
+			/// <param name="key">The key.</param>
 			bool Remove(const KK& key)
 			{
 				vint index=keys.IndexOf(key);
@@ -3154,6 +3648,8 @@ namespace vl
 				}
 			}
 
+			/// <summary>Remove everything.</summary>
+			/// <returns>Returns true if all keys and values are removed.</returns>
 			bool Clear()
 			{
 				keys.Clear();
@@ -3161,7 +3657,12 @@ namespace vl
 				return true;
 			}
 		};
-
+		
+		/// <summary>Group, which is similar to an dictionary, but a group can associate multiple values with a key.</summary>
+		/// <typeparam name="KT">Type of keys.</typeparam>
+		/// <typeparam name="VT">Type of values.</typeparam>
+		/// <typeparam name="KK">Type of the key type of keys.</typeparam>
+		/// <typeparam name="VK">Type of the key type of values.</typeparam>
 		template<
 			typename KT,
 			typename VT,
@@ -3276,37 +3777,57 @@ namespace vl
 			{
 				return new Enumerator(this);
 			}
-
+			
+			/// <summary>Get all keys.</summary>
+			/// <returns>All keys.</returns>
 			const KeyContainer& Keys()const
 			{
 				return keys;
 			}
-
+			
+			/// <summary>Get the number of keys.</summary>
+			/// <returns>The number of keys.</summary>
 			vint Count()const
 			{
 				return keys.Count();
 			}
-
+			
+			/// <summary>Get all values associated with a key.</summary>
+			/// <returns>All values.</returns>
+			/// <param name="key">The key to find.</param>
 			const ValueContainer& Get(const KK& key)const
 			{
 				return *values.Get(keys.IndexOf(key));
 			}
-
+			
+			/// <summary>Get all values associated with a key.</summary>
+			/// <returns>All values.</returns>
+			/// <param name="index">The position of a the key.</param>
 			const ValueContainer& GetByIndex(vint index)const
 			{
 				return *values.Get(index);
 			}
-
+			
+			/// <summary>Get all values associated with a key.</summary>
+			/// <returns>All values.</returns>
+			/// <param name="key">The key to find.</param>
 			const ValueContainer& operator[](const KK& key)const
 			{
 				return *values.Get(keys.IndexOf(key));
 			}
 
+			/// <summary>Test if a key exists in the group or not.</summary>
+			/// <returns>Returns true if the key exists.</returns>
+			/// <param name="key">The key to find.</param>
 			bool Contains(const KK& key)const
 			{
 				return keys.Contains(key);
 			}
-
+			
+			/// <summary>Test if a key exists with an associated value in the group or not.</summary>
+			/// <returns>Returns true if the key exists with an associated value.</returns>
+			/// <param name="key">The key to find.</param>
+			/// <param name="value">The value to find.</param>
 			bool Contains(const KK& key, const VK& value)const
 			{
 				vint index=keys.IndexOf(key);
@@ -3319,12 +3840,19 @@ namespace vl
 					return false;
 				}
 			}
-
+			
+			/// <summary>Add a key with an associated value. If the key already exists, the value will be associated with the key with other values.</summary>
+			/// <returns>Returns true if the pair is added.</returns>
+			/// <param name="value">The pair of key and value.</param>
 			bool Add(const Pair<KT, VT>& value)
 			{
 				return Add(value.key, value.value);
 			}
-
+			
+			/// <summary>Add a key with an associated value. If the key already exists, the value will be associated with the key with other values.</summary>
+			/// <returns>Returns true if the pair is added.</returns>
+			/// <param name="key">The key.</param>
+			/// <param name="value">The value.</param>
 			bool Add(const KT& key, const VT& value)
 			{
 				ValueContainer* target=0;
@@ -3341,7 +3869,10 @@ namespace vl
 				target->Add(value);
 				return true;
 			}
-
+			
+			/// <summary>Remove a key with all associated values.</summary>
+			/// <returns>Returns true if the key and all associated values are removed.</returns>
+			/// <param name="key">The key.</param>
 			bool Remove(const KK& key)
 			{
 				vint index=keys.IndexOf(key);
@@ -3358,7 +3889,11 @@ namespace vl
 					return false;
 				}
 			}
-
+			
+			/// <summary>Remove a key with the associated values.</summary>
+			/// <returns>Returns true if the key and the associated values are removed. If there are multiple values associated with the key, only the value will be removed.</returns>
+			/// <param name="key">The key.</param>
+			/// <param name="value">The value.</param>
 			bool Remove(const KK& key, const VK& value)
 			{
 				vint index=keys.IndexOf(key);
@@ -3379,7 +3914,9 @@ namespace vl
 					return false;
 				}
 			}
-
+			
+			/// <summary>Remove everything.</summary>
+			/// <returns>Returns true if all keys and values are removed.</returns>
 			bool Clear()
 			{
 				for(vint i=0;i<values.Count();i++)
@@ -3525,39 +4062,97 @@ namespace vl
 {
 	namespace stream
 	{
+		/// <summary>
+		/// Interface for streams. Stream functions are grouped into 5 categories:
+		/// 1) Feature testing functions.
+		/// 2) Read functions, available only if [M:v,.stream.IStream.CanRead] returns true.
+		/// 3) Peek functions, available only if [M:v,.stream.IStream.CanPeek] returns true.
+		/// 4) Write functions, available only if [M:v,.stream.IStream.CanWrite] returns true.
+		/// 5) Seek functions, available only if [M:v,.stream.IStream.CanSeek] returns true.
+		/// 6) Size functions, available only if [M:v,.stream.IStream.IsLimited] returns true. But there are still some streams knows that the content is limited, but the size is unknown. In this case, [M:vl.stream.IStream.Size] will return -1.
+		/// </summary>
 		class IStream : public virtual Interface
 		{
 		public:
+			/// <summary>Test if the stream is readable.</summary>
+			/// <returns>Returns true if the stream is readable.</returns>
 			virtual bool					CanRead()const=0;
+			/// <summary>Test if the stream is writable.</summary>
+			/// <returns>Returns true if the stream is writable.</returns>
 			virtual bool					CanWrite()const=0;
+			/// <summary>Test if the stream is seekable.</summary>
+			/// <returns>Returns true if the stream is seekable.</returns>
 			virtual bool					CanSeek()const=0;
+			/// <summary>Test if the stream is peekable.</summary>
+			/// <returns>Returns true if the stream is peekable.</returns>
 			virtual bool					CanPeek()const=0;
+			/// <summary>Test if the content of the stream is limited. A writable stream can also be limited, it means that you can only write a limited content to the stream.</summary>
+			/// <returns>Returns true if the content of the stream is limited.</returns>
 			virtual bool					IsLimited()const=0;
+			/// <summary>Test if the stream is available. For example, if you create a readable [T:vl.stream.FileStream] giving a wrong file name, it will be unavailable.</summary>
+			/// <returns>Returns true if the stream is available.</returns>
 			virtual bool					IsAvailable()const=0;
+			/// <summary>Close the stream.</summary>
 			virtual void					Close()=0;
+			/// <summary>Get the current position in the stream.</summary>
+			/// <returns>The position in the stream. Returns -1 if the stream is not available.</returns>
 			virtual pos_t					Position()const=0;
+			/// <summary>Get the size of the content..</summary>
+			/// <returns>The size of the content. Returns -1 if the size is unknown or the stream is not available.</returns>
 			virtual pos_t					Size()const=0;
+			/// <summary>Step forward or backward from the current position. Will throw exception if the stream is not seekable or not available.</summary>
+			/// <param name="_size">The length of the step.</param>
 			virtual void					Seek(pos_t _size)=0;
+			/// <summary>Step fowward from the beginning. Will throw exception if the stream is not seekable or not available.</summary>
+			/// <param name="_size">The length of the step.</param>
 			virtual void					SeekFromBegin(pos_t _size)=0;
+			/// <summary>Step backward from the end. Will throw exception if the stream is not seekable or not available.</summary>
+			/// <param name="_size">The length of the step.</param>
 			virtual void					SeekFromEnd(pos_t _size)=0;
+			/// <summary>Read from the current position and step forward. Will throw exception if the stream is not readable or not available.</summary>
+			/// <returns>Returns the actual size of the content that is read. Returns 0 indicates that the stream reaches the end if the stream is limited.</returns>
+			/// <param name="_buffer">A buffer to store the content.</param>
+			/// <param name="_size">The size of the content that is expected to read.</param>
 			virtual vint					Read(void* _buffer, vint _size)=0;
+			/// <summary>Write to the current position and step forward. Will throw exception if the stream is not writable or not available.</summary>
+			/// <returns>Returns the actual size of the content that is written. Returns 0 indicates that the stream reaches the end if the stream is limited.</returns>
+			/// <param name="_buffer">A buffer storing the content to write.</param>
+			/// <param name="_size">The size of the content that is expected to write.</param>
 			virtual vint					Write(void* _buffer, vint _size)=0;
+			/// <summary>Read from the current position but not step forward. Will throw exception if the stream is not peekable or not available.</summary>
+			/// <returns>Returns the actual size of the content that is read. Returns 0 indicates that the stream reaches the end if the stream is limited.</returns>
+			/// <param name="_buffer">A buffer to store the content.</param>
+			/// <param name="_size">The size of the content that is expected to peek.</param>
 			virtual vint					Peek(void* _buffer, vint _size)=0;
 		};
 
+		/// <summary>Encoder interface. This interface defines a writable transformation from one stream to another stream. You can create a [T:vl.stream.EncoderStream] after you have an encoder.</summary>
 		class IEncoder : public Interface
 		{
 		public:
+			/// <summary>Set a target writable stream. The <see cref="Write"/> function will transform the content and write to this tream.</summary>
 			virtual void					Setup(IStream* _stream)=0;
+			/// <summary>Stop the transformation, ensuring all written content is transformed to the target stream.</summary>
 			virtual	void					Close()=0;
+			/// <summary>Transform content and write to the target stream. This function may cache something to increase performance, so it cannot expect that all transformed content will be written to the target stream immediately.</summary>
+			/// <returns>Returns the actual size of the content before transforming that is written. The content is treated as being written even it is cached and not actually write to the target stream.</returns>
+			/// <param name="_buffer">A buffer storing the content to write.</param>
+			/// <param name="_size">The size of the content that is expected to write.</param>
 			virtual vint					Write(void* _buffer, vint _size)=0;
 		};
-
+		
+		/// <summary>Decoder interface. This interface defines a readable transformation from one stream to another stream. You can create a [T:vl.stream.DecoderStream] after you have an decoder.</summary>
 		class IDecoder : public Interface
 		{
 		public:
+			/// <summary>Set a target readable stream. The <see cref="Read"/> function will read from this tream and transform the content.</summary>
 			virtual void					Setup(IStream* _stream)=0;
+			/// <summary>Stop the transformation.</summary>
 			virtual	void					Close()=0;
+			/// <summary>Read from the target stream and transform the content.</summary>
+			/// <returns>Returns the actual size of the content after transforming that is read.</returns>
+			/// <param name="_buffer">A buffer to store the content.</param>
+			/// <param name="_size">The size of the content that is expected to read.</param>
 			virtual vint					Read(void* _buffer, vint _size)=0;
 		};
 	}
@@ -3585,6 +4180,7 @@ namespace vl
 {
 	namespace stream
 	{
+		/// <summary>A readable, writable, seekable and peekable stream that stores everything in memory.</summary>
 		class MemoryStream : public Object, public virtual IStream
 		{
 		protected:
@@ -3596,6 +4192,8 @@ namespace vl
 
 			void					PrepareSpace(vint totalSpace);
 		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="_block">Size for each allocation. The stream will only allocate new memory of size "_block" when it reaches the end and has to extend.</param>
 			MemoryStream(vint _block=65536);
 			~MemoryStream();
 
@@ -3641,6 +4239,7 @@ namespace vl
 {
 	namespace stream
 	{
+		/// <summary>A readable, writable, seekable and peekable stream that operates a buffer.</summary>
 		class MemoryWrapperStream : public Object, public virtual IStream
 		{
 		protected:
@@ -3648,6 +4247,9 @@ namespace vl
 			vint						size;
 			vint						position;
 		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="_buffer">The buffer to operate.</param>
+			/// <param name="_size">Size of the buffer.</param>
 			MemoryWrapperStream(void* _buffer, vint _size);
 			~MemoryWrapperStream();
 
@@ -3663,9 +4265,9 @@ namespace vl
 			void					Seek(pos_t _size);
 			void					SeekFromBegin(pos_t _size);
 			void					SeekFromEnd(pos_t _size);
-			vint						Read(void* _buffer, vint _size);
-			vint						Write(void* _buffer, vint _size);
-			vint						Peek(void* _buffer, vint _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
 		};
 	}
 }
@@ -3723,6 +4325,7 @@ namespace vl
 字符串编码解码基类
 ***********************************************************************/
 
+		/// <summary>Base type of all character encoder.</summary>
 		class CharEncoder : public Object, public IEncoder
 		{
 		protected:
@@ -3738,7 +4341,8 @@ namespace vl
 			void							Close();
 			vint							Write(void* _buffer, vint _size);
 		};
-
+		
+		/// <summary>Base type of all character decoder.</summary>
 		class CharDecoder : public Object, public IDecoder
 		{
 		protected:
@@ -3758,13 +4362,15 @@ namespace vl
 /***********************************************************************
 Mbcs
 ***********************************************************************/
-
+		
+		/// <summary>Encoder to transform text in a local code page from wchar_t.</summary>
 		class MbcsEncoder : public CharEncoder
 		{
 		protected:
 			vint							WriteString(wchar_t* _buffer, vint chars);
 		};
-
+		
+		/// <summary>Encoder to transform text in a local code page to wchar_t.</summary>
 		class MbcsDecoder : public CharDecoder
 		{
 		protected:
@@ -3774,13 +4380,15 @@ Mbcs
 /***********************************************************************
 Utf-16
 ***********************************************************************/
-
+		
+		/// <summary>Encoder to transform UTF-16 text from wchar_t.</summary>
 		class Utf16Encoder : public CharEncoder
 		{
 		protected:
 			vint							WriteString(wchar_t* _buffer, vint chars);
 		};
-
+		
+		/// <summary>Decoder to transform UTF-16 text to wchar_t.</summary>
 		class Utf16Decoder : public CharDecoder
 		{
 		protected:
@@ -3790,13 +4398,15 @@ Utf-16
 /***********************************************************************
 Utf-16-be
 ***********************************************************************/
-
+		
+		/// <summary>Encoder to transform big endian UTF-16 text from wchar_t.</summary>
 		class Utf16BEEncoder : public CharEncoder
 		{
 		protected:
 			vint							WriteString(wchar_t* _buffer, vint chars);
 		};
-
+		
+		/// <summary>Decoder to transform big endian UTF-16 text to wchar_t.</summary>
 		class Utf16BEDecoder : public CharDecoder
 		{
 		protected:
@@ -3806,13 +4416,15 @@ Utf-16-be
 /***********************************************************************
 Utf-8
 ***********************************************************************/
-
+		
+		/// <summary>Encoder to transform UTF-8 text from wchar_t.</summary>
 		class Utf8Encoder : public CharEncoder
 		{
 		protected:
 			vint							WriteString(wchar_t* _buffer, vint chars);
 		};
-
+		
+		/// <summary>Decoder to transform UTF-8 text to wchar_t.</summary>
 		class Utf8Decoder : public CharDecoder
 		{
 		protected:
@@ -3828,29 +4440,38 @@ Utf-8
 /***********************************************************************
 Bom
 ***********************************************************************/
-
+		
+		/// <summary>Encoder to transform text from wchar_t. A BOM will be added at the beginning.</summary>
 		class BomEncoder : public Object, public IEncoder
 		{
 		public:
+			/// <summary>Text encoding.</summary>
 			enum Encoding
 			{
+				/// <summary>Multi-bytes character string.</summary>
 				Mbcs,
+				/// <summary>UTF-8.</summary>
 				Utf8,
+				/// <summary>UTF-16.</summary>
 				Utf16,
+				/// <summary>Big endian UTF-16.</summary>
 				Utf16BE
 			};
 		protected:
 			Encoding						encoding;
 			IEncoder*						encoder;
 		public:
+			/// <summary>Create an encoder.</summary>
+			/// <param name="_encoding">Specified encoding.</param>
 			BomEncoder(Encoding _encoding);
 			~BomEncoder();
 
 			void							Setup(IStream* _stream);
 			void							Close();
-			vint								Write(void* _buffer, vint _size);
+			vint							Write(void* _buffer, vint _size);
 		};
-
+		
+		/// <summary>Decoder to transform text to wchar_t. This decoder depends on the BOM information at the beginning to decide the format of the input.</summary>
 		class BomDecoder : public Object, public IDecoder
 		{
 		private:
@@ -3885,6 +4506,7 @@ Bom
 			IStream*						stream;
 
 		public:
+			/// <summary>Create an decoder.</summary>
 			BomDecoder();
 			~BomDecoder();
 
@@ -3897,6 +4519,10 @@ Bom
 Encoding Test
 ***********************************************************************/
 
+		/// <summary>Guess the text encoding in a buffer.</summary>
+		/// <param name="buffer">The buffer to guess.</param>
+		/// <param name="encoding">Returns the most possible encoding.</param>
+		/// <param name="containsBom">Returns true if the BOM information is at the beginning of the buffer.</param>
 		extern void							TestEncoding(unsigned char* buffer, vint size, BomEncoder::Encoding& encoding, bool& containsBom);
 
 /***********************************************************************
@@ -4499,19 +5125,39 @@ namespace vl
 			};
 		}
 
+		/// <summary>Copy containers.</summary>
+		/// <typeparam name="Ds">Type of the destination container.</typeparam>
+		/// <typeparam name="Ss">Type of the source container.</typeparam>
+		/// <param name="ds">The destination container.</param>
+		/// <param name="ss">The source container.</param>
+		/// <param name="append">Set to false to delete everything in the destination container before copying.</param>
 		template<typename Ds, typename Ss>
 		void CopyFrom(Ds& ds, const Ss& ss, bool append=false)
 		{
 			copyfrom_internal::CopyFromAlgorithm<Ds, Ss, randomaccess_internal::RandomAccessable<Ds>::CanResize, randomaccess_internal::RandomAccessable<Ss>::CanRead>::Perform(ds, ss, append);
 		}
-
+		
+		/// <summary>Copy containers.</summary>
+		/// <typeparam name="Ds">Type of the destination container.</typeparam>
+		/// <typeparam name="S">Type of the elements in the source container.</typeparam>
+		/// <param name="ds">The destination container.</param>
+		/// <param name="buffer">Pointer to the source array.</param>
+		/// <param name="count">The number of elements to copy.</param>
+		/// <param name="append">Set to false to delete everything in the destination container before copying.</param>
 		template<typename Ds, typename S>
 		void CopyFrom(Ds& ds, const S* buffer, vint count, bool append=false)
 		{
 			copyfrom_internal::Slice<S> slice={buffer, count};
 			CopyFrom(ds, slice, append);
 		}
-
+		
+		/// <summary>Copy containers.</summary>
+		/// <typeparam name="Ds">Type of the destination container.</typeparam>
+		/// <typeparam name="S">Type of the elements in the source container.</typeparam>
+		/// <param name="ds">The destination container.</param>
+		/// <param name="begin">Pointer to the first element in the source array.</param>
+		/// <param name="end">Pointer to the element after the last element in the source array.</param>
+		/// <param name="append">Set to false to delete everything in the destination container before copying.</param>
 		template<typename Ds, typename S>
 		void CopyFrom(Ds& ds, const S* begin, const S* end, bool append=false)
 		{
@@ -5823,6 +6469,7 @@ namespace vl
 正则表达式引擎数据结构
 ***********************************************************************/
 
+		/// <summary>A type representing a fragment of the input string.</summary>
 		class RegexString : public Object
 		{
 		protected:
@@ -5834,12 +6481,19 @@ namespace vl
 			RegexString(vint _start=0);
 			RegexString(const WString& _string, vint _start, vint _length);
 
+			/// <summary>The position of the input string.</summary>
+			/// <returns>The position.</returns>
 			vint										Start()const;
+			/// <summary>The size of the fragment in characters.</summary>
+			/// <returns>The size.</returns>
 			vint										Length()const;
+			/// <summary>Get the fragment.</summary>
+			/// <returns>The fragment.</returns>
 			const WString&								Value()const;
 			bool										operator==(const RegexString& string)const;
 		};
 
+		/// <summary>A type representing a match of the input string.</summary>
 		class RegexMatch : public Object, private NotCopyable
 		{
 			friend class Regex;
@@ -5859,9 +6513,17 @@ namespace vl
 			RegexMatch(const RegexString& _result);
 		public:
 			
+			/// <summary>Test if this match is a success match or a failed match. A failed match will only appear when calling [M:vl.regex.Regex.Split] or [M:vl.regex.Regex.Cut]. In other cases, failed matches are either not included in the result, or become null pointers.</summary>
+			/// <returns>Returns true if this match is a success match.</returns>
 			bool										Success()const;
+			/// <summary>Get the whole fragment that matches.</summary>
+			/// <returns>The whole fragment.</returns>
 			const RegexString&							Result()const;
+			/// <summary>Get all fragments that are captured.</summary>
+			/// <returns>All fragments that are captured.</returns>
 			const CaptureList&							Captures()const;
+			/// <summary>Get all fragments that are captured by named groups.</summary>
+			/// <returns>All fragments that are captured.</returns>
 			const CaptureGroup&							Groups()const;
 		};
 
@@ -5869,6 +6531,55 @@ namespace vl
 正则表达式引擎
 ***********************************************************************/
 
+		/// <summary><![CDATA[
+		/// Regular Expression. Here is a brief description of the regular expression grammar:
+		///	1) Charset:
+		///		a, [a-z], [^a-z]
+		/// 2) Functional characters:
+		///		^: the beginning of the input (DFA incompatible)
+		///		$: the end of the input (DFA incompatible)
+		///		regex1|regex2: match either regex1 or regex2
+		///	3) Escaping (both \ and / mean the next character is escaped)
+		///		Escaped characters:
+		///			\r: the CR character
+		///			\n: the LF character
+		///			\t: the tab character
+		///			\s: spacing characters (including space, \r, \n, \t)
+		///			\S: non-spacing characters
+		///			\d: [0-9]
+		///			\D: [^0-9]
+		///			\l: [a-zA-Z]
+		///			\L: [^a-zA-Z]
+		///			\w: [a-zA-Z0-9_]
+		///			\W: [^a-zA-Z0-9_]
+		///			\.: any character (this is the main different from other regex, which treat "." as any characters and "\." as the dot character)
+		///			\\, \/, \(, \), \+, \*, \?, \{, \}, \[, \], \<, \>, \^, \$, \!, \=: represents itself
+		///		Escaped characters in charset defined in a square bracket:
+		///			\r: the CR character
+		///			\n: the LF character
+		///			\t: the tab character
+		///			\-, \[, \], \\, \/, \^, \$: represents itself
+		///	4) Loops:
+		///		regex{3}: repeats 3 times
+		///		regex{3,}: repeats 3 or more times
+		///		regex{1,3}: repeats 1 to 3 times
+		///		regex?: repeats 0 or 1 times
+		///		regex*: repeats 0 or more times
+		///		regex+: repeats 1 or more times
+		///		if you add a "?" right after a loop, it means repeating as less as possible (DFA incompatible)
+		///	5) Capturing: (DFA incompatible)
+		///		(regex): No capturing, just change the operators' association
+		///		(?regex): Capture matched fragment
+		///		(?<name>regex): Capture matched fragment in a named group called "name"
+		///		(<$i>): Match the i-th captured fragment, begins from 0
+		///		(<$name;i>): Match the i-th captured fragment in the named group called "name", begins from 0
+		///		(<$name>): Match any captured fragment in the named group called "name"
+		///	6) MISC
+		///		(=regex): The prefix of the following text should match the regex, but it is not counted in the whole match (DFA incompatible)
+		///		(!regex): Any prefix of the following text should not match the regex, and it is not counted in the whole match (DFA incompatible)
+		///		(<#name>regex): Name the regex "name", and it applies here
+		///		(<&name>): Copy the named regex "name" here and apply
+		/// ]]></summary>
 		class Regex : public Object, private NotCopyable
 		{
 		protected:
@@ -5877,18 +6588,48 @@ namespace vl
 
 			void										Process(const WString& text, bool keepEmpty, bool keepSuccess, bool keepFail, RegexMatch::List& matches)const;
 		public:
+			/// <summary>Create a regular expression.</summary>
+			/// <param name="code">The regular expression in a string.</param>
+			/// <param name="preferPure">Set to true to tell the Regex to use DFA if possible.</param>
 			Regex(const WString& code, bool preferPure=true);
 			~Regex();
 
+			/// <summary>Test does the Regex uses DFA to match a string.</summary>
+			/// <returns>Returns true if DFA is used.</returns>
 			bool										IsPureMatch()const;
+			/// <summary>Test does the Regex uses DFA to test a string. Test means ignoring all capturing requirements.</summary>
+			/// <returns>Returns true if DFA is used.</returns>
 			bool										IsPureTest()const;
 
+			/// <summary>Match a prefix of the text.</summary>
+			/// <returns>Returns the match. Returns null if failed.</returns>
+			/// <param name="text">The text to match.</param>
 			RegexMatch::Ref								MatchHead(const WString& text)const;
+			/// <summary>Match a fragment of the text.</summary>
+			/// <returns>Returns the match. Returns null if failed.</returns>
+			/// <param name="text">The text to match.</param>
 			RegexMatch::Ref								Match(const WString& text)const;
+			/// <summary>Match a prefix of the text, ignoring all capturing requirements.</summary>
+			/// <returns>Returns true if succeeded.</returns>
+			/// <param name="text">The text to match.</param>
 			bool										TestHead(const WString& text)const;
+			/// <summary>Match a fragment of the text, ignoring all capturing requirements.</summary>
+			/// <returns>Returns true if succeeded.</returns>
+			/// <param name="text">The text to match.</param>
 			bool										Test(const WString& text)const;
+			/// <summary>Find all matched fragments of the text, returning all matched fragments.</summary>
+			/// <param name="text">The text to match.</param>
+			/// <param name="matches">All successful matches.</param>
 			void										Search(const WString& text, RegexMatch::List& matches)const;
+			/// <summary>Split the text by matched fragments, returning all unmatched fragments.</summary>
+			/// <param name="text">The text to match.</param>
+			/// <param name="keepEmptyMatch">Set to true to keep all empty matches.</param>
+			/// <param name="matches">All failed matches.</param>
 			void										Split(const WString& text, bool keepEmptyMatch, RegexMatch::List& matches)const;
+			/// <summary>Cut the text by matched fragments, returning all matched or unmatched fragments.</summary>
+			/// <param name="text">The text to match.</param>
+			/// <param name="keepEmptyMatch">Set to true to keep all empty matches.</param>
+			/// <param name="matches">All successful and failed matches.</param>
 			void										Cut(const WString& text, bool keepEmptyMatch, RegexMatch::List& matches)const;
 		};
 
@@ -5896,25 +6637,37 @@ namespace vl
 正则表达式词法分析器
 ***********************************************************************/
 
+		/// <summary>A token.</summary>
 		class RegexToken
 		{
 		public:
+			/// <summary>Position in the input string.</summary>
 			vint										start;
+			/// <summary>Size of this token in characters.</summary>
 			vint										length;
+			/// <summary>The token id, begins at 0, represents the regular expression in the list that matches this token. -1 means this token is produced by an error.</summary>
 			vint										token;
+			/// <summary>The pointer to where this token starts in the input string .</summary>
 			const wchar_t*								reading;
+			/// <summary>The argument value from [M:vl.regex.RegexLexer.Parse].</summary>
 			vint										codeIndex;
+			/// <summary>True if this token is complete. False if this token does not end here.</summary>
 			bool										completeToken;
 
+			/// <summary>Row number of the first character, begins at 0.</summary>
 			vint										rowStart;
+			/// <summary>Column number of the first character, begins at 0.</summary>
 			vint										columnStart;
+			/// <summary>Row number of the last character, begins at 0.</summary>
 			vint										rowEnd;
+			/// <summary>Column number of the last character, begins at 0.</summary>
 			vint										columnEnd;
 
 			bool										operator==(const RegexToken& _token)const;
 			bool										operator==(const wchar_t* _token)const;
 		};
 
+		/// <summary>Token collection representing the result from the lexical analyzer.</summary>
 		class RegexTokens : public Object, public collections::IEnumerable<RegexToken>
 		{
 			friend class RegexLexer;
@@ -5929,9 +6682,14 @@ namespace vl
 			RegexTokens(const RegexTokens& tokens);
 
 			collections::IEnumerator<RegexToken>*		CreateEnumerator()const;
+
+			/// <summary>Copy all tokens.</summary>
+			/// <param name="tokens">Returns all tokens.</param>
+			/// <param name="discard">A callback to decide which kind of tokens to discard. The input is [F:vl.regex.RegexToken.token]. Returns true to discard this kind of tokens.</param>
 			void										ReadToEnd(collections::List<RegexToken>& tokens, bool(*discard)(vint)=0)const;
 		};
-
+		
+		/// <summary>Lexical walker.</summary>
 		class RegexLexerWalker : public Object
 		{
 			friend class RegexLexer;
@@ -5943,15 +6701,35 @@ namespace vl
 		public:
 			RegexLexerWalker(const RegexLexerWalker& walker);
 			~RegexLexerWalker();
-
+			
+			/// <summary>Get the start DFA state number, which represents the correct state before parsing any input.</summary>
+			/// <param name="state">The DFA state number.</param>
 			vint										GetStartState()const;
+			/// <summary>Test if this state can only lead to the end of one kind of token.</summary>
+			/// <summary>Returns the token index if this state can only lead to the end of one kind of token. Returns -1 if not.</summary>
 			vint										GetRelatedToken(vint state)const;
+			/// <summary>Step forward by one character.</summary>
+			/// <param name="input">The input character.</param>
+			/// <param name="state">The current state. Returns the new current state when this function returns.</param>
+			/// <param name="token">Returns the token index at the end of the token.</param>
+			/// <param name="finalState">Returns true if it reach the end of the token.</param>
+			/// <param name="previousTokenStop">Returns true if the last character is the end of the token.</param>
 			void										Walk(wchar_t input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const;
+			/// <summary>Step forward by one character.</summary>
+			/// <returns>Returns the new current state.</returns>
+			/// <param name="input">The input character.</param>
+			/// <param name="state">The current state.</param>
 			vint										Walk(wchar_t input, vint state)const;
+			/// <summary>Test if the input text is a complete token.</summary>
+			/// <param name="input">The input text.</param>
+			/// <param name="length">Size of the input text in characters.</param>
 			bool										IsClosedToken(const wchar_t* input, vint length)const;
+			/// <summary>Test if the input is a complete token.</summary>
+			/// <param name="input">The input text.</param>
 			bool										IsClosedToken(const WString& input)const;
 		};
 
+		/// <summary>Lexical colorizer.</summary>
 		class RegexLexerColorizer : public Object
 		{
 			friend class RegexLexer;
@@ -5967,13 +6745,27 @@ namespace vl
 			RegexLexerColorizer(const RegexLexerColorizer& colorizer);
 			~RegexLexerColorizer();
 
+			/// <summary>Reset the colorizer using the DFA state number.</summary>
+			/// <param name="state">The DFA state number.</param>
 			void										Reset(vint state);
+			/// <summary>Step forward by one character.</summary>
+			/// <param name="input">The input character.</param>
 			void										Pass(wchar_t input);
+			/// <summary>Get the start DFA state number, which represents the correct state before colorizing any characters.</summary>
+			/// <param name="state">The DFA state number.</param>
 			vint										GetStartState()const;
+			/// <summary>Get the current DFA state number.</summary>
+			/// <param name="state">The DFA state number.</param>
 			vint										GetCurrentState()const;
+			/// <summary>Colorize a text.</summary>
+			/// <param name="input">The text to colorize.</param>
+			/// <param name="length">Size of the text in characters.</param>
+			/// <param name="tokenProc">Colorizer callback. This callback will be called if any token is found..</param>
+			/// <param name="tokenProcArgument">The argument to call the callback.</param>
 			void										Colorize(const wchar_t* input, vint length, TokenProc tokenProc, void* tokenProcArgument);
 		};
 
+		/// <summary>Lexical analyzer.</summary>
 		class RegexLexer : public Object, private NotCopyable
 		{
 		protected:
@@ -5981,11 +6773,20 @@ namespace vl
 			collections::Array<vint>					ids;
 			collections::Array<vint>					stateTokens;
 		public:
+			/// <summary>Create a lexical analyzer by a set of regular expression. [F:vl.regex.RegexToken.token] will be the index of the matched regular expression.</summary>
 			RegexLexer(const collections::IEnumerable<WString>& tokens);
 			~RegexLexer();
 
+			/// <summary>Tokenize a input text.</summary>
+			/// <returns>The result.</returns>
+			/// <param name="code">The text to tokenize.</param>
+			/// <param name="codeIndex">Extra information that will store in [F:vl.regex.RegexToken.codeIndex].</param>
 			RegexTokens									Parse(const WString& code, vint codeIndex=-1)const;
+			/// <summary>Create a equivalence walker from this lexical analyzer.</summary>
+			/// <returns>The walker.</returns>
 			RegexLexerWalker							Walk()const;
+			/// <summary>Create a equivalence colorizer from this lexical analyzer.</summary>
+			/// <returns>The colorizer.</returns>
 			RegexLexerColorizer							Colorize()const;
 		};
 	}
@@ -6023,30 +6824,60 @@ namespace vl
 流控制器
 ***********************************************************************/
 
+		/// <summary>Text reader. All line breaks are normalized to CRLF regardless the format in the source.</summary>
 		class TextReader : public Object, private NotCopyable
 		{
 		public:
+			/// <summary>Test does the reader reach the end or not.</summary>
+			/// <returns>Returns true if the reader reaches the end.</returns>
 			virtual bool				IsEnd()=0;
+			/// <summary>Read a single character.</summary>
+			/// <returns>The character.</returns>
 			virtual wchar_t				ReadChar()=0;
+			/// <summary>Read a string of a specified size.</summary>
+			/// <returns>The string.</returns>
+			/// <param name="length">Expected length of the string to read.</param>
 			virtual WString				ReadString(vint length);
+			/// <summary>Read a string until a line breaks is reached.</summary>
+			/// <returns>The string. It does not contain the line break.</returns>
 			virtual WString				ReadLine();
+			/// <summary>Read everying remain.</summary>
+			/// <returns>The string.</returns>
 			virtual WString				ReadToEnd();
 		};
-
+		
+		/// <summary>Text writer.</summary>
 		class TextWriter : public Object, private NotCopyable
 		{
 		public:
+			/// <summary>Write a single character.</summary>
+			/// <param name="c">The character to write.</param>
 			virtual void				WriteChar(wchar_t c)=0;
+			/// <summary>Write a string.</summary>
+			/// <param name="string">Buffer to the string to write.</param>
+			/// <param name="charCount">Size of the string in characters not including the zero terminator.</param>
 			virtual void				WriteString(const wchar_t* string, vint charCount);
+			/// <summary>Write a string.</summary>
+			/// <param name="string">Buffer to the zero terminated string to write.</param>
 			virtual void				WriteString(const wchar_t* string);
+			/// <summary>Write a string.</summary>
+			/// <param name="string">The string to write.</param>
 			virtual void				WriteString(const WString& string);
+			/// <summary>Write a string with a CRLF.</summary>
+			/// <param name="string">Buffer to the string to write.</param>
+			/// <param name="charCount">Size of the string in characters not including the zero terminator.</param>
 			virtual void				WriteLine(const wchar_t* string, vint charCount);
+			/// <summary>Write a string with a CRLF.</summary>
+			/// <param name="string">Buffer to the zero terminated string to write.</param>
 			virtual void				WriteLine(const wchar_t* string);
+			/// <summary>Write a string with a CRLF.</summary>
+			/// <param name="string">The string to write.</param>
 			virtual void				WriteLine(const WString& string);
 
 			virtual void				WriteMonospacedEnglishTable(collections::Array<WString>& tableByRow, vint rows, vint columns);
 		};
 
+		/// <summary>Text reader from a string.</summary>
 		class StringReader : public TextReader
 		{
 		protected:
@@ -6056,6 +6887,8 @@ namespace vl
 
 			void						PrepareIfLastCallIsReadLine();
 		public:
+			/// <summary>Create a text reader.</summary>
+			/// <param name="_string">The string to read.</param>
 			StringReader(const WString& _string);
 
 			bool						IsEnd();
@@ -6064,23 +6897,29 @@ namespace vl
 			WString						ReadLine();
 			WString						ReadToEnd();
 		};
-
+		
+		/// <summary>Text reader from a stream.</summary>
 		class StreamReader : public TextReader
 		{
 		protected:
 			IStream*					stream;
 		public:
+			/// <summary>Create a text reader.</summary>
+			/// <param name="_stream">The stream to read.</param>
 			StreamReader(IStream& _stream);
 
 			bool						IsEnd();
 			wchar_t						ReadChar();
 		};
-
+		
+		/// <summary>Text writer to a stream.</summary>
 		class StreamWriter : public TextWriter
 		{
 		protected:
 			IStream*					stream;
 		public:
+			/// <summary>Create a text writer.</summary>
+			/// <param name="_stream">The stream to write.</param>
 			StreamWriter(IStream& _stream);
 			using TextWriter::WriteString;
 
@@ -6092,6 +6931,7 @@ namespace vl
 编码解码
 ***********************************************************************/
 
+		/// <summary>Encoder stream, a writable stream using an [T:vl.stream.IEncoder] to transform content.</summary>
 		class EncoderStream : public virtual IStream
 		{
 		protected:
@@ -6100,6 +6940,9 @@ namespace vl
 			pos_t						position;
 
 		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="_stream">The target stream to write.</param>
+			/// <param name="_encoder">The encoder to transform content.</param>
 			EncoderStream(IStream& _stream, IEncoder& _encoder);
 			~EncoderStream();
 
@@ -6115,11 +6958,12 @@ namespace vl
 			void						Seek(pos_t _size);
 			void						SeekFromBegin(pos_t _size);
 			void						SeekFromEnd(pos_t _size);
-			vint							Read(void* _buffer, vint _size);
-			vint							Write(void* _buffer, vint _size);
-			vint							Peek(void* _buffer, vint _size);
+			vint						Read(void* _buffer, vint _size);
+			vint						Write(void* _buffer, vint _size);
+			vint						Peek(void* _buffer, vint _size);
 		};
-
+		
+		/// <summary>Decoder stream, a readable stream using an [T:vl.stream.IDecoder] to transform content.</summary>
 		class DecoderStream : public virtual IStream
 		{
 		protected:
@@ -6128,6 +6972,9 @@ namespace vl
 			pos_t						position;
 
 		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="_stream">The target stream to read.</param>
+			/// <param name="_decoder">The decoder to transform content.</param>
 			DecoderStream(IStream& _stream, IDecoder& _decoder);
 			~DecoderStream();
 
@@ -6143,9 +6990,9 @@ namespace vl
 			void						Seek(pos_t _size);
 			void						SeekFromBegin(pos_t _size);
 			void						SeekFromEnd(pos_t _size);
-			vint							Read(void* _buffer, vint _size);
-			vint							Write(void* _buffer, vint _size);
-			vint							Peek(void* _buffer, vint _size);
+			vint						Read(void* _buffer, vint _size);
+			vint						Write(void* _buffer, vint _size);
+			vint						Peek(void* _buffer, vint _size);
 		};
 	}
 }
@@ -6212,6 +7059,7 @@ Compression
 			~LzwBase();
 		};
 
+		/// <summary>An encoder to compress using Lzw algorithm.</summary>
 		class LzwEncoder : public LzwBase, public IEncoder
 		{
 		protected:
@@ -6224,7 +7072,10 @@ Compression
 			void									Flush();
 			void									WriteNumber(vint number, vint bitSize);
 		public:
+			/// <summary>Create an encoder.</summary>
 			LzwEncoder();
+			/// <summary>Create an encoder and tell it which byte will never appear in the data before compression.</summary>
+			/// <param name="existingBytes">An array to tell the encoder which byte will never appear in the data before compression.</param>
 			LzwEncoder(bool (&existingBytes)[256]);
 			~LzwEncoder();
 
@@ -6232,7 +7083,8 @@ Compression
 			void									Close()override;
 			vint									Write(void* _buffer, vint _size)override;
 		};
-
+		
+		/// <summary>An decoder to decompress using Lzw algorithm.</summary>
 		class LzwDecoder :public LzwBase, public IDecoder
 		{
 		protected:
@@ -6252,7 +7104,10 @@ Compression
 			void									PrepareOutputBuffer(vint size);
 			void									ExpandCodeToOutputBuffer(lzw::Code* code);
 		public:
+			/// <summary>Create an decoder.</summary>
 			LzwDecoder();
+			/// <summary>Create an decoder and tell it which byte will never appear in the data before compression.</summary>
+			/// <param name="existingBytes">An array to tell the encoder which byte will never appear in the data before compression.</param>
 			LzwDecoder(bool (&existingBytes)[256]);
 			~LzwDecoder();
 
@@ -6282,6 +7137,7 @@ Interfaces:
 
 namespace vl
 {
+	/// <summary>Locale awared operations. Macro "INVLOC" is a shortcut to get a invariant locale.</summary>
 	class Locale : public Object
 	{
 	protected:
@@ -6298,67 +7154,190 @@ namespace vl
 		bool operator>(const Locale& value)const { return localeName>value.localeName; }
 		bool operator>=(const Locale& value)const { return localeName>=value.localeName; }
 
+		/// <summary>Get the invariant locale.</summary>
+		/// <returns>The invariant locale.</returns>
 		static Locale				Invariant();
+		/// <summary>Get the system default locale. This locale controls the code page that used by the the system to interpret ANSI string buffers.</summary>
+		/// <returns>The system default locale.</returns>
 		static Locale				SystemDefault();
+		/// <summary>Get the user default locale. This locale reflect the user's setting.</summary>
+		/// <returns>The user default locale.</returns>
 		static Locale				UserDefault();
+		/// <summary>Get all supported locales.</summary>
+		/// <param name="locales">All supported locales.</param>
 		static void					Enumerate(collections::List<Locale>& locales);
 
+		/// <summary>Get the name of the locale.</summary>
+		/// <returns>The name of the locale.</returns>
 		const WString&				GetName()const;
 
+		/// <summary>Get all short date formats for the locale.</summary>
+		/// <returns>The formats.</returns>
 		void						GetShortDateFormats(collections::List<WString>& formats)const;
+		/// <summary>Get all long date formats for the locale.</summary>
+		/// <returns>The formats.</returns>
 		void						GetLongDateFormats(collections::List<WString>& formats)const;
+		/// <summary>Get all Year-Month date formats for the locale.</summary>
+		/// <returns>The formats.</returns>
 		void						GetYearMonthDateFormats(collections::List<WString>& formats)const;
+		/// <summary>Get all long time formats for the locale.</summary>
+		/// <returns>The formats.</returns>
 		void						GetLongTimeFormats(collections::List<WString>& formats)const;
+		/// <summary>Get all short time formats for the locale.</summary>
+		/// <returns>The formats.</returns>
 		void						GetShortTimeFormats(collections::List<WString>& formats)const;
 
+		/// <summary>Convert a date to a formatted string.</summary>
+		/// <returns>The formatted string.</returns>
+		/// <param name="format">The format to use.</param>
+		/// <param name="date">The date to convert.</param>
 		WString						FormatDate(const WString& format, DateTime date)const;
+		/// <summary>Convert a time to a formatted string.</summary>
+		/// <returns>The formatted string.</returns>
+		/// <param name="format">The format to use.</param>
+		/// <param name="date">The time to convert.</param>
 		WString						FormatTime(const WString& format, DateTime time)const;
 #ifdef VCZH_MSVC
+		/// <summary>Convert a number to a formatted string.</summary>
+		/// <returns>The formatted string.</returns>
+		/// <param name="date">The number to convert.</param>
 		WString						FormatNumber(const WString& number)const;
+		/// <summary>Convert a currency (money) to a formatted string.</summary>
+		/// <returns>The formatted string.</returns>
+		/// <param name="date">The currency to convert.</param>
 		WString						FormatCurrency(const WString& currency)const;
 #endif
 
+		/// <summary>Get the short display string of a day of week.</summary>
+		/// <returns>The display string.</returns>
+		/// <param name="dayOfWeek">Day of week, begins from 0 as Sunday.</param>
 		WString						GetShortDayOfWeekName(vint dayOfWeek)const;
+		/// <summary>Get the long display string of a day of week.</summary>
+		/// <returns>The display string.</returns>
+		/// <param name="dayOfWeek">Day of week, begins from 0 as Sunday.</param>
 		WString						GetLongDayOfWeekName(vint dayOfWeek)const;
+		/// <summary>Get the short display string of a month.</summary>
+		/// <returns>The display string.</returns>
+		/// <param name="month">Month, begins from 1 as January.</param>
 		WString						GetShortMonthName(vint month)const;
+		/// <summary>Get the long display string of a month.</summary>
+		/// <returns>The display string.</returns>
+		/// <param name="month">Month, begins from 1 as January.</param>
 		WString						GetLongMonthName(vint month)const;
 		
 #ifdef VCZH_MSVC
+		/// <summary>Convert characters to the full width.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToFullWidth(const WString& str)const;
+		/// <summary>Convert characters to the half width.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToHalfWidth(const WString& str)const;
+		/// <summary>Convert characters to the Hiragana.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToHiragana(const WString& str)const;
+		/// <summary>Convert characters to the Katagana.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToKatagana(const WString& str)const;
 #endif
-
+		
+		/// <summary>Convert characters to the lower case using the file system rule.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToLower(const WString& str)const;
+		/// <summary>Convert characters to the upper case using the file system rule.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToUpper(const WString& str)const;
+		/// <summary>Convert characters to the lower case using the linguistic rule.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToLinguisticLower(const WString& str)const;
+		/// <summary>Convert characters to the upper case using the linguistic rule.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToLinguisticUpper(const WString& str)const;
 
 #ifdef VCZH_MSVC
+		/// <summary>Convert characters to Simplified Chinese.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToSimplifiedChinese(const WString& str)const;
+		/// <summary>Convert characters to the Traditional Chinese.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToTraditionalChinese(const WString& str)const;
+		/// <summary>Convert characters to the tile case, in which the first letter of each major word is capitalized.</summary>
+		/// <returns>The converted string.</returns>
+		/// <param name="str">The string to convert.</param>
 		WString						ToTileCase(const WString& str)const;
 #endif
 
+		/// <summary>Mergable flags controlling how to normalize a string.</summary>
 		enum Normalization
 		{
+			/// <summary>Do nothing.</summary>
 			None=0,
+			/// <summary>Ignore case using the file system rule.</summary>
 			IgnoreCase=1,
+			/// <summary>Ignore case using the linguistic rule.</summary>
 			IgnoreCaseLinguistic=2,
+			/// <summary>Ignore the difference between between hiragana and katakana characters.</summary>
 			IgnoreKanaType=4,
+			/// <summary>Ignore nonspacing characters.</summary>
 			IgnoreNonSpace=8,
+			/// <summary>Ignore symbols and punctuation.</summary>
 			IgnoreSymbol=16,
+			/// <summary>Ignore the difference between half-width and full-width characters.</summary>
 			IgnoreWidth=32,
+			/// <summary>Treat digits as numbers during sorting.</summary>
 			DigitsAsNumbers=64,
+			/// <summary>Treat punctuation the same as symbols.</summary>
 			StringSoft=128,
 		};
+
+		/// <summary>Compare two strings.</summary>
+		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
+		/// <param name="s1">The first string to compare.</param>
+		/// <param name="s2">The second string to compare.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
 		vint									Compare(const WString& s1, const WString& s2, Normalization normalization)const;
+		/// <summary>Compare two strings to test binary equivalence.</summary>
+		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
+		/// <param name="s1">The first string to compare.</param>
+		/// <param name="s2">The second string to compare.</param>
 		vint									CompareOrdinal(const WString& s1, const WString& s2)const;
+		/// <summary>Compare two strings to test binary equivalence, ignoring case.</summary>
+		/// <returns>Returns 0 if two strings are equal. Returns a positive number if the first string is larger. Returns a negative number if the second string is larger. When sorting strings, larger strings are put after then smaller strings.</returns>
+		/// <param name="s1">The first string to compare.</param>
+		/// <param name="s2">The second string to compare.</param>
 		vint									CompareOrdinalIgnoreCase(const WString& s1, const WString& s2)const;
+		/// <summary>Find the first position that the sub string appears in a text.</summary>
+		/// <returns>Returns a pair of numbers, the first number indicating the position in the text, the second number indicating the size of the equivalence sub string in the text. For some normalization, the found sub string may be binary different to the string you want to find.</returns>
+		/// <param name="text">The text to find the sub string.</param>
+		/// <param name="find">The sub string to match.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
 		collections::Pair<vint, vint>			FindFirst(const WString& text, const WString& find, Normalization normalization)const;
+		/// <summary>Find the last position that the sub string appears in a text.</summary>
+		/// <returns>Returns a pair of numbers, the first number indicating the position in the text, the second number indicating the size of the equivalence sub string in the text. For some normalization, the found sub string may be binary different to the string you want to find.</returns>
+		/// <param name="text">The text to find the sub string.</param>
+		/// <param name="find">The sub string to match.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
 		collections::Pair<vint, vint>			FindLast(const WString& text, const WString& find, Normalization normalization)const;
+		/// <summary>Test is the prefix of the text equivalence to the provided sub string.</summary>
+		/// <returns>Returns true if the prefix of the text equivalence to the provided sub string.</returns>
+		/// <param name="text">The text to test the prefix.</param>
+		/// <param name="find">The sub string to match.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
 		bool									StartsWith(const WString& text, const WString& find, Normalization normalization)const;
+		/// <summary>Test is the postfix of the text equivalence to the provided sub string.</summary>
+		/// <returns>Returns true if the postfix of the text equivalence to the provided sub string.</returns>
+		/// <param name="text">The text to test the postfix.</param>
+		/// <param name="find">The sub string to match.</param>
+		/// <param name="normalization">Flags controlling how to normalize a string.</param>
 		bool									EndsWith(const WString& text, const WString& find, Normalization normalization)const;
 	};
 
@@ -6386,6 +7365,7 @@ Classes:
 
 namespace vl
 {
+	/// <summary>Base type of all exceptions.</summary>
 	class Exception : public Object
 	{
 	protected:
@@ -6439,6 +7419,8 @@ Classes:
 ***********************************************************************/
 #ifndef VCZH_EVENT
 #define VCZH_EVENT
+
+
 namespace vl
 {
 	template<typename T>
@@ -6452,6 +7434,8 @@ namespace vl
 		virtual bool							IsAttached() = 0;
 	};
 
+	/// <summary>Event.</summary>
+	/// <typeparam name="TArgs">Types of callback parameters.</typeparam>
 	template<typename ...TArgs>
 	class Event<void(TArgs...)> : public Object, private NotCopyable
 	{
@@ -6476,6 +7460,9 @@ namespace vl
  
 		collections::SortedList<Ptr<EventHandlerImpl>>	handlers;
 	public:
+		/// <summary>Add a callback to the event.</summary>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="function">The callback.</param>
 		Ptr<EventHandler> Add(const Func<void(TArgs...)>& function)
 		{
 			Ptr<EventHandlerImpl> handler = new EventHandlerImpl(function);
@@ -6483,18 +7470,28 @@ namespace vl
 			return handler;
 		}
  
-		template<typename C>
+		/// <summary>Add a callback to the event.</summary>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="function">The callback.</param>
 		Ptr<EventHandler> Add(void(*function)(TArgs...))
 		{
 			return Add(Func<void(TArgs...)>(function));
 		}
  
+		/// <summary>Add a method callback to the event.</summary>
+		/// <typeparam name="C">Type of the class that has the method callback.</typeparam>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="sender">The object that has the method callback.</param>
+		/// <param name="function">The method callback.</param>
 		template<typename C>
 		Ptr<EventHandler> Add(C* sender, void(C::*function)(TArgs...))
 		{
 			return Add(Func<void(TArgs...)>(sender, function));
 		}
  
+		/// <summary>Remove a callback.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="handler">The event handler representing the callback.</param>
 		bool Remove(Ptr<EventHandler> handler)
 		{
 			Ptr<EventHandlerImpl> impl = handler.Cast<EventHandlerImpl>();
@@ -6506,6 +7503,8 @@ namespace vl
 			return true;
 		}
  
+		/// <summary>Invoke all callbacks in the event.</summary>
+		/// <param name="args">Arguments to invoke all callbacks.</param>
 		void operator()(TArgs ...args)const
 		{
 			for(vint i = 0; i < handlers.Count(); i++)
@@ -6628,6 +7627,8 @@ OrderBy Quick Sort
 LazyList
 ***********************************************************************/
 
+		/// <summary>A lazy evaluated readonly container.</summary>
+		/// <typeparam name="T">The type of elements.</typeparam>
 		template<typename T>
 		class LazyList : public Object, public IEnumerable<T>
 		{
@@ -6642,32 +7643,43 @@ LazyList
 				return enumeratorPrototype->Clone();
 			}
 		public:
+			/// <summary>Create a lazy list with an enumerator.</summary>
+			/// <param name="enumerator">The enumerator.</param>
 			LazyList(IEnumerator<T>* enumerator)
 				:enumeratorPrototype(enumerator)
 			{
 			}
-
+			
+			/// <summary>Create a lazy list with an enumerator.</summary>
+			/// <param name="enumerator">The enumerator.</param>
 			LazyList(Ptr<IEnumerator<T>> enumerator)
 				:enumeratorPrototype(enumerator)
 			{
 			}
-
+			
+			/// <summary>Create a lazy list with an enumerable.</summary>
+			/// <param name="enumerable">The enumerator.</param>
 			LazyList(const IEnumerable<T>& enumerable)
 				:enumeratorPrototype(enumerable.CreateEnumerator())
 			{
 			}
-
+			
+			/// <summary>Create a lazy list with an lazy list.</summary>
+			/// <param name="lazyList">The lazy list.</param>
 			LazyList(const LazyList<T>& lazyList)
 				:enumeratorPrototype(lazyList.enumeratorPrototype)
 			{
 			}
-
+			
+			/// <summary>Create a lazy list with a container.</summary>
+			/// <param name="container">The container.</param>
 			template<typename TContainer>
 			LazyList(Ptr<TContainer> container)
 				:enumeratorPrototype(new ContainerEnumerator<T, TContainer>(container))
 			{
 			}
 			
+			/// <summary>Create an empty lazy list.</summary>
 			LazyList()
 				:enumeratorPrototype(EmptyEnumerable<T>().CreateEnumerator())
 			{
@@ -6686,31 +7698,49 @@ LazyList
 
 			//-------------------------------------------------------
 
+			/// <summary>Create a new lazy list with all elements transformed.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="f">The lambda expression as a transformation function.</param>
 			template<typename F>
 			LazyList<FUNCTION_RESULT_TYPE(F)> Select(F f)const
 			{
 				return new SelectEnumerator<T, FUNCTION_RESULT_TYPE(F)>(xs(), f);
 			}
 			
+			/// <summary>Create a new lazy list with all elements that satisfy with a condition.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="f">The lambda expression as a filter.</param>
 			template<typename F>
 			LazyList<T> Where(F f)const
 			{
 				return new WhereEnumerator<T>(xs(), f);
 			}
 
+			/// <summary>Create a new lazy list with all elements casted to a new type.</summary>
+			/// <typeparam name="U">The new type.</typeparam>
+			/// <returns>The created lazy list.</returns>
 			template<typename U>
 			LazyList<Ptr<U>> Cast()const
 			{
 				Func<Ptr<U>(T)> f=[](T t)->Ptr<U>{return t.template Cast<U>();};
 				return new SelectEnumerator<T, Ptr<U>>(xs(), f);
 			}
-
+			
+			/// <summary>Create a new lazy list with only elements that successfully casted to a new type.</summary>
+			/// <typeparam name="U">The new type.</typeparam>
+			/// <returns>The created lazy list.</returns>
 			template<typename U>
 			LazyList<Ptr<U>> FindType()const
 			{
 				return Cast<U>().Where([](T t){return t;});
 			}
-
+			
+			/// <summary>Create a new lazy list with all elements sorted.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="f">The lambda expression as a comparing function.</param>
 			template<typename F>
 			LazyList<T> OrderBy(F f)const
 			{
@@ -6724,7 +7754,11 @@ LazyList
 			}
 
 			//-------------------------------------------------------
-
+			
+			/// <summary>Aggregate a lazy list. An exception will raise if the lazy list is empty.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>The aggregated value.</returns>
+			/// <param name="f">The lambda expression as an aggregator.</param>
 			template<typename F>
 			T Aggregate(F f)const
 			{
@@ -6740,7 +7774,12 @@ LazyList
 				}
 				return result;
 			}
-
+			
+			/// <summary>Aggregate a lazy list.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>The aggregated value.</returns>
+			/// <param name="init">The extra value that is virtually added before the lazy list.</param>
+			/// <param name="f">The lambda expression as an aggregator.</param>
 			template<typename I, typename F>
 			I Aggregate(I init, F f)const
 			{
@@ -6751,28 +7790,42 @@ LazyList
 				return init;
 			}
 
+			/// <summary>Test does all elements in the lazy list satisfy with a condition.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>Returns true if all elements satisfy with a condition.</returns>
+			/// <param name="f">The lambda expression as a filter.</param>
 			template<typename F>
 			bool All(F f)const
 			{
 				return Select(f).Aggregate(true, [](bool a, bool b){return a&&b;});
 			}
-
+			
+			/// <summary>Test does any elements in the lazy list satisfy with a condition.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>Returns true if at least one element satisfies with a condition.</returns>
+			/// <param name="f">The lambda expression as a filter.</param>
 			template<typename F>
 			bool Any(F f)const
 			{
 				return Select(f).Aggregate(false, [](bool a, bool b){return a||b;});
 			}
 
+			/// <summary>Get the maximum value in the lazy list. An exception will raise if the lazy list is empty.</summary>
+			/// <returns>The maximum value.</returns>
 			T Max()const
 			{
 				return Aggregate([](T a, T b){return a>b?a:b;});
 			}
-
+			
+			/// <summary>Get the minimum value in the lazy list. An exception will raise if the lazy list is empty.</summary>
+			/// <returns>The minimum value.</returns>
 			T Min()const
 			{
 				return Aggregate([](T a, T b){return a<b?a:b;});
 			}
-
+			
+			/// <summary>Get the first value in the lazy list. An exception will raise if the lazy list is empty.</summary>
+			/// <returns>The first value.</returns>
 			T First()const
 			{
 				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
@@ -6782,7 +7835,10 @@ LazyList
 				}
 				return enumerator->Current();
 			}
-
+			
+			/// <summary>Get the first value in the lazy list.</summary>
+			/// <returns>The first value.</returns>
+			/// <param name="defaultValue">Returns this argument if the lazy list is empty.</param>
 			T First(T defaultValue)const
 			{
 				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
@@ -6792,7 +7848,9 @@ LazyList
 				}
 				return enumerator->Current();
 			}
-
+			
+			/// <summary>Get the last value in the lazy list. An exception will raise if the lazy list is empty.</summary>
+			/// <returns>The last value.</returns>
 			T Last()const
 			{
 				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
@@ -6810,7 +7868,10 @@ LazyList
 					return value;
 				}
 			}
-
+			
+			/// <summary>Get the last value in the lazy list.</summary>
+			/// <returns>The last value.</returns>
+			/// <param name="defaultValue">Returns this argument if the lazy list is empty.</param>
 			T Last(T defaultValue)const
 			{
 				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
@@ -6821,6 +7882,8 @@ LazyList
 				return defaultValue;
 			}
 
+			/// <summary>Get the number of elements in the lazy list.</summary>
+			/// <returns>The number of elements.</returns>
 			vint Count()const
 			{
 				vint result=0;
@@ -6832,6 +7895,8 @@ LazyList
 				return result;
 			}
 
+			/// <summary>Test is the lazy list empty.</summary>
+			/// <returns>Returns true if the lazy list is empty.</returns>
 			bool IsEmpty()const
 			{
 				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
@@ -6840,31 +7905,47 @@ LazyList
 
 			//-------------------------------------------------------
 
+			/// <summary>Create a new lazy list containing elements of the two container one after another.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="remains">Elements that put after this lazy list.</param>
 			LazyList<T> Concat(const IEnumerable<T>& remains)const
 			{
 				return new ConcatEnumerator<T>(xs(), remains.CreateEnumerator());
 			}
 
+			/// <summary>Create a new lazy list with some prefix elements.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="count">The size of the prefix.</param>
 			LazyList<T> Take(vint count)const
 			{
 				return new TakeEnumerator<T>(xs(), count);
 			}
-
+			
+			/// <summary>Create a new lazy list without some prefix elements.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="count">The size of the prefix.</param>
 			LazyList<T> Skip(vint count)const
 			{
 				return new SkipEnumerator<T>(xs(), count);
 			}
 
+			/// <summary>Create a new lazy list with several copies of this lazy list one after another.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="count">The numbers of copies.</param>
 			LazyList<T> Repeat(vint count)const
 			{
 				return new RepeatEnumerator<T>(xs(), count);
 			}
 
+			/// <summary>Create a new lazy list with all elements in this lazy list. If some elements appear several times, only one will be kept.</summary>
+			/// <returns>The created lazy list.</returns>
 			LazyList<T> Distinct()const
 			{
 				return new DistinctEnumerator<T>(xs());
 			}
 
+			/// <summary>Create a new lazy list with all elements in this lazy list in a reverse order.</summary>
+			/// <returns>The created lazy list.</returns>
 			LazyList<T> Reverse()const
 			{
 				return new ReverseEnumerator<T>(*this);
@@ -6872,22 +7953,34 @@ LazyList
 
 			//-------------------------------------------------------
 
+			/// <summary>Create a new lazy list of pairs from elements from two containers.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="remains">The second container.</param>
 			template<typename U>
 			LazyList<Pair<T, U>> Pairwise(const IEnumerable<U>& remains)const
 			{
 				return new PairwiseEnumerator<T, U>(xs(), remains.CreateEnumerator());
 			}
 
+			/// <summary>Create a new lazy list with only elements that appear in both containers.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="remains">The second container.</param>
 			LazyList<T> Intersect(const IEnumerable<T>& remains)const
 			{
 				return LazyList<T>(new IntersectExceptEnumerator<T, true>(xs(), remains)).Distinct();
 			}
-
+			
+			/// <summary>Create a new lazy list with only elements that appear in this lazy list but not in another container.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="remains">The second container.</param>
 			LazyList<T> Except(const IEnumerable<T>& remains)const
 			{
 				return LazyList<T>(new IntersectExceptEnumerator<T, false>(xs(), remains)).Distinct();
 			}
-
+			
+			/// <summary>Create a new lazy list with elements in two containers. If some elements appear several times, only one will be kept.</summary>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="remains">The second container.</param>
 			LazyList<T> Union(const IEnumerable<T>& remains)const
 			{
 				return Concat(remains).Distinct();
@@ -6909,6 +8002,10 @@ LazyList
 				}
 			}
 
+			/// <summary>Create a new lazy list, whose elements are from transformed elements in this lazy list.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="f">The lambda expression as a transformation function to transform one element to multiple elements.</param>
 			template<typename F>
 			FUNCTION_RESULT_TYPE(F) SelectMany(F f)const
 			{
@@ -6917,6 +8014,10 @@ LazyList
 				return Select(f).Aggregate(LazyList<U>(), [](const LazyList<U>& a, const IEnumerable<U>& b)->LazyList<U>{return a.Concat(b);});
 			}
 
+			/// <summary>Create a new lazy list, whose elements are groupd by from elements in this lazy list.</summary>
+			/// <typeparam name="F">Type of the lambda expression.</typeparam>
+			/// <returns>The created lazy list.</returns>
+			/// <param name="f">The lambda expression as a key retriver to calcuate a key from an element.</param>
 			template<typename F>
 			LazyList<Pair<FUNCTION_RESULT_TYPE(F), LazyList<T>>> GroupBy(F f)const
 			{
@@ -7017,6 +8118,7 @@ Attribute
 			class IValueException;
 		}
 
+		/// <summary>Base class of all reflectable object. You can use pointer or smart pointer to DescriptableObject to define variables, but if you want to create a reflectable class, you should inherit from [T:vl.reflection.Description`1].</summary>
 		class DescriptableObject
 		{
 			template<typename T, typename Enabled>
@@ -7038,12 +8140,258 @@ Attribute
 			DescriptableObject();
 			virtual ~DescriptableObject();
 
+			/// <summary>Get the type descriptor that describe the real type of this object.</summary>
+			/// <returns>The real type.</returns>
 			description::ITypeDescriptor*			GetTypeDescriptor();
+			/// <summary>Get an internal property of this object. This map is totally for customization.</summary>
+			/// <returns>Value of the internal property of this object.</returns>
+			/// <param name="name">Name of the property.</param>
 			Ptr<Object>								GetInternalProperty(const WString& name);
+			/// <summary>Set an internal property of this object. This map is totally for customization.</summary>
+			/// <param name="name">Name of the property.</param>
+			/// <param name="value">Value of the internal property of this object.</param>
 			void									SetInternalProperty(const WString& name, Ptr<Object> value);
+			/// <summary>Try to delete this object.</summary>
+			/// <returns>Returns true if this operation succeeded. Returns false if the object refuces to be dispose.</returns>
+			/// <param name="forceDisposing">Set to true to force disposing this object. If the reference counter is not 0 if you force disposing it, it will raise a [T:vl.reflection.description.ValueNotDisposableException].</param>
 			bool									Dispose(bool forceDisposing);
 		};
 		
+		/// <summary><![CDATA[
+		/// Inherit from this class when you want to create a reflectable class. It should be used like this:
+		/// class YourClass : public Description<YourClass>
+		/// {
+		///		...
+		/// };
+		///
+		/// After you have complete your type, use the following macros and functions to register your class into the global type table. Everything should be defined in vl::reflection::description namespaces.
+		///	Some of the predefined type has already been registered, if your types depend on these types, you should load those types by calling some or all of them:
+		///	[F:vl.reflection.description.LoadPredefinedTypes]
+		///	[F:vl.reflection.description.LoadParsingTypes]
+		///	[F:vl.reflection.description.JsonLoadTypes]
+		///	[F:vl.reflection.description.XmlLoadTypes]
+		///
+		/// 1) (in header files) Create a macro that contains all types that you want to register. Content in the list will become the registered type names, so it is strongly recommended to use the full name.
+		///		#define MY_TYPELIST(F)\
+		///			F(mynamespaces::MyClass1)\
+		///			F(mynamespaces::MyClass2)\
+		///
+		/// 2) (in header files) Connect type names and types:
+		///		MY_TYPELIST(DECL_TYPE_INFO)
+		///
+		/// 3) (in cpp files) Connect type names and types:
+		///		MY_TYPELIST(IMPL_VL_TYPE_INFO)
+		///
+		/// 4) (in cpp files) Register all members:
+		///		
+		///		#define _ ,
+		///
+		///		a) enum:
+		///			use BEGIN_ENUM_ITEM_MERGABLE instead of BEGIN_ENUM_ITEM if enum items are consider mergable using "|".
+		///			if you want to provide a default value, use BEGIN_ENUM_ITEM_DEFAULT_VALUE(<your type>, <default value>)
+		///
+		///			BEGIN_ENUM_ITEM(Season)
+		///				ENUM_ITEM(Spring)
+		///				ENUM_ITEM(Summer)
+		///				ENUM_ITEM(Autumn)
+		///				ENUM_ITEM(Winter)
+		///			END_ENUM_ITEM(Season)
+		///
+		///		b) enum class:
+		///			use BEGIN_ENUM_ITEM_MERGABLE instead of BEGIN_ENUM_ITEM if enum items are consider mergable using "|".
+		///
+		///			BEGIN_ENUM_ITEM(Season)
+		///				ENUM_CLASS_ITEM(Spring)
+		///				ENUM_CLASS_ITEM(Summer)
+		///				ENUM_CLASS_ITEM(Autumn)
+		///				ENUM_CLASS_ITEM(Winter)
+		///			END_ENUM_ITEM(Season)
+		///
+		///		c) struct (pure data structure):
+		///			BEGIN_STRUCT_MEMBER(Point)
+		///				STRUCT_MEMBER(x)
+		///				STRUCT_MEMBER(y)
+		///			END_STRUCT_MEMBER(Point)
+		///
+		///		d) class:
+		///			BEGIN_CLASS_MEMBER(MyClass)
+		///
+		///				I) declare a base class (can have multiple base classes):
+		///				CLASS_MEMBER_BASE(MyBaseClass)
+		///
+		///				II) declare a field:
+		///				CLASS_MEMBER_FIELD(myField)
+		///
+		///				III) Empty constructor that results in a raw pointer:
+		///				CLASS_MEMBER_CONSTRUCTIOR(MyClass*(), NO_PARAMETER)
+		///
+		///				IV) Empty constructor that results in a smart pointer:
+		///				CLASS_MEMBER_CONSTRUCTIOR(Ptr<MyClass>(), NO_PARAMETER)
+		///
+		///				V) Constructor with arguments:
+		///				CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"})
+		///
+		///				VI) Inject a global function as a constructor
+		///				CLASS_MEMBER_EXTERNALCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, CreateMyClass)
+		///
+		///				VII) Add unoverloaded functions
+		///				CLASS_MEMBER_METHOD(MyFunction1, NO_PARAMETER)
+		///				CLASS_MEMBER_METHOD(MyFunction2, {L"parameter1" _ L"parameter2"})
+		///
+		///				VIII) Add unoverloaded function but give a different names
+		///				CLASS_MEMBER_METHOD_RENAME(MyNewName1, MyFunction1, NO_PARAMETER)
+		///				CLASS_MEMBER_METHOD_RENAME(MyNewName2, MyFunction2, {L"parameter1" _ L"parameter2"})
+		///
+		///				IX) Add overloaded functions
+		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, NO_PARAMETER, int(MyClass::*)())
+		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, {L"parameter"}, int(MyClass::*)(int))
+		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction3, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&))
+		///
+		///				IX) Add overloaded functions but give different names
+		///				CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName3, MyFunction3, NO_PARAMETER, int(MyClass::*)())
+		///				CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName4, MyFunction3, {L"parameter"}, int(MyClass::*)(int))
+		///				CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName4, MyFunction3, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&))
+		///
+		///				X) Inject global functions as methods:
+		///				CLASS_MEMBER_EXTERNALMETHOD(MyNewName5, {L"parameter"}, int(MyClass::*)(int), &AGlobalFunction)
+		///				CLASS_MEMBER_EXTERNALMETHOD(MyNewName5, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&), [](MyClass* a, int b, const WString& c){return 0;})
+		///
+		///				XI) Add unoverloaded static functions
+		///				CLASS_MEMBER_STATIC_METHOD(MyFunction4, NO_PARAMETER)
+		///				CLASS_MEMBER_STATIC_METHOD(MyFunction5, {L"parameter1" _ L"parameter2"})
+		///
+		///				XII) Add overloaded static functions
+		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction6, NO_PARAMETER, int(*)())
+		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction6, {L"parameter"}, int(*)(int))
+		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&))
+		///
+		///				XIII) Inject global functions as static methods:
+		///				CLASS_MEMBER_STATIC_EXTERNALMETHOD(MyNewName6, {L"parameter"}, int(*)(int), &AGlobalFunction2)
+		///				CLASS_MEMBER_STATIC_EXTERNALMETHOD(MyNewName6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&), [](int b, const WString& c){return 0;})
+		///
+		///				XIV) Add a getter function as a property
+		///				CLASS_MEMBER_PROPERTY_READONLY_FAST(X)
+		///				which is short for
+		///				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+		///				CLASS_MEMBER_PROPERTY_READONLY(X, GetX)
+		///
+		///				XV) Add a pair of getter and setter functions as a property
+		///				CLASS_MEMBER_PROPERTY_FAST(X)
+		///				which is short for
+		///				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+		///				CLASS_MEMBER_METHOD(SetX, {L"value"})
+		///				CLASS_MEMBER_PROPERTY(X, GetX, SetX)
+		///
+		///				XVI) Add a getter function as a property with a property changed event
+		///				CLASS_MEMBER_EVENT(XChanged)
+		///				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(X)
+		///				which is short for
+		///				CLASS_MEMBER_EVENT(XChanged)
+		///				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+		///				CLASS_MEMBER_PROPERTY_EVENT_READONLY(X, GetX, XChanged)
+		///
+		///				XVII) Add a pair of getter and setter functions as a property with a property changed event
+		///				CLASS_MEMBER_EVENT(XChanged)
+		///				CLASS_MEMBER_PROPERTY_EVENT_FAST(X)
+		///				which is short for
+		///				CLASS_MEMBER_EVENT(XChanged)
+		///				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+		///				CLASS_MEMBER_METHOD(SetX, {L"value"})
+		///				CLASS_MEMBER_PROPERTY_EVENT(X, GetX, SetX, XChanged)
+		///
+		///			END_CLASS_MEMBER(MyClass)
+		///
+		///			If the code compiles, the class should look like this:
+		///			class MyClass : public Description<MyClass>
+		///			{
+		///			public:
+		///				MyClass();
+		///				MyClass(int numberParameter, const WString& stringParameter);
+		///
+		///				int MyFunction1();
+		///				int MyFunction2(int parameter1, const WString& parameter2);
+		///				int MyFunction3();
+		///				int MyFunction3(int parameter);
+		///				int MyFunction3(int parameter1, const WString& parameter2);
+		///
+		///				static int MyFunction4();
+		///				static int MyFunction5(int parameter1, const WString& parameter2);
+		///				static int MyFunction6();
+		///				static int MyFunction6(int parameter);
+		///				static int MyFunction6(int parameter1, const WString& parameter2);
+		///
+		///				Event<void()> XChanged;
+		///				int GetX();
+		///				void SetX(int value);
+		///			};
+		///
+		///			Ptr<MyClass> CreateMyClass(int numberParameter, const WString7 stringParameter);
+		///			int GlobalFunction(MyClass* self, int parameter);
+		///
+		///		e) interface:
+		///			An interface is defined by
+		///			I) Directly or indirectly inherits [T:vl.reflection.IDescriptable]
+		///			II) The only registered constructor (if exists) should use Ptr<[T:vl.reflection.description.IValueInterfaceProxy]> as a parameter
+		///
+		///			Suppose you have an interface like this:
+		///			class IMyInterface : public virtual IDescriptable, public Description<IMyInterface>
+		///			{
+		///			public:
+		///				int GetX();
+		///				void SetX(int value);
+		///			};
+		///
+		///			If you want this interface implementable by Workflow script, you should first add a proxy like this:
+		///			class IMyInterfaceProxy : public [T:vl.reflection.description.ValueInterfaceRoot], public virtual IMyInterface
+		///			{
+		///			public:
+		///				IMyInterfaceProxy(Ptr<IValueInterfaceProxy> proxy)
+		///					:ValueInterfaceRoot(proxy)
+		///				{
+		///				}
+		///
+		///				static Ptr<IMyInterface> Create(Ptr<IValueInterfaceProxy> proxy)
+		///				{
+		///					return new IMyInterfaceProxy(proxy);
+		///				}
+		///
+		///				int GetX()override
+		///				{
+		///					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetX)
+		///				}
+		///
+		///				void SetX(int value)override
+		///				{
+		///					INVOKE_INTERFACE_PROXY(SetX, value)
+		///				}
+		///			};
+		///
+		///			And then use this code to register the constructor:
+		///			CLASS_MEMBER_EXTERNALCTOR(Ptr<IMyInterface>(Ptr<IValueInterfaceProxy>), {L"proxy"}, &IMyInterfaceProxy::Create)
+		///
+		///			Everything else is the same as registering classes
+		///
+		///		#undef _
+		///
+		/// 5) (in cpp files) Create a type loader:
+		///		class MyTypeLoader : public Object, public ITypeLoader
+		///		{
+		///		public:
+		///			void Load(ITypeManager* manager)
+		///			{
+		///				MY_TYPELIST(ADD_TYPE_INFO)
+		///			}
+		///
+		///			void Unload(ITypeManager* manager)
+		///			{
+		///			}
+		///		};
+		///
+		///	6) Load types when you think is a good timing using this code:
+		///		vl::reflection::description::GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
+		///
+		/// ]]></summary>
+		/// <typeparam name="T">Type of your created reflection class.</param>
 		template<typename T>
 		class Description : public virtual DescriptableObject
 		{
@@ -7076,6 +8424,7 @@ Attribute
 		template<typename T>
 		description::ITypeDescriptor* Description<T>::associatedTypeDescriptor=0;
 
+		/// <summary>Base types of all reflectable interfaces. All reflectable interface types should be virtual inherited.</summary>
 		class IDescriptable : public virtual Interface, public Description<IDescriptable>
 		{
 		public:
@@ -7113,14 +8462,20 @@ ReferenceCounterOperator
 Value
 ***********************************************************************/
 
+			/// <summary>A type to store all values of reflectable types.</summary>
 			class Value : public Object
 			{
 			public:
+				/// <summary>Representing how the value is stored.</summary>
 				enum ValueType
 				{
+					/// <summary>The value is null.</summary>
 					Null,
+					/// <summary>The value stored using a raw pointer.</summary>
 					RawPtr,
+					/// <summary>The value stored using a smart pointer.</summary>
 					SharedPtr,
+					/// <summary>The value stored using a string.</summary>
 					Text,
 				};
 			protected:
@@ -7146,18 +8501,38 @@ Value
 				bool							operator>(const Value& value)const { return Compare(*this, value)>0; }
 				bool							operator>=(const Value& value)const { return Compare(*this, value)>=0; }
 
+				/// <summary>Get how the value is stored.</summary>
+				/// <returns>How the value is stored.</returns>
 				ValueType						GetValueType()const;
+				/// <summary>Get the stored raw pointer if possible.</summary>
+				/// <summary>The stored raw pointer. Returns null if failed.</summary>
 				DescriptableObject*				GetRawPtr()const;
+				/// <summary>Get the stored shared pointer if possible.</summary>
+				/// <summary>The stored shared pointer. Returns null if failed.</summary>
 				Ptr<DescriptableObject>			GetSharedPtr()const;
+				/// <summary>Get the stored text if possible.</summary>
+				/// <summary>The stored text. Returns empty if failed.</summary>
 				const WString&					GetText()const;
+				/// <summary>Get the real type of the stored object.</summary>
+				/// <returns>The real type. Returns null if the value is null.</returns>
 				ITypeDescriptor*				GetTypeDescriptor()const;
 				WString							GetTypeFriendlyName()const;
 				bool							IsNull()const;
 				bool							CanConvertTo(ITypeDescriptor* targetType, ValueType targetValueType)const;
 				bool							CanConvertTo(ITypeInfo* targetType)const;
 
+				/// <summary>Store a raw pointer.</summary>
+				/// <returns>The boxed value.</returns>
+				/// <param name="value">The raw pointer to store.</param>
 				static Value					From(DescriptableObject* value);
+				/// <summary>Store a shared pointer.</summary>
+				/// <returns>The boxed value.</returns>
+				/// <param name="value">The shared pointer to store.</param>
 				static Value					From(Ptr<DescriptableObject> value);
+				/// <summary>Store a text.</summary>
+				/// <returns>The boxed value.</returns>
+				/// <param name="value">The text to store.</param>
+				/// <param name="type">The type that you expect to interpret the text.</param>
 				static Value					From(const WString& value, ITypeDescriptor* type);
 
 				static IMethodInfo*				SelectMethod(IMethodGroupInfo* methodGroup, collections::Array<Value>& arguments);
@@ -7172,6 +8547,8 @@ Value
 				Value							Invoke(const WString& name)const;
 				Value							Invoke(const WString& name, collections::Array<Value>& arguments)const;
 				Ptr<IEventHandler>				AttachEvent(const WString& name, const Value& function)const;
+				/// <summary>Dispose the object is it is stored as a raw pointer.</summary>
+				/// <returns>Returns true if the object is disposed. Returns false if the object cannot be disposed. An exception will be thrown if the reference counter is not 0.</returns>
 				bool							DeleteRawPtr();
 			};
 
@@ -7684,11 +9061,15 @@ namespace vl
 Location
 ***********************************************************************/
 
+		/// <summary>A type representing text position.</summary>
 		struct ParsingTextPos
 		{
 			static const int	UnknownValue=-2;
+			/// <summary>Character index, begins at 0.</summary>
 			vint				index;
+			/// <summary>Row number, begins at 0.</summary>
 			vint				row;
+			/// <summary>Column number, begins at 0.</summary>
 			vint				column;
 
 			ParsingTextPos()
@@ -7719,6 +9100,8 @@ Location
 			{
 			}
 
+			/// <summary>Test if this position a valid position.</summary>
+			/// <returns>Returns true if this position is a valid position.</returns>
 			bool IsInvalid()const
 			{
 				return index < 0 && row < 0 && column < 0;
@@ -7767,10 +9150,14 @@ Location
 			bool operator>=(const ParsingTextPos& pos)const{return Compare(*this, pos)>=0;}
 		};
 
+		/// <summary>A type representing text range.</summary>
 		struct ParsingTextRange
 		{
+			/// <summary>Text position for the first character.</summary>
 			ParsingTextPos	start;
+			/// <summary>Text position for the last character.</summary>
 			ParsingTextPos	end;
+			/// <summary>Code index, refer to [F:vl.regex.RegexToken.codeIndex]</summary>
 			vint			codeIndex;
 
 			ParsingTextRange()
@@ -7834,6 +9221,7 @@ General Syntax Tree
 		class ParsingTreeObject;
 		class ParsingTreeArray;
 
+		/// <summary>Abstract syntax tree.</summary>
 		class ParsingTreeNode : public Object, public reflection::Description<ParsingTreeNode>
 		{
 		public:
@@ -7890,17 +9278,36 @@ General Syntax Tree
 			ParsingTextRange					GetCodeRange();
 			void								SetCodeRange(const ParsingTextRange& range);
 
+			/// <summary>Precalculate for enhance searching performance for this node and all child nodes.</summary>
 			void								InitializeQueryCache();
+			/// <summary>Clear all cache made by <see cref="InitializeQueryCache"/>.</summary>
 			void								ClearQueryCache();
+			/// <summary>Get the parent node. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <returns>The parent node.</summary>
 			ParsingTreeNode*					GetParent();
+			/// <summary>Get the child nodes. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <returns>The child nodes.</summary>
 			const NodeList&						GetSubNodes();
-
+			
+			/// <summary>Find a direct child node at the position. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <returns>The found node.</summary>
+			/// <param name="position">The position.</param>
 			ParsingTreeNode*					FindSubNode(const ParsingTextPos& position);
+			/// <summary>Find a direct child node at the range. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <returns>The found node.</summary>
+			/// <param name="range">The range.</param>
 			ParsingTreeNode*					FindSubNode(const ParsingTextRange& range);
+			/// <summary>Find a most deepest indirect child node at the position. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <returns>The found node.</summary>
+			/// <param name="position">The position.</param>
 			ParsingTreeNode*					FindDeepestNode(const ParsingTextPos& position);
+			/// <summary>Find a most deepest indirect child node at the range. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
+			/// <returns>The found node.</summary>
+			/// <param name="position">The range.</param>
 			ParsingTreeNode*					FindDeepestNode(const ParsingTextRange& range);
 		};
 
+		/// <summary>Representing a token node in a abstract syntax tree.</summary>
 		class ParsingTreeToken : public ParsingTreeNode, public reflection::Description<ParsingTreeToken>
 		{
 		protected:
@@ -7916,10 +9323,13 @@ General Syntax Tree
 			Ptr<ParsingTreeNode>				Clone()override;
 			vint								GetTokenIndex();
 			void								SetTokenIndex(vint _tokenIndex);
+			/// <summary>Get the content of the token.</summary>
+			/// <returns>The content of the token.</returns>
 			const WString&						GetValue();
 			void								SetValue(const WString& _value);
 		};
-
+		
+		/// <summary>Representing an object node in a abstract syntax tree.</summary>
 		class ParsingTreeObject : public ParsingTreeNode, public reflection::Description<ParsingTreeObject>
 		{
 		protected:
@@ -7938,16 +9348,28 @@ General Syntax Tree
 
 			void								Accept(IVisitor* visitor)override;
 			Ptr<ParsingTreeNode>				Clone()override;
+			/// <summary>Get the type name of the object.</summary>
+			/// <returns>The type name of the object.</summary>
 			const WString&						GetType();
 			void								SetType(const WString& _type);
+			/// <summary>Get all fields of the object.</summary>
+			/// <returns>All fields of the object.</summary>
 			NodeMap&							GetMembers();
+			/// <summary>Get a field of the object by the field name.</summary>
+			/// <returns>The field of the object.</returns>
+			/// <param name="name">The field name.</param>
 			Ptr<ParsingTreeNode>				GetMember(const WString& name);
 			bool								SetMember(const WString& name, Ptr<ParsingTreeNode> node);
 			bool								RemoveMember(const WString& name);
+			/// <summary>Get all field names.</summary>
+			/// <returns>All field names of the object.</summary>
 			const NameList&						GetMemberNames();
+			/// <summary>Get names of all rules that return this object.</summary>
+			/// <returns>Names of all rules.</returns>
 			RuleList&							GetCreatorRules();
 		};
-
+		
+		/// <summary>Representing an array node in a abstract syntax tree.</summary>
 		class ParsingTreeArray : public ParsingTreeNode, public reflection::Description<ParsingTreeArray>
 		{
 		protected:
@@ -7963,9 +9385,16 @@ General Syntax Tree
 
 			void								Accept(IVisitor* visitor)override;
 			Ptr<ParsingTreeNode>				Clone()override;
+			/// <summary>Get the type of all elements. It could be different from any actual element's type, but it should at least be the base types of them.</summary>
+			/// <returns>The type of all elements.</returns>
 			const WString&						GetElementType();
 			void								SetElementType(const WString& _elementType);
+			/// <summary>Get all elements in this array.</summary>
+			/// <returns>All elements in this array.</returns>
 			NodeArray&							GetItems();
+			/// <summary>Get a specified element in this array by the index.</summary>
+			/// <returns>The element.</returns>
+			/// <param name="index">The index of the element.</param>
 			Ptr<ParsingTreeNode>				GetItem(vint index);
 			bool								SetItem(vint index, Ptr<ParsingTreeNode> node);
 			bool								AddItem(Ptr<ParsingTreeNode> node);
@@ -7982,28 +9411,39 @@ General Syntax Tree
 语法树基础设施
 ***********************************************************************/
 
+		/// <summary>Base type of all strong typed syntax tree. Normally all strong typed syntax tree are generated from a grammar file using ParserGen.exe in Tools project. See [T:vl.parsing.tabling.ParsingTable] for details.</summary>
 		class ParsingTreeCustomBase : public Object, public reflection::Description<ParsingTreeCustomBase>
 		{
 		public:
+			/// <summary>Range of all tokens that form this object.</summary>
 			ParsingTextRange					codeRange;
+			/// <summary>Names of all rules that return this object.</summary>
 			collections::List<WString>			creatorRules;
 		};
 
+		/// <summary>Strong typed token syntax node, for all class fields of type "token" in the grammar file. See [T:vl.parsing.tabling.ParsingTable] for details.</summary>
 		class ParsingToken : public ParsingTreeCustomBase, public reflection::Description<ParsingToken>
 		{
 		public:
+			/// <summary>Type of the token, representing the index of a regular expression that creates this token in the regular expression list in the grammar file.</summary>
 			vint								tokenIndex;
+			/// <summary>Content of the token.</summary>
 			WString								value;
 
 			ParsingToken():tokenIndex(-1){}
 		};
 
+		/// <summary>Error.</summary>
 		class ParsingError : public Object, public reflection::Description<ParsingError>
 		{
 		public:
+			/// <summary>Range where the error happens.</summary>
 			ParsingTextRange					codeRange;
+			/// <summary>Token at which the error happens.</summary>
 			const regex::RegexToken*			token;
+			/// <summary>A syntax tree that contains this error.</summary>
 			ParsingTreeCustomBase*				parsingTree;
+			/// <summary>The error message.</summary>
 			WString								errorMessage;
 
 			ParsingError();
@@ -8188,6 +9628,242 @@ namespace vl
 跳转表
 ***********************************************************************/
 
+			/// <summary><![CDATA[
+			/// The parsing table. When you complete a grammar file, ParserGen.exe which is in the Tools project will generate the C++ code for you to create a parsing table.
+			///
+			/// Here is a brief description of the grammar file format:
+			///
+			/// include:"<releative path to the Vlpp.h>"	// (multiple)	e.g. "../Import/Vlpp.h"
+			/// classPrefix:<class prefix>					// (single)		A prefix that will be add before all generated types and function. e.g. Xml
+			/// guard:<C++ header guard>					// (single)		The C++ header guard pattern macro name. e.g. VCZH_PARSING_XML_PARSINGXML_PARSER
+			/// namespace:<C++ namespaces>					// (single)		Namespaces separated by "." to contain the generated code. e.g. vl.parsing.xml
+			/// reflection:<namespace>						// (single)		Namespaces separated by "." to contain the name of reflectable types. In most of the cases this should be the same as namespace. e.g. vl.parsing.xml
+			/// parser:<name>(<rule>)						// (multiple)	Pair a function name to a rule name. ParserGen.exe will generate a function called "<prefix><name>" to parse the input using rule named "<rule>". e.g. ParseDocument(XDocument)
+			/// ambiguity:(enabled|disabled)				// (single)		Set to "enabled" indicating that the grammar is by design to have ambiguity.
+			/// serialization:(enabled|disabled)			// (single)		Set to "enabled" to serialize the parsing table as binary in the generated C++ code, so that when the "<prefix>LoadTable" function is called to load the table, it can deserialize from the binary data directly, instead of parsing the grammar again. But the grammar text will always be contained in the generated C++ code regardless of the value of "serialization", it can always be retrived using the "<prefix>GetParserTextBuffer" function.
+			/// grammar:									// (single)		Configuration ends here. All content after "grammar:" will be treated as the grammar to define the input.
+			///
+			/// Here is the brief description of the grammar.
+			/// The grammar is formed by 3 parts: types, token definitions and rule definitions. There is only one character escaping in strings: "", which means the " character.
+			///
+			/// 1) Types:
+			///		You can write attributes like @AttributeName("argument1", "argument2", ...) in the middle of types. But attributes don't affect the parsing. All attribute definitions will be stored in the generated parsing table, and who uses the table defines how attributes work. Multiple attributes are separated by ",".
+			///
+			///		a) Enum:
+			///			enum EnumName <attributes>
+			///			{
+			///				Item1 <attributes>,
+			///				Item2 <attributes>,
+			///				... // cannot skip the last ","
+			///			}
+			///
+			///		b) Class:
+			///			class Name [ambiguous(AmbiguousType)] [: ParentType] <attributes>
+			///			{
+			///				Type name [(UnescapingFunction)] <attributes> ;
+			///			}
+			///
+			///			UnescapingFunction is a callback, which will be called when the contained type is fully constructed. The generated C++ code will define forward declarations of all unescaping functions in the cpp file. You should implement them in other places, or you will get linking errors.
+			///
+			///			If the grammar enables ambiguity, then the parsing result may contain ambiguous results for the same part of the input. For example, in C++:
+			///			A*B;
+			///			has two meaning (if we only consider context-free parsing): multiplication expression and pointer variable definition.
+			///			So if the grammar doesn't enable ambiguity, ParserGen.exe will refuce to generate C++ codes because the grammar is wrong.
+			///			If the grammar enables ambiguity, than the syntax tree should be defined like this:
+			///			
+			///			class Statement ambiguous(AmbiguousStatement)
+			///			{
+			///			}
+			///
+			///			class AmbiguousStatement : Statement // due to the definition of "Statement" class, "AmbiguousStatement" should inherit from "Statement"
+			///			{
+			///				Statement[] items; // required by naming convention
+			///			}
+			///
+			///			class ExpressionStatement : Statement
+			///			{
+			///				Expression expression;
+			///			}
+			///
+			///			class VariableDefinitionStatement : Statement
+			///			{
+			///				Type type;
+			///				token name;
+			///			}
+			///
+			///			So for the "A*B;" part in the whole input, it will becomes an AmbiguousStatement, in which the "items" field contains 2 instance of "ExpressionStatement" and "VariableDefinitionStatement".
+			///			And you can write C++ code to resolve the ambiguity in later passes.
+			///
+			///		c) Type references:
+			///			Types can be defined globally or inside classes. Generic type is not supported. When you want to refer to a specific type, it could be:
+			///				token: Store a token, which will becomes [T:vl.parsing.ParsingToken].
+			///				Type[]: Array, which will becomes [T:vl.collections.List`2] to the element type. Token cannot be the element of arrays.
+			///				ClassName: Instance of a specified type, which will becomes [T:vl.Ptr`1] to that type.
+			///				OuterClass.InnerClass: Refer to the "InnerClass" defined inside the "OuterClass".
+			///
+			/// 2) Token definitions:
+			///		token TokenName = "regular expression" <attributes>;
+			///		discardtoken TokenName = "regular expression";
+			///
+			///		"discardtoken" means if such a token is identified, it will not appear in the lexical analyzing result. And you cannot refer to names of "discardtoken" in the grammar.
+			///
+			/// 3) Rule definitions:
+			///		rule RuleType RuleName <attributes>
+			///			= Grammar1
+			///			= Grammar2
+			///			...
+			///			;
+			///
+			///		It means rule "RuleName" is defined by those grammars, and matching this rule will create an instance of "RuleType" or its whatever types that inheriting "RuleType".
+			///
+			/// 4) Grammars:
+			///		RuleName: Defines an input that matches a rule.
+			///		TokenName: Defines an input that formed by the specified token.
+			///		"StringConstant": Defins an input that formed by exactly the string constant. This constant should define a token in the token list.
+			///		Grammar : FieldName: Defines an input that matches Grammar (should be either a rule name or a token name), and the result will be stored in field "FieldName" of a class, whose type will appear later.
+			///		!Grammar: Defines an input that matches Grammar, and the rule will return the result from this grammar. The input should still match other part of the rule, but result of other parts are ignored.
+			///		[Grammar]: Defines an input that, if match Grammar, will returns the result from that grammar; if not, the result is null.
+			///		{Grammar}: Defines an input that matches 0, 1 or more Grammar.
+			///		(Grammar): Defins an input that matches the the grammar. Brackets is only for changing operator associations.
+			///		Grammar1 Grammar2: Defines an input that should match Grammar1 right before Grammar2.
+			///		Grammar1 | Grammar2: Defines an input that match either Grammar1 or Grammar2.
+			///		Grammar as Type: Defines an input that matches the Grammar, and the whole branch of the rule creates an instance of type "Type"
+			///		Grammar with { FieldName = Value }: Defins an input that matches the Grammar, and will assign "Value", which should be an enum item, to the field "FieldName" of the created instance.
+			///
+			/// 5) Example
+			///		Here is an example to parse expression containing +, -, *, /, () and numbers:\
+			///
+			///		include:"Vlpp.h"
+			///		classPrefix:Calc
+			///		guard:VCZH_CALCULATOR_PARSER
+			///		namespace:vl.calculator
+			///		reflection:vl.calculator
+			///		parser:ParseExpression(Expr)
+			///		ambiguity:disabled
+			///		serialization:enabled
+			///		grammar:
+			///
+			///		class Expression
+			///		{
+			///		}
+			///
+			///		enum BinaryOperator
+			///		{
+			///			Add, Sub, Mul, Div,
+			///		}
+			///
+			///		class NumberExpression : Expression
+			///		{
+			///			token number;
+			///		}
+			///
+			///		class BinaryExpression : Expression
+			///		{
+			///			BinaryOperator op;
+			///			Expression left;
+			///			Expression right;
+			///		}
+			///
+			///		token ADD "\+"
+			///		token SUB "-"
+			///		token MUL "\*"
+			///		token DIV "\/"
+			///		token NUMBER "\d+(.\d+)?"
+			///		token OPEN "("
+			///		token CLOSE ")"
+			///
+			///		rule Expression Factor
+			///			= NUMBER : number as NumberExpression
+			///			= "(" !Expr ")"
+			///			;
+			///		rule Expression Term
+			///			= !Factor
+			///			= Term : left "*" Factor : right as BinaryExpression with {op = "Mul"}
+			///			= Term : left "/" Factor : right as BinaryExpression with {op = "Div"}
+			///			;
+			///		rule Expression Expr
+			///			= !Term
+			///			= Expr : left "+" Term : right as BinaryExpression with {op = "Add"}
+			///			= Expr : left "-" Term : right as BinaryExpression with {op = "Sub"}
+			///			;
+			///
+			///		After using ParserGen.exe to generate C++ codes, you can do this:
+			///			auto table = CalcLoadTable(); // this table can be used several times, don't load each type for each parsing, it will have a big performance overhead.
+			///			List<Ptr<ParsingError>> errors;
+			///			auto expression = CalcParseExpression(L"(1+2) * (3+4)", table, errors); // it should be a Ptr<CalcExpression>, will returns nullptr if the input is wrong, with all errors filled into the "errors" variable.
+			///			You don't need to define the "errors" if you don't actually care how the input is wrong. There will be a overloaded version of CalcParseExpression that doesn't need the error list.
+			///
+			///		If you want to parse a wrong input and do automatic error recovering, which means if the input is not too wrong, you can still get a syntax tree, but some fields are null, with errors filled into the "error" variable. It will be a little complex:
+			///			auto table = CalcLoadTable();					// Load the table.
+			///			ParsingState state(L"(1+2) * (3+4)", table);	// Initialize a state with the input and the table.
+			///			state.Reset(L"Expr");							// Set the rule to parse.
+			///			auto parser = CreateAutoRecoverParser(table);	// Create an appropriate automatic error recoverable parser.
+			///			List<Ptr<ParsingError>> errors;					// Define an error list.
+			///			auto node = parser->Parse(state, errors);		// Parse to get an abstract syntax tree, which is a Ptr<ParsingTreeNode>.
+			///			if (node)
+			///			{
+			///				auto expression = CalcConvertParsingTreeNode(node, state.GetTokens()).Cast<CalcExpression>();
+			///			}
+			///
+			///		After you get a strong typed syntax tree, you can use the generated visitor interface to do something, like evaluate the results of the expression:
+			///			class Evaluator : public Object, public virtual CalcExpression::IVisitor
+			///			{
+			///			private:
+			///				double result;
+			///
+			///				double Call(CalcExpression* node)
+			///				{
+			///					node->Accept(this);
+			///					return result;
+			///				}
+			///
+			///			public:
+			///
+			///				static double Evaluate(CalcExpression* node)
+			///				{
+			///					return Evaluator().Call(node);
+			///				}
+			///
+			///				void Visit(CalcNumberExpression* node)override
+			///				{
+			///					return wtof(node->number.value);
+			///				}
+			///
+			///				void Visit(CalcBinaryExpression* node)override
+			///				{
+			///					auto left = Calc(node->left.Obj());
+			///					auto right = Calc(node->right.Obj());
+			///					switch (node->op)
+			///					{
+			///					case CalcBinaryOperator::Add:
+			///						result = left + right;
+			///						break;
+			///					case CalcBinaryOperator::Sub:
+			///						result = left 0 right;
+			///						break;
+			///					case CalcBinaryOperator::Mul:
+			///						result = left * right;
+			///						break;
+			///					case CalcBinaryOperator::Div:
+			///						result = left / right;
+			///						break;
+			///					}
+			///				}
+			///			};
+			///
+			///			Nullable<double> EvaluateExpression(const WString& input)
+			///			{
+			///				static auto table = CalcLoadTable();
+			///				auto expression = CalcParseExpression(input, table);
+			///				Nulllable<double> result;
+			///				if (expression)
+			///				{
+			///					result = Evaluator::Evaulate(expression.Obj());
+			///				}
+			///				return result;
+			///			}
+			///
+			/// ]]></summary>
 			class ParsingTable : public Object
 			{
 			public:
@@ -8452,9 +10128,13 @@ namespace vl
 
 			public:
 				ParsingTable(vint _attributeInfoCount, vint _treeTypeInfoCount, vint _treeFieldInfoCount, vint _tokenCount, vint _discardTokenCount, vint _stateCount, vint _ruleCount);
+				/// <summary>Deserialize the parsing table from a stream. <see cref="Initialize"/> should be before using this table.</summary>
+				/// <param name="input">The stream.</param>
 				ParsingTable(stream::IStream& input);
 				~ParsingTable();
 
+				/// <summary>Serialize the parsing table to a stream.</summary>
+				/// <param name="output">The stream.</param>
 				void										Serialize(stream::IStream& output);
 
 				bool										GetAmbiguity();
@@ -8494,6 +10174,7 @@ namespace vl
 				const regex::RegexLexer&					GetLexer();
 				Ptr<TransitionBag>							GetTransitionBag(vint state, vint token);
 				void										SetTransitionBag(vint state, vint token, Ptr<TransitionBag> bag);
+				/// <summary>Initialize the parsing table. This function should be called after deserializing the table from a string.</summary>
 				void										Initialize();
 				bool										IsInputToken(vint regexTokenIndex);
 				vint										GetTableTokenIndex(vint regexTokenIndex);
@@ -9870,12 +11551,23 @@ TypeInfoRetriver Helper Functions (BoxValue, UnboxValue)
 			{
 			};
 
+			/// <summary>Box an reflectable object. Its type cannot be generic.</summary>
+			/// <returns>The boxed value.</returns>
+			/// <typeparam name="T">Type of the object.</typeparam>
+			/// <param name="object">The object to box.</param>
+			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
 			template<typename T>
 			Value BoxValue(const T& object, ITypeDescriptor* typeDescriptor=0)
 			{
 				return ValueAccessor<T, TypeInfoRetriver<T>::Decorator>::BoxValue(object, typeDescriptor);
 			}
-
+			
+			/// <summary>Unbox an reflectable object. Its type cannot be generic.</summary>
+			/// <returns>The unboxed object.</returns>
+			/// <typeparam name="T">Type of the object.</typeparam>
+			/// <param name="object">The value to unbox.</param>
+			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
+			/// <param name="valueName">The name of the object to provide a friendly exception message if the conversion is failed (optional).</param>
 			template<typename T>
 			T UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor=0, const WString& valueName=L"value")
 			{
@@ -9890,13 +11582,24 @@ TypeInfoRetriver Helper Functions (UnboxParameter)
 			struct ParameterAccessor
 			{
 			};
-
+			
+			/// <summary>Box an reflectable object. It supports generic types such as containers, functions, etc.</summary>
+			/// <returns>The boxed value.</returns>
+			/// <typeparam name="T">Type of the object.</typeparam>
+			/// <param name="object">The object to box.</param>
+			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
 			template<typename T>
 			Value BoxParameter(typename TypeInfoRetriver<T>::ResultReferenceType object, ITypeDescriptor* typeDescriptor=0)
 			{
 				return ParameterAccessor<typename TypeInfoRetriver<T>::ResultNonReferenceType, TypeInfoRetriver<T>::TypeFlag>::BoxParameter(object, typeDescriptor);
 			}
-
+			
+			/// <summary>Box an reflectable object. It supports generic types such as containers, functions, etc.</summary>
+			/// <typeparam name="T">Type of the object.</typeparam>
+			/// <param name="object">The value to unbox.</param>
+			/// <param name="result">The unboxed object.</param>
+			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
+			/// <param name="valueName">The name of the object to provide a friendly exception message if the conversion is failed (optional).</param>
 			template<typename T>
 			void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor=0, const WString& valueName=L"value")
 			{
@@ -12870,6 +14573,7 @@ namespace vl
 语法分析器通用策略
 ***********************************************************************/
 
+			/// <summary>Base type of all parser strategy.</summary>
 			class ParsingGeneralParser : public Object
 			{
 			protected:
@@ -12879,11 +14583,19 @@ namespace vl
 				ParsingGeneralParser(Ptr<ParsingTable> _table);
 				~ParsingGeneralParser();
 				
+				/// <summary>The parser table that used to do the parsing.</summary>
 				Ptr<ParsingTable>							GetTable();
+				/// <summary>Initialization. It should be called before each time of parsing.</summary>
 				virtual void								BeginParse();
 				virtual ParsingState::TransitionResult		ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)=0;
 				bool										Parse(ParsingState& state, ParsingTransitionProcessor& processor, collections::List<Ptr<ParsingError>>& errors);
 				Ptr<ParsingTreeNode>						Parse(ParsingState& state, collections::List<Ptr<ParsingError>>& errors);
+				/// <summary>Parse an input and get an abstract syntax tree if no error happens or all errors are recovered.</summary>
+				/// <returns>The abstract syntax tree.</returns>
+				/// <param name="input">The input to parse.</param>
+				/// <param name="rule">The name of the rule that used to parse the input.</param>
+				/// <param name="errors">Returns all errors.</param>
+				/// <param name="codeIndex">The code index to differentiate each input. This value will be stored in every tokens and abstract syntax nodes.</param>
 				Ptr<ParsingTreeNode>						Parse(const WString& input, const WString& rule, collections::List<Ptr<ParsingError>>& errors, vint codeIndex = -1);
 			};
 
@@ -12891,6 +14603,7 @@ namespace vl
 语法分析器策略
 ***********************************************************************/
 
+			/// <summary>A strict parse. It doesn't allow ambiguity and error recovery.</summary>
 			class ParsingStrictParser : public ParsingGeneralParser
 			{
 			protected:
@@ -12899,12 +14612,15 @@ namespace vl
 				virtual void								OnClearErrorRecover();
 				virtual ParsingState::TransitionResult		OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<Ptr<ParsingError>>& errors);
 			public:
+				/// <summary>Create the parse using a parsing table.</summary>
+				/// <param name="_table">The parsing table.</param>
 				ParsingStrictParser(Ptr<ParsingTable> _table=0);
 				~ParsingStrictParser();
 				
 				ParsingState::TransitionResult				ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)override;
 			};
-
+			
+			/// <summary>A strict parse. It doesn't allow ambiguity but allows error recovery.</summary>
 			class ParsingAutoRecoverParser : public ParsingStrictParser
 			{
 			public:
@@ -12936,12 +14652,16 @@ namespace vl
 				void										OnClearErrorRecover()override;
 				ParsingState::TransitionResult				OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<Ptr<ParsingError>>& errors)override;
 			public:
+				/// <summary>Create the parse using a parsing table.</summary>
+				/// <param name="_table">The parsing table.</param>
+				/// <param name="_maxInsertedTokenCount">The maximum number of tokens that allow to insert to recover an error.</param>
 				ParsingAutoRecoverParser(Ptr<ParsingTable> _table = 0, vint _maxInsertedTokenCount = -1);
 				~ParsingAutoRecoverParser();
 
 				void										BeginParse()override;
 			};
-
+			
+			/// <summary>A strict parse. It allows ambiguity but doesn't allow error recovery.</summary>
 			class ParsingAmbiguousParser : public ParsingGeneralParser
 			{
 				typedef collections::List<ParsingState::TransitionResult>		DecisionList;
@@ -12960,13 +14680,16 @@ namespace vl
 				void										BuildAmbiguousDecisions(ParsingState& state, collections::List<ParsingState::Future*>& futures, vint begin, vint end, vint resolvableFutureLevels, collections::List<Ptr<ParsingError>>& errors);
 				void										BuildDecisions(ParsingState& state, collections::List<ParsingState::Future*>& futures, vint begin, vint end, vint resolvableFutureLevels, collections::List<Ptr<ParsingError>>& errors);
 			public:
+				/// <summary>Create the parse using a parsing table.</summary>
+				/// <param name="_table">The parsing table.</param>
 				ParsingAmbiguousParser(Ptr<ParsingTable> _table=0);
 				~ParsingAmbiguousParser();
 				
 				ParsingState::TransitionResult				ParseStep(ParsingState& state, collections::List<Ptr<ParsingError>>& errors)override;
 				void										BeginParse()override;
 			};
-
+			
+			/// <summary>A strict parse. It allow both ambiguity and error recovery.</summary>
 			class ParsingAutoRecoverAmbiguousParser : public ParsingAmbiguousParser
 			{
 			protected:
@@ -12974,6 +14697,9 @@ namespace vl
 
 				void										OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<ParsingState::Future*>& futures, vint& begin, vint& end, collections::List<Ptr<ParsingError>>& errors)override;
 			public:
+				/// <summary>Create the parse using a parsing table.</summary>
+				/// <param name="_table">The parsing table.</param>
+				/// <param name="_maxInsertedTokenCount">The maximum number of tokens that allow to insert to recover an error.</param>
 				ParsingAutoRecoverAmbiguousParser(Ptr<ParsingTable> _table = 0, vint _maxInsertedTokenCount = -1);
 				~ParsingAutoRecoverAmbiguousParser();
 			};
@@ -12982,9 +14708,19 @@ namespace vl
 辅助函数
 ***********************************************************************/
 			
+			/// <summary>Create the correct strict parser from a parsing table.</summary>
+			/// <returns>The created parse.</returns>
+			/// <param name="table">The table to create a parser.</param>
 			extern Ptr<ParsingGeneralParser>				CreateStrictParser(Ptr<ParsingTable> table);
+			/// <summary>Create the correct error recoverable parser from a parsing table.</summary>
+			/// <returns>The created parse.</returns>
+			/// <param name="table">The table to create a parser.</param>
 			extern Ptr<ParsingGeneralParser>				CreateAutoRecoverParser(Ptr<ParsingTable> table);
+			/// <summary>Create the correct strict parser to parse the grammar itself.</summary>
+			/// <returns>The created parse.</returns>
 			extern Ptr<ParsingGeneralParser>				CreateBootstrapStrictParser();
+			/// <summary>Create the correct error recoverable to parse the grammar itself.</summary>
+			/// <returns>The created parse.</returns>
 			extern Ptr<ParsingGeneralParser>				CreateBootstrapAutoRecoverParser();
 		}
 	}
@@ -14271,14 +16007,30 @@ namespace vl
 {
 	namespace console
 	{
+		/// <summary>A Static class for command line window operations.</summary>
 		class Console abstract
 		{
 		public:
+			/// <summary>Write to the command line window.</summary>
+			/// <param name="string">Content to write.</param>
+			/// <param name="length">Size of the content in wchar_t. The zero terminator is not included.</param>
 			static void Write(const wchar_t* string, vint length);
+
+			/// <summary>Write to the command line window.</summary>
+			/// <param name="string">Content to write.</param>
 			static void Write(const wchar_t* string);
+
+			/// <summary>Write to the command line window.</summary>
+			/// <param name="string">Content to write.</param>
 			static void Write(const WString& string);
+
+			/// <summary>Write to the command line window with a CRLF.</summary>
+			/// <param name="string">Content to write.</param>
 			static void WriteLine(const WString& string);
+
+			/// <summary>Read from the command line window.</summary>
 			static WString Read();
+
 			static void SetColor(bool red, bool green, bool blue, bool light);
 			static void SetTitle(const WString& string);
 		};
@@ -14305,6 +16057,7 @@ namespace vl
 {
 	namespace filesystem
 	{
+		/// <summary>A type representing a file path.</summary>
 		class FilePath : public Object
 		{
 		protected:
@@ -14318,9 +16071,16 @@ namespace vl
 			static const wchar_t		Delimiter = L'/';
 #endif
 
+			/// <summary>Create a root path.</summary>
 			FilePath();
+			/// <summary>Create a file path.</summary>
+			/// <param name="_filePath">Content of the file path. If it is a relative path, it will be converted to an absolute path.</param>
 			FilePath(const WString& _filePath);
+			/// <summary>Create a file path.</summary>
+			/// <param name="_filePath">Content of the file path. If it is a relative path, it will be converted to an absolute path.</param>
 			FilePath(const wchar_t* _filePath);
+			/// <summary>Copy a file path.</summary>
+			/// <param name="_filePath">The file path to copy.</param>
 			FilePath(const FilePath& _filePath);
 			~FilePath();
 
@@ -14331,56 +16091,132 @@ namespace vl
 			bool						operator<=(const FilePath& filePath){ return Compare(*this, filePath) <= 0; }
 			bool						operator> (const FilePath& filePath){ return Compare(*this, filePath) >  0; }
 			bool						operator>=(const FilePath& filePath){ return Compare(*this, filePath) >= 0; }
+
+			/// <summary>Concat an absolute path and a relative path.</summary>
+			/// <returns>The result absolute path.</returns>
+			/// <param name="relativePath">The relative path to concat.</param>
 			FilePath					operator/(const WString& relativePath)const;
 
+			/// <summary>Test if the file path is a file.</summary>
+			/// <returns>Returns true if the file path is a file.</returns>
 			bool						IsFile()const;
+			/// <summary>Test if the file path is a folder.</summary>
+			/// <returns>Returns true if the file path is a folder.</returns>
 			bool						IsFolder()const;
+			/// <summary>Test if the file path is a the root of all file system objects.</summary>
+			/// <returns>Returns true if the file path is the root of all file system objects.</returns>
 			bool						IsRoot()const;
+
+			/// <summary>Get the last piece of names in the file path.</summary>
+			/// <returns>The last piece of names in the file path.</returns>
 			WString						GetName()const;
+			/// <summary>Get the containing folder of this file path.</summary>
+			/// <returns>The containing folder.</returns>
 			FilePath					GetFolder()const;
+			/// <summary>Get the content of the file path.</summary>
+			/// <returns>The content of the file path.</returns>
 			WString						GetFullPath()const;
+			/// <summary>Calculate the relative path using a referencing folder.</summary>
+			/// <returns>The relative path.</returns>
+			/// <param name="_filePath">The referencing folder.</param>
 			WString						GetRelativePathFor(const FilePath& _filePath);
 		};
 
+		/// <summary>Representing a file reference.</summary>
 		class File : public Object
 		{
 		private:
 			FilePath					filePath;
 
 		public:
+			/// <summary>Create an empty reference.</summary>
 			File();
+			/// <summary>Create a reference to a specified file.</summary>
+			/// <param name="_filePath">The specified file.</param>
 			File(const FilePath& _filePath);
 			~File();
 
+			/// <summary>Get the file path of the file.</summary>
+			/// <returns>The file path.</returns>
 			const FilePath&				GetFilePath()const;
+
+			/// <summary>Get the content of the file as text.</summary>
+			/// <returns>The content of the file.</returns>
 			WString						ReadAllText()const;
+			/// <summary>Get the content of the file as text.</summary>
+			/// <returns>Returns false if this operation succeeded.</returns>
+			/// <param name="text">The content of the file.</param>
 			bool						ReadAllText(WString& text)const;
+			/// <summary>Get the content of the file as text.</summary>
+			/// <returns>Returns false if this operation succeeded.</returns>
+			/// <param name="lines">The content of the file.</param>
 			bool						ReadAllLines(collections::List<WString>& lines)const;
+
+			/// <summary>Write text to the file.</summary>
+			/// <returns>Returns false if this operation succeeded.</returns>
+			/// <param name="text">The text to write.</param>
+			/// <param name="bom">Set to true to add a corresponding BOM at the beginning of the file according to the encoding.</param>
+			/// <param name="encoding">The text encoding.</param>
 			bool						WriteAllText(const WString& text, bool bom = true, stream::BomEncoder::Encoding encoding = stream::BomEncoder::Utf16);
+			/// <summary>Write text to the file.</summary>
+			/// <returns>Returns false if this operation succeeded.</returns>
+			/// <param name="lines">The text to write.</param>
+			/// <param name="bom">Set to true to add a corresponding BOM at the beginning of the file according to the encoding.</param>
+			/// <param name="encoding">The text encoding.</param>
 			bool						WriteAllLines(collections::List<WString>& lines, bool bom = true, stream::BomEncoder::Encoding encoding = stream::BomEncoder::Utf16);
 			
+			/// <summary>Test does the file exist or not.</summary>
+			/// <returns>Returns true if the file exists.</returns>
 			bool						Exists()const;
+			/// <summary>Delete the file.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			bool						Delete()const;
+			/// <summary>Rename the file in the same folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="newName">The new file name.</param>
 			bool						Rename(const WString& newName)const;
 		};
-
+		
+		/// <summary>Representing a folder reference.</summary>
 		class Folder : public Object
 		{
 		private:
 			FilePath					filePath;
 
 		public:
+			/// <summary>Create an empty reference.</summary>
 			Folder();
+			/// <summary>Create a reference to a specified folder.</summary>
+			/// <param name="_filePath">The specified folder.</param>
 			Folder(const FilePath& _filePath);
 			~Folder();
-
+			
+			/// <summary>Get the file path of the folder.</summary>
+			/// <returns>The file path.</returns>
 			const FilePath&				GetFilePath()const;
+			/// <summary>Get all folders in this folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="folders">All folders.</param>
 			bool						GetFolders(collections::List<Folder>& folders)const;
+			/// <summary>Get all files in this folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="files">All files.</param>
 			bool						GetFiles(collections::List<File>& files)const;
 			
+			/// <summary>Test does the folder exist or not.</summary>
+			/// <returns>Returns true if the folder exists.</returns>
 			bool						Exists()const;
+			/// <summary>Create the folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="recursively">Set to true to create all parent folders if necessary.</param>
 			bool						Create(bool recursively)const;
+			/// <summary>Delete the folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="recursively">Set to true to delete everything in the folder.</param>
 			bool						Delete(bool recursively)const;
+			/// <summary>Rename the folder in the same folder.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="newName">The new folder name.</param>
 			bool						Rename(const WString& newName)const;
 		};
 	}
@@ -14409,19 +16245,27 @@ namespace vl
 {
 	namespace stream
 	{
+		/// <summary>A file stream. It is readable when you use [F:vl.stream.FileStream.AccessRight.ReadOnly] or [F:vl.stream.FileStream.AccessRight.ReadWrite] to create the stream. It is writable when you use [F:vl.stream.FileStream.AccessRight.WriteOnly] or [F:vl.stream.FileStream.AccessRight.ReadWrite] to create the stream.</summary>
 		class FileStream : public Object, public virtual IStream
 		{
 		public:
+			/// <summary>Access to the file.</summary>
 			enum AccessRight
 			{
+				/// <summary>The file is opened to read.</summary>
 				ReadOnly,
+				/// <summary>The file is opened to write.</summary>
 				WriteOnly,
+				/// <summary>The file is opened to both read and write.</summary>
 				ReadWrite
 			};
 		protected:
 			AccessRight				accessRight;
 			FILE*					file;
 		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="fileName">File to operate.</param>
+			/// <param name="_accessRight">Operations want to perform on the file.</param>
 			FileStream(const WString& fileName, AccessRight _accessRight);
 			~FileStream();
 
@@ -14465,6 +16309,18 @@ Classes:
 
 namespace vl
 {
+	/// <summary>
+	/// Base type of all global storages. A global storage is a value with a key to store some information. In order to create a global storage, you should do the following in a cpp file:
+	/// BEGIN_GLOBAL_STOREGE_CLASS(<put the key here, it should be a legal C++ identifier>)
+	///		<put all variables here>
+	/// INITIALIZE_GLOBAL_STORAGE_CLASS
+	///		<initialize all variables>
+	/// FINALIZE_GLOBAL_STORAGE_CLASS
+	///		<clear all resources because the program is about to exit>
+	/// END_GLOBAL_STORAGE_CLASS
+	/// Then you have a global storage. You can only use this global storage in the current cpp file. [M:vl.InitializeGlobalStorage] should be called before using any global storage. [M:vl.FinalizeGlobalStorage] is encouraged to call if you think you will not use any global storages anymore. It will reduce noices when you want to detect memory leaks.
+	/// If the key of the global variable is called Key, and the variable you want to access is called Variable, then you can use GetKey()->Variable to access that variable. The GetKey function is created in the macro calls before.
+	/// </summary>
 	class GlobalStorage : public Object, private NotCopyable
 	{
 	private:
@@ -14479,7 +16335,10 @@ namespace vl
 
 	extern GlobalStorage* GetGlobalStorage(const wchar_t* key);
 	extern GlobalStorage* GetGlobalStorage(const WString& key);
+
+	/// <summary>Initialize the global storage.</summary>
 	extern void InitializeGlobalStorage();
+	/// <summary>Finalize the global storage.</summary>
 	extern void FinalizeGlobalStorage();
 }
 
@@ -14516,7 +16375,8 @@ namespace vl
 	}\
 
 #define EXTERN_GLOBAL_STORAGE_CLASS(NAME)\
-	extern NAME& Get##NAME();
+	class NAME;\
+	extern NAME& Get##NAME();\
 
 #endif
 
@@ -14536,43 +16396,79 @@ namespace vl
 HTTP Utility
 ***********************************************************************/
 
+	/// <summary>A type representing an http requiest.</summary>
 	class HttpRequest
 	{
 		typedef collections::Array<char>					BodyBuffer;
 		typedef collections::List<WString>					StringList;
 		typedef collections::Dictionary<WString, WString>	HeaderMap;
 	public:
+		/// <summary>Name of the server, like "gaclib.net".</summary>
 		WString				server;
+		/// <summary>Port of the server, like 80.</summary>
 		vint				port;
+		/// <summary>Query of the request, like "/GettingStart.html".</summary>
 		WString				query;
+		/// <summary>Set to true if the request uses SSL.</summary>
 		bool				secure;
+		/// <summary>User name to authorize. Set to empty if you don't want to provide it.</summary>
 		WString				username;
+		/// <summary>Password to authorize. Set to empty if you don't want to provide it.</summary>
 		WString				password;
+		/// <summary>HTTP method, like "GET", "POST", "PUT", "DELETE", etc.</summary>
 		WString				method;
+		/// <summary>Cookie. Set to empty if you don't want to provide it.</summary>
 		WString				cookie;
+		/// <summary>Request body. This is a binary array using an array container to char.</summary>
 		BodyBuffer			body;
+		/// <summary>Content type, like "text/xml".</summary>
 		WString				contentType;
+		/// <summary>Accept type list, elements of it like "text/xml".</summary>
 		StringList			acceptTypes;
+		/// <summary>A dictionary to contain extra headers.</summary>
 		HeaderMap			extraHeaders;
 
+		/// <summary>Create an empty request.</summary>
 		HttpRequest();
+
+		/// <summary>Set <see cref="server"/>, <see cref="port"/>, <see cref="query"/> and <see cref="secure"/> fields for you using an URL.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="inputQuery">The URL.</param>
 		bool				SetHost(const WString& inputQuery);
+
+		/// <summary>Fill the body with a text using UTF-8 encoding.</summary>
+		/// <param name="bodyString">The text to fill.</param>
 		void				SetBodyUtf8(const WString& bodyString);
 	};
-
+	
+	/// <summary>A type representing an http response.</summary>
 	class HttpResponse
 	{
 		typedef collections::Array<char>		BodyBuffer;
 	public:
+		/// <summary>Status code, like 200.</summary>
 		vint				statusCode;
+		/// <summary>Response body. This is a binary array using an array container to char.</summary>
 		BodyBuffer			body;
+		/// <summary>Returned cookie from the server.</summary>
 		WString				cookie;
 
 		HttpResponse();
+
+		/// <summary>If you believe the server returns a text in UTF-8, use it to decode the body.</summary>
+		/// <returns>The response body as text.</returns>
 		WString				GetBodyUtf8();
 	};
 
+	/// <summary>Send an http request and receive a response.</summary>
+	/// <returns>Returns true if this operation succeeded. Even the server returns 404 will be treated as success, because you get the response.</returns>
+	/// <param name="request">The request.</param>
+	/// <param name="response">The response.</param>
 	extern bool				HttpQuery(const HttpRequest& request, HttpResponse& response);
+
+	/// <summary>Encode a text as part of the url. This function can be used to create arguments in an URL.</summary>
+	/// <returns>The encoded text.</returns>
+	/// <param name="query">The text to encode.</param>
 	extern WString			UrlEncodeQuery(const WString& query);
 }
 
@@ -14619,6 +16515,7 @@ namespace vl
 		struct ConditionVariableData;
 	}
 	
+	/// <summary>Base type of all synchronization objects.</summary>
 	class WaitableObject : public Object, public NotCopyable
 	{
 #if defined VCZH_MSVC
@@ -14629,28 +16526,59 @@ namespace vl
 		WaitableObject();
 		void										SetData(threading_internal::WaitableData* data);
 	public:
-
+		/// <summary>Test if the object has already been created. Some of the synchronization objects should initialize itself after the constructor. This function is only available in Windows.</summary>
+		/// <returns>Returns true if the object has already been created.</returns>
 		bool										IsCreated();
+		/// <summary>Wait for this object to signal.</summary>
+		/// <returns>Returns true if the object is signaled. Returns false if this operation failed.</returns>
 		bool										Wait();
+		/// <summary>Wait for this object to signal for a period of time. This function is only available in Windows.</summary>
+		/// <returns>Returns true if the object is signaled. Returns false if this operation failed, including time out.</returns>
+		/// <param name="ms">Time in milliseconds.</param>
 		bool										WaitForTime(vint ms);
 		
+		/// <summary>Wait for multiple objects. This function is only available in Windows.</summary>
+		/// <returns>Returns true if all objects are signaled. Returns false if this operation failed.</returns>
+		/// <param name="object">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
 		static bool									WaitAll(WaitableObject** objects, vint count);
+		/// <summary>Wait for multiple objects for a period of time. This function is only available in Windows.</summary>
+		/// <returns>Returns true if all objects are signaled. Returns false if this operation failed, including time out.</returns>
+		/// <param name="object">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
+		/// <param name="ms">Time in milliseconds.</param>
 		static bool									WaitAllForTime(WaitableObject** objects, vint count, vint ms);
+		/// <summary>Wait for one of the objects. This function is only available in Windows.</summary>
+		/// <returns>Returns the index of the first signaled or abandoned object, according to the "abandoned" parameter. Returns -1 if this operation failed.</returns>
+		/// <param name="object">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
+		/// <param name="abondoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
 		static vint									WaitAny(WaitableObject** objects, vint count, bool* abandoned);
+		/// <summary>Wait for one of the objects for a period of time. This function is only available in Windows.</summary>
+		/// <returns>Returns the index of the first signaled or abandoned object, according to the "abandoned" parameter. Returns -1 if this operation failed, including time out.</returns>
+		/// <param name="object">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
+		/// <param name="ms">Time in milliseconds.</param>
+		/// <param name="abondoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
 		static vint									WaitAnyForTime(WaitableObject** objects, vint count, vint ms, bool* abandoned);
 #elif defined VCZH_GCC
 		virtual bool								Wait() = 0;
 #endif
 	};
 
+	/// <summary>Representing a thread. [M:vl.Thread.CreateAndStart] is the suggested way to create threads.</summary>
 	class Thread : public WaitableObject
 	{
 		friend void InternalThreadProc(Thread* thread);
 	public:
+		/// <summary>Thread state.</summary>
 		enum ThreadState
 		{
+			/// <summary>The thread has not started.</summary>
 			NotStarted,
+			/// <summary>The thread is running.</summary>
 			Running,
+			/// <summary>The thread has been stopped.</summary>
 			Stopped
 		};
 
@@ -14665,23 +16593,45 @@ namespace vl
 	public:
 		~Thread();
 
+		/// <summary>Create a thread using a function pointer.</summary>
+		/// <returns>Returns the created thread.</returns>
+		/// <param name="procedure">The function pointer.</param>
+		/// <param name="argument">The argument to call the function pointer.</param>
+		/// <param name="deleteAfterStopped">Set to true (by default) to make the thread delete itself after the job is done. If you set this argument to true, you are not suggested to touch the returned thread pointer in any way.</param>
 		static Thread*								CreateAndStart(ThreadProcedure procedure, void* argument=0, bool deleteAfterStopped=true);
+		/// <summary>Create a thread using a function object or a lambda expression.</summary>
+		/// <returns>Returns the created thread.</returns>
+		/// <param name="procedure">The function object or the lambda expression.</param>
+		/// <param name="deleteAfterStopped">Set to true (by default) to make the thread delete itself after the job is done. If you set this argument to true, you are not suggested to touch the returned thread pointer in any way.</param>
 		static Thread*								CreateAndStart(const Func<void()>& procedure, bool deleteAfterStopped=true);
+		/// <summary>Pause the caller thread for a period of time.</summary>
+		/// <param name="ms">Time in milliseconds.</param>
 		static void									Sleep(vint ms);
+		/// <summary>Get the number of logical processors.</summary>
+		/// <returns>The number of logical processor.</returns>
 		static vint									GetCPUCount();
+		/// <summary>Get the current thread id.</summary>
+		/// <returns>The current thread id.</returns>
 		static vint									GetCurrentThreadId();
 
+		/// <summary>Start the thread.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Start();
 #if defined VCZH_GCC
 		bool										Wait();
 #endif
+		/// <summary>Stop the thread.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Stop();
+		/// <summary>Get the state of the thread.</summary>
+		/// <returns>The state of the thread.</returns>
 		ThreadState									GetState();
 #ifdef VCZH_MSVC
 		void										SetCPU(vint index);
 #endif
 	};
 
+	/// <summary>Mutex.</summary>
 	class Mutex : public WaitableObject
 	{
 	private:
@@ -14690,19 +16640,29 @@ namespace vl
 		Mutex();
 		~Mutex();
 
+		/// <summary>Create a mutex.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="owner">Set to true to own the created mutex.</param>
+		/// <param name="name">Name of the mutex. If it is not empty, than it is a global named mutex. This argument is ignored in Linux.</param>
 		bool										Create(bool owned=false, const WString& name=L"");
+		/// <summary>Open an existing global named mutex.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="inheritable">Set to true make the mutex visible to all all child processes. This argument is only used in Windows.</param>
+		/// <param name="name">Name of the mutex. This argument is ignored in Linux.</param>
 		bool										Open(bool inheritable, const WString& name);
 
-		// In the implementation for Linux,
-		// calling Release() more than once between two Wait(),
-		// or calling Wait() more than once between two Release(),
-		// will results in an undefined behavior
+		/// <summary>
+		/// Release the mutex.
+		/// In the implementation for Linux, calling Release() more than once between two Wait(), or calling Wait() more than once between two Release(), will results in an undefined behavior.
+		/// </summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Release();
 #ifdef VCZH_GCC
 		bool										Wait();
 #endif
 	};
-
+	
+	/// <summary>Semaphore.</summary>
 	class Semaphore : public WaitableObject
 	{
 	private:
@@ -14710,18 +16670,32 @@ namespace vl
 	public:
 		Semaphore();
 		~Semaphore();
-
-		// the maxCount is ignored in the implementation for Linux
+		
+		/// <summary>Create a semaphore.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="initialCount">Define the counter of the semaphore.</param>
+		/// <param name="maxCount">Define the maximum value of the counter of the semaphore. This argument is only used in Windows.</param>
+		/// <param name="name">Name of the semaphore. If it is not empty, than it is a global named semaphore. This argument is ignored in Linux.</param>
 		bool										Create(vint initialCount, vint maxCount, const WString& name=L"");
+		/// <summary>Open an existing global named semaphore.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="inheritable">Set to true make the semaphore visible to all all child processes. This argument is only used in Windows.</param>
+		/// <param name="name">Name of the semaphore. This argument is ignored in Linux.</param>
 		bool										Open(bool inheritable, const WString& name);
-
+		
+		/// <summary> Release the semaphore once. </summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Release();
+		/// <summary> Release the semaphore multiple times. </summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="count">The amout to release.</param>
 		vint										Release(vint count);
 #ifdef VCZH_GCC
 		bool										Wait();
 #endif
 	};
 
+	/// <summary>Event.</summary>
 	class EventObject : public WaitableObject
 	{
 	private:
@@ -14729,13 +16703,28 @@ namespace vl
 	public:
 		EventObject();
 		~EventObject();
-
-		// Named event is not supported in the implementation for Linux
+		
+		/// <summary>Create an auto unsignal event. Auto unsignal means, when one thread waits for the event and succeeded, the event will become unsignaled immediately.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="signaled">Set to true make the event signaled at the beginning.</param>
+		/// <param name="name">Name of the event. If it is not empty, than it is a global named mutex. This argument is only used in Windows.</param>
 		bool										CreateAutoUnsignal(bool signaled, const WString& name=L"");
+		/// <summary>Create a manual unsignal event.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="signaled">Set to true make the event signaled at the beginning.</param>
+		/// <param name="name">Name of the event. If it is not empty, than it is a global named mutex. This argument is only used in Windows.</param>
 		bool										CreateManualUnsignal(bool signaled, const WString& name=L"");
+		/// <summary>Open an existing global named event.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="inheritable">Set to true make the event visible to all all child processes. This argument is only used in Windows.</param>
+		/// <param name="name">Name of the event. This argument is only used in Windows.</param>
 		bool										Open(bool inheritable, const WString& name);
 
+		/// <summary>Signal the event.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
 		bool										Signal();
+		/// <summary>Unsignal the event.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
 		bool										Unsignal();
 #ifdef VCZH_GCC
 		bool										Wait();
@@ -14746,17 +16735,27 @@ namespace vl
 线程池
 ***********************************************************************/
 
-	// <NOT_IMPLEMENTED_USING GCC> -- BEGIN
-
+	/// <summary>A light-weight thread pool.</summary>
 	class ThreadPoolLite : public Object
 	{
 	private:
 		ThreadPoolLite();
 		~ThreadPoolLite();
 	public:
+		/// <summary>Queue a function pointer.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="proc">The function pointer.</param>
+		/// <param name="argument">The argument to call the function pointer.</param>
 		static bool									Queue(void(*proc)(void*), void* argument);
+		/// <summary>Queue a function object.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="proc">The function object.</param>
 		static bool									Queue(const Func<void()>& proc);
-
+		
+		/// <summary>Queue a lambda expression.</summary>
+		/// <typeparam name="T">The type of the lambda expression.</param>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="proc">The lambda expression.</param>
 		template<typename T>
 		static void QueueLambda(const T& proc)
 		{
@@ -14768,23 +16767,34 @@ namespace vl
 #endif
 	};
 
-	// <NOT_IMPLEMENTED_USING GCC> -- END
-
 /***********************************************************************
 进程内对象
 ***********************************************************************/
 
+	/// <summary>
+	/// Critical section. It is similar to mutex, but in Windows, enter a owned critical section will not cause dead lock.
+	/// The macro "CS_LOCK" is encouraged to use instead of calling [M:vl.CriticalSection.Enter] and [M:vl.CriticalSection.Leave] like this:
+	/// CS_LOCK(yourCriticalSection)
+	/// {
+	///		<code>
+	/// }
+	/// </summary>
 	class CriticalSection : public Object, public NotCopyable
 	{
 	private:
 		friend class ConditionVariable;
 		threading_internal::CriticalSectionData*	internalData;
 	public:
+		/// <summary>Create a critical section.</summary>
 		CriticalSection();
 		~CriticalSection();
 
+		/// <summary>Try enter a critical section. This function will return immediately.</summary>
+		/// <returns>Returns true if the current thread owned the critical section.</returns>
 		bool										TryEnter();
+		/// <summary>Enter a critical section.</summary>
 		void										Enter();
+		/// <summary>Leave a critical section.</summary>
 		void										Leave();
 
 	public:
@@ -14797,21 +16807,43 @@ namespace vl
 			~Scope();
 		};
 	};
-
+	
+	/// <summary>
+	/// Reader writer lock.
+	/// The macro "READER_LOCK" and "WRITER_LOCK" are encouraged to use instead of calling [M:vl.ReaderWriterLock.EnterReader], [M:vl.ReaderWriterLock.LeaveReader], [M:vl.ReaderWriterLock.EnterWriter] and [M:vl.CriticalSection.LeaveWriter] like this:
+	/// READER_LOCK(yourLock)
+	/// {
+	///		<code>
+	/// }
+	/// or
+	/// WRITER_LOCK(yourLock)
+	/// {
+	///		<code>
+	/// }
+	/// </summary>
 	class ReaderWriterLock : public Object, public NotCopyable
 	{
 	private:
 		friend class ConditionVariable;
 		threading_internal::ReaderWriterLockData*	internalData;
 	public:
+		/// <summary>Create a reader writer lock.</summary>
 		ReaderWriterLock();
 		~ReaderWriterLock();
-
+		
+		/// <summary>Try acquire a reader lock. This function will return immediately.</summary>
+		/// <returns>Returns true if the current thread acquired the reader lock.</returns>
 		bool										TryEnterReader();
+		/// <summary>Acquire a reader lock.</summary>
 		void										EnterReader();
+		/// <summary>Release a reader lock.</summary>
 		void										LeaveReader();
+		/// <summary>Try acquire a writer lock. This function will return immediately.</summary>
+		/// <returns>Returns true if the current thread acquired the writer lock.</returns>
 		bool										TryEnterWriter();
+		/// <summary>Acquire a writer lock.</summary>
 		void										EnterWriter();
+		/// <summary>Release a writer lock.</summary>
 		void										LeaveWriter();
 	public:
 		class ReaderScope : public Object, public NotCopyable
@@ -14833,23 +16865,48 @@ namespace vl
 		};
 	};
 
+	/// <summary>Conditional variable.</summary>
 	class ConditionVariable : public Object, public NotCopyable
 	{
 	private:
 		threading_internal::ConditionVariableData*	internalData;
 	public:
+		/// <summary>Create a conditional variable.</summary>
 		ConditionVariable();
 		~ConditionVariable();
 
+		/// <summary>Bind a conditional variable with a owned critical section and release it. When the function returns, the condition variable is activated, and the current thread owned the critical section again.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="cs">The critical section.</param>
 		bool										SleepWith(CriticalSection& cs);
 #ifdef VCZH_MSVC
+		/// <summary>Bind a conditional variable with a owned critical section and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the critical section again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="cs">The critical section.</param>
+		/// <param name="ms">Time in milliseconds.</param>
 		bool										SleepWithForTime(CriticalSection& cs, vint ms);
+		/// <summary>Bind a conditional variable with a owned reader lock and release it. When the function returns, the condition variable is activated, and the current thread owned the reader lock again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="lock">The reader lock.</param>
 		bool										SleepWithReader(ReaderWriterLock& lock);
+		/// <summary>Bind a conditional variable with a owned reader lock and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the reader lock again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="lock">The reader lock.</param>
+		/// <param name="ms">Time in milliseconds.</param>
 		bool										SleepWithReaderForTime(ReaderWriterLock& lock, vint ms);
+		/// <summary>Bind a conditional variable with a owned writer lock and release it. When the function returns, the condition variable is activated, and the current thread owned the writer lock again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="lock">The writer lock.</param>
 		bool										SleepWithWriter(ReaderWriterLock& lock);
+		/// <summary>Bind a conditional variable with a owned writer lock and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the writer lock again. This function is only available in Windows.</summary>
+		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <param name="lock">The writer lock.</param>
+		/// <param name="ms">Time in milliseconds.</param>
 		bool										SleepWithWriterForTime(ReaderWriterLock& lock, vint ms);
 #endif
+		/// <summary>Wake one thread that pending on this condition variable.</summary>
 		void										WakeOnePending();
+		/// <summary>Wake all thread that pending on this condition variable.</summary>
 		void										WakeAllPendings();
 	};
 
@@ -14858,17 +16915,30 @@ namespace vl
 ***********************************************************************/
 
 	typedef long LockedInt;
-
+	
+	/// <summary>
+	/// Spin lock. It is similar to mutex.
+	/// The macro "SPIN_LOCK" is encouraged to use instead of calling [M:vl.SpinLock.Enter] and [M:vl.SpinLock.Leave] like this:
+	/// SPIN_LOCK(yourLock)
+	/// {
+	///		<code>
+	/// }
+	/// </summary>
 	class SpinLock : public Object, public NotCopyable
 	{
 	protected:
 		volatile LockedInt							token;
 	public:
+		/// <summary>Create a spin lock.</summary>
 		SpinLock();
 		~SpinLock();
-
+		
+		/// <summary>Try enter a spin lock. This function will return immediately.</summary>
+		/// <returns>Returns true if the current thread owned the spin lock.</returns>
 		bool										TryEnter();
+		/// <summary>Enter a spin lock.</summary>
 		void										Enter();
+		/// <summary>Leave a spin lock.</summary>
 		void										Leave();
 
 	public:
@@ -14894,6 +16964,7 @@ ThreadLocalStorage and ThreadVariable<T> are designed to be used as global value
 Dynamically create instances of them are undefined behavior.
 ***********************************************************************/
 
+	/// <summary>Thread local storage operations.</summary>
 	class ThreadLocalStorage : public Object, private NotCopyable
 	{
 		typedef void(*Destructor)(void*);
@@ -14912,11 +16983,16 @@ Dynamically create instances of them are undefined behavior.
 		void									Clear();
 		void									Dispose();
 
+		/// <summary>Fix all storage creation.</summary>
 		static void								FixStorages();
+		/// <summary>Clear all storages for the current thread. For threads that are created using [T:vl.Thread], this function will be automatically called when before the thread exit.</summary>
 		static void								ClearStorages();
+		/// <summary>Clear all storages for the current thread (should be the main thread) and clear all records. This function can only be called by the main thread when all other threads are exited. It will reduce noices when you want to detect memory leaks.</summary>
 		static void								DisposeStorages();
 	};
 
+	/// <summary>Thread local variable. This type can only be used to define global variables. Different threads can store different values to and obtain differnt values from a thread local variable.</summary>
+	/// <typeparam name="T">Type of the storage.</typeparam>
 	template<typename T>
 	class ThreadVariable : public Object, private NotCopyable
 	{
@@ -14931,6 +17007,7 @@ Dynamically create instances of them are undefined behavior.
 			}
 		}
 	public:
+		/// <summary>Create a thread local variable.</summary>
 		ThreadVariable()
 			:storage(&Destructor)
 		{
@@ -14940,21 +17017,28 @@ Dynamically create instances of them are undefined behavior.
 		{
 		}
 
+		/// <summary>Test if the storage has data.</summary>
+		/// <returns>Returns true if the storage has data.</summary>
 		bool HasData()
 		{
 			return storage.Get() != nullptr;
 		}
 
+		/// <summary>Remove the data from this storage.</summary>
 		void Clear()
 		{
 			storage.Clear();
 		}
 
+		/// <summary>Get the stored data.</summary>
+		/// <returns>The stored ata.</returns>
 		T& Get()
 		{
 			return *(T*)storage.Get();
 		}
 
+		/// <summary>Set data to this storage.</summary>
+		/// <param name="T">The data to set.</param>
 		void Set(const T& value)
 		{
 			storage.Clear();
@@ -15003,6 +17087,8 @@ Dynamically create instances of them are undefined behavior.
 RepeatingTaskExecutor
 ***********************************************************************/
 
+	/// <summary>Queued task executor. It is different from a thread pool by: 1) Task execution is single threaded, 2) If you queue a task, it will override the the unexecuted queued task.</summary>
+	/// <typeparam name="T">The type of the argument to run a task.</param>
 	template<typename T>
 	class RepeatingTaskExecutor : public Object
 	{
@@ -15043,9 +17129,12 @@ RepeatingTaskExecutor
 		}
 	
 	protected:
+		/// <summary>This function is called when it is ready to execute a task. Task execution is single threaded. All task code should be put inside the function.</summary>
+		/// <param name="input">The argument to run a task.</param>
 		virtual void							Execute(const T& input)=0;
 
 	public:
+		/// <summary>Create a task executor.</summary>
 		RepeatingTaskExecutor()
 			:inputDataAvailable(false)
 			,executing(false)
@@ -15057,12 +17146,15 @@ RepeatingTaskExecutor
 			EnsureTaskFinished();
 		}
 
+		/// <summary>Wait for all tasks to finish.</summary>
 		void EnsureTaskFinished()
 		{
 			executingEvent.Enter();
 			executingEvent.Leave();
 		}
 
+		/// <summary>Queue a task. If there is a queued task that has not been executied yet, those tasks will be canceled. Only one task can be queued at the same moment.</summary>
+		/// <param name="input">The argument to run a task.</param>
 		void SubmitTask(const T& input)
 		{
 			SPIN_LOCK(inputLock)
@@ -15388,6 +17480,7 @@ namespace vl
 {
 	namespace stream
 	{
+		/// <summary>A writable stream that copy written content to multiple target streams.</summary>
 		class BroadcastStream : public Object, public virtual IStream
 		{
 			typedef collections::List<IStream*>		StreamList;
@@ -15396,9 +17489,12 @@ namespace vl
 			pos_t					position;
 			StreamList				streams;
 		public:
+			/// <summary>Create a strema.</summary>
 			BroadcastStream();
 			~BroadcastStream();
 
+			/// <summary>Get the list of target streams. You can add streams to this list, or remove streams from this list.</summary>
+			/// <returns>The list of target streams.</returns>
 			StreamList&				Targets();
 			bool					CanRead()const;
 			bool					CanWrite()const;
@@ -15412,9 +17508,9 @@ namespace vl
 			void					Seek(pos_t _size);
 			void					SeekFromBegin(pos_t _size);
 			void					SeekFromEnd(pos_t _size);
-			vint						Read(void* _buffer, vint _size);
-			vint						Write(void* _buffer, vint _size);
-			vint						Peek(void* _buffer, vint _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
 		};
 	}
 }
@@ -15441,6 +17537,11 @@ namespace vl
 {
 	namespace stream
 	{
+		/// <summary>
+		/// A cache stream. Features (readable, writable, seekable, peekable) are enabled according to the target stream.
+		/// When you read from the cache strema, it will read a specified size of content from the target stream first and cache, reducing the numbers of operations on the target stream.
+		/// When you write to the cache strema, it will save them to a buffer, and write to the target stream until the buffer reaches a specified size, reducing the numbers of operations on the target stream.
+		/// </summary>
 		class CacheStream : public Object, public virtual IStream
 		{
 		protected:
@@ -15460,6 +17561,9 @@ namespace vl
 			vint					InternalRead(void* _buffer, vint _size);
 			vint					InternalWrite(void* _buffer, vint _size);
 		public:
+			/// <summary>Create a cache stream using a target stream.</summary>
+			/// <param name="_target">The target stream.</param>
+			/// <param name="_block">Size of the cache.</param>
 			CacheStream(IStream& _target, vint _block=65536);
 			~CacheStream();
 
@@ -15504,12 +17608,16 @@ namespace vl
 {
 	namespace stream
 	{
+		/// <summary>A readable stream that, read from an stream, and write everything that is read to another stream.</summary>
 		class RecorderStream : public Object, public virtual IStream
 		{
 		protected:
 			IStream*				in;
 			IStream*				out;
 		public:
+			/// <summary>Create a stream.</summary>
+			/// <param name="_in">The stream to read.</param>
+			/// <param name="_out">The stream to write what is read from "_in".</param>
 			RecorderStream(IStream& _in, IStream& _out);
 			~RecorderStream();
 
@@ -15525,9 +17633,9 @@ namespace vl
 			void					Seek(pos_t _size);
 			void					SeekFromBegin(pos_t _size);
 			void					SeekFromEnd(pos_t _size);
-			vint						Read(void* _buffer, vint _size);
-			vint						Write(void* _buffer, vint _size);
-			vint						Peek(void* _buffer, vint _size);
+			vint					Read(void* _buffer, vint _size);
+			vint					Write(void* _buffer, vint _size);
+			vint					Peek(void* _buffer, vint _size);
 		};
 	}
 }
@@ -15556,15 +17664,38 @@ namespace vl
 {
 	namespace unittest
 	{
+		/// <summary>
+		/// A static class containing all unit test operations. In order to run test cases, you should do the following:
+		/// 1) Write test cases in cpp files like this
+		/// TEST_CASE(<Name of the test case, which should be a legal C++ identifier>)
+		/// {
+		///		<Use TEST_ASSERT(condition) to test>
+		///		<Use TEST_ERROR(expression) if you know "expression" will cause a fatal error by using the CHECK_ERROR macro.>
+		///		<Use TEST_EXCEPTION(expression, exceptionType, assertFunction) if you know "expression" will throw an expression of "exceptionType", and then you can provide "assertFunction" to check the information provided in the exception.>
+		///		<Use TEST_PRINT(message) to print whatever to the command line window.>
+		/// }
+		/// You should call [M:vl.unittest.UnitTest.RunAndDisposeTests] in your main function to run all test cases.
+		/// </summary>
 		class UnitTest abstract
 		{
 		public:
 			typedef void(*TestProc)();
 
+			/// <summary>Print a green message.</summary>
+			/// <param name="string">The content.</param>
 			static void PrintMessage(const WString& string);
+
+			/// <summary>Print a white information.</summary>
+			/// <param name="string">The content.</param>
 			static void PrintInfo(const WString& string);
+
+			/// <summary>Print a red error.</summary>
+			/// <param name="string">The content.</param>
 			static void PrintError(const WString& string);
+
 			static void PushTest(TestProc testProc);
+
+			/// <summary>Run all test cases.</summary>
 			static void RunAndDisposeTests();
 		};
 #if defined VCZH_MSVC	
@@ -15627,6 +17758,8 @@ Classes:
 
 namespace vl
 {
+	/// <summary>A type representing a lazy evaluation.</summary>
+	/// <typeparam name="T">The type of the evaluation result.</typeparam>
 	template<typename T>
 	class Lazy : public Object
 	{
@@ -15641,10 +17774,13 @@ namespace vl
 
 		Ptr<Internal>			internalValue;
 	public:
+		/// <summary>Create an empty evaluation.</summary>
 		Lazy()
 		{
 		}
 
+		/// <summary>Create an evaluation using a function.</summary>
+		/// <param name="evaluator">The function.</param>
 		Lazy(const Func<T()>& evaluator)
 		{
 			internalValue=new Internal;
@@ -15652,6 +17788,8 @@ namespace vl
 			internalValue->evaluator=evaluator;
 		}
 
+		/// <summary>Create an evaluation using the result directly.</summary>
+		/// <param name="value">The result that you have already known.</param>0
 		Lazy(const T& value)
 		{
 			internalValue=new Internal;
@@ -15659,6 +17797,8 @@ namespace vl
 			internalValue->value=value;
 		}
 
+		/// <summary>Copy an evaluation.</summary>
+		/// <param name="lazy">The evaluation to copy.</param>
 		Lazy(const Lazy<T>& lazy)
 			:internalValue(lazy.internalValue)
 		{
@@ -15686,6 +17826,8 @@ namespace vl
 			return *this;
 		}
 
+		/// <summary>Get the evaluation result. If it has not been calculated yet, it will run the evaluation and cache the result. You will not need to calculate for the second time.</summary>
+		/// <returns>The evaluation result.</returns>
 		const T& Value()const
 		{
 			if(!internalValue->evaluated)
@@ -15697,11 +17839,15 @@ namespace vl
 			return internalValue->value;
 		}
 
+		/// <summary>Test if it has already been evaluated or not.</summary>
+		/// <returns>Returns true if it has already been evaluated.</returns>
 		const bool IsEvaluated()const
 		{
 			return internalValue->evaluated;
 		}
 
+		/// <summary>Test if it is an empty evaluation or not.</summary>
+		/// <returns>Returns true if it is not empty.</returns>
 		const bool IsAvailable()const
 		{
 			return internalValue;

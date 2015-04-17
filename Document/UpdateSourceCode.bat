@@ -1,0 +1,13 @@
+cd ..\..\Vlpp\Release
+call Release.bat
+cd ..\..\Workflow\Release
+call Release.bat
+cd ..\..\GacUI\Release
+call Release.bat
+cd ..\..\Workflow\Import
+call Import.bat
+cd ..\..\GacUI\Import
+call Import.bat
+cd ..\..\Tools\Import
+call Import.bat
+cd ..\..\GacUI\Document
