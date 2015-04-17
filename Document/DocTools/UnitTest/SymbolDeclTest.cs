@@ -19,6 +19,10 @@ namespace UnitTest
             CppDeclParser.ParseSymbols(tokens, ref index, decl);
             Assert.AreEqual(tokens.Length, index);
 
+            var xml = decl.Serialize();
+            var newDecl = SymbolDecl.Deserialize(xml);
+            Assert.AreEqual(decl.ToString(), newDecl.ToString());
+
             return decl;
         }
 

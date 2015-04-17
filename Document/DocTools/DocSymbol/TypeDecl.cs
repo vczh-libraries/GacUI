@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DocSymbol
 {
@@ -29,6 +30,25 @@ namespace DocSymbol
             var visitor = new PrintTypeDeclVisitor();
             Accept(visitor);
             return visitor.Result;
+        }
+
+        public XElement Serialize()
+        {
+            var visitor = new SerializeTypeDeclVisitor();
+            visitor.Element = new XElement(GetType().Name);
+            Accept(visitor);
+            return visitor.Element;
+        }
+
+        public static TypeDecl Deserialize(XElement element)
+        {
+            var typeName = "DocSymbol." + element.Name;
+            var type = typeof(TypeDecl).Assembly.GetType(typeName);
+            var typeDecl = (TypeDecl)type.GetConstructor(Type.EmptyTypes).Invoke(null);
+            var visitor = new DeserializeTypeDeclVisitor();
+            visitor.Element = element;
+            typeDecl.Accept(visitor);
+            return typeDecl;
         }
     }
 

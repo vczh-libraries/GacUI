@@ -17,6 +17,10 @@ namespace UnitTest
             Assert.IsTrue(CppTypeParser.ParseType(tokens, ref index, out decl, out name));
             Assert.AreEqual(tokens.Length, index);
 
+            var xml = decl.Serialize();
+            var newDecl = TypeDecl.Deserialize(xml);
+            Assert.AreEqual(decl.ToString(), newDecl.ToString());
+
             if (name == null)
             {
                 return decl.ToString();

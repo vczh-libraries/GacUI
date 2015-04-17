@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DocSymbol
 {
@@ -51,6 +52,25 @@ namespace DocSymbol
             var visitor = new PrintSymbolDeclVisitor();
             Accept(visitor);
             return visitor.Result;
+        }
+
+        public XElement Serialize()
+        {
+            var visitor = new SerializeSymbolDeclVisitor();
+            visitor.Element = new XElement(GetType().Name);
+            Accept(visitor);
+            return visitor.Element;
+        }
+
+        public static SymbolDecl Deserialize(XElement element)
+        {
+            var typeName = "DocSymbol." + element.Name;
+            var type = typeof(SymbolDecl).Assembly.GetType(typeName);
+            var symbolDecl = (SymbolDecl)type.GetConstructor(Type.EmptyTypes).Invoke(null);
+            var visitor = new DeserializeSymbolDeclVisitor();
+            visitor.Element = element;
+            symbolDecl.Accept(visitor);
+            return symbolDecl;
         }
 
         internal string KeyOfScopeParent
