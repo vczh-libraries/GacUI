@@ -84,9 +84,9 @@ namespace DocSymbol
             {
                 this.Element.Add(new XAttribute("Document", decl.Document));
             }
-            if (serializeChildren)
+            if (serializeChildren && decl.Children != null)
             {
-                this.Element.Add(new XElement("Children"), decl.Children.Select(x => x.Serialize()));
+                this.Element.Add(new XElement("Children", decl.Children.Select(x => x.Serialize())));
             }
         }
 
@@ -111,13 +111,13 @@ namespace DocSymbol
             Serialize(decl, false);
             this.Element.Add(new XElement("TypeParameters", decl.TypeParameters.Select(x => new XElement("Item", new XAttribute("Value", x)))));
             this.Element.Add(new XElement("Specialization", decl.Specialization.Select(x => x.Serialize())));
-            this.Element.Add(new XElement("Element"), decl.Element.Serialize());
+            this.Element.Add(new XElement("Element", decl.Element.Serialize()));
         }
 
         public void Visit(BaseTypeDecl decl)
         {
             Serialize(decl);
-            this.Element.Add(new XElement("Type"), decl.Type.Serialize());
+            this.Element.Add(new XElement("Type", decl.Type.Serialize()));
         }
 
         public void Visit(ClassDecl decl)
@@ -131,7 +131,7 @@ namespace DocSymbol
         {
             Serialize(decl);
             this.Element.Add(new XAttribute("Static", decl.Static.ToString()));
-            this.Element.Add(new XElement("Type"), decl.Type.Serialize());
+            this.Element.Add(new XElement("Type", decl.Type.Serialize()));
         }
 
         public void Visit(FuncDecl decl)
@@ -139,7 +139,7 @@ namespace DocSymbol
             Serialize(decl, false);
             this.Element.Add(new XAttribute("Virtual", decl.Virtual.ToString()));
             this.Element.Add(new XAttribute("Function", decl.Function.ToString()));
-            this.Element.Add(new XElement("Type"), decl.Type.Serialize());
+            this.Element.Add(new XElement("Type", decl.Type.Serialize()));
         }
 
         public void Visit(GroupedFieldDecl decl)
@@ -161,7 +161,7 @@ namespace DocSymbol
         public void Visit(TypedefDecl decl)
         {
             Serialize(decl);
-            this.Element.Add(new XElement("Type"), decl.Type.Serialize());
+            this.Element.Add(new XElement("Type", decl.Type.Serialize()));
         }
     }
 }
