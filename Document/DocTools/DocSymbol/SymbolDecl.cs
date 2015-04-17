@@ -53,28 +53,39 @@ namespace DocSymbol
             return visitor.Result;
         }
 
-        protected static string GetKeyOfScopeParent(SymbolDecl decl)
+        internal string KeyOfScopeParent
         {
-            if (decl != null)
+            get
             {
-                decl = decl.GetScopeParent();
+                var decl = this.Parent;
+                if (decl != null)
+                {
+                    decl = decl.ScopeParent;
+                }
+                return decl == null ? "" : decl.OverloadKey;
             }
-            return decl == null ? "" : decl.OverloadKey;
         }
 
-        internal virtual string GenerateNameKey()
+        internal virtual SymbolDecl ScopeParent
         {
-            return null;
+            get
+            {
+                return this;
+            }
         }
 
-        internal virtual string GenerateOverloadKey()
+        internal string GenerateNameKey()
         {
-            return GenerateNameKey();
+            var visitor = new GenerateSymbolDeclNameKeyVisitor();
+            Accept(visitor);
+            return visitor.Result;
         }
 
-        internal virtual SymbolDecl GetScopeParent()
+        internal string GenerateOverloadKey()
         {
-            return this;
+            var visitor = new GenerateSymbolDeclOverrideKeyVisitor();
+            Accept(visitor);
+            return visitor.Result == null ? GenerateNameKey() : visitor.Result;
         }
 
         public virtual void BuildSymbolTree(SymbolDecl parent = null)
@@ -105,11 +116,6 @@ namespace DocSymbol
         public override void Accept(SymbolDecl.IVisitor visitor)
         {
             visitor.Visit(this);
-        }
-
-        internal override string GenerateNameKey()
-        {
-            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
         }
     }
 
@@ -149,9 +155,12 @@ namespace DocSymbol
             visitor.Visit(this);
         }
 
-        internal override SymbolDecl GetScopeParent()
+        internal override SymbolDecl ScopeParent
         {
-            return this.Parent == null ? null : this.Parent.GetScopeParent();
+            get
+            {
+                return this.Parent == null ? null : this.Parent.ScopeParent;
+            }
         }
     }
 
@@ -181,33 +190,6 @@ namespace DocSymbol
         {
             visitor.Visit(this);
         }
-
-        internal override string GenerateNameKey()
-        {
-            var template = this.Parent as TemplateDecl;
-            if (template == null)
-            {
-                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
-            }
-            else
-            {
-                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + "`" + template.TypeParameters.Count.ToString();
-            }
-        }
-
-        internal override string GenerateOverloadKey()
-        {
-            var template = this.Parent as TemplateDecl;
-            if (template == null)
-            {
-                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
-            }
-            else
-            {
-                var postfix = "<" + template.Specialization.Aggregate("", (a, b) => a == "" ? b.ToString() : a + "," + b.ToString()) + ">";
-                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + "`" + template.TypeParameters.Count.ToString() + (postfix == "<>" ? "" : postfix);
-            }
-        }
     }
 
     public class VarDecl : SymbolDecl
@@ -218,11 +200,6 @@ namespace DocSymbol
         public override void Accept(SymbolDecl.IVisitor visitor)
         {
             visitor.Visit(this);
-        }
-
-        internal override string GenerateNameKey()
-        {
-            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
         }
     }
 
@@ -250,34 +227,6 @@ namespace DocSymbol
         public override void Accept(SymbolDecl.IVisitor visitor)
         {
             visitor.Visit(this);
-        }
-
-        internal override string GenerateNameKey()
-        {
-            var template = this.Parent as TemplateDecl;
-            if (template == null)
-            {
-                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
-            }
-            else
-            {
-                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + "`" + template.TypeParameters.Count.ToString();
-            }
-        }
-
-        internal override string GenerateOverloadKey()
-        {
-            var func = (FunctionTypeDecl)this.Type;
-            var postfix = "(" + func.Parameters.Aggregate("", (a, b) => a == "" ? b.Type.ToString() : a + "," + b.Type.ToString()) + ")" + (func.Const ? "const" : "");
-            var template = this.Parent as TemplateDecl;
-            if (template == null)
-            {
-                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + postfix;
-            }
-            else
-            {
-                return GetKeyOfScopeParent(this.Parent) + "::" + this.Name + "`" + template.TypeParameters.Count.ToString() + postfix;
-            }
         }
 
         public override void BuildSymbolTree(SymbolDecl parent)
@@ -312,9 +261,12 @@ namespace DocSymbol
             visitor.Visit(this);
         }
 
-        internal override SymbolDecl GetScopeParent()
+        internal override SymbolDecl ScopeParent
         {
-            return this.Parent == null ? null : this.Parent.GetScopeParent();
+            get
+            {
+                return this.Parent == null ? null : this.Parent.ScopeParent;
+            }
         }
     }
 
@@ -324,11 +276,6 @@ namespace DocSymbol
         {
             visitor.Visit(this);
         }
-
-        internal override string GenerateNameKey()
-        {
-            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
-        }
     }
 
     public class EnumDecl : SymbolDecl
@@ -336,11 +283,6 @@ namespace DocSymbol
         public override void Accept(SymbolDecl.IVisitor visitor)
         {
             visitor.Visit(this);
-        }
-
-        internal override string GenerateNameKey()
-        {
-            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
         }
     }
 
@@ -351,11 +293,6 @@ namespace DocSymbol
         public override void Accept(SymbolDecl.IVisitor visitor)
         {
             visitor.Visit(this);
-        }
-
-        internal override string GenerateNameKey()
-        {
-            return GetKeyOfScopeParent(this.Parent) + "::" + this.Name;
         }
     }
 }

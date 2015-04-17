@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GenerateSymbolDeclKeyVisitor.cs" />
     <Compile Include="PrintSymbolDeclVisitor.cs" />
     <Compile Include="PrintTypeDeclVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
