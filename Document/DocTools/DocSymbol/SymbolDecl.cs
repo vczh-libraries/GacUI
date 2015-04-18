@@ -90,7 +90,20 @@ namespace DocSymbol
 
         #region BuildSymbolTree
 
-        internal string KeyOfScopeParent
+        internal string NameKeyOfScopeParent
+        {
+            get
+            {
+                var decl = this.Parent;
+                if (decl != null)
+                {
+                    decl = decl.ScopeParent;
+                }
+                return decl == null ? "" : decl.NameKey;
+            }
+        }
+
+        internal string OverloadKeyOfScopeParent
         {
             get
             {

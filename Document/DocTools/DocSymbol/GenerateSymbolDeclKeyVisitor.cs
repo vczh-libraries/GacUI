@@ -16,7 +16,7 @@ namespace DocSymbol
 
         public void Visit(NamespaceDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            this.Result = decl.NameKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(UsingNamespaceDecl decl)
@@ -25,7 +25,7 @@ namespace DocSymbol
 
         public void Visit(TypeParameterDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            this.Result = decl.NameKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(TemplateDecl decl)
@@ -38,17 +38,17 @@ namespace DocSymbol
 
         public void Visit(ClassDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            this.Result = decl.NameKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(VarDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            this.Result = decl.NameKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(FuncDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            this.Result = decl.NameKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(GroupedFieldDecl decl)
@@ -57,17 +57,17 @@ namespace DocSymbol
 
         public void Visit(EnumItemDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            this.Result = decl.NameKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(EnumDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            this.Result = decl.NameKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(TypedefDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            this.Result = decl.NameKeyOfScopeParent + "::" + decl.Name;
         }
     }
 
@@ -89,6 +89,7 @@ namespace DocSymbol
 
         public void Visit(TypeParameterDecl decl)
         {
+            this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(TemplateDecl decl)
@@ -104,17 +105,18 @@ namespace DocSymbol
             var template = decl.Parent as TemplateDecl;
             if (template == null)
             {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+                this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name;
             }
             else
             {
                 var postfix = "<" + template.Specialization.Aggregate("", (a, b) => a == "" ? b.ToString() : a + "," + b.ToString()) + ">";
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString() + (postfix == "<>" ? "" : postfix);
+                this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString() + (postfix == "<>" ? "" : postfix);
             }
         }
 
         public void Visit(VarDecl decl)
         {
+            this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(FuncDecl decl)
@@ -124,11 +126,11 @@ namespace DocSymbol
             var template = decl.Parent as TemplateDecl;
             if (template == null)
             {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name + postfix;
+                this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name + postfix;
             }
             else
             {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString() + postfix;
+                this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString() + postfix;
             }
         }
 
@@ -138,14 +140,26 @@ namespace DocSymbol
 
         public void Visit(EnumItemDecl decl)
         {
+            this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(EnumDecl decl)
         {
+            this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(TypedefDecl decl)
         {
+            var template = decl.Parent as TemplateDecl;
+            if (template == null)
+            {
+                this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name;
+            }
+            else
+            {
+                var postfix = "<" + template.Specialization.Aggregate("", (a, b) => a == "" ? b.ToString() : a + "," + b.ToString()) + ">";
+                this.Result = decl.OverloadKeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString() + (postfix == "<>" ? "" : postfix);
+            }
         }
     }
 

@@ -80,7 +80,7 @@ namespace DocSymbol
                         })
                     .Where(x => x.Name != null)
                     .GroupBy(x => x.Name)
-                    .ToDictionary(x => x.Key, x => x.GroupBy(y => y.Tags).Select(y => y.First()).ToList())
+                    .ToDictionary(x => x.Key, x => x.GroupBy(y => y.OverloadKey + ";" + y.Tags).Select(y => y.First()).ToList())
                     ;
                 this.NamespaceContents.Add(nss.Key, children);
             }
