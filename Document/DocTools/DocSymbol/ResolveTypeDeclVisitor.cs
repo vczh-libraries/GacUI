@@ -9,6 +9,7 @@ namespace DocSymbol
     public class ResolveEnvironment
     {
         public List<string> Errors { get; set; }
+        public List<GlobalDecl> Globals { get; set; }
         public List<NamespaceDecl> Namespaces { get; set; }
         public Dictionary<string, List<string>> NamespaceReferences { get; set; }
         public Dictionary<string, Dictionary<string, List<SymbolDecl>>> NamespaceContents { get; set; }
@@ -62,10 +63,59 @@ namespace DocSymbol
                     {
                         Errors.Add(string.Format("Failed to resolve {0} in {1}.", uns.ToString(), ns.ToString()));
                     }
-                    nsref.AddRange(resolved);
+                    foreach (var key in resolved)
+                    {
+                        if (!nsref.Contains(key))
+                        {
+                            nsref.Add(key);
+                        }
+                    }
                 }
-                nsref.AddRange(nslevels.Skip(1));
+                foreach (var key in nslevels.Skip(1))
+                {
+                    if (!nsref.Contains(key))
+                    {
+                        nsref.Add(key);
+                    }
+                }
             }
+
+            {
+                var nsref = new List<string> { "" };
+                this.NamespaceReferences.Add("", nsref);
+                foreach (var uns in this.Globals.SelectMany(x => x.Children).Where(x => x is UsingNamespaceDecl).Cast<UsingNamespaceDecl>())
+                {
+                    string path = uns.Path.Aggregate("", (a, b) => a + "::" + b);
+                    if (allns.Contains(path))
+                    {
+                        if (!nsref.Contains(path))
+                        {
+                            nsref.Add(path);
+                        }
+                    }
+                    else
+                    {
+                        Errors.Add(string.Format("Failed to resolve {0} in global namespace.", uns.ToString()));
+                    }
+                }
+            }
+        }
+
+        private void FillNamespaceContents(string key, IEnumerable<SymbolDecl> symbols)
+        {
+            var children = symbols
+                .Where(x => x.Children != null)
+                .SelectMany(x => x.Children)
+                .Select(x =>
+                    {
+                        var template = x as TemplateDecl;
+                        return template == null ? x : template.Element;
+                    })
+                .Where(x => x.Name != null)
+                .GroupBy(x => x.Name)
+                .ToDictionary(x => x.Key, x => x.GroupBy(y => y.OverloadKey + ";" + y.Tags).Select(y => y.First()).ToList())
+                ;
+            this.NamespaceContents.Add(key, children);
         }
 
         private void FillNamespaceContents()
@@ -75,25 +125,15 @@ namespace DocSymbol
                 .ToArray();
             foreach (var nss in nsg)
             {
-                var children = nss
-                    .Where(x => x.Children != null)
-                    .SelectMany(x => x.Children)
-                    .Select(x =>
-                        {
-                            var template = x as TemplateDecl;
-                            return template == null ? x : template.Element;
-                        })
-                    .Where(x => x.Name != null)
-                    .GroupBy(x => x.Name)
-                    .ToDictionary(x => x.Key, x => x.GroupBy(y => y.OverloadKey + ";" + y.Tags).Select(y => y.First()).ToList())
-                    ;
-                this.NamespaceContents.Add(nss.Key, children);
+                FillNamespaceContents(nss.Key, nss);
             }
+            FillNamespaceContents("", this.Globals);
         }
 
-        public ResolveEnvironment(IEnumerable<SymbolDecl> globals)
+        public ResolveEnvironment(IEnumerable<GlobalDecl> globals)
         {
             this.Errors = new List<string>();
+            this.Globals = globals.ToList();
             this.Namespaces = new List<NamespaceDecl>();
             this.NamespaceReferences = new Dictionary<string, List<string>>();
             this.NamespaceContents = new Dictionary<string, Dictionary<string, List<SymbolDecl>>>();
@@ -119,23 +159,12 @@ namespace DocSymbol
                 Dictionary<string, List<SymbolDecl>> content = null;
                 if (!this.SymbolContents.TryGetValue(symbol, out content))
                 {
-                    if (symbol is GlobalDecl)
+                    var visitor = new ResolveSymbolDeclContentVisitor
                     {
-                        content = this.Namespaces
-                            .Where(x => x.Parent is GlobalDecl)
-                            .GroupBy(x => x.Name)
-                            .ToDictionary(x => x.Key, x => x.Cast<SymbolDecl>().ToList())
-                            ;
-                    }
-                    else
-                    {
-                        var visitor = new ResolveSymbolDeclContentVisitor
-                        {
-                            Environment = this,
-                        };
-                        symbol.Accept(visitor);
-                        content = visitor.Content;
-                    }
+                        Environment = this,
+                    };
+                    symbol.Accept(visitor);
+                    content = visitor.Content;
                     this.SymbolContents.Add(symbol, content);
                 }
                 return content;
@@ -193,8 +222,7 @@ namespace DocSymbol
             var current = this.Symbol;
             while (current != null)
             {
-                var ns = current as NamespaceDecl;
-                if (ns == null)
+                if (!(current is NamespaceDecl) && !(current is GlobalDecl))
                 {
                     var content = this.Environment.GetSymbolContent(current);
                     var decls = FindSymbolInContent(decl, decl.Name, content);
@@ -206,7 +234,7 @@ namespace DocSymbol
                 }
                 else
                 {
-                    var references = this.Environment.NamespaceReferences[ns.NameKey];
+                    var references = this.Environment.NamespaceReferences[current is GlobalDecl ? "" : current.NameKey];
                     foreach (var reference in references)
                     {
                         var content = this.Environment.NamespaceContents[reference];
