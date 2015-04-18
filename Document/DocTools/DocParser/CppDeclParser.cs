@@ -537,13 +537,16 @@ namespace DocParser
                                     CppParser.EnsureToken(tokens, ref index, ";");
                                 }
 
-                                var decl = new VarDecl
+                                if (!(type is ClassMemberTypeDecl))
                                 {
-                                    Static = virtualFunction == Virtual.Static,
-                                    Name = name,
-                                    Type = type,
-                                };
-                                return new SymbolDecl[] { decl };
+                                    var decl = new VarDecl
+                                    {
+                                        Static = virtualFunction == Virtual.Static,
+                                        Name = name,
+                                        Type = type,
+                                    };
+                                    return new SymbolDecl[] { decl };
+                                }
                             }
                         }
                     }

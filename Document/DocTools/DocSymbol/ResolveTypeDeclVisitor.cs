@@ -104,15 +104,22 @@ namespace DocSymbol
 
         public Dictionary<string, List<SymbolDecl>> GetSymbolContent(SymbolDecl symbol)
         {
-            Dictionary<string, List<SymbolDecl>> content = null;
-            if (!this.SymbolContents.TryGetValue(symbol, out content))
+            if (symbol is NamespaceDecl)
             {
-                var visitor = new ResolveSymbolDeclContentVisitor();
-                symbol.Accept(visitor);
-                content = visitor.Content;
-                this.SymbolContents.Add(symbol, content);
+                return this.NamespaceContents[symbol.NameKey];
             }
-            return content;
+            else
+            {
+                Dictionary<string, List<SymbolDecl>> content = null;
+                if (!this.SymbolContents.TryGetValue(symbol, out content))
+                {
+                    var visitor = new ResolveSymbolDeclContentVisitor();
+                    symbol.Accept(visitor);
+                    content = visitor.Content;
+                    this.SymbolContents.Add(symbol, content);
+                }
+                return content;
+            }
         }
     }
 
@@ -245,7 +252,14 @@ namespace DocSymbol
             decl.ReturnType.Resolve(this.Symbol, this.Environment);
             foreach (var type in decl.Parameters)
             {
-                type.Resolve(this.Environment);
+                if (type.Parent == null)
+                {
+                    type.Type.Resolve(this.Symbol, this.Environment);
+                }
+                else
+                {
+                    type.Resolve(this.Environment);
+                }
             }
         }
 
