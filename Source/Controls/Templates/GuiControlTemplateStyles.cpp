@@ -1431,7 +1431,7 @@ GuiBindableDataVisualizer::Factory
 GuiBindableDataVisualizer::DecoratedFactory
 ***********************************************************************/
 
-			GuiBindableDataVisualizer::DecoratedFactory::DecoratedFactory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<IDataVisualizerFactory> _decoratedFactory)
+			GuiBindableDataVisualizer::DecoratedFactory::DecoratedFactory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory)
 				:DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>(_decoratedFactory)
 				, templateFactory(_templateFactory)
 				, ownerColumn(_ownerColumn)
@@ -1530,7 +1530,7 @@ GuiBindableDataEditor::Factory
 			{
 			}
 
-			Ptr<IDataEditor> GuiBindableDataEditor::Factory::CreateEditor(controls::list::IDataEditorCallback* callback)
+			Ptr<controls::list::IDataEditor> GuiBindableDataEditor::Factory::CreateEditor(controls::list::IDataEditorCallback* callback)
 			{
 				auto editor = DataEditorFactory<GuiBindableDataEditor>::CreateEditor(callback).Cast<GuiBindableDataEditor>();
 				if (editor)

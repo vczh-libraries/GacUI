@@ -10234,7 +10234,7 @@ namespace vl
 					LookAheadEnumerator(const ParsingTokenWalker* _walker, vint _currentToken);
 					LookAheadEnumerator(const LookAheadEnumerator& _enumerator);
 
-					IEnumerator<vint>*					Clone()const override;
+					collections::IEnumerator<vint>*		Clone()const override;
 					const vint&							Current()const override;
 					vint								Index()const override;
 					bool								Next()override;

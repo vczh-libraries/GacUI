@@ -1248,12 +1248,12 @@ Interface Proxy
 						return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetChildCount);
 					}
 
-					INodeProvider* GetParent()override
+					tree::INodeProvider* GetParent()override
 					{
 						return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetParent);
 					}
 
-					INodeProvider* GetChild(vint index)override
+					tree::INodeProvider* GetChild(vint index)override
 					{
 						return INVOKEGET_INTERFACE_PROXY(GetChild, index);
 					}

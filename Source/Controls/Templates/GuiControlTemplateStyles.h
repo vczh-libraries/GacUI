@@ -592,7 +592,7 @@ Item Template (GuiGridVisualizerTemplate)
 					controls::list::BindableDataColumn*				ownerColumn;
 
 				public:
-					DecoratedFactory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<IDataVisualizerFactory> _decoratedFactory);
+					DecoratedFactory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory);
 					~DecoratedFactory();
 
 					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)override;
@@ -630,7 +630,7 @@ Item Template (GuiGridEditorTemplate)
 					Factory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn);
 					~Factory();
 
-					Ptr<IDataEditor>								CreateEditor(controls::list::IDataEditorCallback* callback)override;
+					Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataEditorCallback* callback)override;
 				};
 
 			protected:
