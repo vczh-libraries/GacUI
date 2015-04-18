@@ -39,7 +39,7 @@ namespace DocParser
             var xml = new XDocument(global.Serialize());
             xml.Save(args[1]);
 
-            global.BuildSymbolTree(null, "");
+            global.BuildSymbolTree(null, null);
             var grouping = ExpandChildren(global)
                 .Where(decl => decl.OverloadKey != null)
                 .GroupBy(decl => decl.OverloadKey)

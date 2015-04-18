@@ -141,9 +141,18 @@ namespace DocSymbol
         public virtual void BuildSymbolTree(SymbolDecl parent, string tag)
         {
             this.Parent = parent;
-            this.Tags = tag;
-            this.NameKey = GenerateNameKey();
-            this.OverloadKey = GenerateOverloadKey();
+            if (tag != null)
+            {
+                this.Tags = tag;
+            }
+            if (this.NameKey != null)
+            {
+                this.NameKey = GenerateNameKey();
+            }
+            if (this.OverloadKey != null)
+            {
+                this.OverloadKey = GenerateOverloadKey();
+            }
             this.ContentKey = (this.Document == null ? "" : this.Document) + GenerateContentKey();
             if (this.Children != null)
             {

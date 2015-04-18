@@ -18,15 +18,15 @@ move Headers.i .Output\x86\Headers.txt
 cd .Output\x86
 call ..\..\ParseCppHeader.bat
 cd ..\..
-copy .Output\x86\Headers.ast.txt .Output\x86.ast.txt
+copy .Output\x86\Headers.ast.xml .Output\x86.ast.xml
 
 cl.exe Headers.h /I ".Output\Source" /D "_WIN64" /D "WIN32" /D "_DEBUG" /D "WINDOWS" /D "_UNICODE" /D "UNICODE" /P /C
 move Headers.i .Output\x64\Headers.txt
 cd .Output\x64
 call ..\..\ParseCppHeader.bat
 cd ..\..
-copy .Output\x64\Headers.ast.txt .Output\x64.ast.txt
+copy .Output\x64\Headers.ast.xml .Output\x64.ast.xml
 
 cd .Output
-Tools\DocResolver "x86, Windows" x86.ast.txt "x64, Windows" x64.ast.txt Resolved.ast.txt
+Tools\DocResolver "x86, Windows" x86.ast.xml "x64, Windows" x64.ast.xml Resolved.ast.xml
 cd ..

@@ -113,6 +113,10 @@ namespace DocSymbol
             {
                 decl.Document = this.Element.Attribute("Document").Value;
             }
+            if (this.Element.Attribute("Tags") != null)
+            {
+                decl.Tags = this.Element.Attribute("Tags").Value;
+            }
             if (this.Element.Attribute("NameKey") != null)
             {
                 decl.NameKey = this.Element.Attribute("NameKey").Value;

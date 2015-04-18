@@ -102,6 +102,10 @@ namespace DocSymbol
             {
                 this.Element.Add(new XAttribute("Document", decl.Document));
             }
+            if (decl.Tags != null)
+            {
+                this.Element.Add(new XAttribute("Tags", decl.Tags));
+            }
             if (decl.NameKey != null)
             {
                 this.Element.Add(new XAttribute("NameKey", decl.NameKey));
