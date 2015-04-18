@@ -52,7 +52,7 @@ namespace DocSymbol
 
         public void Visit(ArrayTypeDecl decl)
         {
-            this.Result = "array " + decl.Element.ToString();
+            this.Result = "array[" + decl.Expression + "] " + decl.Element.ToString();
         }
 
         public void Visit(FunctionTypeDecl decl)
@@ -125,7 +125,7 @@ namespace DocSymbol
 
         public void Visit(DeclTypeDecl decl)
         {
-            this.Result = "decltype( " + decl.Expression + " )";
+            this.Result = "decltype(" + decl.Expression + ")";
         }
 
         public void Visit(VariadicArgumentTypeDecl decl)

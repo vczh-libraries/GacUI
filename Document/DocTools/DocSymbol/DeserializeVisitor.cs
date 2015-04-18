@@ -49,6 +49,7 @@ namespace DocSymbol
         {
             Deserialize(decl);
             decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
+            decl.Expression = this.Element.Attribute("Expression").Value;
         }
 
         public void Visit(FunctionTypeDecl decl)

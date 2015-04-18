@@ -112,6 +112,7 @@ namespace DocSymbol
     public class ArrayTypeDecl : TypeDecl
     {
         public TypeDecl Element { get; set; }
+        public string Expression { get; set; }
 
         public override void Accept(IVisitor visitor)
         {

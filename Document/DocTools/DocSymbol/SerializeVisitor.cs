@@ -43,6 +43,7 @@ namespace DocSymbol
         {
             Serialize(decl);
             this.Element.Add(new XElement("Element", decl.Element.Serialize()));
+            this.Element.Add(new XAttribute("Expression", decl.Expression));
         }
 
         public void Visit(FunctionTypeDecl decl)

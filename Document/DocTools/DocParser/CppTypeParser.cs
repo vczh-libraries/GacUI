@@ -326,8 +326,15 @@ namespace DocParser
             {
                 if (CppParser.Token(tokens, ref index, "["))
                 {
+                    var oldIndex = index;
                     CppParser.SkipUntil(tokens, ref index, "]");
-                    var arrayDecl = new ArrayTypeDecl();
+                    var arrayDecl = new ArrayTypeDecl
+                    {
+                        Expression = tokens
+                            .Skip(oldIndex)
+                            .Take(index - 1 - oldIndex)
+                            .Aggregate("", (a, b) => a == "" ? b : a + " " + b),
+                    };
                     if (decl == null)
                     {
                         continuation = x => arrayDecl.Element = x;

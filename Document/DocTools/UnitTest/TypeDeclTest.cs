@@ -184,7 +184,7 @@ namespace UnitTest
         public void TestDeclType()
         {
             Assert.AreEqual(
-                "decltype( a + b )",
+                "decltype(a + b)",
                 Convert("decltype ( a + b )")
                 );
         }
@@ -273,70 +273,70 @@ namespace UnitTest
         public void TestArrayType()
         {
             Assert.AreEqual(
-                "array int",
+                "array[] int",
                 Convert("int [ ]")
                 );
             Assert.AreEqual(
-                "a : array int",
+                "a : array[] int",
                 Convert("int a [ ]")
                 );
             Assert.AreEqual(
-                "a : array int",
+                "a : array[] int",
                 Convert("int ( a ) [ ]")
                 );
             Assert.AreEqual(
-                "a : & array int",
+                "a : & array[] int",
                 Convert("int ( & a ) [ ]")
                 );
 
             Assert.AreEqual(
-                "array int",
+                "array[10] int",
                 Convert("int [ 10 ]")
                 );
             Assert.AreEqual(
-                "a : array int",
+                "a : array[10] int",
                 Convert("int a [ 10 ]")
                 );
             Assert.AreEqual(
-                "a : array int",
+                "a : array[10] int",
                 Convert("int ( a ) [ 10 ]")
                 );
             Assert.AreEqual(
-                "a : & array int",
+                "a : & array[10] int",
                 Convert("int ( & a ) [ 10 ]")
                 );
 
             Assert.AreEqual(
-                "array array int",
+                "array[20] array[10] int",
                 Convert("int [ 10 ] [ 20 ]")
                 );
             Assert.AreEqual(
-                "a : array array int",
+                "a : array[20] array[10] int",
                 Convert("int a [ 10 ] [ 20 ]")
                 );
             Assert.AreEqual(
-                "a : array array int",
+                "a : array[20] array[10] int",
                 Convert("int ( a ) [ 10 ] [ 20 ]")
                 );
             Assert.AreEqual(
-                "a : & array array int",
+                "a : & array[20] array[10] int",
                 Convert("int ( & a ) [ 10 ] [ 20 ]")
                 );
 
             Assert.AreEqual(
-                "array array int",
+                "array[call ( 1 , 2 , 3 )] array[sizeof ( double )] int",
                 Convert("int [ sizeof ( double ) ] [ call ( 1 , 2 , 3 ) ]")
                 );
             Assert.AreEqual(
-                "a : array array int",
+                "a : array[call ( 1 , 2 , 3 )] array[sizeof ( double )] int",
                 Convert("int a [ sizeof ( double ) ] [ call ( 1 , 2 , 3 ) ]")
                 );
             Assert.AreEqual(
-                "a : array array int",
+                "a : array[call ( 1 , 2 , 3 )] array[sizeof ( double )] int",
                 Convert("int ( a ) [ sizeof ( double ) ] [ call ( 1 , 2 , 3 ) ]")
                 );
             Assert.AreEqual(
-                "a : & array array int",
+                "a : & array[call ( 1 , 2 , 3 )] array[sizeof ( double )] int",
                 Convert("int ( & a ) [ sizeof ( double ) ] [ call ( 1 , 2 , 3 ) ]")
                 );
         }
@@ -397,7 +397,7 @@ namespace UnitTest
         public void TestBossType()
         {
             Assert.AreEqual(
-                "var : && array array * Class<T>::Inner<U>::(function __thiscall const (a : * array int, b : * function () : void) : & array int)",
+                "var : && array[20] array[10] * Class<T>::Inner<U>::(function __thiscall const (a : * array[30] int, b : * function () : void) : & array[40] int)",
                 Convert("int ( & ( __thiscall typename Class < T > : : template Inner < U > : : * ( & & var ) [ 10 ] [ 20 ] ) ( int ( * a ) [ 30 ] , void ( * b ) ( ) ) const ) [ 40 ]")
                 );
         }
