@@ -61,13 +61,24 @@ namespace DocResolver
             }
 
             var output = args[args.Length - 1];
-            Console.WriteLine("Errors: " + environment.Errors.Count);
+            var errors = environment.Errors.Where(x => x.StartsWith("(Error)")).ToArray();
+            var warnings = environment.Errors.Where(x => x.StartsWith("(Warning)")).ToArray();
+            Console.WriteLine("Errors: " + errors.Length);
+            Console.WriteLine("Warnings: " + warnings.Length);
+
             using (var writer = new StreamWriter(output + ".errors.txt", false, Encoding.UTF8))
             {
-                foreach (var error in environment.Errors)
+                writer.WriteLine("=========================ERROR=========================");
+                foreach (var message in errors)
                 {
-                    writer.WriteLine("=========================ERROR=========================");
-                    writer.WriteLine(error);
+                    writer.WriteLine(message);
+                }
+
+                writer.WriteLine();
+                writer.WriteLine("========================WARNING========================");
+                foreach (var message in warnings)
+                {
+                    writer.WriteLine(message);
                 }
             }
 

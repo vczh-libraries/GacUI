@@ -15,6 +15,7 @@ namespace DocSymbol
         public Dictionary<string, Dictionary<string, List<SymbolDecl>>> NamespaceContents { get; set; }
         public Dictionary<SymbolDecl, Dictionary<string, List<SymbolDecl>>> SymbolContents { get; set; }
         public Dictionary<TypeDecl, List<SymbolDecl>> ResolvedTypes { get; set; }
+        public HashSet<string> AvailableNames { get; set; }
 
         private void FillNamespaceReferences(SymbolDecl decl)
         {
@@ -95,7 +96,7 @@ namespace DocSymbol
                     }
                     else
                     {
-                        Errors.Add(string.Format("Failed to resolve {0} in global namespace.", uns.ToString()));
+                        Errors.Add(string.Format("(Error) Failed to resolve {0} in global namespace.", uns.ToString()));
                     }
                 }
             }
@@ -130,6 +131,21 @@ namespace DocSymbol
             FillNamespaceContents("", this.Globals);
         }
 
+        private void FillAvailableNames(SymbolDecl symbol)
+        {
+            if (symbol.Name != null)
+            {
+                this.AvailableNames.Add(symbol.Name);
+            }
+            if (symbol.Children != null)
+            {
+                foreach (var child in symbol.Children)
+                {
+                    FillAvailableNames(child);
+                }
+            }
+        }
+
         public ResolveEnvironment(IEnumerable<GlobalDecl> globals)
         {
             this.Errors = new List<string>();
@@ -139,6 +155,7 @@ namespace DocSymbol
             this.NamespaceContents = new Dictionary<string, Dictionary<string, List<SymbolDecl>>>();
             this.SymbolContents = new Dictionary<SymbolDecl, Dictionary<string, List<SymbolDecl>>>();
             this.ResolvedTypes = new Dictionary<TypeDecl, List<SymbolDecl>>();
+            this.AvailableNames = new HashSet<string>();
 
             foreach (var global in globals.SelectMany(x => x.Children))
             {
@@ -146,6 +163,10 @@ namespace DocSymbol
             }
             ResolveUsingNamespaces();
             FillNamespaceContents();
+            foreach (var symbol in this.Globals)
+            {
+                FillAvailableNames(symbol);
+            }
         }
 
         public Dictionary<string, List<SymbolDecl>> GetSymbolContent(SymbolDecl symbol)
@@ -191,7 +212,7 @@ namespace DocSymbol
                 if (keys.Length > 1)
                 {
                     var printingKeys = decls.Select(x => x.OverloadKey).Distinct().Aggregate("", (a, b) => a + "\r\n" + b);
-                    this.Environment.Errors.Add(string.Format("Found multiple symbols for {0} in {1}: {2}", name, this.Symbol.OverloadKey, printingKeys));
+                    this.Environment.Errors.Add(string.Format("(Error) Found multiple symbols for {0} in {1}: {2}", name, this.Symbol.OverloadKey, printingKeys));
                     return null;
                 }
                 decl.ReferencingNameKey = keys[0];
@@ -248,7 +269,15 @@ namespace DocSymbol
                 }
                 current = current.Parent;
             }
-            this.Environment.Errors.Add(string.Format("Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+
+            if (this.Environment.AvailableNames.Contains(decl.Name))
+            {
+                this.Environment.Errors.Add(string.Format("(Error) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+            }
+            else
+            {
+                this.Environment.Errors.Add(string.Format("(Warning) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+            }
         }
 
         public void Visit(SubTypeDecl decl)
@@ -288,7 +317,15 @@ namespace DocSymbol
                     return;
                 }
             }
-            this.Environment.Errors.Add(string.Format("Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+
+            if (this.Environment.AvailableNames.Contains(decl.Name))
+            {
+                this.Environment.Errors.Add(string.Format("(Error) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+            }
+            else
+            {
+                this.Environment.Errors.Add(string.Format("(Warning) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+            }
         }
 
         public void Visit(DecorateTypeDecl decl)
