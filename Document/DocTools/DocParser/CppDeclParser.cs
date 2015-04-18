@@ -587,7 +587,16 @@ namespace DocParser
                         }
                         CppParser.SkipUntil(tokens, ref index, "}");
                     }
-                    return new SymbolDecl[] { decl };
+
+                    if (templateDecl != null)
+                    {
+                        templateDecl.Element = decl;
+                        return new SymbolDecl[] { templateDecl };
+                    }
+                    else
+                    {
+                        return new SymbolDecl[] { decl };
+                    }
                 }
             }
             return null;
