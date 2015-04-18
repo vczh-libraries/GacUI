@@ -123,7 +123,10 @@ namespace DocSymbol
                     }
                     else
                     {
-                        var visitor = new ResolveSymbolDeclContentVisitor();
+                        var visitor = new ResolveSymbolDeclContentVisitor
+                        {
+                            Environment = this,
+                        };
                         symbol.Accept(visitor);
                         content = visitor.Content;
                     }
@@ -349,7 +352,7 @@ namespace DocSymbol
 
             foreach (var baseType in decl.BaseTypes)
             {
-                baseType.Type.Resolve(decl, this.Environment);
+                baseType.Type.Resolve(decl.Parent, this.Environment);
             }
         }
 
@@ -395,6 +398,7 @@ namespace DocSymbol
 
     class ResolveSymbolDeclContentVisitor : SymbolDecl.IVisitor
     {
+        public ResolveEnvironment Environment { get; set; }
         public Dictionary<string, List<SymbolDecl>> Content { get; set; }
 
         private void AddSymbol(string key, SymbolDecl symbol)
@@ -410,7 +414,10 @@ namespace DocSymbol
                 decls = new List<SymbolDecl>();
                 this.Content.Add(key, decls);
             }
-            decls.Add(symbol);
+            if (!decls.Contains(symbol))
+            {
+                decls.Add(symbol);
+            }
         }
 
         public void Visit(GlobalDecl decl)
@@ -449,11 +456,62 @@ namespace DocSymbol
                 {
                     if (item.Name != null)
                     {
-                        AddSymbol(item.Name, item);
+                        var template = item as TemplateDecl;
+                        var func = (template == null ? template : item) as FuncDecl;
+                        if (func == null || (func.Function != Function.Constructor && func.Function != Function.Destructor))
+                        {
+                            AddSymbol(item.Name, item);
+                        }
                     }
                     else
                     {
                         item.Accept(this);
+                    }
+                }
+            }
+
+            var keys = this.Content == null ? null : new HashSet<string>(this.Content.Keys);
+            foreach (var baseType in decl.BaseTypes)
+            {
+                baseType.Type.Resolve(decl.Parent, this.Environment);
+                var parent = baseType.Type;
+                while (parent != null)
+                {
+                    var generic = parent as GenericTypeDecl;
+                    if (generic != null)
+                    {
+                        parent = generic.Element;
+                        continue;
+                    }
+                    break;
+                }
+
+                if (parent.ReferencingNameKey != null)
+                {
+                    var symbols = this.Environment.ResolvedTypes[parent];
+                    foreach (var symbol in symbols)
+                    {
+                        if (symbol == decl)
+                        {
+                            break;
+                        }
+
+                        var content = this.Environment.GetSymbolContent(symbol);
+                        if (content != null)
+                        {
+                            foreach (var item in content.Where(p => keys == null || !keys.Contains(p.Key)).SelectMany(x => x.Value))
+                            {
+                                if (item.Access != Access.Private)
+                                {
+                                    var template = item as TemplateDecl;
+                                    var func = (template == null ? template : item) as FuncDecl;
+                                    if (func == null || (func.Function != Function.Constructor && func.Function != Function.Destructor))
+                                    {
+                                        AddSymbol(item.Name, item);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
