@@ -465,7 +465,7 @@ namespace DocSymbol
                     if (item.Name != null)
                     {
                         var template = item as TemplateDecl;
-                        var func = (template == null ? template : item) as FuncDecl;
+                        var func = (template == null ? item : template.Element) as FuncDecl;
                         if (func == null || (func.Function != Function.Constructor && func.Function != Function.Destructor))
                         {
                             AddSymbol(item.Name, item);
@@ -512,7 +512,7 @@ namespace DocSymbol
                                 if (item.Access != Access.Private)
                                 {
                                     var template = item as TemplateDecl;
-                                    var func = (template == null ? template : item) as FuncDecl;
+                                    var func = (template == null ? item : template.Element) as FuncDecl;
                                     if (func == null || (func.Function != Function.Constructor && func.Function != Function.Destructor))
                                     {
                                         AddSymbol(item.Name, item);
