@@ -9,10 +9,69 @@ namespace DocSymbol
     public class ResolveEnvironment
     {
         public List<string> Errors { get; set; }
+        public Dictionary<NamespaceDecl, List<string>> NamespaceReferences { get; set; }
+        public Dictionary<string, List<SymbolDecl>> NamespaceContents { get; set; }
+
+        private void FillNamespaces(SymbolDecl decl)
+        {
+            var ns = decl as NamespaceDecl;
+            if (ns != null)
+            {
+                this.NamespaceReferences.Add(ns, new List<string> { ns.NameKey });
+                if (decl.Children != null)
+                {
+                    foreach (var child in decl.Children)
+                    {
+                        FillNamespaces(child);
+                    }
+                }
+            }
+        }
+
+        private void ResolveUsingNamespaces()
+        {
+            var allns = new HashSet<string>(this.NamespaceReferences.Values.SelectMany(x => x).Distinct());
+            foreach (var nsp in this.NamespaceReferences)
+            {
+                var ns = nsp.Key;
+                var nss = new List<string>();
+                {
+                    var current = ns;
+                    while (current != null)
+                    {
+                        nss.Add(current.NameKey);
+                        current = current.Parent as NamespaceDecl;
+                    }
+                }
+
+                foreach (var uns in ns.Children.Where(x => x is UsingNamespaceDecl).Cast<UsingNamespaceDecl>())
+                {
+                    string path = uns.Path.Aggregate("", (a, b) => a + "::" + b);
+                    var resolved = nss
+                        .Select(x => x + path)
+                        .Where(x => allns.Contains(x))
+                        .ToArray();
+                    if (resolved.Length != 1)
+                    {
+                        Errors.Add(string.Format("Failed to resolve {0} in {1}.", uns.ToString(), ns.ToString()));
+                    }
+                    nsp.Value.AddRange(resolved);
+                }
+                nsp.Value.AddRange(nss.Skip(1));
+            }
+        }
 
         public ResolveEnvironment(IEnumerable<SymbolDecl> globals)
         {
             this.Errors = new List<string>();
+            this.NamespaceReferences = new Dictionary<NamespaceDecl, List<string>>();
+            this.NamespaceContents = new Dictionary<string, List<SymbolDecl>>();
+
+            foreach (var global in globals.SelectMany(x => x.Children))
+            {
+                FillNamespaces(global);
+            }
+            ResolveUsingNamespaces();
         }
     }
 
