@@ -27,7 +27,7 @@ namespace DocSymbol
 
         public static string PrintTemplateDecl(TemplateDecl decl)
         {
-            string result = "template<" + decl.TypeParameters.Aggregate("", (a, b) => a == "" ? b : a + ", " + b) + "> ";
+            string result = "template<" + decl.TypeParameters.Aggregate("", (a, b) => a == "" ? b.Name : a + ", " + b.Name) + "> ";
             if (decl.Specialization.Count > 0)
             {
                 result += decl.Specialization
@@ -36,6 +36,11 @@ namespace DocSymbol
                     + "> ";
             }
             return result;
+        }
+
+        public void Visit(TypeParameterDecl decl)
+        {
+            this.Result = "typename " + decl.Name;
         }
 
         public void Visit(TemplateDecl decl)

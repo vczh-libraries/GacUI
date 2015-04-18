@@ -72,6 +72,11 @@ namespace DocSymbol
                 var children = nss
                     .Where(x => x.Children != null)
                     .SelectMany(x => x.Children)
+                    .Select(x =>
+                        {
+                            var template = x as TemplateDecl;
+                            return template == null ? x : template.Element;
+                        })
                     .Where(x => x.Name != null)
                     .GroupBy(x => x.Name)
                     .ToDictionary(x => x.Key, x => x.GroupBy(y => y.Tags).Select(y => y.First()).ToList())
@@ -101,7 +106,6 @@ namespace DocSymbol
             if (!this.SymbolContents.TryGetValue(symbol, out content))
             {
                 var visitor = new ResolveSymbolDeclContentVisitor();
-                visitor.Content = new Dictionary<string, List<SymbolDecl>>();
                 symbol.Accept(visitor);
                 content = visitor.Content;
                 this.SymbolContents.Add(symbol, content);
@@ -118,6 +122,10 @@ namespace DocSymbol
 
         private bool FindSymbolInContent(RefTypeDecl decl, Dictionary<string, List<SymbolDecl>> content)
         {
+            if (content == null)
+            {
+                return false;
+            }
             List<SymbolDecl> decls = null;
             if (content.TryGetValue(decl.Name, out decls))
             {
@@ -249,14 +257,15 @@ namespace DocSymbol
         {
         }
 
+        public void Visit(TypeParameterDecl decl)
+        {
+        }
+
         public void Visit(TemplateDecl decl)
         {
-            if (decl.Specialization != null)
+            foreach (var type in decl.Specialization)
             {
-                foreach (var type in decl.Specialization)
-                {
-                    type.Resolve(decl, this.Environment);
-                }
+                type.Resolve(decl, this.Environment);
             }
         }
 
@@ -322,64 +331,108 @@ namespace DocSymbol
     {
         public Dictionary<string, List<SymbolDecl>> Content { get; set; }
 
+        private void AddSymbol(string key, SymbolDecl symbol)
+        {
+            if (this.Content == null)
+            {
+                this.Content = new Dictionary<string, List<SymbolDecl>>();
+            }
+
+            List<SymbolDecl> decls = null;
+            if (!this.Content.TryGetValue(key, out decls))
+            {
+                decls = new List<SymbolDecl>();
+                this.Content.Add(key, decls);
+            }
+            decls.Add(symbol);
+        }
+
         public void Visit(GlobalDecl decl)
         {
-            throw new NotImplementedException();
         }
 
         public void Visit(NamespaceDecl decl)
         {
-            throw new NotImplementedException();
         }
 
         public void Visit(UsingNamespaceDecl decl)
         {
-            throw new NotImplementedException();
+        }
+
+        public void Visit(TypeParameterDecl decl)
+        {
         }
 
         public void Visit(TemplateDecl decl)
         {
-            throw new NotImplementedException();
+            foreach (var item in decl.TypeParameters)
+            {
+                AddSymbol(item.Name, item);
+            }
         }
 
         public void Visit(BaseTypeDecl decl)
         {
-            throw new NotImplementedException();
         }
 
         public void Visit(ClassDecl decl)
         {
-            throw new NotImplementedException();
+            if (decl.Children != null)
+            {
+                foreach (var item in decl.Children)
+                {
+                    if (item.Name != null)
+                    {
+                        AddSymbol(item.Name, item);
+                    }
+                    else
+                    {
+                        item.Accept(this);
+                    }
+                }
+            }
         }
 
         public void Visit(VarDecl decl)
         {
-            throw new NotImplementedException();
         }
 
         public void Visit(FuncDecl decl)
         {
-            throw new NotImplementedException();
+            foreach (VarDecl item in decl.Children)
+            {
+                if (item.Name != null)
+                {
+                    AddSymbol(item.Name, item);
+                }
+            }
         }
 
         public void Visit(GroupedFieldDecl decl)
         {
-            throw new NotImplementedException();
+            if (decl.Children != null)
+            {
+                foreach (var item in decl.Children)
+                {
+                    item.Accept(this);
+                }
+            }
         }
 
         public void Visit(EnumItemDecl decl)
         {
-            throw new NotImplementedException();
         }
 
         public void Visit(EnumDecl decl)
         {
-            throw new NotImplementedException();
+            foreach (EnumItemDecl item in decl.Children)
+            {
+                AddSymbol(item.Name, item);
+            }
         }
 
         public void Visit(TypedefDecl decl)
         {
-            throw new NotImplementedException();
         }
     }
 }

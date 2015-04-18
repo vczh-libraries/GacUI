@@ -23,6 +23,11 @@ namespace DocSymbol
         {
         }
 
+        public void Visit(TypeParameterDecl decl)
+        {
+            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+        }
+
         public void Visit(TemplateDecl decl)
         {
         }
@@ -79,6 +84,10 @@ namespace DocSymbol
         }
 
         public void Visit(UsingNamespaceDecl decl)
+        {
+        }
+
+        public void Visit(TypeParameterDecl decl)
         {
         }
 
@@ -156,6 +165,10 @@ namespace DocSymbol
         {
         }
 
+        public void Visit(TypeParameterDecl decl)
+        {
+        }
+
         public void Visit(TemplateDecl decl)
         {
         }
@@ -219,6 +232,10 @@ namespace DocSymbol
         }
 
         public void Visit(UsingNamespaceDecl decl)
+        {
+        }
+
+        public void Visit(TypeParameterDecl decl)
         {
         }
 

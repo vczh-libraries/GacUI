@@ -21,6 +21,7 @@ namespace DocSymbol
             void Visit(GlobalDecl decl);
             void Visit(NamespaceDecl decl);
             void Visit(UsingNamespaceDecl decl);
+            void Visit(TypeParameterDecl decl);
             void Visit(TemplateDecl decl);
             void Visit(BaseTypeDecl decl);
             void Visit(ClassDecl decl);
@@ -192,9 +193,17 @@ namespace DocSymbol
         }
     }
 
+    public class TypeParameterDecl : SymbolDecl
+    {
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+    }
+
     public class TemplateDecl : SymbolDecl
     {
-        public List<string> TypeParameters { get; set; }
+        public List<TypeParameterDecl> TypeParameters { get; set; }
         public List<TypeDecl> Specialization { get; set; }
         public SymbolDecl Element
         {

@@ -136,10 +136,15 @@ namespace DocSymbol
             this.Element.Add(new XElement("Path", decl.Path.Select(x => new XElement("Item", new XAttribute("Value", x)))));
         }
 
+        public void Visit(TypeParameterDecl decl)
+        {
+            Serialize(decl, true);
+        }
+
         public void Visit(TemplateDecl decl)
         {
             Serialize(decl, false);
-            this.Element.Add(new XElement("TypeParameters", decl.TypeParameters.Select(x => new XElement("Item", new XAttribute("Value", x)))));
+            this.Element.Add(new XElement("TypeParameters", decl.TypeParameters.Select(x => x.Serialize())));
             this.Element.Add(new XElement("Specialization", decl.Specialization.Select(x => x.Serialize())));
             this.Element.Add(new XElement("Element", decl.Element.Serialize()));
         }

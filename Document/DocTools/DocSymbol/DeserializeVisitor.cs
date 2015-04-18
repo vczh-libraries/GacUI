@@ -147,10 +147,15 @@ namespace DocSymbol
             decl.Path = this.Element.Element("Path").Elements("Item").Select(x => x.Attribute("Value").Value).ToList();
         }
 
+        public void Visit(TypeParameterDecl decl)
+        {
+            Deserialize(decl);
+        }
+
         public void Visit(TemplateDecl decl)
         {
             Deserialize(decl);
-            decl.TypeParameters = this.Element.Element("TypeParameters").Elements("Item").Select(x => x.Attribute("Value").Value).ToList();
+            decl.TypeParameters = this.Element.Element("TypeParameters").Elements().Select(x => (TypeParameterDecl)SymbolDecl.Deserialize(x)).ToList();
             decl.Specialization = this.Element.Element("Specialization").Elements().Select(x => TypeDecl.Deserialize(x)).ToList();
             decl.Element = SymbolDecl.Deserialize(this.Element.Element("Element").Elements().First());
         }

@@ -21,7 +21,7 @@ namespace DocParser
             {
                 templateDecl = new TemplateDecl
                 {
-                    TypeParameters = new List<string>(),
+                    TypeParameters = new List<TypeParameterDecl>(),
                     Specialization = new List<TypeDecl>(),
                 };
                 CppParser.EnsureToken(tokens, ref index, "<");
@@ -33,7 +33,10 @@ namespace DocParser
                         CppParser.SkipUntilInTemplate(tokens, ref index, out token, ",", ">", "=");
 
                         index -= 2;
-                        templateDecl.TypeParameters.Add(CppParser.EnsureId(tokens, ref index));
+                        templateDecl.TypeParameters.Add(new TypeParameterDecl
+                        {
+                            Name = CppParser.EnsureId(tokens, ref index),
+                        });
                         index++;
 
                         if (token == "=")
