@@ -78,7 +78,15 @@ namespace DocSymbol
 
         public void Visit(TypedefDecl decl)
         {
-            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            var template = decl.Parent as TemplateDecl;
+            if (template == null)
+            {
+                this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
+            }
+            else
+            {
+                this.Result = decl.KeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString();
+            }
         }
     }
 
@@ -216,7 +224,9 @@ namespace DocSymbol
 
         public void Visit(TypedefDecl decl)
         {
-            this.Result = decl.ToString();
+            this.Result = decl.Parent is TemplateDecl
+                ? decl.Parent.ToString()
+                : decl.ToString();
         }
     }
 
@@ -280,7 +290,9 @@ namespace DocSymbol
 
         public void Visit(TypedefDecl decl)
         {
-            this.Result = decl.ToString();
+            this.Result = decl.Parent is TemplateDecl
+                ? decl.Parent.ToString()
+                : decl.ToString();
         }
     }
 }

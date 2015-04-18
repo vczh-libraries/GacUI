@@ -46,6 +46,24 @@ namespace DocResolver
                 }
             }
 
+            Console.WriteLine("Resolving Symbols ...");
+            var symbolResolving = symbolGroup
+                .SelectMany(p => p.Value
+                    .GroupBy(x => x.Tags)
+                    .Select(x => x.First())
+                    )
+                .ToArray();
+            List<string> errors = new List<string>();
+            foreach (var symbol in symbolResolving)
+            {
+                symbol.Resolve(errors);
+            }
+            foreach (var error in errors)
+            {
+                Console.WriteLine("=========================ERROR=========================");
+                Console.WriteLine(error);
+            }
+
             var output = args[args.Length - 1];
         }
 

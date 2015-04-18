@@ -11,30 +11,43 @@ namespace DocSymbol
     {
         public XElement Element;
 
+        private void Serialize(TypeDecl decl)
+        {
+            if (decl.ReferencingNameKey != null)
+            {
+                this.Element.Add(new XAttribute("ReferencingNameKey", decl.ReferencingNameKey));
+            }
+        }
+
         public void Visit(RefTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XAttribute("Name", decl.Name));
         }
 
         public void Visit(SubTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XAttribute("Name", decl.Name));
             this.Element.Add(new XElement("Parent", decl.Parent.Serialize()));
         }
 
         public void Visit(DecorateTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XAttribute("Decoration", decl.Decoration.ToString()));
             this.Element.Add(new XElement("Element", decl.Element.Serialize()));
         }
 
         public void Visit(ArrayTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XElement("Element", decl.Element.Serialize()));
         }
 
         public void Visit(FunctionTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XAttribute("CallingConvention", decl.CallingConvention.ToString()));
             this.Element.Add(new XAttribute("Const", decl.Const.ToString()));
             this.Element.Add(new XElement("ReturnType", decl.ReturnType.Serialize()));
@@ -43,28 +56,33 @@ namespace DocSymbol
 
         public void Visit(ClassMemberTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XElement("Element", decl.Element.Serialize()));
             this.Element.Add(new XElement("ClassType", decl.ClassType.Serialize()));
         }
 
         public void Visit(GenericTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XElement("Element", decl.Element.Serialize()));
             this.Element.Add(new XElement("TypeArguments", decl.TypeArguments.Select(x => x.Serialize())));
         }
 
         public void Visit(DeclTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XAttribute("Expression", decl.Expression));
         }
 
         public void Visit(VariadicArgumentTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XElement("Element", decl.Element.Serialize()));
         }
 
         public void Visit(ConstantTypeDecl decl)
         {
+            Serialize(decl);
             this.Element.Add(new XAttribute("Value", decl.Value));
         }
     }
@@ -83,6 +101,14 @@ namespace DocSymbol
             if (decl.Document != null)
             {
                 this.Element.Add(new XAttribute("Document", decl.Document));
+            }
+            if (decl.NameKey != null)
+            {
+                this.Element.Add(new XAttribute("NameKey", decl.NameKey));
+            }
+            if (decl.OverloadKey != null)
+            {
+                this.Element.Add(new XAttribute("OverloadKey", decl.OverloadKey));
             }
             if (serializeChildren && decl.Children != null)
             {

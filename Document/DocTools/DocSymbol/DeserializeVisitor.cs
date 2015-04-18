@@ -12,6 +12,14 @@ namespace DocSymbol
     {
         public XElement Element;
 
+        private void Deserialize(TypeDecl decl)
+        {
+            if (this.Element.Attribute("ReferencingNameKey") != null)
+            {
+                decl.ReferencingNameKey = this.Element.Attribute("ReferencingNameKey").Value;
+            }
+        }
+
         private static T LoadEnum<T>(string name)
         {
             return (T)typeof(T).GetField(name, BindingFlags.Public | BindingFlags.Static).GetValue(null);
@@ -19,28 +27,33 @@ namespace DocSymbol
 
         public void Visit(RefTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Name = Element.Attribute("Name").Value;
         }
 
         public void Visit(SubTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Name = Element.Attribute("Name").Value;
             decl.Parent = TypeDecl.Deserialize(this.Element.Element("Parent").Elements().First());
         }
 
         public void Visit(DecorateTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Decoration = LoadEnum<Decoration>(this.Element.Attribute("Decoration").Value);
             decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
         }
 
         public void Visit(ArrayTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
         }
 
         public void Visit(FunctionTypeDecl decl)
         {
+            Deserialize(decl);
             decl.CallingConvention = LoadEnum<CallingConvention>(this.Element.Attribute("CallingConvention").Value);
             decl.Const = bool.Parse(this.Element.Attribute("Const").Value);
             decl.ReturnType = TypeDecl.Deserialize(this.Element.Element("ReturnType").Elements().First());
@@ -49,28 +62,33 @@ namespace DocSymbol
 
         public void Visit(ClassMemberTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
             decl.ClassType = TypeDecl.Deserialize(this.Element.Element("ClassType").Elements().First());
         }
 
         public void Visit(GenericTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
             decl.TypeArguments = this.Element.Element("TypeArguments").Elements().Select(x => TypeDecl.Deserialize(x)).ToList();
         }
 
         public void Visit(DeclTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Expression = this.Element.Attribute("Expression").Value;
         }
 
         public void Visit(VariadicArgumentTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Element = TypeDecl.Deserialize(this.Element.Element("Element").Elements().First());
         }
 
         public void Visit(ConstantTypeDecl decl)
         {
+            Deserialize(decl);
             decl.Value = this.Element.Attribute("Value").Value;
         }
     }
@@ -94,6 +112,14 @@ namespace DocSymbol
             if (this.Element.Attribute("Document") != null)
             {
                 decl.Document = this.Element.Attribute("Document").Value;
+            }
+            if (this.Element.Attribute("NameKey") != null)
+            {
+                decl.NameKey = this.Element.Attribute("NameKey").Value;
+            }
+            if (this.Element.Attribute("OverloadKey") != null)
+            {
+                decl.OverloadKey = this.Element.Attribute("OverloadKey").Value;
             }
             if (this.Element.Element("Children") != null)
             {

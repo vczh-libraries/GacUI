@@ -16,19 +16,6 @@ namespace DocSymbol
 
     public abstract class SymbolDecl
     {
-        public Access Access { get; set; }
-        public string Name { get; set; }
-        public List<SymbolDecl> Children { get; set; }
-        public string Document { get; set; }
-
-        #region BuildSymbolTree generated fields
-        public SymbolDecl Parent { get; set; }
-        public string Tags { get; set; }
-        public string NameKey { get; set; }
-        public string OverloadKey { get; set; }
-        public string ContentKey { get; set; }
-        #endregion
-
         public interface IVisitor
         {
             void Visit(GlobalDecl decl);
@@ -44,6 +31,21 @@ namespace DocSymbol
             void Visit(EnumDecl decl);
             void Visit(TypedefDecl decl);
         }
+
+        public Access Access { get; set; }
+        public string Name { get; set; }
+        public List<SymbolDecl> Children { get; set; }
+        public string Document { get; set; }
+
+        #region BuildSymbolTree generated fields
+
+        public SymbolDecl Parent { get; set; }
+        public string Tags { get; set; }
+        public string NameKey { get; set; }
+        public string OverloadKey { get; set; }
+        public string ContentKey { get; set; }
+
+        #endregion
 
         public abstract void Accept(IVisitor visitor);
 
@@ -76,6 +78,13 @@ namespace DocSymbol
             visitor.Element = element;
             symbolDecl.Accept(visitor);
             return symbolDecl;
+        }
+
+        public void Resolve(List<string> errors)
+        {
+            var visitor = new ResolveSymbolDeclVisitor();
+            visitor.Errors = errors;
+            Accept(visitor);
         }
 
         #region BuildSymbolTree
@@ -135,7 +144,7 @@ namespace DocSymbol
             this.Tags = tag;
             this.NameKey = GenerateNameKey();
             this.OverloadKey = GenerateOverloadKey();
-            this.ContentKey = GenerateContentKey();
+            this.ContentKey = (this.Document == null ? "" : this.Document) + GenerateContentKey();
             if (this.Children != null)
             {
                 foreach (var decl in this.Children)

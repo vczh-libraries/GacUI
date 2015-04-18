@@ -23,6 +23,8 @@ namespace DocSymbol
             void Visit(ConstantTypeDecl decl);
         }
 
+        public string ReferencingNameKey { get; set; }
+
         public abstract void Accept(IVisitor visitor);
 
         public override string ToString()
@@ -49,6 +51,15 @@ namespace DocSymbol
             visitor.Element = element;
             typeDecl.Accept(visitor);
             return typeDecl;
+        }
+
+        public void Resolve(SymbolDecl symbol, List<string> errors)
+        {
+            var visitor = new ResolveTypeDeclVisitor();
+            visitor.Symbol = symbol;
+            visitor.Errors = errors;
+            Accept(visitor);
+            this.ReferencingNameKey = visitor.Result;
         }
     }
 

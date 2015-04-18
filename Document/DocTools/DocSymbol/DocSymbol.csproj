@@ -44,6 +44,7 @@
     <Compile Include="PrintSymbolDeclVisitor.cs" />
     <Compile Include="PrintTypeDeclVisitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResolveTypeDeclVisitor.cs" />
     <Compile Include="SerializeVisitor.cs" />
     <Compile Include="SymbolDecl.cs" />
     <Compile Include="TypeDecl.cs" />
