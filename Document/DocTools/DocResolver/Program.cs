@@ -49,10 +49,7 @@ namespace DocResolver
 
             Console.WriteLine("Resolving Symbols ...");
             var symbolResolving = symbolGroup
-                .SelectMany(p => p.Value
-                    .GroupBy(x => x.Tags)
-                    .Select(x => x.First())
-                    )
+                .SelectMany(x => x.Value)
                 .ToArray();
             var environment = new ResolveEnvironment(input.Values);
             foreach (var symbol in symbolResolving)

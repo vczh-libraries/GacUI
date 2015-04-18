@@ -8,7 +8,7 @@ namespace DocSymbol
 {
     public class ResolveEnvironment
     {
-        public List<string> Errors { get; set; }
+        public HashSet<string> Errors { get; set; }
         public List<GlobalDecl> Globals { get; set; }
         public List<NamespaceDecl> Namespaces { get; set; }
         public Dictionary<string, List<string>> NamespaceReferences { get; set; }
@@ -148,7 +148,7 @@ namespace DocSymbol
 
         public ResolveEnvironment(IEnumerable<GlobalDecl> globals)
         {
-            this.Errors = new List<string>();
+            this.Errors = new HashSet<string>();
             this.Globals = globals.ToList();
             this.Namespaces = new List<NamespaceDecl>();
             this.NamespaceReferences = new Dictionary<string, List<string>>();

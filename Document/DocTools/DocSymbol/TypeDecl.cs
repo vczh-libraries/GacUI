@@ -24,6 +24,7 @@ namespace DocSymbol
         }
 
         public string ReferencingNameKey { get; set; }
+        public List<string> ReferencingOverloadKeys { get; set; }
 
         public abstract void Accept(IVisitor visitor);
 

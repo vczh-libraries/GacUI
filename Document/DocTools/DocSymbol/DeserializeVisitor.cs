@@ -18,6 +18,10 @@ namespace DocSymbol
             {
                 decl.ReferencingNameKey = this.Element.Attribute("ReferencingNameKey").Value;
             }
+            if (this.Element.Element("ReferencingOverloadKeys") != null)
+            {
+                decl.ReferencingOverloadKeys = this.Element.Element("ReferencingNameKey").Elements("Key").Select(x => x.Attribute("Value").Value).ToList();
+            }
         }
 
         private static T LoadEnum<T>(string name)
@@ -110,9 +114,9 @@ namespace DocSymbol
             {
                 decl.Name = this.Element.Attribute("Name").Value;
             }
-            if (this.Element.Attribute("Document") != null)
+            if (this.Element.Element("Document") != null)
             {
-                decl.Document = this.Element.Attribute("Document").Value;
+                decl.Document = this.Element.Element("Document").Value;
             }
             if (this.Element.Attribute("Tags") != null)
             {

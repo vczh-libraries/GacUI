@@ -17,6 +17,10 @@ namespace DocSymbol
             {
                 this.Element.Add(new XAttribute("ReferencingNameKey", decl.ReferencingNameKey));
             }
+            if (decl.ReferencingOverloadKeys != null)
+            {
+                this.Element.Add(new XElement("ReferencingOverloadKeys", decl.ReferencingOverloadKeys.Select(x => new XElement("Key", new XAttribute("Value", x)))));
+            }
         }
 
         public void Visit(RefTypeDecl decl)
@@ -101,7 +105,7 @@ namespace DocSymbol
             }
             if (decl.Document != null)
             {
-                this.Element.Add(new XAttribute("Document", decl.Document));
+                this.Element.Add(new XElement("Document", decl.Document));
             }
             if (decl.Tags != null)
             {
