@@ -116,6 +116,23 @@ namespace DocSymbol
         public ResolveEnvironment Environment { get; set; }
         public string Result { get; set; }
 
+        private bool FindSymbolInContent(RefTypeDecl decl, Dictionary<string, List<SymbolDecl>> content)
+        {
+            List<SymbolDecl> decls = null;
+            if (content.TryGetValue(decl.Name, out decls))
+            {
+                var keys = decls.Select(x => x.NameKey).Distinct().ToArray();
+                if (keys.Length > 1)
+                {
+                    var printingKeys = decls.Select(x => x.OverloadKey).Distinct().Aggregate("", (a, b) => a + "\r\n" + b);
+                    this.Environment.Errors.Add(string.Format("Found multiple symbols for {0} in {1}: {2}", decl.Name, this.Symbol.OverloadKey, printingKeys));
+                }
+                this.Result = keys[0];
+                return true;
+            }
+            return false;
+        }
+
         public void Visit(RefTypeDecl decl)
         {
             switch (decl.Name)
@@ -133,32 +150,33 @@ namespace DocSymbol
                     return;
             }
 
-            var ns = this.Symbol as NamespaceDecl;
-            if (ns == null)
+            var current = this.Symbol;
+            while (current != null)
             {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                var references = this.Environment.NamespaceReferences[ns];
-                foreach (var reference in references)
+                var ns = current as NamespaceDecl;
+                if (ns == null)
                 {
-                    var content = this.Environment.NamespaceContents[reference];
-                    List<SymbolDecl> decls = null;
-                    if (content.TryGetValue(decl.Name, out decls))
+                    var content = this.Environment.GetSymbolContent(current);
+                    if (FindSymbolInContent(decl, content))
                     {
-                        var keys = decls.Select(x => x.NameKey).Distinct().ToArray();
-                        if (keys.Length > 1)
-                        {
-                            var printingKeys = decls.Select(x => x.OverloadKey).Distinct().Aggregate("", (a, b) => a + "\r\n" + b);
-                            this.Environment.Errors.Add(string.Format("Found multiple symbols for {0} in {1}: {2}", decl.Name, this.Symbol.OverloadKey, printingKeys));
-                        }
-                        this.Result = keys[0];
                         return;
                     }
                 }
-                this.Environment.Errors.Add(string.Format("Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+                else
+                {
+                    var references = this.Environment.NamespaceReferences[ns];
+                    foreach (var reference in references)
+                    {
+                        var content = this.Environment.NamespaceContents[reference];
+                        if (FindSymbolInContent(decl, content))
+                        {
+                            return;
+                        }
+                    }
+                }
+                current = current.Parent;
             }
+            this.Environment.Errors.Add(string.Format("Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
         }
 
         public void Visit(SubTypeDecl decl)
