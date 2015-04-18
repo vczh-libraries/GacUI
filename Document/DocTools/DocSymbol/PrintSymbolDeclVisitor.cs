@@ -130,7 +130,7 @@ namespace DocSymbol
 
         public void Visit(EnumDecl decl)
         {
-            this.Result = "enum " + decl.Name;
+            this.Result = (decl.EnumClass ? "enum class " : "enum ") + decl.Name;
         }
 
         public void Visit(TypedefDecl decl)

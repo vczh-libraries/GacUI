@@ -169,7 +169,7 @@ namespace DocParser
                 {
                     throw new ArgumentException("Failed to parse.");
                 }
-                CppParser.Token(tokens, ref index, "class");
+                bool enumClass = CppParser.Token(tokens, ref index, "class");
                 string name = CppParser.EnsureId(tokens, ref index);
                 if (CppParser.Token(tokens, ref index, ":"))
                 {
@@ -181,6 +181,7 @@ namespace DocParser
                     var decl = new EnumDecl
                     {
                         Name = name,
+                        EnumClass = enumClass,
                         Children = new List<SymbolDecl>(),
                     };
 

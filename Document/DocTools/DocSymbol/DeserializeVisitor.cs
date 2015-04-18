@@ -207,6 +207,7 @@ namespace DocSymbol
         public void Visit(EnumDecl decl)
         {
             Deserialize(decl);
+            decl.EnumClass = bool.Parse(this.Element.Attribute("EnumClass").Value);
         }
 
         public void Visit(TypedefDecl decl)

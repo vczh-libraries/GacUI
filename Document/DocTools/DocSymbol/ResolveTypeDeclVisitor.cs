@@ -255,7 +255,7 @@ namespace DocSymbol
         public SymbolDecl Symbol { get; set; }
         public ResolveEnvironment Environment { get; set; }
 
-        private List<SymbolDecl> FindSymbolInContent(TypeDecl decl, string name, Dictionary<string, List<SymbolDecl>> content, bool typeAndNamespaceOnly)
+        private List<SymbolDecl> FindSymbolInContent(TypeDecl decl, string name, Dictionary<string, List<SymbolDecl>> content, bool typeAndNamespaceOnly, bool addError)
         {
             if (content == null)
             {
@@ -268,7 +268,7 @@ namespace DocSymbol
                 if (typeAndNamespaceOnly)
                 {
                     decls = decls
-                        .Where(x => !(x is FuncDecl) && !(x is VarDecl))
+                        .Where(x => !(x is FuncDecl) && !(x is VarDecl) && !(x is EnumDecl))
                         .ToList();
                     if (decls.Count == 0)
                     {
@@ -283,8 +283,11 @@ namespace DocSymbol
                 }
                 if (nameKeys.Count > 1)
                 {
-                    var printingKeys = overloadKeys.Aggregate("", (a, b) => a + "\r\n" + b);
-                    this.Environment.AddError(false, "Found multiple symbols for {0} in {1}: " + printingKeys, name, this.Symbol);
+                    if (addError)
+                    {
+                        var printingKeys = overloadKeys.Aggregate("", (a, b) => a + "\r\n" + b);
+                        this.Environment.AddError(false, "Found multiple symbols for {0} in {1}: " + printingKeys, name, this.Symbol);
+                    }
                     return null;
                 }
                 decl.ReferencingNameKey = nameKeys[0];
@@ -299,7 +302,7 @@ namespace DocSymbol
             if (this.Environment.AvailableNames.TryGetValue(name, out decls))
             {
                 decls = decls
-                    .Where(x => !(x is FuncDecl) && !(x is VarDecl))
+                    .Where(x => !(x is FuncDecl) && !(x is VarDecl) && !(x is EnumDecl))
                     .ToList();
                 if (decls.Count == 0)
                 {
@@ -340,37 +343,40 @@ namespace DocSymbol
                     return;
             }
 
-            var current = this.Symbol;
-            while (current != null)
+            for (int pass = 0; pass < 2; pass++)
             {
-                if (!(current is TypedefDecl))
+                var current = this.Symbol;
+                while (current != null)
                 {
-                    if (!(current is NamespaceDecl) && !(current is GlobalDecl))
+                    if (!(current is TypedefDecl))
                     {
-                        var content = this.Environment.GetSymbolContent(current);
-                        var decls = FindSymbolInContent(decl, decl.Name, content, true);
-                        if (decls != null)
+                        if (!(current is NamespaceDecl) && !(current is GlobalDecl))
                         {
-                            this.Environment.ResolvedTypes.Add(decl, decls);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        var references = this.Environment.NamespaceReferences[current is GlobalDecl ? "" : current.NameKey];
-                        foreach (var reference in references)
-                        {
-                            var content = this.Environment.NamespaceContents[reference];
-                            var decls = FindSymbolInContent(decl, decl.Name, content, true);
+                            var content = this.Environment.GetSymbolContent(current);
+                            var decls = FindSymbolInContent(decl, decl.Name, content, pass == 0, pass == 1);
                             if (decls != null)
                             {
                                 this.Environment.ResolvedTypes.Add(decl, decls);
                                 return;
                             }
                         }
+                        else
+                        {
+                            var references = this.Environment.NamespaceReferences[current is GlobalDecl ? "" : current.NameKey];
+                            foreach (var reference in references)
+                            {
+                                var content = this.Environment.NamespaceContents[reference];
+                                var decls = FindSymbolInContent(decl, decl.Name, content, pass == 0, pass == 1);
+                                if (decls != null)
+                                {
+                                    this.Environment.ResolvedTypes.Add(decl, decls);
+                                    return;
+                                }
+                            }
+                        }
                     }
+                    current = current.Parent;
                 }
-                current = current.Parent;
             }
 
             AddError(decl, decl.Name);
@@ -394,7 +400,11 @@ namespace DocSymbol
                         .ToDictionary(x => x.Key, x => x.SelectMany(y => y.Value).ToList())
                         ;
                 }
-                var decls = FindSymbolInContent(decl, decl.Name, content, true);
+                var decls = FindSymbolInContent(decl, decl.Name, content, true, false);
+                if (decls == null)
+                {
+                    decls = FindSymbolInContent(decl, decl.Name, content, false, true);
+                }
                 if (decls != null)
                 {
                     this.Environment.ResolvedTypes.Add(decl, decls);
@@ -604,6 +614,13 @@ namespace DocSymbol
             {
                 foreach (var item in decl.Children)
                 {
+                    var enumClass = item as EnumDecl;
+                    if (enumClass != null && !enumClass.EnumClass)
+                    {
+                        AddSymbol(item.Name, item);
+                        item.Accept(this);
+                    }
+
                     if (item.Name != null)
                     {
                         var template = item as TemplateDecl;

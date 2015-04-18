@@ -215,7 +215,7 @@ namespace UnitTest
             Assert.AreEqual("enum_item Y", global.Children[0].Children[1].ToString());
             Assert.AreEqual("enum_item Z", global.Children[0].Children[2].ToString());
 
-            Assert.AreEqual("enum A", global.Children[1].ToString());
+            Assert.AreEqual("enum class A", global.Children[1].ToString());
             Assert.AreEqual(3, global.Children[1].Children.Count);
             Assert.AreEqual("enum_item X", global.Children[1].Children[0].ToString());
             Assert.AreEqual("enum_item Y", global.Children[1].Children[1].ToString());

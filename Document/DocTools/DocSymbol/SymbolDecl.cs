@@ -385,6 +385,8 @@ namespace DocSymbol
 
     public class EnumDecl : SymbolDecl
     {
+        public bool EnumClass { get; set; }
+
         public override void Accept(SymbolDecl.IVisitor visitor)
         {
             visitor.Visit(this);

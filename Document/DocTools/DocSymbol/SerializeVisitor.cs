@@ -196,6 +196,7 @@ namespace DocSymbol
         public void Visit(EnumDecl decl)
         {
             Serialize(decl);
+            this.Element.Add(new XAttribute("EnumClass", decl.EnumClass.ToString()));
         }
 
         public void Visit(TypedefDecl decl)
