@@ -113,9 +113,20 @@ namespace DocSymbol
                 Dictionary<string, List<SymbolDecl>> content = null;
                 if (!this.SymbolContents.TryGetValue(symbol, out content))
                 {
-                    var visitor = new ResolveSymbolDeclContentVisitor();
-                    symbol.Accept(visitor);
-                    content = visitor.Content;
+                    if (symbol is GlobalDecl)
+                    {
+                        content = this.NamespaceReferences.Keys
+                            .Where(x => x.Parent is GlobalDecl)
+                            .GroupBy(x => x.Name)
+                            .ToDictionary(x => x.Key, x => x.Cast<SymbolDecl>().ToList())
+                            ;
+                    }
+                    else
+                    {
+                        var visitor = new ResolveSymbolDeclContentVisitor();
+                        symbol.Accept(visitor);
+                        content = visitor.Content;
+                    }
                     this.SymbolContents.Add(symbol, content);
                 }
                 return content;
@@ -219,14 +230,18 @@ namespace DocSymbol
 
             if (parent.ReferencingNameKey != null)
             {
-                var parentDecls = this.Environment.ResolvedTypes[parent];
-                var content = parentDecls
-                    .Select(x => this.Environment.GetSymbolContent(x))
-                    .Where(x => x != null)
-                    .SelectMany(x => x)
-                    .GroupBy(x => x.Key)
-                    .ToDictionary(x => x.Key, x => x.SelectMany(y => y.Value).ToList())
-                    ;
+                Dictionary<string, List<SymbolDecl>> content = null;
+                if (!this.Environment.NamespaceContents.TryGetValue(parent.ReferencingNameKey, out content))
+                {
+                    var parentDecls = this.Environment.ResolvedTypes[parent];
+                    content = parentDecls
+                        .Select(x => this.Environment.GetSymbolContent(x))
+                        .Where(x => x != null)
+                        .SelectMany(x => x)
+                        .GroupBy(x => x.Key)
+                        .ToDictionary(x => x.Key, x => x.SelectMany(y => y.Value).ToList())
+                        ;
+                }
                 var decls = FindSymbolInContent(decl, decl.Name, content);
                 if (decls != null)
                 {
