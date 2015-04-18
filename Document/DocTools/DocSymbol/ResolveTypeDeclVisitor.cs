@@ -14,52 +14,74 @@ namespace DocSymbol
 
         public void Visit(RefTypeDecl decl)
         {
-            throw new NotImplementedException();
+            switch (decl.Name)
+            {
+                case "__int8":
+                case "__int16":
+                case "__int32":
+                case "__int64":
+                case "char":
+                case "wchar_t":
+                case "bool":
+                case "float":
+                case "double":
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public void Visit(SubTypeDecl decl)
         {
+            decl.Parent.Resolve(this.Symbol, this.Errors);
             throw new NotImplementedException();
         }
 
         public void Visit(DecorateTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element.Resolve(this.Symbol, this.Errors);
         }
 
         public void Visit(ArrayTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element.Resolve(this.Symbol, this.Errors);
         }
 
         public void Visit(FunctionTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.ReturnType.Resolve(this.Symbol, this.Errors);
+            foreach (var type in decl.Parameters)
+            {
+                type.Resolve(this.Errors);
+            }
         }
 
         public void Visit(ClassMemberTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element.Resolve(this.Symbol, this.Errors);
+            decl.ClassType.Resolve(this.Symbol, this.Errors);
         }
 
         public void Visit(GenericTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element.Resolve(this.Symbol, this.Errors);
+            foreach (var type in decl.TypeArguments)
+            {
+                type.Resolve(this.Symbol, this.Errors);
+            }
         }
 
         public void Visit(DeclTypeDecl decl)
         {
-            throw new NotImplementedException();
         }
 
         public void Visit(VariadicArgumentTypeDecl decl)
         {
-            throw new NotImplementedException();
+            decl.Element.Resolve(this.Symbol, this.Errors);
         }
 
         public void Visit(ConstantTypeDecl decl)
         {
-            throw new NotImplementedException();
         }
     }
 

@@ -55,11 +55,14 @@ namespace DocSymbol
 
         public void Resolve(SymbolDecl symbol, List<string> errors)
         {
-            var visitor = new ResolveTypeDeclVisitor();
-            visitor.Symbol = symbol;
-            visitor.Errors = errors;
-            Accept(visitor);
-            this.ReferencingNameKey = visitor.Result;
+            if (this.ReferencingNameKey == null)
+            {
+                var visitor = new ResolveTypeDeclVisitor();
+                visitor.Symbol = symbol;
+                visitor.Errors = errors;
+                Accept(visitor);
+                this.ReferencingNameKey = visitor.Result;
+            }
         }
     }
 
