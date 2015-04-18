@@ -15,7 +15,7 @@ namespace DocSymbol
         public Dictionary<string, Dictionary<string, List<SymbolDecl>>> NamespaceContents { get; set; }
         public Dictionary<SymbolDecl, Dictionary<string, List<SymbolDecl>>> SymbolContents { get; set; }
         public Dictionary<TypeDecl, List<SymbolDecl>> ResolvedTypes { get; set; }
-        public HashSet<string> AvailableNames { get; set; }
+        public Dictionary<string, List<SymbolDecl>> AvailableNames { get; set; }
 
         private void FillNamespaceReferences(SymbolDecl decl)
         {
@@ -135,7 +135,13 @@ namespace DocSymbol
         {
             if (symbol.Name != null)
             {
-                this.AvailableNames.Add(symbol.Name);
+                List<SymbolDecl> decls = null;
+                if (!this.AvailableNames.TryGetValue(symbol.Name, out decls))
+                {
+                    decls = new List<SymbolDecl>();
+                    this.AvailableNames.Add(symbol.Name, decls);
+                }
+                decls.Add(symbol);
             }
             if (symbol.Children != null)
             {
@@ -155,7 +161,7 @@ namespace DocSymbol
             this.NamespaceContents = new Dictionary<string, Dictionary<string, List<SymbolDecl>>>();
             this.SymbolContents = new Dictionary<SymbolDecl, Dictionary<string, List<SymbolDecl>>>();
             this.ResolvedTypes = new Dictionary<TypeDecl, List<SymbolDecl>>();
-            this.AvailableNames = new HashSet<string>();
+            this.AvailableNames = new Dictionary<string, List<SymbolDecl>>();
 
             foreach (var global in globals.SelectMany(x => x.Children))
             {
@@ -231,6 +237,17 @@ namespace DocSymbol
                 return content;
             }
         }
+
+        public void AddError(bool error, string messageFormat, string name, SymbolDecl symbol)
+        {
+            var template = symbol as TemplateDecl;
+            if (template != null)
+            {
+                symbol = template.Element;
+            }
+
+            this.Errors.Add((error ? "(Error) " : "(Warning) ") + string.Format(messageFormat, name, symbol.OverloadKey));
+        }
     }
 
     class ResolveTypeDeclVisitor : TypeDecl.IVisitor
@@ -267,13 +284,41 @@ namespace DocSymbol
                 if (nameKeys.Count > 1)
                 {
                     var printingKeys = overloadKeys.Aggregate("", (a, b) => a + "\r\n" + b);
-                    this.Environment.Errors.Add(string.Format("(Warning) Found multiple symbols for {0} in {1}: {2}", name, this.Symbol.OverloadKey, printingKeys));
+                    this.Environment.AddError(false, "Found multiple symbols for {0} in {1}: " + printingKeys, name, this.Symbol);
                     return null;
                 }
                 decl.ReferencingNameKey = nameKeys[0];
                 return decls;
             }
             return null;
+        }
+
+        private void AddError(TypeDecl decl, string name)
+        {
+            List<SymbolDecl> decls = null;
+            if (this.Environment.AvailableNames.TryGetValue(name, out decls))
+            {
+                decls = decls
+                    .Where(x => !(x is FuncDecl) && !(x is VarDecl))
+                    .ToList();
+                if (decls.Count == 0)
+                {
+                    this.Environment.AddError(false, "Failed to resolve {0} in {1}.", name, this.Symbol);
+                }
+                else
+                {
+                    decl.ReferencingOverloadKeys = decls
+                        .Select(x => x.OverloadKey)
+                        .Distinct()
+                        .ToList();
+                    var printingKeys = decl.ReferencingOverloadKeys.Aggregate("", (a, b) => a + "\r\n" + b);
+                    this.Environment.AddError(false, "Failed to resolve {0} in {1}, treated as a open type:" + printingKeys, name, this.Symbol);
+                }
+            }
+            else
+            {
+                this.Environment.AddError(true, "Failed to resolve {0} in {1}.", name, this.Symbol);
+            }
         }
 
         public void Visit(RefTypeDecl decl)
@@ -328,14 +373,7 @@ namespace DocSymbol
                 current = current.Parent;
             }
 
-            if (this.Environment.AvailableNames.Contains(decl.Name))
-            {
-                this.Environment.Errors.Add(string.Format("(Warning) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
-            }
-            else
-            {
-                this.Environment.Errors.Add(string.Format("(Error) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
-            }
+            AddError(decl, decl.Name);
         }
 
         public void Visit(SubTypeDecl decl)
@@ -364,14 +402,7 @@ namespace DocSymbol
                 }
             }
 
-            if (this.Environment.AvailableNames.Contains(decl.Name))
-            {
-                this.Environment.Errors.Add(string.Format("(Warning) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
-            }
-            else
-            {
-                this.Environment.Errors.Add(string.Format("(Error) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
-            }
+            AddError(decl, decl.Name);
         }
 
         public void Visit(DecorateTypeDecl decl)

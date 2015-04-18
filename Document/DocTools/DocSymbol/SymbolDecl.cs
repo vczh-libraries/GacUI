@@ -285,6 +285,16 @@ namespace DocSymbol
         {
             visitor.Visit(this);
         }
+
+        public override void BuildSymbolTree(SymbolDecl parent, string tag)
+        {
+            base.BuildSymbolTree(parent, tag);
+            foreach (var type in this.BaseTypes)
+            {
+                type.Parent = this;
+                type.BuildSymbolTree(this, tag);
+            }
+        }
     }
 
     public class VarDecl : SymbolDecl
