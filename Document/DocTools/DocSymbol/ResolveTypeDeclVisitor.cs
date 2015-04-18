@@ -248,14 +248,19 @@ namespace DocSymbol
             List<SymbolDecl> decls = null;
             if (content.TryGetValue(name, out decls))
             {
-                var keys = decls.Select(x => x.NameKey).Distinct().ToArray();
-                if (keys.Length > 1)
+                var nameKeys = decls.Select(x => x.NameKey).Distinct().ToList();
+                var overloadKeys = decls.Select(x => x.OverloadKey).Distinct().ToList();
+                if (overloadKeys.Count > 0)
                 {
-                    var printingKeys = decls.Select(x => x.OverloadKey).Distinct().Aggregate("", (a, b) => a + "\r\n" + b);
+                    decl.ReferencingOverloadKeys = overloadKeys;
+                }
+                if (nameKeys.Count > 1)
+                {
+                    var printingKeys = overloadKeys.Aggregate("", (a, b) => a + "\r\n" + b);
                     this.Environment.Errors.Add(string.Format("(Error) Found multiple symbols for {0} in {1}: {2}", name, this.Symbol.OverloadKey, printingKeys));
                     return null;
                 }
-                decl.ReferencingNameKey = keys[0];
+                decl.ReferencingNameKey = nameKeys[0];
                 return decls;
             }
             return null;
