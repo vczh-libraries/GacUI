@@ -190,7 +190,24 @@ namespace DocSymbol
         public void Visit(SubTypeDecl decl)
         {
             decl.Parent.Resolve(this.Symbol, this.Environment);
-            throw new NotImplementedException();
+
+            var parent = decl.Parent;
+            while (parent != null)
+            {
+                var generic = parent as GenericTypeDecl;
+                if (generic != null)
+                {
+                    parent = generic.Element;
+                    continue;
+                }
+                break;
+            }
+
+            if (parent.ReferencingNameKey != null)
+            {
+                throw new NotImplementedException();
+            }
+            this.Environment.Errors.Add(string.Format("Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
         }
 
         public void Visit(DecorateTypeDecl decl)
@@ -399,11 +416,14 @@ namespace DocSymbol
 
         public void Visit(FuncDecl decl)
         {
-            foreach (VarDecl item in decl.Children)
+            if (decl.Children != null)
             {
-                if (item.Name != null)
+                foreach (VarDecl item in decl.Children)
                 {
-                    AddSymbol(item.Name, item);
+                    if (item.Name != null)
+                    {
+                        AddSymbol(item.Name, item);
+                    }
                 }
             }
         }
