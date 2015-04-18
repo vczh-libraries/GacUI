@@ -61,7 +61,6 @@ namespace DocSymbol
                 visitor.Symbol = symbol;
                 visitor.Environment = environment;
                 Accept(visitor);
-                this.ReferencingNameKey = visitor.Result;
             }
         }
     }

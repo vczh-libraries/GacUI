@@ -120,9 +120,8 @@ namespace DocSymbol
     {
         public SymbolDecl Symbol { get; set; }
         public ResolveEnvironment Environment { get; set; }
-        public string Result { get; set; }
 
-        private List<SymbolDecl> FindSymbolInContent(string name, Dictionary<string, List<SymbolDecl>> content)
+        private List<SymbolDecl> FindSymbolInContent(TypeDecl decl, string name, Dictionary<string, List<SymbolDecl>> content)
         {
             if (content == null)
             {
@@ -139,7 +138,7 @@ namespace DocSymbol
                     this.Environment.Errors.Add(string.Format("Found multiple symbols for {0} in {1}: {2}", name, this.Symbol.OverloadKey, printingKeys));
                     return null;
                 }
-                this.Result = keys[0];
+                decl.ReferencingNameKey = keys[0];
                 return decls;
             }
             return null;
@@ -169,7 +168,7 @@ namespace DocSymbol
                 if (ns == null)
                 {
                     var content = this.Environment.GetSymbolContent(current);
-                    var decls = FindSymbolInContent(decl.Name, content);
+                    var decls = FindSymbolInContent(decl, decl.Name, content);
                     if (decls != null)
                     {
                         this.Environment.ResolvedTypes.Add(decl, decls);
@@ -182,7 +181,7 @@ namespace DocSymbol
                     foreach (var reference in references)
                     {
                         var content = this.Environment.NamespaceContents[reference];
-                        var decls = FindSymbolInContent(decl.Name, content);
+                        var decls = FindSymbolInContent(decl, decl.Name, content);
                         if (decls != null)
                         {
                             this.Environment.ResolvedTypes.Add(decl, decls);
@@ -221,7 +220,7 @@ namespace DocSymbol
                     .GroupBy(x => x.Key)
                     .ToDictionary(x => x.Key, x => x.SelectMany(y => y.Value).ToList())
                     ;
-                var decls = FindSymbolInContent(decl.Name, content);
+                var decls = FindSymbolInContent(decl, decl.Name, content);
                 if (decls != null)
                 {
                     this.Environment.ResolvedTypes.Add(decl, decls);
