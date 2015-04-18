@@ -1,6 +1,7 @@
 ﻿using DocSymbol;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,13 +59,19 @@ namespace DocResolver
             {
                 symbol.Resolve(environment);
             }
-            foreach (var error in environment.Errors)
-            {
-                Console.WriteLine("=========================ERROR=========================");
-                Console.WriteLine(error);
-            }
 
             var output = args[args.Length - 1];
+            Console.WriteLine("Errors: " + environment.Errors.Count);
+            using (var writer = new StreamWriter(output + ".errors.txt", false, Encoding.UTF8))
+            {
+                foreach (var error in environment.Errors)
+                {
+                    writer.WriteLine("=========================ERROR=========================");
+                    writer.WriteLine(error);
+                }
+            }
+
+            Console.WriteLine("Saving ...");
         }
 
         static void GroupSymbolsByOverloadKey(IEnumerable<SymbolDecl> decls, Dictionary<string, List<SymbolDecl>> group)
