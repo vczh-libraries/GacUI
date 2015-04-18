@@ -145,11 +145,11 @@ namespace DocSymbol
             {
                 this.Tags = tag;
             }
-            if (this.NameKey != null)
+            if (this.NameKey == null)
             {
                 this.NameKey = GenerateNameKey();
             }
-            if (this.OverloadKey != null)
+            if (this.OverloadKey == null)
             {
                 this.OverloadKey = GenerateOverloadKey();
             }

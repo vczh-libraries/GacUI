@@ -11,6 +11,7 @@ namespace DocSymbol
         public List<string> Errors { get; set; }
         public Dictionary<NamespaceDecl, List<string>> NamespaceReferences { get; set; }
         public Dictionary<string, Dictionary<string, List<SymbolDecl>>> NamespaceContents { get; set; }
+        public Dictionary<SymbolDecl, Dictionary<string, List<SymbolDecl>>> SymbolContents { get; set; }
 
         private void FillNamespaceReferences(SymbolDecl decl)
         {
@@ -61,7 +62,7 @@ namespace DocSymbol
             }
         }
 
-        public void FillNamespaceContents()
+        private void FillNamespaceContents()
         {
             var nsg = this.NamespaceReferences.Keys
                 .GroupBy(x => x.NameKey)
@@ -84,6 +85,7 @@ namespace DocSymbol
             this.Errors = new List<string>();
             this.NamespaceReferences = new Dictionary<NamespaceDecl, List<string>>();
             this.NamespaceContents = new Dictionary<string, Dictionary<string, List<SymbolDecl>>>();
+            this.SymbolContents = new Dictionary<SymbolDecl, Dictionary<string, List<SymbolDecl>>>();
 
             foreach (var global in globals.SelectMany(x => x.Children))
             {
@@ -91,6 +93,20 @@ namespace DocSymbol
             }
             ResolveUsingNamespaces();
             FillNamespaceContents();
+        }
+
+        public Dictionary<string, List<SymbolDecl>> GetSymbolContent(SymbolDecl symbol)
+        {
+            Dictionary<string, List<SymbolDecl>> content = null;
+            if (!this.SymbolContents.TryGetValue(symbol, out content))
+            {
+                var visitor = new ResolveSymbolDeclContentVisitor();
+                visitor.Content = new Dictionary<string, List<SymbolDecl>>();
+                symbol.Accept(visitor);
+                content = visitor.Content;
+                this.SymbolContents.Add(symbol, content);
+            }
+            return content;
         }
     }
 
@@ -113,10 +129,36 @@ namespace DocSymbol
                 case "bool":
                 case "float":
                 case "double":
+                case "void":
                     return;
             }
 
-            throw new NotImplementedException();
+            var ns = this.Symbol as NamespaceDecl;
+            if (ns == null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                var references = this.Environment.NamespaceReferences[ns];
+                foreach (var reference in references)
+                {
+                    var content = this.Environment.NamespaceContents[reference];
+                    List<SymbolDecl> decls = null;
+                    if (content.TryGetValue(decl.Name, out decls))
+                    {
+                        var keys = decls.Select(x => x.NameKey).Distinct().ToArray();
+                        if (keys.Length > 1)
+                        {
+                            var printingKeys = decls.Select(x => x.OverloadKey).Distinct().Aggregate("", (a, b) => a + "\r\n" + b);
+                            this.Environment.Errors.Add(string.Format("Found multiple symbols for {0} in {1}: {2}", decl.Name, this.Symbol.OverloadKey, printingKeys));
+                        }
+                        this.Result = keys[0];
+                        return;
+                    }
+                }
+                this.Environment.Errors.Add(string.Format("Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+            }
         }
 
         public void Visit(SubTypeDecl decl)
@@ -255,6 +297,71 @@ namespace DocSymbol
             }
 
             decl.Type.Resolve(decl, this.Environment);
+        }
+    }
+
+    class ResolveSymbolDeclContentVisitor : SymbolDecl.IVisitor
+    {
+        public Dictionary<string, List<SymbolDecl>> Content { get; set; }
+
+        public void Visit(GlobalDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(NamespaceDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(UsingNamespaceDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(TemplateDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(BaseTypeDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(ClassDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(VarDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(FuncDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(GroupedFieldDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(EnumItemDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(EnumDecl decl)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Visit(TypedefDecl decl)
+        {
+            throw new NotImplementedException();
         }
     }
 }
