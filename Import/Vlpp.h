@@ -9064,7 +9064,7 @@ Location
 		/// <summary>A type representing text position.</summary>
 		struct ParsingTextPos
 		{
-			static const int	UnknownValue=-2;
+			static const vint	UnknownValue=-2;
 			/// <summary>Character index, begins at 0.</summary>
 			vint				index;
 			/// <summary>Row number, begins at 0.</summary>
