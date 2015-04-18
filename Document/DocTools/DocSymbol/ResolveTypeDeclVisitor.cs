@@ -238,7 +238,7 @@ namespace DocSymbol
         public SymbolDecl Symbol { get; set; }
         public ResolveEnvironment Environment { get; set; }
 
-        private List<SymbolDecl> FindSymbolInContent(TypeDecl decl, string name, Dictionary<string, List<SymbolDecl>> content)
+        private List<SymbolDecl> FindSymbolInContent(TypeDecl decl, string name, Dictionary<string, List<SymbolDecl>> content, bool typeAndNamespaceOnly)
         {
             if (content == null)
             {
@@ -248,6 +248,16 @@ namespace DocSymbol
             List<SymbolDecl> decls = null;
             if (content.TryGetValue(name, out decls))
             {
+                if (typeAndNamespaceOnly)
+                {
+                    decls = decls
+                        .Where(x => !(x is FuncDecl) && !(x is VarDecl))
+                        .ToList();
+                    if (decls.Count == 0)
+                    {
+                        return null;
+                    }
+                }
                 var nameKeys = decls.Select(x => x.NameKey).Distinct().ToList();
                 var overloadKeys = decls.Select(x => x.OverloadKey).Distinct().ToList();
                 if (overloadKeys.Count > 0)
@@ -293,7 +303,7 @@ namespace DocSymbol
                     if (!(current is NamespaceDecl) && !(current is GlobalDecl))
                     {
                         var content = this.Environment.GetSymbolContent(current);
-                        var decls = FindSymbolInContent(decl, decl.Name, content);
+                        var decls = FindSymbolInContent(decl, decl.Name, content, true);
                         if (decls != null)
                         {
                             this.Environment.ResolvedTypes.Add(decl, decls);
@@ -306,7 +316,7 @@ namespace DocSymbol
                         foreach (var reference in references)
                         {
                             var content = this.Environment.NamespaceContents[reference];
-                            var decls = FindSymbolInContent(decl, decl.Name, content);
+                            var decls = FindSymbolInContent(decl, decl.Name, content, true);
                             if (decls != null)
                             {
                                 this.Environment.ResolvedTypes.Add(decl, decls);
@@ -346,7 +356,7 @@ namespace DocSymbol
                         .ToDictionary(x => x.Key, x => x.SelectMany(y => y.Value).ToList())
                         ;
                 }
-                var decls = FindSymbolInContent(decl, decl.Name, content);
+                var decls = FindSymbolInContent(decl, decl.Name, content, true);
                 if (decls != null)
                 {
                     this.Environment.ResolvedTypes.Add(decl, decls);
