@@ -531,16 +531,6 @@ namespace DocSymbol
 
         public void Visit(FuncDecl decl)
         {
-            if (decl.Children != null)
-            {
-                foreach (VarDecl item in decl.Children)
-                {
-                    if (item.Name != null)
-                    {
-                        AddSymbol(item.Name, item);
-                    }
-                }
-            }
         }
 
         public void Visit(GroupedFieldDecl decl)
