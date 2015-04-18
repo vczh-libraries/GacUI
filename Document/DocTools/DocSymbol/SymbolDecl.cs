@@ -80,10 +80,10 @@ namespace DocSymbol
             return symbolDecl;
         }
 
-        public void Resolve(List<string> errors)
+        public void Resolve(ResolveEnvironment environment)
         {
             var visitor = new ResolveSymbolDeclVisitor();
-            visitor.Errors = errors;
+            visitor.Environment = environment;
             Accept(visitor);
         }
 

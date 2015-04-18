@@ -53,13 +53,13 @@ namespace DocSymbol
             return typeDecl;
         }
 
-        public void Resolve(SymbolDecl symbol, List<string> errors)
+        public void Resolve(SymbolDecl symbol, ResolveEnvironment environment)
         {
             if (this.ReferencingNameKey == null)
             {
                 var visitor = new ResolveTypeDeclVisitor();
                 visitor.Symbol = symbol;
-                visitor.Errors = errors;
+                visitor.Environment = environment;
                 Accept(visitor);
                 this.ReferencingNameKey = visitor.Result;
             }

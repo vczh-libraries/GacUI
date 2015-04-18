@@ -6,10 +6,20 @@ using System.Threading.Tasks;
 
 namespace DocSymbol
 {
+    public class ResolveEnvironment
+    {
+        public List<string> Errors { get; set; }
+
+        public ResolveEnvironment(IEnumerable<SymbolDecl> globals)
+        {
+            this.Errors = new List<string>();
+        }
+    }
+
     class ResolveTypeDeclVisitor : TypeDecl.IVisitor
     {
         public SymbolDecl Symbol { get; set; }
-        public List<string> Errors { get; set; }
+        public ResolveEnvironment Environment { get; set; }
         public string Result { get; set; }
 
         public void Visit(RefTypeDecl decl)
@@ -25,49 +35,49 @@ namespace DocSymbol
                 case "bool":
                 case "float":
                 case "double":
-                    break;
-                default:
-                    throw new NotImplementedException();
+                    return;
             }
+
+            throw new NotImplementedException();
         }
 
         public void Visit(SubTypeDecl decl)
         {
-            decl.Parent.Resolve(this.Symbol, this.Errors);
+            decl.Parent.Resolve(this.Symbol, this.Environment);
             throw new NotImplementedException();
         }
 
         public void Visit(DecorateTypeDecl decl)
         {
-            decl.Element.Resolve(this.Symbol, this.Errors);
+            decl.Element.Resolve(this.Symbol, this.Environment);
         }
 
         public void Visit(ArrayTypeDecl decl)
         {
-            decl.Element.Resolve(this.Symbol, this.Errors);
+            decl.Element.Resolve(this.Symbol, this.Environment);
         }
 
         public void Visit(FunctionTypeDecl decl)
         {
-            decl.ReturnType.Resolve(this.Symbol, this.Errors);
+            decl.ReturnType.Resolve(this.Symbol, this.Environment);
             foreach (var type in decl.Parameters)
             {
-                type.Resolve(this.Errors);
+                type.Resolve(this.Environment);
             }
         }
 
         public void Visit(ClassMemberTypeDecl decl)
         {
-            decl.Element.Resolve(this.Symbol, this.Errors);
-            decl.ClassType.Resolve(this.Symbol, this.Errors);
+            decl.Element.Resolve(this.Symbol, this.Environment);
+            decl.ClassType.Resolve(this.Symbol, this.Environment);
         }
 
         public void Visit(GenericTypeDecl decl)
         {
-            decl.Element.Resolve(this.Symbol, this.Errors);
+            decl.Element.Resolve(this.Symbol, this.Environment);
             foreach (var type in decl.TypeArguments)
             {
-                type.Resolve(this.Symbol, this.Errors);
+                type.Resolve(this.Symbol, this.Environment);
             }
         }
 
@@ -77,7 +87,7 @@ namespace DocSymbol
 
         public void Visit(VariadicArgumentTypeDecl decl)
         {
-            decl.Element.Resolve(this.Symbol, this.Errors);
+            decl.Element.Resolve(this.Symbol, this.Environment);
         }
 
         public void Visit(ConstantTypeDecl decl)
@@ -87,7 +97,7 @@ namespace DocSymbol
 
     class ResolveSymbolDeclVisitor : SymbolDecl.IVisitor
     {
-        public List<string> Errors { get; set; }
+        public ResolveEnvironment Environment { get; set; }
 
         public void Visit(GlobalDecl decl)
         {
@@ -107,7 +117,7 @@ namespace DocSymbol
             {
                 foreach (var type in decl.Specialization)
                 {
-                    type.Resolve(decl, this.Errors);
+                    type.Resolve(decl, this.Environment);
                 }
             }
         }
@@ -126,13 +136,13 @@ namespace DocSymbol
 
             foreach (var baseType in decl.BaseTypes)
             {
-                baseType.Type.Resolve(decl, this.Errors);
+                baseType.Type.Resolve(decl, this.Environment);
             }
         }
 
         public void Visit(VarDecl decl)
         {
-            decl.Type.Resolve(decl, this.Errors);
+            decl.Type.Resolve(decl, this.Environment);
         }
 
         public void Visit(FuncDecl decl)
@@ -143,7 +153,7 @@ namespace DocSymbol
                 Visit(templateDecl);
             }
 
-            decl.Type.Resolve(decl, this.Errors);
+            decl.Type.Resolve(decl, this.Environment);
         }
 
         public void Visit(GroupedFieldDecl decl)
@@ -166,7 +176,7 @@ namespace DocSymbol
                 Visit(templateDecl);
             }
 
-            decl.Type.Resolve(decl, this.Errors);
+            decl.Type.Resolve(decl, this.Environment);
         }
     }
 }

@@ -53,12 +53,12 @@ namespace DocResolver
                     .Select(x => x.First())
                     )
                 .ToArray();
-            List<string> errors = new List<string>();
+            var environment = new ResolveEnvironment(input.Values);
             foreach (var symbol in symbolResolving)
             {
-                symbol.Resolve(errors);
+                symbol.Resolve(environment);
             }
-            foreach (var error in errors)
+            foreach (var error in environment.Errors)
             {
                 Console.WriteLine("=========================ERROR=========================");
                 Console.WriteLine(error);
