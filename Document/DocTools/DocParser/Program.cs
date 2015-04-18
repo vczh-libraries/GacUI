@@ -39,18 +39,17 @@ namespace DocParser
             var xml = new XDocument(global.Serialize());
             xml.Save(args[1]);
 
-            global.BuildSymbolTree();
+            global.BuildSymbolTree(null, "");
             var grouping = ExpandChildren(global)
                 .Where(decl => decl.OverloadKey != null)
                 .GroupBy(decl => decl.OverloadKey)
                 .ToDictionary(g => g.Key, g => g.ToArray())
                 ;
-            foreach (var key in grouping.Keys)
+            foreach (var pair in grouping)
             {
-                var values = grouping[key];
-                if (values.Length > 1 && values.Any(decl => !(decl is NamespaceDecl)))
+                if (pair.Value.Length > 1 && pair.Value.Any(decl => !(decl is NamespaceDecl)))
                 {
-                    Console.WriteLine("Duplicate key founds: " + key);
+                    Console.WriteLine("Duplicate key founds: " + pair.Key);
                 }
             }
         }

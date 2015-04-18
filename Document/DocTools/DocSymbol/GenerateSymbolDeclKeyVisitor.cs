@@ -155,4 +155,132 @@ namespace DocSymbol
         {
         }
     }
+
+    class GenerateSymbolDeclContentKeyVisitor : SymbolDecl.IVisitor
+    {
+        public string Result { get; set; }
+
+        public void Visit(GlobalDecl decl)
+        {
+        }
+
+        public void Visit(NamespaceDecl decl)
+        {
+        }
+
+        public void Visit(UsingNamespaceDecl decl)
+        {
+        }
+
+        public void Visit(TemplateDecl decl)
+        {
+        }
+
+        public void Visit(BaseTypeDecl decl)
+        {
+        }
+
+        public void Visit(ClassDecl decl)
+        {
+            string header = decl.Parent is TemplateDecl
+                ? decl.Parent.ToString()
+                : decl.ToString();
+            this.Result = header + (decl.Children == null ? "" : decl.Children.Aggregate("", (a, b) => a + "\r\n" + b.GenerateChildContentKey()));
+        }
+
+        public void Visit(VarDecl decl)
+        {
+            this.Result = decl.ToString();
+        }
+
+        public void Visit(FuncDecl decl)
+        {
+            string header = decl.Parent is TemplateDecl
+                ? decl.Parent.ToString()
+                : decl.ToString();
+            this.Result = header + (decl.Children == null ? "" : decl.Children.Aggregate("", (a, b) => a + "\r\n" + b.GenerateChildContentKey()));
+        }
+
+        public void Visit(GroupedFieldDecl decl)
+        {
+        }
+
+        public void Visit(EnumItemDecl decl)
+        {
+        }
+
+        public void Visit(EnumDecl decl)
+        {
+            this.Result = decl.ToString() + decl.Children.Aggregate("", (a, b) => a + "\r\n" + b.GenerateChildContentKey());
+        }
+
+        public void Visit(TypedefDecl decl)
+        {
+            this.Result = decl.ToString();
+        }
+    }
+
+    class GenerateSymbolDeclChildContentKeyVisitor : SymbolDecl.IVisitor
+    {
+        public string Result { get; set; }
+
+        public void Visit(GlobalDecl decl)
+        {
+        }
+
+        public void Visit(NamespaceDecl decl)
+        {
+        }
+
+        public void Visit(UsingNamespaceDecl decl)
+        {
+        }
+
+        public void Visit(TemplateDecl decl)
+        {
+        }
+
+        public void Visit(BaseTypeDecl decl)
+        {
+        }
+
+        public void Visit(ClassDecl decl)
+        {
+            this.Result = decl.Parent is TemplateDecl
+                ? decl.Parent.ToString()
+                : decl.ToString();
+        }
+
+        public void Visit(VarDecl decl)
+        {
+            this.Result = decl.ToString();
+        }
+
+        public void Visit(FuncDecl decl)
+        {
+            this.Result = decl.Parent is TemplateDecl
+                ? decl.Parent.ToString()
+                : decl.ToString();
+        }
+
+        public void Visit(GroupedFieldDecl decl)
+        {
+            this.Result = decl.ToString() + decl.Children.Aggregate("", (a, b) => a + "\r\n" + b.GenerateChildContentKey());
+        }
+
+        public void Visit(EnumItemDecl decl)
+        {
+            this.Result = decl.ToString();
+        }
+
+        public void Visit(EnumDecl decl)
+        {
+            this.Result = decl.ToString();
+        }
+
+        public void Visit(TypedefDecl decl)
+        {
+            this.Result = decl.ToString();
+        }
+    }
 }

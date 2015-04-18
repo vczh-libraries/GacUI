@@ -25,7 +25,7 @@ namespace DocSymbol
             this.Result = "using namespace " + decl.Path.Aggregate("", (a, b) => a == "" ? b : a + "::" + b);
         }
 
-        public void Visit(TemplateDecl decl)
+        public static string PrintTemplateDecl(TemplateDecl decl)
         {
             string result = "template<" + decl.TypeParameters.Aggregate("", (a, b) => a == "" ? b : a + ", " + b) + "> ";
             if (decl.Specialization.Count > 0)
@@ -35,8 +35,12 @@ namespace DocSymbol
                     .Aggregate("", (a, b) => a == "" ? "specialization<" + b : a + ", " + b)
                     + "> ";
             }
-            result += decl.Element.ToString();
-            this.Result = result;
+            return result;
+        }
+
+        public void Visit(TemplateDecl decl)
+        {
+            this.Result = PrintTemplateDecl(decl) + decl.Element.ToString();
         }
 
         public void Visit(BaseTypeDecl decl)

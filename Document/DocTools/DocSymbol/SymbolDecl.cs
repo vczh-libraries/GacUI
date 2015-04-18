@@ -19,10 +19,15 @@ namespace DocSymbol
         public Access Access { get; set; }
         public string Name { get; set; }
         public List<SymbolDecl> Children { get; set; }
+        public string Document { get; set; }
+
+        #region BuildSymbolTree generated fields
         public SymbolDecl Parent { get; set; }
+        public string Tags { get; set; }
         public string NameKey { get; set; }
         public string OverloadKey { get; set; }
-        public string Document { get; set; }
+        public string ContentKey { get; set; }
+        #endregion
 
         public interface IVisitor
         {
@@ -73,6 +78,8 @@ namespace DocSymbol
             return symbolDecl;
         }
 
+        #region BuildSymbolTree
+
         internal string KeyOfScopeParent
         {
             get
@@ -108,19 +115,37 @@ namespace DocSymbol
             return visitor.Result == null ? GenerateNameKey() : visitor.Result;
         }
 
-        public virtual void BuildSymbolTree(SymbolDecl parent = null)
+        internal string GenerateContentKey()
+        {
+            var visitor = new GenerateSymbolDeclContentKeyVisitor();
+            Accept(visitor);
+            return visitor.Result;
+        }
+
+        internal string GenerateChildContentKey()
+        {
+            var visitor = new GenerateSymbolDeclChildContentKeyVisitor();
+            Accept(visitor);
+            return visitor.Result;
+        }
+
+        public virtual void BuildSymbolTree(SymbolDecl parent, string tag)
         {
             this.Parent = parent;
+            this.Tags = tag;
             this.NameKey = GenerateNameKey();
             this.OverloadKey = GenerateOverloadKey();
+            this.ContentKey = GenerateContentKey();
             if (this.Children != null)
             {
                 foreach (var decl in this.Children)
                 {
-                    decl.BuildSymbolTree(this);
+                    decl.BuildSymbolTree(this, tag);
                 }
             }
         }
+
+        #endregion
     }
 
     public class GlobalDecl : SymbolDecl
@@ -249,7 +274,7 @@ namespace DocSymbol
             visitor.Visit(this);
         }
 
-        public override void BuildSymbolTree(SymbolDecl parent)
+        public override void BuildSymbolTree(SymbolDecl parent, string tag)
         {
             foreach (var decl in ((FunctionTypeDecl)this.Type).Parameters)
             {
@@ -262,7 +287,7 @@ namespace DocSymbol
                     this.Children.Add(decl);
                 }
             }
-            base.BuildSymbolTree(parent);
+            base.BuildSymbolTree(parent, tag);
         }
     }
 
