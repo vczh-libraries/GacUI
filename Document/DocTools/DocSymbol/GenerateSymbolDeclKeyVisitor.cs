@@ -33,15 +33,7 @@ namespace DocSymbol
 
         public void Visit(ClassDecl decl)
         {
-            var template = decl.Parent as TemplateDecl;
-            if (template == null)
-            {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
-            }
-            else
-            {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString();
-            }
+            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(VarDecl decl)
@@ -51,15 +43,7 @@ namespace DocSymbol
 
         public void Visit(FuncDecl decl)
         {
-            var template = decl.Parent as TemplateDecl;
-            if (template == null)
-            {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
-            }
-            else
-            {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString();
-            }
+            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
         }
 
         public void Visit(GroupedFieldDecl decl)
@@ -78,15 +62,7 @@ namespace DocSymbol
 
         public void Visit(TypedefDecl decl)
         {
-            var template = decl.Parent as TemplateDecl;
-            if (template == null)
-            {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
-            }
-            else
-            {
-                this.Result = decl.KeyOfScopeParent + "::" + decl.Name + "`" + template.TypeParameters.Count.ToString();
-            }
+            this.Result = decl.KeyOfScopeParent + "::" + decl.Name;
         }
     }
 

@@ -10,9 +10,9 @@ namespace DocSymbol
     {
         public List<string> Errors { get; set; }
         public Dictionary<NamespaceDecl, List<string>> NamespaceReferences { get; set; }
-        public Dictionary<string, List<SymbolDecl>> NamespaceContents { get; set; }
+        public Dictionary<string, Dictionary<string, List<SymbolDecl>>> NamespaceContents { get; set; }
 
-        private void FillNamespaces(SymbolDecl decl)
+        private void FillNamespaceReferences(SymbolDecl decl)
         {
             var ns = decl as NamespaceDecl;
             if (ns != null)
@@ -22,7 +22,7 @@ namespace DocSymbol
                 {
                     foreach (var child in decl.Children)
                     {
-                        FillNamespaces(child);
+                        FillNamespaceReferences(child);
                     }
                 }
             }
@@ -61,17 +61,36 @@ namespace DocSymbol
             }
         }
 
+        public void FillNamespaceContents()
+        {
+            var nsg = this.NamespaceReferences.Keys
+                .GroupBy(x => x.NameKey)
+                .ToArray();
+            foreach (var nss in nsg)
+            {
+                var children = nss
+                    .Where(x => x.Children != null)
+                    .SelectMany(x => x.Children)
+                    .Where(x => x.Name != null)
+                    .GroupBy(x => x.Name)
+                    .ToDictionary(x => x.Key, x => x.GroupBy(y => y.Tags).Select(y => y.First()).ToList())
+                    ;
+                this.NamespaceContents.Add(nss.Key, children);
+            }
+        }
+
         public ResolveEnvironment(IEnumerable<SymbolDecl> globals)
         {
             this.Errors = new List<string>();
             this.NamespaceReferences = new Dictionary<NamespaceDecl, List<string>>();
-            this.NamespaceContents = new Dictionary<string, List<SymbolDecl>>();
+            this.NamespaceContents = new Dictionary<string, Dictionary<string, List<SymbolDecl>>>();
 
             foreach (var global in globals.SelectMany(x => x.Children))
             {
-                FillNamespaces(global);
+                FillNamespaceReferences(global);
             }
             ResolveUsingNamespaces();
+            FillNamespaceContents();
         }
     }
 
