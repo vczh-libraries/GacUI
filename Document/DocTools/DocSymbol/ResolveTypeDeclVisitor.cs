@@ -169,6 +169,21 @@ namespace DocSymbol
             }
         }
 
+        public TypeDecl FindRefType(TypeDecl type)
+        {
+            while (type != null)
+            {
+                var generic = type as GenericTypeDecl;
+                if (generic != null)
+                {
+                    type = generic.Element;
+                    continue;
+                }
+                break;
+            }
+            return type;
+        }
+
         public Dictionary<string, List<SymbolDecl>> GetSymbolContent(SymbolDecl symbol)
         {
             if (symbol is NamespaceDecl)
@@ -180,12 +195,37 @@ namespace DocSymbol
                 Dictionary<string, List<SymbolDecl>> content = null;
                 if (!this.SymbolContents.TryGetValue(symbol, out content))
                 {
-                    var visitor = new ResolveSymbolDeclContentVisitor
+                    var template = symbol as TemplateDecl;
+                    var typedef = (template == null ? symbol : template.Element) as TypedefDecl;
+                    if (typedef != null)
                     {
-                        Environment = this,
-                    };
-                    symbol.Accept(visitor);
-                    content = visitor.Content;
+                        typedef.Type.Resolve(typedef.Parent, this);
+                        var refType = FindRefType(typedef.Type);
+                        if (refType.ReferencingNameKey == null)
+                        {
+                            content = null;
+                        }
+                        else
+                        {
+                            var symbols = this.ResolvedTypes[refType];
+                            content = symbols
+                                .Select(x => GetSymbolContent(x))
+                                .Where(x => x != null)
+                                .SelectMany(x => x)
+                                .GroupBy(x => x.Key)
+                                .ToDictionary(x => x.Key, x => x.SelectMany(y => y.Value).Distinct().ToList())
+                                ;
+                        }
+                    }
+                    else
+                    {
+                        var visitor = new ResolveSymbolDeclContentVisitor
+                        {
+                            Environment = this,
+                        };
+                        symbol.Accept(visitor);
+                        content = visitor.Content;
+                    }
                     this.SymbolContents.Add(symbol, content);
                 }
                 return content;
@@ -243,27 +283,30 @@ namespace DocSymbol
             var current = this.Symbol;
             while (current != null)
             {
-                if (!(current is NamespaceDecl) && !(current is GlobalDecl))
+                if (!(current is TypedefDecl))
                 {
-                    var content = this.Environment.GetSymbolContent(current);
-                    var decls = FindSymbolInContent(decl, decl.Name, content);
-                    if (decls != null)
+                    if (!(current is NamespaceDecl) && !(current is GlobalDecl))
                     {
-                        this.Environment.ResolvedTypes.Add(decl, decls);
-                        return;
-                    }
-                }
-                else
-                {
-                    var references = this.Environment.NamespaceReferences[current is GlobalDecl ? "" : current.NameKey];
-                    foreach (var reference in references)
-                    {
-                        var content = this.Environment.NamespaceContents[reference];
+                        var content = this.Environment.GetSymbolContent(current);
                         var decls = FindSymbolInContent(decl, decl.Name, content);
                         if (decls != null)
                         {
                             this.Environment.ResolvedTypes.Add(decl, decls);
                             return;
+                        }
+                    }
+                    else
+                    {
+                        var references = this.Environment.NamespaceReferences[current is GlobalDecl ? "" : current.NameKey];
+                        foreach (var reference in references)
+                        {
+                            var content = this.Environment.NamespaceContents[reference];
+                            var decls = FindSymbolInContent(decl, decl.Name, content);
+                            if (decls != null)
+                            {
+                                this.Environment.ResolvedTypes.Add(decl, decls);
+                                return;
+                            }
                         }
                     }
                 }
@@ -283,25 +326,13 @@ namespace DocSymbol
         public void Visit(SubTypeDecl decl)
         {
             decl.Parent.Resolve(this.Symbol, this.Environment);
-
-            var parent = decl.Parent;
-            while (parent != null)
-            {
-                var generic = parent as GenericTypeDecl;
-                if (generic != null)
-                {
-                    parent = generic.Element;
-                    continue;
-                }
-                break;
-            }
-
-            if (parent.ReferencingNameKey != null)
+            var refType = this.Environment.FindRefType(decl.Parent);
+            if (refType.ReferencingNameKey != null)
             {
                 Dictionary<string, List<SymbolDecl>> content = null;
-                if (!this.Environment.NamespaceContents.TryGetValue(parent.ReferencingNameKey, out content))
+                if (!this.Environment.NamespaceContents.TryGetValue(refType.ReferencingNameKey, out content))
                 {
-                    var parentDecls = this.Environment.ResolvedTypes[parent];
+                    var parentDecls = this.Environment.ResolvedTypes[refType];
                     content = parentDecls
                         .Select(x => this.Environment.GetSymbolContent(x))
                         .Where(x => x != null)
@@ -547,21 +578,10 @@ namespace DocSymbol
             foreach (var baseType in decl.BaseTypes)
             {
                 baseType.Type.Resolve(decl.Parent, this.Environment);
-                var parent = baseType.Type;
-                while (parent != null)
+                var refType = this.Environment.FindRefType(baseType.Type);
+                if (refType.ReferencingNameKey != null)
                 {
-                    var generic = parent as GenericTypeDecl;
-                    if (generic != null)
-                    {
-                        parent = generic.Element;
-                        continue;
-                    }
-                    break;
-                }
-
-                if (parent.ReferencingNameKey != null)
-                {
-                    var symbols = this.Environment.ResolvedTypes[parent];
+                    var symbols = this.Environment.ResolvedTypes[refType];
                     foreach (var symbol in symbols)
                     {
                         if (symbol == decl)
