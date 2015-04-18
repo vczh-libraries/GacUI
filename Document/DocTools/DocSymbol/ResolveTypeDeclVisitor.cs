@@ -12,6 +12,7 @@ namespace DocSymbol
         public Dictionary<NamespaceDecl, List<string>> NamespaceReferences { get; set; }
         public Dictionary<string, Dictionary<string, List<SymbolDecl>>> NamespaceContents { get; set; }
         public Dictionary<SymbolDecl, Dictionary<string, List<SymbolDecl>>> SymbolContents { get; set; }
+        public Dictionary<TypeDecl, List<SymbolDecl>> ResolvedTypes { get; set; }
 
         private void FillNamespaceReferences(SymbolDecl decl)
         {
@@ -91,6 +92,7 @@ namespace DocSymbol
             this.NamespaceReferences = new Dictionary<NamespaceDecl, List<string>>();
             this.NamespaceContents = new Dictionary<string, Dictionary<string, List<SymbolDecl>>>();
             this.SymbolContents = new Dictionary<SymbolDecl, Dictionary<string, List<SymbolDecl>>>();
+            this.ResolvedTypes = new Dictionary<TypeDecl, List<SymbolDecl>>();
 
             foreach (var global in globals.SelectMany(x => x.Children))
             {
@@ -120,25 +122,27 @@ namespace DocSymbol
         public ResolveEnvironment Environment { get; set; }
         public string Result { get; set; }
 
-        private bool FindSymbolInContent(RefTypeDecl decl, Dictionary<string, List<SymbolDecl>> content)
+        private List<SymbolDecl> FindSymbolInContent(string name, Dictionary<string, List<SymbolDecl>> content)
         {
             if (content == null)
             {
-                return false;
+                return null;
             }
+
             List<SymbolDecl> decls = null;
-            if (content.TryGetValue(decl.Name, out decls))
+            if (content.TryGetValue(name, out decls))
             {
                 var keys = decls.Select(x => x.NameKey).Distinct().ToArray();
                 if (keys.Length > 1)
                 {
                     var printingKeys = decls.Select(x => x.OverloadKey).Distinct().Aggregate("", (a, b) => a + "\r\n" + b);
-                    this.Environment.Errors.Add(string.Format("Found multiple symbols for {0} in {1}: {2}", decl.Name, this.Symbol.OverloadKey, printingKeys));
+                    this.Environment.Errors.Add(string.Format("Found multiple symbols for {0} in {1}: {2}", name, this.Symbol.OverloadKey, printingKeys));
+                    return null;
                 }
                 this.Result = keys[0];
-                return true;
+                return decls;
             }
-            return false;
+            return null;
         }
 
         public void Visit(RefTypeDecl decl)
@@ -165,8 +169,10 @@ namespace DocSymbol
                 if (ns == null)
                 {
                     var content = this.Environment.GetSymbolContent(current);
-                    if (FindSymbolInContent(decl, content))
+                    var decls = FindSymbolInContent(decl.Name, content);
+                    if (decls != null)
                     {
+                        this.Environment.ResolvedTypes.Add(decl, decls);
                         return;
                     }
                 }
@@ -176,8 +182,10 @@ namespace DocSymbol
                     foreach (var reference in references)
                     {
                         var content = this.Environment.NamespaceContents[reference];
-                        if (FindSymbolInContent(decl, content))
+                        var decls = FindSymbolInContent(decl.Name, content);
+                        if (decls != null)
                         {
+                            this.Environment.ResolvedTypes.Add(decl, decls);
                             return;
                         }
                     }
@@ -205,7 +213,20 @@ namespace DocSymbol
 
             if (parent.ReferencingNameKey != null)
             {
-                throw new NotImplementedException();
+                var parentDecls = this.Environment.ResolvedTypes[parent];
+                var content = parentDecls
+                    .Select(x => this.Environment.GetSymbolContent(x))
+                    .Where(x => x != null)
+                    .SelectMany(x => x)
+                    .GroupBy(x => x.Key)
+                    .ToDictionary(x => x.Key, x => x.SelectMany(y => y.Value).ToList())
+                    ;
+                var decls = FindSymbolInContent(decl.Name, content);
+                if (decls != null)
+                {
+                    this.Environment.ResolvedTypes.Add(decl, decls);
+                    return;
+                }
             }
             this.Environment.Errors.Add(string.Format("Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
         }
