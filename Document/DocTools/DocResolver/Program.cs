@@ -80,6 +80,37 @@ namespace DocResolver
             }
 
             Console.WriteLine("Saving ...");
+            var symbolSaving = symbolGroup
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.Value
+                        .GroupBy(y => y.Tags)
+                        .Select(y => y.First())
+                        .ToArray()
+                    )
+                .GroupBy(x => GetNamespaceSymbol(x.Value.First()))
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.ToDictionary(
+                        y => y.Key,
+                        y => y.Value
+                        )
+                    )
+                ;
+            var outputXml = new XDocument(
+                new XElement("CppXmlDocument",
+                    symbolSaving.Select(x => new XElement("Namespace",
+                        new XAttribute("Name", x.Key is GlobalDecl ? "" : (x.Key as NamespaceDecl).NameKey),
+                        x.Value.Select(y => new XElement("Symbol",
+                            new XAttribute("OverloadKey", y.Key),
+                            y.Value
+                                .Select(z => z.Parent is TemplateDecl ? z.Parent : z)
+                                .Select(z => z.Serialize())
+                            ))
+                        ))
+                    )
+                );
+            outputXml.Save(output);
         }
 
         static void GroupSymbolsByOverloadKey(IEnumerable<SymbolDecl> decls, Dictionary<string, List<SymbolDecl>> group)
@@ -101,6 +132,22 @@ namespace DocResolver
                     GroupSymbolsByOverloadKey(decl.Children, group);
                 }
             }
+        }
+
+        static SymbolDecl GetNamespaceSymbol(SymbolDecl symbol)
+        {
+            while (symbol != null)
+            {
+                if (symbol is GlobalDecl || symbol is NamespaceDecl)
+                {
+                    break;
+                }
+                else
+                {
+                    symbol = symbol.Parent;
+                }
+            }
+            return symbol;
         }
     }
 }
