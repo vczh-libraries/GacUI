@@ -96,7 +96,7 @@ namespace DocSymbol
                     }
                     else
                     {
-                        Errors.Add(string.Format("(Error) Failed to resolve {0} in global namespace.", uns.ToString()));
+                        Errors.Add(string.Format("(Warning) Failed to resolve {0} in global namespace.", uns.ToString()));
                     }
                 }
             }
@@ -267,7 +267,7 @@ namespace DocSymbol
                 if (nameKeys.Count > 1)
                 {
                     var printingKeys = overloadKeys.Aggregate("", (a, b) => a + "\r\n" + b);
-                    this.Environment.Errors.Add(string.Format("(Error) Found multiple symbols for {0} in {1}: {2}", name, this.Symbol.OverloadKey, printingKeys));
+                    this.Environment.Errors.Add(string.Format("(Warning) Found multiple symbols for {0} in {1}: {2}", name, this.Symbol.OverloadKey, printingKeys));
                     return null;
                 }
                 decl.ReferencingNameKey = nameKeys[0];
@@ -330,11 +330,11 @@ namespace DocSymbol
 
             if (this.Environment.AvailableNames.Contains(decl.Name))
             {
-                this.Environment.Errors.Add(string.Format("(Error) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+                this.Environment.Errors.Add(string.Format("(Warning) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
             }
             else
             {
-                this.Environment.Errors.Add(string.Format("(Warning) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+                this.Environment.Errors.Add(string.Format("(Error) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
             }
         }
 
@@ -366,11 +366,11 @@ namespace DocSymbol
 
             if (this.Environment.AvailableNames.Contains(decl.Name))
             {
-                this.Environment.Errors.Add(string.Format("(Error) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+                this.Environment.Errors.Add(string.Format("(Warning) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
             }
             else
             {
-                this.Environment.Errors.Add(string.Format("(Warning) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
+                this.Environment.Errors.Add(string.Format("(Error) Failed to resolve {0} in {1}.", decl.Name, this.Symbol.OverloadKey));
             }
         }
 
