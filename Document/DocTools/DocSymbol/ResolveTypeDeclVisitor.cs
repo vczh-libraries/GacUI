@@ -487,6 +487,63 @@ namespace DocSymbol
     {
         public ResolveEnvironment Environment { get; set; }
 
+        private XElement ResolveCommentSymbol(SymbolDecl decl, string name)
+        {
+            return null;
+        }
+
+        private XElement ResolveCommentText(SymbolDecl decl, string text)
+        {
+            return null;
+        }
+
+        private void Replace(XNode node, XElement replacement)
+        {
+            node.ReplaceWith(replacement);
+        }
+
+        private void ResolveCommentNode(SymbolDecl decl, XNode node)
+        {
+            var text = node as XText;
+            var cdata = node as XCData;
+            var element = node as XElement;
+            if (text != null)
+            {
+                var replacement = ResolveCommentText(decl, text.Value);
+                if (replacement != null)
+                {
+                    Replace(text, replacement);
+                }
+            }
+            if (cdata != null)
+            {
+                var replacement = ResolveCommentText(decl, cdata.Value);
+                if (replacement != null)
+                {
+                    Replace(cdata, replacement);
+                }
+            }
+            if (element != null)
+            {
+                if (element.Name == "see")
+                {
+                    var att = element.Attribute("cref");
+                    var replacement = ResolveCommentSymbol(decl, att.Value);
+                    if (replacement != null)
+                    {
+                        Replace(element, replacement);
+                    }
+                }
+                else
+                {
+                    foreach (var child in element.Nodes().ToArray())
+                    {
+                        ResolveCommentNode(decl, child);
+                    }
+                }
+            }
+        }
+
         public void ResolveComment(SymbolDecl decl)
         {
             if (decl.Document != null)
@@ -494,6 +551,7 @@ namespace DocSymbol
                 try
                 {
                     var xml = XElement.Parse("<Document>" + decl.Document + "</Document>", LoadOptions.PreserveWhitespace);
+                    ResolveCommentNode(decl, xml);
                 }
                 catch (XmlException ex)
                 {
