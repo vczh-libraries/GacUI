@@ -268,8 +268,9 @@ namespace DocSymbol
     {
         public SymbolDecl Symbol { get; set; }
         public ResolveEnvironment Environment { get; set; }
+        public bool SupressError { get; set; }
 
-        private List<SymbolDecl> FindSymbolInContent(TypeDecl decl, string name, Dictionary<string, List<SymbolDecl>> content, bool typeAndNamespaceOnly, bool addError)
+        internal static List<SymbolDecl> FindSymbolInContent(ResolveEnvironment environment, SymbolDecl symbol, TypeDecl decl, string name, Dictionary<string, List<SymbolDecl>> content, bool typeAndNamespaceOnly, bool addError)
         {
             if (content == null)
             {
@@ -300,7 +301,7 @@ namespace DocSymbol
                     if (addError)
                     {
                         var printingKeys = overloadKeys.Aggregate("", (a, b) => a + "\r\n" + b);
-                        this.Environment.AddError(false, "Found multiple symbols for {0} in {1}: " + printingKeys, name, this.Symbol);
+                        environment.AddError(false, "Found multiple symbols for {0} in {1}: " + printingKeys, name, symbol);
                     }
                     return null;
                 }
@@ -308,6 +309,11 @@ namespace DocSymbol
                 return decls;
             }
             return null;
+        }
+
+        private List<SymbolDecl> FindSymbolInContent(TypeDecl decl, string name, Dictionary<string, List<SymbolDecl>> content, bool typeAndNamespaceOnly, bool addError)
+        {
+            return FindSymbolInContent(this.Environment, this.Symbol, decl, name, content, typeAndNamespaceOnly, addError);
         }
 
         private void AddError(TypeDecl decl, string name)
@@ -320,7 +326,10 @@ namespace DocSymbol
                     .ToList();
                 if (decls.Count == 0)
                 {
-                    this.Environment.AddError(false, "Failed to resolve {0} in {1}.", name, this.Symbol);
+                    if (!this.SupressError)
+                    {
+                        this.Environment.AddError(false, "Failed to resolve {0} in {1}.", name, this.Symbol);
+                    }
                 }
                 else
                 {
@@ -329,12 +338,18 @@ namespace DocSymbol
                         .Distinct()
                         .ToList();
                     var printingKeys = decl.ReferencingOverloadKeys.Aggregate("", (a, b) => a + "\r\n" + b);
-                    this.Environment.AddError(false, "Failed to resolve {0} in {1}, treated as a open type:" + printingKeys, name, this.Symbol);
+                    if (!this.SupressError)
+                    {
+                        this.Environment.AddError(false, "Failed to resolve {0} in {1}, treated as a open type:" + printingKeys, name, this.Symbol);
+                    }
                 }
             }
             else
             {
-                this.Environment.AddError(true, "Failed to resolve {0} in {1}.", name, this.Symbol);
+                if (!this.SupressError)
+                {
+                    this.Environment.AddError(true, "Failed to resolve {0} in {1}.", name, this.Symbol);
+                }
             }
         }
 
@@ -367,7 +382,7 @@ namespace DocSymbol
                         if (!(current is NamespaceDecl) && !(current is GlobalDecl))
                         {
                             var content = this.Environment.GetSymbolContent(current);
-                            var decls = FindSymbolInContent(decl, decl.Name, content, pass == 0, pass == 1);
+                            var decls = FindSymbolInContent(decl, decl.Name, content, pass == 0, pass == 1 && !this.SupressError);
                             if (decls != null)
                             {
                                 this.Environment.ResolvedTypes.Add(decl, decls);
@@ -380,7 +395,7 @@ namespace DocSymbol
                             foreach (var reference in references)
                             {
                                 var content = this.Environment.NamespaceContents[reference];
-                                var decls = FindSymbolInContent(decl, decl.Name, content, pass == 0, pass == 1);
+                                var decls = FindSymbolInContent(decl, decl.Name, content, pass == 0, pass == 1 && !this.SupressError);
                                 if (decls != null)
                                 {
                                     this.Environment.ResolvedTypes.Add(decl, decls);
@@ -417,7 +432,7 @@ namespace DocSymbol
                 var decls = FindSymbolInContent(decl, decl.Name, content, true, false);
                 if (decls == null)
                 {
-                    decls = FindSymbolInContent(decl, decl.Name, content, false, true);
+                    decls = FindSymbolInContent(decl, decl.Name, content, false, !this.SupressError);
                 }
                 if (decls != null)
                 {
@@ -492,7 +507,21 @@ namespace DocSymbol
 
         private XElement ResolveCommentSymbol(SymbolDecl decl, string name)
         {
-            this.Environment.AddXmlError("Failed to resolve symbol \"" + name + "\" in XML comment for {0}.", null, decl);
+            var type = name
+                .Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)
+                .Aggregate<string, TypeDecl>(null, (a, b) =>
+                {
+                    return a == null
+                        ? (TypeDecl)new RefTypeDecl { Name = b }
+                        : (TypeDecl)new SubTypeDecl { Parent = a, Name = b }
+                        ;
+                })
+                ;
+            type.Resolve(decl, this.Environment, true);
+            if (type.ReferencingOverloadKeys == null)
+            {
+                this.Environment.AddXmlError("Failed to resolve symbol \"" + name + "\" in XML comment for {0}.", null, decl);
+            }
             return null;
         }
 
@@ -501,7 +530,18 @@ namespace DocSymbol
             var matches = regexSymbol.Matches(text).Cast<Match>().ToArray();
             foreach (var match in matches)
             {
-                ResolveCommentSymbol(decl, match.Value);
+                var type = match.Groups["type"].Value;
+                var symbol = match.Groups["symbol"].Value;
+                var symbolName = symbol
+                    .Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x =>
+                    {
+                        int index = x.IndexOf('`');
+                        return index == -1 ? x : x.Substring(0, index);
+                    })
+                    .Aggregate((a, b) => a + "::" + b)
+                    ;
+                ResolveCommentSymbol(decl, symbolName);
             }
             return null;
         }

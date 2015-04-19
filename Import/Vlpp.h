@@ -2614,7 +2614,7 @@ namespace vl
 		public:
 			typedef T									ElementType;
 
-			/// <summary>Create an enumerator. [M:vl.collections.IEnumeratlr`1.Next] should be called to get the first element.</summary>
+			/// <summary>Create an enumerator. [M:vl.collections.IEnumerator`1.Next] should be called to get the first element.</summary>
 			/// <returns>The enumerator.</returns>
 			virtual IEnumerator<T>*						CreateEnumerator()const=0;
 		};
@@ -4065,11 +4065,11 @@ namespace vl
 		/// <summary>
 		/// Interface for streams. Stream functions are grouped into 5 categories:
 		/// 1) Feature testing functions.
-		/// 2) Read functions, available only if [M:v,.stream.IStream.CanRead] returns true.
-		/// 3) Peek functions, available only if [M:v,.stream.IStream.CanPeek] returns true.
-		/// 4) Write functions, available only if [M:v,.stream.IStream.CanWrite] returns true.
-		/// 5) Seek functions, available only if [M:v,.stream.IStream.CanSeek] returns true.
-		/// 6) Size functions, available only if [M:v,.stream.IStream.IsLimited] returns true. But there are still some streams knows that the content is limited, but the size is unknown. In this case, [M:vl.stream.IStream.Size] will return -1.
+		/// 2) Read functions, available only if [M:vl.stream.IStream.CanRead] returns true.
+		/// 3) Peek functions, available only if [M:vl.stream.IStream.CanPeek] returns true.
+		/// 4) Write functions, available only if [M:vl.stream.IStream.CanWrite] returns true.
+		/// 5) Seek functions, available only if [M:vl.stream.IStream.CanSeek] returns true.
+		/// 6) Size functions, available only if [M:vl.stream.IStream.IsLimited] returns true. But there are still some streams knows that the content is limited, but the size is unknown. In this case, [M:vl.stream.IStream.Size] will return -1.
 		/// </summary>
 		class IStream : public virtual Interface
 		{
@@ -16810,7 +16810,7 @@ namespace vl
 	
 	/// <summary><![CDATA[
 	/// Reader writer lock.
-	/// The macro "READER_LOCK" and "WRITER_LOCK" are encouraged to use instead of calling [M:vl.ReaderWriterLock.EnterReader], [M:vl.ReaderWriterLock.LeaveReader], [M:vl.ReaderWriterLock.EnterWriter] and [M:vl.CriticalSection.LeaveWriter] like this:
+	/// The macro "READER_LOCK" and "WRITER_LOCK" are encouraged to use instead of calling [M:vl.ReaderWriterLock.EnterReader], [M:vl.ReaderWriterLock.LeaveReader], [M:vl.ReaderWriterLock.EnterWriter] and [M:vl.ReaderWriterLock.LeaveWriter] like this:
 	/// READER_LOCK(yourLock)
 	/// {
 	///		<code>

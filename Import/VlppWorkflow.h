@@ -1945,7 +1945,7 @@ Assembly
 				collections::List<WString>							argumentNames;
 				/// <summary>Captured variable names of the function. This index is for accessing [F:vl.workflow.runtime.WfRuntimeVariableContext.variables] in [F:vl.workflow.runtime.WfRuntimeCallStackInfo.captured] when debugging.</summary>
 				collections::List<WString>							capturedVariableNames;
-				/// <summary>Local variable names of the function. This index is for accessing [F:vl.workflow.runtime.WfRuntimeVariableContext.variables] in [F:vl.workflow.runtime.WfRuntimeCallStackInfo.localVariableNames] when debugging.</summary>
+				/// <summary>Local variable names of the function. This index is for accessing [F:vl.workflow.runtime.WfRuntimeVariableContext.variables] in [F:vl.workflow.runtime.WfRuntimeCallStackInfo.localVariables] when debugging.</summary>
 				collections::List<WString>							localVariableNames;
 				/// <summary>First instruction index of the function. This index is for accessing [F:vl.workflow.runtime.WfAssembly.instructions].</summary>
 				vint												firstInstruction = -1;

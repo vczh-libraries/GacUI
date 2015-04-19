@@ -50,15 +50,15 @@ Enumerations
 		/// </summary>
 		enum class Alignment
 		{
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the left side.</summary>
+			/// <summary>Aligned to the left side.</summary>
 			Left=0,
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the top side.</summary>
+			/// <summary>Aligned to the top side.</summary>
 			Top=0,
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the center.</summary>
+			/// <summary>Aligned to the center.</summary>
 			Center=1,
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the right side.</summary>
+			/// <summary>Aligned to the right side.</summary>
 			Right=2,
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the bottom side.</summary>
+			/// <summary>Aligned to the bottom side.</summary>
 			Bottom=2,
 		};
 
@@ -874,45 +874,45 @@ Layout Engine
 				/// <summary>Text style. Items in this enumeration type can be combined.</summary>
 				enum TextStyle
 				{
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.TextStyle]Bold.</summary>
+					/// <summary>Bold.</summary>
 					Bold=1,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.TextStyle]Italic.</summary>
+					/// <summary>Italic.</summary>
 					Italic=2,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.TextStyle]Underline.</summary>
+					/// <summary>Underline.</summary>
 					Underline=4,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.TextStyle]Strikeline.</summary>
+					/// <summary>Strikeline.</summary>
 					Strikeline=8,
 				};
 
 				/// <summary>Inline object break condition.</summary>
 				enum BreakCondition
 				{
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.BreakCondition]Stay together with the previous run if possible.</summary>
+					/// <summary>Stay together with the previous run if possible.</summary>
 					StickToPreviousRun,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.BreakCondition]Stay together with the next run if possible.</summary>
+					/// <summary>Stay together with the next run if possible.</summary>
 					StickToNextRun,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.BreakCondition]Treat as a single run.</summary>
+					/// <summary>Treat as a single run.</summary>
 					Alone,
 				};
 
 				/// <summary>Caret relative position.</summary>
 				enum CaretRelativePosition
 				{
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The first caret position.</summary>
+					/// <summary>The first caret position.</summary>
 					CaretFirst,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The last caret position.</summary>
+					/// <summary>The last caret position.</summary>
 					CaretLast,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The first caret position of the current line.</summary>
+					/// <summary>The first caret position of the current line.</summary>
 					CaretLineFirst,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The last caret position of the current line.</summary>
+					/// <summary>The last caret position of the current line.</summary>
 					CaretLineLast,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The relative left caret position.</summary>
+					/// <summary>The relative left caret position.</summary>
 					CaretMoveLeft,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The relative right caret position.</summary>
+					/// <summary>The relative right caret position.</summary>
 					CaretMoveRight,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The relative up caret position.</summary>
+					/// <summary>The relative up caret position.</summary>
 					CaretMoveUp,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The relative down caret position.</summary>
+					/// <summary>The relative down caret position.</summary>
 					CaretMoveDown,
 				};
 
@@ -1476,11 +1476,11 @@ Native Window
 			/// <summary>Window size state.</summary>
 			enum WindowSizeState
 			{
-				/// <summary>[T:vl.presentation.INativeWindow.WindowSizeState]Minimized.</summary>
+				/// <summary>Minimized.</summary>
 				Minimized,
-				/// <summary>[T:vl.presentation.INativeWindow.WindowSizeState]Restored.</summary>
+				/// <summary>Restored.</summary>
 				Restored,
-				/// <summary>[T:vl.presentation.INativeWindow.WindowSizeState]Maximized.</summary>
+				/// <summary>Maximized.</summary>
 				Maximized,
 			};
 
@@ -1758,37 +1758,37 @@ Native Window
 			/// <summary>Hit test result for a native window.</summary>
 			enum HitTestResult
 			{
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Border that doesn't contain sizing functionalitiy.</summary>
+				/// <summary>Border that doesn't contain sizing functionalitiy.</summary>
 				BorderNoSizing,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Left border.</summary>
+				/// <summary>Left border.</summary>
 				BorderLeft,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Right border.</summary>
+				/// <summary>Right border.</summary>
 				BorderRight,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Top border.</summary>
+				/// <summary>Top border.</summary>
 				BorderTop,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Bottom border.</summary>
+				/// <summary>Bottom border.</summary>
 				BorderBottom,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Left top border.</summary>
+				/// <summary>Left top border.</summary>
 				BorderLeftTop,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Right top border.</summary>
+				/// <summary>Right top border.</summary>
 				BorderRightTop,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Left bottom border.</summary>
+				/// <summary>Left bottom border.</summary>
 				BorderLeftBottom,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Right bottom border.</summary>
+				/// <summary>Right bottom border.</summary>
 				BorderRightBottom,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Title</summary>
+				/// <summary>Title</summary>
 				Title,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Minimum button.</summary>
+				/// <summary>Minimum button.</summary>
 				ButtonMinimum,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Maximum button.</summary>
+				/// <summary>Maximum button.</summary>
 				ButtonMaximum,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Close button.</summary>
+				/// <summary>Close button.</summary>
 				ButtonClose,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Client button.</summary>
+				/// <summary>Client button.</summary>
 				Client,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Icon.</summary>
+				/// <summary>Icon.</summary>
 				Icon,
-				/// <summary>[T:vl.presentation.INativeWindowListener.HitTestResult]Let the OS window layer decide.</summary>
+				/// <summary>Let the OS window layer decide.</summary>
 				NoDecision,
 			};
 
@@ -1997,13 +1997,13 @@ Native Window Services
 			/// <summary>Delay execution controller status.</summary>
 			enum ExecuteStatus
 			{
-				/// <summary>[T:vl.presentation.INativeDelay.ExecuteStatus]Pending.</summary>
+				/// <summary>Pending.</summary>
 				Pending,
-				/// <summary>[T:vl.presentation.INativeDelay.ExecuteStatus]Executing.</summary>
+				/// <summary>Executing.</summary>
 				Executing,
-				/// <summary>[T:vl.presentation.INativeDelay.ExecuteStatus]Executed.</summary>
+				/// <summary>Executed.</summary>
 				Executed,
-				/// <summary>[T:vl.presentation.INativeDelay.ExecuteStatus]Canceled.</summary>
+				/// <summary>Canceled.</summary>
 				Canceled,
 			};
 
@@ -2238,19 +2238,19 @@ Native Window Services
 			/// </summary>
 			enum MessageBoxButtonsInput
 			{
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsInput]Display OK.</summary>
+				/// <summary>Display OK.</summary>
 				DisplayOK,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsInput]Display OK, Cancel.</summary>
+				/// <summary>Display OK, Cancel.</summary>
 				DisplayOKCancel,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsInput]Display Yes, No.</summary>
+				/// <summary>Display Yes, No.</summary>
 				DisplayYesNo,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsInput]Display Yes, No, Cancel.</summary>
+				/// <summary>Display Yes, No, Cancel.</summary>
 				DisplayYesNoCancel,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsInput]Display Retry, Cancel.</summary>
+				/// <summary>Display Retry, Cancel.</summary>
 				DisplayRetryCancel,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsInput]Display Abort, Retry, Ignore.</summary>
+				/// <summary>Display Abort, Retry, Ignore.</summary>
 				DisplayAbortRetryIgnore,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsInput]Display Cancel, TryAgain, Continue.</summary>
+				/// <summary>Display Cancel, TryAgain, Continue.</summary>
 				DisplayCancelTryAgainContinue,
 			};
 
@@ -2259,23 +2259,23 @@ Native Window Services
 			/// </summary>
 			enum MessageBoxButtonsOutput
 			{
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select OK.</summary>
+				/// <summary>Select OK.</summary>
 				SelectOK,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select Cancel.</summary>
+				/// <summary>Select Cancel.</summary>
 				SelectCancel,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select Yes.</summary>
+				/// <summary>Select Yes.</summary>
 				SelectYes,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select No.</summary>
+				/// <summary>Select No.</summary>
 				SelectNo,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select Retry.</summary>
+				/// <summary>Select Retry.</summary>
 				SelectRetry,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select Abort.</summary>
+				/// <summary>Select Abort.</summary>
 				SelectAbort,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select Ignore.</summary>
+				/// <summary>Select Ignore.</summary>
 				SelectIgnore,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select TryAgain.</summary>
+				/// <summary>Select TryAgain.</summary>
 				SelectTryAgain,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxButtonsOutput]Select Continue.</summary>
+				/// <summary>Select Continue.</summary>
 				SelectContinue,
 			};
 
@@ -2284,11 +2284,11 @@ Native Window Services
 			/// </summary>
 			enum MessageBoxDefaultButton
 			{
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxDefaultButton]First.</summary>
+				/// <summary>First.</summary>
 				DefaultFirst,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxDefaultButton]Second.</summary>
+				/// <summary>Second.</summary>
 				DefaultSecond,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxDefaultButton]Third.</summary>
+				/// <summary>Third.</summary>
 				DefaultThird,
 			};
 
@@ -2297,15 +2297,15 @@ Native Window Services
 			/// </summary>
 			enum MessageBoxIcons
 			{
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxIcons]No icon.</summary>
+				/// <summary>No icon.</summary>
 				IconNone,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxIcons]Error icon.</summary>
+				/// <summary>Error icon.</summary>
 				IconError,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxIcons]Question icon.</summary>
+				/// <summary>Question icon.</summary>
 				IconQuestion,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxIcons]Warning icon.</summary>
+				/// <summary>Warning icon.</summary>
 				IconWarning,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxIcons]Information icon.</summary>
+				/// <summary>Information icon.</summary>
 				IconInformation,
 			};
 
@@ -2314,11 +2314,11 @@ Native Window Services
 			/// </summary>
 			enum MessageBoxModalOptions
 			{
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxModalOptions]Disable the current window.</summary>
+				/// <summary>Disable the current window.</summary>
 				ModalWindow,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxModalOptions]Disable all windows in the application.</summary>
+				/// <summary>Disable all windows in the application.</summary>
 				ModalTask,
-				/// <summary>[T:vl.presentation.INativeDialogService.MessageBoxModalOptions]Top most message box in the whole system.</summary>
+				/// <summary>Top most message box in the whole system.</summary>
 				ModalSystem,
 			};
 
@@ -2338,11 +2338,11 @@ Native Window Services
 			/// </summary>
 			enum ColorDialogCustomColorOptions
 			{
-				/// <summary>[T:vl.presentation.INativeDialogService.ColorDialogCustomColorOptions]Disable the custom color panel.</summary>
+				/// <summary>Disable the custom color panel.</summary>
 				CustomColorDisabled,
-				/// <summary>[T:vl.presentation.INativeDialogService.ColorDialogCustomColorOptions]Enable the custom color panel.</summary>
+				/// <summary>Enable the custom color panel.</summary>
 				CustomColorEnabled,
-				/// <summary>[T:vl.presentation.INativeDialogService.ColorDialogCustomColorOptions]Open the custom color panel at the beginning.</summary>
+				/// <summary>Open the custom color panel at the beginning.</summary>
 				CustomColorOpened,
 			};
 
@@ -2370,13 +2370,13 @@ Native Window Services
 			/// </summary>
 			enum FileDialogTypes
 			{
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogTypes]Open file dialog.</summary>
+				/// <summary>Open file dialog.</summary>
 				FileDialogOpen,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogTypes]Open file dialog with preview.</summary>
+				/// <summary>Open file dialog with preview.</summary>
 				FileDialogOpenPreview,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogTypes]Save file dialog.</summary>
+				/// <summary>Save file dialog.</summary>
 				FileDialogSave,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogTypes]Save file dialog with preview.</summary>
+				/// <summary>Save file dialog with preview.</summary>
 				FileDialogSavePreview,
 			};
 
@@ -2385,23 +2385,23 @@ Native Window Services
 			/// </summary>
 			enum FileDialogOptions
 			{
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Allow multiple selection.</summary>
+				/// <summary>Allow multiple selection.</summary>
 				FileDialogAllowMultipleSelection = 1,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Prevent the user to select unexisting files.</summary>
+				/// <summary>Prevent the user to select unexisting files.</summary>
 				FileDialogFileMustExist = 2,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Show the "Read Only" check box.</summary>
+				/// <summary>Show the "Read Only" check box.</summary>
 				FileDialogShowReadOnlyCheckBox = 4,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Dereference link files.</summary>
+				/// <summary>Dereference link files.</summary>
 				FileDialogDereferenceLinks = 8,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Show the "Network" button.</summary>
+				/// <summary>Show the "Network" button.</summary>
 				FileDialogShowNetworkButton = 16,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Prompt if a new file is going to be created.</summary>
+				/// <summary>Prompt if a new file is going to be created.</summary>
 				FileDialogPromptCreateFile = 32,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Promt if a existing file is going to be overwritten.</summary>
+				/// <summary>Promt if a existing file is going to be overwritten.</summary>
 				FileDialogPromptOverwriteFile = 64,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Prevent the user to select an unexisting directory.</summary>
+				/// <summary>Prevent the user to select an unexisting directory.</summary>
 				FileDialogDirectoryMustExist = 128,
-				/// <summary>[T:vl.presentation.INativeDialogService.FileDialogOptions]Add user selected files to "Recent" directory.</summary>
+				/// <summary>Add user selected files to "Recent" directory.</summary>
 				FileDialogAddToRecent = 256,
 			};
 
@@ -4067,9 +4067,9 @@ Elements
 			/// </summary>
 			enum class ElementShape
 			{
-				/// <summary>[T:vl.presentation.elements.ElementShape]Rectangle shape.</summary>
+				/// <summary>Rectangle shape.</summary>
 				Rectangle,
-				/// <summary>[T:vl.presentation.elements.ElementShape]Ellipse shape.</summary>
+				/// <summary>Ellipse shape.</summary>
 				Ellipse,
 			};
 
@@ -4200,9 +4200,9 @@ Elements
 				/// </summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.elements.Gui3DSplitterElement.Direction]Horizontal direction.</summary>
+					/// <summary>Horizontal direction.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.elements.Gui3DSplitterElement.Direction]Vertical direction.</summary>
+					/// <summary>Vertical direction.</summary>
 					Vertical,
 				};
 			protected:
@@ -4301,13 +4301,13 @@ Elements
 				/// </summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.elements.GuiGradientBackgroundElement.Direction]Horizontal direction.</summary>
+					/// <summary>Horizontal direction.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.elements.GuiGradientBackgroundElement.Direction]vertical direction.</summary>
+					/// <summary>vertical direction.</summary>
 					Vertical,
-					/// <summary>[T:vl.presentation.elements.GuiGradientBackgroundElement.Direction]Slash direction.</summary>
+					/// <summary>Slash direction.</summary>
 					Slash,
-					/// <summary>[T:vl.presentation.elements.GuiGradientBackgroundElement.Direction]Back slash direction.</summary>
+					/// <summary>Back slash direction.</summary>
 					Backslash,
 				};
 			protected:
@@ -6022,11 +6022,11 @@ Basic Construction
 				/// </summary>
 				enum MinSizeLimitation
 				{
-					/// <summary>[T:vl.presentation.compositions.GuiGraphicsComposition.MinSizeLimitation]No limitation for the minimum size.</summary>
+					/// <summary>No limitation for the minimum size.</summary>
 					NoLimit,
-					/// <summary>[T:vl.presentation.compositions.GuiGraphicsComposition.MinSizeLimitation]Minimum size of this composition is the minimum size of the contained graphics element.</summary>
+					/// <summary>Minimum size of this composition is the minimum size of the contained graphics element.</summary>
 					LimitToElement,
-					/// <summary>[T:vl.presentation.compositions.GuiGraphicsComposition.MinSizeLimitation]Minimum size of this composition is combiniation of sub compositions and the minimum size of the contained graphics element.</summary>
+					/// <summary>Minimum size of this composition is combiniation of sub compositions and the minimum size of the contained graphics element.</summary>
 					LimitToElementAndChildren,
 				};
 			protected:
@@ -6364,11 +6364,11 @@ Table Compositions
 				/// <summary>Sizing algorithm</summary>
 				enum ComposeType
 				{
-					/// <summary>[T:vl.presentation.compositions.GuiCellOption.ComposeType]Set the size to an absolute value.</summary>
+					/// <summary>Set the size to an absolute value.</summary>
 					Absolute,
-					/// <summary>[T:vl.presentation.compositions.GuiCellOption.ComposeType]Set the size to a percentage number of the whole table.</summary>
+					/// <summary>Set the size to a percentage number of the whole table.</summary>
 					Percentage,
-					/// <summary>[T:vl.presentation.compositions.GuiCellOption.ComposeType]Set the size to the minimum size of the cell element.</summary>
+					/// <summary>Set the size to the minimum size of the cell element.</summary>
 					MinSize,
 				};
 
@@ -6626,9 +6626,9 @@ Stack Compositions
 				/// <summary>Stack item layout direction.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.compositions.GuiStackComposition.Direction]Stack items is layouted horizontally.</summary>
+					/// <summary>Stack items is layouted horizontally.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.compositions.GuiStackComposition.Direction]Stack items is layouted vertically.</summary>
+					/// <summary>Stack items is layouted vertically.</summary>
 					Vertical,
 				};
 			protected:
@@ -6761,13 +6761,13 @@ Specialized Compositions
 				/// <summary>The border to align.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.compositions.GuiSideAlignedComposition.Direction]The left border.</summary>
+					/// <summary>The left border.</summary>
 					Left,
-					/// <summary>[T:vl.presentation.compositions.GuiSideAlignedComposition.Direction]The top border.</summary>
+					/// <summary>The top border.</summary>
 					Top,
-					/// <summary>[T:vl.presentation.compositions.GuiSideAlignedComposition.Direction]The right border.</summary>
+					/// <summary>The right border.</summary>
 					Right,
-					/// <summary>[T:vl.presentation.compositions.GuiSideAlignedComposition.Direction]The bottom border.</summary>
+					/// <summary>The bottom border.</summary>
 					Bottom,
 				};
 			protected:
@@ -7717,11 +7717,11 @@ Buttons
 				/// <summary>The visual state.</summary>
 				enum ControlState
 				{
-					/// <summary>[T:vl.presentation.controls.GuiButton.ControlState]Normal state.</summary>
+					/// <summary>Normal state.</summary>
 					Normal,
-					/// <summary>[T:vl.presentation.controls.GuiButton.ControlState]Active state.</summary>
+					/// <summary>Active state.</summary>
 					Active,
-					/// <summary>[T:vl.presentation.controls.GuiButton.ControlState]Pressed state.</summary>
+					/// <summary>Pressed state.</summary>
 					Pressed,
 				};
 
@@ -9763,25 +9763,25 @@ List Control
 				/// <summary>Represents the four directions that is accessable by keyboard.</summary>
 				enum KeyDirection
 				{
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The up direction.</summary>
+					/// <summary>The up direction.</summary>
 					Up,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The down direction.</summary>
+					/// <summary>The down direction.</summary>
 					Down,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The left direction.</summary>
+					/// <summary>The left direction.</summary>
 					Left,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The right direction.</summary>
+					/// <summary>The right direction.</summary>
 					Right,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The home direction.</summary>
+					/// <summary>The home direction.</summary>
 					Home,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The end direction.</summary>
+					/// <summary>The end direction.</summary>
 					End,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The page up direction.</summary>
+					/// <summary>The page up direction.</summary>
 					PageUp,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The page down direction.</summary>
+					/// <summary>The page down direction.</summary>
 					PageDown,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The page left direction.</summary>
+					/// <summary>The page left direction.</summary>
 					PageLeft,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The page right direction.</summary>
+					/// <summary>The page right direction.</summary>
 					PageRight,
 				};
 
@@ -10226,21 +10226,21 @@ Predefined ItemCoordinateTransformer
 					/// <summary>Axis direction.</summary>
 					enum Alignment
 					{
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:left, Y:down.</summary>
+						/// <summary>X:left, Y:down.</summary>
 						LeftDown,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:right, Y:down.</summary>
+						/// <summary>X:right, Y:down.</summary>
 						RightDown,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:left, Y:up.</summary>
+						/// <summary>X:left, Y:up.</summary>
 						LeftUp,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:right, Y:up.</summary>
+						/// <summary>X:right, Y:up.</summary>
 						RightUp,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:down, Y:left.</summary>
+						/// <summary>X:down, Y:left.</summary>
 						DownLeft,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:down, Y:right.</summary>
+						/// <summary>X:down, Y:right.</summary>
 						DownRight,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:up, Y:left.</summary>
+						/// <summary>X:up, Y:left.</summary>
 						UpLeft,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:up, Y:right.</summary>
+						/// <summary>X:up, Y:right.</summary>
 						UpRight,
 					};
 				protected:
@@ -10739,9 +10739,9 @@ Menu Service
 				/// <summary>Direction to decide the position for a menu with specified control.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.controls.IGuiMenuService.Direction]Aligned to the top or bottom side.</summary>
+					/// <summary>Aligned to the top or bottom side.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.controls.IGuiMenuService.Direction]Aligned to the left or right side.</summary>
+					/// <summary>Aligned to the left or right side.</summary>
 					Vertical,
 				};
 			protected:
@@ -11026,11 +11026,11 @@ ListView Base
 				/// <summary>Represents the sorting state of list view items related to this column.</summary>
 				enum ColumnSortingState
 				{
-					/// <summary>[T:vl.presentation.controls.GuiListViewColumnHeader.ColumnSortingState]Nor sorted.</summary>
+					/// <summary>Not sorted.</summary>
 					NotSorted,
-					/// <summary>[T:vl.presentation.controls.GuiListViewColumnHeader.ColumnSortingState]Ascending.</summary>
+					/// <summary>Ascending.</summary>
 					Ascending,
-					/// <summary>[T:vl.presentation.controls.GuiListViewColumnHeader.ColumnSortingState]Descending.</summary>
+					/// <summary>Descending.</summary>
 					Descending,
 				};
 				
@@ -13991,11 +13991,11 @@ GuiDocumentCommonInterface
 				/// <summary>Represents the edit mode.</summary>
 				enum EditMode
 				{
-					/// <summary>[T:vl.presentation.controls.GuiDocumentCommonInterface.EditMode]View the rich text only.</summary>
+					/// <summary>View the rich text only.</summary>
 					ViewOnly,
-					/// <summary>[T:vl.presentation.controls.GuiDocumentCommonInterface.EditMode]The rich text is selectable.</summary>
+					/// <summary>The rich text is selectable.</summary>
 					Selectable,
-					/// <summary>[T:vl.presentation.controls.GuiDocumentCommonInterface.EditMode]The rich text is editable.</summary>
+					/// <summary>The rich text is editable.</summary>
 					Editable,
 				};
 			protected:
@@ -18340,9 +18340,9 @@ CommonScrollStyle
 				/// <summary>Scroll direction.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.common_styles.CommonScrollStyle.Direction]Horizontal scroll.</summary>
+					/// <summary>Horizontal scroll.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.common_styles.CommonScrollStyle.Direction]Vertical scroll.</summary>
+					/// <summary>Vertical scroll.</summary>
 					Vertical,
 				};
 			protected:
@@ -18419,9 +18419,9 @@ CommonTrackStyle
 				/// <summary>Track direction.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.common_styles.CommonTrackStyle.Direction]Horizontal scroll.</summary>
+					/// <summary>Horizontal scroll.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.common_styles.CommonTrackStyle.Direction]Vertical scroll.</summary>
+					/// <summary>Vertical scroll.</summary>
 					Vertical,
 				};
 			protected:
@@ -18916,9 +18916,9 @@ Button
 				/// <summary>Bullet style.</summary>
 				enum BulletStyle
 				{
-					/// <summary>[T:vl.presentation.win7.Win7CheckBoxStyle.BulletStyle]Check box bullet.</summary>
+					/// <summary>Check box bullet.</summary>
 					CheckBox,
-					/// <summary>[T:vl.presentation.win7.Win7CheckBoxStyle.BulletStyle]Radio button bullet.</summary>
+					/// <summary>Radio button bullet.</summary>
 					RadioButton,
 				};
 			protected:
@@ -19791,9 +19791,9 @@ Button
 				/// <summary>Bullet style.</summary>
 				enum BulletStyle
 				{
-					/// <summary>[T:vl.presentation.win8.Win8CheckBoxStyle.BulletStyle]Check box bullet.</summary>
+					/// <summary>Check box bullet.</summary>
 					CheckBox,
-					/// <summary>[T:vl.presentation.win8.Win8CheckBoxStyle.BulletStyle]Radio button bullet.</summary>
+					/// <summary>Radio button bullet.</summary>
 					RadioButton,
 				};
 			protected:
@@ -21172,11 +21172,11 @@ Toolstrip Button
 				/// <summary>Sub menu dropdown arrow style.</summary>
 				enum ButtonStyle
 				{
-					/// <summary>[T:vl.presentation.win7.Win7ToolstripButtonStyle.ButtonStyle]No dropdown.</summary>
+					/// <summary>No dropdown.</summary>
 					CommandButton,
-					/// <summary>[T:vl.presentation.win7.Win7ToolstripButtonStyle.ButtonStyle]The whole button is a dropdown.</summary>
+					/// <summary>The whole button is a dropdown.</summary>
 					DropdownButton,
-					/// <summary>[T:vl.presentation.win7.Win7ToolstripButtonStyle.ButtonStyle]The button and the dropdown is splitted.</summary>
+					/// <summary>The button and the dropdown is splitted.</summary>
 					SplitButton,
 				};
 			protected:
@@ -21635,11 +21635,11 @@ Toolstrip Button
 				/// <summary>Sub menu dropdown arrow style.</summary>
 				enum ButtonStyle
 				{
-					/// <summary>[T:vl.presentation.win8.Win8ToolstripButtonStyle.ButtonStyle]No dropdown.</summary>
+					/// <summary>No dropdown.</summary>
 					CommandButton,
-					/// <summary>[T:vl.presentation.win8.Win8ToolstripButtonStyle.ButtonStyle]The whole button is a dropdown.</summary>
+					/// <summary>The whole button is a dropdown.</summary>
 					DropdownButton,
-					/// <summary>[T:vl.presentation.win8.Win8ToolstripButtonStyle.ButtonStyle]The button and the dropdown is splitted.</summary>
+					/// <summary>The button and the dropdown is splitted.</summary>
 					SplitButton,
 				};
 			protected:
