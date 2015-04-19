@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace DocSymbol
 {
@@ -236,6 +238,17 @@ namespace DocSymbol
                 }
                 return content;
             }
+        }
+
+        public void AddXmlError(bool error, string messageFormat, string exception, string document, SymbolDecl symbol)
+        {
+            var template = symbol as TemplateDecl;
+            if (template != null)
+            {
+                symbol = template.Element;
+            }
+
+            this.Errors.Add("(Xml) " + string.Format(messageFormat, symbol.OverloadKey) + "\r\n" + exception + "\r\nComment:\r\n" + document);
         }
 
         public void AddError(bool error, string messageFormat, string name, SymbolDecl symbol)
@@ -474,24 +487,44 @@ namespace DocSymbol
     {
         public ResolveEnvironment Environment { get; set; }
 
+        public void ResolveComment(SymbolDecl decl)
+        {
+            if (decl.Document != null)
+            {
+                try
+                {
+                    var xml = XElement.Parse("<Document>" + decl.Document + "</Document>", LoadOptions.PreserveWhitespace);
+                }
+                catch (XmlException ex)
+                {
+                    this.Environment.AddXmlError(true, "Failed to parse XML comment for {0}", ex.Message, decl.Document, decl);
+                }
+            }
+        }
+
         public void Visit(GlobalDecl decl)
         {
+            ResolveComment(decl);
         }
 
         public void Visit(NamespaceDecl decl)
         {
+            ResolveComment(decl);
         }
 
         public void Visit(UsingNamespaceDecl decl)
         {
+            ResolveComment(decl);
         }
 
         public void Visit(TypeParameterDecl decl)
         {
+            ResolveComment(decl);
         }
 
         public void Visit(TemplateDecl decl)
         {
+            ResolveComment(decl);
             foreach (var type in decl.Specialization)
             {
                 type.Resolve(decl, this.Environment);
@@ -500,10 +533,12 @@ namespace DocSymbol
 
         public void Visit(BaseTypeDecl decl)
         {
+            ResolveComment(decl);
         }
 
         public void Visit(ClassDecl decl)
         {
+            ResolveComment(decl);
             var templateDecl = decl.Parent as TemplateDecl;
             if (templateDecl != null)
             {
@@ -518,11 +553,13 @@ namespace DocSymbol
 
         public void Visit(VarDecl decl)
         {
+            ResolveComment(decl);
             decl.Type.Resolve(decl, this.Environment);
         }
 
         public void Visit(FuncDecl decl)
         {
+            ResolveComment(decl);
             var templateDecl = decl.Parent as TemplateDecl;
             if (templateDecl != null)
             {
@@ -534,18 +571,22 @@ namespace DocSymbol
 
         public void Visit(GroupedFieldDecl decl)
         {
+            ResolveComment(decl);
         }
 
         public void Visit(EnumItemDecl decl)
         {
+            ResolveComment(decl);
         }
 
         public void Visit(EnumDecl decl)
         {
+            ResolveComment(decl);
         }
 
         public void Visit(TypedefDecl decl)
         {
+            ResolveComment(decl);
             var templateDecl = decl.Parent as TemplateDecl;
             if (templateDecl != null)
             {

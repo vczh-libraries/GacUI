@@ -372,7 +372,7 @@ namespace vl
 		}
 
 		/// <summary>Unbox the value.</summary>
-		/// <returns>The original value.</summary>
+		/// <returns>The original value.</returns>
 		const T& Unbox()
 		{
 			return object;
@@ -432,7 +432,7 @@ namespace vl
 		}
 		
 		/// <summary>Create a non-null value.</summary>
-		/// <returns>The created nullable value.</summary>
+		/// <returns>The created nullable value.</returns>
 		/// <param name="value">The value to copy.</param>
 		Nullable<T>& operator=(const T& value)
 		{
@@ -446,7 +446,7 @@ namespace vl
 		}
 		
 		/// <summary>Copy a nullable value.</summary>
-		/// <returns>The created nullable value.</summary>
+		/// <returns>The created nullable value.</returns>
 		/// <param name="nullable">The nullable value to copy.</param>
 		Nullable<T>& operator=(const Nullable<T>& nullable)
 		{
@@ -466,7 +466,7 @@ namespace vl
 		}
 		
 		/// <summary>Move a nullable value.</summary>
-		/// <returns>The created nullable value.</summary>
+		/// <returns>The created nullable value.</returns>
 		/// <param name="nullable">The nullable value to move.</param>
 		Nullable<T>& operator=(Nullable<T>&& nullable)
 		{
@@ -751,7 +751,7 @@ Classes:
 namespace vl
 {
 	/// <summary>A type representing a string.</summary>
-	/// <typeparam name="T>Type of a character.</typeparam>
+	/// <typeparam name="T">Type of a character.</typeparam>
 	template<typename T>
 	class ObjectString : public Object
 	{
@@ -2428,7 +2428,7 @@ vl::function_combining::Combining<R1(TArgs...), R2(TArgs...), R(R1,R2)>
 		return function_combining::Combining<F1, F2, C>(function1, function2, converter);
 	}
 
-	/// <summary>Use the converter function to create a combiner, who will receive two function and use <see cref="Combine"> to create a combined function. This function assumes the result types of the two provided function in the future are the same, and the converter function will not change the result type.</summary>
+	/// <summary>Use the converter function to create a combiner, who will receive two function and use <see cref="Combine"/> to create a combined function. This function assumes the result types of the two provided function in the future are the same, and the converter function will not change the result type.</summary>
 	/// <typeparam name="T">Type of the two functions to combine.</typeparam>
 	/// <returns>The combiner.</returns>
 	/// <param name="converter">The converter function.</param>
@@ -3569,7 +3569,7 @@ namespace vl
 			}
 
 			/// <summary>Get the number of keys.</summary>
-			/// <returns>The number of keys.</summary>
+			/// <returns>The number of keys.</returns>
 			vint Count()const
 			{
 				return keys.Count();
@@ -3786,7 +3786,7 @@ namespace vl
 			}
 			
 			/// <summary>Get the number of keys.</summary>
-			/// <returns>The number of keys.</summary>
+			/// <returns>The number of keys.</returns>
 			vint Count()const
 			{
 				return keys.Count();
@@ -8391,7 +8391,7 @@ Attribute
 		///		vl::reflection::description::GetGlobalTypeManager()->AddTypeLoader(new MyTypeLoader);
 		///
 		/// ]]></summary>
-		/// <typeparam name="T">Type of your created reflection class.</param>
+		/// <typeparam name="T">Type of your created reflection class.</typeparam>
 		template<typename T>
 		class Description : public virtual DescriptableObject
 		{
@@ -9283,26 +9283,26 @@ General Syntax Tree
 			/// <summary>Clear all cache made by <see cref="InitializeQueryCache"/>.</summary>
 			void								ClearQueryCache();
 			/// <summary>Get the parent node. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
-			/// <returns>The parent node.</summary>
+			/// <returns>The parent node.</returns>
 			ParsingTreeNode*					GetParent();
 			/// <summary>Get the child nodes. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
-			/// <returns>The child nodes.</summary>
+			/// <returns>The child nodes.</returns>
 			const NodeList&						GetSubNodes();
 			
 			/// <summary>Find a direct child node at the position. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
-			/// <returns>The found node.</summary>
+			/// <returns>The found node.</returns>
 			/// <param name="position">The position.</param>
 			ParsingTreeNode*					FindSubNode(const ParsingTextPos& position);
 			/// <summary>Find a direct child node at the range. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
-			/// <returns>The found node.</summary>
+			/// <returns>The found node.</returns>
 			/// <param name="range">The range.</param>
 			ParsingTreeNode*					FindSubNode(const ParsingTextRange& range);
 			/// <summary>Find a most deepest indirect child node at the position. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
-			/// <returns>The found node.</summary>
+			/// <returns>The found node.</returns>
 			/// <param name="position">The position.</param>
 			ParsingTreeNode*					FindDeepestNode(const ParsingTextPos& position);
 			/// <summary>Find a most deepest indirect child node at the range. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
-			/// <returns>The found node.</summary>
+			/// <returns>The found node.</returns>
 			/// <param name="position">The range.</param>
 			ParsingTreeNode*					FindDeepestNode(const ParsingTextRange& range);
 		};
@@ -9349,11 +9349,11 @@ General Syntax Tree
 			void								Accept(IVisitor* visitor)override;
 			Ptr<ParsingTreeNode>				Clone()override;
 			/// <summary>Get the type name of the object.</summary>
-			/// <returns>The type name of the object.</summary>
+			/// <returns>The type name of the object.</returns>
 			const WString&						GetType();
 			void								SetType(const WString& _type);
 			/// <summary>Get all fields of the object.</summary>
-			/// <returns>All fields of the object.</summary>
+			/// <returns>All fields of the object.</returns>
 			NodeMap&							GetMembers();
 			/// <summary>Get a field of the object by the field name.</summary>
 			/// <returns>The field of the object.</returns>
@@ -9362,7 +9362,7 @@ General Syntax Tree
 			bool								SetMember(const WString& name, Ptr<ParsingTreeNode> node);
 			bool								RemoveMember(const WString& name);
 			/// <summary>Get all field names.</summary>
-			/// <returns>All field names of the object.</summary>
+			/// <returns>All field names of the object.</returns>
 			const NameList&						GetMemberNames();
 			/// <summary>Get names of all rules that return this object.</summary>
 			/// <returns>Names of all rules.</returns>
@@ -16309,7 +16309,7 @@ Classes:
 
 namespace vl
 {
-	/// <summary>
+	/// <summary><![CDATA[
 	/// Base type of all global storages. A global storage is a value with a key to store some information. In order to create a global storage, you should do the following in a cpp file:
 	/// BEGIN_GLOBAL_STOREGE_CLASS(<put the key here, it should be a legal C++ identifier>)
 	///		<put all variables here>
@@ -16320,7 +16320,7 @@ namespace vl
 	/// END_GLOBAL_STORAGE_CLASS
 	/// Then you have a global storage. You can only use this global storage in the current cpp file. [M:vl.InitializeGlobalStorage] should be called before using any global storage. [M:vl.FinalizeGlobalStorage] is encouraged to call if you think you will not use any global storages anymore. It will reduce noices when you want to detect memory leaks.
 	/// If the key of the global variable is called Key, and the variable you want to access is called Variable, then you can use GetKey()->Variable to access that variable. The GetKey function is created in the macro calls before.
-	/// </summary>
+	/// ]]></summary>
 	class GlobalStorage : public Object, private NotCopyable
 	{
 	private:
@@ -16641,12 +16641,12 @@ namespace vl
 		~Mutex();
 
 		/// <summary>Create a mutex.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="owner">Set to true to own the created mutex.</param>
 		/// <param name="name">Name of the mutex. If it is not empty, than it is a global named mutex. This argument is ignored in Linux.</param>
 		bool										Create(bool owned=false, const WString& name=L"");
 		/// <summary>Open an existing global named mutex.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="inheritable">Set to true make the mutex visible to all all child processes. This argument is only used in Windows.</param>
 		/// <param name="name">Name of the mutex. This argument is ignored in Linux.</param>
 		bool										Open(bool inheritable, const WString& name);
@@ -16672,13 +16672,13 @@ namespace vl
 		~Semaphore();
 		
 		/// <summary>Create a semaphore.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="initialCount">Define the counter of the semaphore.</param>
 		/// <param name="maxCount">Define the maximum value of the counter of the semaphore. This argument is only used in Windows.</param>
 		/// <param name="name">Name of the semaphore. If it is not empty, than it is a global named semaphore. This argument is ignored in Linux.</param>
 		bool										Create(vint initialCount, vint maxCount, const WString& name=L"");
 		/// <summary>Open an existing global named semaphore.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="inheritable">Set to true make the semaphore visible to all all child processes. This argument is only used in Windows.</param>
 		/// <param name="name">Name of the semaphore. This argument is ignored in Linux.</param>
 		bool										Open(bool inheritable, const WString& name);
@@ -16705,26 +16705,26 @@ namespace vl
 		~EventObject();
 		
 		/// <summary>Create an auto unsignal event. Auto unsignal means, when one thread waits for the event and succeeded, the event will become unsignaled immediately.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="signaled">Set to true make the event signaled at the beginning.</param>
 		/// <param name="name">Name of the event. If it is not empty, than it is a global named mutex. This argument is only used in Windows.</param>
 		bool										CreateAutoUnsignal(bool signaled, const WString& name=L"");
 		/// <summary>Create a manual unsignal event.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="signaled">Set to true make the event signaled at the beginning.</param>
 		/// <param name="name">Name of the event. If it is not empty, than it is a global named mutex. This argument is only used in Windows.</param>
 		bool										CreateManualUnsignal(bool signaled, const WString& name=L"");
 		/// <summary>Open an existing global named event.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="inheritable">Set to true make the event visible to all all child processes. This argument is only used in Windows.</param>
 		/// <param name="name">Name of the event. This argument is only used in Windows.</param>
 		bool										Open(bool inheritable, const WString& name);
 
 		/// <summary>Signal the event.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Signal();
 		/// <summary>Unsignal the event.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		bool										Unsignal();
 #ifdef VCZH_GCC
 		bool										Wait();
@@ -16753,7 +16753,7 @@ namespace vl
 		static bool									Queue(const Func<void()>& proc);
 		
 		/// <summary>Queue a lambda expression.</summary>
-		/// <typeparam name="T">The type of the lambda expression.</param>
+		/// <typeparam name="T">The type of the lambda expression.</typeparam>
 		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="proc">The lambda expression.</param>
 		template<typename T>
@@ -16771,14 +16771,14 @@ namespace vl
 进程内对象
 ***********************************************************************/
 
-	/// <summary>
+	/// <summary><![CDATA[
 	/// Critical section. It is similar to mutex, but in Windows, enter a owned critical section will not cause dead lock.
 	/// The macro "CS_LOCK" is encouraged to use instead of calling [M:vl.CriticalSection.Enter] and [M:vl.CriticalSection.Leave] like this:
 	/// CS_LOCK(yourCriticalSection)
 	/// {
 	///		<code>
 	/// }
-	/// </summary>
+	/// ]]></summary>
 	class CriticalSection : public Object, public NotCopyable
 	{
 	private:
@@ -16808,7 +16808,7 @@ namespace vl
 		};
 	};
 	
-	/// <summary>
+	/// <summary><![CDATA[
 	/// Reader writer lock.
 	/// The macro "READER_LOCK" and "WRITER_LOCK" are encouraged to use instead of calling [M:vl.ReaderWriterLock.EnterReader], [M:vl.ReaderWriterLock.LeaveReader], [M:vl.ReaderWriterLock.EnterWriter] and [M:vl.CriticalSection.LeaveWriter] like this:
 	/// READER_LOCK(yourLock)
@@ -16820,7 +16820,7 @@ namespace vl
 	/// {
 	///		<code>
 	/// }
-	/// </summary>
+	/// ]]></summary>
 	class ReaderWriterLock : public Object, public NotCopyable
 	{
 	private:
@@ -16876,30 +16876,30 @@ namespace vl
 		~ConditionVariable();
 
 		/// <summary>Bind a conditional variable with a owned critical section and release it. When the function returns, the condition variable is activated, and the current thread owned the critical section again.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="cs">The critical section.</param>
 		bool										SleepWith(CriticalSection& cs);
 #ifdef VCZH_MSVC
 		/// <summary>Bind a conditional variable with a owned critical section and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the critical section again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="cs">The critical section.</param>
 		/// <param name="ms">Time in milliseconds.</param>
 		bool										SleepWithForTime(CriticalSection& cs, vint ms);
 		/// <summary>Bind a conditional variable with a owned reader lock and release it. When the function returns, the condition variable is activated, and the current thread owned the reader lock again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="lock">The reader lock.</param>
 		bool										SleepWithReader(ReaderWriterLock& lock);
 		/// <summary>Bind a conditional variable with a owned reader lock and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the reader lock again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="lock">The reader lock.</param>
 		/// <param name="ms">Time in milliseconds.</param>
 		bool										SleepWithReaderForTime(ReaderWriterLock& lock, vint ms);
 		/// <summary>Bind a conditional variable with a owned writer lock and release it. When the function returns, the condition variable is activated, and the current thread owned the writer lock again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="lock">The writer lock.</param>
 		bool										SleepWithWriter(ReaderWriterLock& lock);
 		/// <summary>Bind a conditional variable with a owned writer lock and release it for a period of time. When the function returns, the condition variable is activated or it is time out, and the current thread owned the writer lock again. This function is only available in Windows.</summary>
-		/// <returns>Returns true if this operation succeeded.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="lock">The writer lock.</param>
 		/// <param name="ms">Time in milliseconds.</param>
 		bool										SleepWithWriterForTime(ReaderWriterLock& lock, vint ms);
@@ -16916,14 +16916,14 @@ namespace vl
 
 	typedef long LockedInt;
 	
-	/// <summary>
+	/// <summary><![CDATA[
 	/// Spin lock. It is similar to mutex.
 	/// The macro "SPIN_LOCK" is encouraged to use instead of calling [M:vl.SpinLock.Enter] and [M:vl.SpinLock.Leave] like this:
 	/// SPIN_LOCK(yourLock)
 	/// {
 	///		<code>
 	/// }
-	/// </summary>
+	/// ]]></summary>
 	class SpinLock : public Object, public NotCopyable
 	{
 	protected:
@@ -17018,7 +17018,7 @@ Dynamically create instances of them are undefined behavior.
 		}
 
 		/// <summary>Test if the storage has data.</summary>
-		/// <returns>Returns true if the storage has data.</summary>
+		/// <returns>Returns true if the storage has data.</returns>
 		bool HasData()
 		{
 			return storage.Get() != nullptr;
@@ -17088,7 +17088,7 @@ RepeatingTaskExecutor
 ***********************************************************************/
 
 	/// <summary>Queued task executor. It is different from a thread pool by: 1) Task execution is single threaded, 2) If you queue a task, it will override the the unexecuted queued task.</summary>
-	/// <typeparam name="T">The type of the argument to run a task.</param>
+	/// <typeparam name="T">The type of the argument to run a task.</typeparam>
 	template<typename T>
 	class RepeatingTaskExecutor : public Object
 	{
@@ -17664,7 +17664,7 @@ namespace vl
 {
 	namespace unittest
 	{
-		/// <summary>
+		/// <summary><![CDATA[
 		/// A static class containing all unit test operations. In order to run test cases, you should do the following:
 		/// 1) Write test cases in cpp files like this
 		/// TEST_CASE(<Name of the test case, which should be a legal C++ identifier>)
@@ -17675,7 +17675,7 @@ namespace vl
 		///		<Use TEST_PRINT(message) to print whatever to the command line window.>
 		/// }
 		/// You should call [M:vl.unittest.UnitTest.RunAndDisposeTests] in your main function to run all test cases.
-		/// </summary>
+		/// ]]></summary>
 		class UnitTest abstract
 		{
 		public:

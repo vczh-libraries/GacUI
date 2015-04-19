@@ -2012,7 +2012,7 @@ RuntimeEnvironment
 				VariableArray					variables;
 			};
 
-			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction] to call any functions inside the assembly. Function "<initialize>" should be the first to execute.</summary>
+			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction] to call any functions inside the assembly. Function "&lt;initialize&gt;" should be the first to execute.</summary>
 			class WfRuntimeGlobalContext : public Object
 			{
 			public:
@@ -2020,7 +2020,7 @@ RuntimeEnvironment
 				Ptr<WfRuntimeVariableContext>	globalVariables;
 				
 				/// <summary>Create a global context for executing a Workflow program.</summary>
-				/// <param name="_assembly>The assembly.</param>
+				/// <param name="_assembly">The assembly.</param>
 				WfRuntimeGlobalContext(Ptr<WfAssembly> _assembly);
 			};
 
@@ -2082,7 +2082,7 @@ RuntimeException
 				Ptr<IValueReadonlyDictionary>	GetGlobalVariables()override;
 
 				/// <summary>Get the name of the executing function.</summary>
-				/// <returns>The name of the execution function.</summary>
+				/// <returns>The name of the execution function.</returns>
 				WString							GetFunctionName()override;
 				/// <summary>Get the source code of the executing module.</summary>
 				/// <returns>The source code.</returns>
@@ -2294,54 +2294,54 @@ Debugger
 				};
 
 				/// <summary>Create an instruction break point.</summary>
-				/// <returns>The created break point.</summary>
-				/// <param name="assembly">The assembly that contains the instruction.</summary>
+				/// <returns>The created break point.</returns>
+				/// <param name="assembly">The assembly that contains the instruction.</param>
 				/// <param name="instruction">The index of the instruction.</param>
 				static WfBreakPoint								Ins(WfAssembly* assembly, vint instruction);
 				
 				/// <summary>Create an global variable reading break point.</summary>
-				/// <returns>The created break point.</summary>
-				/// <param name="assembly">The assembly that contains the instruction.</summary>
+				/// <returns>The created break point.</returns>
+				/// <param name="assembly">The assembly that contains the instruction.</param>
 				/// <param name="variable">The index of the global variable.</param>
 				static WfBreakPoint								Read(WfAssembly* assembly, vint variable);
 				
 				/// <summary>Create an global variable writing break point.</summary>
-				/// <returns>The created break point.</summary>
+				/// <returns>The created break point.</returns>
 				/// <param name="variable">The index of the global variable.</param>
 				static WfBreakPoint								Write(WfAssembly* assembly, vint variable);
 				
 				/// <summary>Create an property reading break point.</summary>
-				/// <returns>The created break point.</summary>
+				/// <returns>The created break point.</returns>
 				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
 				/// <param name="propertyInfo">The property.</param>
 				static WfBreakPoint								Get(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo);
 				
 				/// <summary>Create an property writing break point.</summary>
-				/// <returns>The created break point.</summary>
+				/// <returns>The created break point.</returns>
 				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
 				/// <param name="propertyInfo">The property.</param>
 				static WfBreakPoint								Set(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo);
 				
 				/// <summary>Create an event attaching break point.</summary>
-				/// <returns>The created break point.</summary>
+				/// <returns>The created break point.</returns>
 				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
 				/// <param name="eventInfo">The event.</param>
 				static WfBreakPoint								Attach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo);
 				
 				/// <summary>Create an event detaching break point.</summary>
-				/// <returns>The created break point.</summary>
+				/// <returns>The created break point.</returns>
 				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
 				/// <param name="eventInfo">The event.</param>
 				static WfBreakPoint								Detach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo);
 				
 				/// <summary>Create an function invoking break point.</summary>
-				/// <returns>The created break point.</summary>
+				/// <returns>The created break point.</returns>
 				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
 				/// <param name="methodInfo">The function.</param>
 				static WfBreakPoint								Invoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo);
 				
 				/// <summary>Create an object creating break point.</summary>
-				/// <returns>The created break point.</summary>
+				/// <returns>The created break point.</returns>
 				/// <param name="typeDescriptor">The target object type.</param>
 				static WfBreakPoint								Create(reflection::description::ITypeDescriptor* typeDescriptor);
 			};
@@ -2560,12 +2560,12 @@ Debugger
 Helper Functions
 ***********************************************************************/
 			
-			/// <summary>Load a function from a global context, raise an exception if multiple functions are found under the same name. Function "<initialize>" should be the first to execute.</summary>
+			/// <summary>Load a function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
 			/// <returns>The loaded function.</returns>
 			/// <param name="name">The function name.</param>
 			extern Ptr<reflection::description::IValueFunctionProxy>		LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name);
 			
-			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "<initialize>" should be the first to execute.</summary>
+			/// <summary>Load a C++ friendly function from a global context, raise an exception if multiple functions are found under the same name. Function "&gt;initialize&lt;" should be the first to execute.</summary>
 			/// <returns>The loaded C++ friendly function.</returns>
 			/// <param name="name">The function name.</param>
 			template<typename TFunction>
