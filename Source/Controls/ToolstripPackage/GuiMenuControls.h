@@ -34,9 +34,9 @@ Menu Service
 				/// <summary>Direction to decide the position for a menu with specified control.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.controls.IGuiMenuService.Direction]Aligned to the top or bottom side.</summary>
+					/// <summary>Aligned to the top or bottom side.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.controls.IGuiMenuService.Direction]Aligned to the left or right side.</summary>
+					/// <summary>Aligned to the left or right side.</summary>
 					Vertical,
 				};
 			protected:

@@ -72,11 +72,11 @@ ListView Base
 				/// <summary>Represents the sorting state of list view items related to this column.</summary>
 				enum ColumnSortingState
 				{
-					/// <summary>[T:vl.presentation.controls.GuiListViewColumnHeader.ColumnSortingState]Nor sorted.</summary>
+					/// <summary>Not sorted.</summary>
 					NotSorted,
-					/// <summary>[T:vl.presentation.controls.GuiListViewColumnHeader.ColumnSortingState]Ascending.</summary>
+					/// <summary>Ascending.</summary>
 					Ascending,
-					/// <summary>[T:vl.presentation.controls.GuiListViewColumnHeader.ColumnSortingState]Descending.</summary>
+					/// <summary>Descending.</summary>
 					Descending,
 				};
 				

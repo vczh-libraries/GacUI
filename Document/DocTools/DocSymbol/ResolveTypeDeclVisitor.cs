@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
@@ -240,7 +241,7 @@ namespace DocSymbol
             }
         }
 
-        public void AddXmlError(bool error, string messageFormat, string exception, string document, SymbolDecl symbol)
+        public void AddXmlError(string messageFormat, string exception, SymbolDecl symbol)
         {
             var template = symbol as TemplateDecl;
             if (template != null)
@@ -248,7 +249,7 @@ namespace DocSymbol
                 symbol = template.Element;
             }
 
-            this.Errors.Add("(Xml) " + string.Format(messageFormat, symbol.OverloadKey) + "\r\n" + exception + "\r\nComment:\r\n" + document);
+            this.Errors.Add("(Xml) " + string.Format(messageFormat, symbol.OverloadKey) + (exception == null ? "" : "\r\n" + exception));
         }
 
         public void AddError(bool error, string messageFormat, string name, SymbolDecl symbol)
@@ -485,15 +486,23 @@ namespace DocSymbol
 
     class ResolveSymbolDeclVisitor : SymbolDecl.IVisitor
     {
+        private static Regex regexSymbol = new Regex(@"\[(?<type>[TFM]):(?<symbol>[^\]]*)\]");
+
         public ResolveEnvironment Environment { get; set; }
 
         private XElement ResolveCommentSymbol(SymbolDecl decl, string name)
         {
+            this.Environment.AddXmlError("Failed to resolve symbol \"" + name + "\" in XML comment for {0}.", null, decl);
             return null;
         }
 
         private XElement ResolveCommentText(SymbolDecl decl, string text)
         {
+            var matches = regexSymbol.Matches(text).Cast<Match>().ToArray();
+            foreach (var match in matches)
+            {
+                ResolveCommentSymbol(decl, match.Value);
+            }
             return null;
         }
 
@@ -555,7 +564,7 @@ namespace DocSymbol
                 }
                 catch (XmlException ex)
                 {
-                    this.Environment.AddXmlError(true, "Failed to parse XML comment for {0}", ex.Message, decl.Document, decl);
+                    this.Environment.AddXmlError("Failed to parse XML comment for {0}.", ex.Message, decl);
                 }
             }
         }

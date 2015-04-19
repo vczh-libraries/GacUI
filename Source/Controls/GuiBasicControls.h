@@ -404,11 +404,11 @@ Buttons
 				/// <summary>The visual state.</summary>
 				enum ControlState
 				{
-					/// <summary>[T:vl.presentation.controls.GuiButton.ControlState]Normal state.</summary>
+					/// <summary>Normal state.</summary>
 					Normal,
-					/// <summary>[T:vl.presentation.controls.GuiButton.ControlState]Active state.</summary>
+					/// <summary>Active state.</summary>
 					Active,
-					/// <summary>[T:vl.presentation.controls.GuiButton.ControlState]Pressed state.</summary>
+					/// <summary>Pressed state.</summary>
 					Pressed,
 				};
 

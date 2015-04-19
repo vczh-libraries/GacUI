@@ -33,11 +33,11 @@ Table Compositions
 				/// <summary>Sizing algorithm</summary>
 				enum ComposeType
 				{
-					/// <summary>[T:vl.presentation.compositions.GuiCellOption.ComposeType]Set the size to an absolute value.</summary>
+					/// <summary>Set the size to an absolute value.</summary>
 					Absolute,
-					/// <summary>[T:vl.presentation.compositions.GuiCellOption.ComposeType]Set the size to a percentage number of the whole table.</summary>
+					/// <summary>Set the size to a percentage number of the whole table.</summary>
 					Percentage,
-					/// <summary>[T:vl.presentation.compositions.GuiCellOption.ComposeType]Set the size to the minimum size of the cell element.</summary>
+					/// <summary>Set the size to the minimum size of the cell element.</summary>
 					MinSize,
 				};
 

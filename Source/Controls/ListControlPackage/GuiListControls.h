@@ -126,25 +126,25 @@ List Control
 				/// <summary>Represents the four directions that is accessable by keyboard.</summary>
 				enum KeyDirection
 				{
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The up direction.</summary>
+					/// <summary>The up direction.</summary>
 					Up,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The down direction.</summary>
+					/// <summary>The down direction.</summary>
 					Down,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The left direction.</summary>
+					/// <summary>The left direction.</summary>
 					Left,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The right direction.</summary>
+					/// <summary>The right direction.</summary>
 					Right,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The home direction.</summary>
+					/// <summary>The home direction.</summary>
 					Home,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The end direction.</summary>
+					/// <summary>The end direction.</summary>
 					End,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The page up direction.</summary>
+					/// <summary>The page up direction.</summary>
 					PageUp,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The page down direction.</summary>
+					/// <summary>The page down direction.</summary>
 					PageDown,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The page left direction.</summary>
+					/// <summary>The page left direction.</summary>
 					PageLeft,
-					/// <summary>[T:vl.presentation.controls.GuiListControl.KeyDirection]The page right direction.</summary>
+					/// <summary>The page right direction.</summary>
 					PageRight,
 				};
 
@@ -589,21 +589,21 @@ Predefined ItemCoordinateTransformer
 					/// <summary>Axis direction.</summary>
 					enum Alignment
 					{
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:left, Y:down.</summary>
+						/// <summary>X:left, Y:down.</summary>
 						LeftDown,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:right, Y:down.</summary>
+						/// <summary>X:right, Y:down.</summary>
 						RightDown,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:left, Y:up.</summary>
+						/// <summary>X:left, Y:up.</summary>
 						LeftUp,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:right, Y:up.</summary>
+						/// <summary>X:right, Y:up.</summary>
 						RightUp,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:down, Y:left.</summary>
+						/// <summary>X:down, Y:left.</summary>
 						DownLeft,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:down, Y:right.</summary>
+						/// <summary>X:down, Y:right.</summary>
 						DownRight,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:up, Y:left.</summary>
+						/// <summary>X:up, Y:left.</summary>
 						UpLeft,
-						/// <summary>[T:vl.presentation.controls.list.AxisAlignedItemCoordinateTransformer.Alignment]X:up, Y:right.</summary>
+						/// <summary>X:up, Y:right.</summary>
 						UpRight,
 					};
 				protected:

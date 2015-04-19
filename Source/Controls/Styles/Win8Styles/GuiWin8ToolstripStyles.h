@@ -74,11 +74,11 @@ Toolstrip Button
 				/// <summary>Sub menu dropdown arrow style.</summary>
 				enum ButtonStyle
 				{
-					/// <summary>[T:vl.presentation.win8.Win8ToolstripButtonStyle.ButtonStyle]No dropdown.</summary>
+					/// <summary>No dropdown.</summary>
 					CommandButton,
-					/// <summary>[T:vl.presentation.win8.Win8ToolstripButtonStyle.ButtonStyle]The whole button is a dropdown.</summary>
+					/// <summary>The whole button is a dropdown.</summary>
 					DropdownButton,
-					/// <summary>[T:vl.presentation.win8.Win8ToolstripButtonStyle.ButtonStyle]The button and the dropdown is splitted.</summary>
+					/// <summary>The button and the dropdown is splitted.</summary>
 					SplitButton,
 				};
 			protected:

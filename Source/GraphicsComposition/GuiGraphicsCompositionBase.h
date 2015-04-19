@@ -48,11 +48,11 @@ Basic Construction
 				/// </summary>
 				enum MinSizeLimitation
 				{
-					/// <summary>[T:vl.presentation.compositions.GuiGraphicsComposition.MinSizeLimitation]No limitation for the minimum size.</summary>
+					/// <summary>No limitation for the minimum size.</summary>
 					NoLimit,
-					/// <summary>[T:vl.presentation.compositions.GuiGraphicsComposition.MinSizeLimitation]Minimum size of this composition is the minimum size of the contained graphics element.</summary>
+					/// <summary>Minimum size of this composition is the minimum size of the contained graphics element.</summary>
 					LimitToElement,
-					/// <summary>[T:vl.presentation.compositions.GuiGraphicsComposition.MinSizeLimitation]Minimum size of this composition is combiniation of sub compositions and the minimum size of the contained graphics element.</summary>
+					/// <summary>Minimum size of this composition is combiniation of sub compositions and the minimum size of the contained graphics element.</summary>
 					LimitToElementAndChildren,
 				};
 			protected:

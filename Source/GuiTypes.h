@@ -25,15 +25,15 @@ Enumerations
 		/// </summary>
 		enum class Alignment
 		{
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the left side.</summary>
+			/// <summary>Aligned to the left side.</summary>
 			Left=0,
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the top side.</summary>
+			/// <summary>Aligned to the top side.</summary>
 			Top=0,
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the center.</summary>
+			/// <summary>Aligned to the center.</summary>
 			Center=1,
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the right side.</summary>
+			/// <summary>Aligned to the right side.</summary>
 			Right=2,
-			/// <summary>[T:vl.presentation.Alignment]Aligned to the bottom side.</summary>
+			/// <summary>Aligned to the bottom side.</summary>
 			Bottom=2,
 		};
 

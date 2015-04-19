@@ -29,9 +29,9 @@ Elements
 			/// </summary>
 			enum class ElementShape
 			{
-				/// <summary>[T:vl.presentation.elements.ElementShape]Rectangle shape.</summary>
+				/// <summary>Rectangle shape.</summary>
 				Rectangle,
-				/// <summary>[T:vl.presentation.elements.ElementShape]Ellipse shape.</summary>
+				/// <summary>Ellipse shape.</summary>
 				Ellipse,
 			};
 
@@ -162,9 +162,9 @@ Elements
 				/// </summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.elements.Gui3DSplitterElement.Direction]Horizontal direction.</summary>
+					/// <summary>Horizontal direction.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.elements.Gui3DSplitterElement.Direction]Vertical direction.</summary>
+					/// <summary>Vertical direction.</summary>
 					Vertical,
 				};
 			protected:
@@ -263,13 +263,13 @@ Elements
 				/// </summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.elements.GuiGradientBackgroundElement.Direction]Horizontal direction.</summary>
+					/// <summary>Horizontal direction.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.elements.GuiGradientBackgroundElement.Direction]vertical direction.</summary>
+					/// <summary>vertical direction.</summary>
 					Vertical,
-					/// <summary>[T:vl.presentation.elements.GuiGradientBackgroundElement.Direction]Slash direction.</summary>
+					/// <summary>Slash direction.</summary>
 					Slash,
-					/// <summary>[T:vl.presentation.elements.GuiGradientBackgroundElement.Direction]Back slash direction.</summary>
+					/// <summary>Back slash direction.</summary>
 					Backslash,
 				};
 			protected:

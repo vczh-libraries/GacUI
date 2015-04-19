@@ -93,9 +93,9 @@ Button
 				/// <summary>Bullet style.</summary>
 				enum BulletStyle
 				{
-					/// <summary>[T:vl.presentation.win8.Win8CheckBoxStyle.BulletStyle]Check box bullet.</summary>
+					/// <summary>Check box bullet.</summary>
 					CheckBox,
-					/// <summary>[T:vl.presentation.win8.Win8CheckBoxStyle.BulletStyle]Radio button bullet.</summary>
+					/// <summary>Radio button bullet.</summary>
 					RadioButton,
 				};
 			protected:

@@ -30,11 +30,11 @@ GuiDocumentCommonInterface
 				/// <summary>Represents the edit mode.</summary>
 				enum EditMode
 				{
-					/// <summary>[T:vl.presentation.controls.GuiDocumentCommonInterface.EditMode]View the rich text only.</summary>
+					/// <summary>View the rich text only.</summary>
 					ViewOnly,
-					/// <summary>[T:vl.presentation.controls.GuiDocumentCommonInterface.EditMode]The rich text is selectable.</summary>
+					/// <summary>The rich text is selectable.</summary>
 					Selectable,
-					/// <summary>[T:vl.presentation.controls.GuiDocumentCommonInterface.EditMode]The rich text is editable.</summary>
+					/// <summary>The rich text is editable.</summary>
 					Editable,
 				};
 			protected:

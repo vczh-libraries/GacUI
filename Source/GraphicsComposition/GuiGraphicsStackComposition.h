@@ -37,9 +37,9 @@ Stack Compositions
 				/// <summary>Stack item layout direction.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.compositions.GuiStackComposition.Direction]Stack items is layouted horizontally.</summary>
+					/// <summary>Stack items is layouted horizontally.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.compositions.GuiStackComposition.Direction]Stack items is layouted vertically.</summary>
+					/// <summary>Stack items is layouted vertically.</summary>
 					Vertical,
 				};
 			protected:

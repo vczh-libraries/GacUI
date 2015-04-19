@@ -31,13 +31,13 @@ Specialized Compositions
 				/// <summary>The border to align.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.compositions.GuiSideAlignedComposition.Direction]The left border.</summary>
+					/// <summary>The left border.</summary>
 					Left,
-					/// <summary>[T:vl.presentation.compositions.GuiSideAlignedComposition.Direction]The top border.</summary>
+					/// <summary>The top border.</summary>
 					Top,
-					/// <summary>[T:vl.presentation.compositions.GuiSideAlignedComposition.Direction]The right border.</summary>
+					/// <summary>The right border.</summary>
 					Right,
-					/// <summary>[T:vl.presentation.compositions.GuiSideAlignedComposition.Direction]The bottom border.</summary>
+					/// <summary>The bottom border.</summary>
 					Bottom,
 				};
 			protected:

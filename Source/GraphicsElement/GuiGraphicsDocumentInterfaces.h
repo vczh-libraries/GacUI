@@ -36,45 +36,45 @@ Layout Engine
 				/// <summary>Text style. Items in this enumeration type can be combined.</summary>
 				enum TextStyle
 				{
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.TextStyle]Bold.</summary>
+					/// <summary>Bold.</summary>
 					Bold=1,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.TextStyle]Italic.</summary>
+					/// <summary>Italic.</summary>
 					Italic=2,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.TextStyle]Underline.</summary>
+					/// <summary>Underline.</summary>
 					Underline=4,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.TextStyle]Strikeline.</summary>
+					/// <summary>Strikeline.</summary>
 					Strikeline=8,
 				};
 
 				/// <summary>Inline object break condition.</summary>
 				enum BreakCondition
 				{
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.BreakCondition]Stay together with the previous run if possible.</summary>
+					/// <summary>Stay together with the previous run if possible.</summary>
 					StickToPreviousRun,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.BreakCondition]Stay together with the next run if possible.</summary>
+					/// <summary>Stay together with the next run if possible.</summary>
 					StickToNextRun,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.BreakCondition]Treat as a single run.</summary>
+					/// <summary>Treat as a single run.</summary>
 					Alone,
 				};
 
 				/// <summary>Caret relative position.</summary>
 				enum CaretRelativePosition
 				{
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The first caret position.</summary>
+					/// <summary>The first caret position.</summary>
 					CaretFirst,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The last caret position.</summary>
+					/// <summary>The last caret position.</summary>
 					CaretLast,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The first caret position of the current line.</summary>
+					/// <summary>The first caret position of the current line.</summary>
 					CaretLineFirst,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The last caret position of the current line.</summary>
+					/// <summary>The last caret position of the current line.</summary>
 					CaretLineLast,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The relative left caret position.</summary>
+					/// <summary>The relative left caret position.</summary>
 					CaretMoveLeft,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The relative right caret position.</summary>
+					/// <summary>The relative right caret position.</summary>
 					CaretMoveRight,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The relative up caret position.</summary>
+					/// <summary>The relative up caret position.</summary>
 					CaretMoveUp,
-					/// <summary>[T:vl.presentation.elements.IGuiGraphicsParagraph.CaretRelativePosition]The relative down caret position.</summary>
+					/// <summary>The relative down caret position.</summary>
 					CaretMoveDown,
 				};
 

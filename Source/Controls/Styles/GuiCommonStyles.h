@@ -29,9 +29,9 @@ CommonScrollStyle
 				/// <summary>Scroll direction.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.common_styles.CommonScrollStyle.Direction]Horizontal scroll.</summary>
+					/// <summary>Horizontal scroll.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.common_styles.CommonScrollStyle.Direction]Vertical scroll.</summary>
+					/// <summary>Vertical scroll.</summary>
 					Vertical,
 				};
 			protected:
@@ -108,9 +108,9 @@ CommonTrackStyle
 				/// <summary>Track direction.</summary>
 				enum Direction
 				{
-					/// <summary>[T:vl.presentation.common_styles.CommonTrackStyle.Direction]Horizontal scroll.</summary>
+					/// <summary>Horizontal scroll.</summary>
 					Horizontal,
-					/// <summary>[T:vl.presentation.common_styles.CommonTrackStyle.Direction]Vertical scroll.</summary>
+					/// <summary>Vertical scroll.</summary>
 					Vertical,
 				};
 			protected:
