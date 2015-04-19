@@ -628,7 +628,42 @@ namespace DocSymbol
                 try
                 {
                     var xml = XElement.Parse("<Document>" + decl.Document + "</Document>", LoadOptions.PreserveWhitespace);
-                    ResolveCommentNode(decl, xml);
+
+                    var template = decl as TemplateDecl;
+                    var symbol = decl;
+                    if (template == null)
+                    {
+                        template = decl.Parent as TemplateDecl;
+                    }
+                    else
+                    {
+                        symbol = template.Element;
+                    }
+
+                    var typeparamXmls = xml.Elements("typeparam").ToArray();
+                    var expectedTypeparamNames = template == null ? new string[0] : template.TypeParameters.Select(x => x.Name).ToArray();
+                    var actualTypeparamNames = typeparamXmls.Select(x => x.Attribute("name").Value).ToArray();
+                    if (!expectedTypeparamNames.SequenceEqual(actualTypeparamNames))
+                    {
+                        this.Environment.AddXmlError("<typeparam> elements do not match type parameter names in order in {0}", null, symbol);
+                    }
+
+                    var paramXmls = xml.Elements("param").ToArray();
+                    var func = symbol as FuncDecl;
+                    var expectedParamNames = func == null || func.Children == null ? new string[0] : func.Children.Select(x => x.Name).ToArray();
+                    var actualParamNames = paramXmls.Select(x => x.Attribute("name").Value).ToArray();
+                    if (!expectedParamNames.SequenceEqual(actualParamNames))
+                    {
+                        this.Environment.AddXmlError("<param> elements do not match parameter names in order in {0}", null, symbol);
+                    }
+
+                    var returnXmls = xml.Elements("returns").ToArray();
+                    if (returnXmls.Length == 1 ^ (func != null && ((FunctionTypeDecl)func.Type).ReturnType.ToString() != "void"))
+                    {
+                        this.Environment.AddXmlError("<returns> element does not math the function return type in {0}", null, symbol);
+                    }
+
+                    ResolveCommentNode(symbol, xml);
                     decl.Document = xml.ToString();
                 }
                 catch (XmlException ex)
@@ -640,22 +675,18 @@ namespace DocSymbol
 
         public void Visit(GlobalDecl decl)
         {
-            ResolveComment(decl);
         }
 
         public void Visit(NamespaceDecl decl)
         {
-            ResolveComment(decl);
         }
 
         public void Visit(UsingNamespaceDecl decl)
         {
-            ResolveComment(decl);
         }
 
         public void Visit(TypeParameterDecl decl)
         {
-            ResolveComment(decl);
         }
 
         public void Visit(TemplateDecl decl)

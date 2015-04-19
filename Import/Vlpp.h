@@ -899,7 +899,7 @@ namespace vl
 
 		/// <summary>Copy a string.</summary>
 		/// <param name="_buffer">Memory to copy. It does not have to contain the zero terminator.</param>
-		/// <param name="length">Size of the content in characters.</param>
+		/// <param name="_length">Size of the content in characters.</param>
 		ObjectString(const T* _buffer, vint _length)
 		{
 			if(_length<=0)
@@ -2911,7 +2911,7 @@ namespace vl
 			}
 
 			/// <summary>Set a preference of using memory.</summary>
-			/// <returns>Set to true (by default) to let the container efficiently reduce memory usage when necessary.</returns>
+			/// <param name="mode">Set to true (by default) to let the container efficiently reduce memory usage when necessary.</param>
 			void SetLessMemoryMode(bool mode)
 			{
 				lessMemoryMode=mode;
@@ -2933,7 +2933,7 @@ namespace vl
 			/// <summary>Remove elements.</summary>
 			/// <returns>Returns true if the element is removed.</returns>
 			/// <param name="index">The index of the first element to remove.</param>
-			/// <param name="count">The number of elements to remove.</param>
+			/// <param name="_count">The number of elements to remove.</param>
 			bool RemoveRange(vint index, vint _count)
 			{
 				vint previousCount=ArrayBase<T>::count;
@@ -3147,6 +3147,7 @@ namespace vl
 			}
 			
 			/// <summary>Replace an item.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="index">The position of the item.</param>
 			/// <param name="item">The new item to put into the array.</param>
 			bool Set(vint index, const T& item)
@@ -3188,7 +3189,7 @@ namespace vl
 			}
 			
 			/// <summary>Get the position of an item in this list.</summary>
-			/// <typeparam name="key">Type of the item to find.</typeparam>
+			/// <typeparam name="Key">Type of the item to find.</typeparam>
 			/// <returns>Returns the position. Returns -1 if not exists</returns>
 			/// <param name="item">The item to find.</param>
 			template<typename Key>
@@ -3547,7 +3548,7 @@ namespace vl
 			}
 			
 			/// <summary>Set a preference of using memory.</summary>
-			/// <returns>Set to true (by default) to let the container efficiently reduce memory usage when necessary.</returns>
+			/// <param name="mode">Set to true (by default) to let the container efficiently reduce memory usage when necessary.</param>
 			void SetLessMemoryMode(bool mode)
 			{
 				keys.SetLessMemoryMode(mode);
@@ -4131,6 +4132,7 @@ namespace vl
 		{
 		public:
 			/// <summary>Set a target writable stream. The <see cref="Write"/> function will transform the content and write to this tream.</summary>
+			/// <param name="_stream">The target writable stream.</param>
 			virtual void					Setup(IStream* _stream)=0;
 			/// <summary>Stop the transformation, ensuring all written content is transformed to the target stream.</summary>
 			virtual	void					Close()=0;
@@ -4146,6 +4148,7 @@ namespace vl
 		{
 		public:
 			/// <summary>Set a target readable stream. The <see cref="Read"/> function will read from this tream and transform the content.</summary>
+			/// <param name="_stream">The target readable stream.</param>
 			virtual void					Setup(IStream* _stream)=0;
 			/// <summary>Stop the transformation.</summary>
 			virtual	void					Close()=0;
@@ -4521,6 +4524,7 @@ Encoding Test
 
 		/// <summary>Guess the text encoding in a buffer.</summary>
 		/// <param name="buffer">The buffer to guess.</param>
+		/// <param name="size">Size of the buffer in bytes.</param>
 		/// <param name="encoding">Returns the most possible encoding.</param>
 		/// <param name="containsBom">Returns true if the BOM information is at the beginning of the buffer.</param>
 		extern void							TestEncoding(unsigned char* buffer, vint size, BomEncoder::Encoding& encoding, bool& containsBom);
@@ -6703,10 +6707,11 @@ namespace vl
 			~RegexLexerWalker();
 			
 			/// <summary>Get the start DFA state number, which represents the correct state before parsing any input.</summary>
-			/// <param name="state">The DFA state number.</param>
+			/// <returns>The DFA state number.</returns>
 			vint										GetStartState()const;
 			/// <summary>Test if this state can only lead to the end of one kind of token.</summary>
-			/// <summary>Returns the token index if this state can only lead to the end of one kind of token. Returns -1 if not.</summary>
+			/// <returns>Returns the token index if this state can only lead to the end of one kind of token. Returns -1 if not.</returns>
+			/// <param name="state">The DFA state number.</param>
 			vint										GetRelatedToken(vint state)const;
 			/// <summary>Step forward by one character.</summary>
 			/// <param name="input">The input character.</param>
@@ -6721,10 +6726,12 @@ namespace vl
 			/// <param name="state">The current state.</param>
 			vint										Walk(wchar_t input, vint state)const;
 			/// <summary>Test if the input text is a complete token.</summary>
+			/// <returns>Returns true if the input text is a complete token.</returns>
 			/// <param name="input">The input text.</param>
 			/// <param name="length">Size of the input text in characters.</param>
 			bool										IsClosedToken(const wchar_t* input, vint length)const;
 			/// <summary>Test if the input is a complete token.</summary>
+			/// <returns>Returns true if the input text is a complete token.</returns>
 			/// <param name="input">The input text.</param>
 			bool										IsClosedToken(const WString& input)const;
 		};
@@ -6752,10 +6759,10 @@ namespace vl
 			/// <param name="input">The input character.</param>
 			void										Pass(wchar_t input);
 			/// <summary>Get the start DFA state number, which represents the correct state before colorizing any characters.</summary>
-			/// <param name="state">The DFA state number.</param>
+			/// <returns>The DFA state number.</returns>
 			vint										GetStartState()const;
 			/// <summary>Get the current DFA state number.</summary>
-			/// <param name="state">The DFA state number.</param>
+			/// <returns>The DFA state number.</returns>
 			vint										GetCurrentState()const;
 			/// <summary>Colorize a text.</summary>
 			/// <param name="input">The text to colorize.</param>
@@ -6773,7 +6780,8 @@ namespace vl
 			collections::Array<vint>					ids;
 			collections::Array<vint>					stateTokens;
 		public:
-			/// <summary>Create a lexical analyzer by a set of regular expression. [F:vl.regex.RegexToken.token] will be the index of the matched regular expression.</summary>
+			/// <summary>Create a lexical analyzer by a set of regular expressions. [F:vl.regex.RegexToken.token] will be the index of the matched regular expression.</summary>
+			/// <param name="tokens">The regular expressions.</param>
 			RegexLexer(const collections::IEnumerable<WString>& tokens);
 			~RegexLexer();
 
@@ -7172,19 +7180,19 @@ namespace vl
 		const WString&				GetName()const;
 
 		/// <summary>Get all short date formats for the locale.</summary>
-		/// <returns>The formats.</returns>
+		/// <param name="formats">The formats.</param>
 		void						GetShortDateFormats(collections::List<WString>& formats)const;
 		/// <summary>Get all long date formats for the locale.</summary>
-		/// <returns>The formats.</returns>
+		/// <param name="formats">The formats.</param>
 		void						GetLongDateFormats(collections::List<WString>& formats)const;
 		/// <summary>Get all Year-Month date formats for the locale.</summary>
-		/// <returns>The formats.</returns>
+		/// <param name="formats">The formats.</param>
 		void						GetYearMonthDateFormats(collections::List<WString>& formats)const;
 		/// <summary>Get all long time formats for the locale.</summary>
-		/// <returns>The formats.</returns>
+		/// <param name="formats">The formats.</param>
 		void						GetLongTimeFormats(collections::List<WString>& formats)const;
 		/// <summary>Get all short time formats for the locale.</summary>
-		/// <returns>The formats.</returns>
+		/// <param name="formats">The formats.</param>
 		void						GetShortTimeFormats(collections::List<WString>& formats)const;
 
 		/// <summary>Convert a date to a formatted string.</summary>
@@ -7195,16 +7203,16 @@ namespace vl
 		/// <summary>Convert a time to a formatted string.</summary>
 		/// <returns>The formatted string.</returns>
 		/// <param name="format">The format to use.</param>
-		/// <param name="date">The time to convert.</param>
+		/// <param name="time">The time to convert.</param>
 		WString						FormatTime(const WString& format, DateTime time)const;
 #ifdef VCZH_MSVC
 		/// <summary>Convert a number to a formatted string.</summary>
 		/// <returns>The formatted string.</returns>
-		/// <param name="date">The number to convert.</param>
+		/// <param name="number">The number to convert.</param>
 		WString						FormatNumber(const WString& number)const;
 		/// <summary>Convert a currency (money) to a formatted string.</summary>
 		/// <returns>The formatted string.</returns>
-		/// <param name="date">The currency to convert.</param>
+		/// <param name="currency">The currency to convert.</param>
 		WString						FormatCurrency(const WString& currency)const;
 #endif
 
@@ -7672,6 +7680,7 @@ LazyList
 			}
 			
 			/// <summary>Create a lazy list with a container.</summary>
+			/// <typeparam name="TContainer">Type of the container.</typeparam>
 			/// <param name="container">The container.</param>
 			template<typename TContainer>
 			LazyList(Ptr<TContainer> container)
@@ -7776,9 +7785,10 @@ LazyList
 			}
 			
 			/// <summary>Aggregate a lazy list.</summary>
+			/// <typeparam name="I">Type of the initial value.</typeparam>
 			/// <typeparam name="F">Type of the lambda expression.</typeparam>
 			/// <returns>The aggregated value.</returns>
-			/// <param name="init">The extra value that is virtually added before the lazy list.</param>
+			/// <param name="init">The initial value that is virtually added before the lazy list.</param>
 			/// <param name="f">The lambda expression as an aggregator.</param>
 			template<typename I, typename F>
 			I Aggregate(I init, F f)const
@@ -7954,6 +7964,7 @@ LazyList
 			//-------------------------------------------------------
 
 			/// <summary>Create a new lazy list of pairs from elements from two containers.</summary>
+			/// <typeparam name="U">Type of all elements in the second container.</typeparam>
 			/// <returns>The created lazy list.</returns>
 			/// <param name="remains">The second container.</param>
 			template<typename U>
@@ -8505,13 +8516,13 @@ Value
 				/// <returns>How the value is stored.</returns>
 				ValueType						GetValueType()const;
 				/// <summary>Get the stored raw pointer if possible.</summary>
-				/// <summary>The stored raw pointer. Returns null if failed.</summary>
+				/// <returns>The stored raw pointer. Returns null if failed.</returns>
 				DescriptableObject*				GetRawPtr()const;
 				/// <summary>Get the stored shared pointer if possible.</summary>
-				/// <summary>The stored shared pointer. Returns null if failed.</summary>
+				/// <returns>The stored shared pointer. Returns null if failed.</returns>
 				Ptr<DescriptableObject>			GetSharedPtr()const;
 				/// <summary>Get the stored text if possible.</summary>
-				/// <summary>The stored text. Returns empty if failed.</summary>
+				/// <returns>The stored text. Returns empty if failed.</returns>
 				const WString&					GetText()const;
 				/// <summary>Get the real type of the stored object.</summary>
 				/// <returns>The real type. Returns null if the value is null.</returns>
@@ -9303,7 +9314,7 @@ General Syntax Tree
 			ParsingTreeNode*					FindDeepestNode(const ParsingTextPos& position);
 			/// <summary>Find a most deepest indirect child node at the range. Using this function requires running <see cref="InitializeQueryCache"/> before.</summary>
 			/// <returns>The found node.</returns>
-			/// <param name="position">The range.</param>
+			/// <param name="range">The range.</param>
 			ParsingTreeNode*					FindDeepestNode(const ParsingTextRange& range);
 		};
 
@@ -11565,7 +11576,7 @@ TypeInfoRetriver Helper Functions (BoxValue, UnboxValue)
 			/// <summary>Unbox an reflectable object. Its type cannot be generic.</summary>
 			/// <returns>The unboxed object.</returns>
 			/// <typeparam name="T">Type of the object.</typeparam>
-			/// <param name="object">The value to unbox.</param>
+			/// <param name="value">The value to unbox.</param>
 			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
 			/// <param name="valueName">The name of the object to provide a friendly exception message if the conversion is failed (optional).</param>
 			template<typename T>
@@ -11596,7 +11607,7 @@ TypeInfoRetriver Helper Functions (UnboxParameter)
 			
 			/// <summary>Box an reflectable object. It supports generic types such as containers, functions, etc.</summary>
 			/// <typeparam name="T">Type of the object.</typeparam>
-			/// <param name="object">The value to unbox.</param>
+			/// <param name="value">The value to unbox.</param>
 			/// <param name="result">The unboxed object.</param>
 			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
 			/// <param name="valueName">The name of the object to provide a friendly exception message if the conversion is failed (optional).</param>
@@ -14583,7 +14594,8 @@ namespace vl
 				ParsingGeneralParser(Ptr<ParsingTable> _table);
 				~ParsingGeneralParser();
 				
-				/// <summary>The parser table that used to do the parsing.</summary>
+				/// <summary>Get the parser table that used to do the parsing.</summary>
+				/// <returns>The parser table that used to do the parsing.</returns>
 				Ptr<ParsingTable>							GetTable();
 				/// <summary>Initialization. It should be called before each time of parsing.</summary>
 				virtual void								BeginParse();
@@ -16029,6 +16041,7 @@ namespace vl
 			static void WriteLine(const WString& string);
 
 			/// <summary>Read from the command line window.</summary>
+			/// <returns>The whole line read from the command line window.</returns>
 			static WString Read();
 
 			static void SetColor(bool red, bool green, bool blue, bool light);
@@ -16539,27 +16552,27 @@ namespace vl
 		
 		/// <summary>Wait for multiple objects. This function is only available in Windows.</summary>
 		/// <returns>Returns true if all objects are signaled. Returns false if this operation failed.</returns>
-		/// <param name="object">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
 		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
 		static bool									WaitAll(WaitableObject** objects, vint count);
 		/// <summary>Wait for multiple objects for a period of time. This function is only available in Windows.</summary>
 		/// <returns>Returns true if all objects are signaled. Returns false if this operation failed, including time out.</returns>
-		/// <param name="object">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
 		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
 		/// <param name="ms">Time in milliseconds.</param>
 		static bool									WaitAllForTime(WaitableObject** objects, vint count, vint ms);
 		/// <summary>Wait for one of the objects. This function is only available in Windows.</summary>
 		/// <returns>Returns the index of the first signaled or abandoned object, according to the "abandoned" parameter. Returns -1 if this operation failed.</returns>
-		/// <param name="object">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
 		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
-		/// <param name="abondoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
+		/// <param name="abandoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
 		static vint									WaitAny(WaitableObject** objects, vint count, bool* abandoned);
 		/// <summary>Wait for one of the objects for a period of time. This function is only available in Windows.</summary>
 		/// <returns>Returns the index of the first signaled or abandoned object, according to the "abandoned" parameter. Returns -1 if this operation failed, including time out.</returns>
-		/// <param name="object">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
+		/// <param name="objects">A pointer to an array to <see cref="WaitableObject"/> pointers.</param>
 		/// <param name="count">The number of <see cref="WaitableObject"/> objects in the array.</param>
 		/// <param name="ms">Time in milliseconds.</param>
-		/// <param name="abondoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
+		/// <param name="abandoned">Returns true if the waiting is canceled by an abandoned object. An abandoned object is caused by it's owner thread existing without releasing it.</param>
 		static vint									WaitAnyForTime(WaitableObject** objects, vint count, vint ms, bool* abandoned);
 #elif defined VCZH_GCC
 		virtual bool								Wait() = 0;
@@ -16642,7 +16655,7 @@ namespace vl
 
 		/// <summary>Create a mutex.</summary>
 		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="owner">Set to true to own the created mutex.</param>
+		/// <param name="owned">Set to true to own the created mutex.</param>
 		/// <param name="name">Name of the mutex. If it is not empty, than it is a global named mutex. This argument is ignored in Linux.</param>
 		bool										Create(bool owned=false, const WString& name=L"");
 		/// <summary>Open an existing global named mutex.</summary>
@@ -16754,7 +16767,6 @@ namespace vl
 		
 		/// <summary>Queue a lambda expression.</summary>
 		/// <typeparam name="T">The type of the lambda expression.</typeparam>
-		/// <returns>Returns true if this operation succeeded.</returns>
 		/// <param name="proc">The lambda expression.</param>
 		template<typename T>
 		static void QueueLambda(const T& proc)
@@ -17038,7 +17050,7 @@ Dynamically create instances of them are undefined behavior.
 		}
 
 		/// <summary>Set data to this storage.</summary>
-		/// <param name="T">The data to set.</param>
+		/// <param name="value">The data to set.</param>
 		void Set(const T& value)
 		{
 			storage.Clear();
