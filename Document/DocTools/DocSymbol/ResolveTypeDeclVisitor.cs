@@ -521,13 +521,21 @@ namespace DocSymbol
             if (type.ReferencingOverloadKeys == null)
             {
                 this.Environment.AddXmlError("Failed to resolve symbol \"" + name + "\" in XML comment for {0}.", null, decl);
+                return null;
             }
-            return null;
+            else
+            {
+                return new XElement("links",
+                    type.ReferencingOverloadKeys
+                        .Select(x => new XElement("link", new XAttribute("cref", x)))
+                    );
+            }
         }
 
-        private XElement ResolveCommentText(SymbolDecl decl, string text)
+        private IEnumerable<XNode> ResolveCommentText(SymbolDecl decl, string text)
         {
             var matches = regexSymbol.Matches(text).Cast<Match>().ToArray();
+            var linkXmls = new List<XElement>();
             foreach (var match in matches)
             {
                 var type = match.Groups["type"].Value;
@@ -541,36 +549,50 @@ namespace DocSymbol
                     })
                     .Aggregate((a, b) => a + "::" + b)
                     ;
-                ResolveCommentSymbol(decl, symbolName);
+                var links = ResolveCommentSymbol(decl, symbolName);
+                linkXmls.Add(links);
             }
-            return null;
+
+            int lastIndex = 0;
+            for (int i = 0; i < matches.Length; i++)
+            {
+                var match = matches[i];
+                if (match.Index != lastIndex)
+                {
+                    yield return new XText(text.Substring(lastIndex, match.Index - lastIndex));
+                    lastIndex = match.Index + match.Length;
+                }
+
+                if (linkXmls[i] == null)
+                {
+                    yield return new XText(match.Value);
+                }
+                else
+                {
+                    yield return linkXmls[i];
+                }
+            }
+
+            if (text.Length != lastIndex)
+            {
+                yield return new XText(text.Substring(lastIndex, text.Length - lastIndex));
+            }
         }
 
-        private void Replace(XNode node, XElement replacement)
-        {
-            node.ReplaceWith(replacement);
-        }
-
-        private void ResolveCommentNode(SymbolDecl decl, XNode node)
+        private IEnumerable<XNode> ResolveCommentNode(SymbolDecl decl, XNode node)
         {
             var text = node as XText;
             var cdata = node as XCData;
             var element = node as XElement;
             if (text != null)
             {
-                var replacement = ResolveCommentText(decl, text.Value);
-                if (replacement != null)
-                {
-                    Replace(text, replacement);
-                }
+                var replacement = ResolveCommentText(decl, text.Value).ToArray();
+                return replacement;
             }
             if (cdata != null)
             {
-                var replacement = ResolveCommentText(decl, cdata.Value);
-                if (replacement != null)
-                {
-                    Replace(cdata, replacement);
-                }
+                var replacement = ResolveCommentText(decl, cdata.Value).ToArray();
+                return replacement;
             }
             if (element != null)
             {
@@ -578,10 +600,7 @@ namespace DocSymbol
                 {
                     var att = element.Attribute("cref");
                     var replacement = ResolveCommentSymbol(decl, att.Value);
-                    if (replacement != null)
-                    {
-                        Replace(element, replacement);
-                    }
+                    return new XNode[] { replacement == null ? element : replacement };
                 }
                 else
                 {
@@ -589,7 +608,16 @@ namespace DocSymbol
                     {
                         ResolveCommentNode(decl, child);
                     }
+                    var replacement = element.Nodes()
+                        .SelectMany(x => ResolveCommentNode(decl, x))
+                        .ToArray();
+                    element.ReplaceNodes(replacement);
+                    return new XNode[] { element };
                 }
+            }
+            else
+            {
+                return new XNode[] { node };
             }
         }
 
@@ -601,6 +629,7 @@ namespace DocSymbol
                 {
                     var xml = XElement.Parse("<Document>" + decl.Document + "</Document>", LoadOptions.PreserveWhitespace);
                     ResolveCommentNode(decl, xml);
+                    decl.Document = xml.ToString();
                 }
                 catch (XmlException ex)
                 {
