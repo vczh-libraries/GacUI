@@ -812,6 +812,7 @@ Basic Construction
 				/// Apply a clipper to the render target.
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
 				/// </summary>
+				/// <param name="clipper">The clipper to push.</param>
 				virtual void							PushClipper(Rect clipper)=0;
 				/// <summary>
 				/// Remove the last pushed clipper from the clipper stack.
@@ -1720,7 +1721,7 @@ Native Window
 		/// </summary>
 		struct NativeWindowKeyInfo
 		{
-			/// <summary>Key code of the key that sends this message.</summary>
+			/// <summary>Key code of the key that sends this message, using VKEY_* macros.</summary>
 			vint						code;
 			/// <summary>True if the control button is pressed.</summary>
 			bool						ctrl;
@@ -2109,7 +2110,7 @@ Native Window Services
 			/// Get the screen object where the main part of the specified window is inside.
 			/// </summary>
 			/// <returns>The screen object.</returns>
-			/// <param name="index">The specified window.</param>
+			/// <param name="window">The specified window.</param>
 			virtual INativeScreen*			GetScreen(INativeWindow* window)=0;
 		};
 		
@@ -2185,18 +2186,20 @@ Native Window Services
 			/// Test is the specified key pressing.
 			/// </summary>
 			/// <returns>Returns true if the specified key is pressing.</returns>
+			/// <param name="code">The key code to test, using VKEY_* macros.</param>
 			virtual bool					IsKeyPressing(vint code)=0;
 			/// <summary>
 			/// Test is the specified key toggled.
 			/// </summary>
 			/// <returns>Returns true if the specified key is toggled.</returns>
+			/// <param name="code">The key code to test, using VKEY_* macros.</param>
 			virtual bool					IsKeyToggled(vint code)=0;
 
 			/// <summary>
 			/// Get the name of a key.
 			/// </summary>
 			/// <returns>The name of a key.</returns>
-			/// <param name="key">Key code</param>
+			/// <param name="code">The key code, using VKEY_* macros.</param>
 			virtual WString					GetKeyName(vint code)=0;
 			/// <summary>
 			/// Get the key from a name.
@@ -2516,6 +2519,7 @@ Native Window Controller
 			/// <summary>
 			/// Called when the mouse is moving. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
+			/// <param name="position">The mouse position in the screen space.</param>
 			virtual void					MouseMoving(Point position);
 			/// <summary>
 			/// Called when the global timer message raised. To receive or not receive this message, use <see cref="INativeInputService::StartTimer"/> or <see cref="INativeInputService::StopTimer"/>
@@ -2951,12 +2955,14 @@ Resource Manager
 			/// <summary>
 			/// Set the current <see cref="GuiGraphicsResourceManager"></see>.
 			/// </summary>
-			/// <params name="resourceManager">The resource manager to set.</params>
+			/// <param name="resourceManager">The resource manager to set.</param>
 			extern void									SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager);
 			/// <summary>
 			/// Helper function to register a <see cref="IGuiGraphicsElementFactory"></see> with a <see cref="IGuiGraphicsRendererFactory"></see> and bind them together.
 			/// </summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="elementFactory">The element factory to register.</param>
+			/// <param name="rendererFactory">The renderer factory to register.</param>
 			extern bool									RegisterFactories(IGuiGraphicsElementFactory* elementFactory, IGuiGraphicsRendererFactory* rendererFactory);
 
 /***********************************************************************
@@ -3249,6 +3255,7 @@ Resource Image
 			/// <summary>Create an image data with a specified image and a frame index.</summary>
 			/// <param name="_image">The specified image.</param>
 			/// <param name="_frameIndex">The specified frame index.</param>
+			/// <param name="_filePath">The file path of the image. This parameter is only for metadata, it will not affect the content of the image.</param>
 			GuiImageData(Ptr<INativeImage> _image, vint _frameIndex, const WString& _filePath = L"");
 			~GuiImageData();
 
@@ -3467,12 +3474,13 @@ Resource
 
 			/// <summary>Load a resource from an xml file. If the xml file refers other files, they will be loaded as well.</summary>
 			/// <returns>The loaded resource.</returns>
-			/// <param name="filepath">The file path of the xml file.</param>
+			/// <param name="filePath">The file path of the xml file.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			static Ptr<GuiResource>					LoadFromXml(const WString& filePath, collections::List<WString>& errors);
 
 			/// <summary>Save the resource to xml.</summary>
 			/// <returns>The xml.</returns>
+			/// <param name="serializePrecompiledResource">Set to true to serialize all resources (including image, compiled script, etc) in the xml.</param>
 			Ptr<parsing::xml::XmlDocument>			SaveToXml(bool serializePrecompiledResource);
 			
 			/// <summary>Load a precompiled resource from a stream.</summary>
@@ -3486,6 +3494,7 @@ Resource
 			void									SavePrecompiledBinary(stream::IStream& stream);
 
 			/// <summary>Precompile this resource to improve performance.</summary>
+			/// <param name="errors">All collected errors during precompiling a resource.</param>
 			void									Precompile(collections::List<WString>& errors);
 			
 			/// <summary>Get a contained document model using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>
@@ -4634,7 +4643,7 @@ Elements
 				/// Set all points to the polygon element.
 				/// </summary>
 				/// <param name="p">A pointer to a buffer that stores all points.</param>
-				/// <param name="index">The number of points.</param>
+				/// <param name="count">The number of points.</param>
 				void					SetPoints(const Point* p, vint count);
 
 
@@ -5017,7 +5026,7 @@ Colorized Plain Text (model)
 					/// Get the text position near to specified point.
 					/// </summary>
 					/// <returns>The text position.</returns>
-					/// <param name="row">The specified point, in pixel.</param>
+					/// <param name="point">The specified point, in pixel.</param>
 					TextPos							GetTextPosFromPoint(Point point);
 					/// <summary>
 					/// Get the point of a specified text position.
@@ -5485,7 +5494,7 @@ Rich Content Document (element)
 
 				/// <summary>Get hyperlink from point.</summary>
 				/// <returns>Corressponding hyperlink id. Returns -1 indicates that the point is not in a hyperlink.</returns>
-				/// <param name="index">The point to get the hyperlink id.</param>
+				/// <param name="point">The point to get the hyperlink id.</param>
 				Ptr<DocumentHyperlinkRun>					GetHyperlinkFromPoint(Point point);
 			};
 		}
@@ -6145,7 +6154,7 @@ Basic Construction
 				/// <returns>The associated hit test result.</returns>
 				INativeWindowListener::HitTestResult		GetAssociatedHitTestResult();
 				/// <summary>Set the associated hit test result.</summary>
-				/// <param name="cursor">The associated hit test result.</param>
+				/// <param name="value">The associated hit test result.</param>
 				void										SetAssociatedHitTestResult(INativeWindowListener::HitTestResult value);
 				
 				/// <summary>Get the related control. A related control is the deepest control that contains this composition.</summary>
@@ -6491,16 +6500,16 @@ Table Compositions
 				bool								SetRowsAndColumns(vint _rows, vint _columns);
 				/// <summary>Get the cell composition that covers the specified cell location.</summary>
 				/// <returns>The cell composition that covers the specified cell location.</returns>
-				/// <param name="_rows">The number of rows.</param>
-				/// <param name="_columns">The number of columns.</param>
+				/// <param name="_row">The number of rows.</param>
+				/// <param name="_column">The number of columns.</param>
 				GuiCellComposition*					GetSitedCell(vint _row, vint _column);
 
 				/// <summary>Get the sizing option of the specified row.</summary>
 				/// <returns>The sizing option of the specified row.</returns>
-				/// <param name="_rows">The specified row number.</param>
+				/// <param name="_row">The specified row number.</param>
 				GuiCellOption						GetRowOption(vint _row);
 				/// <summary>Set the sizing option of the specified row.</summary>
-				/// <param name="_rows">The specified row number.</param>
+				/// <param name="_row">The specified row number.</param>
 				/// <param name="option">The sizing option of the specified row.</param>
 				void								SetRowOption(vint _row, GuiCellOption option);
 				/// <summary>Get the sizing option of the specified column.</summary>
@@ -6516,7 +6525,7 @@ Table Compositions
 				/// <returns>The cell padding.</returns>
 				vint								GetCellPadding();
 				/// <summary>Set the cell padding. A cell padding is the distance between a table client area and a cell, or between two cells.</summary>
-				/// <param name="_column">The cell padding.</param>
+				/// <param name="value">The cell padding.</param>
 				void								SetCellPadding(vint value);
 				/// <summary>Get the cell area in the space of the table's parent composition's client area.</summary>
 				/// <returns>The cell area.</returns>
@@ -7531,10 +7540,11 @@ Basic Construction
 				/// <returns>The Alt-combined shortcut key associated with this control.</returns>
 				virtual const WString&					GetAlt();
 				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="value">The Alt-combined shortcut key to associate. Only zero, sigle or multiple upper case letters are legal.</param>
 				virtual bool							SetAlt(const WString& value);
 				/// <summary>Make the control as the parent of multiple Alt-combined shortcut key activatable controls.</summary>
-				/// <param name="value">The alt action host object.</param>
+				/// <param name="host">The alt action host object.</param>
 				void									SetActivatingAltHost(compositions::IGuiAltActionHost* host);
 				/// <summary>Get the text to display on the control.</summary>
 				/// <returns>The text to display on the control.</returns>
@@ -7571,6 +7581,7 @@ Basic Construction
 				/// <param name="value">The tooltip width of the control.</param>
 				void									SetTooltipWidth(vint value);
 				/// <summary>Display the tooltip.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="location">The relative location to specify the left-top position of the tooltip.</param>
 				bool									DisplayTooltip(Point location);
 				/// <summary>Close the tooltip that owned by this control.</summary>
@@ -7578,6 +7589,7 @@ Basic Construction
 
 				/// <summary>Query a service using an identifier. If you want to get a service of type IXXX, use IXXX::Identifier as the identifier.</summary>
 				/// <returns>The requested service. If the control doesn't support this service, it will be null.</returns>
+				/// <param name="identifier">The identifier.</param>
 				virtual IDescriptable*					QueryService(const WString& identifier);
 
 				template<typename T>
@@ -7787,10 +7799,13 @@ Buttons
 					~GroupController();
 
 					/// <summary>Called when the group controller is attached to a <see cref="GuiSelectableButton"/>. use [M:vl.presentation.controls.GuiSelectableButton.SetGroupController] to attach or detach a group controller to or from a selectable button.</summary>
+					/// <param name="button">The button to attach.</param>
 					virtual void						Attach(GuiSelectableButton* button);
 					/// <summary>Called when the group controller is deteched to a <see cref="GuiSelectableButton"/>. use [M:vl.presentation.controls.GuiSelectableButton.SetGroupController] to attach or detach a group controller to or from a selectable button.</summary>
+					/// <param name="button">The button to detach.</param>
 					virtual void						Detach(GuiSelectableButton* button);
 					/// <summary>Called when the selection state of any <see cref="GuiSelectableButton"/> changed.</summary>
+					/// <param name="button">The button that changed the selection state.</param>
 					virtual void						OnSelectedChanged(GuiSelectableButton* button)=0;
 				};
 
@@ -8940,10 +8955,14 @@ Window
 				/// <summary>
 				/// Show a model window, get a callback when the window is closed.
 				/// </summary>
+				/// <param name="owner">The window to show.</param>
+				/// <param name="callback">The callback to call after the window is closed.</param>
 				void									ShowModal(GuiWindow* owner, const Func<void()>& callback);
 				/// <summary>
 				/// Show a model window, get a callback when the window is closed, and then delete itself.
 				/// </summary>
+				/// <param name="owner">The window to show.</param>
+				/// <param name="callback">The callback to call after the window is closed.</param>
 				void									ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback);
 			};
 			
@@ -9302,6 +9321,7 @@ Tab Control
 				/// <returns>The Alt-combined shortcut key associated with this control.</returns>
 				const WString&									GetAlt();
 				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="value">The Alt-combined shortcut key to associate. Only zero, sigle or multiple upper case letters are legal.</param>
 				bool											SetAlt(const WString& value);
 				/// <summary>Get the text rendered as the name for this page.</summary>
@@ -9309,7 +9329,7 @@ Tab Control
 				const WString&									GetText();
 				/// <summary>Set the text rendered as the name for this page.</summary>
 				/// <param name="value">The text rendered as the name for this page.</param>
-				void											SetText(const WString& param);
+				void											SetText(const WString& value);
 				/// <summary>Test is this page selected.</summary>
 				/// <returns>Returns true if this page is selected.</returns>
 				bool											GetSelected();
@@ -9405,11 +9425,11 @@ Tab Control
 				/// <summary>Remove the tag page at the specified index.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="page">The tab page to remove.</param>
-				bool											RemovePage(GuiTabPage* value);
+				bool											RemovePage(GuiTabPage* page);
 				/// <summary>Move a tag page at the specified index to a new position.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="page">The tab page to move.</param>
-				/// <param name="index">The new position.</param>
+				/// <param name="newIndex">The new position.</param>
 				bool											MovePage(GuiTabPage* page, vint newIndex);
 				/// <summary>Get all pages.</summary>
 				/// <returns>All pages.</returns>
@@ -9591,7 +9611,7 @@ Scroll View
 					bool									extendToFullWidth;
 				public:
 					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="_styleProvider">The style provider.</param>
+					/// <param name="styleProvider">The style provider.</param>
 					StyleController(GuiScrollView::IStyleProvider* styleProvider);
 					~StyleController();
 
@@ -9713,7 +9733,7 @@ List Control
 					virtual Rect									GetStyleBounds(IItemStyleController* style)=0;
 					/// <summary>Set the bounds of an item control.</summary>
 					/// <param name="style">The item control.</param>
-					/// <param name="margin">The new bounds.</param>
+					/// <param name="bounds">The new bounds.</param>
 					virtual void									SetStyleBounds(IItemStyleController* style, Rect bounds)=0;
 					/// <summary>Get the <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</summary>
 					/// <returns>The <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</returns>
@@ -9891,6 +9911,7 @@ List Control
 					/// <param name="style">The item style controller.</param>
 					virtual vint								GetVisibleIndex(IItemStyleController* style)=0;
 					/// <summary>Called when the visible area of item container is changed.</summary>
+					/// <param name="bounds">The new visible area.</param>
 					virtual void								OnViewChanged(Rect bounds)=0;
 					/// <summary>Find the item by an base item and a key direction.</summary>
 					/// <returns>The item index that is found. Returns -1 if this operation failed.</returns>
@@ -10036,7 +10057,7 @@ List Control
 				void											DetachItemEvents(IItemStyleController* style);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="_styleProvider">The style provider.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
 				/// <param name="acceptFocus">Set to true if the list control is allowed to have a keyboard focus.</param>
 				GuiListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider, bool acceptFocus=false);
@@ -10142,7 +10163,7 @@ Selectable List Control
 				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="_styleProvider">The style provider.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
 				GuiSelectableListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider);
 				~GuiSelectableListControl();
@@ -10182,7 +10203,7 @@ Selectable List Control
 				/// <param name="itemIndex">The index of the item.</param>
 				/// <param name="ctrl">Set to true if the control key is pressing.</param>
 				/// <param name="shift">Set to true if the shift key is pressing.</param>
-				/// <param name="leftMouse">Set to true if clicked by left mouse button, otherwise right mouse button.</param>
+				/// <param name="leftButton">Set to true if clicked by left mouse button, otherwise right mouse button.</param>
 				bool											SelectItemsByClick(vint itemIndex, bool ctrl, bool shift, bool leftButton);
 				/// <summary>Set the selection status using keys.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>

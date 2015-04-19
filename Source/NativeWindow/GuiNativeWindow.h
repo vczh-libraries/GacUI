@@ -648,7 +648,7 @@ Native Window
 		/// </summary>
 		struct NativeWindowKeyInfo
 		{
-			/// <summary>Key code of the key that sends this message.</summary>
+			/// <summary>Key code of the key that sends this message, using VKEY_* macros.</summary>
 			vint						code;
 			/// <summary>True if the control button is pressed.</summary>
 			bool						ctrl;
@@ -1037,7 +1037,7 @@ Native Window Services
 			/// Get the screen object where the main part of the specified window is inside.
 			/// </summary>
 			/// <returns>The screen object.</returns>
-			/// <param name="index">The specified window.</param>
+			/// <param name="window">The specified window.</param>
 			virtual INativeScreen*			GetScreen(INativeWindow* window)=0;
 		};
 		
@@ -1113,18 +1113,20 @@ Native Window Services
 			/// Test is the specified key pressing.
 			/// </summary>
 			/// <returns>Returns true if the specified key is pressing.</returns>
+			/// <param name="code">The key code to test, using VKEY_* macros.</param>
 			virtual bool					IsKeyPressing(vint code)=0;
 			/// <summary>
 			/// Test is the specified key toggled.
 			/// </summary>
 			/// <returns>Returns true if the specified key is toggled.</returns>
+			/// <param name="code">The key code to test, using VKEY_* macros.</param>
 			virtual bool					IsKeyToggled(vint code)=0;
 
 			/// <summary>
 			/// Get the name of a key.
 			/// </summary>
 			/// <returns>The name of a key.</returns>
-			/// <param name="key">Key code</param>
+			/// <param name="code">The key code, using VKEY_* macros.</param>
 			virtual WString					GetKeyName(vint code)=0;
 			/// <summary>
 			/// Get the key from a name.
@@ -1444,6 +1446,7 @@ Native Window Controller
 			/// <summary>
 			/// Called when the mouse is moving. To receive or not receive this message, use <see cref="INativeInputService::StartHookMouse"/> or <see cref="INativeInputService::StopHookMouse"/>
 			/// </summary>
+			/// <param name="position">The mouse position in the screen space.</param>
 			virtual void					MouseMoving(Point position);
 			/// <summary>
 			/// Called when the global timer message raised. To receive or not receive this message, use <see cref="INativeInputService::StartTimer"/> or <see cref="INativeInputService::StopTimer"/>

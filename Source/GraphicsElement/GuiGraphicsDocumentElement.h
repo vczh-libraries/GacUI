@@ -229,7 +229,7 @@ Rich Content Document (element)
 
 				/// <summary>Get hyperlink from point.</summary>
 				/// <returns>Corressponding hyperlink id. Returns -1 indicates that the point is not in a hyperlink.</returns>
-				/// <param name="index">The point to get the hyperlink id.</param>
+				/// <param name="point">The point to get the hyperlink id.</param>
 				Ptr<DocumentHyperlinkRun>					GetHyperlinkFromPoint(Point point);
 			};
 		}

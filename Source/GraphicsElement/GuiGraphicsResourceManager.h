@@ -92,12 +92,14 @@ Resource Manager
 			/// <summary>
 			/// Set the current <see cref="GuiGraphicsResourceManager"></see>.
 			/// </summary>
-			/// <params name="resourceManager">The resource manager to set.</params>
+			/// <param name="resourceManager">The resource manager to set.</param>
 			extern void									SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager);
 			/// <summary>
 			/// Helper function to register a <see cref="IGuiGraphicsElementFactory"></see> with a <see cref="IGuiGraphicsRendererFactory"></see> and bind them together.
 			/// </summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="elementFactory">The element factory to register.</param>
+			/// <param name="rendererFactory">The renderer factory to register.</param>
 			extern bool									RegisterFactories(IGuiGraphicsElementFactory* elementFactory, IGuiGraphicsRendererFactory* rendererFactory);
 
 /***********************************************************************

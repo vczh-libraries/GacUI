@@ -143,6 +143,7 @@ Basic Construction
 				/// Apply a clipper to the render target.
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
 				/// </summary>
+				/// <param name="clipper">The clipper to push.</param>
 				virtual void							PushClipper(Rect clipper)=0;
 				/// <summary>
 				/// Remove the last pushed clipper from the clipper stack.

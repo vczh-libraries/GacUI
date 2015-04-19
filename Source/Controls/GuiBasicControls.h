@@ -218,10 +218,11 @@ Basic Construction
 				/// <returns>The Alt-combined shortcut key associated with this control.</returns>
 				virtual const WString&					GetAlt();
 				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="value">The Alt-combined shortcut key to associate. Only zero, sigle or multiple upper case letters are legal.</param>
 				virtual bool							SetAlt(const WString& value);
 				/// <summary>Make the control as the parent of multiple Alt-combined shortcut key activatable controls.</summary>
-				/// <param name="value">The alt action host object.</param>
+				/// <param name="host">The alt action host object.</param>
 				void									SetActivatingAltHost(compositions::IGuiAltActionHost* host);
 				/// <summary>Get the text to display on the control.</summary>
 				/// <returns>The text to display on the control.</returns>
@@ -258,6 +259,7 @@ Basic Construction
 				/// <param name="value">The tooltip width of the control.</param>
 				void									SetTooltipWidth(vint value);
 				/// <summary>Display the tooltip.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="location">The relative location to specify the left-top position of the tooltip.</param>
 				bool									DisplayTooltip(Point location);
 				/// <summary>Close the tooltip that owned by this control.</summary>
@@ -265,6 +267,7 @@ Basic Construction
 
 				/// <summary>Query a service using an identifier. If you want to get a service of type IXXX, use IXXX::Identifier as the identifier.</summary>
 				/// <returns>The requested service. If the control doesn't support this service, it will be null.</returns>
+				/// <param name="identifier">The identifier.</param>
 				virtual IDescriptable*					QueryService(const WString& identifier);
 
 				template<typename T>
@@ -474,10 +477,13 @@ Buttons
 					~GroupController();
 
 					/// <summary>Called when the group controller is attached to a <see cref="GuiSelectableButton"/>. use [M:vl.presentation.controls.GuiSelectableButton.SetGroupController] to attach or detach a group controller to or from a selectable button.</summary>
+					/// <param name="button">The button to attach.</param>
 					virtual void						Attach(GuiSelectableButton* button);
 					/// <summary>Called when the group controller is deteched to a <see cref="GuiSelectableButton"/>. use [M:vl.presentation.controls.GuiSelectableButton.SetGroupController] to attach or detach a group controller to or from a selectable button.</summary>
+					/// <param name="button">The button to detach.</param>
 					virtual void						Detach(GuiSelectableButton* button);
 					/// <summary>Called when the selection state of any <see cref="GuiSelectableButton"/> changed.</summary>
+					/// <param name="button">The button that changed the selection state.</param>
 					virtual void						OnSelectedChanged(GuiSelectableButton* button)=0;
 				};
 

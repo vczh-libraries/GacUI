@@ -66,6 +66,7 @@ Tab Control
 				/// <returns>The Alt-combined shortcut key associated with this control.</returns>
 				const WString&									GetAlt();
 				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="value">The Alt-combined shortcut key to associate. Only zero, sigle or multiple upper case letters are legal.</param>
 				bool											SetAlt(const WString& value);
 				/// <summary>Get the text rendered as the name for this page.</summary>
@@ -73,7 +74,7 @@ Tab Control
 				const WString&									GetText();
 				/// <summary>Set the text rendered as the name for this page.</summary>
 				/// <param name="value">The text rendered as the name for this page.</param>
-				void											SetText(const WString& param);
+				void											SetText(const WString& value);
 				/// <summary>Test is this page selected.</summary>
 				/// <returns>Returns true if this page is selected.</returns>
 				bool											GetSelected();
@@ -169,11 +170,11 @@ Tab Control
 				/// <summary>Remove the tag page at the specified index.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="page">The tab page to remove.</param>
-				bool											RemovePage(GuiTabPage* value);
+				bool											RemovePage(GuiTabPage* page);
 				/// <summary>Move a tag page at the specified index to a new position.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="page">The tab page to move.</param>
-				/// <param name="index">The new position.</param>
+				/// <param name="newIndex">The new position.</param>
 				bool											MovePage(GuiTabPage* page, vint newIndex);
 				/// <summary>Get all pages.</summary>
 				/// <returns>All pages.</returns>
@@ -355,7 +356,7 @@ Scroll View
 					bool									extendToFullWidth;
 				public:
 					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="_styleProvider">The style provider.</param>
+					/// <param name="styleProvider">The style provider.</param>
 					StyleController(GuiScrollView::IStyleProvider* styleProvider);
 					~StyleController();
 

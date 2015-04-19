@@ -410,10 +410,14 @@ Window
 				/// <summary>
 				/// Show a model window, get a callback when the window is closed.
 				/// </summary>
+				/// <param name="owner">The window to show.</param>
+				/// <param name="callback">The callback to call after the window is closed.</param>
 				void									ShowModal(GuiWindow* owner, const Func<void()>& callback);
 				/// <summary>
 				/// Show a model window, get a callback when the window is closed, and then delete itself.
 				/// </summary>
+				/// <param name="owner">The window to show.</param>
+				/// <param name="callback">The callback to call after the window is closed.</param>
 				void									ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback);
 			};
 			

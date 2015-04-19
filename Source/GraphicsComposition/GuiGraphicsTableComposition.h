@@ -160,16 +160,16 @@ Table Compositions
 				bool								SetRowsAndColumns(vint _rows, vint _columns);
 				/// <summary>Get the cell composition that covers the specified cell location.</summary>
 				/// <returns>The cell composition that covers the specified cell location.</returns>
-				/// <param name="_rows">The number of rows.</param>
-				/// <param name="_columns">The number of columns.</param>
+				/// <param name="_row">The number of rows.</param>
+				/// <param name="_column">The number of columns.</param>
 				GuiCellComposition*					GetSitedCell(vint _row, vint _column);
 
 				/// <summary>Get the sizing option of the specified row.</summary>
 				/// <returns>The sizing option of the specified row.</returns>
-				/// <param name="_rows">The specified row number.</param>
+				/// <param name="_row">The specified row number.</param>
 				GuiCellOption						GetRowOption(vint _row);
 				/// <summary>Set the sizing option of the specified row.</summary>
-				/// <param name="_rows">The specified row number.</param>
+				/// <param name="_row">The specified row number.</param>
 				/// <param name="option">The sizing option of the specified row.</param>
 				void								SetRowOption(vint _row, GuiCellOption option);
 				/// <summary>Get the sizing option of the specified column.</summary>
@@ -185,7 +185,7 @@ Table Compositions
 				/// <returns>The cell padding.</returns>
 				vint								GetCellPadding();
 				/// <summary>Set the cell padding. A cell padding is the distance between a table client area and a cell, or between two cells.</summary>
-				/// <param name="_column">The cell padding.</param>
+				/// <param name="value">The cell padding.</param>
 				void								SetCellPadding(vint value);
 				/// <summary>Get the cell area in the space of the table's parent composition's client area.</summary>
 				/// <returns>The cell area.</returns>

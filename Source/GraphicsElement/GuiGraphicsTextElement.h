@@ -337,7 +337,7 @@ Colorized Plain Text (model)
 					/// Get the text position near to specified point.
 					/// </summary>
 					/// <returns>The text position.</returns>
-					/// <param name="row">The specified point, in pixel.</param>
+					/// <param name="point">The specified point, in pixel.</param>
 					TextPos							GetTextPosFromPoint(Point point);
 					/// <summary>
 					/// Get the point of a specified text position.

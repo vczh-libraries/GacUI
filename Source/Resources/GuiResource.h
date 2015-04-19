@@ -109,6 +109,7 @@ Resource Image
 			/// <summary>Create an image data with a specified image and a frame index.</summary>
 			/// <param name="_image">The specified image.</param>
 			/// <param name="_frameIndex">The specified frame index.</param>
+			/// <param name="_filePath">The file path of the image. This parameter is only for metadata, it will not affect the content of the image.</param>
 			GuiImageData(Ptr<INativeImage> _image, vint _frameIndex, const WString& _filePath = L"");
 			~GuiImageData();
 
@@ -327,12 +328,13 @@ Resource
 
 			/// <summary>Load a resource from an xml file. If the xml file refers other files, they will be loaded as well.</summary>
 			/// <returns>The loaded resource.</returns>
-			/// <param name="filepath">The file path of the xml file.</param>
+			/// <param name="filePath">The file path of the xml file.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			static Ptr<GuiResource>					LoadFromXml(const WString& filePath, collections::List<WString>& errors);
 
 			/// <summary>Save the resource to xml.</summary>
 			/// <returns>The xml.</returns>
+			/// <param name="serializePrecompiledResource">Set to true to serialize all resources (including image, compiled script, etc) in the xml.</param>
 			Ptr<parsing::xml::XmlDocument>			SaveToXml(bool serializePrecompiledResource);
 			
 			/// <summary>Load a precompiled resource from a stream.</summary>
@@ -346,6 +348,7 @@ Resource
 			void									SavePrecompiledBinary(stream::IStream& stream);
 
 			/// <summary>Precompile this resource to improve performance.</summary>
+			/// <param name="errors">All collected errors during precompiling a resource.</param>
 			void									Precompile(collections::List<WString>& errors);
 			
 			/// <summary>Get a contained document model using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>

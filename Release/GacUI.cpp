@@ -2224,20 +2224,20 @@ GuiTab
 				}
 			}
 
-			bool GuiTab::RemovePage(GuiTabPage* value)
+			bool GuiTab::RemovePage(GuiTabPage* page)
 			{
-				if(value->GetOwnerTab()==this && value->DeassociateTab(this))
+				if(page->GetOwnerTab()==this && page->DeassociateTab(this))
 				{
-					vint index=tabPages.IndexOf(value);
+					vint index=tabPages.IndexOf(page);
 					styleController->RemoveTab(index);
-					GetContainerComposition()->RemoveChild(value->GetContainerComposition());
+					GetContainerComposition()->RemoveChild(page->GetContainerComposition());
 					tabPages.RemoveAt(index);
 					if(tabPages.Count()==0)
 					{
 						SetSelectedPage(0);
 						return 0;
 					}
-					else if(selectedPage==value)
+					else if(selectedPage==page)
 					{
 						SetSelectedPage(tabPages[0]);
 					}

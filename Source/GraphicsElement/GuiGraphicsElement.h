@@ -596,7 +596,7 @@ Elements
 				/// Set all points to the polygon element.
 				/// </summary>
 				/// <param name="p">A pointer to a buffer that stores all points.</param>
-				/// <param name="index">The number of points.</param>
+				/// <param name="count">The number of points.</param>
 				void					SetPoints(const Point* p, vint count);
 
 
