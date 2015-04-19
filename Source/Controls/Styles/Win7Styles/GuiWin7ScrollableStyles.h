@@ -33,7 +33,8 @@ Scroll
 				void										AfterApplyColors(const Win7ButtonColors& colors)override;
 			public:
 				/// <summary>Create the style.</summary>
-				/// <param name="verticalGradient">Set to true to have a vertical gradient background.</param>
+				/// <param name="direction">The direction of the arrow.</param>
+				/// <param name="increaseButton">Set to true to create the arrow for the increase button, otherwise for the decrease button.</param>
 				Win7ScrollArrowButtonStyle(common_styles::CommonScrollStyle::Direction direction, bool increaseButton);
 				~Win7ScrollArrowButtonStyle();
 			};

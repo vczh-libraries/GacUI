@@ -139,15 +139,20 @@ RepeatingParsingExecutor
 
 				protected:
 					/// <summary>Get a syntax tree node's parent when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeNode::GetParent when implementing this interface.</summary>
+					/// <returns>Returns the parent node.</returns>
 					/// <param name="node">The node.</param>
 					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
 					parsing::ParsingTreeNode*								GetParent(parsing::ParsingTreeNode* node, const RepeatingPartialParsingOutput* output);
 					/// <summary>Get a syntax tree node's member when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeObject::GetMember when implementing this interface.</summary>
+					/// <returns>Returns the member node.</returns>
 					/// <param name="node">The node.</param>
+					/// <param name="name">The name of the member.</param>
 					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
 					Ptr<parsing::ParsingTreeNode>							GetMember(parsing::ParsingTreeObject* node, const WString& name, const RepeatingPartialParsingOutput* output);
 					/// <summary>Get a syntax tree node's item when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeArray::GetItem when implementing this interface.</summary>
+					/// <returns>Returns the item node.</returns>
 					/// <param name="node">The node.</param>
+					/// <param name="index">The index of the item.</param>
 					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
 					Ptr<parsing::ParsingTreeNode>							GetItem(parsing::ParsingTreeArray* node, vint index, const RepeatingPartialParsingOutput* output);
 
@@ -254,6 +259,7 @@ RepeatingParsingExecutor
 				~RepeatingParsingExecutor();
 				
 				/// <summary>Get the internal parser that parse the text.</summary>
+				/// <returns>The internal parser.</returns>
 				Ptr<parsing::tabling::ParsingGeneralParser>					GetParser();
 				/// <summary>Detach callback.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>

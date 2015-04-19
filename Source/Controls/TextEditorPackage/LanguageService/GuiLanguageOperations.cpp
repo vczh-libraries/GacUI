@@ -351,13 +351,19 @@ RepeatingParsingExecutor
 				,autoPushingCallback(0)
 			{
 				PrepareMetaData();
-				analyzer->Attach(this);
+				if (analyzer)
+				{
+					analyzer->Attach(this);
+				}
 			}
 
 			RepeatingParsingExecutor::~RepeatingParsingExecutor()
 			{
 				EnsureTaskFinished();
-				analyzer->Detach(this);
+				if (analyzer)
+				{
+					analyzer->Detach(this);
+				}
 			}
 
 			Ptr<parsing::tabling::ParsingGeneralParser> RepeatingParsingExecutor::GetParser()

@@ -185,7 +185,7 @@ ListView ItemStyleProvider
 						/// <summary>Get the sub item text of an item. If the sub item index out of range, it returns an empty string.</summary>
 						/// <returns>The sub item text.</returns>
 						/// <param name="itemIndex">The index of the item.</param>
-						/// <param name="iindextemIndex">The sub item index of the item.</param>
+						/// <param name="index">The sub item index of the item.</param>
 						virtual WString							GetSubItem(vint itemIndex, vint index)=0;
 
 						/// <summary>Get the number of data columns.</summary>
@@ -201,7 +201,7 @@ ListView ItemStyleProvider
 						virtual vint							GetColumnCount()=0;
 						/// <summary>Get the text of a column.</summary>
 						/// <returns>The text.</returns>
-						/// <param name="itemIndex">The index of the column.</param>
+						/// <param name="index">The index of the column.</param>
 						virtual WString							GetColumnText(vint index)=0;
 					};
 
@@ -236,6 +236,7 @@ ListView ItemStyleProvider
 						virtual GuiListControl::IItemArranger*					CreatePreferredArranger()=0;
 						/// <summary>Create a <see cref="IListViewItemContent"/>.</summary>
 						/// <returns>The created list view item content.</returns>
+						/// <param name="font">The expected font of the created item content.</param>
 						virtual IListViewItemContent*							CreateItemContent(const FontProperties& font)=0;
 						/// <summary>Called when the owner item style provider in installed to a <see cref="GuiListControl"/>.</summary>
 						/// <param name="value">The list control.</param>
@@ -296,6 +297,7 @@ ListView ItemStyleProvider
 					const ItemStyleList&						GetCreatedItemStyles();
 					/// <summary>Test is an item style controller placed in the list view control. If not, maybe the style controller is cached for reusing.</summary>
 					/// <returns>Returns true if an item style controller is placed in the list view control.</returns>
+					/// <param name="itemStyle">The item style controller to test.</param>
 					bool										IsItemStyleAttachedToListView(GuiListControl::IItemStyleController* itemStyle);
 
 					/// <summary>Get item content from item style controller.</summary>
@@ -346,7 +348,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewBigIconContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewBigIconContentProvider();
 
@@ -382,7 +385,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewSmallIconContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewSmallIconContentProvider();
 					
@@ -418,7 +422,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewListContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewListContentProvider();
 					
@@ -460,7 +465,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewTileContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewTileContentProvider();
 					
@@ -503,7 +509,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewInformationContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewInformationContentProvider();
 					
@@ -656,7 +663,8 @@ ListView ItemContentProvider(Detailed)
 					void												OnColumnChanged()override;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewDetailContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewDetailContentProvider();
 					
@@ -888,7 +896,7 @@ ListView
 				
 				/// <summary>Set the item content provider.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="itemStyleProvider">The new item content provider.</param>
+				/// <param name="contentProvider">The new item content provider.</param>
 				virtual bool											ChangeItemStyle(Ptr<list::ListViewItemStyleProvider::IListViewItemContentProvider> contentProvider);
 			};
 			

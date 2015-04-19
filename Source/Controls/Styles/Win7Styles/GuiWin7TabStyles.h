@@ -75,6 +75,7 @@ Tab
 				virtual Color												GetBackgroundColor();
 			public:
 				/// <summary>Create the style.</summary>
+				/// <param name="initialize">Set to true to initialize the style. Otherwise the <see cref="Initialize"/> function should be called after creating the style.</param>
 				Win7TabStyle(bool initialize=true);
 				~Win7TabStyle();
 

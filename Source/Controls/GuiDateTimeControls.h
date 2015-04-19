@@ -122,7 +122,7 @@ DatePicker
 				void													NotifyDateChanged();
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="_styleProvider">The style provider.</param>
 				GuiDatePicker(IStyleProvider* _styleProvider);
 				~GuiDatePicker();
 
@@ -178,7 +178,7 @@ DateComboBox
 				void													datePicker_DateSelected(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="_styleController">The style provider.</param>
 				/// <param name="_datePicker">The date picker control to show in the popup.</param>
 				GuiDateComboBox(IStyleController* _styleController, GuiDatePicker* _datePicker);
 				~GuiDateComboBox();

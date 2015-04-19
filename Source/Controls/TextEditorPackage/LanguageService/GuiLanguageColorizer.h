@@ -89,7 +89,7 @@ GuiGrammarColorizer
 				void														SetColor(const WString& name, const ColorEntry& entry);
 				/// <summary>Set a color for a token theme name (@Color or @ContextColor("theme-name") in the grammar).</summary>
 				/// <param name="name">The token theme name.</param>
-				/// <param name="entry">The color.</param>
+				/// <param name="color">The color.</param>
 				void														SetColor(const WString& name, const Color& color);
 				/// <summary>Submit all color settings.</summary>
 				void														EndSetColors();

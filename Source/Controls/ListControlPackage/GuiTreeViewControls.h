@@ -51,10 +51,10 @@ GuiVirtualTreeListControl NodeProvider
 					/// <param name="newCount">The new number of modified sub items.</param>
 					virtual void					OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)=0;
 					/// <summary>Called when a node is expanded.</summary>
-					/// <param name="provider">The node.</param>
+					/// <param name="node">The node.</param>
 					virtual void					OnItemExpanded(INodeProvider* node)=0;
 					/// <summary>Called when a node is collapsed.</summary>
-					/// <param name="provider">The node.</param>
+					/// <param name="node">The node.</param>
 					virtual void					OnItemCollapsed(INodeProvider* node)=0;
 				};
 
@@ -97,6 +97,7 @@ GuiVirtualTreeListControl NodeProvider
 				{
 				public:
 					/// <summary>Get the instance of the root node.</summary>
+					/// <returns>Returns the instance of the root node.</returns>
 					virtual INodeProvider*			GetRootNode()=0;
 					/// <summary>Test does the provider provided an optimized algorithm to get an instance of a node by the index of all visible nodes. If this function returns true, [M:vl.presentation.controls.tree.INodeRootProvider.GetNodeByVisibleIndex] can be used.</summary>
 					/// <returns>Returns true if such an algorithm is provided.</returns>
@@ -415,6 +416,7 @@ GuiVirtualTreeListControl Predefined NodeProvider
 					INodeProvider*					GetRootNode()override;
 					/// <summary>Get the <see cref="MemoryNodeProvider"/> object from an <see cref="INodeProvider"/> object.</summary>
 					/// <returns>The corresponding <see cref="MemoryNodeProvider"/> object.</returns>
+					/// <param name="node">The node to get the memory node.</param>
 					MemoryNodeProvider*				GetMemoryNode(INodeProvider* node);
 				};
 			}
@@ -555,6 +557,7 @@ TreeView
 
 					/// <summary>Get the <see cref="TreeViewItem"/> object from a node.</summary>
 					/// <returns>The <see cref="TreeViewItem"/> object.</returns>
+					/// <param name="node">The node to get the tree view item.</param>
 					Ptr<TreeViewItem>				GetTreeViewData(INodeProvider* node);
 					/// <summary>Set the <see cref="TreeViewItem"/> object to a node.</summary>
 					/// <param name="node">The node.</param>
@@ -672,6 +675,8 @@ TreeView
 					void									OnItemCollapsed(INodeProvider* node)override;
 				public:
 					/// <summary>Create a node item style provider.</summary>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					TreeViewNodeItemStyleProvider(Size _minIconSize = Size(16, 16), bool _fitImage = true);
 					~TreeViewNodeItemStyleProvider();
 

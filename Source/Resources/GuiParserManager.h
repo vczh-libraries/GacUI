@@ -60,6 +60,7 @@ Parser Manager
 			/// <param name="name">The name.</param>
 			virtual Ptr<Table>						GetParsingTable(const WString& name)=0;
 			/// <summary>Set a parsing table loader by name.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="name">The name.</param>
 			/// <param name="loader">The parsing table loader.</param>
 			virtual bool							SetParsingTable(const WString& name, Func<Ptr<Table>()> loader)=0;
@@ -68,6 +69,7 @@ Parser Manager
 			/// <param name="name">The name.</param>
 			virtual Ptr<IGuiGeneralParser>			GetParser(const WString& name)=0;
 			/// <summary>Set a parser by name.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="name">The name.</param>
 			/// <param name="parser">The parser.</param>
 			virtual bool							SetParser(const WString& name, Ptr<IGuiGeneralParser> parser)=0;
@@ -80,6 +82,7 @@ Parser Manager
 		};
 
 		/// <summary>Get the global <see cref="IGuiParserManager"/> object.</summary>
+		/// <returns>The parser manager.</returns>
 		extern IGuiParserManager*					GetParserManager();
 
 /***********************************************************************

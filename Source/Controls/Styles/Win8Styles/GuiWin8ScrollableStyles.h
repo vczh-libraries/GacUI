@@ -44,6 +44,8 @@ Scroll
 				void										AfterApplyColors(const Win8ButtonColors& colors)override;
 			public:
 				/// <summary>Create the style.</summary>
+				/// <param name="direction">The direction of the arrow.</param>
+				/// <param name="increaseButton">Set to true to create the arrow for the increase button, otherwise for the decrease button.</param>
 				Win8ScrollArrowButtonStyle(common_styles::CommonScrollStyle::Direction direction, bool increaseButton);
 				~Win8ScrollArrowButtonStyle();
 			};

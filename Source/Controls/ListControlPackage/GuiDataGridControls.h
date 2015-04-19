@@ -342,18 +342,18 @@ StringGrid Control
 					bool												MoveColumn(vint source, vint target);
 					/// <summary>Remove a column.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <returns>The new column index.</returns>
+					/// <param name="column">The new column index.</param>
 					bool												RemoveColumn(vint column);
 					/// <summary>Clear all columns.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					bool												ClearColumns();
 					/// <summary>Get the text for a column.</summary>
 					/// <returns>The text.</returns>
-					/// <returns>The new column index.</returns>
+					/// <param name="column">The new column index.</param>
 					WString												GetColumnText(vint column);
 					/// <summary>Set the text for a column.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <returns>The column index.</returns>
+					/// <param name="column">The column index.</param>
 					/// <param name="value">The text.</param>
 					bool												SetColumnText(vint column, const WString& value);
 				};

@@ -463,6 +463,7 @@ GuiBindableDataGrid
 				/// <summary>Create a bindable Data grid control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemSource">The item source.</param>
+				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
 				GuiBindableDataGrid(IStyleProvider* _styleProvider, Ptr<description::IValueEnumerable> _itemSource, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
 				

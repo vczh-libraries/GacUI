@@ -11160,7 +11160,7 @@ ListView ItemStyleProvider
 						/// <summary>Get the sub item text of an item. If the sub item index out of range, it returns an empty string.</summary>
 						/// <returns>The sub item text.</returns>
 						/// <param name="itemIndex">The index of the item.</param>
-						/// <param name="iindextemIndex">The sub item index of the item.</param>
+						/// <param name="index">The sub item index of the item.</param>
 						virtual WString							GetSubItem(vint itemIndex, vint index)=0;
 
 						/// <summary>Get the number of data columns.</summary>
@@ -11176,7 +11176,7 @@ ListView ItemStyleProvider
 						virtual vint							GetColumnCount()=0;
 						/// <summary>Get the text of a column.</summary>
 						/// <returns>The text.</returns>
-						/// <param name="itemIndex">The index of the column.</param>
+						/// <param name="index">The index of the column.</param>
 						virtual WString							GetColumnText(vint index)=0;
 					};
 
@@ -11211,6 +11211,7 @@ ListView ItemStyleProvider
 						virtual GuiListControl::IItemArranger*					CreatePreferredArranger()=0;
 						/// <summary>Create a <see cref="IListViewItemContent"/>.</summary>
 						/// <returns>The created list view item content.</returns>
+						/// <param name="font">The expected font of the created item content.</param>
 						virtual IListViewItemContent*							CreateItemContent(const FontProperties& font)=0;
 						/// <summary>Called when the owner item style provider in installed to a <see cref="GuiListControl"/>.</summary>
 						/// <param name="value">The list control.</param>
@@ -11271,6 +11272,7 @@ ListView ItemStyleProvider
 					const ItemStyleList&						GetCreatedItemStyles();
 					/// <summary>Test is an item style controller placed in the list view control. If not, maybe the style controller is cached for reusing.</summary>
 					/// <returns>Returns true if an item style controller is placed in the list view control.</returns>
+					/// <param name="itemStyle">The item style controller to test.</param>
 					bool										IsItemStyleAttachedToListView(GuiListControl::IItemStyleController* itemStyle);
 
 					/// <summary>Get item content from item style controller.</summary>
@@ -11321,7 +11323,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewBigIconContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewBigIconContentProvider();
 
@@ -11357,7 +11360,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewSmallIconContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewSmallIconContentProvider();
 					
@@ -11393,7 +11397,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewListContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewListContentProvider();
 					
@@ -11435,7 +11440,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewTileContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewTileContentProvider();
 					
@@ -11478,7 +11484,8 @@ ListView ItemContentProvider
 					bool												fitImage;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewInformationContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewInformationContentProvider();
 					
@@ -11631,7 +11638,8 @@ ListView ItemContentProvider(Detailed)
 					void												OnColumnChanged()override;
 				public:
 					/// <summary>Create the content provider.</summary>
-					/// <param name="_iconSize">The icon size.</param>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					ListViewDetailContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewDetailContentProvider();
 					
@@ -11863,7 +11871,7 @@ ListView
 				
 				/// <summary>Set the item content provider.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="itemStyleProvider">The new item content provider.</param>
+				/// <param name="contentProvider">The new item content provider.</param>
 				virtual bool											ChangeItemStyle(Ptr<list::ListViewItemStyleProvider::IListViewItemContentProvider> contentProvider);
 			};
 			
@@ -11953,10 +11961,10 @@ GuiVirtualTreeListControl NodeProvider
 					/// <param name="newCount">The new number of modified sub items.</param>
 					virtual void					OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)=0;
 					/// <summary>Called when a node is expanded.</summary>
-					/// <param name="provider">The node.</param>
+					/// <param name="node">The node.</param>
 					virtual void					OnItemExpanded(INodeProvider* node)=0;
 					/// <summary>Called when a node is collapsed.</summary>
-					/// <param name="provider">The node.</param>
+					/// <param name="node">The node.</param>
 					virtual void					OnItemCollapsed(INodeProvider* node)=0;
 				};
 
@@ -11999,6 +12007,7 @@ GuiVirtualTreeListControl NodeProvider
 				{
 				public:
 					/// <summary>Get the instance of the root node.</summary>
+					/// <returns>Returns the instance of the root node.</returns>
 					virtual INodeProvider*			GetRootNode()=0;
 					/// <summary>Test does the provider provided an optimized algorithm to get an instance of a node by the index of all visible nodes. If this function returns true, [M:vl.presentation.controls.tree.INodeRootProvider.GetNodeByVisibleIndex] can be used.</summary>
 					/// <returns>Returns true if such an algorithm is provided.</returns>
@@ -12317,6 +12326,7 @@ GuiVirtualTreeListControl Predefined NodeProvider
 					INodeProvider*					GetRootNode()override;
 					/// <summary>Get the <see cref="MemoryNodeProvider"/> object from an <see cref="INodeProvider"/> object.</summary>
 					/// <returns>The corresponding <see cref="MemoryNodeProvider"/> object.</returns>
+					/// <param name="node">The node to get the memory node.</param>
 					MemoryNodeProvider*				GetMemoryNode(INodeProvider* node);
 				};
 			}
@@ -12457,6 +12467,7 @@ TreeView
 
 					/// <summary>Get the <see cref="TreeViewItem"/> object from a node.</summary>
 					/// <returns>The <see cref="TreeViewItem"/> object.</returns>
+					/// <param name="node">The node to get the tree view item.</param>
 					Ptr<TreeViewItem>				GetTreeViewData(INodeProvider* node);
 					/// <summary>Set the <see cref="TreeViewItem"/> object to a node.</summary>
 					/// <param name="node">The node.</param>
@@ -12574,6 +12585,8 @@ TreeView
 					void									OnItemCollapsed(INodeProvider* node)override;
 				public:
 					/// <summary>Create a node item style provider.</summary>
+					/// <param name="_minIconSize">The icon size.</param>
+					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
 					TreeViewNodeItemStyleProvider(Size _minIconSize = Size(16, 16), bool _fitImage = true);
 					~TreeViewNodeItemStyleProvider();
 
@@ -12855,7 +12868,7 @@ DatePicker
 				void													NotifyDateChanged();
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="_styleProvider">The style provider.</param>
 				GuiDatePicker(IStyleProvider* _styleProvider);
 				~GuiDatePicker();
 
@@ -12911,7 +12924,7 @@ DateComboBox
 				void													datePicker_DateSelected(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="_styleController">The style provider.</param>
 				/// <param name="_datePicker">The date picker control to show in the popup.</param>
 				GuiDateComboBox(IStyleController* _styleController, GuiDatePicker* _datePicker);
 				~GuiDateComboBox();
@@ -13327,7 +13340,7 @@ GuiTextBoxAutoCompleteBase
 				/// <summary>Notify the list to be invisible.</summary>
 				void												CloseList();
 				/// <summary>Set the content of the list.</summary>
-				/// <param name="list">The content of the list.</param>
+				/// <param name="items">The content of the list.</param>
 				void												SetListContent(const collections::List<AutoCompleteItem>& items);
 				/// <summary>Get the last start position when the list is opened.</summary>
 				/// <returns>The start position.</returns>
@@ -15831,18 +15844,18 @@ StringGrid Control
 					bool												MoveColumn(vint source, vint target);
 					/// <summary>Remove a column.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <returns>The new column index.</returns>
+					/// <param name="column">The new column index.</param>
 					bool												RemoveColumn(vint column);
 					/// <summary>Clear all columns.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					bool												ClearColumns();
 					/// <summary>Get the text for a column.</summary>
 					/// <returns>The text.</returns>
-					/// <returns>The new column index.</returns>
+					/// <param name="column">The new column index.</param>
 					WString												GetColumnText(vint column);
 					/// <summary>Set the text for a column.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <returns>The column index.</returns>
+					/// <param name="column">The column index.</param>
 					/// <param name="value">The text.</param>
 					bool												SetColumnText(vint column, const WString& value);
 				};
@@ -16340,6 +16353,7 @@ GuiBindableDataGrid
 				/// <summary>Create a bindable Data grid control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemSource">The item source.</param>
+				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
 				GuiBindableDataGrid(IStyleProvider* _styleProvider, Ptr<description::IValueEnumerable> _itemSource, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
 				
@@ -16574,34 +16588,41 @@ Toolstrip Builder Facade
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="image">The image for the created control.</param>
 				/// <param name="text">The text for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						Button(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
 				/// <summary>Create a button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="command">The command for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						Button(GuiToolstripCommand* command, GuiToolstripButton** result=0);
 				/// <summary>Create a dropdown button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="image">The image for the created control.</param>
 				/// <param name="text">The text for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						DropdownButton(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
 				/// <summary>Create a dropdown button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="command">The command for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						DropdownButton(GuiToolstripCommand* command, GuiToolstripButton** result=0);
 				/// <summary>Create a split button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="image">The image for the created control.</param>
 				/// <param name="text">The text for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						SplitButton(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
 				/// <summary>Create a split button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="command">The command for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						SplitButton(GuiToolstripCommand* command, GuiToolstripButton** result=0);
 				/// <summary>Create a splitter.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				GuiToolstripBuilder*						Splitter();
 				/// <summary>Install a control.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
+				/// <param name="control">The control to install.</param>
 				GuiToolstripBuilder*						Control(GuiControl* control);
 				/// <summary>Begin create sub menu.</summary>
 				/// <returns>The builder of the last created control's sub menu for continuing builder actions.</returns>
@@ -16772,6 +16793,7 @@ namespace vl
 				/// <returns>The created style.</returns>
 				virtual controls::GuiWindow::IStyleController*								CreateWindowStyle()=0;
 				/// <summary>Create a style for a user customizable control.</summary>
+				/// <returns>The created style.</returns>
 				virtual controls::GuiCustomControl::IStyleController*						CreateCustomControlStyle() = 0;
 				/// <summary>Create a style for tooltip.</summary>
 				/// <returns>The created style.</returns>
@@ -16903,7 +16925,7 @@ namespace vl
 			/// <returns>The current theme style factory object.</returns>
 			extern ITheme*						GetCurrentTheme();
 			/// <summary>Set the current theme style factory object.</summary>
-			/// <param name="factory">The current theme style factory object.</param>
+			/// <param name="theam">The current theme style factory object.</param>
 			extern void							SetCurrentTheme(ITheme* theam);
 
 			namespace g
@@ -18472,7 +18494,7 @@ CommonTrackStyle
 				/// <param name="direction">The direction of the tracker.</param>
 				virtual void										InstallBackground(compositions::GuiGraphicsComposition* boundsComposition, Direction direction)=0;
 				/// <summary>Install necessary compositions and elements to the tracker groove.</summary>
-				/// <param name="boundsComposition">The tracker groove composition.</param>
+				/// <param name="trackComposition">The tracker groove composition.</param>
 				/// <param name="direction">The direction of the tracker.</param>
 				virtual void										InstallTrack(compositions::GuiGraphicsComposition* trackComposition, Direction direction)=0;
 				/// <summary>Build the style. This function is supposed to be called in the contructor of the sub class.</summary>
@@ -19010,7 +19032,8 @@ Scroll
 				void										AfterApplyColors(const Win7ButtonColors& colors)override;
 			public:
 				/// <summary>Create the style.</summary>
-				/// <param name="verticalGradient">Set to true to have a vertical gradient background.</param>
+				/// <param name="direction">The direction of the arrow.</param>
+				/// <param name="increaseButton">Set to true to create the arrow for the increase button, otherwise for the decrease button.</param>
 				Win7ScrollArrowButtonStyle(common_styles::CommonScrollStyle::Direction direction, bool increaseButton);
 				~Win7ScrollArrowButtonStyle();
 			};
@@ -19299,6 +19322,7 @@ Container
 				elements::GuiSolidLabelElement*				textElement;
 			public:
 				/// <summary>Create the style.</summary>
+				/// <param name="forShortcutKey">Set to true to create a style for displaying shortcut key.</param>
 				Win7LabelStyle(bool forShortcutKey);
 				~Win7LabelStyle();
 
@@ -19896,6 +19920,8 @@ Scroll
 				void										AfterApplyColors(const Win8ButtonColors& colors)override;
 			public:
 				/// <summary>Create the style.</summary>
+				/// <param name="direction">The direction of the arrow.</param>
+				/// <param name="increaseButton">Set to true to create the arrow for the increase button, otherwise for the decrease button.</param>
 				Win8ScrollArrowButtonStyle(common_styles::CommonScrollStyle::Direction direction, bool increaseButton);
 				~Win8ScrollArrowButtonStyle();
 			};
@@ -20183,6 +20209,7 @@ Container
 				elements::GuiSolidLabelElement*				textElement;
 			public:
 				/// <summary>Create the style.</summary>
+				/// <param name="forShortcutKey">Set to true to create a style for displaying shortcut key.</param>
 				Win8LabelStyle(bool forShortcutKey);
 				~Win8LabelStyle();
 
@@ -20483,6 +20510,7 @@ Tab
 				virtual Color												GetBackgroundColor();
 			public:
 				/// <summary>Create the style.</summary>
+				/// <param name="initialize">Set to true to initialize the style. Otherwise the <see cref="Initialize"/> function should be called after creating the style.</param>
 				Win7TabStyle(bool initialize=true);
 				~Win7TabStyle();
 
@@ -20651,15 +20679,20 @@ RepeatingParsingExecutor
 
 				protected:
 					/// <summary>Get a syntax tree node's parent when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeNode::GetParent when implementing this interface.</summary>
+					/// <returns>Returns the parent node.</returns>
 					/// <param name="node">The node.</param>
 					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
 					parsing::ParsingTreeNode*								GetParent(parsing::ParsingTreeNode* node, const RepeatingPartialParsingOutput* output);
 					/// <summary>Get a syntax tree node's member when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeObject::GetMember when implementing this interface.</summary>
+					/// <returns>Returns the member node.</returns>
 					/// <param name="node">The node.</param>
+					/// <param name="name">The name of the member.</param>
 					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
 					Ptr<parsing::ParsingTreeNode>							GetMember(parsing::ParsingTreeObject* node, const WString& name, const RepeatingPartialParsingOutput* output);
 					/// <summary>Get a syntax tree node's item when the whole tree is in a partial modified state. You should use this function instead of ParsingTreeArray::GetItem when implementing this interface.</summary>
+					/// <returns>Returns the item node.</returns>
 					/// <param name="node">The node.</param>
+					/// <param name="index">The index of the item.</param>
 					/// <param name="output">The partial parsing output, which describes how the whole tree is partial modified.</param>
 					Ptr<parsing::ParsingTreeNode>							GetItem(parsing::ParsingTreeArray* node, vint index, const RepeatingPartialParsingOutput* output);
 
@@ -20766,6 +20799,7 @@ RepeatingParsingExecutor
 				~RepeatingParsingExecutor();
 				
 				/// <summary>Get the internal parser that parse the text.</summary>
+				/// <returns>The internal parser.</returns>
 				Ptr<parsing::tabling::ParsingGeneralParser>					GetParser();
 				/// <summary>Detach callback.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
@@ -20978,7 +21012,7 @@ GuiGrammarColorizer
 				void														SetColor(const WString& name, const ColorEntry& entry);
 				/// <summary>Set a color for a token theme name (@Color or @ContextColor("theme-name") in the grammar).</summary>
 				/// <param name="name">The token theme name.</param>
-				/// <param name="entry">The color.</param>
+				/// <param name="color">The color.</param>
 				void														SetColor(const WString& name, const Color& color);
 				/// <summary>Submit all color settings.</summary>
 				void														EndSetColors();
@@ -21935,6 +21969,7 @@ Parser Manager
 			/// <param name="name">The name.</param>
 			virtual Ptr<Table>						GetParsingTable(const WString& name)=0;
 			/// <summary>Set a parsing table loader by name.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="name">The name.</param>
 			/// <param name="loader">The parsing table loader.</param>
 			virtual bool							SetParsingTable(const WString& name, Func<Ptr<Table>()> loader)=0;
@@ -21943,6 +21978,7 @@ Parser Manager
 			/// <param name="name">The name.</param>
 			virtual Ptr<IGuiGeneralParser>			GetParser(const WString& name)=0;
 			/// <summary>Set a parser by name.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="name">The name.</param>
 			/// <param name="parser">The parser.</param>
 			virtual bool							SetParser(const WString& name, Ptr<IGuiGeneralParser> parser)=0;
@@ -21955,6 +21991,7 @@ Parser Manager
 		};
 
 		/// <summary>Get the global <see cref="IGuiParserManager"/> object.</summary>
+		/// <returns>The parser manager.</returns>
 		extern IGuiParserManager*					GetParserManager();
 
 /***********************************************************************

@@ -140,7 +140,7 @@ CommonTrackStyle
 				/// <param name="direction">The direction of the tracker.</param>
 				virtual void										InstallBackground(compositions::GuiGraphicsComposition* boundsComposition, Direction direction)=0;
 				/// <summary>Install necessary compositions and elements to the tracker groove.</summary>
-				/// <param name="boundsComposition">The tracker groove composition.</param>
+				/// <param name="trackComposition">The tracker groove composition.</param>
 				/// <param name="direction">The direction of the tracker.</param>
 				virtual void										InstallTrack(compositions::GuiGraphicsComposition* trackComposition, Direction direction)=0;
 				/// <summary>Build the style. This function is supposed to be called in the contructor of the sub class.</summary>

@@ -110,7 +110,7 @@ GuiTextBoxAutoCompleteBase
 				/// <summary>Notify the list to be invisible.</summary>
 				void												CloseList();
 				/// <summary>Set the content of the list.</summary>
-				/// <param name="list">The content of the list.</param>
+				/// <param name="items">The content of the list.</param>
 				void												SetListContent(const collections::List<AutoCompleteItem>& items);
 				/// <summary>Get the last start position when the list is opened.</summary>
 				/// <returns>The start position.</returns>

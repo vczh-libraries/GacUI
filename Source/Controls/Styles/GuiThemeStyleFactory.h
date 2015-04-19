@@ -42,6 +42,7 @@ namespace vl
 				/// <returns>The created style.</returns>
 				virtual controls::GuiWindow::IStyleController*								CreateWindowStyle()=0;
 				/// <summary>Create a style for a user customizable control.</summary>
+				/// <returns>The created style.</returns>
 				virtual controls::GuiCustomControl::IStyleController*						CreateCustomControlStyle() = 0;
 				/// <summary>Create a style for tooltip.</summary>
 				/// <returns>The created style.</returns>
@@ -173,7 +174,7 @@ namespace vl
 			/// <returns>The current theme style factory object.</returns>
 			extern ITheme*						GetCurrentTheme();
 			/// <summary>Set the current theme style factory object.</summary>
-			/// <param name="factory">The current theme style factory object.</param>
+			/// <param name="theam">The current theme style factory object.</param>
 			extern void							SetCurrentTheme(ITheme* theam);
 
 			namespace g

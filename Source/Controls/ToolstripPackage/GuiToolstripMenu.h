@@ -88,34 +88,41 @@ Toolstrip Builder Facade
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="image">The image for the created control.</param>
 				/// <param name="text">The text for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						Button(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
 				/// <summary>Create a button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="command">The command for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						Button(GuiToolstripCommand* command, GuiToolstripButton** result=0);
 				/// <summary>Create a dropdown button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="image">The image for the created control.</param>
 				/// <param name="text">The text for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						DropdownButton(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
 				/// <summary>Create a dropdown button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="command">The command for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						DropdownButton(GuiToolstripCommand* command, GuiToolstripButton** result=0);
 				/// <summary>Create a split button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="image">The image for the created control.</param>
 				/// <param name="text">The text for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						SplitButton(Ptr<GuiImageData> image, const WString& text, GuiToolstripButton** result=0);
 				/// <summary>Create a split button.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				/// <param name="command">The command for the created control.</param>
+				/// <param name="result">The created control.</param>
 				GuiToolstripBuilder*						SplitButton(GuiToolstripCommand* command, GuiToolstripButton** result=0);
 				/// <summary>Create a splitter.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
 				GuiToolstripBuilder*						Splitter();
 				/// <summary>Install a control.</summary>
 				/// <returns>The current builder for continuing builder actions.</returns>
+				/// <param name="control">The control to install.</param>
 				GuiToolstripBuilder*						Control(GuiControl* control);
 				/// <summary>Begin create sub menu.</summary>
 				/// <returns>The builder of the last created control's sub menu for continuing builder actions.</returns>

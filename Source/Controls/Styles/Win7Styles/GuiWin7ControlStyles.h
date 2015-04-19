@@ -86,6 +86,7 @@ Container
 				elements::GuiSolidLabelElement*				textElement;
 			public:
 				/// <summary>Create the style.</summary>
+				/// <param name="forShortcutKey">Set to true to create a style for displaying shortcut key.</param>
 				Win7LabelStyle(bool forShortcutKey);
 				~Win7LabelStyle();
 
