@@ -14,6 +14,7 @@ Using this library requires you to use C++ source files (you should put them tog
 
 * The [Import folder](https://github.com/vczh-libraries/GacUI/tree/master/Import) for Vlpp and Workflow.
 * The [Release folder](https://github.com/vczh-libraries/GacUI/tree/master/Release) for this library.
+* The [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) if you prefer to use XML to build your UI.
 
 All other files are for librari development only.
 
