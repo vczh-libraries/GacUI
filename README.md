@@ -7,6 +7,7 @@ Refer to http://gaclib.net for more information.
 * The [DEMOS](http://www.gaclib.net/Demos.html) section show you all demos using this GUI library.
 * The [DOCUMENT](http://www.gaclib.net/Document/reference_gacui.html) section show you all simple documentation organized by C++ classes and functions.
 
+### Notice
 The website is about to have a big update soon. So currently you should download the demo from [vczh/gac](https://github.com/vczh/gac). After the new website and the new release project is done, the old vczh/gac repo will be deleted.
 
 Using this library requires you to use C++ source files (you should put them together) in
@@ -16,6 +17,7 @@ Using this library requires you to use C++ source files (you should put them tog
 
 All other files are for librari development only.
 
+### Content
 This GUI library provides the following features:
 * Develop your GUI using pure C++, [Workflow](https://github.com/vczh-libraries/Workflow) script, XML or even JavaScript (under construction)
 * Cross-platform abilities. 
