@@ -17195,7 +17195,7 @@ Helper Functions
 				return threadDebugger.HasData() ? threadDebugger.Get() : nullptr;
 			}
 
-			void SetDebugferForCurrentThread(Ptr<WfDebugger> debugger)
+			void SetDebuggerForCurrentThread(Ptr<WfDebugger> debugger)
 			{
 				threadDebugger.Set(debugger);
 			}

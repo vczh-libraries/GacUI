@@ -2555,7 +2555,7 @@ Debugger
 			extern Ptr<WfDebugger>						GetDebuggerForCurrentThread();
 			/// <summary>Set the debugger for the current thread.</summary>
 			/// <param name="debugger">The debugger.</param>
-			extern void									SetDebugferForCurrentThread(Ptr<WfDebugger> debugger);
+			extern void									SetDebuggerForCurrentThread(Ptr<WfDebugger> debugger);
 
 /***********************************************************************
 Helper Functions
