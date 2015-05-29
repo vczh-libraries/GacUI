@@ -51,14 +51,17 @@ namespace DocIndex
             }
 
             Console.WriteLine("Writing nss.xml ...");
-            var namespaceFileNames = symbols.Keys
+            var namespaceNames = symbols.Keys
                 .ToDictionary(
                     ns => ns,
-                    ns => "ns("
-                        + ns
+                    ns => ns
                             .Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)
                             .Aggregate("", (a, b) => a == "" ? b : a + "." + b)
-                        + ").xml"
+                );
+            var namespaceFileNames = namespaceNames
+                .ToDictionary(
+                    ns => ns.Key,
+                    ns => "ns(" + ns.Value + ").xml"
                 );
             var outputNss = new XDocument(
                 new XElement("Namespaces",
@@ -77,15 +80,17 @@ namespace DocIndex
 
             Console.WriteLine("Writing ns(*).xml ...");
             var symbolFileNames = symbols
-                .SelectMany(x => x.Value.Select(t => t.Item1))
+                .SelectMany(x => x.Value.Select(t => Tuple.Create(x.Key, t.Item1)))
                 .ToDictionary(
-                    x => x,
-                    x => x
+                    x => x.Item2,
+                    x => x.Item2
+                        .Substring(x.Item1.Length + 2)
                         .Replace("*", "[ptr]")
                         .Replace("?", "[q]")
                         .Replace("<", "[lt]")
                         .Replace(">", "[gt]")
                         .Replace(":", "[colon]")
+                         + "@" + namespaceNames[x.Item1] + ".xml"
                 );
             foreach (var nsp in symbols)
             {
@@ -113,7 +118,38 @@ namespace DocIndex
 
         static string GetDisplayName(SymbolDecl decl)
         {
-            return "";
+            {
+                var templateDecl = decl as TemplateDecl;
+                if (templateDecl != null)
+                {
+                    decl = templateDecl.Element;
+                }
+            }
+
+            if (decl is ClassDecl)
+            {
+                return decl.Name + " class";
+            }
+            else if (decl is EnumDecl)
+            {
+                return decl.Name + " enum";
+            }
+            else if (decl is FuncDecl)
+            {
+                return decl.Name + " function";
+            }
+            else if (decl is VarDecl)
+            {
+                return decl.Name + " field";
+            }
+            else if (decl is TypedefDecl)
+            {
+                return decl.Name + " typedecl";
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
     }
 }
