@@ -79,18 +79,26 @@ namespace DocIndex
             outputNss.Save(output + "nss.xml");
 
             Console.WriteLine("Writing ns(*).xml ...");
-            var symbolFileNames = symbols
-                .SelectMany(x => x.Value.Select(t => Tuple.Create(x.Key, t.Item1)))
+            var symbolNames = symbols
+                .SelectMany(x => x.Value.Select(t => t.Item1))
                 .ToDictionary(
-                    x => x.Item2,
-                    x => x.Item2
-                        .Substring(x.Item1.Length + 2)
-                        .Replace("*", "[ptr]")
-                        .Replace("?", "[q]")
-                        .Replace("<", "[lt]")
-                        .Replace(">", "[gt]")
-                        .Replace(":", "[colon]")
-                         + "@" + namespaceNames[x.Item1] + ".xml"
+                    x => x,
+                    x => x
+                        .Replace("::", ".")
+                        .Replace("*", "^")
+                        .Replace("<", "{")
+                        .Replace(">", "}")
+                        .Substring(1)
+                );
+            var symbolTreeNames = symbolNames
+                .ToDictionary(
+                    ns => ns.Key,
+                    ns => "t(" + ns.Value + ").xml"
+                );
+            var symbolContentNames = symbolNames
+                .ToDictionary(
+                    ns => ns.Key,
+                    ns => "s(" + ns.Value + ").xml"
                 );
             foreach (var nsp in symbols)
             {
@@ -105,7 +113,8 @@ namespace DocIndex
                                 g
                                     .Select(t => new XElement("Symbol",
                                         new XAttribute("Key", t.Item1),
-                                        new XAttribute("FileName", symbolFileNames[t.Item1])
+                                        new XAttribute("TreeName", symbolTreeNames[t.Item1]),
+                                        new XAttribute("ContentName", symbolContentNames[t.Item1])
                                         )
                                     )
                                 )
