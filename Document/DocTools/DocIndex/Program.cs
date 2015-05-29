@@ -216,65 +216,94 @@ namespace DocIndex
 
         static void FixSymbolLinks(SymbolDecl decl, Dictionary<string, string> symbolFileMapping)
         {
+            FixSymbolDeclVisitor.Execute(decl, symbolFileMapping);
         }
 
         class FixTypeDeclVisitor : TypeDecl.IVisitor
         {
             public Dictionary<string, string> SymbolFileMapping { get; set; }
 
-            void Execute(TypeDecl decl)
+            private void Execute(TypeDecl decl)
             {
                 decl.Accept(this);
             }
 
+            private void Fix(TypeDecl decl)
+            {
+                if (decl.ReferencingOverloadKeys != null)
+                {
+                    for (int i = 0; i < decl.ReferencingOverloadKeys.Count; i++)
+                    {
+                        var key = decl.ReferencingOverloadKeys[i];
+                        decl.ReferencingOverloadKeys[i] = key + "@" + this.SymbolFileMapping[key];
+                    }
+                }
+            }
+
             void TypeDecl.IVisitor.Visit(RefTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
             }
 
             void TypeDecl.IVisitor.Visit(SubTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.Parent);
             }
 
             void TypeDecl.IVisitor.Visit(DecorateTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.Element);
             }
 
             void TypeDecl.IVisitor.Visit(ArrayTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.Element);
             }
 
             void TypeDecl.IVisitor.Visit(FunctionTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.ReturnType);
+                foreach (var paremter in decl.Parameters)
+                {
+                    Execute(paremter.Type);
+                }
             }
 
             void TypeDecl.IVisitor.Visit(ClassMemberTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.Element);
+                Execute(decl.Element);
             }
 
             void TypeDecl.IVisitor.Visit(GenericTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.Element);
+                foreach (var paremter in decl.TypeArguments)
+                {
+                    Execute(paremter);
+                }
             }
 
             void TypeDecl.IVisitor.Visit(DeclTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
             }
 
             void TypeDecl.IVisitor.Visit(VariadicArgumentTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.Element);
             }
 
             void TypeDecl.IVisitor.Visit(ConstantTypeDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
             }
         }
 
@@ -284,7 +313,7 @@ namespace DocIndex
 
             public Dictionary<string, string> SymbolFileMapping { get; set; }
 
-            static void Execute(SymbolDecl decl, Dictionary<string, string> symbolFileMapping)
+            public static void Execute(SymbolDecl decl, Dictionary<string, string> symbolFileMapping)
             {
                 var visitor = new FixSymbolDeclVisitor
                 {
@@ -297,79 +326,96 @@ namespace DocIndex
                 decl.Accept(visitor);
             }
 
-            void Execute(SymbolDecl decl)
-            {
-                decl.Accept(this);
-            }
-
-            void Execute(TypeDecl decl)
+            private void Execute(TypeDecl decl)
             {
                 decl.Accept(this.fixTypeDeclVisitor);
             }
 
+            private void Fix(SymbolDecl decl, bool skipChildren = false)
+            {
+                if (!skipChildren && decl.Children != null)
+                {
+                    foreach (var subDecl in decl.Children)
+                    {
+                        subDecl.Accept(this);
+                    }
+                }
+            }
+
             void SymbolDecl.IVisitor.Visit(GlobalDecl decl)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException();
             }
 
             void SymbolDecl.IVisitor.Visit(NamespaceDecl decl)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException();
             }
 
             void SymbolDecl.IVisitor.Visit(UsingNamespaceDecl decl)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException();
             }
 
             void SymbolDecl.IVisitor.Visit(TypeParameterDecl decl)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException();
             }
 
             void SymbolDecl.IVisitor.Visit(TemplateDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                foreach (var spec in decl.Specialization)
+                {
+                    Execute(spec);
+                }
             }
 
             void SymbolDecl.IVisitor.Visit(BaseTypeDecl decl)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException();
             }
 
             void SymbolDecl.IVisitor.Visit(ClassDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                foreach (var baseType in decl.BaseTypes)
+                {
+                    Execute(baseType.Type);
+                }
             }
 
             void SymbolDecl.IVisitor.Visit(VarDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.Type);
             }
 
             void SymbolDecl.IVisitor.Visit(FuncDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl, true);
+                Execute(decl.Type);
             }
 
             void SymbolDecl.IVisitor.Visit(GroupedFieldDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
             }
 
             void SymbolDecl.IVisitor.Visit(EnumItemDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
             }
 
             void SymbolDecl.IVisitor.Visit(EnumDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
             }
 
             void SymbolDecl.IVisitor.Visit(TypedefDecl decl)
             {
-                throw new NotImplementedException();
+                Fix(decl);
+                Execute(decl.Type);
             }
         }
 
