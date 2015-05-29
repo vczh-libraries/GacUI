@@ -114,6 +114,18 @@ namespace DocIndex
                     );
                 outputNs.Save(output + "ns(" + namespaceNames[nsp.Key] + ").xml");
             }
+
+            var symbolFileMapping = new Dictionary<string, string>();
+            Console.WriteLine("Writing t(*).xml ...");
+            foreach (var nsp in symbols)
+            {
+                foreach (var st in nsp.Value)
+                {
+                    var urlName = symbolNames[st.Item1];
+                    var outputSymbol = CreateSymbolTree(urlName, st.Item2, symbolFileMapping);
+                    outputSymbol.Save(output + "t(" + urlName + ").xml");
+                }
+            }
         }
 
         static bool ContainsDocument(SymbolDecl decl)
@@ -155,6 +167,205 @@ namespace DocIndex
             {
                 throw new ArgumentException();
             }
+        }
+
+        class SymbolTree
+        {
+            public string Tags { get; set; }
+            public string Key { get; set; }
+            public string DisplayName { get; set; }
+            public List<SymbolTree> Children { get; set; }
+
+            public XElement Serialize()
+            {
+                return new XElement("Symbol",
+                    new XAttribute("Tags", this.Tags),
+                    new XAttribute("Key", this.Key),
+                    new XAttribute("DisplayName", this.DisplayName),
+                    this.Children.Select(tree => tree.Serialize())
+                    );
+            }
+
+            public static SymbolTree Merge(SymbolTree[] forest)
+            {
+                var result = new SymbolTree();
+                result.Key = forest[0].Key;
+                result.DisplayName = forest[0].DisplayName;
+
+                result.Tags = forest
+                    .SelectMany(tree => tree.Tags.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
+                    .Distinct()
+                    .OrderBy(t => t)
+                    .Aggregate((a, b) => a + ";" + b);
+
+                result.Children = forest
+                    .Where(tree => tree.Children != null)
+                    .SelectMany(tree => tree.Children)
+                    .GroupBy(tree => tree.Key)
+                    .Select(g => Merge(g.ToArray()))
+                    .ToList();
+                return result;
+            }
+        }
+
+        class GenerateSymbolTreeVisitor : SymbolDecl.IVisitor
+        {
+            public SymbolTree Parent { get; set; }
+            public Dictionary<string, string> SymbolParentMapping { get; set; }
+            public SymbolTree Result { get; set; }
+
+            private static SymbolTree ExecuteInternal(SymbolDecl decl, SymbolTree parent, Dictionary<string, string> symbolParentMapping)
+            {
+                var visitor = new GenerateSymbolTreeVisitor
+                {
+                    Parent = parent,
+                    SymbolParentMapping = symbolParentMapping,
+                };
+                decl.Accept(visitor);
+                return visitor.Result;
+            }
+
+            public static SymbolTree Execute(SymbolDecl decl, Dictionary<string, string> symbolParentMapping)
+            {
+                var parent = new SymbolTree();
+                ExecuteInternal(decl, parent, symbolParentMapping);
+                if (parent.Children == null || parent.Children.Count != 1)
+                {
+                    throw new ArgumentException();
+                }
+                return parent.Children[0];
+            }
+            private void GenerateChildren(SymbolDecl decl, SymbolTree parent)
+            {
+                if (decl.Children != null)
+                {
+                    foreach (var subDecl in decl.Children)
+                    {
+                        ExecuteInternal(subDecl, parent, this.SymbolParentMapping);
+                    }
+                }
+            }
+
+            private void EntryDecl(SymbolDecl decl)
+            {
+                this.Result = new SymbolTree
+                {
+                    Tags = decl.Tags,
+                    Key = decl.OverloadKey,
+                    DisplayName = GetDisplayName(decl),
+                };
+                if (this.Parent != null)
+                {
+                    if (this.Parent.Children == null)
+                    {
+                        this.Parent.Children = new List<SymbolTree>();
+                    }
+                    this.Parent.Children.Add(this.Result);
+                }
+                GenerateChildren(decl, this.Result);
+            }
+
+            private void NoEntryDecl(SymbolDecl decl)
+            {
+                if (!this.SymbolParentMapping.ContainsKey(decl.OverloadKey))
+                {
+                    this.SymbolParentMapping.Add(decl.OverloadKey, this.Parent.Key);
+                }
+                GenerateChildren(decl, this.Parent);
+            }
+
+            void SymbolDecl.IVisitor.Visit(GlobalDecl decl)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(NamespaceDecl decl)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(UsingNamespaceDecl decl)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(TypeParameterDecl decl)
+            {
+                NoEntryDecl(decl);
+            }
+
+            void SymbolDecl.IVisitor.Visit(TemplateDecl decl)
+            {
+                NoEntryDecl(decl);
+            }
+
+            void SymbolDecl.IVisitor.Visit(BaseTypeDecl decl)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(ClassDecl decl)
+            {
+                EntryDecl(decl);
+            }
+
+            void SymbolDecl.IVisitor.Visit(VarDecl decl)
+            {
+                EntryDecl(decl);
+            }
+
+            void SymbolDecl.IVisitor.Visit(FuncDecl decl)
+            {
+                EntryDecl(decl);
+            }
+
+            void SymbolDecl.IVisitor.Visit(GroupedFieldDecl decl)
+            {
+                NoEntryDecl(decl);
+            }
+
+            void SymbolDecl.IVisitor.Visit(EnumItemDecl decl)
+            {
+                NoEntryDecl(decl);
+            }
+
+            void SymbolDecl.IVisitor.Visit(EnumDecl decl)
+            {
+                EntryDecl(decl);
+            }
+
+            void SymbolDecl.IVisitor.Visit(TypedefDecl decl)
+            {
+                EntryDecl(decl);
+            }
+        }
+
+        static XDocument CreateSymbolTree(string urlName, SymbolDecl[] decls, Dictionary<string, string> symbolFileMapping)
+        {
+            var symbolParentMapping = new Dictionary<string, string>();
+            var forest = decls
+                .Select(decl => GenerateSymbolTreeVisitor.Execute(decl, symbolParentMapping))
+                .ToArray();
+            var root = SymbolTree.Merge(forest);
+
+            foreach (var key in symbolParentMapping.Keys)
+            {
+                symbolFileMapping.Add(key, urlName);
+            }
+
+            return new XDocument(
+                new XElement("SymbolTree",
+                    new XElement("SymbolParentMapping",
+                        symbolParentMapping.Select(p =>
+                            new XElement("Map",
+                                new XAttribute("From", p.Key),
+                                new XAttribute("To", p.Value)
+                                )
+                            )
+                        )
+                    ),
+                    root.Serialize()
+                );
         }
     }
 }
