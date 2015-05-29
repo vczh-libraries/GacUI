@@ -20,7 +20,7 @@ namespace DocSymbol
             }
             if (this.Element.Element("ReferencingOverloadKeys") != null)
             {
-                decl.ReferencingOverloadKeys = this.Element.Element("ReferencingNameKey").Elements("Key").Select(x => x.Attribute("Value").Value).ToList();
+                decl.ReferencingOverloadKeys = this.Element.Element("ReferencingOverloadKeys").Elements("Key").Select(x => x.Attribute("Value").Value).ToList();
             }
         }
 

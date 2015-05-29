@@ -95,9 +95,16 @@ namespace DocResolver
                     x => x.Value
                         .GroupBy(y => y.Tags)
                         .Select(y => y.First())
+                        .Select(y =>
+                        {
+                            var templateDecl = y.Parent as TemplateDecl;
+                            return templateDecl == null ? y : templateDecl;
+                        })
+                        .Where(y => y.Parent is NamespaceDecl || y.Parent is GlobalDecl)
                         .ToArray()
                     )
-                .GroupBy(x => GetNamespaceSymbol(x.Value.First()))
+                .Where(x => x.Value.Length > 0)
+                .GroupBy(x => x.Value.First().Parent)
                 .ToDictionary(
                     x => x.Key,
                     x => x.ToDictionary(
@@ -141,22 +148,6 @@ namespace DocResolver
                     GroupSymbolsByOverloadKey(decl.Children, group);
                 }
             }
-        }
-
-        static SymbolDecl GetNamespaceSymbol(SymbolDecl symbol)
-        {
-            while (symbol != null)
-            {
-                if (symbol is GlobalDecl || symbol is NamespaceDecl)
-                {
-                    break;
-                }
-                else
-                {
-                    symbol = symbol.Parent;
-                }
-            }
-            return symbol;
         }
     }
 }
