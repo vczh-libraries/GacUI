@@ -118,17 +118,45 @@ namespace DocIndex
                 outputNs.Save(output + "ns(" + namespaceNames[nsp.Key] + ").xml");
             }
 
-            var symbolFileMapping = new Dictionary<string, string>();
             Console.WriteLine("Writing t(*).xml ...");
+            var symbolFileMapping = new Dictionary<string, string>();
             foreach (var nsp in symbols)
             {
+                Console.WriteLine("Processing namespace: " + nsp.Key);
                 foreach (var st in nsp.Value)
                 {
                     var urlName = symbolNames[st.Item1];
-                    var outputSymbol = CreateSymbolTree(urlName, st.Item2, symbolFileMapping);
+                    var outputSymbol = CreateSymbolTree(namespaceNames[nsp.Key], urlName, st.Item2, symbolFileMapping);
                     try
                     {
                         outputSymbol.Save(output + "t(" + urlName + ").xml");
+                    }
+                    catch (PathTooLongException)
+                    {
+                        Console.WriteLine("Error: File path is too long: \"" + urlName + "\".");
+                    }
+                }
+            }
+
+            Console.WriteLine("Writing s(*).xml ...");
+            foreach (var nsp in symbols)
+            {
+                Console.WriteLine("Processing namespace: " + nsp.Key);
+                foreach (var st in nsp.Value)
+                {
+                    var urlName = symbolNames[st.Item1];
+                    foreach (var decl in st.Item2)
+                    {
+                        FixSymbolLinks(decl, symbolFileMapping);
+                    }
+                    var outputSymbol = new XDocument(
+                        new XElement("Symbols",
+                            st.Item2.Select(decl => decl.Serialize())
+                            )
+                        );
+                    try
+                    {
+                        outputSymbol.Save(output + "s(" + urlName + ").xml");
                     }
                     catch (PathTooLongException)
                     {
@@ -183,6 +211,171 @@ namespace DocIndex
                 throw new ArgumentException();
             }
         }
+
+        #region FixSymbolLinks
+
+        static void FixSymbolLinks(SymbolDecl decl, Dictionary<string, string> symbolFileMapping)
+        {
+        }
+
+        class FixTypeDeclVisitor : TypeDecl.IVisitor
+        {
+            public Dictionary<string, string> SymbolFileMapping { get; set; }
+
+            void Execute(TypeDecl decl)
+            {
+                decl.Accept(this);
+            }
+
+            void TypeDecl.IVisitor.Visit(RefTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(SubTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(DecorateTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(ArrayTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(FunctionTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(ClassMemberTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(GenericTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(DeclTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(VariadicArgumentTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void TypeDecl.IVisitor.Visit(ConstantTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        class FixSymbolDeclVisitor : SymbolDecl.IVisitor
+        {
+            private FixTypeDeclVisitor fixTypeDeclVisitor;
+
+            public Dictionary<string, string> SymbolFileMapping { get; set; }
+
+            static void Execute(SymbolDecl decl, Dictionary<string, string> symbolFileMapping)
+            {
+                var visitor = new FixSymbolDeclVisitor
+                {
+                    SymbolFileMapping = symbolFileMapping,
+                    fixTypeDeclVisitor = new FixTypeDeclVisitor
+                    {
+                        SymbolFileMapping = symbolFileMapping,
+                    },
+                };
+                decl.Accept(visitor);
+            }
+
+            void Execute(SymbolDecl decl)
+            {
+                decl.Accept(this);
+            }
+
+            void Execute(TypeDecl decl)
+            {
+                decl.Accept(this.fixTypeDeclVisitor);
+            }
+
+            void SymbolDecl.IVisitor.Visit(GlobalDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(NamespaceDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(UsingNamespaceDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(TypeParameterDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(TemplateDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(BaseTypeDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(ClassDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(VarDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(FuncDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(GroupedFieldDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(EnumItemDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(EnumDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+
+            void SymbolDecl.IVisitor.Visit(TypedefDecl decl)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        #region CreateSymbolTree
 
         class SymbolTree
         {
@@ -386,7 +579,7 @@ namespace DocIndex
             }
         }
 
-        static XDocument CreateSymbolTree(string urlName, SymbolDecl[] decls, Dictionary<string, string> symbolFileMapping)
+        static XDocument CreateSymbolTree(string nsUrlName, string urlName, SymbolDecl[] decls, Dictionary<string, string> symbolFileMapping)
         {
             var symbolParentMapping = new Dictionary<string, string>();
             var forest = decls
@@ -401,6 +594,7 @@ namespace DocIndex
 
             return new XDocument(
                 new XElement("SymbolTree",
+                    new XAttribute("NamespaceUrlName", nsUrlName),
                     new XElement("SymbolParentMapping",
                         symbolParentMapping
                             .Where(p => p.Key != p.Value)
@@ -415,5 +609,7 @@ namespace DocIndex
                     )
                 );
         }
+
+        #endregion
     }
 }
