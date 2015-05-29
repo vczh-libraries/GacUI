@@ -71,7 +71,7 @@ namespace DocIndex
                         .Select(p =>
                             new XElement("Namespace",
                                 new XAttribute("Key", p.Key),
-                                new XAttribute("DisplayName", (p.Key == "" ? "::" : p.Key.Substring(2)) + " Namespace"),
+                                new XAttribute("DisplayName", (p.Key == "" ? "::" : p.Key.Substring(2)) + " namespace"),
                                 new XAttribute("UrlName", p.Value),
                                 new XAttribute("Doc", symbols[p.Key].SelectMany(t => t.Item2.Select(s => s)).Any(ContainsDocument))
                             )
@@ -87,6 +87,9 @@ namespace DocIndex
                     x => x,
                     x => x
                         .Replace("::", ".")
+                        .Replace(":", "#")
+                        .Replace("|", "$")
+                        .Replace("/", "%")
                         .Replace("*", "^")
                         .Replace("<", "{")
                         .Replace(">", "}")
@@ -123,7 +126,14 @@ namespace DocIndex
                 {
                     var urlName = symbolNames[st.Item1];
                     var outputSymbol = CreateSymbolTree(urlName, st.Item2, symbolFileMapping);
-                    outputSymbol.Save(output + "t(" + urlName + ").xml");
+                    try
+                    {
+                        outputSymbol.Save(output + "t(" + urlName + ").xml");
+                    }
+                    catch (PathTooLongException)
+                    {
+                        Console.WriteLine("Error: File path is too long: \"" + urlName + "\".");
+                    }
                 }
             }
         }
@@ -246,8 +256,31 @@ namespace DocIndex
                 }
             }
 
+            private void MapKey(string child, string parent)
+            {
+                string mapping = null;
+                if (this.SymbolParentMapping.TryGetValue(child, out mapping))
+                {
+                    if (mapping != parent)
+                    {
+                        throw new ArgumentException();
+                    }
+                }
+                else
+                {
+                    this.SymbolParentMapping.Add(child, parent);
+                }
+            }
+
             private void EntryDecl(SymbolDecl decl)
             {
+                if (decl.OverloadKey == null)
+                {
+                    throw new ArgumentException();
+                }
+
+                MapKey(decl.OverloadKey, decl.OverloadKey);
+
                 this.Result = new SymbolTree
                 {
                     Tags = decl.Tags,
@@ -267,9 +300,9 @@ namespace DocIndex
 
             private void NoEntryDecl(SymbolDecl decl)
             {
-                if (!this.SymbolParentMapping.ContainsKey(decl.OverloadKey))
+                if (decl.OverloadKey != null)
                 {
-                    this.SymbolParentMapping.Add(decl.OverloadKey, this.Parent.Key);
+                    MapKey(decl.OverloadKey, this.Parent.Key);
                 }
                 GenerateChildren(decl, this.Parent);
             }
@@ -356,15 +389,17 @@ namespace DocIndex
             return new XDocument(
                 new XElement("SymbolTree",
                     new XElement("SymbolParentMapping",
-                        symbolParentMapping.Select(p =>
-                            new XElement("Map",
-                                new XAttribute("From", p.Key),
-                                new XAttribute("To", p.Value)
+                        symbolParentMapping
+                            .Where(p => p.Key != p.Value)
+                            .Select(p =>
+                                new XElement("Map",
+                                    new XAttribute("From", p.Key),
+                                    new XAttribute("To", p.Value)
+                                    )
                                 )
-                            )
-                        )
-                    ),
+                        ),
                     root.Serialize()
+                    )
                 );
         }
     }
