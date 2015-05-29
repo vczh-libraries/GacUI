@@ -140,7 +140,12 @@ namespace DocIndex
 
         static bool ContainsDocument(SymbolDecl decl)
         {
-            return decl.Document != null || (decl.Children != null && decl.Children.Any(ContainsDocument));
+            var docDecl = decl;
+            if (decl.Parent is TemplateDecl)
+            {
+                docDecl = decl.Parent;
+            }
+            return docDecl.Document != null || (decl.Children != null && decl.Children.Any(ContainsDocument));
         }
 
         static string GetDisplayName(SymbolDecl decl)
@@ -203,6 +208,7 @@ namespace DocIndex
                 var result = new SymbolTree();
                 result.Key = forest[0].Key;
                 result.DisplayName = forest[0].DisplayName;
+                result.Doc = forest.Any(tree => tree.Doc);
 
                 result.Tags = forest
                     .SelectMany(tree => tree.Tags.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries))
