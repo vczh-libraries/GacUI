@@ -227,6 +227,22 @@ namespace DocIndex
             FixSymbolDeclVisitor.Execute(decl, symbolFileMapping);
         }
 
+        static string FixKey(string key, Dictionary<string, string> symbolFileMapping)
+        {
+            string urlName = null;
+            if (symbolFileMapping.TryGetValue(key, out urlName))
+            {
+                return key + "@" + urlName;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error: Unable to resolve symbol: " + key);
+                Console.ResetColor();
+                return null;
+            }
+        }
+
         class FixTypeDeclVisitor : TypeDecl.IVisitor
         {
             public Dictionary<string, string> SymbolFileMapping { get; set; }
@@ -242,17 +258,10 @@ namespace DocIndex
                 {
                     for (int i = 0; i < decl.ReferencingOverloadKeys.Count; i++)
                     {
-                        var key = decl.ReferencingOverloadKeys[i];
-                        string urlName = null;
-                        if (this.SymbolFileMapping.TryGetValue(key, out urlName))
+                        var key = FixKey(decl.ReferencingOverloadKeys[i], this.SymbolFileMapping);
+                        if (key != null)
                         {
-                            decl.ReferencingOverloadKeys[i] = key + "@" + urlName;
-                        }
-                        else
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Error: Unable to resolve symbol: " + key);
-                            Console.ResetColor();
+                            decl.ReferencingOverloadKeys[i] = key;
                         }
                     }
                 }
@@ -349,8 +358,35 @@ namespace DocIndex
                 decl.Accept(this.fixTypeDeclVisitor);
             }
 
+            private void Fix(XNode xml)
+            {
+                var element = xml as XElement;
+                if (element != null)
+                {
+                    if (element.Name == "link")
+                    {
+                        var att = element.Attribute("cref");
+                        var key = FixKey(att.Value, this.SymbolFileMapping);
+                        if (key != null)
+                        {
+                            att.Value = key;
+                        }
+                    }
+                    foreach (var node in element.Nodes())
+                    {
+                        Fix(node);
+                    }
+                }
+            }
+
             private void Fix(SymbolDecl decl, bool skipChildren = false)
             {
+                if (decl.Document != null)
+                {
+                    var xml = XElement.Parse(decl.Document);
+                    Fix(xml);
+                    decl.Document = xml.ToString();
+                }
                 if (!skipChildren && decl.Children != null)
                 {
                     foreach (var subDecl in decl.Children)
