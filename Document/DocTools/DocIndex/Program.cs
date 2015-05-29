@@ -64,20 +64,16 @@ namespace DocIndex
                             .Split(new[] { "::" }, StringSplitOptions.RemoveEmptyEntries)
                             .Aggregate("", (a, b) => a == "" ? b : a + "." + b)
                 );
-            var namespaceFileNames = namespaceNames
-                .ToDictionary(
-                    ns => ns.Key,
-                    ns => "ns(" + ns.Value + ").xml"
-                );
             var outputNss = new XDocument(
                 new XElement("Namespaces",
-                    namespaceFileNames
+                    namespaceNames
                         .OrderBy(p => p.Key)
                         .Select(p =>
                             new XElement("Namespace",
                                 new XAttribute("Key", p.Key),
                                 new XAttribute("DisplayName", (p.Key == "" ? "::" : p.Key.Substring(2)) + " Namespace"),
-                                new XAttribute("FileName", p.Value)
+                                new XAttribute("UrlName", p.Value),
+                                new XAttribute("Doc", symbols[p.Key].SelectMany(t => t.Item2.Select(s => s)).Any(ContainsDocument))
                             )
                         )
                     )
@@ -96,16 +92,6 @@ namespace DocIndex
                         .Replace(">", "}")
                         .Substring(1)
                 );
-            var symbolTreeNames = symbolNames
-                .ToDictionary(
-                    ns => ns.Key,
-                    ns => "t(" + ns.Value + ").xml"
-                );
-            var symbolContentNames = symbolNames
-                .ToDictionary(
-                    ns => ns.Key,
-                    ns => "s(" + ns.Value + ").xml"
-                );
             foreach (var nsp in symbols)
             {
                 var outputNs = new XDocument(
@@ -118,16 +104,21 @@ namespace DocIndex
                                 new XAttribute("DisplayName", g.Key),
                                 g
                                     .Select(t => new XElement("Symbol",
-                                        new XAttribute("TreeName", symbolTreeNames[t.Item1]),
-                                        new XAttribute("ContentName", symbolContentNames[t.Item1])
+                                        new XAttribute("UrlName", symbolNames[t.Item1]),
+                                        new XAttribute("Doc", t.Item2.Any(ContainsDocument))
                                         )
                                     )
                                 )
                             )
                         )
                     );
-                outputNs.Save(output + namespaceFileNames[nsp.Key]);
+                outputNs.Save(output + "ns(" + namespaceNames[nsp.Key] + ").xml");
             }
+        }
+
+        static bool ContainsDocument(SymbolDecl decl)
+        {
+            return decl.Document != null || (decl.Children != null && decl.Children.Any(ContainsDocument));
         }
 
         static string GetDisplayName(SymbolDecl decl)
