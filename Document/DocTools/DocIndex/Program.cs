@@ -35,10 +35,16 @@ namespace DocIndex
                             .Select(xmlSymbol =>
                             {
                                 var key = xmlSymbol.Attribute("OverloadKey").Value;
-                                var xmlDecl = xmlSymbol.Elements().First();
-                                var decl = SymbolDecl.Deserialize(xmlDecl);
-                                decl.BuildSymbolTree(null, null);
-                                return Tuple.Create(key, decl);
+                                var symbolDecls = xmlSymbol
+                                    .Elements()
+                                    .Select(xmlDecl =>
+                                    {
+                                        var decl = SymbolDecl.Deserialize(xmlDecl);
+                                        decl.BuildSymbolTree(null, null);
+                                        return decl;
+                                    })
+                                    .ToArray();
+                                return Tuple.Create(key, symbolDecls);
                             })
                             .ToArray();
                     }
@@ -106,13 +112,12 @@ namespace DocIndex
                     new XElement("Namespace",
                         new XAttribute("DisplayName", nsp.Key),
                         nsp.Value
-                            .GroupBy(t => GetDisplayName(t.Item2))
+                            .GroupBy(t => GetDisplayName(t.Item2[0]))
                             .OrderBy(g => g.Key)
                             .Select(g => new XElement("Overloads",
                                 new XAttribute("DisplayName", g.Key),
                                 g
                                     .Select(t => new XElement("Symbol",
-                                        new XAttribute("Key", t.Item1),
                                         new XAttribute("TreeName", symbolTreeNames[t.Item1]),
                                         new XAttribute("ContentName", symbolContentNames[t.Item1])
                                         )
