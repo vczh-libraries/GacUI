@@ -49,7 +49,9 @@ namespace DocParser
             {
                 if (pair.Value.Length > 1 && pair.Value.Any(decl => !(decl is NamespaceDecl)))
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Duplicate key founds: " + pair.Key);
+                    Console.ResetColor();
                 }
             }
         }

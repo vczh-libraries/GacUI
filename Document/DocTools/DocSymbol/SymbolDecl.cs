@@ -108,7 +108,19 @@ namespace DocSymbol
             get
             {
                 var decl = this.Parent;
-                if (decl != null)
+                if (this is TypeParameterDecl)
+                {
+                    var templateDecl = decl as TemplateDecl;
+                    if (templateDecl == null)
+                    {
+                        decl = decl.ScopeParent;
+                    }
+                    else
+                    {
+                        decl = templateDecl.Element;
+                    }
+                }
+                else if (decl != null)
                 {
                     decl = decl.ScopeParent;
                 }

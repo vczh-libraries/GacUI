@@ -133,12 +133,18 @@ namespace DocIndex
                     }
                     catch (PathTooLongException)
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Error: File path is too long: \"" + urlName + "\".");
+                        Console.ResetColor();
                     }
                 }
             }
 
             Console.WriteLine("Writing s(*).xml ...");
+            foreach (var nss in namespaceNames)
+            {
+                symbolFileMapping.Add(nss.Key, "ns:" + nss.Value);
+            }
             foreach (var nsp in symbols)
             {
                 Console.WriteLine("Processing namespace: " + nsp.Key);
@@ -160,7 +166,9 @@ namespace DocIndex
                     }
                     catch (PathTooLongException)
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Error: File path is too long: \"" + urlName + "\".");
+                        Console.ResetColor();
                     }
                 }
             }
@@ -235,7 +243,17 @@ namespace DocIndex
                     for (int i = 0; i < decl.ReferencingOverloadKeys.Count; i++)
                     {
                         var key = decl.ReferencingOverloadKeys[i];
-                        decl.ReferencingOverloadKeys[i] = key + "@" + this.SymbolFileMapping[key];
+                        string urlName = null;
+                        if (this.SymbolFileMapping.TryGetValue(key, out urlName))
+                        {
+                            decl.ReferencingOverloadKeys[i] = key + "@" + urlName;
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Error: Unable to resolve symbol: " + key);
+                            Console.ResetColor();
+                        }
                     }
                 }
             }
@@ -277,7 +295,7 @@ namespace DocIndex
             {
                 Fix(decl);
                 Execute(decl.Element);
-                Execute(decl.Element);
+                Execute(decl.ClassType);
             }
 
             void TypeDecl.IVisitor.Visit(GenericTypeDecl decl)
@@ -582,6 +600,10 @@ namespace DocIndex
             void SymbolDecl.IVisitor.Visit(TemplateDecl decl)
             {
                 NoEntryDecl(decl);
+                foreach (var parameter in decl.TypeParameters)
+                {
+                    MapKey(parameter.OverloadKey, decl.Element.OverloadKey);
+                }
             }
 
             void SymbolDecl.IVisitor.Visit(BaseTypeDecl decl)
@@ -635,7 +657,7 @@ namespace DocIndex
 
             foreach (var key in symbolParentMapping.Keys)
             {
-                symbolFileMapping.Add(key, urlName);
+                symbolFileMapping.Add(key, "s:" + urlName);
             }
 
             return new XDocument(

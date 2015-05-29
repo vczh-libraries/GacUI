@@ -61,9 +61,11 @@ namespace DocResolver
             var xmlErrors = environment.Errors.Where(x => x.StartsWith("(Xml)")).ToArray();
             var warnings = environment.Errors.Where(x => x.StartsWith("(Warning)")).ToArray();
             var errors = environment.Errors.Where(x => x.StartsWith("(Error)")).ToArray();
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Xml Errors: " + xmlErrors.Length);
             Console.WriteLine("Warnings: " + warnings.Length);
             Console.WriteLine("Errors: " + errors.Length);
+            Console.ResetColor();
 
             using (var writer = new StreamWriter(output + ".errors.txt", false, Encoding.UTF8))
             {
