@@ -122,7 +122,7 @@ namespace DocIndex
             var symbolFileMapping = new Dictionary<string, string>();
             foreach (var nsp in symbols)
             {
-                Console.WriteLine("Processing namespace: " + nsp.Key);
+                Console.WriteLine("t(*).xml: " + nsp.Key);
                 foreach (var st in nsp.Value)
                 {
                     var urlName = symbolNames[st.Item1];
@@ -147,7 +147,7 @@ namespace DocIndex
             }
             foreach (var nsp in symbols)
             {
-                Console.WriteLine("Processing namespace: " + nsp.Key);
+                Console.WriteLine("s(*).xml: " + nsp.Key);
                 foreach (var st in nsp.Value)
                 {
                     var urlName = symbolNames[st.Item1];
@@ -204,11 +204,41 @@ namespace DocIndex
             }
             else if (decl is FuncDecl)
             {
-                return decl.Name + " function";
+                var parent = decl.Parent as ClassDecl;
+                if (parent != null)
+                {
+                    if (parent.Name == decl.Name)
+                    {
+                        return decl.Name + " constructor";
+                    }
+                    else if ("~" + parent.Name == decl.Name)
+                    {
+                        return decl.Name + " destructor";
+                    }
+                    else
+                    {
+                        return decl.Name + " method";
+                    }
+                }
+                else
+                {
+                    return decl.Name + " function";
+                }
             }
             else if (decl is VarDecl)
             {
-                return decl.Name + " field";
+                if(decl.Parent is ClassDecl || decl.Parent is GroupedFieldDecl)
+                {
+                    return decl.Name + " field";
+                }
+                else if(decl.Parent is FuncDecl)
+                {
+                    return decl.Name + " parameter";
+                }
+                else
+                {
+                    return decl.Name + " variable";
+                }
             }
             else if (decl is TypedefDecl)
             {
@@ -589,7 +619,7 @@ namespace DocIndex
                 }
             }
 
-            private void EntryDecl(SymbolDecl decl)
+            private void EntryDecl(SymbolDecl decl, bool skipChildren = false)
             {
                 if (decl.OverloadKey == null)
                 {
@@ -613,7 +643,10 @@ namespace DocIndex
                     }
                     this.Parent.Children.Add(this.Result);
                 }
-                GenerateChildren(decl, this.Result);
+                if (!skipChildren)
+                {
+                    GenerateChildren(decl, this.Result);
+                }
             }
 
             private void NoEntryDecl(SymbolDecl decl)
@@ -675,7 +708,7 @@ namespace DocIndex
 
             void SymbolDecl.IVisitor.Visit(FuncDecl decl)
             {
-                EntryDecl(decl);
+                EntryDecl(decl, true);
             }
 
             void SymbolDecl.IVisitor.Visit(GroupedFieldDecl decl)
