@@ -184,6 +184,7 @@ namespace DocIndex
             public string Tags { get; set; }
             public string Key { get; set; }
             public string DisplayName { get; set; }
+            public bool Doc { get; set; }
             public List<SymbolTree> Children { get; set; }
 
             public XElement Serialize()
@@ -192,6 +193,7 @@ namespace DocIndex
                     new XAttribute("Tags", this.Tags),
                     new XAttribute("Key", this.Key),
                     new XAttribute("DisplayName", this.DisplayName),
+                    new XAttribute("Doc", this.Doc),
                     this.Children.Select(tree => tree.Serialize())
                     );
             }
@@ -286,6 +288,7 @@ namespace DocIndex
                     Tags = decl.Tags,
                     Key = decl.OverloadKey,
                     DisplayName = GetDisplayName(decl),
+                    Doc = ContainsDocument(decl),
                 };
                 if (this.Parent != null)
                 {
@@ -300,6 +303,10 @@ namespace DocIndex
 
             private void NoEntryDecl(SymbolDecl decl)
             {
+                if (decl.Document != null && !(decl is TemplateDecl))
+                {
+                    throw new ArgumentException();
+                }
                 if (decl.OverloadKey != null)
                 {
                     MapKey(decl.OverloadKey, this.Parent.Key);
