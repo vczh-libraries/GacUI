@@ -492,7 +492,23 @@ namespace DocIndex
                     new XAttribute("Key", this.Key),
                     new XAttribute("DisplayName", this.DisplayName),
                     new XAttribute("Doc", this.Doc),
-                    this.Children.Select(tree => tree.Serialize())
+                    this.Children
+                        .GroupBy(tree => tree.DisplayName)
+                        .Select(g => Tuple.Create(g.Key, g.ToArray()))
+                        .Select(t =>
+                        {
+                            if (t.Item2.Length == 1)
+                            {
+                                return t.Item2[0].Serialize();
+                            }
+                            else
+                            {
+                                return new XElement("Overloads",
+                                    new XAttribute("DisplayName", t.Item1),
+                                    t.Item2.Select(tree => tree.Serialize())
+                                    );
+                            }
+                        })
                     );
             }
 
