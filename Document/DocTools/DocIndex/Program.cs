@@ -107,6 +107,7 @@ namespace DocIndex
                                 new XAttribute("DisplayName", g.Key),
                                 g
                                     .Select(t => new XElement("Symbol",
+                                        new XAttribute("Key", t.Item2.First().OverloadKey ?? t.Item2.First().Children[0].OverloadKey),
                                         new XAttribute("UrlName", symbolNames[t.Item1]),
                                         new XAttribute("Doc", t.Item2.Any(ContainsDocument))
                                         )
@@ -196,7 +197,17 @@ namespace DocIndex
 
             if (decl is ClassDecl)
             {
-                return decl.Name + " class";
+                switch (((ClassDecl)decl).ClassType)
+                {
+                    case ClassType.Class:
+                        return decl.Name + " class";
+                    case ClassType.Struct:
+                        return decl.Name + " struct";
+                    case ClassType.Union:
+                        return decl.Name + " union";
+                    default:
+                        throw new ArgumentException();
+                }
             }
             else if (decl is EnumDecl)
             {
@@ -227,11 +238,11 @@ namespace DocIndex
             }
             else if (decl is VarDecl)
             {
-                if(decl.Parent is ClassDecl || decl.Parent is GroupedFieldDecl)
+                if (decl.Parent is ClassDecl || decl.Parent is GroupedFieldDecl)
                 {
                     return decl.Name + " field";
                 }
-                else if(decl.Parent is FuncDecl)
+                else if (decl.Parent is FuncDecl)
                 {
                     return decl.Name + " parameter";
                 }
