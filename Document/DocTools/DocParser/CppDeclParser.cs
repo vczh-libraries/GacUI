@@ -192,13 +192,20 @@ namespace DocParser
                             break;
                         }
 
+                        var document = "";
                         while (index < tokens.Length && tokens[index].Length >= 3 && tokens[index].StartsWith("///"))
                         {
+                            var line = tokens[index];
+                            document += line.StartsWith("/// ") || line.StartsWith("///\t")
+                                ? line.Substring(4)
+                                : line.Substring(3);
+                            document += "\r\n";
                             index++;
                         }
                         decl.Children.Add(new EnumItemDecl
                         {
                             Name = CppParser.EnsureId(tokens, ref index),
+                            Document = document,
                         });
 
                         string token = null;

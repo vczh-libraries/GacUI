@@ -662,7 +662,7 @@ namespace DocIndex
 
             private void NoEntryDecl(SymbolDecl decl)
             {
-                if (decl.Document != null && !(decl is TemplateDecl))
+                if (decl.Document != null && !(decl is TemplateDecl) && !(decl is EnumItemDecl))
                 {
                     throw new ArgumentException();
                 }
