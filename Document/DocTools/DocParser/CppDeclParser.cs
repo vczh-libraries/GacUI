@@ -192,10 +192,14 @@ namespace DocParser
                             break;
                         }
 
-                        var document = "";
+                        string document = null;
                         while (index < tokens.Length && tokens[index].Length >= 3 && tokens[index].StartsWith("///"))
                         {
                             var line = tokens[index];
+                            if (document == null)
+                            {
+                                document = "";
+                            }
                             document += line.StartsWith("/// ") || line.StartsWith("///\t")
                                 ? line.Substring(4)
                                 : line.Substring(3);
