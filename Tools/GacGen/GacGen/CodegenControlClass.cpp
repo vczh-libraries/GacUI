@@ -33,7 +33,7 @@ void WriteControlClassHeaderFile(Ptr<CodegenConfig> config, Ptr<Instance> instan
 {
 	Regex regexCtor(L"^(<prefix>/s*)" + instance->typeName + L"/([^)]*/);");
 
-	WString fileName = config->GetControlClassHeaderFileName(instance);
+	WString fileName = config->cppOutput->GetControlClassHeaderFileName(instance);
 	List<WString> lines;
 	if (TryReadFile(config, fileName, lines))
 	{
@@ -75,10 +75,10 @@ void WriteControlClassHeaderFile(Ptr<CodegenConfig> config, Ptr<Instance> instan
 	{
 		OPEN_FILE_WITH_COMMENT(instance->typeName, false);
 
-		writer.WriteLine(L"#ifndef VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->name + L"_" + instance->typeName);
-		writer.WriteLine(L"#define VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->name + L"_" + instance->typeName);
+		writer.WriteLine(L"#ifndef VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->cppOutput->name + L"_" + instance->typeName);
+		writer.WriteLine(L"#define VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->cppOutput->name + L"_" + instance->typeName);
 		writer.WriteLine(L"");
-		writer.WriteLine(L"#include \"" + config->GetPartialClassHeaderFileName() + L"\"");
+		writer.WriteLine(L"#include \"" + config->cppOutput->GetPartialClassHeaderFileName() + L"\"");
 		writer.WriteLine(L"");
 		WriteControlClassHeaderFileContent(config, instance, writer);
 		writer.WriteLine(L"#endif");
@@ -90,7 +90,7 @@ void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 	Regex regexCtor(L"^(<prefix>/s*)" + instance->typeName + L"::" + instance->typeName + L"/([^)]*/)");
 	Regex regexInit(L"^(<prefix>/s*)InitializeComponents/([^)]*/);");
 
-	WString fileName = config->GetControlClassCppFileName(instance);
+	WString fileName = config->cppOutput->GetControlClassCppFileName(instance);
 	List<WString> lines;
 	if (TryReadFile(config, fileName, lines))
 	{
@@ -208,7 +208,7 @@ void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 	else
 	{
 		OPEN_FILE_WITH_COMMENT(instance->typeName, false);
-		writer.WriteLine(L"#include \"" + config->GetGlobalHeaderFileName() + L"\"");
+		writer.WriteLine(L"#include \"" + config->cppOutput->GetGlobalHeaderFileName() + L"\"");
 		writer.WriteLine(L"");
 		WriteControlClassCppFileContent(config, instance, writer);
 	}

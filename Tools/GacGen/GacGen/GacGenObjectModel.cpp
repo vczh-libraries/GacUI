@@ -29,6 +29,35 @@ WString InstanceSchema::GetFullName()
 }
 
 /***********************************************************************
+CodegenConfig::CppConfig
+***********************************************************************/
+
+WString CodegenConfig::CppOutput::GetControlClassHeaderFileName(Ptr<Instance> instance)
+{
+	return prefix + instance->typeName + L".h";
+}
+
+WString CodegenConfig::CppOutput::GetControlClassCppFileName(Ptr<Instance> instance)
+{
+	return prefix + instance->typeName + L".cpp";
+}
+
+WString CodegenConfig::CppOutput::GetPartialClassHeaderFileName()
+{
+	return name + L"PartialClasses.h";
+}
+
+WString CodegenConfig::CppOutput::GetPartialClassCppFileName()
+{
+	return name + L"PartialClasses.cpp";
+}
+
+WString CodegenConfig::CppOutput::GetGlobalHeaderFileName()
+{
+	return name + L".h";
+}
+
+/***********************************************************************
 CodegenConfig
 ***********************************************************************/
 
@@ -54,36 +83,14 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 {
 	Ptr<CodegenConfig> config = new CodegenConfig;
 	config->resource = resource;
-	if (!LoadConfigString(resource, L"Include", config->include)) return false;
-	if (!LoadConfigString(resource, L"Name", config->name)) return false;
-	if (!LoadConfigString(resource, L"Prefix", config->prefix)) return false;
-	LoadConfigString(resource, L"PrecompiledOutput", config->precompiledOutput, true);
-	LoadConfigString(resource, L"PrecompiledBinary", config->precompiledBinary, true);
-	LoadConfigString(resource, L"PrecompiledCompressed", config->precompiledCompressed, true);
+	config->cppOutput = MakePtr<CppOutput>();
+	config->resOutput = MakePtr<ResOutput>();
+
+	if (!LoadConfigString(resource, L"Include", config->cppOutput->include)) return false;
+	if (!LoadConfigString(resource, L"Name", config->cppOutput->name)) return false;
+	if (!LoadConfigString(resource, L"Prefix", config->cppOutput->prefix)) return false;
+	LoadConfigString(resource, L"PrecompiledOutput", config->resOutput->precompiledOutput, true);
+	LoadConfigString(resource, L"PrecompiledBinary", config->resOutput->precompiledBinary, true);
+	LoadConfigString(resource, L"PrecompiledCompressed", config->resOutput->precompiledCompressed, true);
 	return config;
-}
-
-WString CodegenConfig::GetControlClassHeaderFileName(Ptr<Instance> instance)
-{
-	return prefix + instance->typeName + L".h";
-}
-
-WString CodegenConfig::GetControlClassCppFileName(Ptr<Instance> instance)
-{
-	return prefix + instance->typeName + L".cpp";
-}
-
-WString CodegenConfig::GetPartialClassHeaderFileName()
-{
-	return name + L"PartialClasses.h";
-}
-
-WString CodegenConfig::GetPartialClassCppFileName()
-{
-	return name + L"PartialClasses.cpp";
-}
-
-WString CodegenConfig::GetGlobalHeaderFileName()
-{
-	return name + L".h";
 }

@@ -6,13 +6,13 @@ Codegen::PartialClass
 
 void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
 {
-	WString fileName = config->GetPartialClassHeaderFileName();
+	WString fileName = config->cppOutput->GetPartialClassHeaderFileName();
 	OPEN_FILE_WITH_COMMENT(L"Partial Classes", true);
 
-	writer.WriteLine(L"#ifndef VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->name + L"_PARTIAL_CLASSES");
-	writer.WriteLine(L"#define VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->name + L"_PARTIAL_CLASSES");
+	writer.WriteLine(L"#ifndef VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->cppOutput->name + L"_PARTIAL_CLASSES");
+	writer.WriteLine(L"#define VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->cppOutput->name + L"_PARTIAL_CLASSES");
 	writer.WriteLine(L"");
-	writer.WriteLine(L"#include \"" + config->include + L"\"");
+	writer.WriteLine(L"#include \"" + config->cppOutput->include + L"\"");
 	writer.WriteLine(L"");
 
 	List<WString> currentNamespaces;
@@ -318,10 +318,10 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, 
 
 void WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
 {
-	WString fileName = config->GetPartialClassCppFileName();
+	WString fileName = config->cppOutput->GetPartialClassCppFileName();
 	OPEN_FILE_WITH_COMMENT(L"Partial Classes", true);
 
-	writer.WriteLine(L"#include \"" + config->GetGlobalHeaderFileName() + L"\"");
+	writer.WriteLine(L"#include \"" + config->cppOutput->GetGlobalHeaderFileName() + L"\"");
 	writer.WriteLine(L"");
 
 	FOREACH(Ptr<Instance>, instance, instances.Values())
@@ -526,7 +526,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr
 	writer.WriteLine(prefix + L"#undef _");
 	writer.WriteLine(L"");
 
-	writer.WriteLine(prefix + L"class " + config->name + L"ResourceLoader : public Object, public ITypeLoader");
+	writer.WriteLine(prefix + L"class " + config->cppOutput->name + L"ResourceLoader : public Object, public ITypeLoader");
 	writer.WriteLine(prefix + L"{");
 	writer.WriteLine(prefix + L"public:");
 	writer.WriteLine(prefix + L"\tvoid Load(ITypeManager* manager)");
@@ -546,12 +546,12 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr
 	writer.WriteLine(prefix + L"\t}");
 	writer.WriteLine(prefix + L"};");
 	writer.WriteLine(L"");
-	writer.WriteLine(prefix + L"class " + config->name + L"ResourcePlugin : public Object, public vl::presentation::controls::IGuiPlugin");
+	writer.WriteLine(prefix + L"class " + config->cppOutput->name + L"ResourcePlugin : public Object, public vl::presentation::controls::IGuiPlugin");
 	writer.WriteLine(prefix + L"{");
 	writer.WriteLine(prefix + L"public:");
 	writer.WriteLine(prefix + L"\tvoid Load()override");
 	writer.WriteLine(prefix + L"\t{");
-	writer.WriteLine(prefix + L"\t\tGetGlobalTypeManager()->AddTypeLoader(new " + config->name + L"ResourceLoader);");
+	writer.WriteLine(prefix + L"\t\tGetGlobalTypeManager()->AddTypeLoader(new " + config->cppOutput->name + L"ResourceLoader);");
 	writer.WriteLine(prefix + L"\t}");
 	writer.WriteLine(L"");
 	writer.WriteLine(prefix + L"\tvoid AfterLoad()override");
@@ -562,7 +562,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr
 	writer.WriteLine(prefix + L"\t{");
 	writer.WriteLine(prefix + L"\t}");
 	writer.WriteLine(prefix + L"};");
-	writer.WriteLine(prefix + L"GUI_REGISTER_PLUGIN(" + config->name + L"ResourcePlugin)");
+	writer.WriteLine(prefix + L"GUI_REGISTER_PLUGIN(" + config->cppOutput->name + L"ResourcePlugin)");
 
 	WriteNamespaceStop(currentNamespaces, writer);
 	writer.WriteLine(L"");

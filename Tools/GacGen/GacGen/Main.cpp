@@ -549,22 +549,22 @@ void GuiMain()
 	}
 	else
 	{
-		if (config->precompiledOutput != L"")
+		if (config->resOutput->precompiledOutput != L"")
 		{
-			WString fileName = config->precompiledOutput;
+			WString fileName = config->resOutput->precompiledOutput;
 			auto xml = resource->SaveToXml(true);
 			OPEN_FILE(L"Precompiled Xml Resource");
 			XmlPrint(xml, writer);
 		}
-		if (config->precompiledBinary != L"")
+		if (config->resOutput->precompiledBinary != L"")
 		{
-			WString fileName = config->precompiledBinary;
+			WString fileName = config->resOutput->precompiledBinary;
 			OPEN_BINARY_FILE(L"Precompiled Binary Resource");
 			resource->SavePrecompiledBinary(fileStream);
 		}
-		if (config->precompiledCompressed != L"")
+		if (config->resOutput->precompiledCompressed != L"")
 		{
-			WString fileName = config->precompiledCompressed;
+			WString fileName = config->resOutput->precompiledCompressed;
 			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource");
 			LzwEncoder encoder;
 			EncoderStream encoderStream(fileStream, encoder);

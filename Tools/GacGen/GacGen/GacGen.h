@@ -50,24 +50,37 @@ struct InstanceSchema
 class CodegenConfig
 {
 public:
-	Ptr<GuiResource>							resource;
-	WString										include;
-	WString										name;
-	WString										prefix;
-	WString										precompiledOutput;
-	WString										precompiledBinary;
-	WString										precompiledCompressed;
+	class CppOutput
+	{
+	public:
+		WString									include;
+		WString									name;
+		WString									prefix;
 
+		WString									GetControlClassHeaderFileName(Ptr<Instance> instance);
+		WString									GetControlClassCppFileName(Ptr<Instance> instance);
+		WString									GetPartialClassHeaderFileName();
+		WString									GetPartialClassCppFileName();
+		WString									GetGlobalHeaderFileName();
+	};
+
+	class ResOutput
+	{
+	public:
+		WString									precompiledOutput;
+		WString									precompiledBinary;
+		WString									precompiledCompressed;
+	};
+
+	Ptr<GuiResource>							resource;
 	Ptr<ParsingTable>							workflowTable;
 	Ptr<WfLexicalScopeManager>					workflowManager;
 
+	Ptr<CppOutput>								cppOutput;
+	Ptr<ResOutput>								resOutput;
+
 	static bool									LoadConfigString(Ptr<GuiResource> resource, const WString& name, WString& value, bool optional = false);
 	static Ptr<CodegenConfig>					LoadConfig(Ptr<GuiResource> resource);
-	WString										GetControlClassHeaderFileName(Ptr<Instance> instance);
-	WString										GetControlClassCppFileName(Ptr<Instance> instance);
-	WString										GetPartialClassHeaderFileName();
-	WString										GetPartialClassCppFileName();
-	WString										GetGlobalHeaderFileName();
 };
 
 /***********************************************************************
@@ -151,7 +164,7 @@ Codegen::FileUtility
 	WriteFileComment(NAME, DONOTMODIFY, writer);
 
 #define CANNOT_MERGE_CONTENT\
-	PrintErrorMessage(L"error> Don't know how to override " + fileName + L". Please open " + config->GetPartialClassHeaderFileName() + L" to get the latest content in the comment and modify the file by yourself.")
+	PrintErrorMessage(L"error> Don't know how to override " + fileName + L". Please open " + config->cppOutput->GetPartialClassHeaderFileName() + L" to get the latest content in the comment and modify the file by yourself.")
 
 /***********************************************************************
 Codegen::ControlClass
