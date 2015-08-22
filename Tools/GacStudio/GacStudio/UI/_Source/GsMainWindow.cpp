@@ -7,7 +7,7 @@ GacUI::MainWindow
 ***********************************************************************/
 
 #include "GacStudioUI.h"
-#include "..\Studio\SolutionModel.h"
+#include "..\..\Studio\SolutionModel.h"
 
 using namespace vl::collections;
 

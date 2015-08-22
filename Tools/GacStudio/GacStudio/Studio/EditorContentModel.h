@@ -6,7 +6,7 @@ GacStudio::EditorContentModel
 Interfaces:
 ***********************************************************************/
 
-#include "..\UI\GacStudioUI.h"
+#include "..\UI\_Source\GacStudioUI.h"
 
 using namespace vl::collections;
 

@@ -9,7 +9,7 @@ Interfaces:
 #ifndef GACSTUDIO_STUDIO_STUDIOMODEL
 #define GACSTUDIO_STUDIO_STUDIOMODEL
 
-#include "..\UI\GacStudioUI.h"
+#include "..\UI\_Source\GacStudioUI.h"
 
 using namespace vl::collections;
 

@@ -7,7 +7,7 @@ GacUI::NewFileWindow
 ***********************************************************************/
 
 #include "GacStudioUI.h"
-#include "..\Studio\SolutionModel.h"
+#include "..\..\Studio\SolutionModel.h"
 
 using namespace vl::filesystem;
 using namespace vm;
