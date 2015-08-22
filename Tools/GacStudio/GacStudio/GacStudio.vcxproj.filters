@@ -19,9 +19,6 @@
     <Filter Include="Studio">
       <UniqueIdentifier>{ff327580-cb4b-4cff-961d-2284574e41ba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UI">
-      <UniqueIdentifier>{34e00c13-f6f3-4046-9ded-fc771cbbb881}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\CommandImages">
       <UniqueIdentifier>{5e964002-e22e-4002-a396-5949b1696b23}</UniqueIdentifier>
     </Filter>
@@ -36,6 +33,12 @@
     </Filter>
     <Filter Include="Resource Files\ViewModels">
       <UniqueIdentifier>{49ab16c6-9b54-4e8d-9bc6-fe7df165e962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_Source">
+      <UniqueIdentifier>{34e00c13-f6f3-4046-9ded-fc771cbbb881}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="_UIRes">
+      <UniqueIdentifier>{06c82603-0587-48d5-8324-19264fa3e1d3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -69,35 +72,35 @@
     <ClCompile Include="Studio\StudioModel.cpp">
       <Filter>Studio</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GacStudioUIPartialClasses.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GacStudioUIPartialClasses.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsAddExistingFilesWindow.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsAddExistingFilesWindow.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsHScrollTemplate.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsHScrollTemplate.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsHTrackerTemplate.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsHTrackerTemplate.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsMainWindow.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsMainWindow.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsNewFileWindow.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsNewFileWindow.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsNewProjectWindow.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsNewProjectWindow.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsRenameFileWindow.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsRenameFileWindow.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsVScrollTemplate.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsVScrollTemplate.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\GsVTrackerTemplate.cpp">
-      <Filter>UI</Filter>
+    <ClCompile Include="UI\_Source\GsVTrackerTemplate.cpp">
+      <Filter>_Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -128,44 +131,41 @@
     <ClInclude Include="Studio\StudioModel.h">
       <Filter>Studio</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsVTrackerTemplate.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GacStudioUI.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GacStudioUI.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GacStudioUIPartialClasses.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GacStudioUIPartialClasses.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsAddExistingFilesWindow.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsAddExistingFilesWindow.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsHScrollTemplate.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsHScrollTemplate.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsHTrackerTemplate.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsHTrackerTemplate.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsMainWindow.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsMainWindow.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsNewFileWindow.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsNewFileWindow.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsNewProjectWindow.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsNewProjectWindow.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsRenameFileWindow.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsRenameFileWindow.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsVScrollTemplate.h">
+      <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\GsVScrollTemplate.h">
-      <Filter>UI</Filter>
+    <ClInclude Include="UI\_Source\GsVTrackerTemplate.h">
+      <Filter>_Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="UI\Resources.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
     <Xml Include="UI\Skin.xml">
       <Filter>Resource Files</Filter>
     </Xml>
@@ -214,16 +214,16 @@
     <Xml Include="UI\ViewModels\StudioModel.xml">
       <Filter>Resource Files\ViewModels</Filter>
     </Xml>
+    <Xml Include="UI\_UIRes\Resources.xml">
+      <Filter>_UIRes</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <None Include="UI\Codegen.bat">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="UI\Resources.bin">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="UI\ResourcesUncompressed.bin">
-      <Filter>Resource Files</Filter>
+    <None Include="UI\_UIRes\Resources.bin">
+      <Filter>_UIRes</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

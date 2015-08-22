@@ -105,16 +105,16 @@
     <ClCompile Include="Studio\EditorModel.cpp" />
     <ClCompile Include="Studio\SolutionModel.cpp" />
     <ClCompile Include="Studio\StudioModel.cpp" />
-    <ClCompile Include="UI\GacStudioUIPartialClasses.cpp" />
-    <ClCompile Include="UI\GsAddExistingFilesWindow.cpp" />
-    <ClCompile Include="UI\GsHScrollTemplate.cpp" />
-    <ClCompile Include="UI\GsHTrackerTemplate.cpp" />
-    <ClCompile Include="UI\GsMainWindow.cpp" />
-    <ClCompile Include="UI\GsNewFileWindow.cpp" />
-    <ClCompile Include="UI\GsNewProjectWindow.cpp" />
-    <ClCompile Include="UI\GsRenameFileWindow.cpp" />
-    <ClCompile Include="UI\GsVScrollTemplate.cpp" />
-    <ClCompile Include="UI\GsVTrackerTemplate.cpp" />
+    <ClCompile Include="UI\_Source\GacStudioUIPartialClasses.cpp" />
+    <ClCompile Include="UI\_Source\GsAddExistingFilesWindow.cpp" />
+    <ClCompile Include="UI\_Source\GsHScrollTemplate.cpp" />
+    <ClCompile Include="UI\_Source\GsHTrackerTemplate.cpp" />
+    <ClCompile Include="UI\_Source\GsMainWindow.cpp" />
+    <ClCompile Include="UI\_Source\GsNewFileWindow.cpp" />
+    <ClCompile Include="UI\_Source\GsNewProjectWindow.cpp" />
+    <ClCompile Include="UI\_Source\GsRenameFileWindow.cpp" />
+    <ClCompile Include="UI\_Source\GsVScrollTemplate.cpp" />
+    <ClCompile Include="UI\_Source\GsVTrackerTemplate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h" />
@@ -126,17 +126,17 @@
     <ClInclude Include="Studio\EditorModel.h" />
     <ClInclude Include="Studio\SolutionModel.h" />
     <ClInclude Include="Studio\StudioModel.h" />
-    <ClInclude Include="UI\GacStudioUI.h" />
-    <ClInclude Include="UI\GacStudioUIPartialClasses.h" />
-    <ClInclude Include="UI\GsAddExistingFilesWindow.h" />
-    <ClInclude Include="UI\GsHScrollTemplate.h" />
-    <ClInclude Include="UI\GsHTrackerTemplate.h" />
-    <ClInclude Include="UI\GsMainWindow.h" />
-    <ClInclude Include="UI\GsNewFileWindow.h" />
-    <ClInclude Include="UI\GsNewProjectWindow.h" />
-    <ClInclude Include="UI\GsRenameFileWindow.h" />
-    <ClInclude Include="UI\GsVScrollTemplate.h" />
-    <ClInclude Include="UI\GsVTrackerTemplate.h" />
+    <ClInclude Include="UI\_Source\GacStudioUI.h" />
+    <ClInclude Include="UI\_Source\GacStudioUIPartialClasses.h" />
+    <ClInclude Include="UI\_Source\GsAddExistingFilesWindow.h" />
+    <ClInclude Include="UI\_Source\GsHScrollTemplate.h" />
+    <ClInclude Include="UI\_Source\GsHTrackerTemplate.h" />
+    <ClInclude Include="UI\_Source\GsMainWindow.h" />
+    <ClInclude Include="UI\_Source\GsNewFileWindow.h" />
+    <ClInclude Include="UI\_Source\GsNewProjectWindow.h" />
+    <ClInclude Include="UI\_Source\GsRenameFileWindow.h" />
+    <ClInclude Include="UI\_Source\GsVScrollTemplate.h" />
+    <ClInclude Include="UI\_Source\GsVTrackerTemplate.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="UI\About.xml" />
@@ -144,7 +144,6 @@
     <Xml Include="UI\Config.xml" />
     <Xml Include="UI\FileImages\Folder.xml" />
     <Xml Include="UI\ProjectImages\Folder.xml" />
-    <Xml Include="UI\Resources.xml" />
     <Xml Include="UI\Skin.xml" />
     <Xml Include="UI\UserInterfaces\AboutWindow.xml" />
     <Xml Include="UI\UserInterfaces\AddExistingFilesWindow.xml" />
@@ -156,11 +155,11 @@
     <Xml Include="UI\ViewModels\EditorModel.xml" />
     <Xml Include="UI\ViewModels\SolutionModel.xml" />
     <Xml Include="UI\ViewModels\StudioModel.xml" />
+    <Xml Include="UI\_UIRes\Resources.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UI\Codegen.bat" />
-    <None Include="UI\Resources.bin" />
-    <None Include="UI\ResourcesUncompressed.bin" />
+    <None Include="UI\_UIRes\Resources.bin" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="UI\CommandImages\EditCopy.png" />

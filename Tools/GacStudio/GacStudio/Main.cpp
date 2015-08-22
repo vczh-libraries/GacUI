@@ -1,7 +1,7 @@
 
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
-#include "UI\GacStudioUI.h"
+#include "UI\_Source\GacStudioUI.h"
 #include "Studio\StudioModel.h"
 #include <Windows.h>
 
@@ -27,13 +27,13 @@ void GuiMain()
 #ifdef GACSTUDIO_LOADBINARYRESOURCE
 	Ptr<GuiResource> resource;
 	{
-		FileStream fileStream(L"..\\GacStudio\\UI\\Resources.bin", FileStream::ReadOnly);
+		FileStream fileStream(L"..\\GacStudio\\UI\\_UIRes\\Resources.bin", FileStream::ReadOnly);
 		LzwDecoder decoder;
 		DecoderStream decoderStream(fileStream, decoder);
 		resource = GuiResource::LoadPrecompiledBinary(decoderStream, errors);
 	}
 #else
-	auto resource = GuiResource::LoadFromXml(L"..\\GacStudio\\UI\\Resources.xml", errors);
+	auto resource = GuiResource::LoadFromXml(L"..\\GacStudio\\UI\\_UIRes\\Resources.xml", errors);
 #endif
 	GetInstanceLoaderManager()->SetResource(L"GacStudioUI", resource);
 	MainWindow window(new StudioModel);
