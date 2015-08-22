@@ -100,7 +100,7 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 	Ptr<CodegenConfig> config = new CodegenConfig;
 	config->resource = resource;
 
-	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Cpp"))
+	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Cpp/"))
 	{
 		auto out = MakePtr<CodegenConfig::CppOutput>();
 		if (!LoadConfigString(folder, L"Output", out->output)) return nullptr;
@@ -112,7 +112,7 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 		config->cppOutput = out;
 	}
 
-	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Res"))
+	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Res/"))
 	{
 		auto out = MakePtr<CodegenConfig::ResOutput>();
 		if (!LoadConfigString(folder, L"Output", out->output)) return nullptr;

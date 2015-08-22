@@ -531,17 +531,21 @@ void GuiMain()
 	}
 	GetInstanceLoaderManager()->SetResource(L"GACGEN", resource);
 
-	FOREACH(Ptr<Instance>, instance, typeLoader->instances.Values())
+	if (config->cppOutput)
 	{
-		if (instance->context->codeBehind)
+		filesystem::Folder(resource->GetWorkingDirectory() + config->cppOutput->output).Create(true);
+		FOREACH(Ptr<Instance>, instance, typeLoader->instances.Values())
 		{
-			WriteControlClassHeaderFile(config, instance);
-			WriteControlClassCppFile(config, instance);
+			if (instance->context->codeBehind)
+			{
+				WriteControlClassHeaderFile(config, instance);
+				WriteControlClassCppFile(config, instance);
+			}
 		}
+		WritePartialClassHeaderFile(config, typeLoader->typeSchemas, typeLoader->typeSchemaOrder, typeLoader->instances);
+		WritePartialClassCppFile(config, typeLoader->typeSchemas, typeLoader->typeSchemaOrder, typeLoader->instances);
+		WriteGlobalHeaderFile(config, typeLoader->instances);
 	}
-	WritePartialClassHeaderFile(config, typeLoader->typeSchemas, typeLoader->typeSchemaOrder, typeLoader->instances);
-	WritePartialClassCppFile(config, typeLoader->typeSchemas, typeLoader->typeSchemaOrder, typeLoader->instances);
-	WriteGlobalHeaderFile(config, typeLoader->instances);
 
 	if (errors.Count() > 0)
 	{
@@ -549,6 +553,7 @@ void GuiMain()
 	}
 	else if (config->resOutput)
 	{
+		filesystem::Folder(resource->GetWorkingDirectory() + config->resOutput->output).Create(true);
 		if (config->resOutput->precompiledOutput != L"")
 		{
 			WString fileName = config->resOutput->output + config->resOutput->precompiledOutput;

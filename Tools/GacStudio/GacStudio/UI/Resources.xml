@@ -8,7 +8,7 @@
       <Text name="Prefix">Gs</Text>
     </Folder>
     <Folder name="Res">
-      <Text name="Output">.\UIRes</Text>
+      <Text name="Output">.\_UIRes</Text>
       <Text name="PrecompiledCompressed">Resources.bin</Text>
     </Folder>
   </Folder>
