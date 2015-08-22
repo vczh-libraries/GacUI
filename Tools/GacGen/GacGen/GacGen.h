@@ -50,7 +50,15 @@ struct InstanceSchema
 class CodegenConfig
 {
 public:
-	class CppOutput
+	class Output :public Object
+	{
+	public:
+		WString									output;
+
+		void									Initialize();
+	};
+
+	class CppOutput :public Output
 	{
 	public:
 		WString									include;
@@ -64,7 +72,7 @@ public:
 		WString									GetGlobalHeaderFileName();
 	};
 
-	class ResOutput
+	class ResOutput :public Output
 	{
 	public:
 		WString									precompiledOutput;
@@ -79,7 +87,7 @@ public:
 	Ptr<CppOutput>								cppOutput;
 	Ptr<ResOutput>								resOutput;
 
-	static bool									LoadConfigString(Ptr<GuiResource> resource, const WString& name, WString& value, bool optional = false);
+	static bool									LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, WString& value, bool optional = false);
 	static Ptr<CodegenConfig>					LoadConfig(Ptr<GuiResource> resource);
 };
 
@@ -140,20 +148,20 @@ Codegen::FileUtility
 
 #define OPEN_BINARY_FILE(NAME)\
 	FileStream fileStream(config->resource->GetWorkingDirectory() + fileName, FileStream::WriteOnly); \
-	if (!fileStream.IsAvailable()) \
-	{ \
-		PrintErrorMessage(L"error> Failed to generate " + fileName); \
-		return; \
-	} \
+if (!fileStream.IsAvailable()) \
+{ \
+	PrintErrorMessage(L"error> Failed to generate " + fileName); \
+	return; \
+} \
 	PrintSuccessMessage(L"gacgen> Generating " + fileName);
 
 #define OPEN_FILE(NAME)\
 	FileStream fileStream(config->resource->GetWorkingDirectory() + fileName, FileStream::WriteOnly); \
-	if (!fileStream.IsAvailable()) \
-	{ \
-		PrintErrorMessage(L"error> Failed to generate " + fileName); \
-		return; \
-	} \
+if (!fileStream.IsAvailable()) \
+{ \
+	PrintErrorMessage(L"error> Failed to generate " + fileName); \
+	return; \
+} \
 	BomEncoder encoder(BomEncoder::Utf8); \
 	EncoderStream encoderStream(fileStream, encoder); \
 	StreamWriter writer(encoderStream); \

@@ -214,8 +214,8 @@
     <Xml Include="UI\ViewModels\StudioModel.xml">
       <Filter>Resource Files\ViewModels</Filter>
     </Xml>
-    <Xml Include="UI\_UIRes\Resources.xml">
-      <Filter>_UIRes</Filter>
+    <Xml Include="UI\Resources.xml">
+      <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

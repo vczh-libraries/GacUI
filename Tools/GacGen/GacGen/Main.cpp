@@ -102,7 +102,7 @@ private:
 	class ConstructorInfo : public MethodInfoImpl
 	{
 	protected:
-		
+
 		Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
 		{
 			throw GacGenException(L"Constructor of mocking type \"" + GetOwnerTypeDescriptor()->GetTypeName() + L"\" is not accessible.");
@@ -123,7 +123,7 @@ private:
 	class MethodInfo : public MethodInfoImpl
 	{
 	protected:
-		
+
 		Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
 		{
 			throw GacGenException(L"Method \"" + GetName() + L"\" of mocking type \"" + GetOwnerTypeDescriptor()->GetTypeName() + L"\" is not accessible.");
@@ -449,7 +449,7 @@ public:
 
 		SearchAllSchemas(regexClassName, resource, typeSchemas, typeSchemaOrder);
 		SearchAllInstances(regexClassName, resolver, resource, instances);
-		
+
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
 			Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(instance->context, resolver);
@@ -547,24 +547,24 @@ void GuiMain()
 	{
 		PrintErrorMessage(L"Skip generate precompiled resource because there are compilation errors.");
 	}
-	else
+	else if (config->resOutput)
 	{
 		if (config->resOutput->precompiledOutput != L"")
 		{
-			WString fileName = config->resOutput->precompiledOutput;
+			WString fileName = config->resOutput->output + config->resOutput->precompiledOutput;
 			auto xml = resource->SaveToXml(true);
 			OPEN_FILE(L"Precompiled Xml Resource");
 			XmlPrint(xml, writer);
 		}
 		if (config->resOutput->precompiledBinary != L"")
 		{
-			WString fileName = config->resOutput->precompiledBinary;
+			WString fileName = config->resOutput->output + config->resOutput->precompiledBinary;
 			OPEN_BINARY_FILE(L"Precompiled Binary Resource");
 			resource->SavePrecompiledBinary(fileStream);
 		}
 		if (config->resOutput->precompiledCompressed != L"")
 		{
-			WString fileName = config->resOutput->precompiledCompressed;
+			WString fileName = config->resOutput->output + config->resOutput->precompiledCompressed;
 			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource");
 			LzwEncoder encoder;
 			EncoderStream encoderStream(fileStream, encoder);

@@ -6,7 +6,7 @@ Codegen::GlobalHeader
 
 void WriteGlobalHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances)
 {
-	WString fileName = config->cppOutput->GetGlobalHeaderFileName();
+	WString fileName = config->cppOutput->output + config->cppOutput->GetGlobalHeaderFileName();
 	OPEN_FILE_WITH_COMMENT(config->cppOutput->name, true);
 
 	writer.WriteLine(L"#ifndef VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->cppOutput->name);

@@ -33,7 +33,7 @@ void WriteControlClassHeaderFile(Ptr<CodegenConfig> config, Ptr<Instance> instan
 {
 	Regex regexCtor(L"^(<prefix>/s*)" + instance->typeName + L"/([^)]*/);");
 
-	WString fileName = config->cppOutput->GetControlClassHeaderFileName(instance);
+	WString fileName = config->cppOutput->output + config->cppOutput->GetControlClassHeaderFileName(instance);
 	List<WString> lines;
 	if (TryReadFile(config, fileName, lines))
 	{
@@ -49,7 +49,7 @@ void WriteControlClassHeaderFile(Ptr<CodegenConfig> config, Ptr<Instance> instan
 			CANNOT_MERGE_CONTENT;
 			return;
 		}
-		
+
 		OPEN_FILE(instance->typeName);
 		PrintInformationMessage(L"gacgen> Merging content into " + fileName);
 
@@ -90,7 +90,7 @@ void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 	Regex regexCtor(L"^(<prefix>/s*)" + instance->typeName + L"::" + instance->typeName + L"/([^)]*/)");
 	Regex regexInit(L"^(<prefix>/s*)InitializeComponents/([^)]*/);");
 
-	WString fileName = config->cppOutput->GetControlClassCppFileName(instance);
+	WString fileName = config->cppOutput->output + config->cppOutput->GetControlClassCppFileName(instance);
 	List<WString> lines;
 	if (TryReadFile(config, fileName, lines))
 	{
@@ -178,7 +178,7 @@ void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 				}
 			}
 		}
-		
+
 		OPEN_FILE(instance->typeName);
 		PrintInformationMessage(L"gacgen> Merging content into " + fileName);
 

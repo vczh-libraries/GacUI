@@ -8,9 +8,9 @@ WString Instance::GetFullName()
 {
 	return From(namespaces)
 		.Aggregate(WString(), [](const WString& a, const WString& b)->WString
-		{
-			return a + b + L"::";
-		})
+	{
+		return a + b + L"::";
+	})
 		+ typeName;
 }
 
@@ -22,14 +22,30 @@ WString InstanceSchema::GetFullName()
 {
 	return From(namespaces)
 		.Aggregate(WString(), [](const WString& a, const WString& b)->WString
-		{
-			return a + b + L"::";
-		})
+	{
+		return a + b + L"::";
+	})
 		+ typeName;
 }
 
 /***********************************************************************
-CodegenConfig::CppConfig
+CodegenConfig::Output
+***********************************************************************/
+
+void CodegenConfig::Output::Initialize()
+{
+	if (output.Length() == 0)
+	{
+		output = L".\\";
+	}
+	else if (output[output.Length() - 1] != L'\\')
+	{
+		output += L"\\";
+	}
+}
+
+/***********************************************************************
+CodegenConfig::CppOutput
 ***********************************************************************/
 
 WString CodegenConfig::CppOutput::GetControlClassHeaderFileName(Ptr<Instance> instance)
@@ -61,16 +77,16 @@ WString CodegenConfig::CppOutput::GetGlobalHeaderFileName()
 CodegenConfig
 ***********************************************************************/
 
-bool CodegenConfig::LoadConfigString(Ptr<GuiResource> resource, const WString& name, WString& value, bool optional)
+bool CodegenConfig::LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, WString& value, bool optional)
 {
-	if (auto includeItem = resource->GetValueByPath(L"GacGenConfig/" + name).Cast<GuiTextData>())
+	if (auto includeItem = folder->GetValueByPath(path).Cast<GuiTextData>())
 	{
 		value = includeItem->GetText();
 		return true;
 	}
 	else if (!optional)
 	{
-		PrintErrorMessage(L"error> Cannot find configuration in resource \"GacGenConfig/" + name + L"\".");
+		PrintErrorMessage(L"error> Cannot find configuration in resource \"" + folder->GetName() + L"/" + path + L"\".");
 		return false;
 	}
 	else
@@ -83,14 +99,30 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 {
 	Ptr<CodegenConfig> config = new CodegenConfig;
 	config->resource = resource;
-	config->cppOutput = MakePtr<CppOutput>();
-	config->resOutput = MakePtr<ResOutput>();
 
-	if (!LoadConfigString(resource, L"Include", config->cppOutput->include)) return false;
-	if (!LoadConfigString(resource, L"Name", config->cppOutput->name)) return false;
-	if (!LoadConfigString(resource, L"Prefix", config->cppOutput->prefix)) return false;
-	LoadConfigString(resource, L"PrecompiledOutput", config->resOutput->precompiledOutput, true);
-	LoadConfigString(resource, L"PrecompiledBinary", config->resOutput->precompiledBinary, true);
-	LoadConfigString(resource, L"PrecompiledCompressed", config->resOutput->precompiledCompressed, true);
+	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Cpp"))
+	{
+		auto out = MakePtr<CodegenConfig::CppOutput>();
+		if (!LoadConfigString(folder, L"Output", out->output)) return nullptr;
+		if (!LoadConfigString(folder, L"Include", out->include)) return nullptr;
+		if (!LoadConfigString(folder, L"Name", out->name)) return nullptr;
+		if (!LoadConfigString(folder, L"Prefix", out->prefix)) return nullptr;
+
+		out->Initialize();
+		config->cppOutput = out;
+	}
+
+	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Res"))
+	{
+		auto out = MakePtr<CodegenConfig::ResOutput>();
+		if (!LoadConfigString(folder, L"Output", out->output)) return nullptr;
+		LoadConfigString(folder, L"PrecompiledOutput", out->precompiledOutput, true);
+		LoadConfigString(folder, L"PrecompiledBinary", out->precompiledBinary, true);
+		LoadConfigString(folder, L"PrecompiledCompressed", out->precompiledCompressed, true);
+
+		out->Initialize();
+		config->resOutput = out;
+	}
+
 	return config;
 }

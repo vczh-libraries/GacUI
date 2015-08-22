@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Resource>
   <Folder name="GacGenConfig">
-    <Text name="Include">GacUIReflection.h</Text>
-    <Text name="Name">GacStudioUI</Text>
-    <Text name="Prefix">Gs</Text>
-    <Text name="PrecompiledCompressed">Resources.bin</Text>
+    <Folder name="Cpp">
+      <Text name="Output">.\_Source</Text>
+      <Text name="Include">GacUIReflection.h</Text>
+      <Text name="Name">GacStudioUI</Text>
+      <Text name="Prefix">Gs</Text>
+    </Folder>
+    <Folder name="Res">
+      <Text name="Output">.\UIRes</Text>
+      <Text name="PrecompiledCompressed">Resources.bin</Text>
+    </Folder>
   </Folder>
   <Folder name="CommandImages" content="Link">CommandImages\Folder.xml</Folder>
   <Folder name="ProjectImages" content="Link">ProjectImages\Folder.xml</Folder>

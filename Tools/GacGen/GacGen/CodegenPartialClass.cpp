@@ -6,7 +6,7 @@ Codegen::PartialClass
 
 void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
 {
-	WString fileName = config->cppOutput->GetPartialClassHeaderFileName();
+	WString fileName = config->cppOutput->output + config->cppOutput->GetPartialClassHeaderFileName();
 	OPEN_FILE_WITH_COMMENT(L"Partial Classes", true);
 
 	writer.WriteLine(L"#ifndef VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->cppOutput->name + L"_PARTIAL_CLASSES");
@@ -318,7 +318,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, 
 
 void WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
 {
-	WString fileName = config->cppOutput->GetPartialClassCppFileName();
+	WString fileName = config->cppOutput->output + config->cppOutput->GetPartialClassCppFileName();
 	OPEN_FILE_WITH_COMMENT(L"Partial Classes", true);
 
 	writer.WriteLine(L"#include \"" + config->cppOutput->GetGlobalHeaderFileName() + L"\"");

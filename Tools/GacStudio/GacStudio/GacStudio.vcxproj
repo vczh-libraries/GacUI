@@ -144,6 +144,7 @@
     <Xml Include="UI\Config.xml" />
     <Xml Include="UI\FileImages\Folder.xml" />
     <Xml Include="UI\ProjectImages\Folder.xml" />
+    <Xml Include="UI\Resources.xml" />
     <Xml Include="UI\Skin.xml" />
     <Xml Include="UI\UserInterfaces\AboutWindow.xml" />
     <Xml Include="UI\UserInterfaces\AddExistingFilesWindow.xml" />
@@ -155,7 +156,6 @@
     <Xml Include="UI\ViewModels\EditorModel.xml" />
     <Xml Include="UI\ViewModels\SolutionModel.xml" />
     <Xml Include="UI\ViewModels\StudioModel.xml" />
-    <Xml Include="UI\_UIRes\Resources.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UI\Codegen.bat" />
