@@ -2,13 +2,11 @@ rd /s /q .Output
 mkdir .Output
 cd .Output
 mkdir Source
-mkdir Tools
 mkdir x86
 mkdir x64
 mkdir Index
 cd ..
 
-MSBuild DocTools\DocTools.sln /p:Configuration=Release;OutputPath=..\..\.Output\Tools\
 copy ..\Release\*.h .Output\Source\*.h
 copy ..\Release\*.cpp .Output\Source\*.cpp
 copy ..\Import\*.h .Output\Source\*.h
@@ -29,6 +27,6 @@ cd ..\..
 copy .Output\x64\Headers.ast.xml .Output\x64.ast.xml
 
 cd .Output
-Tools\DocResolver "x86, Windows" x86.ast.xml "x64, Windows" x64.ast.xml Resolved.ast.xml
-Tools\DocIndex Resolved.ast.xml Index
+..\..\..\Tools\Tools\DocResolver "x86, Windows" x86.ast.xml "x64, Windows" x64.ast.xml Resolved.ast.xml
+..\..\..\Tools\Tools\DocIndex Resolved.ast.xml Index
 cd ..
