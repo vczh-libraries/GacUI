@@ -122,17 +122,19 @@ namespace vl
 			KEYWORD_TRY = 77,
 			KEYWORD_CATCH = 78,
 			KEYWORD_FINALLY = 79,
-			KEYWORD_USING = 80,
-			KEYWORD_NAMESPACE = 81,
-			KEYWORD_MODULE = 82,
-			KEYWORD_UNIT = 83,
-			NAME = 84,
-			ORDERED_NAME = 85,
-			FLOAT = 86,
-			INTEGER = 87,
-			STRING = 88,
-			FORMATSTRING = 89,
-			SPACE = 90,
+			KEYWORD_CLASS = 80,
+			KEYWORD_STATIC = 81,
+			KEYWORD_USING = 82,
+			KEYWORD_NAMESPACE = 83,
+			KEYWORD_MODULE = 84,
+			KEYWORD_UNIT = 85,
+			NAME = 86,
+			ORDERED_NAME = 87,
+			FLOAT = 88,
+			INTEGER = 89,
+			STRING = 90,
+			FORMATSTRING = 91,
+			SPACE = 92,
 		};
 		class WfType;
 		class WfPredefinedType;
@@ -198,6 +200,8 @@ namespace vl
 		class WfVariableDeclaration;
 		class WfVariableStatement;
 		class WfNewTypeExpression;
+		class WfClassMember;
+		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
 		class WfModuleUsingWildCardFragment;
@@ -968,6 +972,7 @@ namespace vl
 				virtual void Visit(WfNamespaceDeclaration* node)=0;
 				virtual void Visit(WfFunctionDeclaration* node)=0;
 				virtual void Visit(WfVariableDeclaration* node)=0;
+				virtual void Visit(WfClassDeclaration* node)=0;
 			};
 
 			virtual void Accept(WfDeclaration::IVisitor* visitor)=0;
@@ -1054,6 +1059,32 @@ namespace vl
 			void Accept(WfExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfNewTypeExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		enum class WfClassMemberKind
+		{
+			Static,
+			Normal,
+		};
+
+		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
+		{
+		public:
+			WfClassMemberKind kind;
+			vl::Ptr<WfDeclaration> declaration;
+
+			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
+		{
+		public:
+			vl::collections::List<vl::Ptr<WfType>> baseTypes;
+			vl::collections::List<vl::Ptr<WfClassMember>> members;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfClassDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfModuleUsingFragment abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfModuleUsingFragment>
@@ -1235,6 +1266,9 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfVariableDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
 			DECL_TYPE_INFO(vl::workflow::WfNewTypeExpression)
+			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
+			DECL_TYPE_INFO(vl::workflow::WfClassMember)
+			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingWildCardFragment)
@@ -1588,6 +1622,11 @@ namespace vl
 						INVOKE_INTERFACE_PROXY(Visit, node);
 					}
 
+					void Visit(vl::workflow::WfClassDeclaration* node)override
+					{
+						INVOKE_INTERFACE_PROXY(Visit, node);
+					}
+
 				};
 
 				class WfModuleUsingFragment_IVisitor : public ValueInterfaceRoot, public virtual vl::workflow::WfModuleUsingFragment::IVisitor
@@ -1699,7 +1738,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-RUNTIME\WFRUNTIME.H
+RUNTIME\WFRUNTIMEINSTRUCTION.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1709,8 +1748,8 @@ Workflow::Runtime
 Interfaces:
 **********************************************************************/
 
-#ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIME
-#define VCZH_WORKFLOW_RUNTIME_WFRUNTIME
+#ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMEINSTRUCTION
+#define VCZH_WORKFLOW_RUNTIME_WFRUNTIMEINSTRUCTION
 
 
 namespace vl
@@ -1719,9 +1758,6 @@ namespace vl
 	{
 		namespace runtime
 		{
-			struct WfRuntimeThreadContext;
-			class IWfDebuggerCallback;
-			class WfDebugger;
 
 /***********************************************************************
 Instruction
@@ -1930,6 +1966,121 @@ Instruction
 				#undef CTOR_LABEL
 				#undef CTOR_TYPE
 			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+RUNTIME\WFRUNTIMETYPEDESCRIPTOR.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Workflow::Runtime
+
+Interfaces:
+**********************************************************************/
+
+#ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMETYPEDESCRIPTOR
+#define VCZH_WORKFLOW_RUNTIME_WFRUNTIMETYPEDESCRIPTOR
+
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace runtime
+		{
+			class WfRuntimeGlobalContext;
+		}
+
+		namespace typeimpl
+		{
+			class WfClass;
+			class WfTypeImpl;
+
+			class WfStaticMethod : public reflection::description::MethodInfoImpl
+			{
+				friend class WfClass;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef reflection::description::Value						Value;
+			protected:
+				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
+				
+				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
+			public:
+				vint									functionIndex;
+
+				WfStaticMethod();
+				~WfStaticMethod();
+
+				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
+				void									SetReturn(Ptr<ITypeInfo> type);
+			};
+
+			class WfClass : public reflection::description::TypeDescriptorImpl
+			{
+				friend class WfTypeImpl;
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+			protected:
+				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
+				
+				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
+				void									LoadInternal()override;
+			public:
+				WfClass(const WString& typeName);
+				~WfClass();
+				
+				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
+				void									AddBaseType(ITypeDescriptor* type);
+				void									AddMember(const WString& name, Ptr<WfStaticMethod> value);
+			};
+
+			class WfTypeImpl : public Object, public reflection::description::ITypeLoader, public reflection::Description<WfTypeImpl>
+			{
+			protected:
+				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
+
+			public:
+				collections::List<Ptr<WfClass>>			classes;
+				
+				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
+				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
+				void									Load(reflection::description::ITypeManager* manager)override;
+				void									Unload(reflection::description::ITypeManager* manager)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+RUNTIME\WFRUNTIMEASSEMBLY.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Workflow::Runtime
+
+Interfaces:
+**********************************************************************/
+
+#ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMEASSEMBLY
+#define VCZH_WORKFLOW_RUNTIME_WFRUNTIMEASSEMBLY
+
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace runtime
+		{
 
 /***********************************************************************
 Assembly
@@ -1987,6 +2138,8 @@ Assembly
 				collections::List<Ptr<WfAssemblyFunction>>			functions;
 				/// <summary>Instructions.</summary>
 				collections::List<WfInstruction>					instructions;
+				/// <summary>Custom types.</summary>
+				Ptr<typeimpl::WfTypeImpl>							typeImpl;
 
 				/// <summary>Create an empty assembly.</summary>
 				WfAssembly();
@@ -1999,244 +2152,175 @@ Assembly
 				/// <param name="output">Serialized binary data.</param>
 				void												Serialize(stream::IStream& output);
 			};
+		}
+	}
+}
 
-/***********************************************************************
-RuntimeEnvironment
-***********************************************************************/
-
-			class WfRuntimeVariableContext : public Object
-			{
-				typedef collections::Array<reflection::description::Value>		VariableArray;
-
-			public:
-				VariableArray					variables;
-			};
-
-			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction] to call any functions inside the assembly. Function "&lt;initialize&gt;" should be the first to execute.</summary>
-			class WfRuntimeGlobalContext : public Object
-			{
-			public:
-				Ptr<WfAssembly>					assembly;
-				Ptr<WfRuntimeVariableContext>	globalVariables;
-				
-				/// <summary>Create a global context for executing a Workflow program.</summary>
-				/// <param name="_assembly">The assembly.</param>
-				WfRuntimeGlobalContext(Ptr<WfAssembly> _assembly);
-			};
-
-			struct WfRuntimeStackFrame
-			{
-				Ptr<WfRuntimeVariableContext>	capturedVariables;
-				vint							functionIndex = -1;
-				vint							nextInstructionIndex = -1;
-				vint							stackBase = 0;
-				vint							fixedVariableCount = 0;
-				vint							freeStackBase = 0;
-			};
-
-			struct WfRuntimeTrapFrame
-			{
-				vint							stackFrameIndex = -1;
-				vint							instructionIndex = -1;
-				vint							stackPatternCount = -1;
-			};
-
-/***********************************************************************
-RuntimeException
-***********************************************************************/
-
-			/// <summary>Representing a call stack item.</summary>
-			class WfRuntimeCallStackInfo : public Object, public virtual reflection::description::IValueCallStack
-			{
-				using IValueReadonlyDictionary = reflection::description::IValueReadonlyDictionary;
-			protected:
-				Ptr<IValueReadonlyDictionary>	cachedLocalVariables;
-				Ptr<IValueReadonlyDictionary>	cachedLocalArguments;
-				Ptr<IValueReadonlyDictionary>	cachedCapturedVariables;
-				Ptr<IValueReadonlyDictionary>	cachedGlobalVariables;
-
-				Ptr<IValueReadonlyDictionary>	GetVariables(collections::List<WString>& names, Ptr<WfRuntimeVariableContext> context, Ptr<IValueReadonlyDictionary>& cache);
-			public:
-				WfRuntimeCallStackInfo();
-				WfRuntimeCallStackInfo(WfRuntimeThreadContext* context, const WfRuntimeStackFrame& stackFrame);
-				~WfRuntimeCallStackInfo();
-
-				/// <summary>The executing assembly.</summary>
-				Ptr<WfAssembly>					assembly;
-				/// <summary>Global variable values.</summary>
-				Ptr<WfRuntimeVariableContext>	global;
-				/// <summary>Captured variable values.</summary>
-				Ptr<WfRuntimeVariableContext>	captured;
-				/// <summary>Argument values.</summary>
-				Ptr<WfRuntimeVariableContext>	arguments;
-				/// <summary>Local variable values.</summary>
-				Ptr<WfRuntimeVariableContext>	localVariables;
-				/// <summary>The executing function.</summary>
-				vint							functionIndex = -1;
-				/// <summary>The executing instruction.</summary>
-				vint							instruction = -1;
-
-				Ptr<IValueReadonlyDictionary>	GetLocalVariables()override;
-				Ptr<IValueReadonlyDictionary>	GetLocalArguments()override;
-				Ptr<IValueReadonlyDictionary>	GetCapturedVariables()override;
-				Ptr<IValueReadonlyDictionary>	GetGlobalVariables()override;
-
-				/// <summary>Get the name of the executing function.</summary>
-				/// <returns>The name of the execution function.</returns>
-				WString							GetFunctionName()override;
-				/// <summary>Get the source code of the executing module.</summary>
-				/// <returns>The source code.</returns>
-				WString							GetSourceCodeBeforeCodegen()override;
-				/// <summary>Get the source code of the executing module from generated syntax trees from the final compiling pass.</summary>
-				/// <returns>The source code.</returns>
-				WString							GetSourceCodeAfterCodegen()override;
-				/// <summary>Get the row number (starts at 0) of the source code of the executing module.</summary>
-				/// <returns>The row number.</returns>
-				vint							GetRowBeforeCodegen()override;
-				/// <summary>Get the row number (starts at 0) of the source code of the executing module from generated syntax trees from the final compiling pass.</summary>
-				/// <returns>The row number.</returns>
-				vint							GetRowAfterCodegen()override;
-			};
-			
-			/// <summary>Representing an raised exception.</summary>
-			class WfRuntimeExceptionInfo : public Object, public virtual reflection::description::IValueException
-			{
-				typedef collections::List<Ptr<WfRuntimeCallStackInfo>>		CallStackList;
-				using IValueReadonlyList = reflection::description::IValueReadonlyList;
-			protected:
-				Ptr<IValueReadonlyList>			cachedCallStack;
-
-			public:
-				/// <summary>Exception message.</summary>
-				WString							message;
-				/// <summary>Fatal error flag.</summary>
-				bool							fatal = false;
-				/// <summary>All call stack items.</summary>
-				CallStackList					callStack;
-
-				WfRuntimeExceptionInfo(const WString& _message, bool _fatal);
-				~WfRuntimeExceptionInfo();
-				
-#pragma push_macro("GetMessage")
-#if defined GetMessage
-#undef GetMessage
 #endif
-				WString							GetMessage()override;
-#pragma pop_macro("GetMessage")
-				bool							GetFatal()override;
-				Ptr<IValueReadonlyList>			GetCallStack()override;
-			};
-			
-			/// <summary>Representing an raised exception object for upper level C++ code.</summary>
-			class WfRuntimeException : public reflection::description::TypeDescriptorException
-			{
-			protected:
-				Ptr<WfRuntimeExceptionInfo>		info;
-				bool							fatal = false;
-			public:
-				WfRuntimeException(Ptr<WfRuntimeExceptionInfo> _info)
-					:reflection::description::TypeDescriptorException(_info->message)
-					, info(_info)
-					, fatal(_info->fatal)
-				{
-				}
-
-				WfRuntimeException(const WString& _message, bool _fatal)
-					:reflection::description::TypeDescriptorException(_message)
-					, fatal(_fatal)
-				{
-				}
-
-				/// <summary>Get the detailed information.</summary>
-				/// <returns>The detailed information.</returns>
-				Ptr<WfRuntimeExceptionInfo> GetInfo()const
-				{
-					return info;
-				}
-
-				/// <summary>Get the fatal error flag.</summary>
-				/// <returns>Returns true if this exception is a fatal error, which normally means state corruption in a Workflow runtime.</returns>
-				bool IsFatal()const
-				{
-					return fatal;
-				}
-			};
 
 /***********************************************************************
-RuntimeThreadContext
+RUNTIME\WFRUNTIMECONSTRUCTIONS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Workflow::Runtime
+
+Interfaces:
+**********************************************************************/
+
+#ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMECONSTRUCTIONS
+#define VCZH_WORKFLOW_RUNTIME_WFRUNTIMECONSTRUCTIONS
+
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace runtime
+		{
+			class WfRuntimeGlobalContext;
+			class WfRuntimeVariableContext;
+			
+/***********************************************************************
+Range
 ***********************************************************************/
 
-			enum class WfRuntimeExecutionStatus
+			template<typename T>
+			class WfRuntimeRange : public Object, public reflection::description::IValueEnumerable
 			{
-				Ready,
-				Executing,
-				RaisedException,
-				Finished,
-				FatalError,
-			};
+			protected:
+				T						begin;
+				T						end;
 
-			enum class WfRuntimeExecutionAction
+				class Enumerator : public Object, public reflection::description::IValueEnumerator
+				{
+				protected:
+					T					begin;
+					T					end;
+					T					current;
+				public:
+					Enumerator(T _begin, T _end)
+						:begin(_begin), end(_end), current(_begin - 1)
+					{
+					}
+
+					reflection::description::Value GetCurrent()
+					{
+						return reflection::description::BoxValue<T>(current);
+					}
+
+					vint GetIndex()
+					{
+						return (vint)(current - begin);
+					}
+
+					bool Next()
+					{
+						if (current >= end) return false;
+						current++;
+						return true;
+					}
+				};
+			public:
+				WfRuntimeRange(T _begin, T _end)
+					:begin(_begin), end(_end)
+				{
+				}
+
+				Ptr<reflection::description::IValueEnumerator> CreateEnumerator()override
+				{
+					return MakePtr<Enumerator>(begin, end);
+				}
+			};
+			
+/***********************************************************************
+ReverseEnumerable
+***********************************************************************/
+
+			class WfRuntimeReverseEnumerable : public Object, public reflection::description::IValueEnumerable
 			{
-				ExecuteInstruction,
-				UnwrapStack,
-				EnterStackFrame,
-				ExitStackFrame,
-				Nop,
-			};
+			protected:
+				Ptr<reflection::description::IValueList>		list;
 
-			enum class WfRuntimeThreadContextError
+				class Enumerator : public Object, public reflection::description::IValueEnumerator
+				{
+				protected:
+					Ptr<reflection::description::IValueList>	list;
+					vint										index;
+
+				public:
+					Enumerator(Ptr<reflection::description::IValueList> _list);
+					reflection::description::Value				GetCurrent();
+					vint										GetIndex();
+					bool										Next();
+				};
+
+			public:
+				WfRuntimeReverseEnumerable(Ptr<reflection::description::IValueList> _list);
+
+				Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
+			};
+			
+/***********************************************************************
+Lambda
+***********************************************************************/
+
+			class WfRuntimeLambda : public Object, public reflection::description::IValueFunctionProxy
 			{
-				Success,
-				WrongStackItemIndex,
-				WrongVariableIndex,
-				WrongFunctionIndex,
-				WrongArgumentCount,
-				WrongCapturedVariableCount,
-				EmptyStackFrame,
-				EmptyTrapFrame,
-				EmptyStack,
-				TrapFrameCorrupted,
-				StackCorrupted,
-			};
+			public:
+				Ptr<WfRuntimeGlobalContext>			globalContext;
+				Ptr<WfRuntimeVariableContext>		capturedVariables;
+				vint								functionIndex;
 
-			struct WfRuntimeThreadContext
+				WfRuntimeLambda(Ptr<WfRuntimeGlobalContext> _globalContext, Ptr<WfRuntimeVariableContext> _capturedVariables, vint _functionIndex);
+
+				reflection::description::Value		Invoke(Ptr<reflection::description::IValueList> arguments)override;
+			};
+			
+/***********************************************************************
+InterfaceInstance
+***********************************************************************/
+
+			class WfRuntimeInterfaceInstance : public Object, public reflection::description::IValueInterfaceProxy
 			{
-				typedef collections::List<reflection::description::Value>		VariableList;
-				typedef collections::List<WfRuntimeStackFrame>					StackFrameList;
-				typedef collections::List<WfRuntimeTrapFrame>					TrapFrameList;
+				typedef collections::Dictionary<WString, Ptr<reflection::description::IValueFunctionProxy>>		FunctionMap;
+			public:
+				FunctionMap							functions;
 
-				Ptr<WfRuntimeGlobalContext>		globalContext;
-				Ptr<WfRuntimeExceptionInfo>		exceptionInfo;
-				VariableList					stack;
-				StackFrameList					stackFrames;
-				TrapFrameList					trapFrames;
-				WfRuntimeExecutionStatus		status = WfRuntimeExecutionStatus::Finished;
-
-				WfRuntimeThreadContext(Ptr<WfRuntimeGlobalContext> _context);
-				WfRuntimeThreadContext(Ptr<WfAssembly> _assembly);
-
-				WfRuntimeStackFrame&			GetCurrentStackFrame();
-				WfRuntimeThreadContextError		PushStackFrame(vint functionIndex, vint argumentCount, Ptr<WfRuntimeVariableContext> capturedVariables = 0);
-				WfRuntimeThreadContextError		PopStackFrame();
-				WfRuntimeTrapFrame&				GetCurrentTrapFrame();
-				WfRuntimeThreadContextError		PushTrapFrame(vint instructionIndex);
-				WfRuntimeThreadContextError		PopTrapFrame(vint saveStackPatternCount);
-				WfRuntimeThreadContextError		PushValue(const reflection::description::Value& value);
-				WfRuntimeThreadContextError		PopValue(reflection::description::Value& value);
-				WfRuntimeThreadContextError		RaiseException(const WString& exception, bool fatalError, bool skipDebugger = false);
-				WfRuntimeThreadContextError		RaiseException(Ptr<WfRuntimeExceptionInfo> info, bool skipDebugger = false);
-
-				WfRuntimeThreadContextError		LoadStackValue(vint stackItemIndex, reflection::description::Value& value);
-				WfRuntimeThreadContextError		LoadGlobalVariable(vint variableIndex, reflection::description::Value& value);
-				WfRuntimeThreadContextError		StoreGlobalVariable(vint variableIndex, const reflection::description::Value& value);
-				WfRuntimeThreadContextError		LoadCapturedVariable(vint variableIndex, reflection::description::Value& value);
-				WfRuntimeThreadContextError		LoadLocalVariable(vint variableIndex, reflection::description::Value& value);
-				WfRuntimeThreadContextError		StoreLocalVariable(vint variableIndex, const reflection::description::Value& value);
-
-				WfRuntimeExecutionAction		ExecuteInternal(WfInstruction& ins, WfRuntimeStackFrame& stackFrame, IWfDebuggerCallback* callback);
-				WfRuntimeExecutionAction		Execute(IWfDebuggerCallback* callback);
-				void							ExecuteToEnd();
+				reflection::description::Value		Invoke(const WString& name, Ptr<reflection::description::IValueList> arguments)override;
 			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+RUNTIME\WFRUNTIMEDEBUGGER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Workflow::Runtime
+
+Interfaces:
+**********************************************************************/
+
+#ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIMEDEBUGGER
+#define VCZH_WORKFLOW_RUNTIME_WFRUNTIMEDEBUGGER
+
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace runtime
+		{
+			class WfRuntimeThreadContext;
+			class WfRuntimeExceptionInfo;
+			class IWfDebuggerCallback;
+			class WfDebugger;
 
 /***********************************************************************
 Debugger
@@ -2556,6 +2640,273 @@ Debugger
 			/// <summary>Set the debugger for the current thread.</summary>
 			/// <param name="debugger">The debugger.</param>
 			extern void									SetDebuggerForCurrentThread(Ptr<WfDebugger> debugger);
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+RUNTIME\WFRUNTIME.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Workflow::Runtime
+
+Interfaces:
+**********************************************************************/
+
+#ifndef VCZH_WORKFLOW_RUNTIME_WFRUNTIME
+#define VCZH_WORKFLOW_RUNTIME_WFRUNTIME
+
+
+namespace vl
+{
+	namespace workflow
+	{
+		namespace runtime
+		{
+
+/***********************************************************************
+RuntimeEnvironment
+***********************************************************************/
+
+			class WfRuntimeVariableContext : public Object
+			{
+				typedef collections::Array<reflection::description::Value>		VariableArray;
+
+			public:
+				VariableArray					variables;
+			};
+
+			/// <summary>Global context for executing a Workflow program. After the context is prepared, use [M:vl.workflow.runtime.LoadFunction] to call any functions inside the assembly. Function "&lt;initialize&gt;" should be the first to execute.</summary>
+			class WfRuntimeGlobalContext : public Object, public reflection::Description<WfRuntimeGlobalContext>
+			{
+			public:
+				Ptr<WfAssembly>					assembly;
+				Ptr<WfRuntimeVariableContext>	globalVariables;
+				
+				/// <summary>Create a global context for executing a Workflow program.</summary>
+				/// <param name="_assembly">The assembly.</param>
+				WfRuntimeGlobalContext(Ptr<WfAssembly> _assembly);
+				~WfRuntimeGlobalContext();
+			};
+
+			struct WfRuntimeStackFrame
+			{
+				Ptr<WfRuntimeVariableContext>	capturedVariables;
+				vint							functionIndex = -1;
+				vint							nextInstructionIndex = -1;
+				vint							stackBase = 0;
+				vint							fixedVariableCount = 0;
+				vint							freeStackBase = 0;
+			};
+
+			struct WfRuntimeTrapFrame
+			{
+				vint							stackFrameIndex = -1;
+				vint							instructionIndex = -1;
+				vint							stackPatternCount = -1;
+			};
+
+/***********************************************************************
+RuntimeException
+***********************************************************************/
+
+			/// <summary>Representing a call stack item.</summary>
+			class WfRuntimeCallStackInfo : public Object, public virtual reflection::description::IValueCallStack
+			{
+				using IValueReadonlyDictionary = reflection::description::IValueReadonlyDictionary;
+			protected:
+				Ptr<IValueReadonlyDictionary>	cachedLocalVariables;
+				Ptr<IValueReadonlyDictionary>	cachedLocalArguments;
+				Ptr<IValueReadonlyDictionary>	cachedCapturedVariables;
+				Ptr<IValueReadonlyDictionary>	cachedGlobalVariables;
+
+				Ptr<IValueReadonlyDictionary>	GetVariables(collections::List<WString>& names, Ptr<WfRuntimeVariableContext> context, Ptr<IValueReadonlyDictionary>& cache);
+			public:
+				WfRuntimeCallStackInfo();
+				WfRuntimeCallStackInfo(WfRuntimeThreadContext* context, const WfRuntimeStackFrame& stackFrame);
+				~WfRuntimeCallStackInfo();
+
+				/// <summary>The executing assembly.</summary>
+				Ptr<WfAssembly>					assembly;
+				/// <summary>Global variable values.</summary>
+				Ptr<WfRuntimeVariableContext>	global;
+				/// <summary>Captured variable values.</summary>
+				Ptr<WfRuntimeVariableContext>	captured;
+				/// <summary>Argument values.</summary>
+				Ptr<WfRuntimeVariableContext>	arguments;
+				/// <summary>Local variable values.</summary>
+				Ptr<WfRuntimeVariableContext>	localVariables;
+				/// <summary>The executing function.</summary>
+				vint							functionIndex = -1;
+				/// <summary>The executing instruction.</summary>
+				vint							instruction = -1;
+
+				Ptr<IValueReadonlyDictionary>	GetLocalVariables()override;
+				Ptr<IValueReadonlyDictionary>	GetLocalArguments()override;
+				Ptr<IValueReadonlyDictionary>	GetCapturedVariables()override;
+				Ptr<IValueReadonlyDictionary>	GetGlobalVariables()override;
+
+				/// <summary>Get the name of the executing function.</summary>
+				/// <returns>The name of the execution function.</returns>
+				WString							GetFunctionName()override;
+				/// <summary>Get the source code of the executing module.</summary>
+				/// <returns>The source code.</returns>
+				WString							GetSourceCodeBeforeCodegen()override;
+				/// <summary>Get the source code of the executing module from generated syntax trees from the final compiling pass.</summary>
+				/// <returns>The source code.</returns>
+				WString							GetSourceCodeAfterCodegen()override;
+				/// <summary>Get the row number (starts at 0) of the source code of the executing module.</summary>
+				/// <returns>The row number.</returns>
+				vint							GetRowBeforeCodegen()override;
+				/// <summary>Get the row number (starts at 0) of the source code of the executing module from generated syntax trees from the final compiling pass.</summary>
+				/// <returns>The row number.</returns>
+				vint							GetRowAfterCodegen()override;
+			};
+			
+			/// <summary>Representing an raised exception.</summary>
+			class WfRuntimeExceptionInfo : public Object, public virtual reflection::description::IValueException
+			{
+				typedef collections::List<Ptr<WfRuntimeCallStackInfo>>		CallStackList;
+				using IValueReadonlyList = reflection::description::IValueReadonlyList;
+			protected:
+				Ptr<IValueReadonlyList>			cachedCallStack;
+
+			public:
+				/// <summary>Exception message.</summary>
+				WString							message;
+				/// <summary>Fatal error flag.</summary>
+				bool							fatal = false;
+				/// <summary>All call stack items.</summary>
+				CallStackList					callStack;
+
+				WfRuntimeExceptionInfo(const WString& _message, bool _fatal);
+				~WfRuntimeExceptionInfo();
+				
+#pragma push_macro("GetMessage")
+#if defined GetMessage
+#undef GetMessage
+#endif
+				WString							GetMessage()override;
+#pragma pop_macro("GetMessage")
+				bool							GetFatal()override;
+				Ptr<IValueReadonlyList>			GetCallStack()override;
+			};
+			
+			/// <summary>Representing an raised exception object for upper level C++ code.</summary>
+			class WfRuntimeException : public reflection::description::TypeDescriptorException
+			{
+			protected:
+				Ptr<WfRuntimeExceptionInfo>		info;
+				bool							fatal = false;
+			public:
+				WfRuntimeException(Ptr<WfRuntimeExceptionInfo> _info)
+					:reflection::description::TypeDescriptorException(_info->message)
+					, info(_info)
+					, fatal(_info->fatal)
+				{
+				}
+
+				WfRuntimeException(const WString& _message, bool _fatal)
+					:reflection::description::TypeDescriptorException(_message)
+					, fatal(_fatal)
+				{
+				}
+
+				/// <summary>Get the detailed information.</summary>
+				/// <returns>The detailed information.</returns>
+				Ptr<WfRuntimeExceptionInfo> GetInfo()const
+				{
+					return info;
+				}
+
+				/// <summary>Get the fatal error flag.</summary>
+				/// <returns>Returns true if this exception is a fatal error, which normally means state corruption in a Workflow runtime.</returns>
+				bool IsFatal()const
+				{
+					return fatal;
+				}
+			};
+
+/***********************************************************************
+RuntimeThreadContext
+***********************************************************************/
+
+			enum class WfRuntimeExecutionStatus
+			{
+				Ready,
+				Executing,
+				RaisedException,
+				Finished,
+				FatalError,
+			};
+
+			enum class WfRuntimeExecutionAction
+			{
+				ExecuteInstruction,
+				UnwrapStack,
+				EnterStackFrame,
+				ExitStackFrame,
+				Nop,
+			};
+
+			enum class WfRuntimeThreadContextError
+			{
+				Success,
+				WrongStackItemIndex,
+				WrongVariableIndex,
+				WrongFunctionIndex,
+				WrongArgumentCount,
+				WrongCapturedVariableCount,
+				EmptyStackFrame,
+				EmptyTrapFrame,
+				EmptyStack,
+				TrapFrameCorrupted,
+				StackCorrupted,
+			};
+
+			class WfRuntimeThreadContext
+			{
+				typedef collections::List<reflection::description::Value>		VariableList;
+				typedef collections::List<WfRuntimeStackFrame>					StackFrameList;
+				typedef collections::List<WfRuntimeTrapFrame>					TrapFrameList;
+			public:
+
+				Ptr<WfRuntimeGlobalContext>		globalContext;
+				Ptr<WfRuntimeExceptionInfo>		exceptionInfo;
+				VariableList					stack;
+				StackFrameList					stackFrames;
+				TrapFrameList					trapFrames;
+				WfRuntimeExecutionStatus		status = WfRuntimeExecutionStatus::Finished;
+
+				WfRuntimeThreadContext(Ptr<WfRuntimeGlobalContext> _context);
+				WfRuntimeThreadContext(Ptr<WfAssembly> _assembly);
+
+				WfRuntimeStackFrame&			GetCurrentStackFrame();
+				WfRuntimeThreadContextError		PushStackFrame(vint functionIndex, vint argumentCount, Ptr<WfRuntimeVariableContext> capturedVariables = 0);
+				WfRuntimeThreadContextError		PopStackFrame();
+				WfRuntimeTrapFrame&				GetCurrentTrapFrame();
+				WfRuntimeThreadContextError		PushTrapFrame(vint instructionIndex);
+				WfRuntimeThreadContextError		PopTrapFrame(vint saveStackPatternCount);
+				WfRuntimeThreadContextError		PushValue(const reflection::description::Value& value);
+				WfRuntimeThreadContextError		PopValue(reflection::description::Value& value);
+				WfRuntimeThreadContextError		RaiseException(const WString& exception, bool fatalError, bool skipDebugger = false);
+				WfRuntimeThreadContextError		RaiseException(Ptr<WfRuntimeExceptionInfo> info, bool skipDebugger = false);
+
+				WfRuntimeThreadContextError		LoadStackValue(vint stackItemIndex, reflection::description::Value& value);
+				WfRuntimeThreadContextError		LoadGlobalVariable(vint variableIndex, reflection::description::Value& value);
+				WfRuntimeThreadContextError		StoreGlobalVariable(vint variableIndex, const reflection::description::Value& value);
+				WfRuntimeThreadContextError		LoadCapturedVariable(vint variableIndex, reflection::description::Value& value);
+				WfRuntimeThreadContextError		LoadLocalVariable(vint variableIndex, reflection::description::Value& value);
+				WfRuntimeThreadContextError		StoreLocalVariable(vint variableIndex, const reflection::description::Value& value);
+
+				WfRuntimeExecutionAction		ExecuteInternal(WfInstruction& ins, WfRuntimeStackFrame& stackFrame, IWfDebuggerCallback* callback);
+				WfRuntimeExecutionAction		Execute(IWfDebuggerCallback* callback);
+				void							ExecuteToEnd();
+			};
 
 /***********************************************************************
 Helper Functions
@@ -2640,6 +2991,7 @@ Scope
 			public:
 				WfLexicalScopeManager*						ownerManager;		// nullable and inheritable
 				Ptr<WfModule>								ownerModule;		// nullable and inheritable
+				Ptr<WfClassMember>							ownerClassMember;	// nullable and inheritable
 				Ptr<WfDeclaration>							ownerDeclaration;	// nullable and inheritable
 				Ptr<WfStatement>							ownerStatement;		// nullable
 				Ptr<WfExpression>							ownerExpression;	// nullable
@@ -2706,6 +3058,9 @@ Scope Manager
 			/// <summary>Workflow compiler.</summary>
 			class WfLexicalScopeManager : public Object
 			{
+				typedef reflection::description::ITypeDescriptor											ITypeDescriptor;
+				typedef reflection::description::IMemberInfo												IMemberInfo;
+
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
 				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
@@ -2719,15 +3074,14 @@ Scope Manager
 				typedef collections::Group<WfFunctionDeclaration*, Ptr<WfLexicalSymbol>>					FunctionLambdaCaptureGroup;
 				typedef collections::Group<WfOrderedLambdaExpression*, Ptr<WfLexicalSymbol>>				OrderedLambdaCaptureGroup;
 
+				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
+				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
+
 			protected:
 				ModuleList									modules;
 				ModuleCodeList								moduleCodes;
 				vint										usedCodeIndex = 0;
 
-				void										BuildGlobalNameFromTypeDescriptors();
-				void										BuildGlobalNameFromModules();
-				void										BuildName(Ptr<WfLexicalScopeName> name, Ptr<WfDeclaration> declaration);
-				void										ValidateScopeName(Ptr<WfLexicalScopeName> name);
 			public:
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
 				ParsingErrorList							errors;
@@ -2741,8 +3095,11 @@ Scope Manager
 				StatementScopeMap							statementScopes;			// the nearest scope for the statement
 				ExpressionScopeMap							expressionScopes;			// the nearest scope for the expression
 				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
-				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbol in an lambda expression
-				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbol in an lambda expression
+				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbols in an lambda expression
+				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an lambda expression
+
+				DeclarationTypeMap							declarationTypes;			// type descriptor for type declaration
+				DeclarationMemberInfoMap					declarationMemberInfos;		// member for type description
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
@@ -2768,7 +3125,6 @@ Scope Manager
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types.</param>
 				/// <param name="deleteModules">Set to true to delete all added modules.</param>
 				void										Clear(bool keepTypeDescriptorNames, bool deleteModules);
-				bool										CheckScopes();
 				/// <summary>Compile.</summary>
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
 				void										Rebuild(bool keepTypeDescriptorNames);
@@ -2849,13 +3205,27 @@ Structure Analyzing
 			extern void										ValidateExpressionStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfExpression>& expression);
 
 /***********************************************************************
-Scope Analyzing
+Global Name
 ***********************************************************************/
 
+			extern void										BuildGlobalNameFromTypeDescriptors(WfLexicalScopeManager* manager);
+			extern void										BuildGlobalNameFromModules(WfLexicalScopeManager* manager);
+			extern void										ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name);
+
+/***********************************************************************
+Scope Analyzing
+***********************************************************************/
+			
+			extern void										CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member);
+			extern void										CompleteScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
+			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+
 			extern void										BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern void										BuildScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member, parsing::ParsingTreeCustomBase* source = 0);
 			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source = 0);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
+			extern bool										CheckScopes(WfLexicalScopeManager* manager);
 
 /***********************************************************************
 Semantic Analyzing
@@ -2883,6 +3253,7 @@ Semantic Analyzing
 			};
 
 			extern void										ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member);
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										ValidateStatementSemantic(WfLexicalScopeManager* manager, Ptr<WfStatement> statement);
 			extern void										ValidateExpressionSemantic(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results);
@@ -3098,6 +3469,12 @@ Error Messages
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results, const WString& name);
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalSymbol>>& symbols, const WString& name);
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalScopeName>>& names, const WString& name);
+
+				// G: Class error
+				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassDeclaration* node, const WString& name);
+				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassMember* node, const WString& name);
+				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStatic(WfClassMember* node);
+				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
 			};
 		}
 	}
