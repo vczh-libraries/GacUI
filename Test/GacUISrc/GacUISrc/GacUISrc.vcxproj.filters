@@ -753,5 +753,8 @@
     <Text Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
       <Filter>GacUI\Reflection\InstanceQuery</Filter>
     </Text>
+    <Text Include="UI.xml">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

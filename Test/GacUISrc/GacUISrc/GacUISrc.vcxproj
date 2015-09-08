@@ -315,6 +315,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.parser.txt" />
+    <Text Include="UI.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

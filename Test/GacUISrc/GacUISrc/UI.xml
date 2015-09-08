@@ -1,0 +1,9 @@
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="test::MainWindow">
+      <Window Text="MainWindow" ClientSize="x:640 y:480">
+        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

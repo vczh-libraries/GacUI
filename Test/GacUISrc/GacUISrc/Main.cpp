@@ -1,6 +1,8 @@
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #include "..\..\..\Source\GacUI.h"
+#include "..\..\..\Source\Reflection\GuiInstanceLoader.h"
+#include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.h"
 #include <Windows.h>
 
 using namespace vl::regex;
@@ -9,6 +11,9 @@ using namespace vl::parsing;
 using namespace vl::parsing::definitions;
 using namespace vl::parsing::tabling;
 using namespace vl::stream;
+using namespace vl::reflection;
+using namespace vl::reflection::description;
+using namespace vl::collections;
 
 //#define GUI_GRAPHICS_RENDERER_GDI
 #define GUI_GRAPHICS_RENDERER_DIRECT2D
@@ -36,9 +41,8 @@ namespace autocomplete_grammar
 	extern void InstallTextBox(GuiMultilineTextBox* textBox);
 }
 
-void GuiMain()
+void GuiMain_GrammarIntellisense()
 {
-	UnitTestInGuiMain();
 	GuiWindow window(GetCurrentTheme()->CreateWindowStyle());
 	window.GetContainerComposition()->SetPreferredMinSize(Size(600, 480));
 	{
@@ -50,4 +54,102 @@ void GuiMain()
 	window.ForceCalculateSizeImmediately();
 	window.MoveToScreenCenter();
 	GetApplication()->Run(&window);
+}
+
+namespace test
+{
+	template<typename TImpl>
+	class MainWindow_ : public GuiWindow, public GuiInstancePartialClass<GuiWindow>, public Description<TImpl>
+	{
+	protected:
+
+		void InitializeComponents()
+		{
+			InitializeFromResource();
+		}
+	public:
+		MainWindow_()
+			:GuiInstancePartialClass<GuiWindow>(L"test::MainWindow")
+			, GuiWindow(theme::GetCurrentTheme()->CreateWindowStyle())
+		{
+		}
+	};
+
+	class MainWindow : public MainWindow_<MainWindow>
+	{
+	public:
+		MainWindow()
+		{
+			InitializeComponents();
+		}
+	};
+}
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+			DECL_TYPE_INFO(test::MainWindow)
+			IMPL_CPP_TYPE_INFO(test::MainWindow)
+
+			BEGIN_CLASS_MEMBER(test::MainWindow)
+				CLASS_MEMBER_BASE(GuiWindow)
+				CLASS_MEMBER_CONSTRUCTOR(test::MainWindow*(), NO_PARAMETER)
+			END_CLASS_MEMBER(test::MainWindow)
+
+			class ResourceLoader : public Object, public ITypeLoader
+			{
+			public:
+				void Load(ITypeManager* manager)override
+				{
+					ADD_TYPE_INFO(test::MainWindow)
+				}
+
+				void Unload(ITypeManager* manager)override
+				{
+				}
+			};
+
+			class ResourcePlugin : public Object, public IGuiPlugin
+			{
+			public:
+				void Load()override
+				{
+					GetGlobalTypeManager()->AddTypeLoader(new ResourceLoader);
+				}
+
+				void AfterLoad()override
+				{
+				}
+
+				void Unload()override
+				{
+				}
+			};
+			GUI_REGISTER_PLUGIN(ResourcePlugin)
+		}
+	}
+}
+
+using namespace test;
+
+void GuiMain_Resource()
+{
+	{
+		List<WString> errors;
+		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
+		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
+	}
+	MainWindow window;
+	window.ForceCalculateSizeImmediately();
+	window.MoveToScreenCenter();
+	GetApplication()->Run(&window);
+}
+
+void GuiMain()
+{
+	UnitTestInGuiMain();
+	GuiMain_Resource();
 }
