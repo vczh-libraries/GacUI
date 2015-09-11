@@ -140,6 +140,7 @@ void GuiMain_Resource()
 	{
 		List<WString> errors;
 		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
+		resource->Precompile(errors);
 		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
 	}
 	MainWindow window;

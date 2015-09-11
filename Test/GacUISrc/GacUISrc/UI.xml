@@ -7,7 +7,7 @@
     </Instance>
   </Instance>
   <Script name="SharedScript">
-    <Script language="Workflow">
+    <Workflow>
       <![CDATA[
         module sharedscript;
         
@@ -19,6 +19,6 @@
           }
         }
       ]]>
-    </Script>
+    </Workflow>
   </Script>
 </Resource>
