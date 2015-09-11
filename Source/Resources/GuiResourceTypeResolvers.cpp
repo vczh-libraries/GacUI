@@ -30,10 +30,6 @@ Image Type Resolver
 				return L"Image";
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-			}
-
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
 			{
 				return this;
@@ -137,10 +133,6 @@ Text Type Resolver
 				return L"Text";
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-			}
-
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
 			{
 				return this;
@@ -217,10 +209,6 @@ Xml Type Resolver
 			WString GetType()override
 			{
 				return L"Xml";
-			}
-
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
 			}
 
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
@@ -326,10 +314,6 @@ Doc Type Resolver
 			bool IsDelayLoad()override
 			{
 				return true;
-			}
-
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
 			}
 
 			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override

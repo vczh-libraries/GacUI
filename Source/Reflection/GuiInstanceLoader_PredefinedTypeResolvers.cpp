@@ -19,6 +19,7 @@ Instance Type Resolver
 		class GuiResourceInstanceTypeResolver
 			: public Object
 			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
 			, private IGuiResourceTypeResolver_DirectLoadStream
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
@@ -38,12 +39,20 @@ Instance Type Resolver
 				return false;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			vint GetMaxPassIndex()override
 			{
-				if (auto obj = resource.Cast<GuiInstanceContext>())
+				return 2;
+			}
+
+			void Precompile(Ptr<DescriptableObject> resource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				if (passIndex == 2)
 				{
-					obj->ApplyStyles(resolver, errors);
-					Workflow_PrecompileInstanceContext(obj, errors);
+					if (auto obj = resource.Cast<GuiInstanceContext>())
+					{
+						obj->ApplyStyles(resolver, errors);
+						Workflow_PrecompileInstanceContext(obj, errors);
+					}
 				}
 			}
 
@@ -114,10 +123,6 @@ Instance Style Type Resolver
 				return false;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-			}
-
 			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
 			{
 				return this;
@@ -172,10 +177,6 @@ Instance Schema Type Resolver
 				return false;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-			}
-
 			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
 			{
 				return this;
@@ -212,6 +213,7 @@ Shared Script Type Resolver
 		class GuiResourceSharedScriptTypeResolver
 			: public Object
 			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
 		public:
@@ -230,7 +232,12 @@ Shared Script Type Resolver
 				return false;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			vint GetMaxPassIndex()override
+			{
+				return 1;
+			}
+
+			void Precompile(Ptr<DescriptableObject> resource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
 			{
 			}
 
