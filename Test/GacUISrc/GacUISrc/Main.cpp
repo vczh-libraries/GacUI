@@ -148,6 +148,14 @@ void GuiMain_Resource()
 			StreamWriter writer(fileStream);
 			XmlPrint(xml, writer);
 		}
+		{
+			FileStream fileStream(L"UI.bin", FileStream::WriteOnly);
+			resource->SavePrecompiledBinary(fileStream);
+		}
+		{
+			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
+			resource->LoadPrecompiledBinary(fileStream, errors);
+		}
 		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
 	}
 	MainWindow window;
