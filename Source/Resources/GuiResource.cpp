@@ -938,6 +938,76 @@ GuiResource
 			}
 		}
 
+		void IGuiResourceCache::LoadFromBinary(stream::internal::Reader& reader, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::List<GlobalStringKey>& sortedKeys)
+		{
+			vint count = 0;
+			reader << count;
+
+			for (vint i = 0; i < count; i++)
+			{
+				GlobalStringKey key, name;
+				if (&sortedKeys)
+				{
+					vint keyIndex = -1;
+					vint nameIndex = -1;
+					reader << keyIndex << nameIndex;
+					auto key = sortedKeys[keyIndex];
+					auto name = sortedKeys[nameIndex];
+				}
+				else
+				{
+					WString keyString, nameString;
+					reader << keyString << nameString;
+					key = GlobalStringKey::Get(keyString);
+					name = GlobalStringKey::Get(nameString);
+				}
+
+				stream::MemoryStream stream;
+				reader << (stream::IStream&)stream;
+
+				if (auto resolver = GetResourceResolverManager()->GetCacheResolver(name))
+				{
+					if (auto cache = resolver->Deserialize(stream))
+					{
+						caches.Add(key, cache);
+					}
+				}
+			}
+		}
+
+		void IGuiResourceCache::SaveToBinary(stream::internal::Writer& writer, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::SortedList<GlobalStringKey>& sortedKeys)
+		{
+			vint count = caches.Count();
+			writer << count;
+			for (vint i = 0; i < count; i++)
+			{
+				auto cache = caches.Values()[i];
+				auto key = caches.Keys()[i];
+				auto name = cache->GetCacheTypeName();
+				if (&sortedKeys)
+				{
+					auto keyIndex = sortedKeys.IndexOf(key);
+					vint nameIndex = sortedKeys.IndexOf(name);
+					CHECK_ERROR(keyIndex != -1 && nameIndex != -1, L"IGuiResourceCache::SaveToBinary(stream::internal::Writer&, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>&)#Internal Error.");
+					writer << keyIndex << nameIndex;
+				}
+				else
+				{
+					WString keyString = key.ToString();
+					WString nameString = name.ToString();
+					writer << keyString << nameString;
+				}
+
+				stream::MemoryStream stream;
+				
+				if (auto resolver = GetResourceResolverManager()->GetCacheResolver(name))
+				{
+					resolver->Serialize(cache, stream);
+				}
+				writer << (stream::IStream&)stream;
+			}
+		}
+
 /***********************************************************************
 GuiResource
 ***********************************************************************/
@@ -1043,6 +1113,7 @@ GuiResource
 
 			List<WString> typeNames;
 			reader << typeNames;
+			IGuiResourceCache::LoadFromBinary(reader, resource->precompiledCaches);
 			
 			DelayLoadingList delayLoadings;
 			resource->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
@@ -1058,6 +1129,7 @@ GuiResource
 			List<WString> typeNames;
 			CollectTypeNames(typeNames);
 			writer << typeNames;
+			IGuiResourceCache::SaveToBinary(writer, precompiledCaches);
 			SaveResourceFolderToBinary(writer, typeNames);
 		}
 

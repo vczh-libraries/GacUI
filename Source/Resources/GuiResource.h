@@ -310,6 +310,8 @@ Resource Cache
 
 			static void								LoadFromXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
 			static void								SaveToXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
+			static void								LoadFromBinary(stream::internal::Reader& reader, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::List<GlobalStringKey>& sortedKeys = *(collections::List<GlobalStringKey>*)nullptr);
+			static void								SaveToBinary(stream::internal::Writer& writer, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::SortedList<GlobalStringKey>& sortedKeys = *(collections::SortedList<GlobalStringKey>*)nullptr);
 		};
 
 		class IGuiResourceCacheResolver : public IDescriptable, public Description<IGuiResourceCacheResolver>
