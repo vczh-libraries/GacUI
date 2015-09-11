@@ -12,6 +12,7 @@ namespace vl
 		using namespace parsing::xml;
 		using namespace parsing::json;
 		using namespace regex;
+		using namespace stream;
 
 		WString GetFolderPath(const WString& filePath)
 		{
@@ -384,7 +385,7 @@ GuiResourceFolder
 						}
 					}
 				}
-				else
+				else if(element->name.value.Length() <= 3 || element->name.value.Sub(0, 4) != L"ref.")
 				{
 					WString relativeFilePath;
 					WString filePath;
@@ -884,6 +885,63 @@ GuiResourceFolder
 GuiResource
 ***********************************************************************/
 
+		void IGuiResourceCache::LoadFromXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches)
+		{
+			FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml, L"Cache"))
+			{
+				auto attName = XmlGetAttribute(element, L"Name");
+				auto attType = XmlGetAttribute(element, L"Type");
+				if (attName && attType)
+				{
+					auto resolver = GetResourceResolverManager()->GetCacheResolver(GlobalStringKey::Get(attType->value.value));
+
+					MemoryStream stream;
+					HexToBinary(stream, XmlGetValue(element));
+					stream.SeekFromBegin(0);
+
+					auto cache = resolver->Deserialize(stream);
+					caches.Add(GlobalStringKey::Get(attName->value.value), cache);
+				}
+			}
+		}
+
+		void IGuiResourceCache::SaveToXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches)
+		{
+			for (vint i = 0; i < caches.Count(); i++)
+			{
+				auto key = caches.Keys()[i];
+				auto value = caches.Values()[i];
+				auto resolver = GetResourceResolverManager()->GetCacheResolver(value->GetCacheTypeName());
+
+				MemoryStream stream;
+				resolver->Serialize(value, stream);
+				stream.SeekFromBegin(0);
+				auto hex = BinaryToHex(stream);
+					
+				auto xmlCache = MakePtr<XmlElement>();
+				xmlCache->name.value = L"Cache";
+				xml->subNodes.Add(xmlCache);
+
+				auto attName = MakePtr<XmlAttribute>();
+				attName->name.value = L"Name";
+				attName->value.value = key.ToString();
+				xmlCache->attributes.Add(attName);
+
+				auto attType = MakePtr<XmlAttribute>();
+				attType->name.value = L"Type";
+				attType->value.value = value->GetCacheTypeName().ToString();
+				xmlCache->attributes.Add(attType);
+
+				auto xmlContent = MakePtr<XmlCData>();
+				xmlContent->content.value = hex;
+				xmlCache->subNodes.Add(xmlContent);
+			}
+		}
+
+/***********************************************************************
+GuiResource
+***********************************************************************/
+
 		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors)
 		{
 			FOREACH(DelayLoading, delay, delayLoadings)
@@ -928,6 +986,10 @@ GuiResource
 			Ptr<GuiResource> resource = new GuiResource;
 			resource->workingDirectory = workingDirectory;
 			DelayLoadingList delayLoadings;
+			if (auto xmlCaches = XmlGetElement(xml->rootElement, L"ref.Caches"))
+			{
+				IGuiResourceCache::LoadFromXml(xmlCaches, resource->precompiledCaches);
+			}
 			resource->LoadResourceFolderFromXml(delayLoadings, resource->workingDirectory, xml->rootElement, errors);
 
 			ProcessDelayLoading(resource, delayLoadings, errors);
@@ -960,6 +1022,13 @@ GuiResource
 		{
 			auto xmlRoot = MakePtr<XmlElement>();
 			xmlRoot->name.value = L"Resource";
+			if (serializePrecompiledResource && precompiledCaches.Count() > 0)
+			{
+				auto xmlCaches = MakePtr<XmlElement>();
+				xmlCaches->name.value = L"ref.Caches";
+				xmlRoot->subNodes.Add(xmlCaches);
+				IGuiResourceCache::SaveToXml(xmlCaches, precompiledCaches);
+			}
 			SaveResourceFolderToXml(xmlRoot, serializePrecompiledResource);
 
 			auto doc = MakePtr<XmlDocument>();

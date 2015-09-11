@@ -307,6 +307,9 @@ Resource Cache
 		{
 		public:
 			virtual GlobalStringKey					GetCacheTypeName() = 0;
+
+			static void								LoadFromXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
+			static void								SaveToXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
 		};
 
 		class IGuiResourceCacheResolver : public IDescriptable, public Description<IGuiResourceCacheResolver>

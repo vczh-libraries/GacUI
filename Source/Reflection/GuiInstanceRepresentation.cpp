@@ -779,21 +779,9 @@ GuiInstanceContext
 							context->states.Add(state);
 						}
 					}
-					else if (element->name.value == L"ref.Cache")
+					else if (element->name.value == L"ref.Caches")
 					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attType = XmlGetAttribute(element, L"Type");
-						if (attName && attType)
-						{
-							auto resolver = GetResourceResolverManager()->GetCacheResolver(GlobalStringKey::Get(attType->value.value));
-
-							MemoryStream stream;
-							HexToBinary(stream, XmlGetValue(element));
-							stream.SeekFromBegin(0);
-
-							auto cache = resolver->Deserialize(stream);
-							context->precompiledCaches.Add(GlobalStringKey::Get(attName->value.value), cache);
-						}
+						IGuiResourceCache::LoadFromXml(element, context->precompiledCaches);
 					}
 					else if (!context->instance)
 					{
@@ -921,37 +909,12 @@ GuiInstanceContext
 				}
 			}
 
-			if (serializePrecompiledResource)
+			if (serializePrecompiledResource && precompiledCaches.Count() > 0)
 			{
-				for (vint i = 0; i < precompiledCaches.Count(); i++)
-				{
-					auto key = precompiledCaches.Keys()[i];
-					auto value = precompiledCaches.Values()[i];
-					auto resolver = GetResourceResolverManager()->GetCacheResolver(value->GetCacheTypeName());
-
-					MemoryStream stream;
-					resolver->Serialize(value, stream);
-					stream.SeekFromBegin(0);
-					auto hex = BinaryToHex(stream);
-					
-					auto xmlCache = MakePtr<XmlElement>();
-					xmlCache->name.value = L"ref.Cache";
-					xmlInstance->subNodes.Add(xmlCache);
-
-					auto attName = MakePtr<XmlAttribute>();
-					attName->name.value = L"Name";
-					attName->value.value = key.ToString();
-					xmlCache->attributes.Add(attName);
-
-					auto attType = MakePtr<XmlAttribute>();
-					attType->name.value = L"Type";
-					attType->value.value = value->GetCacheTypeName().ToString();
-					xmlCache->attributes.Add(attType);
-
-					auto xmlContent = MakePtr<XmlCData>();
-					xmlContent->content.value = hex;
-					xmlCache->subNodes.Add(xmlContent);
-				}
+				auto xmlCaches = MakePtr<XmlElement>();
+				xmlCaches->name.value = L"ref.Caches";
+				xmlInstance->subNodes.Add(xmlCaches);
+				IGuiResourceCache::SaveToXml(xmlCaches, precompiledCaches);
 			}
 
 			instance->FillXml(xmlInstance, serializePrecompiledResource);
