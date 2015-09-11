@@ -132,6 +132,8 @@ GlobalStringKey
 		GlobalStringKey GlobalStringKey::_Uri;
 		GlobalStringKey GlobalStringKey::_Workflow_Assembly_Cache;
 		GlobalStringKey GlobalStringKey::_Workflow_Global_Context;
+		GlobalStringKey GlobalStringKey::_Shared_Workflow_Assembly_Cache;
+		GlobalStringKey GlobalStringKey::_Shared_Workflow_Global_Context;
 		GlobalStringKey GlobalStringKey::_ControlTemplate;
 		GlobalStringKey GlobalStringKey::_ItemTemplate;
 
@@ -151,6 +153,8 @@ GlobalStringKey
 				GlobalStringKey::_Uri = GlobalStringKey::Get(L"uri");
 				GlobalStringKey::_Workflow_Assembly_Cache = GlobalStringKey::Get(L"WORKFLOW-ASSEMBLY-CACHE");
 				GlobalStringKey::_Workflow_Global_Context = GlobalStringKey::Get(L"WORKFLOW-GLOBAL-CONTEXT");
+				GlobalStringKey::_Shared_Workflow_Assembly_Cache = GlobalStringKey::Get(L"SHARED-WORKFLOW-ASSEMBLY-CACHE");
+				GlobalStringKey::_Shared_Workflow_Global_Context = GlobalStringKey::Get(L"SHARED-WORKFLOW-GLOBAL-CONTEXT");
 				GlobalStringKey::_ControlTemplate = GlobalStringKey::Get(L"ControlTemplate");
 				GlobalStringKey::_ItemTemplate = GlobalStringKey::Get(L"ItemTemplate");
 			}

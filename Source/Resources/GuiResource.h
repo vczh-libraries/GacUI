@@ -69,6 +69,8 @@ Global String Key
 			static GlobalStringKey					_Uri;
 			static GlobalStringKey					_Workflow_Assembly_Cache;
 			static GlobalStringKey					_Workflow_Global_Context;
+			static GlobalStringKey					_Shared_Workflow_Assembly_Cache;
+			static GlobalStringKey					_Shared_Workflow_Global_Context;
 			static GlobalStringKey					_ControlTemplate;
 			static GlobalStringKey					_ItemTemplate;
 

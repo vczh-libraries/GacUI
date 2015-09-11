@@ -10,7 +10,14 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace parsing;
 		using namespace parsing::xml;
+		using namespace workflow::analyzer;
+		using namespace workflow::runtime;
+		using namespace reflection::description;
+		using namespace collections;
+
+#define ERROR_CODE_PREFIX L"================================================================"
 
 /***********************************************************************
 Instance Type Resolver
@@ -54,6 +61,11 @@ Instance Type Resolver
 						Workflow_PrecompileInstanceContext(obj, errors);
 					}
 				}
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
 			}
 
 			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
@@ -210,6 +222,72 @@ Instance Schema Type Resolver
 Shared Script Type Resolver
 ***********************************************************************/
 
+		class GuiSharedWorkflowCache : public Object, public IGuiResourceCache
+		{
+		public:
+			static const GlobalStringKey&					CacheTypeName;
+			static const GlobalStringKey&					CacheContextName;
+
+			List<WString>									moduleCodes;
+			Ptr<WfAssembly>									assembly;
+			Ptr<WfRuntimeGlobalContext>						globalContext;
+
+			GuiSharedWorkflowCache()
+			{
+			}
+
+			GuiSharedWorkflowCache(Ptr<WfAssembly> _assembly)
+				:assembly(_assembly)
+			{
+				Initialize();
+			}
+
+			GlobalStringKey GetCacheTypeName()override
+			{
+				return CacheTypeName;
+			}
+
+			void Initialize()
+			{
+				if (!globalContext)
+				{
+					globalContext = new WfRuntimeGlobalContext(assembly);
+					LoadFunction<void()>(globalContext, L"<initialize>")();
+				}
+			}
+		};
+
+		const GlobalStringKey& GuiSharedWorkflowCache::CacheTypeName = GlobalStringKey::_Shared_Workflow_Assembly_Cache;
+		const GlobalStringKey& GuiSharedWorkflowCache::CacheContextName = GlobalStringKey::_Shared_Workflow_Global_Context;
+
+		class GuiSharedWorkflowCacheResolver : public Object, public IGuiResourceCacheResolver 
+		{
+		public:
+			GlobalStringKey GetCacheTypeName()override
+			{
+				return GuiSharedWorkflowCache::CacheTypeName;
+			}
+
+			bool Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)override
+			{
+				if (auto obj = cache.Cast<GuiWorkflowCache>())
+				{
+					obj->assembly->Serialize(stream);
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			Ptr<IGuiResourceCache> Deserialize(stream::IStream& stream)override
+			{
+				auto assembly = new WfAssembly(stream);
+				return new GuiSharedWorkflowCache(assembly);
+			}
+		};
+
 		class GuiResourceSharedScriptTypeResolver
 			: public Object
 			, public IGuiResourceTypeResolver
@@ -239,6 +317,63 @@ Shared Script Type Resolver
 
 			void Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
 			{
+				if (passIndex == 0)
+				{
+					if (auto obj = resource.Cast<GuiInstanceSharedScript>())
+					{
+						if (obj->language == L"Workflow")
+						{
+							Ptr<GuiSharedWorkflowCache> cache;
+							auto key = GuiSharedWorkflowCache::CacheContextName;
+							auto index = rootResource->precompiledCaches.Keys().IndexOf(key);
+
+							if (index == -1)
+							{
+								cache = new GuiSharedWorkflowCache;
+								rootResource->precompiledCaches.Add(key, cache);
+							}
+							else
+							{
+								cache = rootResource->precompiledCaches.Values()[index].Cast<GuiSharedWorkflowCache>();
+							}
+							cache->moduleCodes.Add(obj->code);
+						}
+					}
+				}
+				else if (passIndex == 1)
+				{
+					Ptr<GuiSharedWorkflowCache> cache;
+					auto key = GuiSharedWorkflowCache::CacheContextName;
+					auto index = rootResource->precompiledCaches.Keys().IndexOf(key);
+
+					if (index != -1)
+					{
+						auto cache = rootResource->precompiledCaches.Values()[index].Cast<GuiSharedWorkflowCache>();
+						auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
+						List<Ptr<ParsingError>> scriptErrors;
+						cache->assembly = Compile(table, cache->moduleCodes, scriptErrors);
+						if (scriptErrors.Count() > 0)
+						{
+							errors.Add(ERROR_CODE_PREFIX L"Failed to parse the shared workflow script");
+							FOREACH(Ptr<ParsingError>, error, scriptErrors)
+							{
+								errors.Add(
+									L"Row: " + itow(error->codeRange.start.row + 1) +
+									L", Column: " + itow(error->codeRange.start.column + 1) +
+									L", Message: " + error->errorMessage);
+							}
+						}
+						else
+						{
+							cache->Initialize();
+						}
+					}
+				}
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
 			}
 
 			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
@@ -292,6 +427,7 @@ Shared Script Type Resolver
 				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
 				manager->SetTypeResolver(new GuiResourceInstanceSchemaTypeResolver);
 				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
+				manager->SetCacheResolver(new GuiSharedWorkflowCacheResolver);
 			}
 
 			void Unload()override
