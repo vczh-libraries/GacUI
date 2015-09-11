@@ -423,6 +423,9 @@
     <ClCompile Include="TsfTestWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.cpp">
+      <Filter>GacUI\Reflection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -742,6 +745,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GacWorkflowReferences.h">
       <Filter>GacUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h">
+      <Filter>GacUI\Reflection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

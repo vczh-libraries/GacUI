@@ -1,9 +1,24 @@
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="test::MainWindow">
-      <Window Text="MainWindow" ClientSize="x:640 y:480">
+      <Window Text-eval="SharedScript::GetTitle()" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
       </Window>
     </Instance>
   </Instance>
+  <Script name="SharedScript">
+    <Script language="Workflow">
+      <![CDATA[
+        module sharedscript;
+        
+        class SharedScript
+        {
+          static func GetTitle() : string
+          {
+            return "MainWindow";
+          }
+        }
+      ]]>
+    </Script>
+  </Script>
 </Resource>

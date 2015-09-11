@@ -176,6 +176,7 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_WorkflowCompiler.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSchemaRepresentation.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.cpp">
@@ -298,6 +299,7 @@
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceLoader_WorkflowCompiler.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSchemaRepresentation.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h" />
     <ClInclude Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.h" />
     <ClInclude Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h" />
