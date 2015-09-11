@@ -953,7 +953,7 @@ GuiWorkflowCacheResolver
 			return GuiWorkflowCache::CacheTypeName;
 		}
 
-		bool GuiWorkflowCacheResolver::Serialize(Ptr<IGuiInstanceCache> cache, stream::IStream& stream)
+		bool GuiWorkflowCacheResolver::Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)
 		{
 			if (auto obj = cache.Cast<GuiWorkflowCache>())
 			{
@@ -966,7 +966,7 @@ GuiWorkflowCacheResolver
 			}
 		}
 
-		Ptr<IGuiInstanceCache> GuiWorkflowCacheResolver::Deserialize(stream::IStream& stream)
+		Ptr<IGuiResourceCache> GuiWorkflowCacheResolver::Deserialize(stream::IStream& stream)
 		{
 			auto assembly = new WfAssembly(stream);
 			return new GuiWorkflowCache(assembly);
@@ -999,8 +999,8 @@ Workflow_GetSharedManager
 			{
 				sharedManagerPlugin = this;
 
-				IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
-				manager->AddInstanceCacheResolver(new GuiWorkflowCacheResolver);
+				auto manager=GetResourceResolverManager();
+				manager->SetCacheResolver(new GuiWorkflowCacheResolver);
 			}
 
 			void Unload()override

@@ -426,6 +426,9 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedTypeResolvers.cpp">
+      <Filter>GacUI\Reflection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">

@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_Log.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceBinders.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceLoaders.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedTypeResolvers.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_WorkflowCompiler.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSchemaRepresentation.cpp" />

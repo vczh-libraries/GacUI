@@ -56,7 +56,7 @@ WorkflowCompiler
 GuiWorkflowCache
 ***********************************************************************/
 
-		class GuiWorkflowCache : public Object, public IGuiInstanceCache
+		class GuiWorkflowCache : public Object, public IGuiResourceCache
 		{
 		public:
 			static const GlobalStringKey&					CacheTypeName;
@@ -70,12 +70,12 @@ GuiWorkflowCache
 			GlobalStringKey									GetCacheTypeName()override;
 		};
 
-		class GuiWorkflowCacheResolver : public Object, public IGuiInstanceCacheResolver
+		class GuiWorkflowCacheResolver : public Object, public IGuiResourceCacheResolver
 		{
 		public:
 			GlobalStringKey									GetCacheTypeName()override;
-			bool											Serialize(Ptr<IGuiInstanceCache> cache, stream::IStream& stream)override;
-			Ptr<IGuiInstanceCache>							Deserialize(stream::IStream& stream)override;
+			bool											Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)override;
+			Ptr<IGuiResourceCache>							Deserialize(stream::IStream& stream)override;
 		};
 	}
 }

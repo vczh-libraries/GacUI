@@ -241,24 +241,6 @@ Instance Binder
 		};
 
 /***********************************************************************
-Instance Cache
-***********************************************************************/
-
-		class IGuiInstanceCache : public IDescriptable, public Description<IGuiInstanceCache>
-		{
-		public:
-			virtual GlobalStringKey					GetCacheTypeName() = 0;
-		};
-
-		class IGuiInstanceCacheResolver : public IDescriptable, public Description<IGuiInstanceCache>
-		{
-		public:
-			virtual GlobalStringKey					GetCacheTypeName() = 0;
-			virtual bool							Serialize(Ptr<IGuiInstanceCache> cache, stream::IStream& stream) = 0;
-			virtual Ptr<IGuiInstanceCache>			Deserialize(stream::IStream& stream) = 0;
-		};
-
-/***********************************************************************
 Instance Loader Manager
 ***********************************************************************/
 
@@ -271,8 +253,6 @@ Instance Loader Manager
 			virtual IGuiInstanceBinder*					GetInstanceBinder(GlobalStringKey bindingName) = 0;
 			virtual bool								AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder) = 0;
 			virtual IGuiInstanceEventBinder*			GetInstanceEventBinder(GlobalStringKey bindingName) = 0;
-			virtual bool								AddInstanceCacheResolver(Ptr<IGuiInstanceCacheResolver> cacheResolver) = 0;
-			virtual IGuiInstanceCacheResolver*			GetInstanceCacheResolver(GlobalStringKey cacheTypeName) = 0;
 			virtual bool								CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual bool								SetLoader(Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual IGuiInstanceLoader*					GetLoader(GlobalStringKey typeName) = 0;

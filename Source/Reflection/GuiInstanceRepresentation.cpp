@@ -785,7 +785,7 @@ GuiInstanceContext
 						auto attType = XmlGetAttribute(element, L"Type");
 						if (attName && attType)
 						{
-							auto resolver = GetInstanceLoaderManager()->GetInstanceCacheResolver(GlobalStringKey::Get(attType->value.value));
+							auto resolver = GetResourceResolverManager()->GetCacheResolver(GlobalStringKey::Get(attType->value.value));
 
 							MemoryStream stream;
 							HexToBinary(stream, XmlGetValue(element));
@@ -927,7 +927,7 @@ GuiInstanceContext
 				{
 					auto key = precompiledCaches.Keys()[i];
 					auto value = precompiledCaches.Values()[i];
-					auto resolver = GetInstanceLoaderManager()->GetInstanceCacheResolver(value->GetCacheTypeName());
+					auto resolver = GetResourceResolverManager()->GetCacheResolver(value->GetCacheTypeName());
 
 					MemoryStream stream;
 					resolver->Serialize(value, stream);
@@ -1069,7 +1069,7 @@ GuiInstanceContext
 
 					auto key = sortedKeys[keyIndex];
 					auto name = sortedKeys[nameIndex];
-					if (auto resolver = GetInstanceLoaderManager()->GetInstanceCacheResolver(name))
+					if (auto resolver = GetResourceResolverManager()->GetCacheResolver(name))
 					{
 						if (auto cache = resolver->Deserialize(stream))
 						{
@@ -1171,7 +1171,7 @@ GuiInstanceContext
 
 					stream::MemoryStream stream;
 
-					if (auto resolver = GetInstanceLoaderManager()->GetInstanceCacheResolver(name))
+					if (auto resolver = GetResourceResolverManager()->GetCacheResolver(name))
 					{
 						resolver->Serialize(cache, stream);
 					}

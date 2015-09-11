@@ -164,7 +164,7 @@ Instance Context
 		{
 		public:
 			typedef collections::List<Ptr<GuiInstanceNamespace>>						NamespaceList;
-			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiInstanceCache>>	CacheMap;
+			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>	CacheMap;
 
 			struct NamespaceInfo : public Object, public Description<NamespaceInfo>
 			{

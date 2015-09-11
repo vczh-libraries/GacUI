@@ -10,6 +10,7 @@ using namespace vl::regex_internal;
 using namespace vl::parsing;
 using namespace vl::parsing::definitions;
 using namespace vl::parsing::tabling;
+using namespace vl::parsing::xml;
 using namespace vl::stream;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
@@ -141,6 +142,12 @@ void GuiMain_Resource()
 		List<WString> errors;
 		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
 		resource->Precompile(errors);
+		{
+			auto xml = resource->SaveToXml(true);
+			FileStream fileStream(L"UI.precompiled.xml", FileStream::WriteOnly);
+			StreamWriter writer(fileStream);
+			XmlPrint(xml, writer);
+		}
 		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
 	}
 	MainWindow window;

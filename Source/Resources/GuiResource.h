@@ -300,17 +300,38 @@ Resource Structure
 		};
 
 /***********************************************************************
+Resource Cache
+***********************************************************************/
+
+		class IGuiResourceCache : public IDescriptable, public Description<IGuiResourceCache>
+		{
+		public:
+			virtual GlobalStringKey					GetCacheTypeName() = 0;
+		};
+
+		class IGuiResourceCacheResolver : public IDescriptable, public Description<IGuiResourceCacheResolver>
+		{
+		public:
+			virtual GlobalStringKey					GetCacheTypeName() = 0;
+			virtual bool							Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream) = 0;
+			virtual Ptr<IGuiResourceCache>			Deserialize(stream::IStream& stream) = 0;
+		};
+
+/***********************************************************************
 Resource
 ***********************************************************************/
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
 		class GuiResource : public GuiResourceFolder, public Description<GuiResource>
 		{
+			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>	CacheMap;
 		protected:
 			WString									workingDirectory;
 
 			static void								ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors);
 		public:
+			CacheMap								precompiledCaches;
+
 			/// <summary>Create a resource.</summary>
 			GuiResource();
 			~GuiResource();
@@ -542,6 +563,14 @@ Resource Resolver Manager
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="resolver">The resolver.</param>
 			virtual bool										SetTypeResolver(Ptr<IGuiResourceTypeResolver> resolver)=0;
+			/// <summary>Get the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
+			/// <returns>The resolver.</returns>
+			/// <param name="type">The cache type.</param>
+			virtual IGuiResourceCacheResolver*					GetCacheResolver(GlobalStringKey cacheTypeName) = 0;
+			/// <summary>Set the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="resolver">The resolver.</param>
+			virtual bool										SetCacheResolver(Ptr<IGuiResourceCacheResolver> cacheResolver) = 0;
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();

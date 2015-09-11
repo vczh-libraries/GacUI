@@ -1170,9 +1170,13 @@ IGuiResourceResolverManager
 
 		class GuiResourceResolverManager : public Object, public IGuiResourceResolverManager, public IGuiPlugin
 		{
+			typedef Dictionary<WString, Ptr<IGuiResourcePathResolverFactory>>			PathFactoryMap;
+			typedef Dictionary<WString, Ptr<IGuiResourceTypeResolver>>					TypeResolverMap;
+			typedef Dictionary<GlobalStringKey, Ptr<IGuiResourceCacheResolver>>			CacheResolverMap;
 		protected:
-			Dictionary<WString, Ptr<IGuiResourcePathResolverFactory>>		pathFactories;
-			Dictionary<WString, Ptr<IGuiResourceTypeResolver>>				typeResolvers;
+			PathFactoryMap				pathFactories;
+			TypeResolverMap				typeResolvers;
+			CacheResolverMap			cacheResolvers;
 
 		public:
 			GuiResourceResolverManager()
@@ -1227,6 +1231,19 @@ IGuiResourceResolverManager
 			{
 				if(typeResolvers.Keys().Contains(resolver->GetType())) return false;
 				typeResolvers.Add(resolver->GetType(), resolver);
+				return true;
+			}
+
+			IGuiResourceCacheResolver* GetCacheResolver(GlobalStringKey cacheTypeName)override
+			{
+				vint index = cacheResolvers.Keys().IndexOf(cacheTypeName);
+				return index == -1 ? 0 : cacheResolvers.Values()[index].Obj();
+			}
+
+			bool SetCacheResolver(Ptr<IGuiResourceCacheResolver> cacheResolver)override
+			{
+				if (cacheResolvers.Keys().Contains(cacheResolver->GetCacheTypeName())) return false;
+				cacheResolvers.Add(cacheResolver->GetCacheTypeName(), cacheResolver);
 				return true;
 			}
 		};
