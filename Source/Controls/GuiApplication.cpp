@@ -429,8 +429,8 @@ GuiApplicationMain
 				theme::SetCurrentTheme(theme.Obj());
 				GuiMain();
 				theme::SetCurrentTheme(0);
-				DestroyGlobalTypeManager();
 				DestroyPluginManager();
+				DestroyGlobalTypeManager();
 				ThreadLocalStorage::DisposeStorages();
 			}
 		}
