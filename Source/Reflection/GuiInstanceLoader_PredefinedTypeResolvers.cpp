@@ -44,7 +44,7 @@ Instance Type Resolver
 				return 2;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			void Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
 			{
 				if (passIndex == 2)
 				{
@@ -237,7 +237,7 @@ Shared Script Type Resolver
 				return 1;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			void Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
 			{
 			}
 

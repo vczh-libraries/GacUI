@@ -742,17 +742,20 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)
+		void GuiResourceFolder::PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, GuiResource* rootResource, vint passIndex, collections::List<WString>& errors)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
-				typeResolver->Precompile(item->GetContent(), resolver, errors);
+				if (auto precompile = typeResolver->Precompile())
+				{
+					precompile->Precompile(item->GetContent(), rootResource, passIndex, resolver, errors);
+				}
 			}
 
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
-				folder->PrecompileResourceFolder(resolver, errors);
+				folder->PrecompileResourceFolder(resolver, rootResource, passIndex, errors);
 			}
 		}
 
@@ -1135,8 +1138,12 @@ GuiResource
 
 		void GuiResource::Precompile(collections::List<WString>& errors)
 		{
+			vint maxPass = GetResourceResolverManager()->GetMaxPrecompilePassIndex();
 			Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(this, workingDirectory);
-			PrecompileResourceFolder(resolver, errors);
+			for (vint i = 0; i <= maxPass; i++)
+			{
+				PrecompileResourceFolder(resolver, this, i, errors);
+			}
 		}
 
 		Ptr<DocumentModel> GuiResource::GetDocumentByPath(const WString& path)
@@ -1373,6 +1380,23 @@ IGuiResourceResolverManager
 				if(typeResolvers.Keys().Contains(resolver->GetType())) return false;
 				typeResolvers.Add(resolver->GetType(), resolver);
 				return true;
+			}
+
+			vint GetMaxPrecompilePassIndex()
+			{
+				vint maxPass = -1;
+				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
+				{
+					if (auto precompile = resolver->Precompile())
+					{
+						vint pass = precompile->GetMaxPassIndex();
+						if (maxPass < pass)
+						{
+							maxPass = pass;
+						}
+					}
+				}
+				return maxPass;
 			}
 
 			IGuiResourceCacheResolver* GetCacheResolver(GlobalStringKey cacheTypeName)override
