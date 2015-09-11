@@ -270,7 +270,7 @@ Shared Script Type Resolver
 
 			bool Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)override
 			{
-				if (auto obj = cache.Cast<GuiWorkflowCache>())
+				if (auto obj = cache.Cast<GuiSharedWorkflowCache>())
 				{
 					obj->assembly->Serialize(stream);
 					return true;
