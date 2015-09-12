@@ -1007,6 +1007,9 @@ namespace vl
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseDown, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseUp, vl::presentation::compositions::GuiMouseEventArgs)
+
+				CLASS_MEMBER_FIELD(draggingHandle)
+				CLASS_MEMBER_FIELD(draggingStartLocation)
 			END_CLASS_MEMBER(darkskin::HScrollTemplate)
 
 			BEGIN_CLASS_MEMBER(darkskin::HTrackerTemplate)
@@ -1016,6 +1019,9 @@ namespace vl
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseDown, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseUp, vl::presentation::compositions::GuiMouseEventArgs)
+
+				CLASS_MEMBER_FIELD(draggingHandle)
+				CLASS_MEMBER_FIELD(draggingStartLocation)
 			END_CLASS_MEMBER(darkskin::HTrackerTemplate)
 
 			BEGIN_CLASS_MEMBER(darkskin::ItemBackgroundTemplate)
@@ -1175,6 +1181,9 @@ namespace vl
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseDown, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseUp, vl::presentation::compositions::GuiMouseEventArgs)
+
+				CLASS_MEMBER_FIELD(draggingHandle)
+				CLASS_MEMBER_FIELD(draggingStartLocation)
 			END_CLASS_MEMBER(darkskin::VScrollTemplate)
 
 			BEGIN_CLASS_MEMBER(darkskin::VTrackerTemplate)
@@ -1184,6 +1193,9 @@ namespace vl
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseDown, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseUp, vl::presentation::compositions::GuiMouseEventArgs)
+
+				CLASS_MEMBER_FIELD(draggingHandle)
+				CLASS_MEMBER_FIELD(draggingStartLocation)
 			END_CLASS_MEMBER(darkskin::VTrackerTemplate)
 
 			BEGIN_CLASS_MEMBER(darkskin::WindowTemplate)

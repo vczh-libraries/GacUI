@@ -6357,13 +6357,62 @@ Workflow_CompileEventHandler
 				if (eventInfo)
 				{
 					vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
-					auto type = TypeInfoRetriver<Value>::CreateTypeInfo();
-					for (vint i = 0; i < count; i++)
+					bool standardName = false;
+					if (count == 2)
 					{
-						auto arg = MakePtr<WfFunctionArgument>();
-						arg->name.value = L"<argument>" + itow(i + 1);
-						arg->type = GetTypeFromTypeInfo(type.Obj());
-						func->arguments.Add(arg);
+						auto senderType = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(1)->GetTypeDescriptor();
+						auto argumentType = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(2)->GetTypeDescriptor();
+						if (senderType == GetTypeDescriptor<GuiGraphicsComposition>())
+						{
+							auto expectedType = GetTypeDescriptor<GuiEventArgs>();
+							List<ITypeDescriptor*> types;
+							types.Add(argumentType);
+							for (vint i = 0; i < types.Count(); i++)
+							{
+								auto type = types[i];
+								if (type == expectedType)
+								{
+									standardName = true;
+									break;
+								}
+								vint baseCount = type->GetBaseTypeDescriptorCount();
+								for (vint j = 0; j < baseCount; j++)
+								{
+									auto baseType = type->GetBaseTypeDescriptor(j);
+									if (!types.Contains(baseType))
+									{
+										types.Add(baseType);
+									}
+								}
+							}
+						}
+					}
+
+					if (standardName)
+					{
+						{
+							auto arg = MakePtr<WfFunctionArgument>();
+							arg->name.value = L"sender";
+							arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(1));
+							func->arguments.Add(arg);
+						}
+						{
+							auto arg = MakePtr<WfFunctionArgument>();
+							arg->name.value = L"arguments";
+							arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(2));
+							func->arguments.Add(arg);
+						}
+					}
+					else
+					{
+						auto type = TypeInfoRetriver<Value>::CreateTypeInfo();
+						for (vint i = 0; i < count; i++)
+						{
+							auto arg = MakePtr<WfFunctionArgument>();
+							arg->name.value = L"<argument>" + itow(i + 1);
+							arg->type = GetTypeFromTypeInfo(type.Obj());
+							func->arguments.Add(arg);
+						}
 					}
 				}
 						
@@ -8202,6 +8251,16 @@ GuiInstanceContext
 			{
 				keys.Add(parameters[i]->name);
 				keys.Add(parameters[i]->className);
+			}
+
+			for (vint i = 0; i < properties.Count(); i++)
+			{
+				keys.Add(properties[i]->name);
+			}
+
+			for (vint i = 0; i < states.Count(); i++)
+			{
+				keys.Add(states[i]->name);
 			}
 
 			for (vint i = 0; i < precompiledCaches.Count(); i++)

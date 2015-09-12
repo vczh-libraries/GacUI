@@ -1120,6 +1120,16 @@ GuiInstanceContext
 				keys.Add(parameters[i]->className);
 			}
 
+			for (vint i = 0; i < properties.Count(); i++)
+			{
+				keys.Add(properties[i]->name);
+			}
+
+			for (vint i = 0; i < states.Count(); i++)
+			{
+				keys.Add(states[i]->name);
+			}
+
 			for (vint i = 0; i < precompiledCaches.Count(); i++)
 			{
 				keys.Add(precompiledCaches.Keys()[i]);

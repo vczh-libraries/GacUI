@@ -766,6 +766,8 @@ namespace darkskin
 		friend struct vl::reflection::description::CustomTypeDescriptorSelector<TImpl>;
 	private:
 	protected:
+		bool draggingHandle;
+		vl::presentation::Point draggingStartLocation;
 		vl::presentation::compositions::GuiPartialViewComposition* handle;
 		vl::presentation::compositions::GuiBoundsComposition* handleContainer;
 		vl::presentation::templates::GuiScrollTemplate* self;
@@ -798,6 +800,8 @@ namespace darkskin
 		friend struct vl::reflection::description::CustomTypeDescriptorSelector<TImpl>;
 	private:
 	protected:
+		bool draggingHandle;
+		vl::presentation::Point draggingStartLocation;
 		vl::presentation::compositions::GuiBoundsComposition* handle;
 		vl::presentation::templates::GuiScrollTemplate* self;
 
@@ -1646,6 +1650,8 @@ namespace darkskin
 		friend struct vl::reflection::description::CustomTypeDescriptorSelector<TImpl>;
 	private:
 	protected:
+		bool draggingHandle;
+		vl::presentation::Point draggingStartLocation;
 		vl::presentation::compositions::GuiPartialViewComposition* handle;
 		vl::presentation::compositions::GuiBoundsComposition* handleContainer;
 		vl::presentation::templates::GuiScrollTemplate* self;
@@ -1678,6 +1684,8 @@ namespace darkskin
 		friend struct vl::reflection::description::CustomTypeDescriptorSelector<TImpl>;
 	private:
 	protected:
+		bool draggingHandle;
+		vl::presentation::Point draggingStartLocation;
 		vl::presentation::compositions::GuiBoundsComposition* handle;
 		vl::presentation::templates::GuiScrollTemplate* self;
 

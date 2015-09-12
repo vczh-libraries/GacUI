@@ -480,7 +480,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr
 			}
 		}
 		
-		if (instance->context->parameters.Count() > 0)
+		if (instance->context->parameters.Count() + instance->context->properties.Count() + instance->context->states.Count() > 0)
 		{
 			writer.WriteLine(L"");
 			FOREACH_INDEXER(Ptr<GuiInstanceParameter>, parameter, index, instance->context->parameters)
