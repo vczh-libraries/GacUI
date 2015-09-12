@@ -435,8 +435,8 @@ GuiApplicationMain
 				theme::SetCurrentTheme(theme.Obj());
 				GuiMain();
 				theme::SetCurrentTheme(0);
-				DestroyGlobalTypeManager();
 				DestroyPluginManager();
+				DestroyGlobalTypeManager();
 				ThreadLocalStorage::DisposeStorages();
 			}
 		}
@@ -41883,6 +41883,7 @@ namespace vl
 		using namespace parsing::xml;
 		using namespace parsing::json;
 		using namespace regex;
+		using namespace stream;
 
 		WString GetFolderPath(const WString& filePath)
 		{
@@ -42002,6 +42003,8 @@ GlobalStringKey
 		GlobalStringKey GlobalStringKey::_Uri;
 		GlobalStringKey GlobalStringKey::_Workflow_Assembly_Cache;
 		GlobalStringKey GlobalStringKey::_Workflow_Global_Context;
+		GlobalStringKey GlobalStringKey::_Shared_Workflow_Assembly_Cache;
+		GlobalStringKey GlobalStringKey::_Shared_Workflow_Global_Context;
 		GlobalStringKey GlobalStringKey::_ControlTemplate;
 		GlobalStringKey GlobalStringKey::_ItemTemplate;
 
@@ -42021,6 +42024,8 @@ GlobalStringKey
 				GlobalStringKey::_Uri = GlobalStringKey::Get(L"uri");
 				GlobalStringKey::_Workflow_Assembly_Cache = GlobalStringKey::Get(L"WORKFLOW-ASSEMBLY-CACHE");
 				GlobalStringKey::_Workflow_Global_Context = GlobalStringKey::Get(L"WORKFLOW-GLOBAL-CONTEXT");
+				GlobalStringKey::_Shared_Workflow_Assembly_Cache = GlobalStringKey::Get(L"SHARED-WORKFLOW-ASSEMBLY-CACHE");
+				GlobalStringKey::_Shared_Workflow_Global_Context = GlobalStringKey::Get(L"SHARED-WORKFLOW-GLOBAL-CONTEXT");
 				GlobalStringKey::_ControlTemplate = GlobalStringKey::Get(L"ControlTemplate");
 				GlobalStringKey::_ItemTemplate = GlobalStringKey::Get(L"ItemTemplate");
 			}
@@ -42255,7 +42260,7 @@ GuiResourceFolder
 						}
 					}
 				}
-				else
+				else if(element->name.value.Length() <= 3 || element->name.value.Sub(0, 4) != L"ref.")
 				{
 					WString relativeFilePath;
 					WString filePath;
@@ -42612,17 +42617,20 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)
+		void GuiResourceFolder::PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, GuiResource* rootResource, vint passIndex, collections::List<WString>& errors)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
-				typeResolver->Precompile(item->GetContent(), resolver, errors);
+				if (auto precompile = typeResolver->Precompile())
+				{
+					precompile->Precompile(item->GetContent(), rootResource, passIndex, resolver, errors);
+				}
 			}
 
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
-				folder->PrecompileResourceFolder(resolver, errors);
+				folder->PrecompileResourceFolder(resolver, rootResource, passIndex, errors);
 			}
 		}
 
@@ -42755,6 +42763,133 @@ GuiResourceFolder
 GuiResource
 ***********************************************************************/
 
+		void IGuiResourceCache::LoadFromXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches)
+		{
+			FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml, L"Cache"))
+			{
+				auto attName = XmlGetAttribute(element, L"Name");
+				auto attType = XmlGetAttribute(element, L"Type");
+				if (attName && attType)
+				{
+					auto resolver = GetResourceResolverManager()->GetCacheResolver(GlobalStringKey::Get(attType->value.value));
+
+					MemoryStream stream;
+					HexToBinary(stream, XmlGetValue(element));
+					stream.SeekFromBegin(0);
+
+					auto cache = resolver->Deserialize(stream);
+					caches.Add(GlobalStringKey::Get(attName->value.value), cache);
+				}
+			}
+		}
+
+		void IGuiResourceCache::SaveToXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches)
+		{
+			for (vint i = 0; i < caches.Count(); i++)
+			{
+				auto key = caches.Keys()[i];
+				auto value = caches.Values()[i];
+				auto resolver = GetResourceResolverManager()->GetCacheResolver(value->GetCacheTypeName());
+
+				MemoryStream stream;
+				resolver->Serialize(value, stream);
+				stream.SeekFromBegin(0);
+				auto hex = BinaryToHex(stream);
+					
+				auto xmlCache = MakePtr<XmlElement>();
+				xmlCache->name.value = L"Cache";
+				xml->subNodes.Add(xmlCache);
+
+				auto attName = MakePtr<XmlAttribute>();
+				attName->name.value = L"Name";
+				attName->value.value = key.ToString();
+				xmlCache->attributes.Add(attName);
+
+				auto attType = MakePtr<XmlAttribute>();
+				attType->name.value = L"Type";
+				attType->value.value = value->GetCacheTypeName().ToString();
+				xmlCache->attributes.Add(attType);
+
+				auto xmlContent = MakePtr<XmlCData>();
+				xmlContent->content.value = hex;
+				xmlCache->subNodes.Add(xmlContent);
+			}
+		}
+
+		void IGuiResourceCache::LoadFromBinary(stream::internal::Reader& reader, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::List<GlobalStringKey>& sortedKeys)
+		{
+			vint count = 0;
+			reader << count;
+
+			for (vint i = 0; i < count; i++)
+			{
+				GlobalStringKey key, name;
+				if (&sortedKeys)
+				{
+					vint keyIndex = -1;
+					vint nameIndex = -1;
+					reader << keyIndex << nameIndex;
+					auto key = sortedKeys[keyIndex];
+					auto name = sortedKeys[nameIndex];
+				}
+				else
+				{
+					WString keyString, nameString;
+					reader << keyString << nameString;
+					key = GlobalStringKey::Get(keyString);
+					name = GlobalStringKey::Get(nameString);
+				}
+
+				stream::MemoryStream stream;
+				reader << (stream::IStream&)stream;
+
+				if (auto resolver = GetResourceResolverManager()->GetCacheResolver(name))
+				{
+					if (auto cache = resolver->Deserialize(stream))
+					{
+						caches.Add(key, cache);
+					}
+				}
+			}
+		}
+
+		void IGuiResourceCache::SaveToBinary(stream::internal::Writer& writer, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::SortedList<GlobalStringKey>& sortedKeys)
+		{
+			vint count = caches.Count();
+			writer << count;
+			for (vint i = 0; i < count; i++)
+			{
+				auto cache = caches.Values()[i];
+				auto key = caches.Keys()[i];
+				auto name = cache->GetCacheTypeName();
+				if (&sortedKeys)
+				{
+					auto keyIndex = sortedKeys.IndexOf(key);
+					vint nameIndex = sortedKeys.IndexOf(name);
+					CHECK_ERROR(keyIndex != -1 && nameIndex != -1, L"IGuiResourceCache::SaveToBinary(stream::internal::Writer&, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>&)#Internal Error.");
+					writer << keyIndex << nameIndex;
+				}
+				else
+				{
+					WString keyString = key.ToString();
+					WString nameString = name.ToString();
+					writer << keyString << nameString;
+				}
+
+				stream::MemoryStream stream;
+				
+				if (auto resolver = GetResourceResolverManager()->GetCacheResolver(name))
+				{
+					resolver->Serialize(cache, stream);
+				}
+				writer << (stream::IStream&)stream;
+			}
+		}
+
+/***********************************************************************
+GuiResource
+***********************************************************************/
+
 		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors)
 		{
 			FOREACH(DelayLoading, delay, delayLoadings)
@@ -42799,6 +42934,10 @@ GuiResource
 			Ptr<GuiResource> resource = new GuiResource;
 			resource->workingDirectory = workingDirectory;
 			DelayLoadingList delayLoadings;
+			if (auto xmlCaches = XmlGetElement(xml->rootElement, L"ref.Caches"))
+			{
+				IGuiResourceCache::LoadFromXml(xmlCaches, resource->precompiledCaches);
+			}
 			resource->LoadResourceFolderFromXml(delayLoadings, resource->workingDirectory, xml->rootElement, errors);
 
 			ProcessDelayLoading(resource, delayLoadings, errors);
@@ -42831,6 +42970,13 @@ GuiResource
 		{
 			auto xmlRoot = MakePtr<XmlElement>();
 			xmlRoot->name.value = L"Resource";
+			if (serializePrecompiledResource && precompiledCaches.Count() > 0)
+			{
+				auto xmlCaches = MakePtr<XmlElement>();
+				xmlCaches->name.value = L"ref.Caches";
+				xmlRoot->subNodes.Add(xmlCaches);
+				IGuiResourceCache::SaveToXml(xmlCaches, precompiledCaches);
+			}
 			SaveResourceFolderToXml(xmlRoot, serializePrecompiledResource);
 
 			auto doc = MakePtr<XmlDocument>();
@@ -42845,6 +42991,7 @@ GuiResource
 
 			List<WString> typeNames;
 			reader << typeNames;
+			IGuiResourceCache::LoadFromBinary(reader, resource->precompiledCaches);
 			
 			DelayLoadingList delayLoadings;
 			resource->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
@@ -42860,13 +43007,18 @@ GuiResource
 			List<WString> typeNames;
 			CollectTypeNames(typeNames);
 			writer << typeNames;
+			IGuiResourceCache::SaveToBinary(writer, precompiledCaches);
 			SaveResourceFolderToBinary(writer, typeNames);
 		}
 
 		void GuiResource::Precompile(collections::List<WString>& errors)
 		{
+			vint maxPass = GetResourceResolverManager()->GetMaxPrecompilePassIndex();
 			Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(this, workingDirectory);
-			PrecompileResourceFolder(resolver, errors);
+			for (vint i = 0; i <= maxPass; i++)
+			{
+				PrecompileResourceFolder(resolver, this, i, errors);
+			}
 		}
 
 		Ptr<DocumentModel> GuiResource::GetDocumentByPath(const WString& path)
@@ -43041,9 +43193,13 @@ IGuiResourceResolverManager
 
 		class GuiResourceResolverManager : public Object, public IGuiResourceResolverManager, public IGuiPlugin
 		{
+			typedef Dictionary<WString, Ptr<IGuiResourcePathResolverFactory>>			PathFactoryMap;
+			typedef Dictionary<WString, Ptr<IGuiResourceTypeResolver>>					TypeResolverMap;
+			typedef Dictionary<GlobalStringKey, Ptr<IGuiResourceCacheResolver>>			CacheResolverMap;
 		protected:
-			Dictionary<WString, Ptr<IGuiResourcePathResolverFactory>>		pathFactories;
-			Dictionary<WString, Ptr<IGuiResourceTypeResolver>>				typeResolvers;
+			PathFactoryMap				pathFactories;
+			TypeResolverMap				typeResolvers;
+			CacheResolverMap			cacheResolvers;
 
 		public:
 			GuiResourceResolverManager()
@@ -43100,6 +43256,36 @@ IGuiResourceResolverManager
 				typeResolvers.Add(resolver->GetType(), resolver);
 				return true;
 			}
+
+			vint GetMaxPrecompilePassIndex()
+			{
+				vint maxPass = -1;
+				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
+				{
+					if (auto precompile = resolver->Precompile())
+					{
+						vint pass = precompile->GetMaxPassIndex();
+						if (maxPass < pass)
+						{
+							maxPass = pass;
+						}
+					}
+				}
+				return maxPass;
+			}
+
+			IGuiResourceCacheResolver* GetCacheResolver(GlobalStringKey cacheTypeName)override
+			{
+				vint index = cacheResolvers.Keys().IndexOf(cacheTypeName);
+				return index == -1 ? 0 : cacheResolvers.Values()[index].Obj();
+			}
+
+			bool SetCacheResolver(Ptr<IGuiResourceCacheResolver> cacheResolver)override
+			{
+				if (cacheResolvers.Keys().Contains(cacheResolver->GetCacheTypeName())) return false;
+				cacheResolvers.Add(cacheResolver->GetCacheTypeName(), cacheResolver);
+				return true;
+			}
 		};
 		GUI_REGISTER_PLUGIN(GuiResourceResolverManager)
 	}
@@ -43134,10 +43320,6 @@ Image Type Resolver
 			WString GetType()override
 			{
 				return L"Image";
-			}
-
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
 			}
 
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
@@ -43243,10 +43425,6 @@ Text Type Resolver
 				return L"Text";
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-			}
-
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
 			{
 				return this;
@@ -43323,10 +43501,6 @@ Xml Type Resolver
 			WString GetType()override
 			{
 				return L"Xml";
-			}
-
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
 			}
 
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
@@ -43432,10 +43606,6 @@ Doc Type Resolver
 			bool IsDelayLoad()override
 			{
 				return true;
-			}
-
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
 			}
 
 			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override

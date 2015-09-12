@@ -354,7 +354,7 @@ Instance Context
 		{
 		public:
 			typedef collections::List<Ptr<GuiInstanceNamespace>>						NamespaceList;
-			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiInstanceCache>>	CacheMap;
+			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>	CacheMap;
 
 			struct NamespaceInfo : public Object, public Description<NamespaceInfo>
 			{
@@ -779,24 +779,6 @@ Instance Binder
 		};
 
 /***********************************************************************
-Instance Cache
-***********************************************************************/
-
-		class IGuiInstanceCache : public IDescriptable, public Description<IGuiInstanceCache>
-		{
-		public:
-			virtual GlobalStringKey					GetCacheTypeName() = 0;
-		};
-
-		class IGuiInstanceCacheResolver : public IDescriptable, public Description<IGuiInstanceCache>
-		{
-		public:
-			virtual GlobalStringKey					GetCacheTypeName() = 0;
-			virtual bool							Serialize(Ptr<IGuiInstanceCache> cache, stream::IStream& stream) = 0;
-			virtual Ptr<IGuiInstanceCache>			Deserialize(stream::IStream& stream) = 0;
-		};
-
-/***********************************************************************
 Instance Loader Manager
 ***********************************************************************/
 
@@ -809,8 +791,6 @@ Instance Loader Manager
 			virtual IGuiInstanceBinder*					GetInstanceBinder(GlobalStringKey bindingName) = 0;
 			virtual bool								AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder) = 0;
 			virtual IGuiInstanceEventBinder*			GetInstanceEventBinder(GlobalStringKey bindingName) = 0;
-			virtual bool								AddInstanceCacheResolver(Ptr<IGuiInstanceCacheResolver> cacheResolver) = 0;
-			virtual IGuiInstanceCacheResolver*			GetInstanceCacheResolver(GlobalStringKey cacheTypeName) = 0;
 			virtual bool								CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual bool								SetLoader(Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual IGuiInstanceLoader*					GetLoader(GlobalStringKey typeName) = 0;
@@ -3774,6 +3754,39 @@ namespace vl
 #endif
 
 /***********************************************************************
+GUIINSTANCESHAREDSCRIPT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Shared Script
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class GuiInstanceSharedScript :public Object, public Description<GuiInstanceSharedScript>
+		{
+		public:
+			WString										language;
+			WString										code;
+
+			static Ptr<GuiInstanceSharedScript>			LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, collections::List<WString>& errors);
+			Ptr<parsing::xml::XmlElement>				SaveToXml();
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
 GUIINSTANCELOADER_WORKFLOWCOMPILER.H
 ***********************************************************************/
 /***********************************************************************
@@ -3832,7 +3845,7 @@ WorkflowCompiler
 GuiWorkflowCache
 ***********************************************************************/
 
-		class GuiWorkflowCache : public Object, public IGuiInstanceCache
+		class GuiWorkflowCache : public Object, public IGuiResourceCache
 		{
 		public:
 			static const GlobalStringKey&					CacheTypeName;
@@ -3846,12 +3859,12 @@ GuiWorkflowCache
 			GlobalStringKey									GetCacheTypeName()override;
 		};
 
-		class GuiWorkflowCacheResolver : public Object, public IGuiInstanceCacheResolver
+		class GuiWorkflowCacheResolver : public Object, public IGuiResourceCacheResolver
 		{
 		public:
 			GlobalStringKey									GetCacheTypeName()override;
-			bool											Serialize(Ptr<IGuiInstanceCache> cache, stream::IStream& stream)override;
-			Ptr<IGuiInstanceCache>							Deserialize(stream::IStream& stream)override;
+			bool											Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)override;
+			Ptr<IGuiResourceCache>							Deserialize(stream::IStream& stream)override;
 		};
 	}
 }

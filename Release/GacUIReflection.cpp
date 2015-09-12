@@ -333,199 +333,6 @@ GuiInstanceContext::ElementName Parser
 		};
 
 /***********************************************************************
-Instance Type Resolver
-***********************************************************************/
-
-		class GuiResourceInstanceTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_DirectLoadStream
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-		public:
-			WString GetType()override
-			{
-				return L"Instance";
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-				if (auto obj = resource.Cast<GuiInstanceContext>())
-				{
-					obj->ApplyStyles(resolver, errors);
-					Workflow_PrecompileInstanceContext(obj, errors);
-				}
-			}
-
-			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
-			{
-				auto obj = resource.Cast<GuiInstanceContext>();
-				obj->SavePrecompiledBinary(stream);
-			}
-
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
-			{
-				return GuiInstanceContext::LoadPrecompiledBinary(stream, errors);
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
-			{
-				if (auto obj = resource.Cast<GuiInstanceContext>())
-				{
-					return obj->SaveToXml(serializePrecompiledResource);
-				}
-				return 0;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
-				if (xml)
-				{
-					Ptr<GuiInstanceContext> context = GuiInstanceContext::LoadFromXml(xml, errors);
-					return context;
-				}
-				return 0;
-			}
-		};
-
-/***********************************************************************
-Instance Style Resolver
-***********************************************************************/
-
-		class GuiResourceInstanceStyleResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-		public:
-			WString GetType()override
-			{
-				return L"InstanceStyle";
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
-			{
-				if (!serializePrecompiledResource)
-				{
-					if (auto obj = resource.Cast<GuiInstanceStyleContext>())
-					{
-						return obj->SaveToXml();
-					}
-				}
-				return 0;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
-				if (xml)
-				{
-					Ptr<GuiInstanceStyleContext> context = GuiInstanceStyleContext::LoadFromXml(xml, errors);
-					return context;
-				}
-				return 0;
-			}
-		};
-
-/***********************************************************************
-Instance Schema Type Resolver
-***********************************************************************/
-
-		class GuiResourceInstanceSchemaTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-		public:
-			WString GetType()override
-			{
-				return L"InstanceSchema";
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			void Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
-			{
-				if (!serializePrecompiledResource)
-				{
-					if (auto obj = resource.Cast<GuiInstanceSchema>())
-					{
-						return obj->SaveToXml();
-					}
-				}
-				return 0;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
-				if (xml)
-				{
-					Ptr<GuiInstanceSchema> schema = GuiInstanceSchema::LoadFromXml(xml, errors);
-					return schema;
-				}
-				return 0;
-			}
-		};
-
-/***********************************************************************
 GuiDefaultInstanceLoader
 ***********************************************************************/
 
@@ -1178,7 +985,6 @@ GuiInstanceLoaderManager
 			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceBinder>>				BinderMap;
 			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceEventBinder>>			EventBinderMap;
 			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceBindingContextFactory>>	BindingContextFactoryMap;
-			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceCacheResolver>>			CacheResolverMap;
 
 			struct VirtualTypeInfo
 			{
@@ -1202,7 +1008,6 @@ GuiInstanceLoaderManager
 			BinderMap								binders;
 			EventBinderMap							eventBinders;
 			BindingContextFactoryMap				bindingContextFactories;
-			CacheResolverMap						cacheResolvers;
 			VirtualTypeInfoMap						typeInfos;
 			ResourceMap								resources;
 
@@ -1319,16 +1124,8 @@ GuiInstanceLoaderManager
 
 			void AfterLoad()override
 			{
-				{
-					IGuiResourceResolverManager* manager = GetResourceResolverManager();
-					manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
-					manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
-					manager->SetTypeResolver(new GuiResourceInstanceSchemaTypeResolver);
-				}
-				{
-					IGuiParserManager* manager = GetParserManager();
-					manager->SetParser(L"INSTANCE-ELEMENT-NAME", new GuiInstanceContextElementNameParser);
-				}
+				IGuiParserManager* manager = GetParserManager();
+				manager->SetParser(L"INSTANCE-ELEMENT-NAME", new GuiInstanceContextElementNameParser);
 			}
 
 			void Unload()override
@@ -1373,19 +1170,6 @@ GuiInstanceLoaderManager
 			{
 				vint index = eventBinders.Keys().IndexOf(bindingName);
 				return index == -1 ? 0 : eventBinders.Values()[index].Obj();
-			}
-
-			bool AddInstanceCacheResolver(Ptr<IGuiInstanceCacheResolver> cacheResolver)override
-			{
-				if (cacheResolvers.Keys().Contains(cacheResolver->GetCacheTypeName())) return false;
-				cacheResolvers.Add(cacheResolver->GetCacheTypeName(), cacheResolver);
-				return true;
-			}
-
-			IGuiInstanceCacheResolver* GetInstanceCacheResolver(GlobalStringKey cacheTypeName)override
-			{
-				vint index = cacheResolvers.Keys().IndexOf(cacheTypeName);
-				return index == -1 ? 0 : cacheResolvers.Values()[index].Obj();
 			}
 
 			bool CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader)override
@@ -5832,6 +5616,442 @@ GuiPredefinedInstanceLoadersPlugin
 }
 
 /***********************************************************************
+GUIINSTANCELOADER_PREDEFINEDTYPERESOLVERS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace parsing;
+		using namespace parsing::xml;
+		using namespace workflow::analyzer;
+		using namespace workflow::runtime;
+		using namespace reflection::description;
+		using namespace collections;
+
+#define ERROR_CODE_PREFIX L"================================================================"
+
+/***********************************************************************
+Instance Type Resolver
+***********************************************************************/
+
+		class GuiResourceInstanceTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
+			, private IGuiResourceTypeResolver_DirectLoadStream
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Instance";
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return 2;
+			}
+
+			void Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				if (passIndex == 2)
+				{
+					if (auto obj = resource.Cast<GuiInstanceContext>())
+					{
+						obj->ApplyStyles(resolver, errors);
+						Workflow_PrecompileInstanceContext(obj, errors);
+					}
+				}
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			{
+				auto obj = resource.Cast<GuiInstanceContext>();
+				obj->SavePrecompiledBinary(stream);
+			}
+
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			{
+				return GuiInstanceContext::LoadPrecompiledBinary(stream, errors);
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			{
+				if (auto obj = resource.Cast<GuiInstanceContext>())
+				{
+					return obj->SaveToXml(serializePrecompiledResource);
+				}
+				return 0;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				if (xml)
+				{
+					Ptr<GuiInstanceContext> context = GuiInstanceContext::LoadFromXml(xml, errors);
+					return context;
+				}
+				return 0;
+			}
+		};
+
+/***********************************************************************
+Instance Style Type Resolver
+***********************************************************************/
+
+		class GuiResourceInstanceStyleResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"InstanceStyle";
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			{
+				if (!serializePrecompiledResource)
+				{
+					if (auto obj = resource.Cast<GuiInstanceStyleContext>())
+					{
+						return obj->SaveToXml();
+					}
+				}
+				return 0;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				if (xml)
+				{
+					auto context = GuiInstanceStyleContext::LoadFromXml(xml, errors);
+					return context;
+				}
+				return 0;
+			}
+		};
+
+/***********************************************************************
+Instance Schema Type Resolver
+***********************************************************************/
+
+		class GuiResourceInstanceSchemaTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"InstanceSchema";
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			{
+				if (!serializePrecompiledResource)
+				{
+					if (auto obj = resource.Cast<GuiInstanceSchema>())
+					{
+						return obj->SaveToXml();
+					}
+				}
+				return 0;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				if (xml)
+				{
+					auto schema = GuiInstanceSchema::LoadFromXml(xml, errors);
+					return schema;
+				}
+				return 0;
+			}
+		};
+
+/***********************************************************************
+Shared Script Type Resolver
+***********************************************************************/
+
+		class GuiSharedWorkflowCache : public Object, public IGuiResourceCache
+		{
+		public:
+			static const GlobalStringKey&					CacheTypeName;
+			static const GlobalStringKey&					CacheContextName;
+
+			List<WString>									moduleCodes;
+			Ptr<WfAssembly>									assembly;
+			Ptr<WfRuntimeGlobalContext>						globalContext;
+
+			GuiSharedWorkflowCache()
+			{
+			}
+
+			GuiSharedWorkflowCache(Ptr<WfAssembly> _assembly)
+				:assembly(_assembly)
+			{
+				Initialize();
+			}
+
+			GlobalStringKey GetCacheTypeName()override
+			{
+				return CacheTypeName;
+			}
+
+			void Initialize()
+			{
+				if (!globalContext)
+				{
+					globalContext = new WfRuntimeGlobalContext(assembly);
+					LoadFunction<void()>(globalContext, L"<initialize>")();
+				}
+			}
+		};
+
+		const GlobalStringKey& GuiSharedWorkflowCache::CacheTypeName = GlobalStringKey::_Shared_Workflow_Assembly_Cache;
+		const GlobalStringKey& GuiSharedWorkflowCache::CacheContextName = GlobalStringKey::_Shared_Workflow_Global_Context;
+
+		class GuiSharedWorkflowCacheResolver : public Object, public IGuiResourceCacheResolver 
+		{
+		public:
+			GlobalStringKey GetCacheTypeName()override
+			{
+				return GuiSharedWorkflowCache::CacheTypeName;
+			}
+
+			bool Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)override
+			{
+				if (auto obj = cache.Cast<GuiSharedWorkflowCache>())
+				{
+					obj->assembly->Serialize(stream);
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			Ptr<IGuiResourceCache> Deserialize(stream::IStream& stream)override
+			{
+				auto assembly = new WfAssembly(stream);
+				return new GuiSharedWorkflowCache(assembly);
+			}
+		};
+
+		class GuiResourceSharedScriptTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Script";
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return 1;
+			}
+
+			void Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				if (passIndex == 0)
+				{
+					if (auto obj = resource.Cast<GuiInstanceSharedScript>())
+					{
+						if (obj->language == L"Workflow")
+						{
+							Ptr<GuiSharedWorkflowCache> cache;
+							auto key = GuiSharedWorkflowCache::CacheContextName;
+							auto index = rootResource->precompiledCaches.Keys().IndexOf(key);
+
+							if (index == -1)
+							{
+								cache = new GuiSharedWorkflowCache;
+								rootResource->precompiledCaches.Add(key, cache);
+							}
+							else
+							{
+								cache = rootResource->precompiledCaches.Values()[index].Cast<GuiSharedWorkflowCache>();
+							}
+							cache->moduleCodes.Add(obj->code);
+						}
+					}
+				}
+				else if (passIndex == 1)
+				{
+					Ptr<GuiSharedWorkflowCache> cache;
+					auto key = GuiSharedWorkflowCache::CacheContextName;
+					auto index = rootResource->precompiledCaches.Keys().IndexOf(key);
+
+					if (index != -1)
+					{
+						auto cache = rootResource->precompiledCaches.Values()[index].Cast<GuiSharedWorkflowCache>();
+						auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
+						List<Ptr<ParsingError>> scriptErrors;
+						cache->assembly = Compile(table, cache->moduleCodes, scriptErrors);
+						if (scriptErrors.Count() > 0)
+						{
+							errors.Add(ERROR_CODE_PREFIX L"Failed to parse the shared workflow script");
+							FOREACH(Ptr<ParsingError>, error, scriptErrors)
+							{
+								errors.Add(
+									L"Row: " + itow(error->codeRange.start.row + 1) +
+									L", Column: " + itow(error->codeRange.start.column + 1) +
+									L", Message: " + error->errorMessage);
+							}
+						}
+						else
+						{
+							cache->Initialize();
+						}
+					}
+				}
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			{
+				if (!serializePrecompiledResource)
+				{
+					if (auto obj = resource.Cast<GuiInstanceSharedScript>())
+					{
+						return obj->SaveToXml();
+					}
+				}
+				return 0;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				if (xml)
+				{
+					auto schema = GuiInstanceSharedScript::LoadFromXml(xml, errors);
+					return schema;
+				}
+				return 0;
+			}
+		};
+
+/***********************************************************************
+Shared Script Type Resolver
+***********************************************************************/
+
+		class GuiPredefinedTypeResolversPlugin : public Object, public IGuiPlugin
+		{
+		public:
+			GuiPredefinedTypeResolversPlugin()
+			{
+			}
+
+			void Load()override
+			{
+			}
+
+			void AfterLoad()override
+			{
+				IGuiResourceResolverManager* manager = GetResourceResolverManager();
+				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
+				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
+				manager->SetTypeResolver(new GuiResourceInstanceSchemaTypeResolver);
+				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
+				manager->SetCacheResolver(new GuiSharedWorkflowCacheResolver);
+			}
+
+			void Unload()override
+			{
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiPredefinedTypeResolversPlugin)
+	}
+}
+
+/***********************************************************************
 GUIINSTANCELOADER_WORKFLOWCOMPILER.CPP
 ***********************************************************************/
 
@@ -6786,7 +7006,7 @@ GuiWorkflowCacheResolver
 			return GuiWorkflowCache::CacheTypeName;
 		}
 
-		bool GuiWorkflowCacheResolver::Serialize(Ptr<IGuiInstanceCache> cache, stream::IStream& stream)
+		bool GuiWorkflowCacheResolver::Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)
 		{
 			if (auto obj = cache.Cast<GuiWorkflowCache>())
 			{
@@ -6799,7 +7019,7 @@ GuiWorkflowCacheResolver
 			}
 		}
 
-		Ptr<IGuiInstanceCache> GuiWorkflowCacheResolver::Deserialize(stream::IStream& stream)
+		Ptr<IGuiResourceCache> GuiWorkflowCacheResolver::Deserialize(stream::IStream& stream)
 		{
 			auto assembly = new WfAssembly(stream);
 			return new GuiWorkflowCache(assembly);
@@ -6832,8 +7052,8 @@ Workflow_GetSharedManager
 			{
 				sharedManagerPlugin = this;
 
-				IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
-				manager->AddInstanceCacheResolver(new GuiWorkflowCacheResolver);
+				auto manager=GetResourceResolverManager();
+				manager->SetCacheResolver(new GuiWorkflowCacheResolver);
 			}
 
 			void Unload()override
@@ -7638,21 +7858,9 @@ GuiInstanceContext
 							context->states.Add(state);
 						}
 					}
-					else if (element->name.value == L"ref.Cache")
+					else if (element->name.value == L"ref.Caches")
 					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attType = XmlGetAttribute(element, L"Type");
-						if (attName && attType)
-						{
-							auto resolver = GetInstanceLoaderManager()->GetInstanceCacheResolver(GlobalStringKey::Get(attType->value.value));
-
-							MemoryStream stream;
-							HexToBinary(stream, XmlGetValue(element));
-							stream.SeekFromBegin(0);
-
-							auto cache = resolver->Deserialize(stream);
-							context->precompiledCaches.Add(GlobalStringKey::Get(attName->value.value), cache);
-						}
+						IGuiResourceCache::LoadFromXml(element, context->precompiledCaches);
 					}
 					else if (!context->instance)
 					{
@@ -7780,37 +7988,12 @@ GuiInstanceContext
 				}
 			}
 
-			if (serializePrecompiledResource)
+			if (serializePrecompiledResource && precompiledCaches.Count() > 0)
 			{
-				for (vint i = 0; i < precompiledCaches.Count(); i++)
-				{
-					auto key = precompiledCaches.Keys()[i];
-					auto value = precompiledCaches.Values()[i];
-					auto resolver = GetInstanceLoaderManager()->GetInstanceCacheResolver(value->GetCacheTypeName());
-
-					MemoryStream stream;
-					resolver->Serialize(value, stream);
-					stream.SeekFromBegin(0);
-					auto hex = BinaryToHex(stream);
-					
-					auto xmlCache = MakePtr<XmlElement>();
-					xmlCache->name.value = L"ref.Cache";
-					xmlInstance->subNodes.Add(xmlCache);
-
-					auto attName = MakePtr<XmlAttribute>();
-					attName->name.value = L"Name";
-					attName->value.value = key.ToString();
-					xmlCache->attributes.Add(attName);
-
-					auto attType = MakePtr<XmlAttribute>();
-					attType->name.value = L"Type";
-					attType->value.value = value->GetCacheTypeName().ToString();
-					xmlCache->attributes.Add(attType);
-
-					auto xmlContent = MakePtr<XmlCData>();
-					xmlContent->content.value = hex;
-					xmlCache->subNodes.Add(xmlContent);
-				}
+				auto xmlCaches = MakePtr<XmlElement>();
+				xmlCaches->name.value = L"ref.Caches";
+				xmlInstance->subNodes.Add(xmlCaches);
+				IGuiResourceCache::SaveToXml(xmlCaches, precompiledCaches);
 			}
 
 			instance->FillXml(xmlInstance, serializePrecompiledResource);
@@ -7915,28 +8098,7 @@ GuiInstanceContext
 					context->states.Add(state);
 				}
 			}
-			{
-				vint count = 0;
-				reader << count;
-
-				for (vint i = 0; i < count; i++)
-				{
-					vint keyIndex = -1;
-					vint nameIndex = -1;
-					stream::MemoryStream stream;
-					reader << keyIndex << nameIndex << (stream::IStream&)stream;
-
-					auto key = sortedKeys[keyIndex];
-					auto name = sortedKeys[nameIndex];
-					if (auto resolver = GetInstanceLoaderManager()->GetInstanceCacheResolver(name))
-					{
-						if (auto cache = resolver->Deserialize(stream))
-						{
-							context->precompiledCaches.Add(key, cache);
-						}
-					}
-				}
-			}
+			IGuiResourceCache::LoadFromBinary(reader, context->precompiledCaches, sortedKeys);
 
 			return context;
 		}
@@ -8017,26 +8179,8 @@ GuiInstanceContext
 					writer << nameIndex << typeName;
 				}
 			}
-			{
-				vint count = precompiledCaches.Count();
-				writer << count;
-				for (vint i = 0; i < count; i++)
-				{
-					auto keyIndex = sortedKeys.IndexOf(precompiledCaches.Keys()[i]);
-					auto cache = precompiledCaches.Values()[i];
-					auto name = cache->GetCacheTypeName();
-					vint nameIndex = sortedKeys.IndexOf(name);
-					CHECK_ERROR(keyIndex != -1 && nameIndex != -1, L"GuiInstanceContext::SavePrecompiledBinary(stream::IStream&)#Internal Error.");
-
-					stream::MemoryStream stream;
-
-					if (auto resolver = GetInstanceLoaderManager()->GetInstanceCacheResolver(name))
-					{
-						resolver->Serialize(cache, stream);
-					}
-					writer << keyIndex << nameIndex << (stream::IStream&)stream;
-				}
-			}
+			
+			IGuiResourceCache::SaveToBinary(writer, precompiledCaches, sortedKeys);
 		}
 
 		void GuiInstanceContext::CollectUsedKey(collections::List<GlobalStringKey>& keys)
@@ -8533,6 +8677,42 @@ GuiInstanceSchema
 			auto doc = MakePtr<XmlDocument>();
 			doc->rootElement = xmlElement;
 			return doc;
+		}
+	}
+}
+
+/***********************************************************************
+GUIINSTANCESHAREDSCRIPT.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace parsing::xml;
+
+/***********************************************************************
+GuiInstanceSharedScript
+***********************************************************************/
+
+		Ptr<GuiInstanceSharedScript> GuiInstanceSharedScript::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, collections::List<WString>& errors)
+		{
+			auto script = MakePtr<GuiInstanceSharedScript>();
+			script->language = xml->rootElement->name.value;
+			script->code = XmlGetValue(xml->rootElement);
+			return script;
+		}
+
+		Ptr<parsing::xml::XmlElement> GuiInstanceSharedScript::SaveToXml()
+		{
+			auto cdata = MakePtr<XmlCData>();
+			cdata->content.value = code;
+
+			auto xml = MakePtr<XmlElement>();
+			xml->name.value = language;
+			xml->subNodes.Add(cdata);
+
+			return xml;
 		}
 	}
 }

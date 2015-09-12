@@ -3215,6 +3215,8 @@ Global String Key
 			static GlobalStringKey					_Uri;
 			static GlobalStringKey					_Workflow_Assembly_Cache;
 			static GlobalStringKey					_Workflow_Global_Context;
+			static GlobalStringKey					_Shared_Workflow_Assembly_Cache;
+			static GlobalStringKey					_Shared_Workflow_Global_Context;
 			static GlobalStringKey					_ControlTemplate;
 			static GlobalStringKey					_ItemTemplate;
 
@@ -3391,7 +3393,7 @@ Resource Structure
 			void									CollectTypeNames(collections::List<WString>& typeNames);
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::Reader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
 			void									SaveResourceFolderToBinary(stream::internal::Writer& writer, collections::List<WString>& typeNames);
-			void									PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors);
+			void									PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, GuiResource* rootResource, vint passIndex, collections::List<WString>& errors);
 		public:
 			/// <summary>Create a resource folder.</summary>
 			GuiResourceFolder();
@@ -3446,17 +3448,43 @@ Resource Structure
 		};
 
 /***********************************************************************
+Resource Cache
+***********************************************************************/
+
+		class IGuiResourceCache : public IDescriptable, public Description<IGuiResourceCache>
+		{
+		public:
+			virtual GlobalStringKey					GetCacheTypeName() = 0;
+
+			static void								LoadFromXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
+			static void								SaveToXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
+			static void								LoadFromBinary(stream::internal::Reader& reader, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::List<GlobalStringKey>& sortedKeys = *(collections::List<GlobalStringKey>*)nullptr);
+			static void								SaveToBinary(stream::internal::Writer& writer, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::SortedList<GlobalStringKey>& sortedKeys = *(collections::SortedList<GlobalStringKey>*)nullptr);
+		};
+
+		class IGuiResourceCacheResolver : public IDescriptable, public Description<IGuiResourceCacheResolver>
+		{
+		public:
+			virtual GlobalStringKey					GetCacheTypeName() = 0;
+			virtual bool							Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream) = 0;
+			virtual Ptr<IGuiResourceCache>			Deserialize(stream::IStream& stream) = 0;
+		};
+
+/***********************************************************************
 Resource
 ***********************************************************************/
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
 		class GuiResource : public GuiResourceFolder, public Description<GuiResource>
 		{
+			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>	CacheMap;
 		protected:
 			WString									workingDirectory;
 
 			static void								ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors);
 		public:
+			CacheMap								precompiledCaches;
+
 			/// <summary>Create a resource.</summary>
 			GuiResource();
 			~GuiResource();
@@ -3571,6 +3599,7 @@ Resource Path Resolver
 Resource Type Resolver
 ***********************************************************************/
 
+		class IGuiResourceTypeResolver_Precompile;
 		class IGuiResourceTypeResolver_DirectLoadXml;
 		class IGuiResourceTypeResolver_DirectLoadStream;
 		class IGuiResourceTypeResolver_IndirectLoad;
@@ -3583,12 +3612,9 @@ Resource Type Resolver
 			/// <returns>The type.</returns>
 			virtual WString										GetType() = 0;
 			
-			/// <summary>Precompile the resource item.</summary>
-			/// <param name="resource">The resource.</param>
-			/// <param name="resolver">The path resolver. This is only for delay load resource.</param>
-			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual void										Precompile(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors) = 0;
-			
+			/// <summary>Get the precompiler for the type resolver.</summary>
+			/// <returns>Returns null if the type resolve does not support precompiling.</returns>
+			virtual IGuiResourceTypeResolver_Precompile*		Precompile(){ return 0; }
 			/// <summary>Get the object for convert the resource between xml and object.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
 			virtual IGuiResourceTypeResolver_DirectLoadXml*		DirectLoadXml(){ return 0; }
@@ -3598,6 +3624,27 @@ Resource Type Resolver
 			/// <summary>Get the object for convert the resource between the preload type and the current type.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
 			virtual IGuiResourceTypeResolver_IndirectLoad*		IndirectLoad(){ return 0; }
+		};
+
+		/// <summary>
+		///		Represents a precompiler for resources of a specified type.
+		///		Current resources that needs precompiling:
+		///			Pass 0: <Script>	(collect workflow scripts)
+		///			Pass 1: <Script>	(compile collected workflow scripts)
+		///			Pass 2: <Instance>
+		/// </summary>
+		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
+		{
+		public:
+			/// <summary>Get the maximum pass index that the precompiler needs.</summary>
+			/// <returns>Returns the maximum pass index. The precompiler doesn't not need to response to every pass.</returns>
+			virtual vint										GetMaxPassIndex() = 0;
+			/// <summary>Precompile the resource item.</summary>
+			/// <param name="resource">The resource.</param>
+			/// <param name="pass">Indicate the pass index of this precompiling pass.</param>
+			/// <param name="resolver">The path resolver. This is only for delay load resource.</param>
+			/// <param name="errors">All collected errors during loading a resource.</param>
+			virtual void										Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource without a preload type.</summary>
@@ -3675,19 +3722,30 @@ Resource Resolver Manager
 			/// <summary>Get the <see cref="IGuiResourcePathResolverFactory"/> for a protocol.</summary>
 			/// <returns>The factory.</returns>
 			/// <param name="protocol">The protocol.</param>
-			virtual IGuiResourcePathResolverFactory*			GetPathResolverFactory(const WString& protocol)=0;
+			virtual IGuiResourcePathResolverFactory*			GetPathResolverFactory(const WString& protocol) = 0;
 			/// <summary>Set the <see cref="IGuiResourcePathResolverFactory"/> for a protocol.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="factory">The factory.</param>
-			virtual bool										SetPathResolverFactory(Ptr<IGuiResourcePathResolverFactory> factory)=0;
+			virtual bool										SetPathResolverFactory(Ptr<IGuiResourcePathResolverFactory> factory) = 0;
 			/// <summary>Get the <see cref="IGuiResourceTypeResolver"/> for a resource type.</summary>
 			/// <returns>The resolver.</returns>
 			/// <param name="type">The resource type.</param>
-			virtual IGuiResourceTypeResolver*					GetTypeResolver(const WString& type)=0;
+			virtual IGuiResourceTypeResolver*					GetTypeResolver(const WString& type) = 0;
 			/// <summary>Set the <see cref="IGuiResourceTypeResolver"/> for a resource type.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="resolver">The resolver.</param>
-			virtual bool										SetTypeResolver(Ptr<IGuiResourceTypeResolver> resolver)=0;
+			virtual bool										SetTypeResolver(Ptr<IGuiResourceTypeResolver> resolver) = 0;
+			/// <summary>Get the maximum precompiling pass index.</summary>
+			/// <returns>The maximum precompiling pass index.<.returns>
+			virtual vint										GetMaxPrecompilePassIndex() = 0;
+			/// <summary>Get the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
+			/// <returns>The resolver.</returns>
+			/// <param name="type">The cache type.</param>
+			virtual IGuiResourceCacheResolver*					GetCacheResolver(GlobalStringKey cacheTypeName) = 0;
+			/// <summary>Set the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="resolver">The resolver.</param>
+			virtual bool										SetCacheResolver(Ptr<IGuiResourceCacheResolver> cacheResolver) = 0;
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();
