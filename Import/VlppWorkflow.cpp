@@ -2287,7 +2287,6 @@ GenerateAssembly
 				auto assembly = MakePtr<WfAssembly>();
 				assembly->insBeforeCodegen = new WfInstructionDebugInfo;
 				assembly->insAfterCodegen = new WfInstructionDebugInfo;
-				assembly->typeImpl = new WfTypeImpl;
 				
 				WfCodegenContext context(assembly, manager);
 				FOREACH_INDEXER(Ptr<WfModule>, module, index, manager->GetModules())
@@ -2315,11 +2314,15 @@ GenerateAssembly
 					assembly->insAfterCodegen->moduleCodes.Add(codeAfterCodegen);
 				}
 
-				FOREACH(Ptr<ITypeDescriptor>, td, manager->declarationTypes.Values())
+				if (manager->declarationTypes.Count() > 0)
 				{
-					if (auto tdClass = td.Cast<WfClass>())
+					assembly->typeImpl = new WfTypeImpl;
+					FOREACH(Ptr<ITypeDescriptor>, td, manager->declarationTypes.Values())
 					{
-						assembly->typeImpl->classes.Add(tdClass);
+						if (auto tdClass = td.Cast<WfClass>())
+						{
+							assembly->typeImpl->classes.Add(tdClass);
+						}
 					}
 				}
 
@@ -16273,12 +16276,18 @@ WfRuntimeGlobalContext
 			{
 				globalVariables = new WfRuntimeVariableContext;
 				globalVariables->variables.Resize(assembly->variableNames.Count());
-				assembly->typeImpl->SetGlobalContext(this);
+				if (assembly->typeImpl)
+				{
+					assembly->typeImpl->SetGlobalContext(this);
+				}
 			}
 
 			WfRuntimeGlobalContext::~WfRuntimeGlobalContext()
 			{
-				assembly->typeImpl->SetGlobalContext(nullptr);
+				if (assembly->typeImpl)
+				{
+					assembly->typeImpl->SetGlobalContext(nullptr);
+				}
 			}
 
 /***********************************************************************
@@ -17238,80 +17247,90 @@ Serialization (TypeImpl)
 
 				static void IO(Reader& reader, WfTypeImpl& value)
 				{
-					// classes
-					vint classCount = 0;
-					reader << classCount;
-					for (vint i = 0; i < classCount; i++)
+					bool hasTypeImpl = false;
+					reader << hasTypeImpl;
+					if (hasTypeImpl)
 					{
-						WString typeName;
-						reader << typeName;
-						value.classes.Add(MakePtr<WfClass>(typeName));
-					}
+						// classes
+						vint classCount = 0;
+						reader << classCount;
+						for (vint i = 0; i < classCount; i++)
+						{
+							WString typeName;
+							reader << typeName;
+							value.classes.Add(MakePtr<WfClass>(typeName));
+						}
 
-					Dictionary<vint, ITypeDescriptor*> tdIndex;
-					for (vint i = 0; i < classCount; i++)
-					{
-						tdIndex.Add(i, value.classes[i].Obj());
-					}
+						Dictionary<vint, ITypeDescriptor*> tdIndex;
+						for (vint i = 0; i < classCount; i++)
+						{
+							tdIndex.Add(i, value.classes[i].Obj());
+						}
 					
-					// used type descriptors
-					vint tdCount = 0;
-					reader << tdCount;
-					for (vint i = 0; i < tdCount; i++)
-					{
-						WString typeName;
-						reader << typeName;
-						tdIndex.Add((i * -1) - 1, GetTypeDescriptor(typeName));
-					}
+						// used type descriptors
+						vint tdCount = 0;
+						reader << tdCount;
+						for (vint i = 0; i < tdCount; i++)
+						{
+							WString typeName;
+							reader << typeName;
+							tdIndex.Add((i * -1) - 1, GetTypeDescriptor(typeName));
+						}
 
-					// fill classes
-					for (vint i = 0; i < classCount; i++)
-					{
-						IO(reader, value.classes[i].Obj(), tdIndex);
+						// fill classes
+						for (vint i = 0; i < classCount; i++)
+						{
+							IO(reader, value.classes[i].Obj(), tdIndex);
+						}
 					}
 				}
 					
 				static void IO(Writer& writer, WfTypeImpl& value)
 				{
-					// classes
-					vint classCount = value.classes.Count();
-					writer << classCount;
-					for (vint i = 0; i < classCount; i++)
+					bool hasTypeImpl = &value != nullptr;
+					writer << hasTypeImpl;
+					if (hasTypeImpl)
 					{
-						WString typeName = value.classes[i]->GetTypeName();
-						writer << typeName;
-					}
-
-					Dictionary<ITypeDescriptor*, vint> tdIndex;
-					for (vint i = 0; i < classCount; i++)
-					{
-						tdIndex.Add(value.classes[i].Obj(), i);
-					}
-
-					// used type descriptors
-					SortedList<ITypeDescriptor*> tds;
-					CollectTypeDescriptors(&value, tds);
-					for (vint i = tds.Count() - 1; i >= 0; i--)
-					{
-						if (tdIndex.Keys().Contains(tds[i]))
+						// classes
+						vint classCount = value.classes.Count();
+						writer << classCount;
+						for (vint i = 0; i < classCount; i++)
 						{
-							tds.RemoveAt(i);
+							WString typeName = value.classes[i]->GetTypeName();
+							writer << typeName;
 						}
-					}
 
-					vint tdCount = tds.Count();
-					writer << tdCount;
-					for (vint i = 0; i < tdCount; i++)
-					{
-						tdIndex.Add(tds[i], (i * -1) - 1);
-						WString typeName = tds[i]->GetTypeName();
-						writer << typeName;
-					}
+						Dictionary<ITypeDescriptor*, vint> tdIndex;
+						for (vint i = 0; i < classCount; i++)
+						{
+							tdIndex.Add(value.classes[i].Obj(), i);
+						}
 
-					// fill classes
-					for (vint i = 0; i < classCount; i++)
-					{
-						IO(writer, value.classes[i].Obj(), tdIndex);
+						// used type descriptors
+						SortedList<ITypeDescriptor*> tds;
+						CollectTypeDescriptors(&value, tds);
+						for (vint i = tds.Count() - 1; i >= 0; i--)
+						{
+							if (tdIndex.Keys().Contains(tds[i]))
+							{
+								tds.RemoveAt(i);
+							}
+						}
+
+						vint tdCount = tds.Count();
+						writer << tdCount;
+						for (vint i = 0; i < tdCount; i++)
+						{
+							tdIndex.Add(tds[i], (i * -1) - 1);
+							WString typeName = tds[i]->GetTypeName();
+							writer << typeName;
+						}
+
+						// fill classes
+						for (vint i = 0; i < classCount; i++)
+						{
+							IO(writer, value.classes[i].Obj(), tdIndex);
+						}
 					}
 				}
 			};
@@ -17403,7 +17422,10 @@ WfAssembly
 			void WfAssembly::IO(TIO& io)
 			{
 				io << typeImpl;
-				GetGlobalTypeManager()->AddTypeLoader(typeImpl);
+				if (typeImpl)
+				{
+					GetGlobalTypeManager()->AddTypeLoader(typeImpl);
+				}
 				io	<< insBeforeCodegen
 					<< insAfterCodegen
 					<< variableNames
@@ -17411,7 +17433,10 @@ WfAssembly
 					<< functions
 					<< instructions
 					;
-				GetGlobalTypeManager()->RemoveTypeLoader(typeImpl);
+				if (typeImpl)
+				{
+					GetGlobalTypeManager()->RemoveTypeLoader(typeImpl);
+				}
 			}
 
 			WfAssembly::WfAssembly()

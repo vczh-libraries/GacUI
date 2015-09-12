@@ -349,23 +349,28 @@ Shared Script Type Resolver
 					if (index != -1)
 					{
 						auto cache = rootResource->precompiledCaches.Values()[index].Cast<GuiSharedWorkflowCache>();
-						auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
-						List<Ptr<ParsingError>> scriptErrors;
-						cache->assembly = Compile(table, cache->moduleCodes, scriptErrors);
-						if (scriptErrors.Count() > 0)
+						if (cache->moduleCodes.Count() > 0)
 						{
-							errors.Add(ERROR_CODE_PREFIX L"Failed to parse the shared workflow script");
-							FOREACH(Ptr<ParsingError>, error, scriptErrors)
+							auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
+							List<Ptr<ParsingError>> scriptErrors;
+							cache->assembly = Compile(table, cache->moduleCodes, scriptErrors);
+							cache->moduleCodes.Clear();
+
+							if (scriptErrors.Count() > 0)
 							{
-								errors.Add(
-									L"Row: " + itow(error->codeRange.start.row + 1) +
-									L", Column: " + itow(error->codeRange.start.column + 1) +
-									L", Message: " + error->errorMessage);
+								errors.Add(ERROR_CODE_PREFIX L"Failed to parse the shared workflow script");
+								FOREACH(Ptr<ParsingError>, error, scriptErrors)
+								{
+									errors.Add(
+										L"Row: " + itow(error->codeRange.start.row + 1) +
+										L", Column: " + itow(error->codeRange.start.column + 1) +
+										L", Message: " + error->errorMessage);
+								}
 							}
-						}
-						else
-						{
-							cache->Initialize();
+							else
+							{
+								cache->Initialize();
+							}
 						}
 					}
 				}
