@@ -44,6 +44,7 @@ namespace darkskin
 
 	VScrollTemplate::VScrollTemplate()
 	{
+		draggingHandle = false;
 		InitializeComponents();
 	}
 }

@@ -11356,7 +11356,7 @@ ParsingState
 ***********************************************************************/
 
 			ParsingState::ParsingState(const WString& _input, Ptr<ParsingTable> _table, vint codeIndex)
-				:input(_input)
+				:input(_input.Buffer())
 				,table(_table)
 				,parsingRuleStartState(-1)
 			{

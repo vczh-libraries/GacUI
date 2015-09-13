@@ -44,6 +44,7 @@ namespace darkskin
 
 	VTrackerTemplate::VTrackerTemplate()
 	{
+		draggingHandle = false;
 		InitializeComponents();
 	}
 }

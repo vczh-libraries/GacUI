@@ -44,6 +44,7 @@ namespace darkskin
 
 	HScrollTemplate::HScrollTemplate()
 	{
+		draggingHandle = false;
 		InitializeComponents();
 	}
 }

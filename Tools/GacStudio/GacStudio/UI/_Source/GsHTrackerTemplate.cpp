@@ -44,6 +44,7 @@ namespace darkskin
 
 	HTrackerTemplate::HTrackerTemplate()
 	{
+		draggingHandle = false;
 		InitializeComponents();
 	}
 }
