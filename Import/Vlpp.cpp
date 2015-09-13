@@ -17483,6 +17483,8 @@ SerializableTypeDescriptorBase
 TypeName
 ***********************************************************************/
 			
+			IMPL_TYPE_INFO_RENAME(Sys,														system::Sys)
+			IMPL_TYPE_INFO_RENAME(Math,														system::Math)
 			IMPL_TYPE_INFO_RENAME(void,														system::Void)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::VoidValue,					system::Void)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::IDescriptable,							system::Interface)
@@ -18280,6 +18282,60 @@ Collections
 				};
 			};
 
+			BEGIN_CLASS_MEMBER(Sys)
+				CLASS_MEMBER_STATIC_METHOD(Len, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Left, { L"value" _ L"length" })
+				CLASS_MEMBER_STATIC_METHOD(Right, { L"value" _ L"length" })
+				CLASS_MEMBER_STATIC_METHOD(Mid, { L"value" _ L"start" _ L"length" })
+				CLASS_MEMBER_STATIC_METHOD(Find, { L"value" _ L"substr" })
+			END_CLASS_MEMBER(Sys)
+
+			BEGIN_CLASS_MEMBER(Math)
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint8_t(*)(vint8_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint16_t(*)(vint16_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint32_t(*)(vint32_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint64_t(*)(vint64_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, float(*)(float))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, double(*)(double))
+				
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, vint8_t(*)(vint8_t, vint8_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, vint16_t(*)(vint16_t, vint16_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, vint32_t(*)(vint32_t, vint32_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, vint64_t(*)(vint64_t, vint64_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, float(*)(float, float))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, double(*)(double, double))
+				
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, vint8_t(*)(vint8_t, vint8_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, vint16_t(*)(vint16_t, vint16_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, vint32_t(*)(vint32_t, vint32_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, vint64_t(*)(vint64_t, vint64_t))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, float(*)(float, float))
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, double(*)(double, double))
+
+				CLASS_MEMBER_STATIC_METHOD(Sin, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Cos, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Tan, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(ASin, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(ACos, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(ATan, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(ATan2, { L"x" _ L"y" })
+
+				CLASS_MEMBER_STATIC_METHOD(Exp, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(LogN, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Log10, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Log, { L"value" _ L"base" })
+				CLASS_MEMBER_STATIC_METHOD(Pow, { L"value" _ L"power" })
+				CLASS_MEMBER_STATIC_METHOD(Ceil, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Floor, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Round, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Trunc, { L"value" })
+
+				CLASS_MEMBER_STATIC_METHOD(CeilI, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(FloorI, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(RoundI, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(TruncI, { L"value" })
+			END_CLASS_MEMBER(Math)
+
 			BEGIN_STRUCT_MEMBER(VoidValue)
 			END_STRUCT_MEMBER(VoidValue)
 
@@ -18574,6 +18630,10 @@ LoadPredefinedTypes
 					AddSerializableType<TypedDefaultValueSerializer<Locale>>(manager);
 					AddSerializableType<BoolValueSerializer>(manager);
 					AddSerializableType<DateTimeValueSerializer>(manager);
+
+					ADD_TYPE_INFO(Sys)
+					ADD_TYPE_INFO(Math)
+
 					ADD_TYPE_INFO(VoidValue)
 					ADD_TYPE_INFO(IDescriptable)
 					ADD_TYPE_INFO(DescriptableObject)
