@@ -18807,6 +18807,7 @@ WfRuntimeThreadContext
 							WString from = result.IsNull() ? L"<null>" : L"<" + result.GetText() + L"> of " + result.GetTypeDescriptor()->GetTypeName();
 							WString to = ins.typeDescriptorParameter->GetTypeName();
 							RaiseException(L"Failed to convert from \"" + from + L"\" to \"" + to + L"\".", false);
+							return WfRuntimeExecutionAction::Nop;
 						}
 					}
 				case WfInsCode::TryConvertToType:
