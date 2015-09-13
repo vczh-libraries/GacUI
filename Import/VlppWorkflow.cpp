@@ -19121,6 +19121,8 @@ WfRuntimeThreadContext
 						EXECUTE(OpPositive, U2)
 						EXECUTE(OpPositive, U4)
 						EXECUTE(OpPositive, U8)
+						EXECUTE(OpPositive, F4)
+						EXECUTE(OpPositive, F8)
 					END_TYPE
 				case WfInsCode::OpNegative:
 					BEGIN_TYPE
@@ -19128,6 +19130,8 @@ WfRuntimeThreadContext
 						EXECUTE(OpNegative, I2)
 						EXECUTE(OpNegative, I4)
 						EXECUTE(OpNegative, I8)
+						EXECUTE(OpNegative, F4)
+						EXECUTE(OpNegative, F8)
 					END_TYPE
 				case WfInsCode::OpConcat:
 					{
