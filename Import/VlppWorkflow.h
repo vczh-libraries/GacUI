@@ -1792,6 +1792,7 @@ Instruction
 				JumpIf,				// label				: () -> ()										;
 				Invoke,				// function, count		: Value-1, ..., Value-n -> Value				;
 				GetProperty,		// IPropertyInfo*		: Value-this -> Value							;
+				SetProperty,		// IPropertyInfo*		: Value, Value-this -> ()						;
 				InvokeProxy,		// count				: Value-1, ..., Value-n, Value-this -> Value	;
 				InvokeMethod,		// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value	;
 				AttachEvent,		// IEventInfo*			: Value-this, <function> -> <Listener>			;
@@ -1854,6 +1855,7 @@ Instruction
 			APPLY_LABEL(JumpIf)\
 			APPLY_FUNCTION_COUNT(Invoke)\
 			APPLY_PROPERTY(GetProperty)\
+			APPLY_PROPERTY(SetProperty)\
 			APPLY_COUNT(InvokeProxy)\
 			APPLY_METHOD_COUNT(InvokeMethod)\
 			APPLY_EVENT(AttachEvent)\

@@ -1004,9 +1004,7 @@ namespace vl
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(darkskin::HScrollTemplate*(), NO_PARAMETER)
 
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseDown, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseUp, vl::presentation::compositions::GuiMouseEventArgs)
 
 				CLASS_MEMBER_FIELD(draggingHandle)
 				CLASS_MEMBER_FIELD(draggingStartLocation)
@@ -1016,9 +1014,7 @@ namespace vl
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(darkskin::HTrackerTemplate*(), NO_PARAMETER)
 
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseDown, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseUp, vl::presentation::compositions::GuiMouseEventArgs)
 
 				CLASS_MEMBER_FIELD(draggingHandle)
 				CLASS_MEMBER_FIELD(draggingStartLocation)
@@ -1178,9 +1174,7 @@ namespace vl
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(darkskin::VScrollTemplate*(), NO_PARAMETER)
 
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseDown, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseUp, vl::presentation::compositions::GuiMouseEventArgs)
 
 				CLASS_MEMBER_FIELD(draggingHandle)
 				CLASS_MEMBER_FIELD(draggingStartLocation)
@@ -1190,9 +1184,7 @@ namespace vl
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(darkskin::VTrackerTemplate*(), NO_PARAMETER)
 
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseDown, vl::presentation::compositions::GuiMouseEventArgs)
 				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseUp, vl::presentation::compositions::GuiMouseEventArgs)
 
 				CLASS_MEMBER_FIELD(draggingHandle)
 				CLASS_MEMBER_FIELD(draggingStartLocation)

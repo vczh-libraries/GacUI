@@ -4915,12 +4915,21 @@ GenerateInstructions(Expression)
 						else if (auto member = node->first.Cast<WfMemberExpression>())
 						{
 							auto result = context.manager->expressionResolvings[member.Obj()];
-							auto methodInfo = result.propertyInfo->GetSetter();
-							GenerateExpressionInstructions(context, node->second);
-							INSTRUCTION(Ins::Duplicate(0));
-							GenerateExpressionInstructions(context, member->parent);
-							INSTRUCTION(Ins::InvokeMethod(methodInfo, 1));
-							INSTRUCTION(Ins::Pop());
+							if (auto methodInfo = result.propertyInfo->GetSetter())
+							{
+								GenerateExpressionInstructions(context, node->second);
+								INSTRUCTION(Ins::Duplicate(0));
+								GenerateExpressionInstructions(context, member->parent);
+								INSTRUCTION(Ins::InvokeMethod(methodInfo, 1));
+								INSTRUCTION(Ins::Pop());
+							}
+							else
+							{
+								GenerateExpressionInstructions(context, node->second);
+								INSTRUCTION(Ins::Duplicate(0));
+								GenerateExpressionInstructions(context, member->parent);
+								INSTRUCTION(Ins::SetProperty(result.propertyInfo));
+							}
 						}
 						else
 						{
@@ -8430,6 +8439,10 @@ ValidateSemantic(Expression)
 								{
 									setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
 								}
+							}
+							else if (!typeDescriptor->GetValueSerializer() && info->IsWritable())
+							{
+								setterType = CopyTypeInfo(info->GetReturn());
 							}
 							ResolveExpressionResult result(info, getterType, setterType);
 							results.Add(result);
@@ -18858,6 +18871,15 @@ WfRuntimeThreadContext
 						CALL_DEBUGGER(callback->BreakGet(operand.GetRawPtr(), ins.propertyParameter));
 						Value result = ins.propertyParameter->GetValue(operand);
 						PushValue(result);
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::SetProperty:
+					{
+						Value operand, value;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
+						ins.propertyParameter->SetValue(operand, value);
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeProxy:

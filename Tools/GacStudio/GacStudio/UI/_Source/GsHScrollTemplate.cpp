@@ -13,15 +13,6 @@ namespace darkskin
 {
 	// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
 
-	void HScrollTemplate::OnHandleMouseDown(GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments)
-	{
-		if (sender->GetRelatedControl()->GetVisuallyEnabled())
-		{
-			draggingHandle = true;
-			draggingStartLocation = Point(arguments.x, arguments.y);
-		}
-	}
-
 	void HScrollTemplate::OnHandleMouseMove(GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments)
 	{
 		if (draggingHandle)
@@ -47,11 +38,6 @@ namespace darkskin
 				GetCommands()->SetPosition(newPosition + 1);
 			}
 		}
-	}
-
-	void HScrollTemplate::OnHandleMouseUp(GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments)
-	{
-		draggingHandle = false;
 	}
 
 	// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
