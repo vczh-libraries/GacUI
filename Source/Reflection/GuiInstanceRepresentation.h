@@ -152,6 +152,7 @@ Instance Namespace
 		public:
 			GlobalStringKey							name;
 			WString									typeName;
+			WString									value;
 		};
 
 /***********************************************************************

@@ -791,6 +791,8 @@ namespace darkskin
 			,handleContainer(0)
 			,self(0)
 		{
+			this->draggingHandle = vl::reflection::description::UnboxValue<bool>(vl::reflection::description::Value::From(L"false", reflection::description::GetTypeDescriptor<bool>()));
+			this->draggingStartLocation = vl::reflection::description::UnboxValue<vl::presentation::Point>(vl::reflection::description::Value::From(L"", reflection::description::GetTypeDescriptor<vl::presentation::Point>()));
 		}
 	};
 
@@ -822,6 +824,8 @@ namespace darkskin
 			,handle(0)
 			,self(0)
 		{
+			this->draggingHandle = vl::reflection::description::UnboxValue<bool>(vl::reflection::description::Value::From(L"false", reflection::description::GetTypeDescriptor<bool>()));
+			this->draggingStartLocation = vl::reflection::description::UnboxValue<vl::presentation::Point>(vl::reflection::description::Value::From(L"", reflection::description::GetTypeDescriptor<vl::presentation::Point>()));
 		}
 	};
 
@@ -1675,6 +1679,8 @@ namespace darkskin
 			,handleContainer(0)
 			,self(0)
 		{
+			this->draggingHandle = vl::reflection::description::UnboxValue<bool>(vl::reflection::description::Value::From(L"false", reflection::description::GetTypeDescriptor<bool>()));
+			this->draggingStartLocation = vl::reflection::description::UnboxValue<vl::presentation::Point>(vl::reflection::description::Value::From(L"", reflection::description::GetTypeDescriptor<vl::presentation::Point>()));
 		}
 	};
 
@@ -1706,6 +1712,8 @@ namespace darkskin
 			,handle(0)
 			,self(0)
 		{
+			this->draggingHandle = vl::reflection::description::UnboxValue<bool>(vl::reflection::description::Value::From(L"false", reflection::description::GetTypeDescriptor<bool>()));
+			this->draggingStartLocation = vl::reflection::description::UnboxValue<vl::presentation::Point>(vl::reflection::description::Value::From(L"", reflection::description::GetTypeDescriptor<vl::presentation::Point>()));
 		}
 	};
 

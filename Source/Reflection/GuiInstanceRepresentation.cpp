@@ -771,11 +771,16 @@ GuiInstanceContext
 					{
 						auto attName = XmlGetAttribute(element, L"Name");
 						auto attType = XmlGetAttribute(element, L"Type");
+						auto attValue = XmlGetAttribute(element, L"Value");
 						if (attName && attType)
 						{
 							auto state = MakePtr<GuiInstanceState>();
 							state->name = GlobalStringKey::Get(attName->value.value);
 							state->typeName = attType->value.value;
+							if (attValue)
+							{
+								state->value = attValue->value.value;
+							}
 							context->states.Add(state);
 						}
 					}
@@ -891,6 +896,14 @@ GuiInstanceContext
 				attType->name.value = L"Type";
 				attType->value.value = state->typeName;
 				xmlState->attributes.Add(attType);
+
+				if (state->value != L"")
+				{
+					auto attValue = MakePtr<XmlAttribute>();
+					attValue->name.value = L"Value";
+					attValue->value.value = state->value;
+					xmlState->attributes.Add(attType);
+				}
 			}
 
 			if (!serializePrecompiledResource && stylePaths.Count() > 0)
@@ -1011,11 +1024,13 @@ GuiInstanceContext
 				{
 					vint nameIndex = -1;
 					WString typeName;
-					reader << nameIndex << typeName;
+					WString value;
+					reader << nameIndex << typeName << value;
 
 					auto state = MakePtr<GuiInstanceState>();
 					state->name = sortedKeys[nameIndex];
 					state->typeName = typeName;
+					state->value = value;
 					context->states.Add(state);
 				}
 			}
@@ -1096,8 +1111,9 @@ GuiInstanceContext
 				{
 					vint nameIndex = sortedKeys.IndexOf(state->name);
 					WString typeName = state->typeName;
+					WString value = state->value;
 					CHECK_ERROR(nameIndex != -1, L"GuiInstanceContext::SavePrecompiledBinary(stream::IStream&)#Internal Error.");
-					writer << nameIndex << typeName;
+					writer << nameIndex << typeName << value;
 				}
 			}
 			

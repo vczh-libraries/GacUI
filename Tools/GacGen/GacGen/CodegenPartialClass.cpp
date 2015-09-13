@@ -233,8 +233,30 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, 
 		{
 			writer.WriteLine(prefix + L"\t\t," + field + L"(0)");
 		}
+		FOREACH(Ptr<GuiInstanceState>, state, instance->context->states)
+		{
+			if (auto typeInfo = GetTypeInfoFromWorkflowType(config, state->typeName))
+			{
+				if (typeInfo->GetDecorator() == ITypeInfo::RawPtr)
+				{
+					writer.WriteLine(prefix + L"\t\t," + state->name.ToString() + L"(0)");
+				}
+			}
+		}
 		writer.WriteLine(prefix + L"\t{");
+		FOREACH(Ptr<GuiInstanceState>, state, instance->context->states)
+		{
+			if (auto typeInfo = GetTypeInfoFromWorkflowType(config, state->typeName))
+			{
+				if (typeInfo->GetTypeDescriptor()->GetValueSerializer())
+				{
+					auto cppType = GetCppTypeFromTypeInfo(typeInfo.Obj());
+					writer.WriteLine(prefix + L"\t\tthis->" + state->name.ToString() + L" = vl::reflection::description::UnboxValue<" + cppType + L">(vl::reflection::description::Value::From(L\"" + state->value + L"\", reflection::description::GetTypeDescriptor<" + cppType + L">()));");
+				}
+			}
+		}
 		writer.WriteLine(prefix + L"\t}");
+
 		FOREACH(Ptr<GuiInstanceParameter>, parameter, instance->context->parameters)
 		{
 			writer.WriteLine(L"");
