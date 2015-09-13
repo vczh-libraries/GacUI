@@ -2563,6 +2563,38 @@ namespace darkskin
 
 namespace darkskin
 {
+	class HScrollTemplate : public darkskin::HScrollTemplate_<darkskin::HScrollTemplate>
+	{
+		friend class darkskin::HScrollTemplate_<darkskin::HScrollTemplate>;
+		friend struct vl::reflection::description::CustomTypeDescriptorSelector<darkskin::HScrollTemplate>;
+	protected:
+
+		// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
+		// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
+	public:
+		HScrollTemplate();
+	};
+}
+
+
+namespace darkskin
+{
+	class HTrackerTemplate : public darkskin::HTrackerTemplate_<darkskin::HTrackerTemplate>
+	{
+		friend class darkskin::HTrackerTemplate_<darkskin::HTrackerTemplate>;
+		friend struct vl::reflection::description::CustomTypeDescriptorSelector<darkskin::HTrackerTemplate>;
+	protected:
+
+		// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
+		// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
+	public:
+		HTrackerTemplate();
+	};
+}
+
+
+namespace darkskin
+{
 	class ItemBackgroundTemplate : public darkskin::ItemBackgroundTemplate_<darkskin::ItemBackgroundTemplate>
 	{
 		friend class darkskin::ItemBackgroundTemplate_<darkskin::ItemBackgroundTemplate>;
@@ -3037,6 +3069,38 @@ namespace darkskin
 		// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
 	public:
 		VScrollHandleTemplate();
+	};
+}
+
+
+namespace darkskin
+{
+	class VScrollTemplate : public darkskin::VScrollTemplate_<darkskin::VScrollTemplate>
+	{
+		friend class darkskin::VScrollTemplate_<darkskin::VScrollTemplate>;
+		friend struct vl::reflection::description::CustomTypeDescriptorSelector<darkskin::VScrollTemplate>;
+	protected:
+
+		// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
+		// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
+	public:
+		VScrollTemplate();
+	};
+}
+
+
+namespace darkskin
+{
+	class VTrackerTemplate : public darkskin::VTrackerTemplate_<darkskin::VTrackerTemplate>
+	{
+		friend class darkskin::VTrackerTemplate_<darkskin::VTrackerTemplate>;
+		friend struct vl::reflection::description::CustomTypeDescriptorSelector<darkskin::VTrackerTemplate>;
+	protected:
+
+		// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
+		// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
+	public:
+		VTrackerTemplate();
 	};
 }
 

@@ -78,12 +78,6 @@
     <ClCompile Include="UI\_Source\GsAddExistingFilesWindow.cpp">
       <Filter>_Source</Filter>
     </ClCompile>
-    <ClCompile Include="UI\_Source\GsHScrollTemplate.cpp">
-      <Filter>_Source</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\_Source\GsHTrackerTemplate.cpp">
-      <Filter>_Source</Filter>
-    </ClCompile>
     <ClCompile Include="UI\_Source\GsMainWindow.cpp">
       <Filter>_Source</Filter>
     </ClCompile>
@@ -94,12 +88,6 @@
       <Filter>_Source</Filter>
     </ClCompile>
     <ClCompile Include="UI\_Source\GsRenameFileWindow.cpp">
-      <Filter>_Source</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\_Source\GsVScrollTemplate.cpp">
-      <Filter>_Source</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\_Source\GsVTrackerTemplate.cpp">
       <Filter>_Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -140,12 +128,6 @@
     <ClInclude Include="UI\_Source\GsAddExistingFilesWindow.h">
       <Filter>_Source</Filter>
     </ClInclude>
-    <ClInclude Include="UI\_Source\GsHScrollTemplate.h">
-      <Filter>_Source</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\_Source\GsHTrackerTemplate.h">
-      <Filter>_Source</Filter>
-    </ClInclude>
     <ClInclude Include="UI\_Source\GsMainWindow.h">
       <Filter>_Source</Filter>
     </ClInclude>
@@ -156,12 +138,6 @@
       <Filter>_Source</Filter>
     </ClInclude>
     <ClInclude Include="UI\_Source\GsRenameFileWindow.h">
-      <Filter>_Source</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\_Source\GsVScrollTemplate.h">
-      <Filter>_Source</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\_Source\GsVTrackerTemplate.h">
       <Filter>_Source</Filter>
     </ClInclude>
   </ItemGroup>

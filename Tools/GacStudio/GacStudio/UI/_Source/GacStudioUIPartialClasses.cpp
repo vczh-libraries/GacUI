@@ -172,6 +172,32 @@ namespace darkskin
 
 	// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
 
+	HScrollTemplate::HScrollTemplate()
+	{
+		InitializeComponents();
+	}
+}
+
+
+namespace darkskin
+{
+	// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
+
+	// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
+
+	HTrackerTemplate::HTrackerTemplate()
+	{
+		InitializeComponents();
+	}
+}
+
+
+namespace darkskin
+{
+	// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
+
+	// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
+
 	ItemBackgroundTemplate::ItemBackgroundTemplate()
 	{
 		InitializeComponents();
@@ -550,6 +576,32 @@ namespace darkskin
 	// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
 
 	VScrollHandleTemplate::VScrollHandleTemplate()
+	{
+		InitializeComponents();
+	}
+}
+
+
+namespace darkskin
+{
+	// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
+
+	// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
+
+	VScrollTemplate::VScrollTemplate()
+	{
+		InitializeComponents();
+	}
+}
+
+
+namespace darkskin
+{
+	// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
+
+	// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
+
+	VTrackerTemplate::VTrackerTemplate()
 	{
 		InitializeComponents();
 	}

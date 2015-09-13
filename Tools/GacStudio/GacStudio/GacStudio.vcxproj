@@ -107,14 +107,10 @@
     <ClCompile Include="Studio\StudioModel.cpp" />
     <ClCompile Include="UI\_Source\GacStudioUIPartialClasses.cpp" />
     <ClCompile Include="UI\_Source\GsAddExistingFilesWindow.cpp" />
-    <ClCompile Include="UI\_Source\GsHScrollTemplate.cpp" />
-    <ClCompile Include="UI\_Source\GsHTrackerTemplate.cpp" />
     <ClCompile Include="UI\_Source\GsMainWindow.cpp" />
     <ClCompile Include="UI\_Source\GsNewFileWindow.cpp" />
     <ClCompile Include="UI\_Source\GsNewProjectWindow.cpp" />
     <ClCompile Include="UI\_Source\GsRenameFileWindow.cpp" />
-    <ClCompile Include="UI\_Source\GsVScrollTemplate.cpp" />
-    <ClCompile Include="UI\_Source\GsVTrackerTemplate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h" />
@@ -129,14 +125,10 @@
     <ClInclude Include="UI\_Source\GacStudioUI.h" />
     <ClInclude Include="UI\_Source\GacStudioUIPartialClasses.h" />
     <ClInclude Include="UI\_Source\GsAddExistingFilesWindow.h" />
-    <ClInclude Include="UI\_Source\GsHScrollTemplate.h" />
-    <ClInclude Include="UI\_Source\GsHTrackerTemplate.h" />
     <ClInclude Include="UI\_Source\GsMainWindow.h" />
     <ClInclude Include="UI\_Source\GsNewFileWindow.h" />
     <ClInclude Include="UI\_Source\GsNewProjectWindow.h" />
     <ClInclude Include="UI\_Source\GsRenameFileWindow.h" />
-    <ClInclude Include="UI\_Source\GsVScrollTemplate.h" />
-    <ClInclude Include="UI\_Source\GsVTrackerTemplate.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="UI\About.xml" />
