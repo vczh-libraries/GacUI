@@ -1004,8 +1004,6 @@ namespace vl
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(darkskin::HScrollTemplate*(), NO_PARAMETER)
 
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
-
 				CLASS_MEMBER_FIELD(draggingHandle)
 				CLASS_MEMBER_FIELD(draggingStartLocation)
 			END_CLASS_MEMBER(darkskin::HScrollTemplate)
@@ -1013,8 +1011,6 @@ namespace vl
 			BEGIN_CLASS_MEMBER(darkskin::HTrackerTemplate)
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(darkskin::HTrackerTemplate*(), NO_PARAMETER)
-
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
 
 				CLASS_MEMBER_FIELD(draggingHandle)
 				CLASS_MEMBER_FIELD(draggingStartLocation)
@@ -1174,8 +1170,6 @@ namespace vl
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(darkskin::VScrollTemplate*(), NO_PARAMETER)
 
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
-
 				CLASS_MEMBER_FIELD(draggingHandle)
 				CLASS_MEMBER_FIELD(draggingStartLocation)
 			END_CLASS_MEMBER(darkskin::VScrollTemplate)
@@ -1183,8 +1177,6 @@ namespace vl
 			BEGIN_CLASS_MEMBER(darkskin::VTrackerTemplate)
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiScrollTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(darkskin::VTrackerTemplate*(), NO_PARAMETER)
-
-				CLASS_MEMBER_GUIEVENT_HANDLER(OnHandleMouseMove, vl::presentation::compositions::GuiMouseEventArgs)
 
 				CLASS_MEMBER_FIELD(draggingHandle)
 				CLASS_MEMBER_FIELD(draggingStartLocation)

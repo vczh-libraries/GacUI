@@ -20,7 +20,6 @@ namespace darkskin
 	protected:
 
 		// #region CLASS_MEMBER_GUIEVENT_HANDLER (DO NOT PUT OTHER CONTENT IN THIS #region.)
-		void OnHandleMouseMove(GuiGraphicsComposition* sender, vl::presentation::compositions::GuiMouseEventArgs& arguments);
 		// #endregion CLASS_MEMBER_GUIEVENT_HANDLER
 	public:
 		HScrollTemplate();
