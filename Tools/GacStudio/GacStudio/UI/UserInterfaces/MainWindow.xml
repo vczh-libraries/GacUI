@@ -151,7 +151,44 @@
       <Cell Site="row:2 column:2" InternalMargin="left:0 top:0 right:5 bottom:5">
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <TabPage Text="Start Page"/>
+          <TabPage Text="Start Page">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                <CellOption>composeType:Absolute absolute:20</CellOption>
+                <CellOption>composeType:Absolute absolute:20</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                <CellOption>composeType:Absolute absolute:20</CellOption>
+                <CellOption>composeType:Absolute absolute:20</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:1">
+                <VScroll>
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </VScroll>
+              </Cell>
+
+              <Cell Site="row:0 column:2">
+                <VTracker>
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </VTracker>
+              </Cell>
+
+              <Cell Site="row:1 column:0">
+                <HScroll>
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </HScroll>
+              </Cell>
+
+              <Cell Site="row:2 column:0">
+                <HTracker>
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </HTracker>
+              </Cell>
+            </Table>
+          </TabPage>
         </Tab>
       </Cell>
     </Table>
