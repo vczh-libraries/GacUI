@@ -123,18 +123,20 @@ namespace vl
 			KEYWORD_CATCH = 78,
 			KEYWORD_FINALLY = 79,
 			KEYWORD_CLASS = 80,
-			KEYWORD_STATIC = 81,
-			KEYWORD_USING = 82,
-			KEYWORD_NAMESPACE = 83,
-			KEYWORD_MODULE = 84,
-			KEYWORD_UNIT = 85,
-			NAME = 86,
-			ORDERED_NAME = 87,
-			FLOAT = 88,
-			INTEGER = 89,
-			STRING = 90,
-			FORMATSTRING = 91,
-			SPACE = 92,
+			KEYWORD_PROP = 81,
+			KEYWORD_EVENT = 82,
+			KEYWORD_STATIC = 83,
+			KEYWORD_USING = 84,
+			KEYWORD_NAMESPACE = 85,
+			KEYWORD_MODULE = 86,
+			KEYWORD_UNIT = 87,
+			NAME = 88,
+			ORDERED_NAME = 89,
+			FLOAT = 90,
+			INTEGER = 91,
+			STRING = 92,
+			FORMATSTRING = 93,
+			SPACE = 94,
 		};
 		class WfType;
 		class WfPredefinedType;
@@ -201,6 +203,8 @@ namespace vl
 		class WfVariableStatement;
 		class WfNewTypeExpression;
 		class WfClassMember;
+		class WfEventDeclaration;
+		class WfPropertyDeclaration;
 		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
@@ -972,6 +976,8 @@ namespace vl
 				virtual void Visit(WfNamespaceDeclaration* node)=0;
 				virtual void Visit(WfFunctionDeclaration* node)=0;
 				virtual void Visit(WfVariableDeclaration* node)=0;
+				virtual void Visit(WfEventDeclaration* node)=0;
+				virtual void Visit(WfPropertyDeclaration* node)=0;
 				virtual void Visit(WfClassDeclaration* node)=0;
 			};
 
@@ -1067,6 +1073,12 @@ namespace vl
 			Normal,
 		};
 
+		enum class WfClassKind
+		{
+			Class,
+			Interface,
+		};
+
 		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
 		{
 		public:
@@ -1076,9 +1088,33 @@ namespace vl
 			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
+		class WfEventDeclaration : public WfDeclaration, vl::reflection::Description<WfEventDeclaration>
+		{
+		public:
+			vl::collections::List<vl::Ptr<WfType>> arguments;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfEventDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfPropertyDeclaration : public WfDeclaration, vl::reflection::Description<WfPropertyDeclaration>
+		{
+		public:
+			vl::Ptr<WfType> type;
+			vl::parsing::ParsingToken getter;
+			vl::parsing::ParsingToken setter;
+			vl::parsing::ParsingToken valueChangedEvent;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
 		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
 		{
 		public:
+			WfClassKind kind;
 			vl::collections::List<vl::Ptr<WfType>> baseTypes;
 			vl::collections::List<vl::Ptr<WfClassMember>> members;
 
@@ -1267,7 +1303,10 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
 			DECL_TYPE_INFO(vl::workflow::WfNewTypeExpression)
 			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
+			DECL_TYPE_INFO(vl::workflow::WfClassKind)
 			DECL_TYPE_INFO(vl::workflow::WfClassMember)
+			DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
@@ -1618,6 +1657,16 @@ namespace vl
 					}
 
 					void Visit(vl::workflow::WfVariableDeclaration* node)override
+					{
+						INVOKE_INTERFACE_PROXY(Visit, node);
+					}
+
+					void Visit(vl::workflow::WfEventDeclaration* node)override
+					{
+						INVOKE_INTERFACE_PROXY(Visit, node);
+					}
+
+					void Visit(vl::workflow::WfPropertyDeclaration* node)override
 					{
 						INVOKE_INTERFACE_PROXY(Visit, node);
 					}
@@ -2000,33 +2049,97 @@ namespace vl
 
 		namespace typeimpl
 		{
-			class WfClass;
+			class WfCustomType;
 			class WfTypeImpl;
 
-			class WfStaticMethod : public reflection::description::MethodInfoImpl
+/***********************************************************************
+Method
+***********************************************************************/
+
+			class WfMethodBase : public reflection::description::MethodInfoImpl
 			{
-				friend class WfClass;
+				friend class WfCustomType;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
-				typedef reflection::description::Value						Value;
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
 				
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
-				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
-				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
-				vint									functionIndex;
-
-				WfStaticMethod();
-				~WfStaticMethod();
+				WfMethodBase();
+				~WfMethodBase();
 
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetReturn(Ptr<ITypeInfo> type);
 			};
 
-			class WfClass : public reflection::description::TypeDescriptorImpl
+			class WfStaticMethod : public WfMethodBase
 			{
-				friend class WfTypeImpl;
+				typedef reflection::description::Value						Value;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
+			public:
+				vint									functionIndex = -1;
+			};
+
+			class WfInterfaceMethod : public WfMethodBase
+			{
+				typedef reflection::description::Value						Value;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
+			public:
+			};
+
+/***********************************************************************
+Event
+***********************************************************************/
+
+			class WfEvent : public reflection::description::EventInfoImpl
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef reflection::description::IEventHandler				IEventHandler;
+				typedef reflection::description::Value						Value;
+			protected:
+
+				void									AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
+				void									DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
+				void									InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)override;
+				Ptr<ITypeInfo>							GetHandlerTypeInternal()override;
+			public:
+				WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
+				~WfEvent();
+
+				void									SetHandlerType(Ptr<ITypeInfo> typeInfo);
+			};
+
+/***********************************************************************
+Property
+***********************************************************************/
+
+			class WfProperty : public reflection::description::PropertyInfoImpl
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::MethodInfoImpl				MethodInfoImpl;
+				typedef reflection::description::EventInfoImpl				EventInfoImpl;
+			public:
+				WfProperty(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
+				~WfProperty();
+
+				void									SetGetter(MethodInfoImpl* value);
+				void									SetSetter(MethodInfoImpl* value);
+				void									SetValueChangedEvent(EventInfoImpl* value);
+			};
+
+/***********************************************************************
+Custom Type
+***********************************************************************/
+
+			class WfCustomType : public reflection::description::TypeDescriptorImpl
+			{
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 			protected:
@@ -2035,13 +2148,35 @@ namespace vl
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 				void									LoadInternal()override;
 			public:
-				WfClass(const WString& typeName);
-				~WfClass();
+				WfCustomType(const WString& typeName);
+				~WfCustomType();
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									AddBaseType(ITypeDescriptor* type);
-				void									AddMember(const WString& name, Ptr<WfStaticMethod> value);
+				void									AddMember(const WString& name, Ptr<WfMethodBase> value);
+				void									AddMember(Ptr<WfProperty> value);
+				void									AddMember(Ptr<WfEvent> value);
 			};
+
+			class WfClass : public WfCustomType
+			{
+				friend class WfTypeImpl;
+			public:
+				WfClass(const WString& typeName);
+				~WfClass();
+			};
+
+			class WfInterface : public WfCustomType
+			{
+				friend class WfTypeImpl;
+			public:
+				WfInterface(const WString& typeName);
+				~WfInterface();
+			};
+
+/***********************************************************************
+Plugin
+***********************************************************************/
 
 			class WfTypeImpl : public Object, public reflection::description::ITypeLoader, public reflection::Description<WfTypeImpl>
 			{
@@ -2050,6 +2185,7 @@ namespace vl
 
 			public:
 				collections::List<Ptr<WfClass>>			classes;
+				collections::List<Ptr<WfInterface>>		interfaces;
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
@@ -3132,6 +3268,7 @@ Scope Manager
 				void										Rebuild(bool keepTypeDescriptorNames);
 				void										ResolveSymbol(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalSymbol>>& symbols);
 				void										ResolveScopeName(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalScopeName>>& names);
+				Ptr<WfLexicalSymbol>						GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node);
 			};
 
 /***********************************************************************
@@ -3202,7 +3339,7 @@ Structure Analyzing
 			};
 			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, bool returnType = false);
 			extern void										ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source = 0);
+			extern void										ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, WfClassDeclaration* classDecl = 0 , parsing::ParsingTreeCustomBase* source = 0);
 			extern void										ValidateStatementStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfStatement>& statement);
 			extern void										ValidateExpressionStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfExpression>& expression);
 
@@ -3218,12 +3355,12 @@ Global Name
 Scope Analyzing
 ***********************************************************************/
 			
-			extern void										CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member);
+			extern void										CompleteScopeForClassMember(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member);
 			extern void										CompleteScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 			extern void										BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										BuildScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member, parsing::ParsingTreeCustomBase* source = 0);
+			extern void										BuildScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member, parsing::ParsingTreeCustomBase* source = 0);
 			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source = 0);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
@@ -3255,7 +3392,7 @@ Semantic Analyzing
 			};
 
 			extern void										ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfClass> td, Ptr<WfClassMember> member);
+			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member);
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										ValidateStatementSemantic(WfLexicalScopeManager* manager, Ptr<WfStatement> statement);
 			extern void										ValidateExpressionSemantic(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results);
@@ -3351,6 +3488,7 @@ Code Generation
 				void								ApplyExitInstructions(Ptr<WfCodegenScopeContext> scopeContext);
 			};
 
+			extern void										GenerateFunctionDeclarationMetadata(WfCodegenContext& context, WfFunctionDeclaration* node, Ptr<runtime::WfAssemblyFunction> meta);
 			extern void										GenerateGlobalDeclarationMetadata(WfCodegenContext& context, Ptr<WfDeclaration> declaration, const WString& namePrefix = L"");
 			extern void										GenerateClosureInstructions(WfCodegenContext& context, Ptr<WfCodegenFunctionContext> functionContext);
 			extern void										GenerateInitializeInstructions(WfCodegenContext& context, Ptr<WfDeclaration> declaration);
@@ -3450,6 +3588,8 @@ Error Messages
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);
+				static Ptr<parsing::ParsingError>			FunctionShouldHaveImplementation(WfDeclaration* node);
+				static Ptr<parsing::ParsingError>			InterfaceMethodShouldNotHaveImplementation(WfDeclaration* node);
 				static Ptr<parsing::ParsingError>			DuplicatedDeclaration(WfDeclaration* node, const WString& firstDeclarationCategory);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfDeclaration* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfFunctionArgument* node, Ptr<WfLexicalSymbol> symbol);
@@ -3459,6 +3599,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			WrontDeclaration(WfEventDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrontDeclaration(WfPropertyDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);
@@ -3477,6 +3619,14 @@ Error Messages
 				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassMember* node, const WString& name);
 				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStatic(WfClassMember* node);
 				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
+				static Ptr<parsing::ParsingError>			PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			PropertyEventNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			TooManyPropertyGetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			TooManyPropertySetter(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			TooManyPropertyEvent(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			PropertyGetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
+				static Ptr<parsing::ParsingError>			PropertySetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 			};
 		}
 	}
