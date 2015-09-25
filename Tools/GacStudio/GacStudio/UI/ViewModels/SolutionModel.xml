@@ -1,41 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Schemas>
-  <Interface ref.Class="vm::ISolutionItemModel">
-    <Property Name="Parent" Type="vm::ISolutionItemModel*" Readonly="true"/>
-    <Property Name="Image" Type="presentation::GuiImageData^" Readonly="true" Observable="true"/>
-    <Property Name="Name" Type="string" Readonly="true" Observable="true"/>
-    <Property Name="Children" Type="ObservableList^" Readonly="true"/>
-    <Property Name="FilePath" Type="string" Readonly="true" Observable="true"/>
-    <Property Name="FileDirectory" Type="string" Readonly="true" Observable="true"/>
+<Workflow-ViewModel>
+  <![CDATA[
+    module SolutionModel;
     
-    <Property Name="ErrorCount" Type="int" Readonly="true" Observable="true"/>
-    <Method Name="GetErrorText" Type="string">
-      <Argument Name="index" Type="int"/>
-    </Method>
-  </Interface>
-
-  <Interface ref.Class="vm::IFileModel" Parent="vm::ISolutionItemModel">
-    <Property Name="FileFactory" Type="vm::IFileFactoryModel^" Readonly="true"/>
-    <Method Name="InitializeFileAndSave" Type="void"/>
-  </Interface>
-
-  <Interface ref.Class="vm::IFolderModel" Parent="vm::ISolutionItemModel">
-  </Interface>
-
-  <Interface ref.Class="vm::IProjectModel" Parent="vm::ISolutionItemModel">
-    <Property Name="ProjectFactory" Type="vm::IProjectFactoryModel^" Readonly="true"/>
-    <Method Name="OpenProject" Type="void"/>
-    <Method Name="InitializeProjectAndSave" Type="void"/>
-  </Interface>
-
-  <Interface ref.Class="vm::ISolutionModel" Parent="vm::ISolutionItemModel">
-    <Method Name="OpenSolution" Type="void"/>
-    <Method Name="NewSolution" Type="void"/>
-    <Method Name="AddProject" Type="void">
-      <Argument Name="project" Type="vm::IProjectModel^"/>
-    </Method>
-    <Method Name="RemoveProject" Type="void">
-      <Argument Name="project" Type="vm::IProjectModel^"/>
-    </Method>
-  </Interface>
-</Schemas>
+    using system::*;
+    using presentation::Gui*;
+    
+    namespace vm
+    {
+      interface ISolutionItemModel
+      {
+        func GetParent() : ISolutionItemModel*;
+        prop Parent : ISolutionItemModel* {GetParent}
+        
+        func GetImage() : ImageData^;
+        event ImageChanged();
+        prop Image : ImageData^ {GetImage : ImageChanged}
+        
+        func GetName() : string;
+        event NameChanged();
+        prop Name : string {GetName : NameChanged}
+        
+        func GetChildren() : ObservableList^;
+        prop Children : ObservableList^ {GetChildren}
+        
+        func GetFilePath() : string;
+        event FilePathChanged();
+        prop FilePath : string {GetFilePath : FilePathChanged}
+        
+        func GetFileDirectory() : string;
+        event FileDirectoryChanged();
+        prop FileDirectory : string {GetFileDirectory : FileDirectoryChanged}
+        
+        func GetErrorCount() : int;
+        event ErrorCountChanged();
+        prop ErrorCount : int {GetErrorCount : ErrorCountChanged}
+        
+        func GetErrorText(index : int) : string;
+      }
+      
+      interface IFileModel : ISolutionItemModel
+      {
+        func GetFileFactory() : IFileFactoryModel^;
+        prop FileFactory : IFileFactoryModel^ {GetFileFactory}
+        
+        func InitializeFileAndSave() : void;
+      }
+      
+      interface IFolderModel : ISolutionItemModel
+      {
+      }
+      
+      interface IProjectModel : ISolutionItemModel
+      {
+        func GetProjectFactory() : IProjectFactoryModel^;
+        prop ProjectFactory : IProjectFactoryModel^ {GetProjectFactory}
+        
+        func OpenProject() : void;
+        func InitializeProjectAndSave() : void;
+      }
+      
+      interface ISolutionModel : ISolutionItemModel
+      {
+        func OpenSolution() : void;
+        func NewSolution() : void;
+        func AddProject(project : IProjectModel^) : void;
+        func RemoveProject(project : IProjectModel^) : void;
+      }
+    }
+  ]]>
+</Workflow-ViewModel>

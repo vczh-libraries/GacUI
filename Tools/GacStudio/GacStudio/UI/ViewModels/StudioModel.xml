@@ -1,130 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Schemas>
-  <Interface ref.Class="vm::IFileFactoryModel">
-    <Property Name="Image" Type="presentation::GuiImageData^" Readonly="true"/>
-    <Property Name="SmallImage" Type="presentation::GuiImageData^" Readonly="true"/>
-    <Property Name="Name" Type="string" Readonly="true"/>
-    <Property Name="Category" Type="string" Readonly="true"/>
-    <Property Name="Description" Type="string" Readonly="true"/>
-    <Property Name="Id" Type="string" Readonly="true"/>
-    <Property Name="DefaultFileExt" Type="string" Readonly="true"/>
-    <Property Name="TextTemplate" Type="vm::ITextTemplate^" Readonly="true"/>
-    <Property Name="ContentFactory" Type="vm::IEditorContentFactoryModel^" Readonly="true"/>
-  </Interface>
-
-  <Interface ref.Class="vm::IProjectFactoryModel">
-    <Property Name="Image" Type="presentation::GuiImageData^" Readonly="true"/>
-    <Property Name="SmallImage" Type="presentation::GuiImageData^" Readonly="true"/>
-    <Property Name="Name" Type="string" Readonly="true"/>
-    <Property Name="Description" Type="string" Readonly="true"/>
-    <Property Name="Id" Type="string" Readonly="true"/>
-    <Property Name="Children" Type="vm::IProjectFactoryModel^{}" Readonly="true"/>
-  </Interface>
-
-  <Interface ref.Class="vm::IStudioNewFileModel">
-    <Property Name="FileFilters" Type="vm::IProjectFactoryModel^" Readonly="true"/>
-    <Property Name="SelectedFileFilter" Type="vm::IProjectFactoryModel^"/>
-    <Property Name="FilteredFileFactories" Type="system::ObservableList^" Readonly="true"/>
-  </Interface>
-  
-  <Class ref.Class="vm::StudioFileReference">
-    <Property Name="name" Type="string"/>
-    <Property Name="folder" Type="string"/>
-    <Property Name="fileFactory" Type="vm::IFileFactoryModel^"/>
-  </Class>
-
-  <Interface ref.Class="vm::IStudioAddExistingFilesModel">
-    <Property Name="SelectedFiles" Type="system::ObservableList^" Readonly="true"/>
-    <Property Name="CurrentFileName" Type="string"/>
-    <Property Name="FilteredFileFactories" Type="system::ObservableList^" Readonly="true"/>
-
-    <Method Name="AddFiles" Type="void">
-      <Argument Name="fileNames" Type="string{}"/>
-    </Method>
-    <Method Name="RemoveFiles" Type="void">
-      <Argument Name="indices" Type="int{}"/>
-    </Method>
-  </Interface>
-  
-  <Interface ref.Class="vm::IStudioModel">
-    <Property Name="ProjectFactories" Type="vm::IProjectFactoryModel^{}" Readonly="true"/>
-    <Property Name="FileFactories" Type="vm::IFileFactoryModel^{}" Readonly="true"/>
-    <Property Name="ContentFactories" Type="vm::IEditorContentFactoryModel^{}" Readonly="true"/>
-    <Property Name="EditorFactories" Type="vm::IEditorFactoryModel^{}" Readonly="true"/>
-
-    <Method Name="CreateNewFileModel" Type="vm::IStudioNewFileModel^"/>
-    <Method Name="CreateAddExistingFilesModel" Type="vm::IStudioAddExistingFilesModel^">
-      <Argument Name="action" Type="vm::IAddFileItemAction^"/>
-    </Method>
-
-    <Property Name="RootSolutionItem" Type="vm::ISolutionItemModel^" Readonly="true"/>
-    <Property Name="OpenedSolution" Type="vm::ISolutionModel^" Readonly="true" Observable="true"/>
-    <Method Name="NotifySelectedSolutionItem" Type="void">
-      <Argument Name="solutionItem" Type="vm::ISolutionItemModel^"/>
-    </Method>
-    <Property Name="WorkingItem" Type="vm::ISolutionItemModel^" Readonly="true" Observable="true"/>
-    <Property Name="WorkingProject" Type="vm::IProjectModel^" Readonly="true" Observable="true"/>
-    <Property Name="WorkingDirectory" Type="string" Readonly="true" Observable="true"/>
-
-    <Method Name="GetProjectFactory" Type="vm::IProjectFactoryModel^">
-      <Argument Name="id" Type="string"/>
-    </Method>
-    <Method Name="GetFileFactory" Type="vm::IFileFactoryModel^">
-      <Argument Name="id" Type="string"/>
-    </Method>
-    <Method Name="GetEditorFactory" Type="vm::IEditorFactoryModel^">
-      <Argument Name="id" Type="string"/>
-    </Method>
-    <Method Name="GetAssociatedEditors" Type="vm::IEditorFactoryModel^{}">
-      <Argument Name="contentFactory" Type="vm::IEditorContentFactoryModel^"/>
-    </Method>
-
-    <Method Name="OpenSolution" Type="void">
-      <Argument Name="filePath" Type="string"/>
-    </Method>
-    <Method Name="NewSolution" Type="void">
-      <Argument Name="filePath" Type="string"/>
-    </Method>
-    <Method Name="CloseSolution" Type="void">
-    </Method>
-    <Method Name="AddNewProject" Type="vm::IProjectModel^">
-      <Argument Name="createNewSolution" Type="bool"/>
-      <Argument Name="projectFactory" Type="vm::IProjectFactoryModel^"/>
-      <Argument Name="projectName" Type="string"/>
-      <Argument Name="solutionDirectory" Type="string"/>
-      <Argument Name="solutionName" Type="string"/>
-    </Method>
-    <Method Name="AddNewFile" Type="vm::IFileModel^">
-      <Argument Name="action" Type="vm::IAddFileItemAction^"/>
-      <Argument Name="fileFactory" Type="vm::IFileFactoryModel^"/>
-      <Argument Name="fileDirectory" Type="string"/>
-      <Argument Name="fileName" Type="string"/>
-    </Method>
-    <Method Name="AddExistingFiles" Type="void">
-      <Argument Name="action" Type="vm::IAddFileItemAction^"/>
-      <Argument Name="files" Type="vm::StudioFileReference^{}"/>
-    </Method>
-    <Method Name="RenameFile" Type="void">
-      <Argument Name="action" Type="vm::IRenameItemAction^"/>
-      <Argument Name="solutionItem" Type="vm::ISolutionItemModel^"/>
-      <Argument Name="newName" Type="string"/>
-    </Method>
-    <Method Name="RemoveFile" Type="void">
-      <Argument Name="action" Type="vm::IRemoveItemAction^"/>
-      <Argument Name="solutionItem" Type="vm::ISolutionItemModel^"/>
-    </Method>
-
-    <Method Name="OpenBrowser" Type="void">
-      <Argument Name="url" Type="string"/>
-    </Method>
-    <Method Name="PromptError" Type="void">
-      <Argument Name="message" Type="string"/>
-    </Method>
-    <Method Name="SafeExecute" Type="bool">
-      <Argument Name="procedure" Type="func():void"/>
-    </Method>
-    <Method Name="ExecuteSaveItems" Type="void">
-      <Argument Name="saveItems" Type="vm::ISaveItemAction^{}"/>
-    </Method>
-  </Interface>
-</Schemas>
+<Workflow-ViewModel>
+  <![CDATA[
+    module StudioModel;
+    
+    using system::*;
+    using presentation::Gui*;
+    
+    namespace vm
+    {
+      interface IFileFactoryModel
+      {
+        func GetImage() : ImageData^;
+        prop Image : ImageData^ {GetImage}
+        
+        func GetSmallImage() : ImageData^;
+        prop SmallImage : ImageData^ {GetSmallImage}
+        
+        func GetName() : string;
+        prop Name : string {GetName}
+        
+        func GetCategory() : string;
+        prop Category : string {GetCategory}
+        
+        func GetDescription() : string;
+        prop Description : string {GetDescription}
+        
+        func GetId() : string;
+        prop Id : string {GetId}
+        
+        func GetDefaultFileExt() : string;
+        prop DefaultFileExt : string {GetDefaultFileExt}
+        
+        func GetTextTemplate() : ITextTemplate^;
+        prop TextTemplate : ITextTemplate^ {GetTextTemplate}
+        
+        func GetContentFactory() : IEditorContentFactoryModel^;
+        prop ContentFactory : IEditorContentFactoryModel^ {GetContentFactory}
+      }
+      
+      interface IProjectFactoryModel
+      {
+        func GetImage() : ImageData^;
+        prop Image : ImageData^ {GetImage}
+        
+        func GetSmallImage() : ImageData^;
+        prop SmallImage : ImageData^ {GetSmallImage}
+        
+        func GetName() : string;
+        prop Name : string {GetName}
+        
+        func GetDescription() : string;
+        prop Description : string {GetDescription}
+        
+        func GetId() : string;
+        prop Id : string {GetId}
+        
+        func GetChildren() : IProjectFactoryModel^{}
+        prop Children : IProjectFactoryModel^{} {GetChildren}
+      }
+      
+      interface IStudioNewFileModel
+      {
+        func GetFileFilters() : IProjectFactoryModel^;
+        prop FileFilters : IProjectFactoryModel^ : {GetFileFilters}
+        
+        func GetSelectedFileFilter() : IProjectFactoryModel^;
+        prop SelectedFileFilter : IProjectFactoryModel^ : {GetSelectedFileFilter}
+        
+        func GetFilteredFileFactories() : ObservableList^;
+        prop FilteredFileFactories : ObservableList^ : {GetFilteredFileFactories}
+      }
+      
+      interface IStudioFileReference
+      {
+        func GetName() : string;
+        prop Name : string {GetName}
+        
+        func GetFolder() : string;
+        prop Folder : string {GetFolder}
+        
+        func GetFileFactory() : IFileFactoryModel^;
+        prop FileFactory : IFileFactoryModel^ {GetFileFactory}
+      }
+      
+      interface IStudioAddExistingFilesModel
+      {
+        func GetSelectedFiles() : ObservableList^;
+        prop SelectedFiles : ObservableList^ {GetSelectedFiles}
+        
+        func GetCurrentFileName : string;
+        prop CurrentFileName : string {GetCurrentFileName}
+        
+        func GetFilteredFileFactories : ObservableList^;
+        prop FilteredFileFactories : ObservableList {GetFilteredFileFactories}
+        
+        func AddFiles(fileNames: string{}) : void;
+        func RemoveFiles(indices : int{}) : void;
+      }
+      
+      interface IStudioModel
+      {
+        func GetProjectFactories() : IProjectFactoryModel^{};
+        prop ProjectFactories : IProjectFactoryModel^{} {GetProjectFactories}
+        
+        func GetFileFactories() : IFileFactoryModel^{}
+        prop FileFactories : IFileFactoryModel^{} {GetFileFactories}
+        
+        func GetContentFactories() : IEditorContentFactoryModel^{}
+        prop ContentFactories : IEditorContentFactoryModel^{} {GetContentFactories}
+        
+        func GetEditorFactories() : IEditorFactoryModel^{}
+        prop EditorFactories : IEditorFactoryModel^{} {GetEditorFactories}
+        
+        func CreateNewFileModel() : IStudioNewFileModel^;
+        func CreateAddExistingFilesModel(action : IAddFileItemAction^) : IStudioAddExistingFilesModel^;
+        
+        func GetRootSolutionItem() : ISolutionItemModel^;
+        prop RootSolutionItem : ISolutionItemModel^ {GetRootSolutionItem}
+        
+        func GetOpenedSolution() : ISolutionModel^;
+        event OpenedSolutionChanged();
+        prop OpenedSolution : ISolutionModel^ {GetOpenedSolution : OpenedSolutionChanged}
+        
+        func NotifySelectedSolutionItem(solutionItem : ISolutionItemModel^) : void;
+        
+        func GetWorkingItem() : ISolutionItemModel^;
+        event WorkingItemChanged();
+        prop WorkingItem : ISolutionItemModel^ {GetWorkingItem : WorkingItemChanged}
+        
+        func GetWorkingProject() : IProjectModel^;
+        event WorkingProjectChanged();
+        prop WorkingProject : IProjectModel^ {GetWorkingProject : WorkingProjectChanged}
+        
+        func GetWorkingDirectory() : string;
+        event WorkingDirectoryChanged();
+        prop WorkingDirectory : string {GetWorkingDirectory : WorkingDirectoryChanged};
+        
+        func GetProjectFactory(id : string) : IProjectFactoryModel^;
+        func GetFileFactory(id : string) : IFileFactoryModel^;
+        func GetEditorFactory(id : string) : IEditorFactoryModel^;
+        func GetAssociatedEditors(contentFactory : IEditorContentFactoryModel^) : IEditorFactoryModel^{};
+        
+        func OpenSolution(filePath : string) : void;
+        func NewSolution(filePath : string) : void;
+        func CloseSolution() : void;
+        func AddNewProject(createNewSolution : bool, projectFactory : IProjectFactoryModel^, projectName : string, solutionDirectory : string, solutionName : string) : IProjectModel^;
+        func AddNewFile(action : IAddFileItemAction^, fileFactory : IFileFactoryModel^, fileDirectory : string, fileName : string) : IFileModel^;
+        func AddExistingFiles(action : IAddFileItemAction^, files : IStudioFileRefernces^{}) : void;
+        func RenameFile(action : IRenameItemAction^, solutionItem : ISolutionItemModel^, newName : string) : void;
+        func RemoveFile(action : IRemoveItemAction^, solutionItem : ISolutionItemModel^) : void;
+        
+        func OpenBrowser(url : string) : void;
+        func PromptError(message : string) : void;
+        func SafeExecute(procedure : func():void) : bool;
+        func ExecuteSaveItems(saveItems : ISaveItemAction^{}) : void;
+      }
+    }
+  ]]>
+</Workflow-ViewModel>

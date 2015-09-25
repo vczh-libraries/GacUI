@@ -16,10 +16,10 @@
   <Folder name="ProjectImages" content="Link">ProjectImages\Folder.xml</Folder>
   <Folder name="FileImages" content="Link">FileImages\Folder.xml</Folder>
   <Folder name="UI">
-    <InstanceSchema content="File">ViewModels\SolutionModel.xml</InstanceSchema>
-    <InstanceSchema content="File">ViewModels\StudioModel.xml</InstanceSchema>
-    <InstanceSchema content="File">ViewModels\EditorModel.xml</InstanceSchema>
-    <InstanceSchema content="File">ViewModels\ActionModel.xml</InstanceSchema>
+    <Script content="File">ViewModels\SolutionModel.xml</Script>
+    <Script content="File">ViewModels\StudioModel.xml</Script>
+    <Script content="File">ViewModels\EditorModel.xml</Script>
+    <Script content="File">ViewModels\ActionModel.xml</Script>
     <Instance content="File">UserInterfaces\MainWindow.xml</Instance>
     <Instance content="File">UserInterfaces\NewProjectWindow.xml</Instance>
     <Instance content="File">UserInterfaces\NewFileWindow.xml</Instance>

@@ -1,40 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Schemas>
-  <Interface ref.Class="vm::ISaveItemAction">
-    <Method Name="Save" Type="void"/>
-  </Interface>
-  
-  <Interface ref.Class="vm::IAddFileItemAction">
-    <Method Name="HasFile" Type="bool">
-      <Argument Name="fileName" Type="string"/>
-    </Method>
-    <Method Name="AddFile" Type="vm::ISaveItemAction^{}">
-      <Argument Name="file" Type="vm::IFileModel^"/>
-    </Method>
-  </Interface>
-
-  <Interface ref.Class="vm::IOpenInEditorItemAction">
-    <Property Name="SupportedContents" Type="vm::IEditorContentModel^{}" Readonly="true"/>
-    <Property Name="SupportedEditors" Type="vm::IEditorFactoryModel^{}" Readonly="true"/>
-    <Property Name="CurrentEditor" Type="vm::IEditorModel*" Readonly="true"/>
-
-    <Method Name="OpenEditor" Type="vm::IEditorModel^">
-      <Argument Name="editorFactory" Type="vm::IEditorFactoryModel^"/>
-    </Method>
-    <Method Name="CloseEditor" Type="void"/>
-  </Interface>
-
-  <Interface ref.Class="vm::IRenameItemAction">
-    <Method Name="GetRenameablePart" Type="string"/>
-    <Method Name="PreviewRename" Type="string">
-      <Argument Name="newName" Type="string"/>
-    </Method>
-    <Method Name="Rename" Type="vm::ISaveItemAction^{}">
-      <Argument Name="newName" Type="string"/>
-    </Method>
-  </Interface>
-
-  <Interface ref.Class="vm::IRemoveItemAction">
-    <Method Name="Remove" Type="vm::ISaveItemAction^{}"/>
-  </Interface>
-</Schemas>
+<Workflow-ViewModel>
+  <![CDATA[
+    module ActionModel;
+    
+    namespace vm
+    {
+      interface ISaveItemAction
+      {
+        func Save() : void;
+      }
+      
+      interface IAddFileItemAction
+      {
+        func HasFile(fileName : string) : bool;
+        func AddFile(file : IFileModel^) : ISaveItemAction^{};
+      }
+      
+      interface IOpenInEditorItemAction
+      {
+        func GetSupportedContents() : IEditorContentModel^{};
+        prop SupportedContents : IEditorContentModel^{} {GetSupportedContents}
+        
+        func GetSupportedEditors() : IEditorFactoryModel^{};
+        prop SupportedEditors : IEditorFactoryModel^{} {GetSupportedEditors}
+        
+        func GetCurrentEditor() : IEditorModel*;
+        prop CurrentEditor : IEditorModel* {GetCurrentEditor}
+        
+        func OpenEditor(editorFactory : IEditorFactoryModel^) : IEditorModel^;
+        func CloseEditor() : void;
+      }
+      
+      interface IRenameItemAction
+      {
+        func GetRenameablePart() : string;
+        func PreviewRename(newName : string) : string;
+        func Rename(newName : string) : ISaveItemAction^{};
+      }
+      
+      interface IRemoveItemAction
+      {
+        func Remove() : ISaveItemAction^{};
+      }
+    }
+  ]]>
+</Workflow-ViewModel>

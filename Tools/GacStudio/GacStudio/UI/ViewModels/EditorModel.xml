@@ -1,80 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Schemas>
-  <Interface ref.Class="vm::IMacroEnvironment">
-    <Property Name="Parent" Type="vm::IMacroEnvironment*" Readonly="true"/>
-    <Method Name="HasMacro" Type="bool">
-      <Argument Name="name" Type="string"/>
-      <Argument Name="inherit" Type="bool"/>
-    </Method>
-    <Method Name="GetMacroValue" Type="string">
-      <Argument Name="name" Type="string"/>
-      <Argument Name="inherit" Type="bool"/>
-    </Method>
-  </Interface>
-
-  <Interface ref.Class="vm::ITextTemplate">
-    <Method Name="Generate" Type="string">
-      <Argument Name="macroEnvironment" Type="vm::IMacroEnvironment^"/>
-    </Method>
-  </Interface>
-
-  <Interface ref.Class="vm::IEditorContentFactoryModel">
-    <Property Name="Name" Type="string" Readonly="true"/>
-    <Property Name="Id" Type="string" Readonly="true"/>
-    <Property Name="BaseContentFactory" Type="vm::IEditorContentFactoryModel*" Readonly="true"/>
-
-    <Method Name="CreateContent" Type="vm::IEditorContentModel^">
-      <Argument Name="baseContent" Type="vm::IEditorContentModel^"/>
-    </Method>
-  </Interface>
-  
-  <Interface ref.Class="vm::IEditorContentModel">
-    <Property Name="ContentFactory" Type="vm::IEditorContentFactoryModel^" Readonly="true"/>
-    <Property Name="BaseContent" Type="vm::IEditorContentModel*" Readonly="true"/>
-    <Property Name="SubContent" Type="vm::IEditorContentModel*" Readonly="true"/>
-    <Property Name="PersistedContent" Type="object" Readonly="true" Observable="true"/>
-    <Property Name="EditingContent" Type="object" Readonly="true"/>
-    <Property Name="CurrentEditor" Type="vm::IEditorModel*" Readonly="true" Observable="true"/>
-
-    <Method Name="Persist" Type="void">
-      <Argument Name="content" Type="object"/>
-    </Method>
-    <Method Name="BeginEdit" Type="void">
-      <Argument Name="editor" Type="vm::IEditorModel*"/>
-    </Method>
-    <Method Name="EndEdit" Type="void"/>
-  </Interface>
-
-  <Interface ref.Class="vm::IEditorFileContentModel" Parent="vm::IEditorContentModel">
-    <Property Name="FileName" Type="string" Readonly="true"/>
-
-    <Method Name="LoadFile" Type="void">
-      <Argument Name="fileName" Type="string"/>
-    </Method>
-    <Method Name="RenameFile" Type="void">
-      <Argument Name="fileName" Type="string"/>
-    </Method>
-  </Interface>
-
-  <Interface ref.Class="vm::IEditorFactoryModel">
-    <Property Name="Name" Type="string" Readonly="true"/>
-    <Property Name="Id" Type="string" Readonly="true"/>
-    <Property Name="RequiredContentFactory" Type="vm::IEditorContentFactoryModel^" Readonly="true"/>
-    <Property Name="EditingContentFactory" Type="vm::IEditorContentFactoryModel^" Readonly="true"/>
-
-    <Method Name="CreateEditor" Type="vm::IEditorModel^"/>
-  </Interface>
-
-  <Interface ref.Class="vm::IEditorModel">
-    <Property Name="EditorFactory" Type="vm::IEditorFactoryModel^" Readonly="true"/>
-    <Property Name="EditorAction" Type="vm::IOpenInEditorItemAction^" Readonly="true"/>
-    <Property Name="EditorControl" Type="Control*" Readonly="true"/>
-    <Property Name="EditingContent" Type="object" Readonly="true"/>
-
-    <Method Name="Open" Type="void">
-      <Argument Name="content" Type="vm::IEditorContentModel^"/>
-    </Method>
-    <Method Name="Save" Type="void"/>
-    <Method Name="Close" Type="void"/>
-  </Interface>
-</Schemas>
+<Workflow-ViewModel>
+  <![CDATA[
+    module EditorModel;
+    
+    using presentation::controls::Gui*;
+    
+    namespace vm
+    {
+      interface IMacroEnvironment
+      {
+        func GetParent() : IMacroEnvironment*;
+        prop Parent : IMacroEnvironment* {GetParent}
+        
+        func HasMacro(name : string, inherit : bool) : bool;
+        func GetMacroValue(name : string, inherit : bool) : string;
+      }
+      
+      interface ITextTemplate
+      {
+        func Generate(macroEnvironment : IMacroEnvironment^) : string;
+      }
+      
+      interface IEditorContentFactoryModel
+      {
+        func GetName() : string;
+        prop Name : string {GetName}
+        
+        func GetId() : string;
+        prop Id : string {GetId}
+        
+        func GetBaseContentFactory() : IEditorContentFactoryModel*;
+        prop BaseContentFactory : IEditorContentFactoryModel* {GetBaseContentFactory}
+        
+        func CreateContent(baseContent : IEditorContentModel^) : IEditorContentModel^;
+      }
+      
+      interface IEditorContentModel
+      {
+        func GetContentFactory() : IEditorContentFactoryModel^;
+        prop ContentFactory : IEditorContentFactoryModel^ {GetContentFactory}
+        
+        func GetBaseContent() : IEditorContentModel*;
+        prop BaseContent : IEditorContentModel* {GetBaseContent}
+        
+        func GetSubContent() : IEditorContentModel*;
+        prop SubContent : IEditorContentModel* {GetSubContent}
+        
+        func GetPersistedContent() : object;
+        event PersistedContentChanged();
+        prop PersistedContent : object {GetPersistedContent : PersistedContentChanged}
+        
+        func GetEditingContent() : object;
+        prop EditingContent : object {GetEditingContent}
+        
+        func GetCurrentEditor() : IEditorModel*;
+        event CurrentEditorChanged();
+        prop CurrentEditor : IEditorModel* {GetCurrentEditor : CurrentEditorChanged}
+        
+        func Persist(content : object) : void;
+        func BeginEdit(editor : IEditorModel*) : void;
+        func EndEdit() : void;
+      }
+      
+      interface IEditorFileContentModel : IEditorContentModel
+      {
+        func GetFileName() : string;
+        prop FileName : string {GetFileName}
+        
+        func LoadFile(fileName : string) : void;
+        func RenameFile(fileName : string) : void;
+      }
+      
+      interface IEditorFactoryModel
+      {
+        func GetName() : string;
+        prop Name : string {GetName}
+        
+        func GetId() : string;
+        prop Id : string {GetId}
+        
+        func GetRequiredContentFactory() : IEditorContentFactoryModel^;
+        prop RequiredContentFactory : IEditorContentFactoryModel^ {GetRequiredContentFactory}
+        
+        func GetEditingContentFactory() : IEditorContentFactoryModel^;
+        prop EditingContentFactory : IEditorContentFactoryModel^ {GetEditingContentFactory}
+        
+        func CreateEditor() : IEditorModel^;
+      }
+      
+      interface IEdotorModel
+      {
+        func GetEditorFactory() : IEditorFactoryModel^;
+        prop EditorFactory : IEditorFactoryModel^ {GetEditorFactory}
+        
+        func GetEditorAction() : IOpenInEditorItemAction^;
+        prop EditorAction : IOpenInEditorItemAction^ {GetEditorAction}
+        
+        func GetEditorControl() : Control*;
+        prop EditorControl : Control* {GetEditorControl}
+        
+        func GetEditingContent() : object;
+        prop EditingContent : object {GetEditingContent}
+        
+        func Open(content : IEditorContentModel^) : void;
+        func Save() : void;
+        func Close() : void;
+      }
+    }
+  ]]>
+</Workflow-ViewModel>
