@@ -556,6 +556,16 @@ Type Declaration
 				CLASS_MEMBER_METHOD_OVERLOAD(SaveToXml, {L"filePath"}, bool(DocumentModel::*)(const WString&))
 			END_CLASS_MEMBER(DocumentModel)
 
+			BEGIN_CLASS_MEMBER(GuiInstanceSharedScript)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiInstanceSharedScript>(), NO_PARAMETER)
+				
+				CLASS_MEMBER_FIELD(language)
+				CLASS_MEMBER_FIELD(code)
+
+				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(LoadFromXml, {L"xml" _ L"errors"}, Ptr<GuiInstanceSharedScript>(*)(Ptr<XmlElement>, List<WString>&))
+				CLASS_MEMBER_METHOD_OVERLOAD(SaveToXml, NO_PARAMETER, Ptr<XmlElement>(GuiInstanceSharedScript::*)())
+			END_CLASS_MEMBER(GuiInstanceSharedScript)
+
 			BEGIN_CLASS_MEMBER(GuiInstanceStyle)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiInstanceStyle>(), NO_PARAMETER)
 				
@@ -574,52 +584,6 @@ Type Declaration
 				CLASS_MEMBER_STATIC_METHOD(LoadFromXml, {L"xml" _ L"errors"})
 				CLASS_MEMBER_METHOD(SaveToXml, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiInstanceStyleContext)
-
-			BEGIN_CLASS_MEMBER(GuiInstancePropertySchame)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiInstancePropertySchame>(), NO_PARAMETER)
-
-				CLASS_MEMBER_FIELD(name)
-				CLASS_MEMBER_FIELD(typeName)
-				CLASS_MEMBER_FIELD(readonly)
-				CLASS_MEMBER_FIELD(observable)
-			END_CLASS_MEMBER(GuiInstancePropertySchame)
-
-			BEGIN_CLASS_MEMBER(GuiInstanceTypeSchema)
-				CLASS_MEMBER_FIELD(typeName)
-				CLASS_MEMBER_FIELD(parentType)
-				CLASS_MEMBER_FIELD(properties)
-			END_CLASS_MEMBER(GuiInstanceTypeSchema)
-
-			BEGIN_CLASS_MEMBER(GuiInstanceDataSchema)
-				CLASS_MEMBER_BASE(GuiInstanceTypeSchema)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiInstanceDataSchema>(), NO_PARAMETER)
-				
-				CLASS_MEMBER_FIELD(referenceType)
-			END_CLASS_MEMBER(GuiInstanceDataSchema)
-
-			BEGIN_CLASS_MEMBER(GuiInstanceMethodSchema)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiInstanceMethodSchema>(), NO_PARAMETER)
-				
-				CLASS_MEMBER_FIELD(name)
-				CLASS_MEMBER_FIELD(returnType)
-				CLASS_MEMBER_FIELD(arguments)
-			END_CLASS_MEMBER(GuiInstanceMethodSchema)
-
-			BEGIN_CLASS_MEMBER(GuiInstanceInterfaceSchema)
-				CLASS_MEMBER_BASE(GuiInstanceTypeSchema)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiInstanceInterfaceSchema>(), NO_PARAMETER)
-
-				CLASS_MEMBER_FIELD(methods)
-			END_CLASS_MEMBER(GuiInstanceInterfaceSchema)
-
-			BEGIN_CLASS_MEMBER(GuiInstanceSchema)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiInstanceSchema>(), NO_PARAMETER)
-				
-				CLASS_MEMBER_FIELD(schemas)
-
-				CLASS_MEMBER_STATIC_METHOD(LoadFromXml, {L"xml" _ L"errors"})
-				CLASS_MEMBER_METHOD(SaveToXml, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiInstanceSchema)
 
 			BEGIN_CLASS_MEMBER(GuiValueRepr)
 			END_CLASS_MEMBER(GuiValueRepr)

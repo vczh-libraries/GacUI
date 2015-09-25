@@ -11,6 +11,7 @@ Interfaces:
 
 #include "../../GacUI.h"
 #include "../GuiInstanceLoader.h"
+#include "../GuiInstanceSharedScript.h"
 
 namespace vl
 {
@@ -76,14 +77,9 @@ Type List
 			F(presentation::DocumentParagraphRun)\
 			F(presentation::DocumentStyle)\
 			F(presentation::DocumentModel)\
+			F(presentation::GuiInstanceSharedScript)\
 			F(presentation::GuiInstanceStyle)\
 			F(presentation::GuiInstanceStyleContext)\
-			F(presentation::GuiInstancePropertySchame)\
-			F(presentation::GuiInstanceTypeSchema)\
-			F(presentation::GuiInstanceDataSchema)\
-			F(presentation::GuiInstanceMethodSchema)\
-			F(presentation::GuiInstanceInterfaceSchema)\
-			F(presentation::GuiInstanceSchema)\
 			F(presentation::GuiValueRepr)\
 			F(presentation::GuiTextRepr)\
 			F(presentation::GuiAttSetterRepr)\

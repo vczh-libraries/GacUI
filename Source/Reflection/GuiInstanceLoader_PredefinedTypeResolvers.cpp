@@ -2,7 +2,6 @@
 #include "TypeDescriptors/GuiReflectionEvents.h"
 #include "../Resources/GuiParserManager.h"
 #include "InstanceQuery/GuiInstanceQuery.h"
-#include "GuiInstanceSchemaRepresentation.h"
 #include "GuiInstanceSharedScript.h"
 #include "GuiInstanceLoader_WorkflowCompiler.h"
 
@@ -159,60 +158,6 @@ Instance Style Type Resolver
 				{
 					auto context = GuiInstanceStyleContext::LoadFromXml(xml, errors);
 					return context;
-				}
-				return 0;
-			}
-		};
-
-/***********************************************************************
-Instance Schema Type Resolver
-***********************************************************************/
-
-		class GuiResourceInstanceSchemaTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-		public:
-			WString GetType()override
-			{
-				return L"InstanceSchema";
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
-			{
-				if (!serializePrecompiledResource)
-				{
-					if (auto obj = resource.Cast<GuiInstanceSchema>())
-					{
-						return obj->SaveToXml();
-					}
-				}
-				return 0;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
-				if (xml)
-				{
-					auto schema = GuiInstanceSchema::LoadFromXml(xml, errors);
-					return schema;
 				}
 				return 0;
 			}
@@ -430,7 +375,6 @@ Shared Script Type Resolver
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
 				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
 				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
-				manager->SetTypeResolver(new GuiResourceInstanceSchemaTypeResolver);
 				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
 				manager->SetCacheResolver(new GuiSharedWorkflowCacheResolver);
 			}

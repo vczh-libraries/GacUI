@@ -384,9 +384,6 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSchemaRepresentation.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.cpp">
       <Filter>GacUI\Reflection\InstanceQuery</Filter>
     </ClCompile>
@@ -717,9 +714,6 @@
       <Filter>GacUI\Reflection</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.h">
-      <Filter>GacUI\Reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSchemaRepresentation.h">
       <Filter>GacUI\Reflection</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.h">
