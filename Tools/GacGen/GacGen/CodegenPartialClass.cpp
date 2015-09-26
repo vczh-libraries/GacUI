@@ -463,7 +463,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 					{
 						if (info->GetValueChangedEvent())
 						{
-							writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_READONLY_EVENT(" + info->GetName() + L", " + info->GetGetter()->GetName() + L", " + info->GetValueChangedEvent()->GetName() + L")");
+							writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_EVENT_READONLY(" + info->GetName() + L", " + info->GetGetter()->GetName() + L", " + info->GetValueChangedEvent()->GetName() + L")");
 						}
 						else
 						{

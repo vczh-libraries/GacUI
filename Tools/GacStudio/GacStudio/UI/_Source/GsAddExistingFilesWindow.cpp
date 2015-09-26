@@ -31,7 +31,7 @@ namespace ui
 	{
 		auto model = GetViewModel();
 		auto action = GetAction();
-		auto files = GetLazyList<Ptr<vm::StudioFileReference>>(GetOperationModel()->GetSelectedFiles());
+		auto files = GetLazyList<Ptr<vm::IStudioFileReference>>(GetOperationModel()->GetSelectedFiles());
 		if (model->SafeExecute([=]()
 			{
 				model->AddExistingFiles(action, files);

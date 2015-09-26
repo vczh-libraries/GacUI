@@ -161,7 +161,7 @@ Operation Models
 		IStudioModel*									studioModel;
 		Ptr<IAddFileItemAction>							action;
 		WString											currentFileName;
-		list::ObservableList<Ptr<StudioFileReference>>	selectedFiles;
+		list::ObservableList<Ptr<IStudioFileReference>>	selectedFiles;
 		list::ObservableList<Ptr<IFileFactoryModel>>	filteredFileFactories;
 
 		void											GetAcceptableFileFactories(const WString& fileName, list::ObservableList<Ptr<IFileFactoryModel>>& fileFactories);
@@ -224,6 +224,23 @@ Editor
 Studio Model
 ***********************************************************************/
 
+	class StudioFileReference : public Object, public virtual IStudioFileReference
+	{
+	protected:
+		WString					name;
+		WString					folder;
+		Ptr<IFileFactoryModel>	fileFactory;
+	public:
+		StudioFileReference(WString _name, WString _folder, Ptr<IFileFactoryModel> _fileFactory)
+			:name(_name), folder(_folder), fileFactory(_fileFactory)
+		{
+		}
+
+		WString GetName()override { return name; }
+		WString GetFolder()override { return folder; }
+		Ptr<IFileFactoryModel> GetFileFactory()override { return fileFactory; }
+	};
+
 	class StudioModel : public Object, public virtual IStudioModel
 	{
 		typedef Group<IEditorContentFactoryModel*, Ptr<IEditorFactoryModel>>		AssociatedEditorMap;
@@ -265,7 +282,7 @@ Studio Model
 		void											CloseSolution()override;
 		vl::Ptr<vm::IProjectModel>						AddNewProject(bool createNewSolution, vl::Ptr<vm::IProjectFactoryModel> projectFactory, vl::WString projectName, vl::WString solutionDirectory, vl::WString solutionName)override;
 		vl::Ptr<vm::IFileModel>							AddNewFile(vl::Ptr<vm::IAddFileItemAction> action, vl::Ptr<vm::IFileFactoryModel> fileFactory, vl::WString fileDirectory, vl::WString fileName)override;
-		void											AddExistingFiles(vl::Ptr<vm::IAddFileItemAction> action, vl::collections::LazyList<vl::Ptr<vm::StudioFileReference>> files)override;
+		void											AddExistingFiles(vl::Ptr<vm::IAddFileItemAction> action, vl::collections::LazyList<vl::Ptr<vm::IStudioFileReference>> files)override;
 		void											RenameFile(vl::Ptr<vm::IRenameItemAction> action, vl::Ptr<vm::ISolutionItemModel> solutionItem, vl::WString newName)override;
 		void											RemoveFile(vl::Ptr<vm::IRemoveItemAction> action, vl::Ptr<vm::ISolutionItemModel> solutionItem)override;
 

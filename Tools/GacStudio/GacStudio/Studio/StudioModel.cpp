@@ -413,10 +413,11 @@ StudioAddExistingFilesModel
 				GetAcceptableFileFactories(fileName, fileFactories);
 				FilePath filePath = fileName;
 
-				auto fileRef = MakePtr<StudioFileReference>();
-				fileRef->name = filePath.GetName();
-				fileRef->folder = filePath.GetFolder().GetFullPath();
-				fileRef->fileFactory = From(fileFactories).First(nullptr);
+				auto fileRef = MakePtr<StudioFileReference>(
+					filePath.GetName(),
+					filePath.GetFolder().GetFullPath(),
+					From(fileFactories).First(nullptr)
+					);
 
 				selectedFiles.Add(fileRef);
 			}
@@ -847,17 +848,17 @@ StudioModel
 		return fileItem;
 	}
 
-	void StudioModel::AddExistingFiles(vl::Ptr<vm::IAddFileItemAction> action, vl::collections::LazyList<vl::Ptr<vm::StudioFileReference>> files)
+	void StudioModel::AddExistingFiles(vl::Ptr<vm::IAddFileItemAction> action, vl::collections::LazyList<vl::Ptr<vm::IStudioFileReference>> files)
 	{
 		ExecuteSaveItems(
 			From(files)
-				.Where([=](Ptr<StudioFileReference> fileRef)
+				.Where([=](Ptr<IStudioFileReference> fileRef)
 				{
-					return fileRef->fileFactory;
+					return fileRef->GetFileFactory();
 				})
-				.Select([=](Ptr<StudioFileReference> fileRef)
+				.Select([=](Ptr<IStudioFileReference> fileRef)
 				{
-					return MakePtr<FileItem>(this, fileRef->fileFactory, (FilePath(fileRef->folder) / fileRef->name).GetFullPath());
+					return MakePtr<FileItem>(this, fileRef->GetFileFactory(), (FilePath(fileRef->GetFolder()) / fileRef->GetName()).GetFullPath());
 				})
 				.SelectMany([=](Ptr<FileItem> fileItem)
 				{

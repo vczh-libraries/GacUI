@@ -712,10 +712,10 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(vm::ISolutionItemModel)
 			IMPL_CPP_TYPE_INFO(vm::ISolutionModel)
 			IMPL_CPP_TYPE_INFO(vm::IStudioAddExistingFilesModel)
+			IMPL_CPP_TYPE_INFO(vm::IStudioFileReference)
 			IMPL_CPP_TYPE_INFO(vm::IStudioModel)
 			IMPL_CPP_TYPE_INFO(vm::IStudioNewFileModel)
 			IMPL_CPP_TYPE_INFO(vm::ITextTemplate)
-			IMPL_CPP_TYPE_INFO(vm::StudioFileReference)
 			IMPL_CPP_TYPE_INFO(darkskin::BottomScrollButtonTemplate)
 			IMPL_CPP_TYPE_INFO(darkskin::ButtonTemplate)
 			IMPL_CPP_TYPE_INFO(darkskin::CheckBoxTemplate)
@@ -782,71 +782,99 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(vm::IEditorContentFactoryModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Id)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BaseContentFactory)
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetId, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetBaseContentFactory, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(CreateContent, { L"baseContent" });
+				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
+				CLASS_MEMBER_PROPERTY_READONLY(Id, GetId)
+				CLASS_MEMBER_PROPERTY_READONLY(BaseContentFactory, GetBaseContentFactory)
 			END_CLASS_MEMBER(vm::IEditorContentFactoryModel)
 
 			BEGIN_CLASS_MEMBER(vm::IEditorContentModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentFactory)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BaseContent)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SubContent)
+				CLASS_MEMBER_METHOD(GetContentFactory, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetBaseContent, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetSubContent, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetPersistedContent, NO_PARAMETER);
 				CLASS_MEMBER_EVENT(PersistedContentChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(PersistedContent, PersistedContentChanged)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditingContent)
+				CLASS_MEMBER_METHOD(GetEditingContent, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetCurrentEditor, NO_PARAMETER);
 				CLASS_MEMBER_EVENT(CurrentEditorChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(CurrentEditor, CurrentEditorChanged)
 				CLASS_MEMBER_METHOD(Persist, { L"content" });
 				CLASS_MEMBER_METHOD(BeginEdit, { L"editor" });
 				CLASS_MEMBER_METHOD(EndEdit, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(ContentFactory, GetContentFactory)
+				CLASS_MEMBER_PROPERTY_READONLY(BaseContent, GetBaseContent)
+				CLASS_MEMBER_PROPERTY_READONLY(SubContent, GetSubContent)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(PersistedContent, GetPersistedContent, PersistedContentChanged)
+				CLASS_MEMBER_PROPERTY_READONLY(EditingContent, GetEditingContent)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(CurrentEditor, GetCurrentEditor, CurrentEditorChanged)
 			END_CLASS_MEMBER(vm::IEditorContentModel)
 
 			BEGIN_CLASS_MEMBER(vm::IEditorFactoryModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Id)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RequiredContentFactory)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditingContentFactory)
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetId, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetRequiredContentFactory, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetEditingContentFactory, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(CreateEditor, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
+				CLASS_MEMBER_PROPERTY_READONLY(Id, GetId)
+				CLASS_MEMBER_PROPERTY_READONLY(RequiredContentFactory, GetRequiredContentFactory)
+				CLASS_MEMBER_PROPERTY_READONLY(EditingContentFactory, GetEditingContentFactory)
 			END_CLASS_MEMBER(vm::IEditorFactoryModel)
 
 			BEGIN_CLASS_MEMBER(vm::IEditorFileContentModel)
 				CLASS_MEMBER_BASE(vm::IEditorContentModel)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(FileName)
+				CLASS_MEMBER_METHOD(GetFileName, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(LoadFile, { L"fileName" });
 				CLASS_MEMBER_METHOD(RenameFile, { L"fileName" });
+				CLASS_MEMBER_PROPERTY_READONLY(FileName, GetFileName)
 			END_CLASS_MEMBER(vm::IEditorFileContentModel)
 
 			BEGIN_CLASS_MEMBER(vm::IEditorModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditorFactory)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditorAction)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditorControl)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditingContent)
+				CLASS_MEMBER_METHOD(GetEditorFactory, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetEditorAction, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetEditorControl, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetEditingContent, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(Open, { L"content" });
 				CLASS_MEMBER_METHOD(Save, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(Close, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(EditorFactory, GetEditorFactory)
+				CLASS_MEMBER_PROPERTY_READONLY(EditorAction, GetEditorAction)
+				CLASS_MEMBER_PROPERTY_READONLY(EditorControl, GetEditorControl)
+				CLASS_MEMBER_PROPERTY_READONLY(EditingContent, GetEditingContent)
 			END_CLASS_MEMBER(vm::IEditorModel)
 
 			BEGIN_CLASS_MEMBER(vm::IFileFactoryModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Image)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SmallImage)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Category)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Description)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Id)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(DefaultFileExt)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextTemplate)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentFactory)
+				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetSmallImage, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetCategory, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetDescription, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetId, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetDefaultFileExt, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetTextTemplate, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetContentFactory, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(Image, GetImage)
+				CLASS_MEMBER_PROPERTY_READONLY(SmallImage, GetSmallImage)
+				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
+				CLASS_MEMBER_PROPERTY_READONLY(Category, GetCategory)
+				CLASS_MEMBER_PROPERTY_READONLY(Description, GetDescription)
+				CLASS_MEMBER_PROPERTY_READONLY(Id, GetId)
+				CLASS_MEMBER_PROPERTY_READONLY(DefaultFileExt, GetDefaultFileExt)
+				CLASS_MEMBER_PROPERTY_READONLY(TextTemplate, GetTextTemplate)
+				CLASS_MEMBER_PROPERTY_READONLY(ContentFactory, GetContentFactory)
 			END_CLASS_MEMBER(vm::IFileFactoryModel)
 
 			BEGIN_CLASS_MEMBER(vm::IFileModel)
 				CLASS_MEMBER_BASE(vm::ISolutionItemModel)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(FileFactory)
+				CLASS_MEMBER_METHOD(GetFileFactory, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(InitializeFileAndSave, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(FileFactory, GetFileFactory)
 			END_CLASS_MEMBER(vm::IFileModel)
 
 			BEGIN_CLASS_MEMBER(vm::IFolderModel)
@@ -855,35 +883,46 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(vm::IMacroEnvironment)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
+				CLASS_MEMBER_METHOD(GetParent, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(HasMacro, { L"name" _ L"inherit" });
 				CLASS_MEMBER_METHOD(GetMacroValue, { L"name" _ L"inherit" });
+				CLASS_MEMBER_PROPERTY_READONLY(Parent, GetParent)
 			END_CLASS_MEMBER(vm::IMacroEnvironment)
 
 			BEGIN_CLASS_MEMBER(vm::IOpenInEditorItemAction)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SupportedContents)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SupportedEditors)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(CurrentEditor)
+				CLASS_MEMBER_METHOD(GetSupportedContents, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetSupportedEditors, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetCurrentEditor, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(OpenEditor, { L"editorFactory" });
 				CLASS_MEMBER_METHOD(CloseEditor, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(SupportedContents, GetSupportedContents)
+				CLASS_MEMBER_PROPERTY_READONLY(SupportedEditors, GetSupportedEditors)
+				CLASS_MEMBER_PROPERTY_READONLY(CurrentEditor, GetCurrentEditor)
 			END_CLASS_MEMBER(vm::IOpenInEditorItemAction)
 
 			BEGIN_CLASS_MEMBER(vm::IProjectFactoryModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Image)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SmallImage)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Description)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Id)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Children)
+				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetSmallImage, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetDescription, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetId, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetChildren, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(Image, GetImage)
+				CLASS_MEMBER_PROPERTY_READONLY(SmallImage, GetSmallImage)
+				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
+				CLASS_MEMBER_PROPERTY_READONLY(Description, GetDescription)
+				CLASS_MEMBER_PROPERTY_READONLY(Id, GetId)
+				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
 			END_CLASS_MEMBER(vm::IProjectFactoryModel)
 
 			BEGIN_CLASS_MEMBER(vm::IProjectModel)
 				CLASS_MEMBER_BASE(vm::ISolutionItemModel)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ProjectFactory)
+				CLASS_MEMBER_METHOD(GetProjectFactory, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(OpenProject, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(InitializeProjectAndSave, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(ProjectFactory, GetProjectFactory)
 			END_CLASS_MEMBER(vm::IProjectModel)
 
 			BEGIN_CLASS_MEMBER(vm::IRemoveItemAction)
@@ -905,19 +944,26 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(vm::ISolutionItemModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
+				CLASS_MEMBER_METHOD(GetParent, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER);
 				CLASS_MEMBER_EVENT(ImageChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(Image, ImageChanged)
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER);
 				CLASS_MEMBER_EVENT(NameChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(Name, NameChanged)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Children)
+				CLASS_MEMBER_METHOD(GetChildren, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetFilePath, NO_PARAMETER);
 				CLASS_MEMBER_EVENT(FilePathChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(FilePath, FilePathChanged)
+				CLASS_MEMBER_METHOD(GetFileDirectory, NO_PARAMETER);
 				CLASS_MEMBER_EVENT(FileDirectoryChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(FileDirectory, FileDirectoryChanged)
+				CLASS_MEMBER_METHOD(GetErrorCount, NO_PARAMETER);
 				CLASS_MEMBER_EVENT(ErrorCountChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(ErrorCount, ErrorCountChanged)
 				CLASS_MEMBER_METHOD(GetErrorText, { L"index" });
+				CLASS_MEMBER_PROPERTY_READONLY(Parent, GetParent)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(Image, GetImage, ImageChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(Name, GetName, NameChanged)
+				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(FilePath, GetFilePath, FilePathChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(FileDirectory, GetFileDirectory, FileDirectoryChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(ErrorCount, GetErrorCount, ErrorCountChanged)
 			END_CLASS_MEMBER(vm::ISolutionItemModel)
 
 			BEGIN_CLASS_MEMBER(vm::ISolutionModel)
@@ -930,31 +976,45 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(vm::IStudioAddExistingFilesModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SelectedFiles)
-				CLASS_MEMBER_PROPERTY_FAST(CurrentFileName)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(FilteredFileFactories)
+				CLASS_MEMBER_METHOD(GetSelectedFiles, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetCurrentFileName, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(SetCurrentFileName, { L"value" });
+				CLASS_MEMBER_METHOD(GetFilteredFileFactories, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(AddFiles, { L"fileNames" });
 				CLASS_MEMBER_METHOD(RemoveFiles, { L"indices" });
+				CLASS_MEMBER_PROPERTY_READONLY(SelectedFiles, GetSelectedFiles)
+				CLASS_MEMBER_PROPERTY(CurrentFileName, GetCurrentFileName, SetCurrentFileName)
+				CLASS_MEMBER_PROPERTY_READONLY(FilteredFileFactories, GetFilteredFileFactories)
 			END_CLASS_MEMBER(vm::IStudioAddExistingFilesModel)
+
+			BEGIN_CLASS_MEMBER(vm::IStudioFileReference)
+				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetFolder, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetFileFactory, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
+				CLASS_MEMBER_PROPERTY_READONLY(Folder, GetFolder)
+				CLASS_MEMBER_PROPERTY_READONLY(FileFactory, GetFileFactory)
+			END_CLASS_MEMBER(vm::IStudioFileReference)
 
 			BEGIN_CLASS_MEMBER(vm::IStudioModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ProjectFactories)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(FileFactories)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentFactories)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditorFactories)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RootSolutionItem)
-				CLASS_MEMBER_EVENT(OpenedSolutionChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(OpenedSolution, OpenedSolutionChanged)
-				CLASS_MEMBER_EVENT(WorkingItemChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(WorkingItem, WorkingItemChanged)
-				CLASS_MEMBER_EVENT(WorkingProjectChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(WorkingProject, WorkingProjectChanged)
-				CLASS_MEMBER_EVENT(WorkingDirectoryChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(WorkingDirectory, WorkingDirectoryChanged)
+				CLASS_MEMBER_METHOD(GetProjectFactories, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetFileFactories, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetContentFactories, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetEditorFactories, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(CreateNewFileModel, NO_PARAMETER);
 				CLASS_MEMBER_METHOD(CreateAddExistingFilesModel, { L"action" });
+				CLASS_MEMBER_METHOD(GetRootSolutionItem, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetOpenedSolution, NO_PARAMETER);
+				CLASS_MEMBER_EVENT(OpenedSolutionChanged)
 				CLASS_MEMBER_METHOD(NotifySelectedSolutionItem, { L"solutionItem" });
+				CLASS_MEMBER_METHOD(GetWorkingItem, NO_PARAMETER);
+				CLASS_MEMBER_EVENT(WorkingItemChanged)
+				CLASS_MEMBER_METHOD(GetWorkingProject, NO_PARAMETER);
+				CLASS_MEMBER_EVENT(WorkingProjectChanged)
+				CLASS_MEMBER_METHOD(GetWorkingDirectory, NO_PARAMETER);
+				CLASS_MEMBER_EVENT(WorkingDirectoryChanged)
 				CLASS_MEMBER_METHOD(GetProjectFactory, { L"id" });
 				CLASS_MEMBER_METHOD(GetFileFactory, { L"id" });
 				CLASS_MEMBER_METHOD(GetEditorFactory, { L"id" });
@@ -971,26 +1031,32 @@ namespace vl
 				CLASS_MEMBER_METHOD(PromptError, { L"message" });
 				CLASS_MEMBER_METHOD(SafeExecute, { L"procedure" });
 				CLASS_MEMBER_METHOD(ExecuteSaveItems, { L"saveItems" });
+				CLASS_MEMBER_PROPERTY_READONLY(ProjectFactories, GetProjectFactories)
+				CLASS_MEMBER_PROPERTY_READONLY(FileFactories, GetFileFactories)
+				CLASS_MEMBER_PROPERTY_READONLY(ContentFactories, GetContentFactories)
+				CLASS_MEMBER_PROPERTY_READONLY(EditorFactories, GetEditorFactories)
+				CLASS_MEMBER_PROPERTY_READONLY(RootSolutionItem, GetRootSolutionItem)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(OpenedSolution, GetOpenedSolution, OpenedSolutionChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(WorkingItem, GetWorkingItem, WorkingItemChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(WorkingProject, GetWorkingProject, WorkingProjectChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(WorkingDirectory, GetWorkingDirectory, WorkingDirectoryChanged)
 			END_CLASS_MEMBER(vm::IStudioModel)
 
 			BEGIN_CLASS_MEMBER(vm::IStudioNewFileModel)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(FileFilters)
-				CLASS_MEMBER_PROPERTY_FAST(SelectedFileFilter)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(FilteredFileFactories)
+				CLASS_MEMBER_METHOD(GetFileFilters, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(GetSelectedFileFilter, NO_PARAMETER);
+				CLASS_MEMBER_METHOD(SetSelectedFileFilter, { L"value" });
+				CLASS_MEMBER_METHOD(GetFilteredFileFactories, NO_PARAMETER);
+				CLASS_MEMBER_PROPERTY_READONLY(FileFilters, GetFileFilters)
+				CLASS_MEMBER_PROPERTY(SelectedFileFilter, GetSelectedFileFilter, SetSelectedFileFilter)
+				CLASS_MEMBER_PROPERTY_READONLY(FilteredFileFactories, GetFilteredFileFactories)
 			END_CLASS_MEMBER(vm::IStudioNewFileModel)
 
 			BEGIN_CLASS_MEMBER(vm::ITextTemplate)
 				CLASS_MEMBER_BASE(vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(Generate, { L"macroEnvironment" });
 			END_CLASS_MEMBER(vm::ITextTemplate)
-
-			BEGIN_CLASS_MEMBER(vm::StudioFileReference)
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vm::StudioFileReference>(), NO_PARAMETER)
-				CLASS_MEMBER_FIELD(name)
-				CLASS_MEMBER_FIELD(folder)
-				CLASS_MEMBER_FIELD(fileFactory)
-			END_CLASS_MEMBER(vm::StudioFileReference)
 
 			BEGIN_CLASS_MEMBER(darkskin::BottomScrollButtonTemplate)
 				CLASS_MEMBER_BASE(vl::presentation::templates::GuiButtonTemplate)
@@ -1369,10 +1435,10 @@ namespace vl
 					ADD_TYPE_INFO(vm::ISolutionItemModel)
 					ADD_TYPE_INFO(vm::ISolutionModel)
 					ADD_TYPE_INFO(vm::IStudioAddExistingFilesModel)
+					ADD_TYPE_INFO(vm::IStudioFileReference)
 					ADD_TYPE_INFO(vm::IStudioModel)
 					ADD_TYPE_INFO(vm::IStudioNewFileModel)
 					ADD_TYPE_INFO(vm::ITextTemplate)
-					ADD_TYPE_INFO(vm::StudioFileReference)
 					ADD_TYPE_INFO(darkskin::BottomScrollButtonTemplate)
 					ADD_TYPE_INFO(darkskin::ButtonTemplate)
 					ADD_TYPE_INFO(darkskin::CheckBoxTemplate)
