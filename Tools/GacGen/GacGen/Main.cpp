@@ -392,8 +392,8 @@ void GuiMain()
 				WriteControlClassCppFile(config, instance);
 			}
 		}
-		WritePartialClassHeaderFile(config, typeLoader->typeSchemas, typeLoader->typeSchemaOrder, typeLoader->instances);
-		WritePartialClassCppFile(config, typeLoader->typeSchemas, typeLoader->typeSchemaOrder, typeLoader->instances);
+		WritePartialClassHeaderFile(config, typeLoader->schemaManager, typeLoader->typeSchemas, typeLoader->typeSchemaOrder, typeLoader->instances);
+		WritePartialClassCppFile(config, typeLoader->schemaManager, typeLoader->typeSchemas, typeLoader->typeSchemaOrder, typeLoader->instances);
 		WriteGlobalHeaderFile(config, typeLoader->instances);
 	}
 

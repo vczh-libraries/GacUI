@@ -177,8 +177,8 @@ void											WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance>
 Codegen::PartialClass
 ***********************************************************************/
 
-void											WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<WfClassDeclaration>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances);
-void											WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<WfClassDeclaration>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances);
+void											WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManager> schemaManager, Dictionary<WString, Ptr<WfClassDeclaration>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances);
+void											WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManager> schemaManager, Dictionary<WString, Ptr<WfClassDeclaration>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances);
 
 /***********************************************************************
 Codegen::GlobalHeader

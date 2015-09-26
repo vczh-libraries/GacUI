@@ -15,20 +15,6 @@ WString Instance::GetFullName()
 }
 
 /***********************************************************************
-InstanceSchema
-***********************************************************************/
-
-WString InstanceSchema::GetFullName()
-{
-	return From(namespaces)
-		.Aggregate(WString(), [](const WString& a, const WString& b)->WString
-		{
-			return a + b + L"::";
-		})
-		+ typeName;
-}
-
-/***********************************************************************
 CodegenConfig::Output
 ***********************************************************************/
 

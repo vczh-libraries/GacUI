@@ -4,7 +4,7 @@
 Codegen::PartialClass
 ***********************************************************************/
 
-void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
+void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManager> schemaManager, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
 {
 	WString fileName = config->cppOutput->output + config->cppOutput->GetPartialClassHeaderFileName();
 	OPEN_FILE_WITH_COMMENT(L"Partial Classes", true);
@@ -338,7 +338,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, 
 	writer.WriteLine(L"#endif");
 }
 
-void WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
+void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManager> schemaManager, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
 {
 	WString fileName = config->cppOutput->output + config->cppOutput->GetPartialClassCppFileName();
 	OPEN_FILE_WITH_COMMENT(L"Partial Classes", true);
