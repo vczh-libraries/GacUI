@@ -47,7 +47,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 		List<WString> namespaces;
 		auto typeName = SplitSchemaName(typeSchemaName, namespaces);
 		WString prefix = WriteNamespace(currentNamespaces, namespaces, writer);
-		auto classDecl = typeSchemas[typeName];
+		auto classDecl = typeSchemas[typeSchemaName];
 		auto td = schemaManager->declarationTypes[classDecl.Obj()];
 
 		writer.WriteString(prefix + L"class " + typeName);
@@ -69,7 +69,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 					{
 						writer.WriteString(L", public virtual ");
 					}
-					writer.WriteString(td->GetBaseTypeDescriptor(i)->GetTypeName());
+					writer.WriteString(GetCppTypeName(td->GetBaseTypeDescriptor(i)));
 				}
 			}
 		}
@@ -372,99 +372,109 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 	WString prefix = WriteNamespace(currentNamespaces, ns, writer);
 	writer.WriteLine(prefix + L"#define _ ,");
 	
-	FOREACH(Ptr<InstanceSchema>, instance, typeSchemas.Values())
+	FOREACH(WString, typeName, typeSchemaOrder)
 	{
-		writer.WriteLine(prefix + L"IMPL_CPP_TYPE_INFO(" + instance->GetFullName() + L")");
+		writer.WriteLine(prefix + L"IMPL_CPP_TYPE_INFO(" + typeName + L")");
 	}
 	FOREACH(Ptr<Instance>, instance, instances.Values())
 	{
 		writer.WriteLine(prefix + L"IMPL_CPP_TYPE_INFO(" + instance->GetFullName() + L")");
 	}
 	writer.WriteLine(L"");
+	
 
-	FOREACH(Ptr<InstanceSchema>, instance, typeSchemas.Values())
+	FOREACH(WString, typeSchemaName, typeSchemaOrder)
 	{
-		if (auto data = instance->schema.Cast<GuiInstanceDataSchema>())
+		List<WString> namespaces;
+		auto classDecl = typeSchemas[typeSchemaName];
+		auto td = schemaManager->declarationTypes[classDecl.Obj()];
+
+		writer.WriteLine(prefix + L"BEGIN_CLASS_MEMBER(" + typeSchemaName + L")");
 		{
-			if (data->referenceType)
+			auto baseCount = td->GetBaseTypeDescriptorCount();
+			if (baseCount == 0)
 			{
-				writer.WriteLine(prefix + L"BEGIN_CLASS_MEMBER(" + instance->GetFullName() + L")");
-				if (data->parentType != L"")
-				{
-					writer.WriteLine(prefix + L"\tCLASS_MEMBER_BASE(" + data->parentType + L")");
-				}
-				writer.WriteLine(prefix + L"\tCLASS_MEMBER_CONSTRUCTOR(vl::Ptr<" + instance->GetFullName() + L">(), NO_PARAMETER)");
-				FOREACH(Ptr<GuiInstancePropertySchame>, prop, data->properties)
-				{
-					writer.WriteLine(prefix + L"\tCLASS_MEMBER_FIELD(" + prop->name + L")");
-				}
-				writer.WriteLine(prefix + L"END_CLASS_MEMBER(" + instance->GetFullName() + L")");
+				writer.WriteLine(prefix + L"\tCLASS_MEMBER_BASE(vl::reflection::IDescriptable)");
+				writer.WriteString(L" : public virtual ");
 			}
 			else
 			{
-				writer.WriteLine(prefix + L"BEGIN_STRUCT_MEMBER(" + instance->GetFullName() + L")");
-				FOREACH(Ptr<GuiInstancePropertySchame>, prop, data->properties)
+				for (vint i = 0; i < baseCount; i++)
 				{
-					writer.WriteLine(prefix + L"\tSTRUCT_MEMBER(" + prop->name + L")");
+					writer.WriteLine(prefix + L"\tCLASS_MEMBER_BASE(" + GetCppTypeName(td->GetBaseTypeDescriptor(i)) + L")");
 				}
-				writer.WriteLine(prefix + L"END_STRUCT_MEMBER(" + instance->GetFullName() + L")");
 			}
 		}
-		else if (auto itf = instance->schema.Cast<GuiInstanceInterfaceSchema>())
+		
+		FOREACH(Ptr<WfClassMember>, member, classDecl->members)
 		{
-			writer.WriteLine(prefix + L"BEGIN_CLASS_MEMBER(" + instance->GetFullName() + L")");
-			WString parent = itf->parentType == L"" ? L"vl::reflection::IDescriptable" : itf->parentType;
-			writer.WriteLine(prefix + L"\tCLASS_MEMBER_BASE(" + parent + L")");
-			FOREACH(Ptr<GuiInstancePropertySchame>, prop, itf->properties)
+			if (member->kind == WfClassMemberKind::Normal)
 			{
-				if (prop->observable)
+				if (auto funcDecl = member->declaration.Cast<WfFunctionDeclaration>())
 				{
-					writer.WriteLine(prefix + L"\tCLASS_MEMBER_EVENT(" + prop->name + L"Changed)");
-					if (prop->readonly)
+					auto info = schemaManager->declarationMemberInfos[funcDecl.Obj()].Cast<IMethodInfo>();
+					writer.WriteString(prefix + L"\tCLASS_MEMBER_METHOD(" + info->GetName() + L", ");
+					vint count = info->GetParameterCount();
+					if (count == 0)
 					{
-						writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(" + prop->name + L", " + prop->name + L"Changed)");
+						writer.WriteString(L"NO_PARAMETER");
 					}
 					else
 					{
-						writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_EVENT_FAST(" + prop->name + L", " + prop->name + L"Changed)");
-					}
-				}
-				else
-				{
-					if (prop->readonly)
-					{
-						writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_READONLY_FAST(" + prop->name + L")");
-					}
-					else
-					{
-						writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_FAST(" + prop->name + L")");
-					}
-				}
-			}
-			FOREACH(Ptr<GuiInstanceMethodSchema>, method, itf->methods)
-			{
-				writer.WriteString(prefix + L"\tCLASS_MEMBER_METHOD(" + method->name + L", ");
-				if (method->arguments.Count() == 0)
-				{
-					writer.WriteString(L"NO_PARAMETER");
-				}
-				else
-				{
-					writer.WriteString(L"{ ");
-					FOREACH_INDEXER(Ptr<GuiInstancePropertySchame>, argument, index, method->arguments)
-					{
-						if (index > 0)
+						writer.WriteString(L"{ ");
+						for (vint i = 0; i<count; i++)
 						{
-							writer.WriteString(L" _ ");
+							if (i > 0)
+							{
+								writer.WriteString(L" _ ");
+							}
+							writer.WriteString(L"L\"" + info->GetParameter(i)->GetName() + L"\"");
 						}
-						writer.WriteString(L"L\"" + argument->name + L"\"");
+						writer.WriteString(L" }");
 					}
-					writer.WriteString(L" }");
+					writer.WriteLine(L");");
 				}
-				writer.WriteLine(L");");
+				else if (auto eventDecl = member->declaration.Cast<WfEventDeclaration>())
+				{
+					auto info = schemaManager->declarationMemberInfos[funcDecl.Obj()].Cast<IEventInfo>();
+					writer.WriteLine(prefix + L"\tCLASS_MEMBER_EVENT(" + info->GetName() + L")");
+				}
 			}
-			writer.WriteLine(prefix + L"END_CLASS_MEMBER(" + instance->GetFullName() + L")");
 		}
+		
+		FOREACH(Ptr<WfClassMember>, member, classDecl->members)
+		{
+			if (member->kind == WfClassMemberKind::Normal)
+			{
+				if (auto propDecl = member->declaration.Cast<WfPropertyDeclaration>())
+				{
+					auto info = schemaManager->declarationMemberInfos[propDecl.Obj()].Cast<IPropertyInfo>();
+					if (info->GetSetter())
+					{
+						if (info->GetValueChangedEvent())
+						{
+							writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_EVENT(" + info->GetName() + L", " + info->GetGetter()->GetName() + L", " + info->GetSetter()->GetName() + L", " + info->GetValueChangedEvent()->GetName() + L")");
+						}
+						else
+						{
+							writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY(" + info->GetName() + L", " + info->GetGetter()->GetName() + L", " + info->GetSetter()->GetName() + L")");
+						}
+					}
+					else
+					{
+						if (info->GetValueChangedEvent())
+						{
+							writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_READONLY_EVENT(" + info->GetName() + L", " + info->GetGetter()->GetName() + L", " + info->GetValueChangedEvent()->GetName() + L")");
+						}
+						else
+						{
+							writer.WriteLine(prefix + L"\tCLASS_MEMBER_PROPERTY_READONLY(" + info->GetName() + L", " + info->GetGetter()->GetName() + L")");
+						}
+					}
+				}
+			}
+		}
+		writer.WriteLine(prefix + L"END_CLASS_MEMBER(" + typeSchemaName + L")");
 		writer.WriteLine(L"");
 	}
 
@@ -565,9 +575,9 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 	writer.WriteLine(prefix + L"public:");
 	writer.WriteLine(prefix + L"\tvoid Load(ITypeManager* manager)");
 	writer.WriteLine(prefix + L"\t{");
-	FOREACH(Ptr<InstanceSchema>, instance, typeSchemas.Values())
+	FOREACH(WString, typeName, typeSchemaOrder)
 	{
-		writer.WriteLine(prefix + L"\t\tADD_TYPE_INFO(" + instance->GetFullName() + L")");
+		writer.WriteLine(prefix + L"\t\tADD_TYPE_INFO(" + typeName + L")");
 	}
 	FOREACH(Ptr<Instance>, instance, instances.Values())
 	{
