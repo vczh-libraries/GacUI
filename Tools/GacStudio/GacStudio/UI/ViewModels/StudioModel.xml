@@ -55,20 +55,20 @@
         func GetId() : string;
         prop Id : string {GetId}
         
-        func GetChildren() : IProjectFactoryModel^{}
+        func GetChildren() : IProjectFactoryModel^;
         prop Children : IProjectFactoryModel^{} {GetChildren}
       }
       
       interface IStudioNewFileModel
       {
         func GetFileFilters() : IProjectFactoryModel^;
-        prop FileFilters : IProjectFactoryModel^ : {GetFileFilters}
+        prop FileFilters : IProjectFactoryModel^ {GetFileFilters}
         
         func GetSelectedFileFilter() : IProjectFactoryModel^;
-        prop SelectedFileFilter : IProjectFactoryModel^ : {GetSelectedFileFilter}
+        prop SelectedFileFilter : IProjectFactoryModel^ {GetSelectedFileFilter}
         
         func GetFilteredFileFactories() : ObservableList^;
-        prop FilteredFileFactories : ObservableList^ : {GetFilteredFileFactories}
+        prop FilteredFileFactories : ObservableList^ {GetFilteredFileFactories}
       }
       
       interface IStudioFileReference
@@ -88,10 +88,10 @@
         func GetSelectedFiles() : ObservableList^;
         prop SelectedFiles : ObservableList^ {GetSelectedFiles}
         
-        func GetCurrentFileName : string;
+        func GetCurrentFileName() : string;
         prop CurrentFileName : string {GetCurrentFileName}
         
-        func GetFilteredFileFactories : ObservableList^;
+        func GetFilteredFileFactories() : ObservableList^;
         prop FilteredFileFactories : ObservableList {GetFilteredFileFactories}
         
         func AddFiles(fileNames: string{}) : void;
@@ -103,13 +103,13 @@
         func GetProjectFactories() : IProjectFactoryModel^{};
         prop ProjectFactories : IProjectFactoryModel^{} {GetProjectFactories}
         
-        func GetFileFactories() : IFileFactoryModel^{}
+        func GetFileFactories() : IFileFactoryModel^;
         prop FileFactories : IFileFactoryModel^{} {GetFileFactories}
         
-        func GetContentFactories() : IEditorContentFactoryModel^{}
+        func GetContentFactories() : IEditorContentFactoryModel^;
         prop ContentFactories : IEditorContentFactoryModel^{} {GetContentFactories}
         
-        func GetEditorFactories() : IEditorFactoryModel^{}
+        func GetEditorFactories() : IEditorFactoryModel^;
         prop EditorFactories : IEditorFactoryModel^{} {GetEditorFactories}
         
         func CreateNewFileModel() : IStudioNewFileModel^;
@@ -134,7 +134,7 @@
         
         func GetWorkingDirectory() : string;
         event WorkingDirectoryChanged();
-        prop WorkingDirectory : string {GetWorkingDirectory : WorkingDirectoryChanged};
+        prop WorkingDirectory : string {GetWorkingDirectory : WorkingDirectoryChanged}
         
         func GetProjectFactory(id : string) : IProjectFactoryModel^;
         func GetFileFactory(id : string) : IFileFactoryModel^;
@@ -146,7 +146,7 @@
         func CloseSolution() : void;
         func AddNewProject(createNewSolution : bool, projectFactory : IProjectFactoryModel^, projectName : string, solutionDirectory : string, solutionName : string) : IProjectModel^;
         func AddNewFile(action : IAddFileItemAction^, fileFactory : IFileFactoryModel^, fileDirectory : string, fileName : string) : IFileModel^;
-        func AddExistingFiles(action : IAddFileItemAction^, files : IStudioFileRefernces^{}) : void;
+        func AddExistingFiles(action : IAddFileItemAction^, files : IStudioFileReference^{}) : void;
         func RenameFile(action : IRenameItemAction^, solutionItem : ISolutionItemModel^, newName : string) : void;
         func RemoveFile(action : IRemoveItemAction^, solutionItem : ISolutionItemModel^) : void;
         

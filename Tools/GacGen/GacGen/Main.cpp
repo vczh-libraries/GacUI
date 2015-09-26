@@ -247,11 +247,14 @@ protected:
 
 		FOREACH(Ptr<ParsingError>, error, schemaManager->errors)
 		{
-			PrintErrorMessage(
-				L"Schema: " + schemaPathMap[error->codeRange.codeIndex] +
-				L", Row: " + itow(error->codeRange.start.row + 1) +
-				L", Column: " + itow(error->codeRange.start.column + 1) +
-				L", Message: " + error->errorMessage);
+			if (schemaPathMap.Keys().Contains(error->codeRange.codeIndex))
+			{
+				PrintErrorMessage(
+					L"Schema: " + schemaPathMap[error->codeRange.codeIndex] +
+					L", Row: " + itow(error->codeRange.start.row + 1) +
+					L", Column: " + itow(error->codeRange.start.column + 1) +
+					L", Message: " + error->errorMessage);
+			}
 		}
 		return true;
 	}
