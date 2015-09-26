@@ -12,6 +12,7 @@ void WriteGlobalHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<In
 	writer.WriteLine(L"#ifndef VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->cppOutput->name);
 	writer.WriteLine(L"#define VCZH_GACUI_RESOURCE_CODE_GENERATOR_" + config->cppOutput->name);
 	writer.WriteLine(L"");
+	writer.WriteLine(L"#include \"" + config->cppOutput->GetPartialClassHeaderFileName() + L"\"");
 	FOREACH(Ptr<Instance>, instance, instances.Values())
 	{
 		if (instance->context->codeBehind)
