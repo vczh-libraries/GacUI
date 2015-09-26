@@ -26,11 +26,24 @@ void WriteControlClassHeaderCtor(Ptr<CodegenConfig> config, Ptr<Instance> instan
 	writer.WriteLine(L");");
 }
 
+void WriteControlClassHeaderDtor(Ptr<CodegenConfig> config, Ptr<Instance> instance, const WString& prefix, StreamWriter& writer)
+{
+	writer.WriteLine(prefix + L"~" + instance->typeName + L"();");
+}
+
 void WriteControlClassCppCtor(Ptr<CodegenConfig> config, Ptr<Instance> instance, const WString& prefix, StreamWriter& writer)
 {
 	writer.WriteString(prefix + instance->typeName + L"::" + instance->typeName + L"(");
 	WriteControlClassHeaderCtorArgs(config, instance, writer);
 	writer.WriteLine(L")");
+}
+
+void WriteControlClassCppDtor(Ptr<CodegenConfig> config, Ptr<Instance> instance, const WString& prefix, StreamWriter& writer)
+{
+	writer.WriteLine(prefix + instance->typeName + L"::!" + instance->typeName + L"()");
+	writer.WriteLine(prefix + L"{");
+	writer.WriteLine(prefix + L"\tClearSubscriptions();");
+	writer.WriteLine(prefix + L"}");
 }
 
 void WriteControlClassCppInit(Ptr<CodegenConfig> config, Ptr<Instance> instance, const WString& prefix, StreamWriter& writer)
@@ -67,6 +80,7 @@ void WriteControlClassHeaderFileContent(Ptr<CodegenConfig> config, Ptr<Instance>
 	WriteControlClassHeaderFileEventHandlers(config, instance, prefix, writer);
 	writer.WriteLine(prefix + L"public:");
 	WriteControlClassHeaderCtor(config, instance, prefix + L"\t" , writer);
+	WriteControlClassHeaderDtor(config, instance, prefix + L"\t" , writer);
 	writer.WriteLine(prefix + L"};");
 	WriteNamespaceStop(currentNamespaces, writer);
 	writer.WriteLine(L"");
@@ -84,6 +98,8 @@ void WriteControlClassCppFileContent(Ptr<CodegenConfig> config, Ptr<Instance> in
 	writer.WriteLine(prefix + L"{");
 	WriteControlClassCppInit(config, instance, prefix + L"\t", writer);
 	writer.WriteLine(prefix + L"}");
+	writer.WriteLine(L"");
+	WriteControlClassCppDtor(config, instance, prefix, writer);
 	WriteNamespaceStop(currentNamespaces, writer);
 	writer.WriteLine(L"");
 }
