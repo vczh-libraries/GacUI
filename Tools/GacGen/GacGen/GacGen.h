@@ -13,6 +13,7 @@ using namespace vl::parsing::tabling;
 using namespace vl::parsing::xml;
 using namespace vl::workflow;
 using namespace vl::workflow::analyzer;
+using namespace vl::workflow::runtime;
 
 /***********************************************************************
 Console

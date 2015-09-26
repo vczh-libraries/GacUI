@@ -99,7 +99,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 				}
 				else if (auto eventDecl = member->declaration.Cast<WfEventDeclaration>())
 				{
-					auto info = schemaManager->declarationMemberInfos[funcDecl.Obj()].Cast<IEventInfo>();
+					auto info = schemaManager->declarationMemberInfos[eventDecl.Obj()].Cast<IEventInfo>();
 					writer.WriteString(prefix + L"\tvl::Event<void(");
 					auto funcType = info->GetHandlerType()->GetElementType();
 					vint count = funcType->GetGenericArgumentCount();
@@ -436,7 +436,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 				}
 				else if (auto eventDecl = member->declaration.Cast<WfEventDeclaration>())
 				{
-					auto info = schemaManager->declarationMemberInfos[funcDecl.Obj()].Cast<IEventInfo>();
+					auto info = schemaManager->declarationMemberInfos[eventDecl.Obj()].Cast<IEventInfo>();
 					writer.WriteLine(prefix + L"\tCLASS_MEMBER_EVENT(" + info->GetName() + L")");
 				}
 			}

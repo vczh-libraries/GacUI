@@ -92,7 +92,7 @@
         prop CurrentFileName : string {GetCurrentFileName}
         
         func GetFilteredFileFactories() : ObservableList^;
-        prop FilteredFileFactories : ObservableList {GetFilteredFileFactories}
+        prop FilteredFileFactories : ObservableList^ {GetFilteredFileFactories}
         
         func AddFiles(fileNames: string{}) : void;
         func RemoveFiles(indices : int{}) : void;

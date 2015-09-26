@@ -1100,9 +1100,7 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorDeclaration = node;
-					{
-						symbol->type = node->type;
-					}
+					symbol->type = node->type;
 					parentScope->symbols.Add(symbol->name, symbol);
 
 					BuildScopeForExpression(manager, parentScope, node->expression);
@@ -1121,6 +1119,7 @@ BuildScopeForDeclaration
 					Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(parentScope.Obj());
 					symbol->name = node->name.value;
 					symbol->creatorDeclaration = node;
+					symbol->type = node->type;
 					parentScope->symbols.Add(symbol->name, symbol);
 				}
 
@@ -1823,6 +1822,10 @@ CompleteScopeForDeclaration
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						CompleteScopeForDeclaration(manager, decl);
+					}
 				}
 
 				void Visit(WfFunctionDeclaration* node)override
@@ -4413,6 +4416,10 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						GenerateInitializeInstructions(context, decl);
+					}
 				}
 
 				void Visit(WfFunctionDeclaration* node)override
@@ -4606,6 +4613,10 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
+					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					{
+						GenerateDeclarationInstructions(context, decl);
+					}
 				}
 
 				void Visit(WfFunctionDeclaration* node)override

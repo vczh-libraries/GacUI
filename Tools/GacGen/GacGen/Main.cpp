@@ -232,6 +232,7 @@ private:
 
 public:
 	Ptr<WfLexicalScopeManager>						schemaManager;
+	Ptr<WfAssembly>									assembly;
 	Dictionary<WString, Ptr<WfClassDeclaration>>	typeSchemas;
 	List<WString>									typeSchemaOrder;
 	Dictionary<WString, Ptr<Instance>>				instances;
@@ -291,6 +292,7 @@ public:
 					schemaManager->Rebuild(false);
 					if (!HasSchemaError(schemaPathMap))
 					{
+						assembly = GenerateAssembly(schemaManager.Obj());
 						List<Ptr<WfDeclaration>> decls;
 						CopyFrom(
 							decls,
@@ -333,6 +335,10 @@ public:
 
 	void Load(ITypeManager* manager)
 	{
+		if (assembly && assembly->typeImpl)
+		{
+			assembly->typeImpl->Load(manager);
+		}
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
 			if (instance->context->className && instance->baseType)
@@ -345,6 +351,18 @@ public:
 
 	void Unload(ITypeManager* manager)
 	{
+		if (assembly && assembly->typeImpl)
+		{
+			assembly->typeImpl->Unload(manager);
+		}
+		FOREACH(Ptr<Instance>, instance, instances.Values())
+		{
+			if (instance->context->className && instance->baseType)
+			{
+				Ptr<ITypeDescriptor> typeDescriptor = new InstanceTypeDescriptor(this, instance->baseType, instance->context);
+				manager->SetTypeDescriptor(typeDescriptor->GetTypeName(), nullptr);
+			}
+		}
 	}
 };
 
@@ -429,4 +447,5 @@ void GuiMain()
 			resource->SavePrecompiledBinary(encoderStream);
 		}
 	}
+	GetGlobalTypeManager()->RemoveTypeLoader(typeLoader);
 }
