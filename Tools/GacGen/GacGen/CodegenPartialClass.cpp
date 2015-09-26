@@ -1,10 +1,21 @@
 #include "GacGen.h"
 
+WString SplitSchemaName(WString typeName, List<WString>& namespaces)
+{
+	auto reading = typeName.Buffer();
+	while (auto split = wcsstr(reading, L"::"))
+	{
+		namespaces.Add(WString(reading, split - reading));
+		reading = split + 2;
+	}
+	return reading;
+}
+
 /***********************************************************************
-Codegen::PartialClass
+Codegen::PartialClassHeader
 ***********************************************************************/
 
-void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManager> schemaManager, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
+void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManager> schemaManager, Dictionary<WString, Ptr<WfClassDeclaration>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
 {
 	WString fileName = config->cppOutput->output + config->cppOutput->GetPartialClassHeaderFileName();
 	OPEN_FILE_WITH_COMMENT(L"Partial Classes", true);
@@ -19,23 +30,10 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 	
 	FOREACH(WString, typeSchemaName, typeSchemaOrder)
 	{
-		auto instance = typeSchemas[typeSchemaName];
-		WString prefix = WriteNamespace(currentNamespaces, instance->namespaces, writer);
-		if (auto data = instance->schema.Cast<GuiInstanceDataSchema>())
-		{
-			if (data->referenceType)
-			{
-				writer.WriteLine(prefix + L"class " + instance->typeName + L";");
-			}
-			else
-			{
-				writer.WriteLine(prefix + L"struct " + instance->typeName + L";");
-			}
-		}
-		else if (auto itf = instance->schema.Cast<GuiInstanceInterfaceSchema>())
-		{
-			writer.WriteLine(prefix + L"class " + instance->typeName + L";");
-		}
+		List<WString> namespaces;
+		auto typeName = SplitSchemaName(typeSchemaName, namespaces);
+		WString prefix = WriteNamespace(currentNamespaces, namespaces, writer);
+		writer.WriteLine(prefix + L"class " + typeName + L";");
 	}
 	FOREACH(Ptr<Instance>, instance, instances.Values())
 	{
@@ -46,68 +44,78 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 
 	FOREACH(WString, typeSchemaName, typeSchemaOrder)
 	{
-		auto instance = typeSchemas[typeSchemaName];
-		WString prefix = WriteNamespace(currentNamespaces, instance->namespaces, writer);
-		if (auto data = instance->schema.Cast<GuiInstanceDataSchema>())
+		List<WString> namespaces;
+		auto typeName = SplitSchemaName(typeSchemaName, namespaces);
+		WString prefix = WriteNamespace(currentNamespaces, namespaces, writer);
+		auto classDecl = typeSchemas[typeName];
+		auto td = schemaManager->declarationTypes[classDecl.Obj()];
+
+		writer.WriteString(prefix + L"class " + typeName);
 		{
-			if (data->referenceType)
+			auto baseCount = td->GetBaseTypeDescriptorCount();
+			if (baseCount == 0)
 			{
-				WString parent = data->parentType == L"" ? L"vl::Object" : data->parentType;
-				writer.WriteLine(prefix + L"class " + instance->typeName + L" : public " + parent + L", public vl::reflection::Description<" + instance->typeName + L">");
+				writer.WriteString(L" : public virtual vl::reflection::IDescriptable");
 			}
 			else
 			{
-				writer.WriteLine(prefix + L"struct " + instance->typeName);
-			}
-			writer.WriteLine(prefix + L"{");
-			if (data->referenceType)
-			{
-				writer.WriteLine(prefix + L"public:");
-			}
-			FOREACH(Ptr<GuiInstancePropertySchame>, prop, data->properties)
-			{
-				writer.WriteLine(prefix + L"\t" + GetCppTypeNameFromWorkflowType(config, prop->typeName) + L" " + prop->name + L";");
-			}
-			writer.WriteLine(prefix + L"};");
-		}
-		else if (auto itf = instance->schema.Cast<GuiInstanceInterfaceSchema>())
-		{
-			WString parent = itf->parentType == L"" ? L"vl::reflection::IDescriptable" : itf->parentType;
-			writer.WriteLine(prefix + L"class " + instance->typeName + L" : public virtual " + parent + L", public vl::reflection::Description<" + instance->typeName + L">");
-			writer.WriteLine(prefix + L"{");
-			writer.WriteLine(prefix + L"public:");
-			FOREACH(Ptr<GuiInstancePropertySchame>, prop, itf->properties)
-			{
-				writer.WriteLine(L"");
-				writer.WriteLine(prefix + L"\tvirtual " + GetCppTypeNameFromWorkflowType(config, prop->typeName) + L" Get" + prop->name + L"() = 0;");
-				if (!prop->readonly)
+				for (vint i = 0; i < baseCount; i++)
 				{
-					writer.WriteLine(prefix + L"\tvirtual void Set" + prop->name + L"(" + GetCppTypeNameFromWorkflowType(config, prop->typeName) + L" value) = 0;");
-				}
-				if (prop->observable)
-				{
-					writer.WriteLine(prefix + L"\tvl::Event<void()> " + prop->name + L"Changed;");
-				}
-			}
-			if (itf->methods.Count() > 0)
-			{
-				writer.WriteLine(L"");
-				FOREACH(Ptr<GuiInstanceMethodSchema>, method, itf->methods)
-				{
-					writer.WriteString(prefix + L"\tvirtual " + GetCppTypeNameFromWorkflowType(config, method->returnType) + L" " + method->name + L"(");
-					FOREACH_INDEXER(Ptr<GuiInstancePropertySchame>, argument, index, method->arguments)
+					if (i == 0)
 					{
-						if (index > 0)
+						writer.WriteString(L" : public virtual ");
+					}
+					else
+					{
+						writer.WriteString(L", public virtual ");
+					}
+					writer.WriteString(td->GetBaseTypeDescriptor(i)->GetTypeName());
+				}
+			}
+		}
+		writer.WriteLine(L", public vl::reflection::Description<" + typeName + L">");
+		writer.WriteLine(prefix + L"{");
+		writer.WriteLine(prefix + L"public:");
+
+		FOREACH(Ptr<WfClassMember>, member, classDecl->members)
+		{
+			if (member->kind == WfClassMemberKind::Normal)
+			{
+				if (auto funcDecl = member->declaration.Cast<WfFunctionDeclaration>())
+				{
+					auto info = schemaManager->declarationMemberInfos[funcDecl.Obj()].Cast<IMethodInfo>();
+					writer.WriteString(prefix + L"\tvirtual " + GetCppTypeFromTypeInfo(info->GetReturn()) + L" " + info->GetName() + L"(");
+					vint count = info->GetParameterCount();
+					for (vint i = 0; i < count; i++)
+					{
+						if (i > 0)
 						{
 							writer.WriteString(L", ");
 						}
-						writer.WriteString(GetCppTypeNameFromWorkflowType(config, argument->typeName) + L" " + argument->name);
+						auto paramInfo = info->GetParameter(i);
+						writer.WriteString(GetCppTypeFromTypeInfo(paramInfo->GetType()) + L" " + paramInfo->GetName());
 					}
 					writer.WriteLine(L") = 0;");
 				}
+				else if (auto eventDecl = member->declaration.Cast<WfEventDeclaration>())
+				{
+					auto info = schemaManager->declarationMemberInfos[funcDecl.Obj()].Cast<IEventInfo>();
+					writer.WriteString(prefix + L"\tvl::Event<void(");
+					auto funcType = info->GetHandlerType()->GetElementType();
+					vint count = funcType->GetGenericArgumentCount();
+					for (vint i = 1; i < count; i++)
+					{
+						if (i > 1)
+						{
+							writer.WriteString(L", ");
+						}
+						writer.WriteString(GetCppTypeFromTypeInfo(funcType->GetGenericArgument(i)));
+					}
+					writer.WriteLine(L")> " + info->GetName() + L";");
+				}
 			}
-			writer.WriteLine(prefix + L"};");
 		}
+		writer.WriteLine(prefix + L"};");
 		writer.WriteLine(L"");
 	}
 
@@ -312,9 +320,9 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 		FillReflectionNamespaces(ns);
 		WString prefix = WriteNamespace(currentNamespaces, ns, writer);
 
-		FOREACH(Ptr<InstanceSchema>, instance, typeSchemas.Values())
+		FOREACH(WString, typeName, typeSchemaOrder)
 		{
-			writer.WriteLine(prefix + L"DECL_TYPE_INFO(" + instance->GetFullName() + L")");
+			writer.WriteLine(prefix + L"DECL_TYPE_INFO(" + typeName + L")");
 		}
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
@@ -338,7 +346,11 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 	writer.WriteLine(L"#endif");
 }
 
-void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManager> schemaManager, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
+/***********************************************************************
+Codegen::PartialClassCpp
+***********************************************************************/
+
+void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManager> schemaManager, Dictionary<WString, Ptr<WfClassDeclaration>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances)
 {
 	WString fileName = config->cppOutput->output + config->cppOutput->GetPartialClassCppFileName();
 	OPEN_FILE_WITH_COMMENT(L"Partial Classes", true);
