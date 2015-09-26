@@ -40,7 +40,7 @@ void WriteControlClassCppCtor(Ptr<CodegenConfig> config, Ptr<Instance> instance,
 
 void WriteControlClassCppDtor(Ptr<CodegenConfig> config, Ptr<Instance> instance, const WString& prefix, StreamWriter& writer)
 {
-	writer.WriteLine(prefix + instance->typeName + L"::!" + instance->typeName + L"()");
+	writer.WriteLine(prefix + instance->typeName + L"::~" + instance->typeName + L"()");
 	writer.WriteLine(prefix + L"{");
 	writer.WriteLine(prefix + L"\tClearSubscriptions();");
 	writer.WriteLine(prefix + L"}");
