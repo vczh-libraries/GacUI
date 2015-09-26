@@ -1846,7 +1846,18 @@ CompleteScopeForDeclaration
 
 				void Visit(WfClassDeclaration* node)override
 				{
+					auto scope = manager->declarationScopes[node];
 					auto td = manager->declarationTypes[node].Cast<WfCustomType>();
+					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+					{
+						if (auto scopeName = GetScopeNameFromReferenceType(scope.Obj(), baseType))
+						{
+							if (scopeName->typeDescriptor)
+							{
+								td->AddBaseType(scopeName->typeDescriptor);
+							}
+						}
+					}
 					FOREACH(Ptr<WfClassMember>, member, node->members)
 					{
 						CompleteScopeForClassMember(manager, td, node, member);
@@ -2383,6 +2394,11 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::PropertySetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl)
 			{
 				return new ParsingError(node, L"G5: Cannot match the setter \"" + node->getter.value + L"\" of property \"" + node->name.value + L"\" in type \"" + classDecl->name.value + L"\". A property setter should have no return value and have only one argument, and the argument type should be identical to the property type.");
+			}
+
+			Ptr<parsing::ParsingError> WfErrors::WrongBaseType(WfClassDeclaration* node, WfType* type)
+			{
+				return new ParsingError(node, L"G6: A base type of the type \"" + node->name.value + L"\" should be another custom type, it cannot be any predefined type, pointer type, shared pointer type, nullable type, collection type, or function type");
 			}
 		}
 	}
@@ -10725,11 +10741,6 @@ ValidateStructure(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfType>, type, node->baseTypes)
-					{
-						ValidateTypeStructure(manager, type);
-					}
-
 					switch (node->kind)
 					{
 					case WfClassKind::Class:
@@ -10740,6 +10751,33 @@ ValidateStructure(Declaration)
 							}
 						}
 						break;
+					}
+
+					FOREACH(Ptr<WfType>, type, node->baseTypes)
+					{
+						ValidateTypeStructure(manager, type);
+
+						WfType* currentType = type.Obj();
+						while (currentType)
+						{
+							if (auto tqType = dynamic_cast<WfTopQualifiedType*>(currentType))
+							{
+								currentType = nullptr;
+							}
+							else if (auto refType = dynamic_cast<WfReferenceType*>(currentType))
+							{
+								currentType = nullptr;
+							}
+							else if (auto childType = dynamic_cast<WfChildType*>(currentType))
+							{
+								currentType = childType->parent.Obj();
+							}
+							else
+							{
+								manager->errors.Add(WfErrors::WrongBaseType(node, type.Obj()));
+								break;
+							}
+						}
 					}
 
 					FOREACH(Ptr<WfClassMember>, member, node->members)
