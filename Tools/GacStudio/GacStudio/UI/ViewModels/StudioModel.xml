@@ -55,7 +55,7 @@
         func GetId() : string;
         prop Id : string {GetId}
         
-        func GetChildren() : IProjectFactoryModel^;
+        func GetChildren() : IProjectFactoryModel^{};
         prop Children : IProjectFactoryModel^{} {GetChildren}
       }
       
@@ -103,13 +103,13 @@
         func GetProjectFactories() : IProjectFactoryModel^{};
         prop ProjectFactories : IProjectFactoryModel^{} {GetProjectFactories}
         
-        func GetFileFactories() : IFileFactoryModel^;
+        func GetFileFactories() : IFileFactoryModel^{};
         prop FileFactories : IFileFactoryModel^{} {GetFileFactories}
         
-        func GetContentFactories() : IEditorContentFactoryModel^;
+        func GetContentFactories() : IEditorContentFactoryModel^{};
         prop ContentFactories : IEditorContentFactoryModel^{} {GetContentFactories}
         
-        func GetEditorFactories() : IEditorFactoryModel^;
+        func GetEditorFactories() : IEditorFactoryModel^{};
         prop EditorFactories : IEditorFactoryModel^{} {GetEditorFactories}
         
         func CreateNewFileModel() : IStudioNewFileModel^;
