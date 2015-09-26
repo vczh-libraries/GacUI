@@ -3629,9 +3629,9 @@ Resource Type Resolver
 		/// <summary>
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
-		///			Pass 0: <Script>	(collect workflow scripts)
-		///			Pass 1: <Script>	(compile collected workflow scripts)
-		///			Pass 2: <Instance>
+		///			Pass 0: Script		(collect workflow scripts)
+		///			Pass 1: Script		(compile collected workflow scripts)
+		///			Pass 2: Instance
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
 		{
@@ -3736,7 +3736,7 @@ Resource Resolver Manager
 			/// <param name="resolver">The resolver.</param>
 			virtual bool										SetTypeResolver(Ptr<IGuiResourceTypeResolver> resolver) = 0;
 			/// <summary>Get the maximum precompiling pass index.</summary>
-			/// <returns>The maximum precompiling pass index.<.returns>
+			/// <returns>The maximum precompiling pass index.</returns>
 			virtual vint										GetMaxPrecompilePassIndex() = 0;
 			/// <summary>Get the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
 			/// <returns>The resolver.</returns>
