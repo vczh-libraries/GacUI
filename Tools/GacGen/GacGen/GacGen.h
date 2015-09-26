@@ -38,15 +38,6 @@ struct Instance
 	WString										GetFullName();
 };
 
-struct InstanceSchema
-{
-	List<WString>								namespaces;
-	WString										typeName;
-	Ptr<GuiInstanceTypeSchema>					schema;
-
-	WString										GetFullName();
-};
-
 class CodegenConfig
 {
 public:
@@ -108,7 +99,7 @@ Search
 ***********************************************************************/
 
 void											SearchAllFields(Ptr<GuiInstanceEnvironment> env, Ptr<GuiInstanceContext> context, Dictionary<WString, GuiConstructorRepr*>& fields);
-void											SearchAllSchemas(const Regex& regexClassName, Ptr<GuiResourceFolder> folder, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder);
+void											SearchAllSchemas(const Regex& regexClassName, Ptr<GuiResourceFolder> folder, List<WString>& schemaPaths, List<Ptr<GuiInstanceSharedScript>>& schemas);
 void											SearchAllInstances(const Regex& regexClassName, Ptr<GuiResourcePathResolver> resolver, Ptr<GuiResourceFolder> folder, Dictionary<WString, Ptr<Instance>>& instances);
 void											SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Ptr<GuiInstanceEnvironment> env, Dictionary<WString, ITypeDescriptor*>& eventHandlers);
 
@@ -186,8 +177,8 @@ void											WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance>
 Codegen::PartialClass
 ***********************************************************************/
 
-void											WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances);
-void											WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances);
+void											WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<WfClassDeclaration>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances);
+void											WritePartialClassCppFile(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<WfClassDeclaration>>& typeSchemas, List<WString>& typeSchemaOrder, Dictionary<WString, Ptr<Instance>>& instances);
 
 /***********************************************************************
 Codegen::GlobalHeader

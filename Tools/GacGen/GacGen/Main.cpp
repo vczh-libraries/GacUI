@@ -25,14 +25,9 @@ public:
 class ResourceMockTypeLoader : public Object, public ITypeLoader
 {
 protected:
-	Ptr<GuiResource>							resource;
-	Ptr<CodegenConfig>							config;
-	Regex										regexClassName;
-
-public:
-	Dictionary<WString, Ptr<InstanceSchema>>	typeSchemas;
-	List<WString>								typeSchemaOrder;
-	Dictionary<WString, Ptr<Instance>>			instances;
+	Ptr<GuiResource>								resource;
+	Ptr<CodegenConfig>								config;
+	Regex											regexClassName;
 
 private:
 
@@ -141,210 +136,6 @@ private:
 		}
 	};
 
-	class ClassTypeDescriptor : public TypeDescriptorImpl
-	{
-	protected:
-		ResourceMockTypeLoader*					loader;
-		Ptr<GuiInstanceDataSchema>				schema;
-
-		void LoadInternal()override
-		{
-			FOREACH(Ptr<GuiInstancePropertySchame>, prop, schema->properties)
-			{
-				if (!IsPropertyExists(prop->name, false))
-				{
-					if (auto type = GetTypeInfoFromWorkflowType(loader->config, prop->typeName))
-					{
-						AddProperty(new FieldInfo(this, prop->name, type));
-					}
-				}
-			}
-
-			auto descriptorType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-			descriptorType->SetTypeDescriptor(this);
-
-			auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
-			pointerType->SetElementType(descriptorType);
-
-			AddConstructor(new ConstructorInfo(pointerType));
-		}
-
-	public:
-		ClassTypeDescriptor(ResourceMockTypeLoader* _loader, Ptr<GuiInstanceDataSchema> _schema)
-			:TypeDescriptorImpl(_schema->typeName, _schema->typeName)
-			, loader(_loader)
-			, schema(_schema)
-		{
-		}
-	};
-
-	class StructTypeDescriptor : public TypeDescriptorImpl
-	{
-	private:
-
-		class Serializer : public Object, public virtual IValueSerializer
-		{
-		protected:
-			StructTypeDescriptor*				ownerTypeDescriptor;
-
-		public:
-			Serializer(StructTypeDescriptor* _ownerTypeDescriptor)
-				:ownerTypeDescriptor(_ownerTypeDescriptor)
-			{
-			}
-
-			ITypeDescriptor* GetOwnerTypeDescriptor()override
-			{
-				return ownerTypeDescriptor;
-			}
-
-			bool Validate(const WString& text)override
-			{
-				return false;
-			}
-
-			bool Parse(const WString& input, Value& output)override
-			{
-				return false;
-			}
-
-			WString GetDefaultText()override
-			{
-				return L"";
-			}
-
-			bool HasCandidate()override
-			{
-				return false;
-			}
-
-			vint GetCandidateCount()override
-			{
-				return 0;
-			}
-
-			WString GetCandidate(vint index)override
-			{
-				return L"";
-			}
-
-			bool CanMergeCandidate()override
-			{
-				return false;
-			}
-		};
-
-	protected:
-		ResourceMockTypeLoader*					loader;
-		Ptr<GuiInstanceDataSchema>				schema;
-		Ptr<IValueSerializer>					serializer;
-
-		void LoadInternal()override
-		{
-			FOREACH(Ptr<GuiInstancePropertySchame>, prop, schema->properties)
-			{
-				if (!IsPropertyExists(prop->name, false))
-				{
-					if (auto type = GetTypeInfoFromWorkflowType(loader->config, prop->typeName))
-					{
-						AddProperty(new FieldInfo(this, prop->name, type));
-					}
-				}
-			}
-		}
-
-	public:
-		StructTypeDescriptor(ResourceMockTypeLoader* _loader, Ptr<GuiInstanceDataSchema> _schema)
-			:TypeDescriptorImpl(_schema->typeName, _schema->typeName)
-			, loader(_loader)
-			, schema(_schema)
-		{
-			serializer = new Serializer(this);
-		}
-
-		IValueSerializer* GetValueSerializer()override
-		{
-			return serializer.Obj();
-		}
-	};
-
-	class InterfaceTypeDescriptor : public TypeDescriptorImpl
-	{
-	protected:
-		ResourceMockTypeLoader*					loader;
-		Ptr<GuiInstanceInterfaceSchema>			schema;
-
-		void LoadInternal()override
-		{
-			auto voidType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-			voidType->SetTypeDescriptor(description::GetTypeDescriptor<void>());
-
-			if (schema->parentType != L"")
-			{
-				if (auto td = description::GetTypeDescriptor(schema->parentType))
-				{
-					AddBaseType(td);
-				}
-			}
-
-			FOREACH(Ptr<GuiInstancePropertySchame>, prop, schema->properties)
-			{
-				if (!IsPropertyExists(prop->name, false))
-				{
-					if (auto type = GetTypeInfoFromWorkflowType(loader->config, prop->typeName))
-					{
-						auto eventInfo = prop->observable ? MakePtr<EventInfo>(this, prop->name + L"Changed") : nullptr;
-						auto getter = MakePtr<MethodInfo>(type);
-						auto setter = prop->readonly ? nullptr : MakePtr<MethodInfo>(voidType);
-						if (setter)
-						{
-							auto parameterInfo = new ParameterInfoImpl(setter.Obj(), L"value", type);
-							setter->AddParameter(parameterInfo);
-						}
-						auto propInfo = MakePtr<PropertyInfoImpl>(this, prop->name, getter.Obj(), setter.Obj(), eventInfo.Obj());
-
-						if (eventInfo)
-						{
-							AddEvent(eventInfo);
-						}
-						AddMethod(L"Get" + prop->name, getter);
-						if (setter)
-						{
-							AddMethod(L"Set" + prop->name, setter);
-						}
-						AddProperty(propInfo);
-					}
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceMethodSchema>, method, schema->methods)
-			{
-				auto returnType = GetTypeInfoFromWorkflowType(loader->config, method->returnType);
-				if (!returnType) returnType = voidType;
-
-				auto methodInfo = MakePtr<MethodInfo>(returnType);
-				FOREACH(Ptr<GuiInstancePropertySchame>, argument, method->arguments)
-				{
-					if (auto type = GetTypeInfoFromWorkflowType(loader->config, argument->typeName))
-					{
-						auto parameterInfo = new ParameterInfoImpl(methodInfo.Obj(), argument->name, type);
-						methodInfo->AddParameter(parameterInfo);
-					}
-				}
-
-				AddMethod(method->name, methodInfo);
-			}
-		}
-
-	public:
-		InterfaceTypeDescriptor(ResourceMockTypeLoader* _loader, Ptr<GuiInstanceInterfaceSchema> _schema)
-			:TypeDescriptorImpl(_schema->typeName, _schema->typeName)
-			, loader(_loader)
-			, schema(_schema)
-		{
-		}
-	};
-
 	class InstanceTypeDescriptor : public TypeDescriptorImpl
 	{
 	protected:
@@ -440,14 +231,94 @@ private:
 	};
 
 public:
+	Ptr<WfLexicalScopeManager>						schemaManager;
+	Dictionary<WString, Ptr<WfClassDeclaration>>	typeSchemas;
+	List<WString>									typeSchemaOrder;
+	Dictionary<WString, Ptr<Instance>>				instances;
+
+protected:
+
+	bool HasSchemaError(Dictionary<vint, WString>& schemaPathMap)
+	{
+		if (schemaManager->errors.Count() == 0)
+		{
+			return false;
+		}
+
+		FOREACH(Ptr<ParsingError>, error, schemaManager->errors)
+		{
+			PrintErrorMessage(
+				L"Schema: " + schemaPathMap[error->codeRange.codeIndex] +
+				L", Row: " + itow(error->codeRange.start.row + 1) +
+				L", Column: " + itow(error->codeRange.start.column + 1) +
+				L", Message: " + error->errorMessage);
+		}
+		return true;
+	}
+
+public:
 	ResourceMockTypeLoader(Ptr<GuiResource> _resource, Ptr<CodegenConfig> _config)
 		:resource(_resource)
 		, config(_config)
 		, regexClassName(L"((<namespace>[^:]+)::)*(<type>[^:]+)")
 	{
 		Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
+		{
+			List<WString> schemaPaths;
+			List<Ptr<GuiInstanceSharedScript>> schemas;
+			Dictionary<vint, WString> schemaPathMap;
+			SearchAllSchemas(regexClassName, resource, schemaPaths, schemas);
 
-		SearchAllSchemas(regexClassName, resource, typeSchemas, typeSchemaOrder);
+			if (schemas.Count() > 0)
+			{
+				if (!config->workflowTable)
+				{
+					config->workflowTable = WfLoadTable();
+				}
+				schemaManager = new WfLexicalScopeManager(config->workflowTable);
+
+				FOREACH_INDEXER(Ptr<GuiInstanceSharedScript>, schema, schemaIndex, schemas)
+				{
+					vint codeIndex = schemaManager->AddModule(schema->code);
+					schemaPathMap.Add(codeIndex, schemaPaths[schemaIndex]);
+				}
+
+				if (!HasSchemaError(schemaPathMap))
+				{
+					schemaManager->Rebuild(false);
+					if (!HasSchemaError(schemaPathMap))
+					{
+						List<Ptr<WfDeclaration>> decls;
+						CopyFrom(
+							decls,
+							From(schemaManager->GetModules())
+								.SelectMany([](Ptr<WfModule> module)
+								{
+									return LazyList<Ptr<WfDeclaration>>(module->declarations);
+								})
+							);
+						for (vint i = 0; i < decls.Count(); i++)
+						{
+							auto decl = decls[i];
+							if (auto nsDecl = decl.Cast<WfNamespaceDeclaration>())
+							{
+								CopyFrom(decls, nsDecl->declarations, true);
+							}
+							else if (auto classDecl = decl.Cast<WfClassDeclaration>())
+							{
+								if (classDecl->kind == WfClassKind::Interface)
+								{
+									auto td = schemaManager->declarationTypes[classDecl.Obj()];
+									auto typeName = td->GetTypeName();
+									typeSchemas.Add(typeName, classDecl);
+									typeSchemaOrder.Add(typeName);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		SearchAllInstances(regexClassName, resolver, resource, instances);
 
 		FOREACH(Ptr<Instance>, instance, instances.Values())
@@ -459,27 +330,6 @@ public:
 
 	void Load(ITypeManager* manager)
 	{
-		FOREACH(Ptr<InstanceSchema>, schema, typeSchemas.Values())
-		{
-			Ptr<ITypeDescriptor> typeDescriptor;
-			if (auto dataType = schema->schema.Cast<GuiInstanceDataSchema>())
-			{
-				if (dataType->referenceType)
-				{
-					typeDescriptor = new ClassTypeDescriptor(this, dataType);
-				}
-				else
-				{
-					typeDescriptor = new StructTypeDescriptor(this, dataType);
-				}
-			}
-			else if (auto interfaceType = schema->schema.Cast<GuiInstanceInterfaceSchema>())
-			{
-				typeDescriptor = new InterfaceTypeDescriptor(this, interfaceType);
-			}
-			manager->SetTypeDescriptor(typeDescriptor->GetTypeName(), typeDescriptor);
-		}
-
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
 			if (instance->context->className && instance->baseType)

@@ -59,44 +59,22 @@ void SearchAllFields(Ptr<GuiInstanceEnvironment> env, Ptr<GuiInstanceContext> co
 SearchAllSchemas
 ***********************************************************************/
 
-void SearchAllSchemas(const Regex& regexClassName, Ptr<GuiResourceFolder> folder, Dictionary<WString, Ptr<InstanceSchema>>& typeSchemas, List<WString>& typeSchemaOrder)
+void SearchAllSchemas(const Regex& regexClassName, Ptr<GuiResourceFolder> folder, List<WString>& schemaPaths, List<Ptr<GuiInstanceSharedScript>>& schemas)
 {
 	FOREACH(Ptr<GuiResourceItem>, item, folder->GetItems())
 	{
-		auto schema = item->GetContent().Cast<GuiInstanceSchema>();
-		if (!schema) continue;
-
-		FOREACH(Ptr<GuiInstanceTypeSchema>, typeSchema, schema->schemas)
+		if (auto schema = item->GetContent().Cast<GuiInstanceSharedScript>())
 		{
-			if (typeSchemas.Keys().Contains(typeSchema->typeName)) continue;
-			auto match = regexClassName.MatchHead(typeSchema->typeName);
-			if (!match)
+			if (schema->language == L"Workflow-ViewModel")
 			{
-				PrintErrorMessage(L"Skip code generation for \"" + typeSchema->typeName + L"\" because this type name is illegal.");
-				continue;
+				schemaPaths.Add(item->GetPath());
+				schemas.Add(schema);
 			}
-
-			auto instance = MakePtr<InstanceSchema>();
-			if (match->Groups().Contains(L"namespace"))
-			{
-				CopyFrom(
-					instance->namespaces,
-					From(match->Groups()[L"namespace"])
-						.Select([](const RegexString& str)->WString
-						{
-							return str.Value();
-						})
-					);
-			}
-			instance->typeName = match->Groups()[L"type"][0].Value();
-			instance->schema = typeSchema;
-			typeSchemaOrder.Add(typeSchema->typeName);
-			typeSchemas.Add(typeSchema->typeName, instance);
 		}
 	}
 	FOREACH(Ptr<GuiResourceFolder>, subFolder, folder->GetFolders())
 	{
-		SearchAllSchemas(regexClassName, subFolder, typeSchemas, typeSchemaOrder);
+		SearchAllSchemas(regexClassName, subFolder, schemaPaths, schemas);
 	}
 }
 
