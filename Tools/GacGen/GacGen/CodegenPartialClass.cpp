@@ -320,7 +320,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 		FillReflectionNamespaces(ns);
 		WString prefix = WriteNamespace(currentNamespaces, ns, writer);
 
-		FOREACH(WString, typeName, typeSchemaOrder)
+		FOREACH(WString, typeName, typeSchemas.Keys())
 		{
 			writer.WriteLine(prefix + L"DECL_TYPE_INFO(" + typeName + L")");
 		}
@@ -372,7 +372,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 	WString prefix = WriteNamespace(currentNamespaces, ns, writer);
 	writer.WriteLine(prefix + L"#define _ ,");
 	
-	FOREACH(WString, typeName, typeSchemaOrder)
+	FOREACH(WString, typeName, typeSchemas.Keys())
 	{
 		writer.WriteLine(prefix + L"IMPL_CPP_TYPE_INFO(" + typeName + L")");
 	}
@@ -383,7 +383,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 	writer.WriteLine(L"");
 	
 
-	FOREACH(WString, typeSchemaName, typeSchemaOrder)
+	FOREACH(WString, typeSchemaName, typeSchemas.Keys())
 	{
 		List<WString> namespaces;
 		auto classDecl = typeSchemas[typeSchemaName];
@@ -395,7 +395,6 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 			if (baseCount == 0)
 			{
 				writer.WriteLine(prefix + L"\tCLASS_MEMBER_BASE(vl::reflection::IDescriptable)");
-				writer.WriteString(L" : public virtual ");
 			}
 			else
 			{
@@ -575,7 +574,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 	writer.WriteLine(prefix + L"public:");
 	writer.WriteLine(prefix + L"\tvoid Load(ITypeManager* manager)");
 	writer.WriteLine(prefix + L"\t{");
-	FOREACH(WString, typeName, typeSchemaOrder)
+	FOREACH(WString, typeName, typeSchemas.Keys())
 	{
 		writer.WriteLine(prefix + L"\t\tADD_TYPE_INFO(" + typeName + L")");
 	}

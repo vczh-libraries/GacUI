@@ -65,7 +65,8 @@
         prop FileFilters : IProjectFactoryModel^ {GetFileFilters}
         
         func GetSelectedFileFilter() : IProjectFactoryModel^;
-        prop SelectedFileFilter : IProjectFactoryModel^ {GetSelectedFileFilter}
+        func SetSelectedFileFilter(value : IProjectFactoryModel^) : void;
+        prop SelectedFileFilter : IProjectFactoryModel^ {GetSelectedFileFilter, SetSelectedFileFilter}
         
         func GetFilteredFileFactories() : ObservableList^;
         prop FilteredFileFactories : ObservableList^ {GetFilteredFileFactories}
@@ -89,7 +90,8 @@
         prop SelectedFiles : ObservableList^ {GetSelectedFiles}
         
         func GetCurrentFileName() : string;
-        prop CurrentFileName : string {GetCurrentFileName}
+        func SetCurrentFileName(value : string) : void;
+        prop CurrentFileName : string {GetCurrentFileName, SetCurrentFileName}
         
         func GetFilteredFileFactories() : ObservableList^;
         prop FilteredFileFactories : ObservableList^ {GetFilteredFileFactories}

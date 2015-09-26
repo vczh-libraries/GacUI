@@ -17,8 +17,8 @@
 
           <Cell Site="row:1 column:0" PreferredMinSize="x:24">
             <ImageFrame>
-              <att.Image-bind>(cast (vm::StudioFileReference^) self.RowValue).fileFactory.SmallImage.Image ?? null</att.Image-bind>
-              <att.FrameIndex-bind>(cast (vm::StudioFileReference^) self.RowValue).fileFactory.SmallImage.FrameIndex ?? 0</att.FrameIndex-bind>
+              <att.Image-bind>(cast (vm::IStudioFileReference^) self.RowValue).FileFactory.SmallImage.Image ?? null</att.Image-bind>
+              <att.FrameIndex-bind>(cast (vm::IStudioFileReference^) self.RowValue).FileFactory.SmallImage.FrameIndex ?? 0</att.FrameIndex-bind>
             </ImageFrame>
           </Cell>
 
@@ -76,7 +76,7 @@
       <ref.Parameter Name="Action" Class="vm::IAddFileItemAction"/>
       <Window ref.Name="self" Text="Add Existing Files" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <att.OperationModel-set CurrentFileName-bind="(cast (vm::StudioFileReference^) dataGridFiles.SelectedRowValue).name ?? ''"/>
+        <att.OperationModel-set CurrentFileName-bind="(cast (vm::IStudioFileReference^) dataGridFiles.SelectedRowValue).Name ?? ''"/>
 
         <OpenFileDialog ref.Name="dialogOpen" Title="Add Existing Files">
           <att.Options>FileDialogAllowMultipleSelection|FileDialogFileMustExist|FileDialogDereferenceLinks|FileDialogDirectoryMustExist</att.Options>
