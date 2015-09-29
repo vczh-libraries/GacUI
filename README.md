@@ -8,7 +8,7 @@ Refer to http://gaclib.net for more information.
 * The [DOCUMENT](http://www.gaclib.net/Document/reference_gacui.html) section show you all simple documentation organized by C++ classes and functions.
 
 ### Notice
-The release of the GacUI project is put in [vczh-libraries/Release](https://github.com/vczh-libraries/Release). The previous release repo [vczh/gac](https://github.com/vczh/gac) has already deprecated.
+The release of the GacUI project is put in [vczh-libraries/Release](https://github.com/vczh-libraries/Release).
 
 Using this library requires you to use C++ source files (you should put them together) in
 
