@@ -1,24 +1,19 @@
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="test::MainWindow">
-      <Window Text-eval="SharedScript::GetTitle()" ClientSize="x:640 y:480">
-        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+      <Window Text="Window" ClientSize="x:480 y:320">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+        <att.ContainerComposition-set InternalMargin="left:5 top:5 right:5 bottom:5"/>
+        <Button Text="Button">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:-1 bottom:-1" PreferredMinSize="x:100 y:30"/>
+        </Button>
+        <Button Text="Button">
+          <att.BoundsComposition-set AlignmentToParent="left:-1 top:0 right:0 bottom:-1" PreferredMinSize="x:100 y:30"/>
+        </Button>
+        <Button Text="Button">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="x:100 y:30"/>
+        </Button>
       </Window>
     </Instance>
   </Instance>
-  <Script name="SharedScript">
-    <Workflow>
-      <![CDATA[
-        module sharedscript;
-        
-        class SharedScript
-        {
-          static func GetTitle() : string
-          {
-            return "MainWindow";
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
 </Resource>
