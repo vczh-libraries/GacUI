@@ -3,6 +3,14 @@
     <Instance ref.Class="test::MainWindow">
       <Window Text="Window" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+      </Window>
+    </Instance>
+  </Instance>
+
+  <Instance name="AlignmentWindowResource">
+    <Instance ref.Class="test::AlignmentWindow">
+      <Window Text="Window" ClientSize="x:480 y:320">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <att.ContainerComposition-set InternalMargin="left:5 top:5 right:5 bottom:5"/>
         <Button Text="Button">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:-1 bottom:-1" PreferredMinSize="x:100 y:30"/>
