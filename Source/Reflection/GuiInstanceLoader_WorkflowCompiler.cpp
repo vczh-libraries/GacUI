@@ -62,7 +62,7 @@ Module
 							{
 								auto fragment = MakePtr<WfModuleUsingNameFragment>();
 								item->fragments.Add(fragment);
-								fragment->name.value = WString(wildcard, vint(end - wildcard - 1));
+								fragment->name.value = WString(wildcard + 1, vint(end - wildcard - 1));
 							}
 						}
 						else if (begin < end)
@@ -960,6 +960,8 @@ Workflow_GetSharedManager
 				context->instance->Accept(&visitor);
 				rootTypeDescriptor = visitor.rootTypeDescriptor;
 			}
+
+			if (errors.Count() == 0)
 			{
 				WorkflowCompileVisitor visitor(context, typeInfos, errors);
 				context->instance->Accept(&visitor);
