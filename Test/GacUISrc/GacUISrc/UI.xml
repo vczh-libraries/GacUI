@@ -3,6 +3,83 @@
     <Instance ref.Class="test::MainWindow">
       <Window Text="Window" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+        <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:20</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Columns>
+          
+          <Cell Site="row:0 column:0 columnSpan:3">
+            <SolidLabel Font="fontFamily:{Lucida Calligraphy} size:96" HorizontalAlignment="Center" VerticalAlignment="Center" Text="GacUI"/>
+          </Cell>
+
+          <Cell Site="row:2 column:0">
+            <Label Text="User Name:"/>
+          </Cell>
+          <Cell Site="row:2 column:1">
+            <SinglelineTextBox>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+          <Cell Site="row:2 column:2">
+            <Button Text="Forget User Name ...">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:3 column:0">
+            <Label Text="Password:"/>
+          </Cell>
+          <Cell Site="row:3 column:1">
+            <SinglelineTextBox PasswordChar="*">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+          <Cell Site="row:3 column:2">
+            <Button Text="Forget Password ...">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:5 column:0 columnSpan:3">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0" InternalMargin="right:10">
+                <Button Text="Sign Up ...">
+                  <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
+                </Button>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <Button Text="Log In">
+                  <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
+                </Button>
+              </Cell>
+              <Cell Site="row:0 column:3">
+                <Button Text="Close">
+                  <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
+                </Button>
+              </Cell>
+            </Table>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
