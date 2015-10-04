@@ -75,6 +75,8 @@ Type Declaration
 				ENUM_ITEM_NAMESPACE(GuiStackComposition)
 				ENUM_NAMESPACE_ITEM(Horizontal)
 				ENUM_NAMESPACE_ITEM(Vertical)
+				ENUM_NAMESPACE_ITEM(ReversedHorizontal)
+				ENUM_NAMESPACE_ITEM(ReversedVertical)
 			END_ENUM_ITEM(GuiStackComposition::Direction)
 
 			BEGIN_CLASS_MEMBER(GuiStackItemComposition)

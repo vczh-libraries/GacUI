@@ -37,10 +37,14 @@ Stack Compositions
 				/// <summary>Stack item layout direction.</summary>
 				enum Direction
 				{
-					/// <summary>Stack items is layouted horizontally.</summary>
+					/// <summary>Stack items is layouted from left to right.</summary>
 					Horizontal,
-					/// <summary>Stack items is layouted vertically.</summary>
+					/// <summary>Stack items is layouted from top to bottom.</summary>
 					Vertical,
+					/// <summary>Stack items is layouted from right to left.</summary>
+					ReversedHorizontal,
+					/// <summary>Stack items is layouted from bottom to top.</summary>
+					ReversedVertical,
 				};
 			protected:
 				Direction							direction;

@@ -14,6 +14,22 @@
           ]]>
         </ev.SelectedChanged-eval>
       </Style>
+      <Style ref.Path="//StackItem/Button">
+        <ev.Clicked-eval>
+          <![CDATA[
+            {
+              for (item in stackLayout.StackItems)
+              {
+                item.ExtraMargin = cast Margin "";
+              }
+            
+              var item = cast (StackItem*) sender.Parent;
+              item.ExtraMargin = cast Margin "left:10 top:10 right:10 bottom:10";
+              stackLayout.MoveChild(item, stackLayout.StackItems.Count - 1);
+            }
+          ]]>
+        </ev.Clicked-eval>
+      </Style>
     </Styles>
   </InstanceStyle>
   <Instance name="StackWindowResource">
@@ -21,8 +37,9 @@
       <Window Text="Window" ClientSize="x:480 y:320">
         <x:MutexGroupController ref.Name="groupStackDirection"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <Table AlignmentToParent="left:5 top:5 right:5 bottom:5">
+        <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5">
           <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:MinSize</CellOption>
@@ -45,9 +62,13 @@
           <Cell Site="row:3 column:0">
             <RadioButton Text="ReversedVertical" GroupController-ref="groupStackDirection"/>
           </Cell>
-
+          
           <Cell Site="row:4 column:0">
-            <Stack ref.Name="stackLayout" AlignmentToParent="left:5 top:5 right:5 bottom:5" Padding="5">
+            <Label Text="Click any button in stack items to enlarge it."/>
+          </Cell>
+
+          <Cell Site="row:5 column:0">
+            <Stack ref.Name="stackLayout" AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="5" ExtraMargin="left:10 top:10 right:10 bottom:10">
               <StackItem>
                 <Button Text="Large">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:100"/>
