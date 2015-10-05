@@ -52,6 +52,7 @@ Stack Compositions
 				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
 				
 				vint								padding = 0;
+				vint								adjustment = 0;
 				Margin								extraMargin;
 
 				collections::Array<Rect>			stackItemBounds;
@@ -59,7 +60,7 @@ Stack Compositions
 				Rect								previousBounds;
 
 				void								UpdateStackItemBounds();
-				void								FixStackItemSizes();
+				void								EnsureStackItemVisible();
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
