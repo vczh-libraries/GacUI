@@ -47,14 +47,16 @@ Stack Compositions
 					ReversedVertical,
 				};
 			protected:
-				Direction							direction;
+				Direction							direction = Horizontal;
 				ItemCompositionList					stackItems;
+				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
+				
+				vint								padding = 0;
+				Margin								extraMargin;
+
 				collections::Array<Rect>			stackItemBounds;
 				Size								stackItemTotalSize;
-				vint								padding;
 				Rect								previousBounds;
-				Margin								extraMargin;
-				GuiStackItemComposition*			ensuringVisibleStackItem;
 
 				void								UpdateStackItemBounds();
 				void								FixStackItemSizes();

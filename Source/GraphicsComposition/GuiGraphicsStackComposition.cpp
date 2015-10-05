@@ -13,47 +13,55 @@ GuiStackComposition
 
 			void GuiStackComposition::UpdateStackItemBounds()
 			{
-				if(stackItemBounds.Count()!=stackItems.Count())
+				if (stackItemBounds.Count() != stackItems.Count())
 				{
 					stackItemBounds.Resize(stackItems.Count());
 				}
 
-				stackItemTotalSize=Size(0, 0);
-				vint x=extraMargin.left?extraMargin.left:0;
-				vint y=extraMargin.top?extraMargin.top:0;
-				switch(direction)
+				stackItemTotalSize = Size(0, 0);
+				Point offset;
+				for (vint i = 0; i < stackItems.Count(); i++)
 				{
-				case GuiStackComposition::Horizontal:
-					{
-						for(vint i=0;i<stackItems.Count();i++)
-						{
-							Size itemSize=stackItems[i]->GetMinSize();
-							if(i>0) stackItemTotalSize.x+=padding;
-							if(stackItemTotalSize.y<itemSize.y) stackItemTotalSize.y=itemSize.y;
-							stackItemBounds[i]=Rect(Point(stackItemTotalSize.x+x, y), Size(itemSize.x, 0));
-							stackItemTotalSize.x+=itemSize.x;
-						}
-					}
-					break;
-				case GuiStackComposition::Vertical:
-					{
-						for(vint i=0;i<stackItems.Count();i++)
-						{
-							Size itemSize=stackItems[i]->GetMinSize();
-							if(i>0) stackItemTotalSize.y+=padding;
-							if(stackItemTotalSize.x<itemSize.x) stackItemTotalSize.x=itemSize.x;
-							stackItemBounds[i]=Rect(Point(x, stackItemTotalSize.y+y), Size(0, itemSize.y));
-							stackItemTotalSize.y+=itemSize.y;
-						}
-					}
-					break;
-				}
+					vint offsetX = 0;
+					vint offsetY = 0;
+					Size itemSize = stackItems[i]->GetMinSize();
+					stackItemBounds[i] = Rect(offset, itemSize);
 
+#define ACCUMULATE(U, V)										\
+					{											\
+						if (stackItemTotalSize.V < itemSize.V)	\
+						{										\
+							stackItemTotalSize.V = itemSize.V;	\
+						}										\
+						if (i > 0)								\
+						{										\
+							stackItemTotalSize.U += padding;	\
+						}										\
+						stackItemTotalSize.U += itemSize.U;		\
+					}											\
+
+					switch (direction)
+					{
+					case GuiStackComposition::Horizontal:
+					case GuiStackComposition::ReversedHorizontal:
+						ACCUMULATE(x, y)
+						break;
+					case GuiStackComposition::Vertical:
+					case GuiStackComposition::ReversedVertical:
+						ACCUMULATE(y, x)
+						break;
+					}
+
+#undef ACCUMULATE
+					offset.x += itemSize.x + padding;
+					offset.y += itemSize.y + padding;
+				}
 				FixStackItemSizes();
 			}
 
 			void GuiStackComposition::FixStackItemSizes()
 			{
+				return;
 				switch(direction)
 				{
 				case Horizontal:
@@ -156,9 +164,6 @@ GuiStackComposition
 			}
 
 			GuiStackComposition::GuiStackComposition()
-				:direction(Horizontal)
-				,padding(0)
-				,ensuringVisibleStackItem(0)
 			{
 				BoundsChanged.AttachMethod(this, &GuiStackComposition::OnBoundsChanged);
 			}
@@ -208,32 +213,37 @@ GuiStackComposition
 			
 			Size GuiStackComposition::GetMinPreferredClientSize()
 			{
-				Size minSize=GuiBoundsComposition::GetMinPreferredClientSize();
+				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
 				UpdateStackItemBounds();
-				if(GetMinSizeLimitation()==GuiGraphicsComposition::LimitToElementAndChildren)
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					if (!ensuringVisibleStackItem || direction == Vertical)
+					if (!ensuringVisibleStackItem)
 					{
-						if(minSize.x<stackItemTotalSize.x) minSize.x=stackItemTotalSize.x;
-					}
-					if (!ensuringVisibleStackItem || direction == Horizontal)
-					{
-						if(minSize.y<stackItemTotalSize.y) minSize.y=stackItemTotalSize.y;
+						if (minSize.x < stackItemTotalSize.x)
+						{
+							minSize.x = stackItemTotalSize.x;
+						}
+						
+						if (minSize.y < stackItemTotalSize.y)
+						{
+							minSize.y = stackItemTotalSize.y;
+						}
 					}
 				}
-				vint x=0;
-				vint y=0;
-				if(extraMargin.left>0) x+=extraMargin.left;
-				if(extraMargin.right>0) x+=extraMargin.right;
-				if(extraMargin.top>0) y+=extraMargin.top;
-				if(extraMargin.bottom>0) y+=extraMargin.bottom;
-				return minSize+Size(x, y);
+
+				vint x = 0;
+				vint y = 0;
+				if (extraMargin.left > 0) x += extraMargin.left;
+				if (extraMargin.right > 0) x += extraMargin.right;
+				if (extraMargin.top > 0) y += extraMargin.top;
+				if (extraMargin.bottom > 0) y += extraMargin.bottom;
+				return minSize + Size(x, y);
 			}
 
 			Rect GuiStackComposition::GetBounds()
 			{
-				Rect bounds=GuiBoundsComposition::GetBounds();
-				previousBounds=bounds;
+				Rect bounds = GuiBoundsComposition::GetBounds();
+				previousBounds = bounds;
 				FixStackItemSizes();
 				return bounds;
 			}
@@ -250,23 +260,25 @@ GuiStackComposition
 
 			bool GuiStackComposition::IsStackItemClipped()
 			{
-				Rect clientArea=GetClientArea();
-				for(vint i=0;i<stackItems.Count();i++)
+				Rect clientArea = GetClientArea();
+				for (vint i = 0; i < stackItems.Count(); i++)
 				{
-					Rect stackItemBounds=stackItems[i]->GetBounds();
+					Rect stackItemBounds = stackItems[i]->GetBounds();
 					switch(direction)
 					{
 					case Horizontal:
+					case ReversedHorizontal:
 						{
-							if(stackItemBounds.Left()<0 || stackItemBounds.Right()>=clientArea.Width())
+							if (stackItemBounds.Left() < 0 || stackItemBounds.Right() >= clientArea.Width())
 							{
 								return true;
 							}
 						}
 						break;
 					case Vertical:
+					case ReversedVertical:
 						{
-							if(stackItemBounds.Top()<0 || stackItemBounds.Bottom()>=clientArea.Height())
+							if (stackItemBounds.Top() < 0 || stackItemBounds.Bottom() >= clientArea.Height())
 							{
 								return true;
 							}
@@ -323,30 +335,69 @@ GuiStackItemComposition
 
 			Rect GuiStackItemComposition::GetBounds()
 			{
-				Rect result=bounds;
+				Rect result = bounds;
 				if(stackParent)
 				{
-					vint index=stackParent->stackItems.IndexOf(this);
+					vint index = stackParent->stackItems.IndexOf(this);
 					if(index!=-1)
 					{
-						if(stackParent->stackItemBounds.Count()!=stackParent->stackItems.Count())
+						if (stackParent->stackItemBounds.Count() != stackParent->stackItems.Count())
 						{
 							stackParent->UpdateStackItemBounds();
 						}
-						result=stackParent->stackItemBounds[index];
+						result = stackParent->stackItemBounds[index];
 					}
+
+					Rect parentBounds = stackParent->previousBounds;
+					Margin margin = stackParent->extraMargin;
+					if (margin.left <= 0) margin.left = 0;
+					if (margin.top <= 0) margin.top = 0;
+					if (margin.right <= 0) margin.right = 0;
+					if (margin.bottom <= 0) margin.bottom = 0;
+
+					auto x = result.Left();
+					auto y = result.Top();
+					auto w = result.Width();
+					auto h = result.Height();
+
+					switch (stackParent->direction)
+					{
+					case GuiStackComposition::Horizontal:
+						x += margin.left;
+						y = margin.top;
+						h = parentBounds.Height() - margin.top - margin.bottom;
+						break;
+					case GuiStackComposition::ReversedHorizontal:
+						x = parentBounds.Right() - margin.right - w;
+						y = margin.top;
+						h = parentBounds.Height() - margin.top - margin.bottom;
+						break;
+					case GuiStackComposition::Vertical:
+						x = margin.left;
+						y += margin.top;
+						w = parentBounds.Width() - margin.left - margin.right;
+						break;
+					case GuiStackComposition::ReversedVertical:
+						x = margin.left;
+						y = parentBounds.Bottom() - margin.bottom - h;
+						w = parentBounds.Width() - margin.left - margin.right;
+						break;
+					}
+
+					result = Rect(
+						x - extraMargin.left,
+						y - extraMargin.top,
+						x + w + extraMargin.right,
+						y + h + extraMargin.bottom
+						);
 				}
-				result.x1-=extraMargin.left;
-				result.y1-=extraMargin.top;
-				result.x2+=extraMargin.right;
-				result.y2+=extraMargin.bottom;
 				UpdatePreviousBounds(result);
 				return result;
 			}
 
 			void GuiStackItemComposition::SetBounds(Rect value)
 			{
-				bounds=value;
+				bounds = value;
 			}
 
 			Margin GuiStackItemComposition::GetExtraMargin()
@@ -356,7 +407,7 @@ GuiStackItemComposition
 
 			void GuiStackItemComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin=value;
+				extraMargin = value;
 			}
 		}
 	}
