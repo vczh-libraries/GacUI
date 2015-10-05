@@ -68,7 +68,7 @@ GuiStackComposition
 				}																	\
 				else																\
 				{																	\
-					vint overflow = itemBounds.V() >= previousBounds.V();			\
+					vint overflow = itemBounds.V() - previousBounds.V();			\
 					if (overflow > 0)												\
 					{																\
 						adjustment -= overflow;										\
@@ -180,13 +180,15 @@ GuiStackComposition
 				UpdateStackItemBounds();
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					if (!ensuringVisibleStackItem)
+					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
 					{
 						if (minSize.x < stackItemTotalSize.x)
 						{
 							minSize.x = stackItemTotalSize.x;
 						}
-						
+					}
+					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
+					{	
 						if (minSize.y < stackItemTotalSize.y)
 						{
 							minSize.y = stackItemTotalSize.y;

@@ -6693,23 +6693,30 @@ Stack Compositions
 				/// <summary>Stack item layout direction.</summary>
 				enum Direction
 				{
-					/// <summary>Stack items is layouted horizontally.</summary>
+					/// <summary>Stack items is layouted from left to right.</summary>
 					Horizontal,
-					/// <summary>Stack items is layouted vertically.</summary>
+					/// <summary>Stack items is layouted from top to bottom.</summary>
 					Vertical,
+					/// <summary>Stack items is layouted from right to left.</summary>
+					ReversedHorizontal,
+					/// <summary>Stack items is layouted from bottom to top.</summary>
+					ReversedVertical,
 				};
 			protected:
-				Direction							direction;
+				Direction							direction = Horizontal;
 				ItemCompositionList					stackItems;
+				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
+				
+				vint								padding = 0;
+				vint								adjustment = 0;
+				Margin								extraMargin;
+
 				collections::Array<Rect>			stackItemBounds;
 				Size								stackItemTotalSize;
-				vint								padding;
 				Rect								previousBounds;
-				Margin								extraMargin;
-				GuiStackItemComposition*			ensuringVisibleStackItem;
 
 				void								UpdateStackItemBounds();
-				void								FixStackItemSizes();
+				void								EnsureStackItemVisible();
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
