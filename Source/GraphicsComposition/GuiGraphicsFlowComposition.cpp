@@ -31,6 +31,11 @@ GuiFlowItemComposition
 			GuiFlowItemComposition::~GuiFlowItemComposition()
 			{
 			}
+
+			Rect GuiFlowItemComposition::GetBounds()
+			{
+				throw 0;
+			}
 		}
 	}
 }

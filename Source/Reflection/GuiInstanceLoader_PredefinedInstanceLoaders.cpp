@@ -865,10 +865,6 @@ GuiListViewInstanceLoader
 				return Value();
 			}
 
-			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-			}
-
 			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
 				if (typeInfo.typeName == GetTypeName())
@@ -914,11 +910,6 @@ GuiListViewInstanceLoader
 					}
 				}
 				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
-			}
-
-			bool SetPropertyValue(PropertyValue& propertyValue)override
-			{
-				return false;
 			}
 		};
 
@@ -1470,6 +1461,70 @@ GuiBindableDataGridInstanceLoader
 		};
 
 /***********************************************************************
+GuiAxisInstanceLoader
+***********************************************************************/
+
+		class GuiAxisInstanceLoader : public Object, public IGuiInstanceLoader
+		{
+		protected:
+			GlobalStringKey					typeName;
+			GlobalStringKey					_AxisDirection;
+
+		public:
+			GuiAxisInstanceLoader()
+			{
+				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiAxis>()->GetTypeName());
+				_AxisDirection = GlobalStringKey::Get(L"AxisDirection");
+			}
+
+			GlobalStringKey GetTypeName()override
+			{
+				return typeName;
+			}
+
+			bool IsCreatable(const TypeInfo& typeInfo)override
+			{
+				return typeName == typeInfo.typeName;
+			}
+
+			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
+			{
+				if (typeInfo.typeName == GetTypeName())
+				{
+					vint indexAxisDirection = constructorArguments.Keys().IndexOf(_AxisDirection);	
+					if (indexAxisDirection == -1)
+					{
+						return Value();
+					}
+
+					auto axisDirection = UnboxValue<AxisDirection>(constructorArguments.GetByIndex(indexAxisDirection)[0]);
+					auto axis = new GuiAxis(axisDirection);
+					return Value::From(axis);
+				}
+				return Value();
+			}
+
+			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				if (typeInfo.typeName == GetTypeName())
+				{
+					propertyNames.Add(_AxisDirection);
+				}
+			}
+
+			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+			{
+				if (propertyInfo.propertyName == _AxisDirection)
+				{
+					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<AxisDirection>());
+					info->scope = GuiInstancePropertyInfo::Constructor;
+					return info;
+				}
+				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+			}
+		};
+
+/***********************************************************************
 GuiCompositionInstanceLoader
 ***********************************************************************/
 
@@ -1873,6 +1928,7 @@ GuiPredefinedInstanceLoadersPlugin
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);		// VisualizerTemplates, EditorTemplate
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);			// ControlTemplate, ItemSource
 
+				manager->SetLoader(new GuiAxisInstanceLoader);
 				manager->SetLoader(new GuiCompositionInstanceLoader);
 				manager->SetLoader(new GuiTableCompositionInstanceLoader);
 				manager->SetLoader(new GuiCellCompositionInstanceLoader);

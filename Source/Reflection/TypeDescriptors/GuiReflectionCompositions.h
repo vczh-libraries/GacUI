@@ -96,17 +96,17 @@ Interface Proxy
 					}
 				};
 
-				class composition_IGuiAxis : public ValueInterfaceRoot, public virtual IGuiAxis
+				class compositions_IGuiAxis : public ValueInterfaceRoot, public virtual IGuiAxis
 				{
 				public:
-					composition_IGuiAxis(Ptr<IValueInterfaceProxy> _proxy)
+					compositions_IGuiAxis(Ptr<IValueInterfaceProxy> _proxy)
 						:ValueInterfaceRoot(_proxy)
 					{
 					}
 
-					static Ptr<composition_IGuiAxis> Create(Ptr<IValueInterfaceProxy> proxy)
+					static Ptr<IGuiAxis> Create(Ptr<IValueInterfaceProxy> proxy)
 					{
-						return new composition_IGuiAxis(proxy);
+						return new compositions_IGuiAxis(proxy);
 					}
 
 					Size RealSizeToVirtualSize(Size size)override
