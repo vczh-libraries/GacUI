@@ -230,7 +230,7 @@ ListView ItemStyleProvider
 					public:
 						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemCoordinateTransformer"/> for the related item style provider.</summary>
 						/// <returns>The created item coordinate transformer.</returns>
-						virtual GuiListControl::IItemCoordinateTransformer*		CreatePreferredCoordinateTransformer()=0;
+						virtual compositions::IGuiAxis*							CreatePreferredAxis()=0;
 						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemArranger"/> for the related item style provider.</summary>
 						/// <returns>The created item coordinate arranger.</returns>
 						virtual GuiListControl::IItemArranger*					CreatePreferredArranger()=0;
@@ -353,7 +353,7 @@ ListView ItemContentProvider
 					ListViewBigIconContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewBigIconContentProvider();
 
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -390,7 +390,7 @@ ListView ItemContentProvider
 					ListViewSmallIconContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewSmallIconContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -427,7 +427,7 @@ ListView ItemContentProvider
 					ListViewListContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewListContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -470,7 +470,7 @@ ListView ItemContentProvider
 					ListViewTileContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewTileContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -514,7 +514,7 @@ ListView ItemContentProvider
 					ListViewInformationContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewInformationContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -668,7 +668,7 @@ ListView ItemContentProvider(Detailed)
 					ListViewDetailContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewDetailContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;

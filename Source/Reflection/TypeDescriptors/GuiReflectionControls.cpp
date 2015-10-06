@@ -469,7 +469,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(StyleProvider)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Arranger)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(CoordinateTransformer)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Axis)
 
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 			END_CLASS_MEMBER(GuiListControl)
@@ -511,20 +511,6 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(GetBindingValue, {L"itemIndex"})
 			END_CLASS_MEMBER(GuiListControl::IItemBindingView)
-
-			BEGIN_ENUM_ITEM(GuiListControl::KeyDirection)
-				ENUM_ITEM_NAMESPACE(GuiListControl)
-				ENUM_NAMESPACE_ITEM(Up)
-				ENUM_NAMESPACE_ITEM(Down)
-				ENUM_NAMESPACE_ITEM(Left)
-				ENUM_NAMESPACE_ITEM(Right)
-				ENUM_NAMESPACE_ITEM(Home)
-				ENUM_NAMESPACE_ITEM(End)
-				ENUM_NAMESPACE_ITEM(PageUp)
-				ENUM_NAMESPACE_ITEM(PageDown)
-				ENUM_NAMESPACE_ITEM(PageLeft)
-				ENUM_NAMESPACE_ITEM(PageRight)
-			END_ENUM_ITEM(GuiListControl::KeyDirection)
 
 			BEGIN_CLASS_MEMBER(GuiListControl::IItemProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -579,21 +565,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 			END_CLASS_MEMBER(GuiListControl::IItemArranger)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemCoordinateTransformer)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemCoordinateTransformer)
-
-				CLASS_MEMBER_METHOD(RealSizeToVirtualSize, {L"size"})
-				CLASS_MEMBER_METHOD(VirtualSizeToRealSize, {L"size"})
-				CLASS_MEMBER_METHOD(RealPointToVirtualPoint, {L"realFullSize" _ L"point"})
-				CLASS_MEMBER_METHOD(VirtualPointToRealPoint, {L"realFullSize" _ L"point"})
-				CLASS_MEMBER_METHOD(RealRectToVirtualRect, {L"realFullSize" _ L"rect"})
-				CLASS_MEMBER_METHOD(VirtualRectToRealRect, {L"realFullSize" _ L"rect"})
-				CLASS_MEMBER_METHOD(RealMarginToVirtualMargin, {L"margin"})
-				CLASS_MEMBER_METHOD(VirtualMarginToRealMargin, {L"margin"})
-				CLASS_MEMBER_METHOD(RealKeyDirectionToVirtualKeyDirection, {L"key"})
-			END_CLASS_MEMBER(GuiListControl::IItemCoordinateTransformer)
-
 			BEGIN_CLASS_MEMBER(GuiSelectableListControl)
 				CLASS_MEMBER_BASE(GuiListControl)
 				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableListControl*(GuiSelectableListControl::IStyleProvider* _ GuiSelectableListControl::IItemProvider*), {L"styleProvider" _ L"itemProvider"})
@@ -618,30 +589,6 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(SetStyleSelected, {L"style" _ L"value"})
 			END_CLASS_MEMBER(GuiSelectableListControl::IItemStyleProvider)
-
-			BEGIN_CLASS_MEMBER(DefaultItemCoordinateTransformer)
-				CLASS_MEMBER_BASE(GuiListControl::IItemCoordinateTransformer)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<DefaultItemCoordinateTransformer>(), NO_PARAMETER)
-			END_CLASS_MEMBER(DefaultItemCoordinateTransformer)
-
-			BEGIN_CLASS_MEMBER(AxisAlignedItemCoordinateTransformer)
-				CLASS_MEMBER_BASE(GuiListControl::IItemCoordinateTransformer)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<AxisAlignedItemCoordinateTransformer>(AxisAlignedItemCoordinateTransformer::Alignment), {L"alignment"})
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alignment)
-			END_CLASS_MEMBER(AxisAlignedItemCoordinateTransformer)
-
-			BEGIN_ENUM_ITEM(AxisAlignedItemCoordinateTransformer::Alignment)
-				ENUM_ITEM_NAMESPACE(AxisAlignedItemCoordinateTransformer)
-				ENUM_NAMESPACE_ITEM(LeftDown)
-				ENUM_NAMESPACE_ITEM(RightDown)
-				ENUM_NAMESPACE_ITEM(LeftUp)
-				ENUM_NAMESPACE_ITEM(RightUp)
-				ENUM_NAMESPACE_ITEM(DownLeft)
-				ENUM_NAMESPACE_ITEM(DownRight)
-				ENUM_NAMESPACE_ITEM(UpLeft)
-				ENUM_NAMESPACE_ITEM(UpRight)
-			END_ENUM_ITEM(AxisAlignedItemCoordinateTransformer::Alignment)
 
 			BEGIN_CLASS_MEMBER(RangedItemArrangerBase)
 				CLASS_MEMBER_BASE(GuiListControl::IItemArranger)
@@ -819,7 +766,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(IDescriptable)
 				INTERFACE_EXTERNALCTOR(ListViewItemStyleProvider, IListViewItemContentProvider)
 
-				CLASS_MEMBER_METHOD(CreatePreferredCoordinateTransformer, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreatePreferredAxis, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreatePreferredArranger, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateItemContent, {L"font"})
 				CLASS_MEMBER_METHOD(AttachListControl, {L"value"})

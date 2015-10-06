@@ -56,6 +56,46 @@ Type Declaration
 #define INTERFACE_IDENTIFIER(INTERFACE)\
 	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), []()->WString{return INTERFACE::Identifier;})
 
+			BEGIN_ENUM_ITEM(KeyDirection)
+				ENUM_CLASS_ITEM(Up)
+				ENUM_CLASS_ITEM(Down)
+				ENUM_CLASS_ITEM(Left)
+				ENUM_CLASS_ITEM(Right)
+				ENUM_CLASS_ITEM(Home)
+				ENUM_CLASS_ITEM(End)
+				ENUM_CLASS_ITEM(PageUp)
+				ENUM_CLASS_ITEM(PageDown)
+				ENUM_CLASS_ITEM(PageLeft)
+				ENUM_CLASS_ITEM(PageRight)
+			END_ENUM_ITEM(KeyDirection)
+
+			BEGIN_CLASS_MEMBER(IGuiAxis)
+				CLASS_MEMBER_BASE(IDescriptable)
+				INTERFACE_EXTERNALCTOR(compositions, IGuiAxis)
+
+				CLASS_MEMBER_METHOD(RealSizeToVirtualSize, {L"size"})
+				CLASS_MEMBER_METHOD(VirtualSizeToRealSize, {L"size"})
+				CLASS_MEMBER_METHOD(RealPointToVirtualPoint, {L"realFullSize" _ L"point"})
+				CLASS_MEMBER_METHOD(VirtualPointToRealPoint, {L"realFullSize" _ L"point"})
+				CLASS_MEMBER_METHOD(RealRectToVirtualRect, {L"realFullSize" _ L"rect"})
+				CLASS_MEMBER_METHOD(VirtualRectToRealRect, {L"realFullSize" _ L"rect"})
+				CLASS_MEMBER_METHOD(RealMarginToVirtualMargin, {L"margin"})
+				CLASS_MEMBER_METHOD(VirtualMarginToRealMargin, {L"margin"})
+				CLASS_MEMBER_METHOD(RealKeyDirectionToVirtualKeyDirection, {L"key"})
+			END_CLASS_MEMBER(IGuiAxis)
+
+			BEGIN_CLASS_MEMBER(GuiDefaultAxis)
+				CLASS_MEMBER_BASE(IGuiAxis)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDefaultAxis>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiDefaultAxis)
+
+			BEGIN_CLASS_MEMBER(GuiAxis)
+				CLASS_MEMBER_BASE(IGuiAxis)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiAxis>(AxisDirection), {L"axisDirection"})
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alignment)
+			END_CLASS_MEMBER(GuiAxis)
+
 			BEGIN_CLASS_MEMBER(GuiStackComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiStackComposition*(), NO_PARAMETER)
@@ -135,6 +175,16 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(SetSite, {L"row" _ L"column" _ L"rowSpan" _ L"columnSpan"})
 			END_CLASS_MEMBER(GuiCellComposition)
+
+			BEGIN_CLASS_MEMBER(GuiFlowComposition)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+				CLASS_MEMBER_CONSTRUCTOR(GuiFlowComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiFlowComposition)
+
+			BEGIN_CLASS_MEMBER(GuiFlowItemComposition)
+				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_CONSTRUCTOR(GuiFlowItemComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiFlowItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiSideAlignedComposition)
 				CLASS_MEMBER_BASE(GuiGraphicsSite)

@@ -166,7 +166,7 @@ Datagrid ContentProvider
 					DataGridContentProvider();
 					~DataGridContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;

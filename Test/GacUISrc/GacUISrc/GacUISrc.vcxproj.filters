@@ -426,6 +426,12 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedTypeResolvers.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.cpp">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -745,6 +751,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h">
       <Filter>GacUI\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.h">
+      <Filter>GacUI\GraphicsComposition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.h">
+      <Filter>GacUI\GraphicsComposition</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

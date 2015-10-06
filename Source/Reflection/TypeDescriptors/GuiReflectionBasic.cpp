@@ -114,6 +114,17 @@ Type Declaration
 				ENUM_CLASS_ITEM(Bottom)
 			END_ENUM_ITEM(Alignment)
 
+			BEGIN_ENUM_ITEM(AxisDirection)
+				ENUM_CLASS_ITEM(LeftDown)
+				ENUM_CLASS_ITEM(RightDown)
+				ENUM_CLASS_ITEM(LeftUp)
+				ENUM_CLASS_ITEM(RightUp)
+				ENUM_CLASS_ITEM(DownLeft)
+				ENUM_CLASS_ITEM(DownRight)
+				ENUM_CLASS_ITEM(UpLeft)
+				ENUM_CLASS_ITEM(UpRight)
+			END_ENUM_ITEM(AxisDirection)
+
 			BEGIN_STRUCT_MEMBER(TextPos)
 				STRUCT_MEMBER(row)
 				STRUCT_MEMBER(column)

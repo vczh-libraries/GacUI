@@ -37,6 +37,27 @@ Enumerations
 			Bottom=2,
 		};
 
+		/// <summary>Axis direction.</summary>
+		enum class AxisDirection
+		{
+			/// <summary>X:left, Y:down.</summary>
+			LeftDown,
+			/// <summary>X:right, Y:down.</summary>
+			RightDown,
+			/// <summary>X:left, Y:up.</summary>
+			LeftUp,
+			/// <summary>X:right, Y:up.</summary>
+			RightUp,
+			/// <summary>X:down, Y:left.</summary>
+			DownLeft,
+			/// <summary>X:down, Y:right.</summary>
+			DownRight,
+			/// <summary>X:up, Y:left.</summary>
+			UpLeft,
+			/// <summary>X:up, Y:right.</summary>
+			UpRight,
+		};
+
 /***********************************************************************
 TextPos
 ***********************************************************************/

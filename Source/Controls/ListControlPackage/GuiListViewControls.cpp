@@ -380,9 +380,9 @@ ListViewBigIconContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewBigIconContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewBigIconContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewBigIconContentProvider::CreatePreferredArranger()
@@ -494,9 +494,9 @@ ListViewSmallIconContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewSmallIconContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewSmallIconContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewSmallIconContentProvider::CreatePreferredArranger()
@@ -607,9 +607,9 @@ ListViewListContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewListContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewListContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewListContentProvider::CreatePreferredArranger()
@@ -771,9 +771,9 @@ ListViewTileContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewTileContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewTileContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewTileContentProvider::CreatePreferredArranger()
@@ -961,9 +961,9 @@ ListViewInformationContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewInformationContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewInformationContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewInformationContentProvider::CreatePreferredArranger()
@@ -1399,9 +1399,9 @@ ListViewDetailContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewDetailContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewDetailContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewDetailContentProvider::CreatePreferredArranger()
@@ -1869,7 +1869,7 @@ GuiListView
 			{
 				SetStyleProvider(0);
 				SetArranger(0);
-				SetCoordinateTransformer(contentProvider->CreatePreferredCoordinateTransformer());
+				SetAxis(contentProvider->CreatePreferredAxis());
 				SetStyleProvider(new list::ListViewItemStyleProvider(contentProvider));
 				SetArranger(contentProvider->CreatePreferredArranger());
 				return true;

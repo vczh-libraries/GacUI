@@ -706,9 +706,9 @@ DataGridContentProvider
 					CloseEditor(false);
 				}
 
-				GuiListControl::IItemCoordinateTransformer* DataGridContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* DataGridContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* DataGridContentProvider::CreatePreferredArranger()

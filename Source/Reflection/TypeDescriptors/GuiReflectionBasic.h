@@ -29,6 +29,7 @@ Type List
 #define GUIREFLECTIONBASIC_TYPELIST(F)\
 			F(presentation::Color)\
 			F(presentation::Alignment)\
+			F(presentation::AxisDirection)\
 			F(presentation::TextPos)\
 			F(presentation::GridPos)\
 			F(presentation::Point)\

@@ -25,6 +25,10 @@ Type List
 ***********************************************************************/
 
 #define GUIREFLECTIONCOMPOSITION_TYPELIST(F)\
+			F(presentation::compositions::KeyDirection)\
+			F(presentation::compositions::IGuiAxis)\
+			F(presentation::compositions::GuiDefaultAxis)\
+			F(presentation::compositions::GuiAxis)\
 			F(presentation::compositions::GuiStackComposition)\
 			F(presentation::compositions::GuiStackComposition::Direction)\
 			F(presentation::compositions::GuiStackItemComposition)\
@@ -32,6 +36,8 @@ Type List
 			F(presentation::compositions::GuiCellOption::ComposeType)\
 			F(presentation::compositions::GuiTableComposition)\
 			F(presentation::compositions::GuiCellComposition)\
+			F(presentation::compositions::GuiFlowComposition)\
+			F(presentation::compositions::GuiFlowItemComposition)\
 			F(presentation::compositions::GuiSideAlignedComposition)\
 			F(presentation::compositions::GuiSideAlignedComposition::Direction)\
 			F(presentation::compositions::GuiPartialViewComposition)\
@@ -87,6 +93,65 @@ Interface Proxy
 					void Stop()override
 					{
 						INVOKE_INTERFACE_PROXY_NOPARAMS(Stop);
+					}
+				};
+
+				class composition_IGuiAxis : public ValueInterfaceRoot, public virtual IGuiAxis
+				{
+				public:
+					composition_IGuiAxis(Ptr<IValueInterfaceProxy> _proxy)
+						:ValueInterfaceRoot(_proxy)
+					{
+					}
+
+					static Ptr<composition_IGuiAxis> Create(Ptr<IValueInterfaceProxy> proxy)
+					{
+						return new composition_IGuiAxis(proxy);
+					}
+
+					Size RealSizeToVirtualSize(Size size)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealSizeToVirtualSize, size);
+					}
+
+					Size VirtualSizeToRealSize(Size size)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(VirtualSizeToRealSize, size);
+					}
+
+					Point RealPointToVirtualPoint(Size realFullSize, Point point)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealPointToVirtualPoint, realFullSize, point);
+					}
+
+					Point VirtualPointToRealPoint(Size realFullSize, Point point)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(VirtualPointToRealPoint, realFullSize, point);
+					}
+
+					Rect RealRectToVirtualRect(Size realFullSize, Rect rect)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealRectToVirtualRect, realFullSize, rect);
+					}
+
+					Rect VirtualRectToRealRect(Size realFullSize, Rect rect)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(VirtualRectToRealRect, realFullSize, rect);
+					}
+
+					Margin RealMarginToVirtualMargin(Margin margin)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealMarginToVirtualMargin, margin);
+					}
+
+					Margin VirtualMarginToRealMargin(Margin margin)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(VirtualMarginToRealMargin, margin);
+					}
+
+					KeyDirection RealKeyDirectionToVirtualKeyDirection(KeyDirection key)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealKeyDirectionToVirtualKeyDirection, key);
 					}
 				};
 			}
