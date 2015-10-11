@@ -179,11 +179,20 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiFlowComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiFlowComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_FAST(ExtraMargin)
+				CLASS_MEMBER_PROPERTY_FAST(RowPadding)
+				CLASS_MEMBER_PROPERTY_FAST(ColumnPadding)
+				CLASS_MEMBER_PROPERTY_FAST(Axis)
+				CLASS_MEMBER_PROPERTY_FAST(Alignment)
 			END_CLASS_MEMBER(GuiFlowComposition)
 
 			BEGIN_CLASS_MEMBER(GuiFlowItemComposition)
 				CLASS_MEMBER_BASE(GuiGraphicsSite)
 				CLASS_MEMBER_CONSTRUCTOR(GuiFlowItemComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
+				CLASS_MEMBER_PROPERTY_FAST(ExtraMargin)
 			END_CLASS_MEMBER(GuiFlowItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiSideAlignedComposition)

@@ -172,6 +172,7 @@ GuiStackComposition
 			void GuiStackComposition::SetPadding(vint value)
 			{
 				padding = value;
+				EnsureStackItemVisible();
 			}
 			
 			Size GuiStackComposition::GetMinPreferredClientSize()
@@ -221,6 +222,7 @@ GuiStackComposition
 			void GuiStackComposition::SetExtraMargin(Margin value)
 			{
 				extraMargin=value;
+				EnsureStackItemVisible();
 			}
 
 			bool GuiStackComposition::IsStackItemClipped()
