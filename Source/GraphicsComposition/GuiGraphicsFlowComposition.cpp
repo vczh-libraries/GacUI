@@ -13,7 +13,6 @@ GuiFlowComposition
 
 			void GuiFlowComposition::UpdateFlowItemBounds()
 			{
-				throw 0;
 			}
 
 			void GuiFlowComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
@@ -133,16 +132,25 @@ GuiFlowItemComposition
 			GuiFlowItemComposition::~GuiFlowItemComposition()
 			{
 			}
+			
+			bool GuiFlowItemComposition::IsSizeAffectParent()
+			{
+				return false;
+			}
 
 			Rect GuiFlowItemComposition::GetBounds()
 			{
 				Rect result = bounds;
 				if(flowParent)
 				{
-					throw 0;
 				}
 				UpdatePreviousBounds(result);
 				return result;
+			}
+
+			void GuiFlowItemComposition::SetBounds(Rect value)
+			{
+				bounds = value;
 			}
 
 			Margin GuiFlowItemComposition::GetExtraMargin()

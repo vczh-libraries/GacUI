@@ -1,5 +1,5 @@
 <Resource>
-  <InstanceStyle name="StackWindowStyle">
+  <InstanceStyle name="FlowWindowStyle">
     <Styles>
       <Style ref.Path="//RadioButton">
         <ev.SelectedChanged-eval>
@@ -8,7 +8,9 @@
               var radioButton = cast (SelectableButton*) sender.RelatedControl;
               if (radioButton.Selected)
               {
-                stackLayout.Direction = cast (Stack::Direction) radioButton.Text;
+                var direction = cast (AxisDirection) radioButton.Text;
+                var axis = new Axis^(direction);
+                flowLayout.Axis = axis;
               }
             }
           ]]>
@@ -18,22 +20,22 @@
         <ev.Clicked-eval>
           <![CDATA[
             {
-              for (item in stackLayout.StackItems)
+              for (item in flowLayout.FlowItems)
               {
                 item.ExtraMargin = cast Margin "";
               }
             
-              var item = cast (StackItem*) sender.Parent;
+              var item = cast (FlowItem*) sender.Parent;
               item.ExtraMargin = cast Margin "left:10 top:10 right:10 bottom:10";
-              stackLayout.MoveChild(item, stackLayout.StackItems.Count - 1);
+              flowLayout.MoveChild(item, flowLayout.StackItems.Count - 1);
             }
           ]]>
         </ev.Clicked-eval>
       </Style>
     </Styles>
   </InstanceStyle>
-  <Instance name="StackWindowResource">
-    <Instance ref.Class="test::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*" ref.Styles="res://StackWindowStyle">
+  <Instance name="FlowWindowResource">
+    <Instance ref.Class="test::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*" ref.Styles="res://FlowWindowStyle">
       <Window Text="Window" ClientSize="x:480 y:320">
         <x:MutexGroupController ref.Name="groupStackDirection"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
@@ -47,149 +49,107 @@
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
           </att.Rows>
           <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
           </att.Columns>
 
-          <Cell Site="row:0 column:0">
-            <RadioButton Text="Horizontal" GroupController-ref="groupStackDirection" Selected="true"/>
+          <Cell Site="row:0 column:1">
+            <RadioButton Text="LeftDown" GroupController-ref="groupStackDirection" Selected="true"/>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <RadioButton Text="RightDown" GroupController-ref="groupStackDirection"/>
           </Cell>
           <Cell Site="row:1 column:0">
-            <RadioButton Text="Vertical" GroupController-ref="groupStackDirection"/>
+            <RadioButton Text="DownLeft" GroupController-ref="groupStackDirection"/>
+          </Cell>
+          <Cell Site="row:1 column:4">
+            <RadioButton Text="DownRight" GroupController-ref="groupStackDirection"/>
           </Cell>
           <Cell Site="row:2 column:0">
-            <RadioButton Text="ReversedHorizontal" GroupController-ref="groupStackDirection"/>
+            <RadioButton Text="UpLeft" GroupController-ref="groupStackDirection" Selected="true"/>
           </Cell>
-          <Cell Site="row:3 column:0">
-            <RadioButton Text="ReversedVertical" GroupController-ref="groupStackDirection"/>
+          <Cell Site="row:2 column:4">
+            <RadioButton Text="UpRight" GroupController-ref="groupStackDirection"/>
+          </Cell>
+          <Cell Site="row:3 column:1">
+            <RadioButton Text="LeftUp" GroupController-ref="groupStackDirection"/>
+          </Cell>
+          <Cell Site="row:3 column:2">
+            <RadioButton Text="RightUp" GroupController-ref="groupStackDirection"/>
           </Cell>
           
-          <Cell Site="row:4 column:0">
+          <Cell Site="row:4 column:0 columnSpan:5">
             <Label Text="Click any button in stack items to enlarge it."/>
           </Cell>
 
-          <Cell Site="row:5 column:0">
-            <Stack ref.Name="stackLayout" AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="5" ExtraMargin="left:10 top:10 right:10 bottom:10">
-              <StackItem>
-                <Button Text="Large">
+          <Cell Site="row:5 column:0 columnSpan:5">
+            <Flow ref.Name="flowLayout" AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="20" ColumnPadding="5" ExtraMargin="left:10 top:10 right:10 bottom:10">
+              <FlowItem>
+                <Button Text="Large 1">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:100"/>
                 </Button>
-              </StackItem>
-              <StackItem>
-                <Button Text="Medium">
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Medium 1">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:75 y:75"/>
                 </Button>
-              </StackItem>
-              <StackItem>
-                <Button Text="Small">
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Small 1">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:50 y:50"/>
                 </Button>
-              </StackItem>
-            </Stack>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Large 2">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:100"/>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Medium 2">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:75 y:75"/>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Small 2">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:50 y:50"/>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Large 3">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:100"/>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Medium 3">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:75 y:75"/>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Small 3">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:50 y:50"/>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Large 4">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:100"/>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Medium 4">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:75 y:75"/>
+                </Button>
+              </FlowItem>
+              <FlowItem>
+                <Button Text="Small 4">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:50 y:50"/>
+                </Button>
+              </FlowItem>
+            </Flow>
           </Cell>
         </Table>
-      </Window>
-    </Instance>
-  </Instance>
-  
-  <Instance name="TableWindowResource">
-    <Instance ref.Class="test::TableWindow">
-      <Window Text="Window" ClientSize="x:480 y:320">
-        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
-          <att.Rows>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Absolute absolute:20</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-          </att.Columns>
-          
-          <Cell Site="row:0 column:0 columnSpan:3">
-            <SolidLabel Font="fontFamily:{Lucida Calligraphy} size:96" HorizontalAlignment="Center" VerticalAlignment="Center" Text="GacUI"/>
-          </Cell>
-
-          <Cell Site="row:2 column:0">
-            <Label Text="User Name:"/>
-          </Cell>
-          <Cell Site="row:2 column:1">
-            <SinglelineTextBox>
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </SinglelineTextBox>
-          </Cell>
-          <Cell Site="row:2 column:2">
-            <Button Text="Forget User Name ...">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </Button>
-          </Cell>
-
-          <Cell Site="row:3 column:0">
-            <Label Text="Password:"/>
-          </Cell>
-          <Cell Site="row:3 column:1">
-            <SinglelineTextBox PasswordChar="*">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </SinglelineTextBox>
-          </Cell>
-          <Cell Site="row:3 column:2">
-            <Button Text="Forget Password ...">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </Button>
-          </Cell>
-
-          <Cell Site="row:5 column:0 columnSpan:3">
-            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-              <att.Rows>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Rows>
-              <att.Columns>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:Percentage percentage:1.0</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Columns>
-
-              <Cell Site="row:0 column:0" InternalMargin="right:10">
-                <Button Text="Sign Up ...">
-                  <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
-                </Button>
-              </Cell>
-              <Cell Site="row:0 column:1">
-                <Button Text="Log In">
-                  <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
-                </Button>
-              </Cell>
-              <Cell Site="row:0 column:3">
-                <Button Text="Close">
-                  <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
-                </Button>
-              </Cell>
-            </Table>
-          </Cell>
-        </Table>
-      </Window>
-    </Instance>
-  </Instance>
-
-  <Instance name="AlignmentWindowResource">
-    <Instance ref.Class="test::AlignmentWindow">
-      <Window Text="Window" ClientSize="x:480 y:320">
-        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <att.ContainerComposition-set InternalMargin="left:5 top:5 right:5 bottom:5"/>
-        <Button Text="Button">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:-1 bottom:-1" PreferredMinSize="x:100 y:30"/>
-        </Button>
-        <Button Text="Button">
-          <att.BoundsComposition-set AlignmentToParent="left:-1 top:0 right:0 bottom:-1" PreferredMinSize="x:100 y:30"/>
-        </Button>
-        <Button Text="Button">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="x:100 y:30"/>
-        </Button>
       </Window>
     </Instance>
   </Instance>
