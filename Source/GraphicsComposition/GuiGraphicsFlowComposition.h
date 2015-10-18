@@ -37,6 +37,7 @@ Flow Compositions
 
 				ItemCompositionList					flowItems;
 				collections::Array<Rect>			flowItemBounds;
+				Rect								previousBounds;
 
 				void								UpdateFlowItemBounds();
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
@@ -56,11 +57,14 @@ Flow Compositions
 				void								SetAxis(Ptr<IGuiAxis> value);
 				Alignment							GetAlignment();
 				void								SetAlignment(Alignment value);
+
+				Size								GetMinPreferredClientSize()override;
+				Rect								GetBounds()override;
 			};
 
 			class GuiFlowItemComposition : public GuiGraphicsSite, public Description<GuiFlowItemComposition>
 			{
-				friend class GuiStackComposition;
+				friend class GuiFlowComposition;
 			protected:
 				GuiFlowComposition*					flowParent;
 				Rect								bounds;

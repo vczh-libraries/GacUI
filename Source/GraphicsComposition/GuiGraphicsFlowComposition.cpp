@@ -17,7 +17,14 @@ GuiFlowComposition
 
 			void GuiFlowComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
-				UpdateFlowItemBounds();
+				for (vint i = 0; i < flowItems.Count(); i++)
+				{
+					if (flowItemBounds[i].GetSize() != flowItems[i]->GetMinSize())
+					{
+						UpdateFlowItemBounds();
+						return;
+					}
+				}
 			}
 
 			void GuiFlowComposition::OnChildInserted(GuiGraphicsComposition* child)
@@ -107,6 +114,30 @@ GuiFlowComposition
 			{
 				alignment = value;
 				UpdateFlowItemBounds();
+			}
+			
+			Size GuiFlowComposition::GetMinPreferredClientSize()
+			{
+				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				{
+				}
+
+				vint x = 0;
+				vint y = 0;
+				if (extraMargin.left > 0) x += extraMargin.left;
+				if (extraMargin.right > 0) x += extraMargin.right;
+				if (extraMargin.top > 0) y += extraMargin.top;
+				if (extraMargin.bottom > 0) y += extraMargin.bottom;
+				return minSize + Size(x, y);
+			}
+
+			Rect GuiFlowComposition::GetBounds()
+			{
+				Rect bounds = GuiBoundsComposition::GetBounds();
+				previousBounds = bounds;
+				UpdatePreviousBounds(previousBounds);
+				return bounds;
 			}
 
 /***********************************************************************

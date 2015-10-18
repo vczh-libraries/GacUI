@@ -96,7 +96,15 @@ GuiStackComposition
 
 			void GuiStackComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
-				UpdateStackItemBounds();
+				for (vint i = 0; i < stackItems.Count(); i++)
+				{
+					if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
+					{
+						UpdateStackItemBounds();
+						return;
+					}
+				}
+				EnsureStackItemVisible();
 			}
 
 			void GuiStackComposition::OnChildInserted(GuiGraphicsComposition* child)
@@ -178,7 +186,6 @@ GuiStackComposition
 			Size GuiStackComposition::GetMinPreferredClientSize()
 			{
 				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
-				UpdateStackItemBounds();
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
 					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
@@ -210,7 +217,7 @@ GuiStackComposition
 			{
 				Rect bounds = GuiBoundsComposition::GetBounds();
 				previousBounds = bounds;
-				EnsureStackItemVisible();
+				UpdatePreviousBounds(previousBounds);
 				return bounds;
 			}
 
