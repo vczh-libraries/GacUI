@@ -96,14 +96,6 @@ GuiStackComposition
 
 			void GuiStackComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
-				for (vint i = 0; i < stackItems.Count(); i++)
-				{
-					if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
-					{
-						UpdateStackItemBounds();
-						return;
-					}
-				}
 				EnsureStackItemVisible();
 			}
 
@@ -215,6 +207,15 @@ GuiStackComposition
 
 			Rect GuiStackComposition::GetBounds()
 			{
+				for (vint i = 0; i < stackItems.Count(); i++)
+				{
+					if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
+					{
+						UpdateStackItemBounds();
+						break;
+					}
+				}
+
 				Rect bounds = GuiBoundsComposition::GetBounds();
 				previousBounds = bounds;
 				UpdatePreviousBounds(previousBounds);

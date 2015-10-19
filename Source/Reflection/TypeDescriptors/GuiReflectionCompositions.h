@@ -36,7 +36,10 @@ Type List
 			F(presentation::compositions::GuiCellOption::ComposeType)\
 			F(presentation::compositions::GuiTableComposition)\
 			F(presentation::compositions::GuiCellComposition)\
+			F(presentation::compositions::FlowAlignment)\
 			F(presentation::compositions::GuiFlowComposition)\
+			F(presentation::compositions::GuiFlowOption)\
+			F(presentation::compositions::GuiFlowOption::BaselineType)\
 			F(presentation::compositions::GuiFlowItemComposition)\
 			F(presentation::compositions::GuiSideAlignedComposition)\
 			F(presentation::compositions::GuiSideAlignedComposition::Direction)\

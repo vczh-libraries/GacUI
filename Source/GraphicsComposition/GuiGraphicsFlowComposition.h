@@ -23,6 +23,13 @@ namespace vl
 Flow Compositions
 ***********************************************************************/
 
+			enum class FlowAlignment
+			{
+				Left,
+				Center,
+				Extend,
+			};
+
 			class GuiFlowComposition : public GuiBoundsComposition, public Description<GuiFlowComposition>
 			{
 				friend class GuiFlowItemComposition;
@@ -32,7 +39,7 @@ Flow Compositions
 				Margin								extraMargin;
 				vint								rowPadding = 0;
 				vint								columnPadding = 0;
-				Alignment							alignment = Alignment::Left;
+				FlowAlignment						alignment = FlowAlignment::Left;
 				Ptr<IGuiAxis>						axis;
 
 				ItemCompositionList					flowItems;
@@ -55,11 +62,25 @@ Flow Compositions
 				void								SetColumnPadding(vint value);
 				Ptr<IGuiAxis>						GetAxis();
 				void								SetAxis(Ptr<IGuiAxis> value);
-				Alignment							GetAlignment();
-				void								SetAlignment(Alignment value);
+				FlowAlignment						GetAlignment();
+				void								SetAlignment(FlowAlignment value);
 
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
+			};
+
+			struct GuiFlowOption
+			{
+				enum BaselineType
+				{
+					Percentage,
+					FromTop,
+					FromBottom,
+				};
+
+				BaselineType						baseline;
+				double								percentage;
+				vint								distance;
 			};
 
 			class GuiFlowItemComposition : public GuiGraphicsSite, public Description<GuiFlowItemComposition>
