@@ -176,6 +176,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetSite, {L"row" _ L"column" _ L"rowSpan" _ L"columnSpan"})
 			END_CLASS_MEMBER(GuiCellComposition)
 
+			BEGIN_ENUM_ITEM(FlowAlignment)
+				ENUM_CLASS_ITEM(Left)
+				ENUM_CLASS_ITEM(Center)
+				ENUM_CLASS_ITEM(Extend)
+			END_ENUM_ITEM(FlowAlignment)
+
 			BEGIN_CLASS_MEMBER(GuiFlowComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiFlowComposition*(), NO_PARAMETER)
@@ -186,6 +192,19 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Axis)
 				CLASS_MEMBER_PROPERTY_FAST(Alignment)
 			END_CLASS_MEMBER(GuiFlowComposition)
+
+			BEGIN_STRUCT_MEMBER(GuiFlowOption)
+				STRUCT_MEMBER(baseline)
+				STRUCT_MEMBER(percentage)
+				STRUCT_MEMBER(distance)
+			END_STRUCT_MEMBER(GuiFlowOption)
+
+			BEGIN_ENUM_ITEM(GuiFlowOption::BaselineType)
+				ENUM_ITEM_NAMESPACE(GuiFlowOption)
+				ENUM_NAMESPACE_ITEM(Percentage)
+				ENUM_NAMESPACE_ITEM(FromTop)
+				ENUM_NAMESPACE_ITEM(FromBottom)
+			END_ENUM_ITEM(GuiFlowOption::BaselineType)
 
 			BEGIN_CLASS_MEMBER(GuiFlowItemComposition)
 				CLASS_MEMBER_BASE(GuiGraphicsSite)
