@@ -6,6 +6,7 @@ namespace vl
 	{
 		namespace compositions
 		{
+			using namespace collections;
 
 /***********************************************************************
 GuiFlowComposition
@@ -13,6 +14,122 @@ GuiFlowComposition
 
 			void GuiFlowComposition::UpdateFlowItemBounds()
 			{
+				auto clientMargin = axis->RealMarginToVirtualMargin(extraMargin);
+				if (clientMargin.left < 0) clientMargin.left = 0;
+				if (clientMargin.top < 0) clientMargin.top = 0;
+				if (clientMargin.right < 0) clientMargin.right = 0;
+				if (clientMargin.bottom < 0) clientMargin.bottom = 0;
+
+				auto realFullSize = previousBounds.GetSize();
+				auto clientSize = axis->RealSizeToVirtualSize(realFullSize);
+				clientSize.x -= (clientMargin.left + clientMargin.right);
+				clientSize.y -= (clientMargin.top + clientMargin.bottom);
+
+				flowItemBounds.Resize(flowItems.Count());
+				for (vint i = 0; i < flowItems.Count(); i++)
+				{
+					flowItemBounds[i] = Rect(Point(0, 0), flowItems[i]->GetMinSize());
+				}
+
+				vint currentIndex = 0;
+				vint rowTop = 0;
+
+				while (currentIndex < flowItems.Count())
+				{
+					auto itemSize = axis->RealSizeToVirtualSize(flowItemBounds[currentIndex].GetSize());
+					vint rowWidth = itemSize.x;
+					vint rowHeight = itemSize.y;
+					vint rowItemCount = 1;
+
+					for (vint i = currentIndex + 1; i < flowItems.Count(); i++)
+					{
+						itemSize = axis->RealSizeToVirtualSize(flowItemBounds[i].GetSize());
+						vint itemWidth = itemSize.x + columnPadding;
+						if (rowWidth + itemWidth > clientSize.x)
+						{
+							break;
+						}
+						rowWidth += itemWidth;
+						if (rowHeight < itemSize.y)
+						{
+							rowHeight = itemSize.y;
+						}
+						rowItemCount++;
+					}
+
+					vint baseLine = 0;
+					Array<vint> itemBaseLines(rowItemCount);
+					for (vint i = 0; i < rowItemCount; i++)
+					{
+						vint index = currentIndex + i;
+						vint itemBaseLine = 0;
+						itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
+
+						auto option = flowItems[index]->GetFlowOption();
+						switch (option.baseline)
+						{
+						case GuiFlowOption::FromTop:
+							itemBaseLine = option.distance;
+							break;
+						case GuiFlowOption::FromBottom:
+							itemBaseLine = itemSize.y - option.distance;
+							break;
+						case GuiFlowOption::Percentage:
+							itemBaseLine = (vint)(itemSize.y*option.percentage);
+							break;
+						}
+
+						itemBaseLines[i] = itemBaseLine;
+						if (baseLine < itemBaseLine)
+						{
+							baseLine = itemBaseLine;
+						}
+					}
+
+					vint rowUsedWidth = 0;
+					for (vint i = 0; i < rowItemCount; i++)
+					{
+						vint index = currentIndex + i;
+						itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
+
+						vint itemLeft = 0;
+						vint itemTop = rowTop + baseLine - itemBaseLines[i];
+
+						switch (alignment)
+						{
+						case FlowAlignment::Left:
+							itemLeft = rowUsedWidth + i * columnPadding;
+							break;
+						case FlowAlignment::Center:
+							itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth) / 2;
+							break;
+						case FlowAlignment::Extend:
+							if (i == 0)
+							{
+								itemLeft = rowUsedWidth;
+							}
+							else
+							{
+								itemLeft = rowUsedWidth + (vint)((double)(clientSize.x - rowWidth) * i / (rowItemCount - 1));
+							}
+							break;
+						}
+
+						flowItemBounds[index] = axis->VirtualRectToRealRect(
+							realFullSize,
+							Rect(
+								Point(
+									itemLeft + clientMargin.left,
+									itemTop + clientMargin.top
+									),
+								itemSize
+								)
+							);
+						rowUsedWidth += itemSize.x;
+					}
+
+					rowTop += rowHeight + rowPadding;
+				}
 			}
 
 			void GuiFlowComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
@@ -175,6 +292,18 @@ GuiFlowItemComposition
 				Rect result = bounds;
 				if(flowParent)
 				{
+					vint index = flowParent->flowItems.IndexOf(this);
+					if (index != -1)
+					{
+						result = flowParent->flowItemBounds[index];
+					}
+
+					result = Rect(
+						result.Left() - extraMargin.left,
+						result.Top() - extraMargin.top,
+						result.Right() + extraMargin.right,
+						result.Bottom() + extraMargin.bottom
+						);
 				}
 				UpdatePreviousBounds(result);
 				return result;
@@ -193,6 +322,20 @@ GuiFlowItemComposition
 			void GuiFlowItemComposition::SetExtraMargin(Margin value)
 			{
 				extraMargin = value;
+			}
+
+			GuiFlowOption GuiFlowItemComposition::GetFlowOption()
+			{
+				return option;
+			}
+
+			void GuiFlowItemComposition::SetFlowOption(GuiFlowOption value)
+			{
+				option = value;
+				if (flowParent)
+				{
+					flowParent->UpdateFlowItemBounds();
+				}
 			}
 		}
 	}

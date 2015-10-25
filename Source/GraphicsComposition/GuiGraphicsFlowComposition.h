@@ -78,9 +78,9 @@ Flow Compositions
 					FromBottom,
 				};
 
-				BaselineType						baseline;
-				double								percentage;
-				vint								distance;
+				BaselineType						baseline = FromBottom;
+				double								percentage = 0.0;
+				vint								distance = 0;
 			};
 
 			class GuiFlowItemComposition : public GuiGraphicsSite, public Description<GuiFlowItemComposition>
@@ -90,6 +90,7 @@ Flow Compositions
 				GuiFlowComposition*					flowParent;
 				Rect								bounds;
 				Margin								extraMargin;
+				GuiFlowOption						option;
 
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
 				Size								GetMinSize();
@@ -103,6 +104,9 @@ Flow Compositions
 
 				Margin								GetExtraMargin();
 				void								SetExtraMargin(Margin value);
+
+				GuiFlowOption						GetFlowOption();
+				void								SetFlowOption(GuiFlowOption value);
 			};
 		}
 	}

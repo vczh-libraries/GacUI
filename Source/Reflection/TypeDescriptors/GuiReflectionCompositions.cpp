@@ -212,6 +212,7 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(ExtraMargin)
+				CLASS_MEMBER_PROPERTY_FAST(FlowOption)
 			END_CLASS_MEMBER(GuiFlowItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiSideAlignedComposition)
