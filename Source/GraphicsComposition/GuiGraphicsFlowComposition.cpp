@@ -129,11 +129,13 @@ GuiFlowComposition
 					}
 
 					rowTop += rowHeight + rowPadding;
+					currentIndex += rowItemCount;
 				}
 			}
 
 			void GuiFlowComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
+				UpdateFlowItemBounds();
 			}
 
 			void GuiFlowComposition::OnChildInserted(GuiGraphicsComposition* child)
@@ -161,6 +163,7 @@ GuiFlowComposition
 			GuiFlowComposition::GuiFlowComposition()
 				:axis(new GuiDefaultAxis)
 			{
+				BoundsChanged.AttachMethod(this, &GuiFlowComposition::OnBoundsChanged);
 			}
 
 			GuiFlowComposition::~GuiFlowComposition()
@@ -252,9 +255,7 @@ GuiFlowComposition
 					}
 				}
 
-				Rect bounds = GuiBoundsComposition::GetBounds();
-				previousBounds = bounds;
-				UpdatePreviousBounds(previousBounds);
+				bounds = GuiBoundsComposition::GetBounds();
 				return bounds;
 			}
 

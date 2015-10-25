@@ -57,28 +57,28 @@
           </att.Columns>
 
           <Cell Site="row:0 column:1">
-            <RadioButton Text="LeftDown" GroupController-ref="groupStackDirection" Selected="true"/>
+            <RadioButton Text="RightDown" GroupController-ref="groupStackDirection" Selected="true"/>
           </Cell>
           <Cell Site="row:0 column:2">
-            <RadioButton Text="RightDown" GroupController-ref="groupStackDirection"/>
+            <RadioButton Text="LeftDown" GroupController-ref="groupStackDirection"/>
           </Cell>
           <Cell Site="row:1 column:0">
-            <RadioButton Text="DownLeft" GroupController-ref="groupStackDirection"/>
-          </Cell>
-          <Cell Site="row:1 column:4">
             <RadioButton Text="DownRight" GroupController-ref="groupStackDirection"/>
           </Cell>
-          <Cell Site="row:2 column:0">
-            <RadioButton Text="UpLeft" GroupController-ref="groupStackDirection" Selected="true"/>
+          <Cell Site="row:1 column:4">
+            <RadioButton Text="DownLeft" GroupController-ref="groupStackDirection"/>
           </Cell>
-          <Cell Site="row:2 column:4">
+          <Cell Site="row:2 column:0">
             <RadioButton Text="UpRight" GroupController-ref="groupStackDirection"/>
           </Cell>
+          <Cell Site="row:2 column:4">
+            <RadioButton Text="UpLeft" GroupController-ref="groupStackDirection"/>
+          </Cell>
           <Cell Site="row:3 column:1">
-            <RadioButton Text="LeftUp" GroupController-ref="groupStackDirection"/>
+            <RadioButton Text="RightUp" GroupController-ref="groupStackDirection"/>
           </Cell>
           <Cell Site="row:3 column:2">
-            <RadioButton Text="RightUp" GroupController-ref="groupStackDirection"/>
+            <RadioButton Text="LeftUp" GroupController-ref="groupStackDirection"/>
           </Cell>
           
           <Cell Site="row:4 column:0 columnSpan:5">

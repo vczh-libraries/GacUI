@@ -44,7 +44,7 @@ Flow Compositions
 
 				ItemCompositionList					flowItems;
 				collections::Array<Rect>			flowItemBounds;
-				Rect								previousBounds;
+				Rect								bounds;
 
 				void								UpdateFlowItemBounds();
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
