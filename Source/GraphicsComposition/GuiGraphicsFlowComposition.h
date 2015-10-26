@@ -45,8 +45,10 @@ Flow Compositions
 				ItemCompositionList					flowItems;
 				collections::Array<Rect>			flowItemBounds;
 				Rect								bounds;
+				vint								minHeight = 0;
+				bool								needUpdate = false;
 
-				void								UpdateFlowItemBounds();
+				void								UpdateFlowItemBounds(bool forceUpdate);
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;

@@ -6541,9 +6541,9 @@ DataGridContentProvider
 					CloseEditor(false);
 				}
 
-				GuiListControl::IItemCoordinateTransformer* DataGridContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* DataGridContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* DataGridContentProvider::CreatePreferredArranger()
@@ -8420,7 +8420,7 @@ GuiListControl::ItemCallback
 			void GuiListControl::ItemCallback::SetViewLocation(Point value)
 			{
 				Rect virtualRect(value, listControl->GetViewSize());
-				Rect realRect=listControl->itemCoordinateTransformer->VirtualRectToRealRect(listControl->fullSize, virtualRect);
+				Rect realRect=listControl->axis->VirtualRectToRealRect(listControl->fullSize, virtualRect);
 				listControl->GetHorizontalScroll()->SetPosition(realRect.Left());
 				listControl->GetVerticalScroll()->SetPosition(realRect.Top());
 			}
@@ -8428,24 +8428,24 @@ GuiListControl::ItemCallback
 			Size GuiListControl::ItemCallback::GetStylePreferredSize(IItemStyleController* style)
 			{
 				Size size=style->GetBoundsComposition()->GetPreferredBounds().GetSize();
-				return listControl->itemCoordinateTransformer->RealSizeToVirtualSize(size);
+				return listControl->axis->RealSizeToVirtualSize(size);
 			}
 
 			void GuiListControl::ItemCallback::SetStyleAlignmentToParent(IItemStyleController* style, Margin margin)
 			{
-				Margin newMargin=listControl->itemCoordinateTransformer->VirtualMarginToRealMargin(margin);
+				Margin newMargin=listControl->axis->VirtualMarginToRealMargin(margin);
 				style->GetBoundsComposition()->SetAlignmentToParent(newMargin);
 			}
 
 			Rect GuiListControl::ItemCallback::GetStyleBounds(IItemStyleController* style)
 			{
 				Rect bounds=style->GetBoundsComposition()->GetBounds();
-				return listControl->itemCoordinateTransformer->RealRectToVirtualRect(listControl->GetViewSize(), bounds);
+				return listControl->axis->RealRectToVirtualRect(listControl->GetViewSize(), bounds);
 			}
 
 			void GuiListControl::ItemCallback::SetStyleBounds(IItemStyleController* style, Rect bounds)
 			{
-				Rect newBounds=listControl->itemCoordinateTransformer->VirtualRectToRealRect(listControl->GetViewSize(), bounds);
+				Rect newBounds=listControl->axis->VirtualRectToRealRect(listControl->GetViewSize(), bounds);
 				return style->GetBoundsComposition()->SetBounds(newBounds);
 			}
 
@@ -8492,7 +8492,7 @@ GuiListControl
 			Size GuiListControl::QueryFullSize()
 			{
 				Size virtualSize=itemArranger?itemArranger->GetTotalSize():Size(0, 0);
-				fullSize=itemCoordinateTransformer->VirtualSizeToRealSize(virtualSize);
+				fullSize=axis->VirtualSizeToRealSize(virtualSize);
 				return fullSize;
 			}
 
@@ -8500,7 +8500,7 @@ GuiListControl
 			{
 				if(itemArranger)
 				{
-					Rect newBounds=itemCoordinateTransformer->RealRectToVirtualRect(fullSize, viewBounds);
+					Rect newBounds=axis->RealRectToVirtualRect(fullSize, viewBounds);
 					itemArranger->OnViewChanged(newBounds);
 				}
 			}
@@ -8656,7 +8656,7 @@ GuiListControl
 			{
 				StyleProviderChanged.SetAssociatedComposition(boundsComposition);
 				ArrangerChanged.SetAssociatedComposition(boundsComposition);
-				CoordinateTransformerChanged.SetAssociatedComposition(boundsComposition);
+				AxisChanged.SetAssociatedComposition(boundsComposition);
 				
 				ItemLeftButtonDown.SetAssociatedComposition(boundsComposition);
 				ItemLeftButtonUp.SetAssociatedComposition(boundsComposition);
@@ -8673,7 +8673,7 @@ GuiListControl
 
 				callback=new ItemCallback(this);
 				itemProvider->AttachCallback(callback.Obj());
-				itemCoordinateTransformer=new list::DefaultItemCoordinateTransformer;
+				axis=new GuiDefaultAxis;
 
 				if(acceptFocus)
 				{
@@ -8726,17 +8726,17 @@ GuiListControl
 				return old;
 			}
 
-			GuiListControl::IItemCoordinateTransformer* GuiListControl::GetCoordinateTransformer()
+			compositions::IGuiAxis* GuiListControl::GetAxis()
 			{
-				return itemCoordinateTransformer.Obj();
+				return axis.Obj();
 			}
 
-			Ptr<GuiListControl::IItemCoordinateTransformer> GuiListControl::SetCoordinateTransformer(Ptr<IItemCoordinateTransformer> value)
+			Ptr<compositions::IGuiAxis> GuiListControl::SetAxis(Ptr<compositions::IGuiAxis> value)
 			{
-				Ptr<IItemCoordinateTransformer> old=itemCoordinateTransformer;
-				itemCoordinateTransformer=value;
+				Ptr<IGuiAxis> old=axis;
+				axis=value;
 				SetStyleProviderAndArranger(itemStyleProvider, itemArranger);
-				CoordinateTransformerChanged.Execute(GetNotifyEventArguments());
+				AxisChanged.Execute(GetNotifyEventArguments());
 				return old;
 			}
 
@@ -9016,40 +9016,40 @@ GuiSelectableListControl
 				if(!GetArranger()) return false;
 
 				NormalizeSelectedItemIndexStartEnd();
-				KeyDirection keyDirection=Up;
+				KeyDirection keyDirection=KeyDirection::Up;
 				switch(code)
 				{
 				case VKEY_UP:
-					keyDirection=Up;
+					keyDirection=KeyDirection::Up;
 					break;
 				case VKEY_DOWN:
-					keyDirection=Down;
+					keyDirection=KeyDirection::Down;
 					break;
 				case VKEY_LEFT:
-					keyDirection=Left;
+					keyDirection=KeyDirection::Left;
 					break;
 				case VKEY_RIGHT:
-					keyDirection=Right;
+					keyDirection=KeyDirection::Right;
 					break;
 				case VKEY_HOME:
-					keyDirection=Home;
+					keyDirection=KeyDirection::Home;
 					break;
 				case VKEY_END:
-					keyDirection=End;
+					keyDirection=KeyDirection::End;
 					break;
 				case VKEY_PRIOR:
-					keyDirection=PageUp;
+					keyDirection=KeyDirection::PageUp;
 					break;
 				case VKEY_NEXT:
-					keyDirection=PageDown;
+					keyDirection=KeyDirection::PageDown;
 					break;
 				default:
 					return false;
 				}
 
-				if(GetCoordinateTransformer())
+				if(GetAxis())
 				{
-					keyDirection=GetCoordinateTransformer()->RealKeyDirectionToVirtualKeyDirection(keyDirection);
+					keyDirection=GetAxis()->RealKeyDirectionToVirtualKeyDirection(keyDirection);
 				}
 				vint itemIndex=GetArranger()->FindItem(selectedItemIndexEnd, keyDirection);
 				if(SelectItemsByClick(itemIndex, ctrl, shift, true))
@@ -9074,363 +9074,6 @@ GuiSelectableListControl
 
 			namespace list
 			{
-
-/***********************************************************************
-DefaultItemCoordinateTransformer
-***********************************************************************/
-
-				DefaultItemCoordinateTransformer::DefaultItemCoordinateTransformer()
-				{
-				}
-
-				DefaultItemCoordinateTransformer::~DefaultItemCoordinateTransformer()
-				{
-				}
-
-				Size DefaultItemCoordinateTransformer::RealSizeToVirtualSize(Size size)
-				{
-					return size;
-				}
-
-				Size DefaultItemCoordinateTransformer::VirtualSizeToRealSize(Size size)
-				{
-					return size;
-				}
-
-				Point DefaultItemCoordinateTransformer::RealPointToVirtualPoint(Size realFullSize, Point point)
-				{
-					return point;
-				}
-
-				Point DefaultItemCoordinateTransformer::VirtualPointToRealPoint(Size realFullSize, Point point)
-				{
-					return point;
-				}
-
-				Rect DefaultItemCoordinateTransformer::RealRectToVirtualRect(Size realFullSize, Rect rect)
-				{
-					return rect;
-				}
-
-				Rect DefaultItemCoordinateTransformer::VirtualRectToRealRect(Size realFullSize, Rect rect)
-				{
-					return rect;
-				}
-
-				Margin DefaultItemCoordinateTransformer::RealMarginToVirtualMargin(Margin margin)
-				{
-					return margin;
-				}
-
-				Margin DefaultItemCoordinateTransformer::VirtualMarginToRealMargin(Margin margin)
-				{
-					return margin;
-				}
-
-				GuiListControl::KeyDirection DefaultItemCoordinateTransformer::RealKeyDirectionToVirtualKeyDirection(GuiListControl::KeyDirection key)
-				{
-					return key;
-				}
-
-/***********************************************************************
-AxisAlignedItemCoordinateTransformer
-***********************************************************************/
-
-				AxisAlignedItemCoordinateTransformer::AxisAlignedItemCoordinateTransformer(Alignment _alignment)
-					:alignment(_alignment)
-				{
-				}
-
-				AxisAlignedItemCoordinateTransformer::~AxisAlignedItemCoordinateTransformer()
-				{
-				}
-
-				AxisAlignedItemCoordinateTransformer::Alignment AxisAlignedItemCoordinateTransformer::GetAlignment()
-				{
-					return alignment;
-				}
-
-				Size AxisAlignedItemCoordinateTransformer::RealSizeToVirtualSize(Size size)
-				{
-					switch(alignment)
-					{
-					case LeftDown:
-					case RightDown:
-					case LeftUp:
-					case RightUp:
-						return Size(size.x, size.y);
-					case DownLeft:
-					case DownRight:
-					case UpLeft:
-					case UpRight:
-						return Size(size.y, size.x);
-					}
-					return size;
-				}
-
-				Size AxisAlignedItemCoordinateTransformer::VirtualSizeToRealSize(Size size)
-				{
-					return RealSizeToVirtualSize(size);
-				}
-
-				Point AxisAlignedItemCoordinateTransformer::RealPointToVirtualPoint(Size realFullSize, Point point)
-				{
-					Rect rect(point, Size(0, 0));
-					return RealRectToVirtualRect(realFullSize, rect).LeftTop();
-				}
-
-				Point AxisAlignedItemCoordinateTransformer::VirtualPointToRealPoint(Size realFullSize, Point point)
-				{
-					Rect rect(point, Size(0, 0));
-					return VirtualRectToRealRect(realFullSize, rect).LeftTop();
-				}
-
-				Rect AxisAlignedItemCoordinateTransformer::RealRectToVirtualRect(Size realFullSize, Rect rect)
-				{
-					vint x1=rect.x1;
-					vint x2=realFullSize.x-rect.x2;
-					vint y1=rect.y1;
-					vint y2=realFullSize.y-rect.y2;
-					vint w=rect.Width();
-					vint h=rect.Height();
-					switch(alignment)
-					{
-					case LeftDown:
-						return Rect(Point(x2, y1), Size(w, h));
-					case RightDown:
-						return Rect(Point(x1, y1), Size(w, h));
-					case LeftUp:
-						return Rect(Point(x2, y2), Size(w, h));
-					case RightUp:
-						return Rect(Point(x1, y2), Size(w, h));
-					case DownLeft:
-						return Rect(Point(y1, x2), Size(h, w));
-					case DownRight:
-						return Rect(Point(y1, x1), Size(h, w));
-					case UpLeft:
-						return Rect(Point(y2, x2), Size(h, w));
-					case UpRight:
-						return Rect(Point(y2, x1), Size(h, w));
-					}
-					return rect;
-				}
-
-				Rect AxisAlignedItemCoordinateTransformer::VirtualRectToRealRect(Size realFullSize, Rect rect)
-				{
-					realFullSize=RealSizeToVirtualSize(realFullSize);
-					vint x1=rect.x1;
-					vint x2=realFullSize.x-rect.x2;
-					vint y1=rect.y1;
-					vint y2=realFullSize.y-rect.y2;
-					vint w=rect.Width();
-					vint h=rect.Height();
-					switch(alignment)
-					{
-					case LeftDown:
-						return Rect(Point(x2, y1), Size(w, h));
-					case RightDown:
-						return Rect(Point(x1, y1), Size(w, h));
-					case LeftUp:
-						return Rect(Point(x2, y2), Size(w, h));
-					case RightUp:
-						return Rect(Point(x1, y2), Size(w, h));
-					case DownLeft:
-						return Rect(Point(y2, x1), Size(h, w));
-					case DownRight:
-						return Rect(Point(y1, x1), Size(h, w));
-					case UpLeft:
-						return Rect(Point(y2, x2), Size(h, w));
-					case UpRight:
-						return Rect(Point(y1, x2), Size(h, w));
-					}
-					return rect;
-				}
-
-				Margin AxisAlignedItemCoordinateTransformer::RealMarginToVirtualMargin(Margin margin)
-				{
-					vint x1=margin.left;
-					vint x2=margin.right;
-					vint y1=margin.top;
-					vint y2=margin.bottom;
-					switch(alignment)
-					{
-					case LeftDown:
-						return Margin(x2, y1, x1, y2);
-					case RightDown:
-						return Margin(x1, y1, x2, y2);
-					case LeftUp:
-						return Margin(x2, y2, x1, y1);
-					case RightUp:
-						return Margin(x1, y2, x2, y1);
-					case DownLeft:
-						return Margin(y1, x2, y2, x1);
-					case DownRight:
-						return Margin(y1, x1, y2, x2);
-					case UpLeft:
-						return Margin(y2, x2, y1, x1);
-					case UpRight:
-						return Margin(y2, x1, y1, x2);
-					}
-					return margin;
-				}
-
-				Margin AxisAlignedItemCoordinateTransformer::VirtualMarginToRealMargin(Margin margin)
-				{
-					vint x1=margin.left;
-					vint x2=margin.right;
-					vint y1=margin.top;
-					vint y2=margin.bottom;
-					switch(alignment)
-					{
-					case LeftDown:
-						return Margin(x2, y1, x1, y2);
-					case RightDown:
-						return Margin(x1, y1, x2, y2);
-					case LeftUp:
-						return Margin(x2, y2, x1, y1);
-					case RightUp:
-						return Margin(x1, y2, x2, y1);
-					case DownLeft:
-						return Margin(y2, x1, y1, x2);
-					case DownRight:
-						return Margin(y1, x1, y2, x2);
-					case UpLeft:
-						return Margin(y2, x2, y1, x1);
-					case UpRight:
-						return Margin(y1, x2, y2, x1);
-					default:;
-					}
-					return margin;
-				}
-
-				GuiListControl::KeyDirection AxisAlignedItemCoordinateTransformer::RealKeyDirectionToVirtualKeyDirection(GuiListControl::KeyDirection key)
-				{
-					bool pageKey=false;
-					switch(key)
-					{
-					case GuiListControl::PageUp:
-						pageKey=true;
-						key=GuiListControl::Up;
-						break;
-					case GuiListControl::PageDown:
-						pageKey=true;
-						key=GuiListControl::Down;
-						break;
-					case GuiListControl::PageLeft:
-						pageKey=true;
-						key=GuiListControl::Left;
-						break;
-					case GuiListControl::PageRight:
-						pageKey=true;
-						key=GuiListControl::Right;
-						break;
-					default:;
-					}
-
-					switch(key)
-					{
-					case GuiListControl::Up:
-						switch(alignment)
-						{
-						case LeftDown:	key=GuiListControl::Up;		break;
-						case RightDown:	key=GuiListControl::Up;		break;
-						case LeftUp:	key=GuiListControl::Down;	break;
-						case RightUp:	key=GuiListControl::Down;	break;
-						case DownLeft:	key=GuiListControl::Left;	break;
-						case DownRight:	key=GuiListControl::Left;	break;
-						case UpLeft:	key=GuiListControl::Right;	break;
-						case UpRight:	key=GuiListControl::Right;	break;
-						}
-						break;
-					case GuiListControl::Down:
-						switch(alignment)
-						{
-						case LeftDown:	key=GuiListControl::Down;	break;
-						case RightDown:	key=GuiListControl::Down;	break;
-						case LeftUp:	key=GuiListControl::Up;		break;
-						case RightUp:	key=GuiListControl::Up;		break;
-						case DownLeft:	key=GuiListControl::Right;	break;
-						case DownRight:	key=GuiListControl::Right;	break;
-						case UpLeft:	key=GuiListControl::Left;	break;
-						case UpRight:	key=GuiListControl::Left;	break;
-						}
-						break;
-					case GuiListControl::Left:
-						switch(alignment)
-						{
-						case LeftDown:	key=GuiListControl::Right;	break;
-						case RightDown:	key=GuiListControl::Left;	break;
-						case LeftUp:	key=GuiListControl::Right;	break;
-						case RightUp:	key=GuiListControl::Left;	break;
-						case DownLeft:	key=GuiListControl::Down;	break;
-						case DownRight:	key=GuiListControl::Up;		break;
-						case UpLeft:	key=GuiListControl::Down;	break;
-						case UpRight:	key=GuiListControl::Up;		break;
-						}
-						break;
-					case GuiListControl::Right:
-						switch(alignment)
-						{
-						case LeftDown:	key=GuiListControl::Left;	break;
-						case RightDown:	key=GuiListControl::Right;	break;
-						case LeftUp:	key=GuiListControl::Left;	break;
-						case RightUp:	key=GuiListControl::Right;	break;
-						case DownLeft:	key=GuiListControl::Up;		break;
-						case DownRight:	key=GuiListControl::Down;	break;
-						case UpLeft:	key=GuiListControl::Up;		break;
-						case UpRight:	key=GuiListControl::Down;	break;
-						}
-						break;
-					case GuiListControl::Home:
-						switch(alignment)
-						{
-						case LeftDown:	key=GuiListControl::Home;	break;
-						case RightDown:	key=GuiListControl::Home;	break;
-						case LeftUp:	key=GuiListControl::End;	break;
-						case RightUp:	key=GuiListControl::End;	break;
-						case DownLeft:	key=GuiListControl::Home;	break;
-						case DownRight:	key=GuiListControl::Home;	break;
-						case UpLeft:	key=GuiListControl::End;	break;
-						case UpRight:	key=GuiListControl::End;	break;
-						}
-						break;
-					case GuiListControl::End:
-						switch(alignment)
-						{
-						case LeftDown:	key=GuiListControl::End;	break;
-						case RightDown:	key=GuiListControl::End;	break;
-						case LeftUp:	key=GuiListControl::Home;	break;
-						case RightUp:	key=GuiListControl::Home;	break;
-						case DownLeft:	key=GuiListControl::End;	break;
-						case DownRight:	key=GuiListControl::End;	break;
-						case UpLeft:	key=GuiListControl::Home;	break;
-						case UpRight:	key=GuiListControl::Home;	break;
-						}
-						break;
-					default:;
-					}
-
-					if(pageKey)
-					{
-						switch(key)
-						{
-						case GuiListControl::Up:
-							key=GuiListControl::PageUp;
-							break;
-						case GuiListControl::Down:
-							key=GuiListControl::PageDown;
-							break;
-						case GuiListControl::Left:
-							key=GuiListControl::PageLeft;
-							break;
-						case GuiListControl::Right:
-							key=GuiListControl::PageRight;
-							break;
-						default:;
-						}
-					}
-					return key;
-				}
 
 /***********************************************************************
 RangedItemArrangerBase
@@ -9723,7 +9366,7 @@ FixedHeightItemArranger
 				{
 				}
 
-				vint FixedHeightItemArranger::FindItem(vint itemIndex, GuiListControl::KeyDirection key)
+				vint FixedHeightItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
 				{
 					vint count=itemProvider->Count();
 					if(count==0) return -1;
@@ -9731,22 +9374,22 @@ FixedHeightItemArranger
 					if(groupCount==0) groupCount=1;
 					switch(key)
 					{
-					case GuiListControl::Up:
+					case KeyDirection::Up:
 						itemIndex--;
 						break;
-					case GuiListControl::Down:
+					case KeyDirection::Down:
 						itemIndex++;
 						break;
-					case GuiListControl::Home:
+					case KeyDirection::Home:
 						itemIndex=0;
 						break;
-					case GuiListControl::End:
+					case KeyDirection::End:
 						itemIndex=count;
 						break;
-					case GuiListControl::PageUp:
+					case KeyDirection::PageUp:
 						itemIndex-=groupCount;
 						break;
-					case GuiListControl::PageDown:
+					case KeyDirection::PageDown:
 						itemIndex+=groupCount;
 						break;
 					default:
@@ -9949,7 +9592,7 @@ FixedSizeMultiColumnItemArranger
 				{
 				}
 
-				vint FixedSizeMultiColumnItemArranger::FindItem(vint itemIndex, GuiListControl::KeyDirection key)
+				vint FixedSizeMultiColumnItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
 				{
 					vint count=itemProvider->Count();
 					vint columnCount=viewBounds.Width()/itemSize.x;
@@ -9959,34 +9602,34 @@ FixedSizeMultiColumnItemArranger
 
 					switch(key)
 					{
-					case GuiListControl::Up:
+					case KeyDirection::Up:
 						itemIndex-=columnCount;
 						break;
-					case GuiListControl::Down:
+					case KeyDirection::Down:
 						itemIndex+=columnCount;
 						break;
-					case GuiListControl::Left:
+					case KeyDirection::Left:
 						itemIndex--;
 						break;
-					case GuiListControl::Right:
+					case KeyDirection::Right:
 						itemIndex++;
 						break;
-					case GuiListControl::Home:
+					case KeyDirection::Home:
 						itemIndex=0;
 						break;
-					case GuiListControl::End:
+					case KeyDirection::End:
 						itemIndex=count;
 						break;
-					case GuiListControl::PageUp:
+					case KeyDirection::PageUp:
 						itemIndex-=columnCount*rowCount;
 						break;
-					case GuiListControl::PageDown:
+					case KeyDirection::PageDown:
 						itemIndex+=columnCount*rowCount;
 						break;
-					case GuiListControl::PageLeft:
+					case KeyDirection::PageLeft:
 						itemIndex-=itemIndex%columnCount;
 						break;
-					case GuiListControl::PageRight:
+					case KeyDirection::PageRight:
 						itemIndex+=columnCount-itemIndex%columnCount-1;
 						break;
 					default:
@@ -10207,35 +9850,35 @@ FixedHeightMultiColumnItemArranger
 				{
 				}
 
-				vint FixedHeightMultiColumnItemArranger::FindItem(vint itemIndex, GuiListControl::KeyDirection key)
+				vint FixedHeightMultiColumnItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
 				{
 					vint count=itemProvider->Count();
 					vint groupCount=viewBounds.Height()/itemHeight;
 					if(groupCount==0) groupCount=1;
 					switch(key)
 					{
-					case GuiListControl::Up:
+					case KeyDirection::Up:
 						itemIndex--;
 						break;
-					case GuiListControl::Down:
+					case KeyDirection::Down:
 						itemIndex++;
 						break;
-					case GuiListControl::Left:
+					case KeyDirection::Left:
 						itemIndex-=groupCount;
 						break;
-					case GuiListControl::Right:
+					case KeyDirection::Right:
 						itemIndex+=groupCount;
 						break;
-					case GuiListControl::Home:
+					case KeyDirection::Home:
 						itemIndex=0;
 						break;
-					case GuiListControl::End:
+					case KeyDirection::End:
 						itemIndex=count;
 						break;
-					case GuiListControl::PageUp:
+					case KeyDirection::PageUp:
 						itemIndex-=itemIndex%groupCount;
 						break;
-					case GuiListControl::PageDown:
+					case KeyDirection::PageDown:
 						itemIndex+=groupCount-itemIndex%groupCount-1;
 						break;
 					default:
@@ -10820,9 +10463,9 @@ ListViewBigIconContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewBigIconContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewBigIconContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewBigIconContentProvider::CreatePreferredArranger()
@@ -10934,9 +10577,9 @@ ListViewSmallIconContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewSmallIconContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewSmallIconContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewSmallIconContentProvider::CreatePreferredArranger()
@@ -11047,9 +10690,9 @@ ListViewListContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewListContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewListContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewListContentProvider::CreatePreferredArranger()
@@ -11211,9 +10854,9 @@ ListViewTileContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewTileContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewTileContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewTileContentProvider::CreatePreferredArranger()
@@ -11401,9 +11044,9 @@ ListViewInformationContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewInformationContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewInformationContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewInformationContentProvider::CreatePreferredArranger()
@@ -11839,9 +11482,9 @@ ListViewDetailContentProvider
 				{
 				}
 
-				GuiListControl::IItemCoordinateTransformer* ListViewDetailContentProvider::CreatePreferredCoordinateTransformer()
+				compositions::IGuiAxis* ListViewDetailContentProvider::CreatePreferredAxis()
 				{
-					return new DefaultItemCoordinateTransformer;
+					return new GuiDefaultAxis;
 				}
 
 				GuiListControl::IItemArranger* ListViewDetailContentProvider::CreatePreferredArranger()
@@ -12309,7 +11952,7 @@ GuiListView
 			{
 				SetStyleProvider(0);
 				SetArranger(0);
-				SetCoordinateTransformer(contentProvider->CreatePreferredCoordinateTransformer());
+				SetAxis(contentProvider->CreatePreferredAxis());
 				SetStyleProvider(new list::ListViewItemStyleProvider(contentProvider));
 				SetArranger(contentProvider->CreatePreferredArranger());
 				return true;
@@ -32253,6 +31896,377 @@ GuiToolstripButton
 }
 
 /***********************************************************************
+GRAPHICSCOMPOSITION\GUIGRAPHICSAXIS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+
+/***********************************************************************
+GuiDefaultAxis
+***********************************************************************/
+
+			GuiDefaultAxis::GuiDefaultAxis()
+			{
+			}
+
+			GuiDefaultAxis::~GuiDefaultAxis()
+			{
+			}
+
+			Size GuiDefaultAxis::RealSizeToVirtualSize(Size size)
+			{
+				return size;
+			}
+
+			Size GuiDefaultAxis::VirtualSizeToRealSize(Size size)
+			{
+				return size;
+			}
+
+			Point GuiDefaultAxis::RealPointToVirtualPoint(Size realFullSize, Point point)
+			{
+				return point;
+			}
+
+			Point GuiDefaultAxis::VirtualPointToRealPoint(Size realFullSize, Point point)
+			{
+				return point;
+			}
+
+			Rect GuiDefaultAxis::RealRectToVirtualRect(Size realFullSize, Rect rect)
+			{
+				return rect;
+			}
+
+			Rect GuiDefaultAxis::VirtualRectToRealRect(Size realFullSize, Rect rect)
+			{
+				return rect;
+			}
+
+			Margin GuiDefaultAxis::RealMarginToVirtualMargin(Margin margin)
+			{
+				return margin;
+			}
+
+			Margin GuiDefaultAxis::VirtualMarginToRealMargin(Margin margin)
+			{
+				return margin;
+			}
+
+			KeyDirection GuiDefaultAxis::RealKeyDirectionToVirtualKeyDirection(KeyDirection key)
+			{
+				return key;
+			}
+
+/***********************************************************************
+GuiAxis
+***********************************************************************/
+
+			GuiAxis::GuiAxis(AxisDirection _axisDirection)
+				:axisDirection(_axisDirection)
+			{
+			}
+
+			GuiAxis::~GuiAxis()
+			{
+			}
+
+			AxisDirection GuiAxis::GetAlignment()
+			{
+				return axisDirection;
+			}
+
+			Size GuiAxis::RealSizeToVirtualSize(Size size)
+			{
+				switch(axisDirection)
+				{
+				case AxisDirection::LeftDown:
+				case AxisDirection::RightDown:
+				case AxisDirection::LeftUp:
+				case AxisDirection::RightUp:
+					return Size(size.x, size.y);
+				case AxisDirection::DownLeft:
+				case AxisDirection::DownRight:
+				case AxisDirection::UpLeft:
+				case AxisDirection::UpRight:
+					return Size(size.y, size.x);
+				}
+				return size;
+			}
+
+			Size GuiAxis::VirtualSizeToRealSize(Size size)
+			{
+				return RealSizeToVirtualSize(size);
+			}
+
+			Point GuiAxis::RealPointToVirtualPoint(Size realFullSize, Point point)
+			{
+				Rect rect(point, Size(0, 0));
+				return RealRectToVirtualRect(realFullSize, rect).LeftTop();
+			}
+
+			Point GuiAxis::VirtualPointToRealPoint(Size realFullSize, Point point)
+			{
+				Rect rect(point, Size(0, 0));
+				return VirtualRectToRealRect(realFullSize, rect).LeftTop();
+			}
+
+			Rect GuiAxis::RealRectToVirtualRect(Size realFullSize, Rect rect)
+			{
+				vint x1=rect.x1;
+				vint x2=realFullSize.x-rect.x2;
+				vint y1=rect.y1;
+				vint y2=realFullSize.y-rect.y2;
+				vint w=rect.Width();
+				vint h=rect.Height();
+				switch(axisDirection)
+				{
+				case AxisDirection::LeftDown:
+					return Rect(Point(x2, y1), Size(w, h));
+				case AxisDirection::RightDown:
+					return Rect(Point(x1, y1), Size(w, h));
+				case AxisDirection::LeftUp:
+					return Rect(Point(x2, y2), Size(w, h));
+				case AxisDirection::RightUp:
+					return Rect(Point(x1, y2), Size(w, h));
+				case AxisDirection::DownLeft:
+					return Rect(Point(y1, x2), Size(h, w));
+				case AxisDirection::DownRight:
+					return Rect(Point(y1, x1), Size(h, w));
+				case AxisDirection::UpLeft:
+					return Rect(Point(y2, x2), Size(h, w));
+				case AxisDirection::UpRight:
+					return Rect(Point(y2, x1), Size(h, w));
+				}
+				return rect;
+			}
+
+			Rect GuiAxis::VirtualRectToRealRect(Size realFullSize, Rect rect)
+			{
+				realFullSize=RealSizeToVirtualSize(realFullSize);
+				vint x1=rect.x1;
+				vint x2=realFullSize.x-rect.x2;
+				vint y1=rect.y1;
+				vint y2=realFullSize.y-rect.y2;
+				vint w=rect.Width();
+				vint h=rect.Height();
+				switch(axisDirection)
+				{
+				case AxisDirection::LeftDown:
+					return Rect(Point(x2, y1), Size(w, h));
+				case AxisDirection::RightDown:
+					return Rect(Point(x1, y1), Size(w, h));
+				case AxisDirection::LeftUp:
+					return Rect(Point(x2, y2), Size(w, h));
+				case AxisDirection::RightUp:
+					return Rect(Point(x1, y2), Size(w, h));
+				case AxisDirection::DownLeft:
+					return Rect(Point(y2, x1), Size(h, w));
+				case AxisDirection::DownRight:
+					return Rect(Point(y1, x1), Size(h, w));
+				case AxisDirection::UpLeft:
+					return Rect(Point(y2, x2), Size(h, w));
+				case AxisDirection::UpRight:
+					return Rect(Point(y1, x2), Size(h, w));
+				}
+				return rect;
+			}
+
+			Margin GuiAxis::RealMarginToVirtualMargin(Margin margin)
+			{
+				vint x1=margin.left;
+				vint x2=margin.right;
+				vint y1=margin.top;
+				vint y2=margin.bottom;
+				switch(axisDirection)
+				{
+				case AxisDirection::LeftDown:
+					return Margin(x2, y1, x1, y2);
+				case AxisDirection::RightDown:
+					return Margin(x1, y1, x2, y2);
+				case AxisDirection::LeftUp:
+					return Margin(x2, y2, x1, y1);
+				case AxisDirection::RightUp:
+					return Margin(x1, y2, x2, y1);
+				case AxisDirection::DownLeft:
+					return Margin(y1, x2, y2, x1);
+				case AxisDirection::DownRight:
+					return Margin(y1, x1, y2, x2);
+				case AxisDirection::UpLeft:
+					return Margin(y2, x2, y1, x1);
+				case AxisDirection::UpRight:
+					return Margin(y2, x1, y1, x2);
+				}
+				return margin;
+			}
+
+			Margin GuiAxis::VirtualMarginToRealMargin(Margin margin)
+			{
+				vint x1=margin.left;
+				vint x2=margin.right;
+				vint y1=margin.top;
+				vint y2=margin.bottom;
+				switch(axisDirection)
+				{
+				case AxisDirection::LeftDown:
+					return Margin(x2, y1, x1, y2);
+				case AxisDirection::RightDown:
+					return Margin(x1, y1, x2, y2);
+				case AxisDirection::LeftUp:
+					return Margin(x2, y2, x1, y1);
+				case AxisDirection::RightUp:
+					return Margin(x1, y2, x2, y1);
+				case AxisDirection::DownLeft:
+					return Margin(y2, x1, y1, x2);
+				case AxisDirection::DownRight:
+					return Margin(y1, x1, y2, x2);
+				case AxisDirection::UpLeft:
+					return Margin(y2, x2, y1, x1);
+				case AxisDirection::UpRight:
+					return Margin(y1, x2, y2, x1);
+				default:;
+				}
+				return margin;
+			}
+
+			KeyDirection GuiAxis::RealKeyDirectionToVirtualKeyDirection(KeyDirection key)
+			{
+				bool pageKey=false;
+				switch(key)
+				{
+				case KeyDirection::PageUp:
+					pageKey=true;
+					key=KeyDirection::Up;
+					break;
+				case KeyDirection::PageDown:
+					pageKey=true;
+					key=KeyDirection::Down;
+					break;
+				case KeyDirection::PageLeft:
+					pageKey=true;
+					key=KeyDirection::Left;
+					break;
+				case KeyDirection::PageRight:
+					pageKey=true;
+					key=KeyDirection::Right;
+					break;
+				default:;
+				}
+
+				switch(key)
+				{
+				case KeyDirection::Up:
+					switch(axisDirection)
+					{
+					case AxisDirection::LeftDown:	key=KeyDirection::Up;		break;
+					case AxisDirection::RightDown:	key=KeyDirection::Up;		break;
+					case AxisDirection::LeftUp:		key=KeyDirection::Down;	break;
+					case AxisDirection::RightUp:	key=KeyDirection::Down;	break;
+					case AxisDirection::DownLeft:	key=KeyDirection::Left;	break;
+					case AxisDirection::DownRight:	key=KeyDirection::Left;	break;
+					case AxisDirection::UpLeft:		key=KeyDirection::Right;	break;
+					case AxisDirection::UpRight:	key=KeyDirection::Right;	break;
+					}
+					break;
+				case KeyDirection::Down:
+					switch(axisDirection)
+					{
+					case AxisDirection::LeftDown:	key=KeyDirection::Down;	break;
+					case AxisDirection::RightDown:	key=KeyDirection::Down;	break;
+					case AxisDirection::LeftUp:		key=KeyDirection::Up;		break;
+					case AxisDirection::RightUp:	key=KeyDirection::Up;		break;
+					case AxisDirection::DownLeft:	key=KeyDirection::Right;	break;
+					case AxisDirection::DownRight:	key=KeyDirection::Right;	break;
+					case AxisDirection::UpLeft:		key=KeyDirection::Left;	break;
+					case AxisDirection::UpRight:	key=KeyDirection::Left;	break;
+					}
+					break;
+				case KeyDirection::Left:
+					switch(axisDirection)
+					{
+					case AxisDirection::LeftDown:	key=KeyDirection::Right;	break;
+					case AxisDirection::RightDown:	key=KeyDirection::Left;	break;
+					case AxisDirection::LeftUp:		key=KeyDirection::Right;	break;
+					case AxisDirection::RightUp:	key=KeyDirection::Left;	break;
+					case AxisDirection::DownLeft:	key=KeyDirection::Down;	break;
+					case AxisDirection::DownRight:	key=KeyDirection::Up;		break;
+					case AxisDirection::UpLeft:		key=KeyDirection::Down;	break;
+					case AxisDirection::UpRight:	key=KeyDirection::Up;		break;
+					}
+					break;
+				case KeyDirection::Right:
+					switch(axisDirection)
+					{
+					case AxisDirection::LeftDown:	key=KeyDirection::Left;	break;
+					case AxisDirection::RightDown:	key=KeyDirection::Right;	break;
+					case AxisDirection::LeftUp:		key=KeyDirection::Left;	break;
+					case AxisDirection::RightUp:	key=KeyDirection::Right;	break;
+					case AxisDirection::DownLeft:	key=KeyDirection::Up;		break;
+					case AxisDirection::DownRight:	key=KeyDirection::Down;	break;
+					case AxisDirection::UpLeft:		key=KeyDirection::Up;		break;
+					case AxisDirection::UpRight:	key=KeyDirection::Down;	break;
+					}
+					break;
+				case KeyDirection::Home:
+					switch(axisDirection)
+					{
+					case AxisDirection::LeftDown:	key=KeyDirection::Home;	break;
+					case AxisDirection::RightDown:	key=KeyDirection::Home;	break;
+					case AxisDirection::LeftUp:		key=KeyDirection::End;	break;
+					case AxisDirection::RightUp:	key=KeyDirection::End;	break;
+					case AxisDirection::DownLeft:	key=KeyDirection::Home;	break;
+					case AxisDirection::DownRight:	key=KeyDirection::Home;	break;
+					case AxisDirection::UpLeft:		key=KeyDirection::End;	break;
+					case AxisDirection::UpRight:	key=KeyDirection::End;	break;
+					}
+					break;
+				case KeyDirection::End:
+					switch(axisDirection)
+					{
+					case AxisDirection::LeftDown:	key=KeyDirection::End;	break;
+					case AxisDirection::RightDown:	key=KeyDirection::End;	break;
+					case AxisDirection::LeftUp:		key=KeyDirection::Home;	break;
+					case AxisDirection::RightUp:	key=KeyDirection::Home;	break;
+					case AxisDirection::DownLeft:	key=KeyDirection::End;	break;
+					case AxisDirection::DownRight:	key=KeyDirection::End;	break;
+					case AxisDirection::UpLeft:		key=KeyDirection::Home;	break;
+					case AxisDirection::UpRight:	key=KeyDirection::Home;	break;
+					}
+					break;
+				default:;
+				}
+
+				if(pageKey)
+				{
+					switch(key)
+					{
+					case KeyDirection::Up:
+						key=KeyDirection::PageUp;
+						break;
+					case KeyDirection::Down:
+						key=KeyDirection::PageDown;
+						break;
+					case KeyDirection::Left:
+						key=KeyDirection::PageLeft;
+						break;
+					case KeyDirection::Right:
+						key=KeyDirection::PageRight;
+						break;
+					default:;
+					}
+				}
+				return key;
+			}
+		}
+	}
+}
+
+/***********************************************************************
 GRAPHICSCOMPOSITION\GUIGRAPHICSBASICCOMPOSITION.CPP
 ***********************************************************************/
 
@@ -33283,6 +33297,384 @@ Event Receiver
 }
 
 /***********************************************************************
+GRAPHICSCOMPOSITION\GUIGRAPHICSFLOWCOMPOSITION.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			using namespace collections;
+
+/***********************************************************************
+GuiFlowComposition
+***********************************************************************/
+
+			void GuiFlowComposition::UpdateFlowItemBounds(bool forceUpdate)
+			{
+				if (forceUpdate || needUpdate)
+				{
+					needUpdate = false;
+					auto clientMargin = axis->RealMarginToVirtualMargin(extraMargin);
+					if (clientMargin.left < 0) clientMargin.left = 0;
+					if (clientMargin.top < 0) clientMargin.top = 0;
+					if (clientMargin.right < 0) clientMargin.right = 0;
+					if (clientMargin.bottom < 0) clientMargin.bottom = 0;
+
+					auto realFullSize = previousBounds.GetSize();
+					auto clientSize = axis->RealSizeToVirtualSize(realFullSize);
+					clientSize.x -= (clientMargin.left + clientMargin.right);
+					clientSize.y -= (clientMargin.top + clientMargin.bottom);
+
+					flowItemBounds.Resize(flowItems.Count());
+					for (vint i = 0; i < flowItems.Count(); i++)
+					{
+						flowItemBounds[i] = Rect(Point(0, 0), flowItems[i]->GetMinSize());
+					}
+
+					vint currentIndex = 0;
+					vint rowTop = 0;
+
+					while (currentIndex < flowItems.Count())
+					{
+						auto itemSize = axis->RealSizeToVirtualSize(flowItemBounds[currentIndex].GetSize());
+						vint rowWidth = itemSize.x;
+						vint rowHeight = itemSize.y;
+						vint rowItemCount = 1;
+
+						for (vint i = currentIndex + 1; i < flowItems.Count(); i++)
+						{
+							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[i].GetSize());
+							vint itemWidth = itemSize.x + columnPadding;
+							if (rowWidth + itemWidth > clientSize.x)
+							{
+								break;
+							}
+							rowWidth += itemWidth;
+							if (rowHeight < itemSize.y)
+							{
+								rowHeight = itemSize.y;
+							}
+							rowItemCount++;
+						}
+
+						vint baseLine = 0;
+						Array<vint> itemBaseLines(rowItemCount);
+						for (vint i = 0; i < rowItemCount; i++)
+						{
+							vint index = currentIndex + i;
+							vint itemBaseLine = 0;
+							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
+
+							auto option = flowItems[index]->GetFlowOption();
+							switch (option.baseline)
+							{
+							case GuiFlowOption::FromTop:
+								itemBaseLine = option.distance;
+								break;
+							case GuiFlowOption::FromBottom:
+								itemBaseLine = itemSize.y - option.distance;
+								break;
+							case GuiFlowOption::Percentage:
+								itemBaseLine = (vint)(itemSize.y*option.percentage);
+								break;
+							}
+
+							itemBaseLines[i] = itemBaseLine;
+							if (baseLine < itemBaseLine)
+							{
+								baseLine = itemBaseLine;
+							}
+						}
+
+						vint rowUsedWidth = 0;
+						for (vint i = 0; i < rowItemCount; i++)
+						{
+							vint index = currentIndex + i;
+							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
+
+							vint itemLeft = 0;
+							vint itemTop = rowTop + baseLine - itemBaseLines[i];
+
+							switch (alignment)
+							{
+							case FlowAlignment::Left:
+								itemLeft = rowUsedWidth + i * columnPadding;
+								break;
+							case FlowAlignment::Center:
+								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth) / 2;
+								break;
+							case FlowAlignment::Extend:
+								if (i == 0)
+								{
+									itemLeft = rowUsedWidth;
+								}
+								else
+								{
+									itemLeft = rowUsedWidth + (vint)((double)(clientSize.x - rowWidth) * i / (rowItemCount - 1)) + i * columnPadding;
+								}
+								break;
+							}
+
+							flowItemBounds[index] = axis->VirtualRectToRealRect(
+								realFullSize,
+								Rect(
+									Point(
+										itemLeft + clientMargin.left,
+										itemTop + clientMargin.top
+										),
+									itemSize
+									)
+								);
+							rowUsedWidth += itemSize.x;
+						}
+
+						rowTop += rowHeight + rowPadding;
+						currentIndex += rowItemCount;
+					}
+
+					minHeight = rowTop == 0 ? 0 : rowTop - rowPadding;
+				}
+			}
+
+			void GuiFlowComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				UpdateFlowItemBounds(true);
+			}
+
+			void GuiFlowComposition::OnChildInserted(GuiGraphicsComposition* child)
+			{
+				GuiBoundsComposition::OnChildInserted(child);
+				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
+				if (item && !flowItems.Contains(item))
+				{
+					flowItems.Add(item);
+					needUpdate = true;
+				}
+			}
+
+			void GuiFlowComposition::OnChildRemoved(GuiGraphicsComposition* child)
+			{
+				GuiBoundsComposition::OnChildRemoved(child);
+				auto item=dynamic_cast<GuiFlowItemComposition*>(child);
+				if(item)
+				{
+					flowItems.Remove(item);
+					needUpdate = true;
+				}
+			}
+
+			GuiFlowComposition::GuiFlowComposition()
+				:axis(new GuiDefaultAxis)
+			{
+				BoundsChanged.AttachMethod(this, &GuiFlowComposition::OnBoundsChanged);
+			}
+
+			GuiFlowComposition::~GuiFlowComposition()
+			{
+			}
+
+			const GuiFlowComposition::ItemCompositionList& GuiFlowComposition::GetFlowItems()
+			{
+				return flowItems;
+			}
+
+			Margin GuiFlowComposition::GetExtraMargin()
+			{
+				return extraMargin;
+			}
+
+			void GuiFlowComposition::SetExtraMargin(Margin value)
+			{
+				extraMargin = value;
+				needUpdate = true;
+			}
+
+			vint GuiFlowComposition::GetRowPadding()
+			{
+				return rowPadding;
+			}
+
+			void GuiFlowComposition::SetRowPadding(vint value)
+			{
+				rowPadding = value;
+				needUpdate = true;
+			}
+
+			vint GuiFlowComposition::GetColumnPadding()
+			{
+				return columnPadding;
+			}
+
+			void GuiFlowComposition::SetColumnPadding(vint value)
+			{
+				columnPadding = value;
+				needUpdate = true;
+			}
+
+			Ptr<IGuiAxis> GuiFlowComposition::GetAxis()
+			{
+				return axis;
+			}
+
+			void GuiFlowComposition::SetAxis(Ptr<IGuiAxis> value)
+			{
+				if (value)
+				{
+					axis = value;
+					needUpdate = true;
+				}
+			}
+
+			FlowAlignment GuiFlowComposition::GetAlignment()
+			{
+				return alignment;
+			}
+
+			void GuiFlowComposition::SetAlignment(FlowAlignment value)
+			{
+				alignment = value;
+				needUpdate = true;
+			}
+			
+			Size GuiFlowComposition::GetMinPreferredClientSize()
+			{
+				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				{
+					auto clientMargin = extraMargin;
+					if (clientMargin.left < 0) clientMargin.left = 0;
+					if (clientMargin.top < 0) clientMargin.top = 0;
+					if (clientMargin.right < 0) clientMargin.right = 0;
+					if (clientMargin.bottom < 0) clientMargin.bottom = 0;
+
+					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
+					clientSize.x += clientMargin.left + clientMargin.right;
+					clientSize.y += clientMargin.top + clientMargin.bottom;
+
+					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
+					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
+				}
+
+				vint x = 0;
+				vint y = 0;
+				if (extraMargin.left > 0) x += extraMargin.left;
+				if (extraMargin.right > 0) x += extraMargin.right;
+				if (extraMargin.top > 0) y += extraMargin.top;
+				if (extraMargin.bottom > 0) y += extraMargin.bottom;
+				return minSize + Size(x, y);
+			}
+
+			Rect GuiFlowComposition::GetBounds()
+			{
+				if (!needUpdate)
+				{
+					for (vint i = 0; i < flowItems.Count(); i++)
+					{
+						if (flowItemBounds[i].GetSize() != flowItems[i]->GetMinSize())
+						{
+							needUpdate = true;
+							break;
+						}
+					}
+				}
+
+				if (needUpdate)
+				{
+					UpdateFlowItemBounds(true);
+				}
+
+				bounds = GuiBoundsComposition::GetBounds();
+				return bounds;
+			}
+
+/***********************************************************************
+GuiFlowItemComposition
+***********************************************************************/
+
+			void GuiFlowItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
+			{
+				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				flowParent = newParent == 0 ? 0 : dynamic_cast<GuiFlowComposition*>(newParent);
+			}
+
+			Size GuiFlowItemComposition::GetMinSize()
+			{
+				return GetBoundsInternal(bounds).GetSize();
+			}
+
+			GuiFlowItemComposition::GuiFlowItemComposition()
+			{
+				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			}
+
+			GuiFlowItemComposition::~GuiFlowItemComposition()
+			{
+			}
+			
+			bool GuiFlowItemComposition::IsSizeAffectParent()
+			{
+				return false;
+			}
+
+			Rect GuiFlowItemComposition::GetBounds()
+			{
+				Rect result = bounds;
+				if(flowParent)
+				{
+					flowParent->UpdateFlowItemBounds(false);
+					vint index = flowParent->flowItems.IndexOf(this);
+					if (index != -1)
+					{
+						result = flowParent->flowItemBounds[index];
+					}
+
+					result = Rect(
+						result.Left() - extraMargin.left,
+						result.Top() - extraMargin.top,
+						result.Right() + extraMargin.right,
+						result.Bottom() + extraMargin.bottom
+						);
+				}
+				UpdatePreviousBounds(result);
+				return result;
+			}
+
+			void GuiFlowItemComposition::SetBounds(Rect value)
+			{
+				bounds = value;
+			}
+
+			Margin GuiFlowItemComposition::GetExtraMargin()
+			{
+				return extraMargin;
+			}
+
+			void GuiFlowItemComposition::SetExtraMargin(Margin value)
+			{
+				extraMargin = value;
+			}
+
+			GuiFlowOption GuiFlowItemComposition::GetFlowOption()
+			{
+				return option;
+			}
+
+			void GuiFlowItemComposition::SetFlowOption(GuiFlowOption value)
+			{
+				option = value;
+				if (flowParent)
+				{
+					flowParent->needUpdate = true;
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
 GRAPHICSCOMPOSITION\GUIGRAPHICSSPECIALIZEDCOMPOSITION.CPP
 ***********************************************************************/
 
@@ -33579,7 +33971,7 @@ GuiStackComposition
 
 			void GuiStackComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
-				UpdateStackItemBounds();
+				EnsureStackItemVisible();
 			}
 
 			void GuiStackComposition::OnChildInserted(GuiGraphicsComposition* child)
@@ -33655,12 +34047,12 @@ GuiStackComposition
 			void GuiStackComposition::SetPadding(vint value)
 			{
 				padding = value;
+				EnsureStackItemVisible();
 			}
 			
 			Size GuiStackComposition::GetMinPreferredClientSize()
 			{
 				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
-				UpdateStackItemBounds();
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
 					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
@@ -33690,9 +34082,18 @@ GuiStackComposition
 
 			Rect GuiStackComposition::GetBounds()
 			{
+				for (vint i = 0; i < stackItems.Count(); i++)
+				{
+					if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
+					{
+						UpdateStackItemBounds();
+						break;
+					}
+				}
+
 				Rect bounds = GuiBoundsComposition::GetBounds();
 				previousBounds = bounds;
-				EnsureStackItemVisible();
+				UpdatePreviousBounds(previousBounds);
 				return bounds;
 			}
 
@@ -33704,6 +34105,7 @@ GuiStackComposition
 			void GuiStackComposition::SetExtraMargin(Margin value)
 			{
 				extraMargin=value;
+				EnsureStackItemVisible();
 			}
 
 			bool GuiStackComposition::IsStackItemClipped()

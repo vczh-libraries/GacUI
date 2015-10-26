@@ -4552,10 +4552,6 @@ GuiListViewInstanceLoader
 				return Value();
 			}
 
-			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-			}
-
 			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
 				if (typeInfo.typeName == GetTypeName())
@@ -4601,11 +4597,6 @@ GuiListViewInstanceLoader
 					}
 				}
 				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
-			}
-
-			bool SetPropertyValue(PropertyValue& propertyValue)override
-			{
-				return false;
 			}
 		};
 
@@ -5157,6 +5148,70 @@ GuiBindableDataGridInstanceLoader
 		};
 
 /***********************************************************************
+GuiAxisInstanceLoader
+***********************************************************************/
+
+		class GuiAxisInstanceLoader : public Object, public IGuiInstanceLoader
+		{
+		protected:
+			GlobalStringKey					typeName;
+			GlobalStringKey					_AxisDirection;
+
+		public:
+			GuiAxisInstanceLoader()
+			{
+				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiAxis>()->GetTypeName());
+				_AxisDirection = GlobalStringKey::Get(L"AxisDirection");
+			}
+
+			GlobalStringKey GetTypeName()override
+			{
+				return typeName;
+			}
+
+			bool IsCreatable(const TypeInfo& typeInfo)override
+			{
+				return typeName == typeInfo.typeName;
+			}
+
+			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
+			{
+				if (typeInfo.typeName == GetTypeName())
+				{
+					vint indexAxisDirection = constructorArguments.Keys().IndexOf(_AxisDirection);	
+					if (indexAxisDirection == -1)
+					{
+						return Value();
+					}
+
+					auto axisDirection = UnboxValue<AxisDirection>(constructorArguments.GetByIndex(indexAxisDirection)[0]);
+					auto axis = new GuiAxis(axisDirection);
+					return Value::From(axis);
+				}
+				return Value();
+			}
+
+			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				if (typeInfo.typeName == GetTypeName())
+				{
+					propertyNames.Add(_AxisDirection);
+				}
+			}
+
+			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+			{
+				if (propertyInfo.propertyName == _AxisDirection)
+				{
+					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<AxisDirection>());
+					info->scope = GuiInstancePropertyInfo::Constructor;
+					return info;
+				}
+				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+			}
+		};
+
+/***********************************************************************
 GuiCompositionInstanceLoader
 ***********************************************************************/
 
@@ -5560,6 +5615,7 @@ GuiPredefinedInstanceLoadersPlugin
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);		// VisualizerTemplates, EditorTemplate
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);			// ControlTemplate, ItemSource
 
+				manager->SetLoader(new GuiAxisInstanceLoader);
 				manager->SetLoader(new GuiCompositionInstanceLoader);
 				manager->SetLoader(new GuiTableCompositionInstanceLoader);
 				manager->SetLoader(new GuiCellCompositionInstanceLoader);
@@ -9344,6 +9400,17 @@ Type Declaration
 				ENUM_CLASS_ITEM(Bottom)
 			END_ENUM_ITEM(Alignment)
 
+			BEGIN_ENUM_ITEM(AxisDirection)
+				ENUM_CLASS_ITEM(LeftDown)
+				ENUM_CLASS_ITEM(RightDown)
+				ENUM_CLASS_ITEM(LeftUp)
+				ENUM_CLASS_ITEM(RightUp)
+				ENUM_CLASS_ITEM(DownLeft)
+				ENUM_CLASS_ITEM(DownRight)
+				ENUM_CLASS_ITEM(UpLeft)
+				ENUM_CLASS_ITEM(UpRight)
+			END_ENUM_ITEM(AxisDirection)
+
 			BEGIN_STRUCT_MEMBER(TextPos)
 				STRUCT_MEMBER(row)
 				STRUCT_MEMBER(column)
@@ -10261,6 +10328,46 @@ Type Declaration
 #define INTERFACE_IDENTIFIER(INTERFACE)\
 	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), []()->WString{return INTERFACE::Identifier;})
 
+			BEGIN_ENUM_ITEM(KeyDirection)
+				ENUM_CLASS_ITEM(Up)
+				ENUM_CLASS_ITEM(Down)
+				ENUM_CLASS_ITEM(Left)
+				ENUM_CLASS_ITEM(Right)
+				ENUM_CLASS_ITEM(Home)
+				ENUM_CLASS_ITEM(End)
+				ENUM_CLASS_ITEM(PageUp)
+				ENUM_CLASS_ITEM(PageDown)
+				ENUM_CLASS_ITEM(PageLeft)
+				ENUM_CLASS_ITEM(PageRight)
+			END_ENUM_ITEM(KeyDirection)
+
+			BEGIN_CLASS_MEMBER(IGuiAxis)
+				CLASS_MEMBER_BASE(IDescriptable)
+				INTERFACE_EXTERNALCTOR(compositions, IGuiAxis)
+
+				CLASS_MEMBER_METHOD(RealSizeToVirtualSize, {L"size"})
+				CLASS_MEMBER_METHOD(VirtualSizeToRealSize, {L"size"})
+				CLASS_MEMBER_METHOD(RealPointToVirtualPoint, {L"realFullSize" _ L"point"})
+				CLASS_MEMBER_METHOD(VirtualPointToRealPoint, {L"realFullSize" _ L"point"})
+				CLASS_MEMBER_METHOD(RealRectToVirtualRect, {L"realFullSize" _ L"rect"})
+				CLASS_MEMBER_METHOD(VirtualRectToRealRect, {L"realFullSize" _ L"rect"})
+				CLASS_MEMBER_METHOD(RealMarginToVirtualMargin, {L"margin"})
+				CLASS_MEMBER_METHOD(VirtualMarginToRealMargin, {L"margin"})
+				CLASS_MEMBER_METHOD(RealKeyDirectionToVirtualKeyDirection, {L"key"})
+			END_CLASS_MEMBER(IGuiAxis)
+
+			BEGIN_CLASS_MEMBER(GuiDefaultAxis)
+				CLASS_MEMBER_BASE(IGuiAxis)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDefaultAxis>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiDefaultAxis)
+
+			BEGIN_CLASS_MEMBER(GuiAxis)
+				CLASS_MEMBER_BASE(IGuiAxis)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiAxis>(AxisDirection), {L"axisDirection"})
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alignment)
+			END_CLASS_MEMBER(GuiAxis)
+
 			BEGIN_CLASS_MEMBER(GuiStackComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiStackComposition*(), NO_PARAMETER)
@@ -10340,6 +10447,46 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(SetSite, {L"row" _ L"column" _ L"rowSpan" _ L"columnSpan"})
 			END_CLASS_MEMBER(GuiCellComposition)
+
+			BEGIN_ENUM_ITEM(FlowAlignment)
+				ENUM_CLASS_ITEM(Left)
+				ENUM_CLASS_ITEM(Center)
+				ENUM_CLASS_ITEM(Extend)
+			END_ENUM_ITEM(FlowAlignment)
+
+			BEGIN_CLASS_MEMBER(GuiFlowComposition)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+				CLASS_MEMBER_CONSTRUCTOR(GuiFlowComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(FlowItems)
+				CLASS_MEMBER_PROPERTY_FAST(ExtraMargin)
+				CLASS_MEMBER_PROPERTY_FAST(RowPadding)
+				CLASS_MEMBER_PROPERTY_FAST(ColumnPadding)
+				CLASS_MEMBER_PROPERTY_FAST(Axis)
+				CLASS_MEMBER_PROPERTY_FAST(Alignment)
+			END_CLASS_MEMBER(GuiFlowComposition)
+
+			BEGIN_STRUCT_MEMBER(GuiFlowOption)
+				STRUCT_MEMBER(baseline)
+				STRUCT_MEMBER(percentage)
+				STRUCT_MEMBER(distance)
+			END_STRUCT_MEMBER(GuiFlowOption)
+
+			BEGIN_ENUM_ITEM(GuiFlowOption::BaselineType)
+				ENUM_ITEM_NAMESPACE(GuiFlowOption)
+				ENUM_NAMESPACE_ITEM(Percentage)
+				ENUM_NAMESPACE_ITEM(FromTop)
+				ENUM_NAMESPACE_ITEM(FromBottom)
+			END_ENUM_ITEM(GuiFlowOption::BaselineType)
+
+			BEGIN_CLASS_MEMBER(GuiFlowItemComposition)
+				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_CONSTRUCTOR(GuiFlowItemComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
+				CLASS_MEMBER_PROPERTY_FAST(ExtraMargin)
+				CLASS_MEMBER_PROPERTY_FAST(FlowOption)
+			END_CLASS_MEMBER(GuiFlowItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiSideAlignedComposition)
 				CLASS_MEMBER_BASE(GuiGraphicsSite)
@@ -10964,7 +11111,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(StyleProvider)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Arranger)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(CoordinateTransformer)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Axis)
 
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 			END_CLASS_MEMBER(GuiListControl)
@@ -11006,20 +11153,6 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(GetBindingValue, {L"itemIndex"})
 			END_CLASS_MEMBER(GuiListControl::IItemBindingView)
-
-			BEGIN_ENUM_ITEM(GuiListControl::KeyDirection)
-				ENUM_ITEM_NAMESPACE(GuiListControl)
-				ENUM_NAMESPACE_ITEM(Up)
-				ENUM_NAMESPACE_ITEM(Down)
-				ENUM_NAMESPACE_ITEM(Left)
-				ENUM_NAMESPACE_ITEM(Right)
-				ENUM_NAMESPACE_ITEM(Home)
-				ENUM_NAMESPACE_ITEM(End)
-				ENUM_NAMESPACE_ITEM(PageUp)
-				ENUM_NAMESPACE_ITEM(PageDown)
-				ENUM_NAMESPACE_ITEM(PageLeft)
-				ENUM_NAMESPACE_ITEM(PageRight)
-			END_ENUM_ITEM(GuiListControl::KeyDirection)
 
 			BEGIN_CLASS_MEMBER(GuiListControl::IItemProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -11074,21 +11207,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 			END_CLASS_MEMBER(GuiListControl::IItemArranger)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemCoordinateTransformer)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemCoordinateTransformer)
-
-				CLASS_MEMBER_METHOD(RealSizeToVirtualSize, {L"size"})
-				CLASS_MEMBER_METHOD(VirtualSizeToRealSize, {L"size"})
-				CLASS_MEMBER_METHOD(RealPointToVirtualPoint, {L"realFullSize" _ L"point"})
-				CLASS_MEMBER_METHOD(VirtualPointToRealPoint, {L"realFullSize" _ L"point"})
-				CLASS_MEMBER_METHOD(RealRectToVirtualRect, {L"realFullSize" _ L"rect"})
-				CLASS_MEMBER_METHOD(VirtualRectToRealRect, {L"realFullSize" _ L"rect"})
-				CLASS_MEMBER_METHOD(RealMarginToVirtualMargin, {L"margin"})
-				CLASS_MEMBER_METHOD(VirtualMarginToRealMargin, {L"margin"})
-				CLASS_MEMBER_METHOD(RealKeyDirectionToVirtualKeyDirection, {L"key"})
-			END_CLASS_MEMBER(GuiListControl::IItemCoordinateTransformer)
-
 			BEGIN_CLASS_MEMBER(GuiSelectableListControl)
 				CLASS_MEMBER_BASE(GuiListControl)
 				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableListControl*(GuiSelectableListControl::IStyleProvider* _ GuiSelectableListControl::IItemProvider*), {L"styleProvider" _ L"itemProvider"})
@@ -11113,30 +11231,6 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(SetStyleSelected, {L"style" _ L"value"})
 			END_CLASS_MEMBER(GuiSelectableListControl::IItemStyleProvider)
-
-			BEGIN_CLASS_MEMBER(DefaultItemCoordinateTransformer)
-				CLASS_MEMBER_BASE(GuiListControl::IItemCoordinateTransformer)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<DefaultItemCoordinateTransformer>(), NO_PARAMETER)
-			END_CLASS_MEMBER(DefaultItemCoordinateTransformer)
-
-			BEGIN_CLASS_MEMBER(AxisAlignedItemCoordinateTransformer)
-				CLASS_MEMBER_BASE(GuiListControl::IItemCoordinateTransformer)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<AxisAlignedItemCoordinateTransformer>(AxisAlignedItemCoordinateTransformer::Alignment), {L"alignment"})
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alignment)
-			END_CLASS_MEMBER(AxisAlignedItemCoordinateTransformer)
-
-			BEGIN_ENUM_ITEM(AxisAlignedItemCoordinateTransformer::Alignment)
-				ENUM_ITEM_NAMESPACE(AxisAlignedItemCoordinateTransformer)
-				ENUM_NAMESPACE_ITEM(LeftDown)
-				ENUM_NAMESPACE_ITEM(RightDown)
-				ENUM_NAMESPACE_ITEM(LeftUp)
-				ENUM_NAMESPACE_ITEM(RightUp)
-				ENUM_NAMESPACE_ITEM(DownLeft)
-				ENUM_NAMESPACE_ITEM(DownRight)
-				ENUM_NAMESPACE_ITEM(UpLeft)
-				ENUM_NAMESPACE_ITEM(UpRight)
-			END_ENUM_ITEM(AxisAlignedItemCoordinateTransformer::Alignment)
 
 			BEGIN_CLASS_MEMBER(RangedItemArrangerBase)
 				CLASS_MEMBER_BASE(GuiListControl::IItemArranger)
@@ -11314,7 +11408,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(IDescriptable)
 				INTERFACE_EXTERNALCTOR(ListViewItemStyleProvider, IListViewItemContentProvider)
 
-				CLASS_MEMBER_METHOD(CreatePreferredCoordinateTransformer, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreatePreferredAxis, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreatePreferredArranger, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateItemContent, {L"font"})
 				CLASS_MEMBER_METHOD(AttachListControl, {L"value"})

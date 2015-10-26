@@ -53,6 +53,8 @@
         <x:MutexGroupController ref.Name="groupAxis"/>
         <x:MutexGroupController ref.Name="groupAlignment"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+        <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
+        
         <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>

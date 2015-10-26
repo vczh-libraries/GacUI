@@ -898,6 +898,7 @@ Type List
 #define GUIREFLECTIONBASIC_TYPELIST(F)\
 			F(presentation::Color)\
 			F(presentation::Alignment)\
+			F(presentation::AxisDirection)\
 			F(presentation::TextPos)\
 			F(presentation::GridPos)\
 			F(presentation::Point)\
@@ -1210,6 +1211,10 @@ Type List
 ***********************************************************************/
 
 #define GUIREFLECTIONCOMPOSITION_TYPELIST(F)\
+			F(presentation::compositions::KeyDirection)\
+			F(presentation::compositions::IGuiAxis)\
+			F(presentation::compositions::GuiDefaultAxis)\
+			F(presentation::compositions::GuiAxis)\
 			F(presentation::compositions::GuiStackComposition)\
 			F(presentation::compositions::GuiStackComposition::Direction)\
 			F(presentation::compositions::GuiStackItemComposition)\
@@ -1217,6 +1222,11 @@ Type List
 			F(presentation::compositions::GuiCellOption::ComposeType)\
 			F(presentation::compositions::GuiTableComposition)\
 			F(presentation::compositions::GuiCellComposition)\
+			F(presentation::compositions::FlowAlignment)\
+			F(presentation::compositions::GuiFlowComposition)\
+			F(presentation::compositions::GuiFlowOption)\
+			F(presentation::compositions::GuiFlowOption::BaselineType)\
+			F(presentation::compositions::GuiFlowItemComposition)\
 			F(presentation::compositions::GuiSideAlignedComposition)\
 			F(presentation::compositions::GuiSideAlignedComposition::Direction)\
 			F(presentation::compositions::GuiPartialViewComposition)\
@@ -1272,6 +1282,65 @@ Interface Proxy
 					void Stop()override
 					{
 						INVOKE_INTERFACE_PROXY_NOPARAMS(Stop);
+					}
+				};
+
+				class compositions_IGuiAxis : public ValueInterfaceRoot, public virtual IGuiAxis
+				{
+				public:
+					compositions_IGuiAxis(Ptr<IValueInterfaceProxy> _proxy)
+						:ValueInterfaceRoot(_proxy)
+					{
+					}
+
+					static Ptr<IGuiAxis> Create(Ptr<IValueInterfaceProxy> proxy)
+					{
+						return new compositions_IGuiAxis(proxy);
+					}
+
+					Size RealSizeToVirtualSize(Size size)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealSizeToVirtualSize, size);
+					}
+
+					Size VirtualSizeToRealSize(Size size)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(VirtualSizeToRealSize, size);
+					}
+
+					Point RealPointToVirtualPoint(Size realFullSize, Point point)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealPointToVirtualPoint, realFullSize, point);
+					}
+
+					Point VirtualPointToRealPoint(Size realFullSize, Point point)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(VirtualPointToRealPoint, realFullSize, point);
+					}
+
+					Rect RealRectToVirtualRect(Size realFullSize, Rect rect)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealRectToVirtualRect, realFullSize, rect);
+					}
+
+					Rect VirtualRectToRealRect(Size realFullSize, Rect rect)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(VirtualRectToRealRect, realFullSize, rect);
+					}
+
+					Margin RealMarginToVirtualMargin(Margin margin)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealMarginToVirtualMargin, margin);
+					}
+
+					Margin VirtualMarginToRealMargin(Margin margin)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(VirtualMarginToRealMargin, margin);
+					}
+
+					KeyDirection RealKeyDirectionToVirtualKeyDirection(KeyDirection key)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(RealKeyDirectionToVirtualKeyDirection, key);
 					}
 				};
 			}
@@ -1358,17 +1427,12 @@ Type List
 			F(presentation::controls::GuiListControl::IItemArrangerCallback)\
 			F(presentation::controls::GuiListControl::IItemPrimaryTextView)\
 			F(presentation::controls::GuiListControl::IItemBindingView)\
-			F(presentation::controls::GuiListControl::KeyDirection)\
 			F(presentation::controls::GuiListControl::IItemProvider)\
 			F(presentation::controls::GuiListControl::IItemStyleController)\
 			F(presentation::controls::GuiListControl::IItemStyleProvider)\
 			F(presentation::controls::GuiListControl::IItemArranger)\
-			F(presentation::controls::GuiListControl::IItemCoordinateTransformer)\
 			F(presentation::controls::GuiSelectableListControl)\
 			F(presentation::controls::GuiSelectableListControl::IItemStyleProvider)\
-			F(presentation::controls::list::DefaultItemCoordinateTransformer)\
-			F(presentation::controls::list::AxisAlignedItemCoordinateTransformer)\
-			F(presentation::controls::list::AxisAlignedItemCoordinateTransformer::Alignment)\
 			F(presentation::controls::list::RangedItemArrangerBase)\
 			F(presentation::controls::list::FixedHeightItemArranger)\
 			F(presentation::controls::list::FixedSizeMultiColumnItemArranger)\
@@ -2070,7 +2134,7 @@ Interface Proxy
 						INVOKE_INTERFACE_PROXY(OnViewChanged, bounds);
 					}
 
-					vint FindItem(vint itemIndex, GuiListControl::KeyDirection key)override
+					vint FindItem(vint itemIndex, compositions::KeyDirection key)override
 					{
 						return INVOKEGET_INTERFACE_PROXY(FindItem, itemIndex, key);
 					}
@@ -2078,65 +2142,6 @@ Interface Proxy
 					bool EnsureItemVisible(vint itemIndex)override
 					{
 						return INVOKEGET_INTERFACE_PROXY(EnsureItemVisible, itemIndex);
-					}
-				};
-
-				class GuiListControl_IItemCoordinateTransformer : public ValueInterfaceRoot, public virtual GuiListControl::IItemCoordinateTransformer
-				{
-				public:
-					GuiListControl_IItemCoordinateTransformer(Ptr<IValueInterfaceProxy> _proxy)
-						:ValueInterfaceRoot(_proxy)
-					{
-					}
-
-					static Ptr<GuiListControl::IItemCoordinateTransformer> Create(Ptr<IValueInterfaceProxy> proxy)
-					{
-						return new GuiListControl_IItemCoordinateTransformer(proxy);
-					}
-
-					Size RealSizeToVirtualSize(Size size)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealSizeToVirtualSize, size);
-					}
-
-					Size VirtualSizeToRealSize(Size size)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(VirtualSizeToRealSize, size);
-					}
-
-					Point RealPointToVirtualPoint(Size realFullSize, Point point)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealPointToVirtualPoint, realFullSize, point);
-					}
-
-					Point VirtualPointToRealPoint(Size realFullSize, Point point)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(VirtualPointToRealPoint, realFullSize, point);
-					}
-
-					Rect RealRectToVirtualRect(Size realFullSize, Rect rect)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealRectToVirtualRect, realFullSize, rect);
-					}
-
-					Rect VirtualRectToRealRect(Size realFullSize, Rect rect)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(VirtualRectToRealRect, realFullSize, rect);
-					}
-
-					Margin RealMarginToVirtualMargin(Margin margin)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealMarginToVirtualMargin, margin);
-					}
-
-					Margin VirtualMarginToRealMargin(Margin margin)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(VirtualMarginToRealMargin, margin);
-					}
-
-					GuiListControl::KeyDirection RealKeyDirectionToVirtualKeyDirection(GuiListControl::KeyDirection key)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealKeyDirectionToVirtualKeyDirection, key);
 					}
 				};
 
@@ -2358,9 +2363,9 @@ Interface Proxy
 						return new ListViewItemStyleProvider_IListViewItemContentProvider(proxy);
 					}
 
-					GuiListControl::IItemCoordinateTransformer* CreatePreferredCoordinateTransformer()override
+					compositions::IGuiAxis* CreatePreferredAxis()override
 					{
-						return INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreatePreferredCoordinateTransformer);
+						return INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreatePreferredAxis);
 					}
 
 					GuiListControl::IItemArranger* CreatePreferredArranger()override

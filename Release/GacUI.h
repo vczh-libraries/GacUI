@@ -62,6 +62,27 @@ Enumerations
 			Bottom=2,
 		};
 
+		/// <summary>Axis direction.</summary>
+		enum class AxisDirection
+		{
+			/// <summary>X:left, Y:down.</summary>
+			LeftDown,
+			/// <summary>X:right, Y:down.</summary>
+			RightDown,
+			/// <summary>X:left, Y:up.</summary>
+			LeftUp,
+			/// <summary>X:right, Y:up.</summary>
+			RightUp,
+			/// <summary>X:down, Y:left.</summary>
+			DownLeft,
+			/// <summary>X:down, Y:right.</summary>
+			DownRight,
+			/// <summary>X:up, Y:left.</summary>
+			UpLeft,
+			/// <summary>X:up, Y:right.</summary>
+			UpRight,
+		};
+
 /***********************************************************************
 TextPos
 ***********************************************************************/
@@ -6801,6 +6822,278 @@ Stack Compositions
 #endif
 
 /***********************************************************************
+GRAPHICSCOMPOSITION\GUIGRAPHICSAXIS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Composition System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSAXIS
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSAXIS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+
+/***********************************************************************
+Axis Interface
+***********************************************************************/
+
+			/// <summary>Represents the four directions that is accessable by keyboard.</summary>
+			enum class KeyDirection
+			{
+				/// <summary>The up direction.</summary>
+				Up,
+				/// <summary>The down direction.</summary>
+				Down,
+				/// <summary>The left direction.</summary>
+				Left,
+				/// <summary>The right direction.</summary>
+				Right,
+				/// <summary>The home direction.</summary>
+				Home,
+				/// <summary>The end direction.</summary>
+				End,
+				/// <summary>The page up direction.</summary>
+				PageUp,
+				/// <summary>The page down direction.</summary>
+				PageDown,
+				/// <summary>The page left direction.</summary>
+				PageLeft,
+				/// <summary>The page right direction.</summary>
+				PageRight,
+			};
+				
+			/// <summary>Item coordinate transformer for a <see cref="GuiListControl"/>. In all functions in this interface, real coordinate is in the list control's container space, virtual coordinate is in a space that the transformer created.</summary>
+			class IGuiAxis : public virtual IDescriptable, public Description<IGuiAxis>
+			{
+			public:
+				/// <summary>Translate real size to virtual size.</summary>
+				/// <returns>The virtual size.</returns>
+				/// <param name="size">The real size.</param>
+				virtual Size								RealSizeToVirtualSize(Size size)=0;
+				/// <summary>Translate virtual size to real size.</summary>
+				/// <returns>The real size.</returns>
+				/// <param name="size">The virtual size.</param>
+				virtual Size								VirtualSizeToRealSize(Size size)=0;
+				/// <summary>Translate real point to virtual point.</summary>
+				/// <returns>The virtual point.</returns>
+				/// <param name="realFullSize">The real full size.</param>
+				/// <param name="point">The real point.</param>
+				virtual Point								RealPointToVirtualPoint(Size realFullSize, Point point)=0;
+				/// <summary>Translate virtual point to real point.</summary>
+				/// <returns>The real point.</returns>
+				/// <param name="realFullSize">The real full size.</param>
+				/// <param name="point">The virtual point.</param>
+				virtual Point								VirtualPointToRealPoint(Size realFullSize, Point point)=0;
+				/// <summary>Translate real bounds to virtual bounds.</summary>
+				/// <returns>The virtual bounds.</returns>
+				/// <param name="realFullSize">The real full size.</param>
+				/// <param name="rect">The real bounds.</param>
+				virtual Rect								RealRectToVirtualRect(Size realFullSize, Rect rect)=0;
+				/// <summary>Translate virtual bounds to real bounds.</summary>
+				/// <returns>The real bounds.</returns>
+				/// <param name="realFullSize">The real full size.</param>
+				/// <param name="rect">The virtual bounds.</param>
+				virtual Rect								VirtualRectToRealRect(Size realFullSize, Rect rect)=0;
+				/// <summary>Translate real margin to margin size.</summary>
+				/// <returns>The virtual margin.</returns>
+				/// <param name="margin">The real margin.</param>
+				virtual Margin								RealMarginToVirtualMargin(Margin margin)=0;
+				/// <summary>Translate virtual margin to margin size.</summary>
+				/// <returns>The real margin.</returns>
+				/// <param name="margin">The virtual margin.</param>
+				virtual Margin								VirtualMarginToRealMargin(Margin margin)=0;
+				/// <summary>Translate real key direction to virtual key direction.</summary>
+				/// <returns>The virtual key direction.</returns>
+				/// <param name="key">The real key direction.</param>
+				virtual KeyDirection						RealKeyDirectionToVirtualKeyDirection(KeyDirection key)=0;
+			};
+
+/***********************************************************************
+Axis Implementation
+***********************************************************************/
+
+			/// <summary>Default item coordinate transformer. This transformer doesn't transform any coordinate.</summary>
+			class GuiDefaultAxis : public Object, virtual public IGuiAxis, public Description<GuiDefaultAxis>
+			{
+			public:
+				/// <summary>Create the transformer.</summary>
+				GuiDefaultAxis();
+				~GuiDefaultAxis();
+
+				Size										RealSizeToVirtualSize(Size size)override;
+				Size										VirtualSizeToRealSize(Size size)override;
+				Point										RealPointToVirtualPoint(Size realFullSize, Point point)override;
+				Point										VirtualPointToRealPoint(Size realFullSize, Point point)override;
+				Rect										RealRectToVirtualRect(Size realFullSize, Rect rect)override;
+				Rect										VirtualRectToRealRect(Size realFullSize, Rect rect)override;
+				Margin										RealMarginToVirtualMargin(Margin margin)override;
+				Margin										VirtualMarginToRealMargin(Margin margin)override;
+				KeyDirection								RealKeyDirectionToVirtualKeyDirection(KeyDirection key)override;
+			};
+				
+			/// <summary>Axis aligned item coordinate transformer. This transformer transforms coordinates by changing the axis direction.</summary>
+			class GuiAxis : public Object, virtual public IGuiAxis, public Description<GuiAxis>
+			{
+			protected:
+				AxisDirection								axisDirection;
+
+			public:
+				/// <summary>Create the transformer with a specified axis direction.</summary>
+				/// <param name="_alignment">The specified axis direction.</param>
+				GuiAxis(AxisDirection _axisDirection);
+				~GuiAxis();
+
+				/// <summary>Get the specified axis direction.</summary>
+				/// <returns>The specified axis direction.</returns>
+				AxisDirection								GetAlignment();
+				Size										RealSizeToVirtualSize(Size size)override;
+				Size										VirtualSizeToRealSize(Size size)override;
+				Point										RealPointToVirtualPoint(Size realFullSize, Point point)override;
+				Point										VirtualPointToRealPoint(Size realFullSize, Point point)override;
+				Rect										RealRectToVirtualRect(Size realFullSize, Rect rect)override;
+				Rect										VirtualRectToRealRect(Size realFullSize, Rect rect)override;
+				Margin										RealMarginToVirtualMargin(Margin margin)override;
+				Margin										VirtualMarginToRealMargin(Margin margin)override;
+				KeyDirection								RealKeyDirectionToVirtualKeyDirection(KeyDirection key)override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+GRAPHICSCOMPOSITION\GUIGRAPHICSFLOWCOMPOSITION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Composition System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSFLOWCOMPOSITION
+#define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSFLOWCOMPOSITION
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+
+/***********************************************************************
+Flow Compositions
+***********************************************************************/
+
+			enum class FlowAlignment
+			{
+				Left,
+				Center,
+				Extend,
+			};
+
+			class GuiFlowComposition : public GuiBoundsComposition, public Description<GuiFlowComposition>
+			{
+				friend class GuiFlowItemComposition;
+
+				typedef collections::List<GuiFlowItemComposition*>				ItemCompositionList;
+			protected:
+				Margin								extraMargin;
+				vint								rowPadding = 0;
+				vint								columnPadding = 0;
+				FlowAlignment						alignment = FlowAlignment::Left;
+				Ptr<IGuiAxis>						axis;
+
+				ItemCompositionList					flowItems;
+				collections::Array<Rect>			flowItemBounds;
+				Rect								bounds;
+				vint								minHeight = 0;
+				bool								needUpdate = false;
+
+				void								UpdateFlowItemBounds(bool forceUpdate);
+				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
+				void								OnChildInserted(GuiGraphicsComposition* child)override;
+				void								OnChildRemoved(GuiGraphicsComposition* child)override;
+			public:
+				GuiFlowComposition();
+				~GuiFlowComposition();
+
+				const ItemCompositionList&			GetFlowItems();
+
+				Margin								GetExtraMargin();
+				void								SetExtraMargin(Margin value);
+				vint								GetRowPadding();
+				void								SetRowPadding(vint value);
+				vint								GetColumnPadding();
+				void								SetColumnPadding(vint value);
+				Ptr<IGuiAxis>						GetAxis();
+				void								SetAxis(Ptr<IGuiAxis> value);
+				FlowAlignment						GetAlignment();
+				void								SetAlignment(FlowAlignment value);
+
+				Size								GetMinPreferredClientSize()override;
+				Rect								GetBounds()override;
+			};
+
+			struct GuiFlowOption
+			{
+				enum BaselineType
+				{
+					Percentage,
+					FromTop,
+					FromBottom,
+				};
+
+				BaselineType						baseline = FromBottom;
+				double								percentage = 0.0;
+				vint								distance = 0;
+			};
+
+			class GuiFlowItemComposition : public GuiGraphicsSite, public Description<GuiFlowItemComposition>
+			{
+				friend class GuiFlowComposition;
+			protected:
+				GuiFlowComposition*					flowParent;
+				Rect								bounds;
+				Margin								extraMargin;
+				GuiFlowOption						option;
+
+				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
+				Size								GetMinSize();
+			public:
+				GuiFlowItemComposition();
+				~GuiFlowItemComposition();
+				
+				bool								IsSizeAffectParent()override;
+				Rect								GetBounds()override;
+				void								SetBounds(Rect value);
+
+				Margin								GetExtraMargin();
+				void								SetExtraMargin(Margin value);
+
+				GuiFlowOption						GetFlowOption();
+				void								SetFlowOption(GuiFlowOption value);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
 GRAPHICSCOMPOSITION\GUIGRAPHICSSPECIALIZEDCOMPOSITION.H
 ***********************************************************************/
 /***********************************************************************
@@ -9845,31 +10138,6 @@ List Control
 				// Provider Interfaces
 				//-----------------------------------------------------------
 
-				/// <summary>Represents the four directions that is accessable by keyboard.</summary>
-				enum KeyDirection
-				{
-					/// <summary>The up direction.</summary>
-					Up,
-					/// <summary>The down direction.</summary>
-					Down,
-					/// <summary>The left direction.</summary>
-					Left,
-					/// <summary>The right direction.</summary>
-					Right,
-					/// <summary>The home direction.</summary>
-					Home,
-					/// <summary>The end direction.</summary>
-					End,
-					/// <summary>The page up direction.</summary>
-					PageUp,
-					/// <summary>The page down direction.</summary>
-					PageDown,
-					/// <summary>The page left direction.</summary>
-					PageLeft,
-					/// <summary>The page right direction.</summary>
-					PageRight,
-				};
-
 				/// <summary>Item provider for a <see cref="GuiListControl"/>.</summary>
 				class IItemProvider : public virtual IDescriptable, public Description<IItemProvider>
 				{
@@ -9982,57 +10250,11 @@ List Control
 					/// <returns>The item index that is found. Returns -1 if this operation failed.</returns>
 					/// <param name="itemIndex">The base item index.</param>
 					/// <param name="key">The key direction.</param>
-					virtual vint								FindItem(vint itemIndex, KeyDirection key)=0;
+					virtual vint								FindItem(vint itemIndex, compositions::KeyDirection key)=0;
 					/// <summary>Adjust the view location to make an item visible.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="itemIndex">The item index of the item to be made visible.</param>
 					virtual bool								EnsureItemVisible(vint itemIndex)=0;
-				};
-				
-				/// <summary>Item coordinate transformer for a <see cref="GuiListControl"/>. In all functions in this interface, real coordinate is in the list control's container space, virtual coordinate is in a space that the transformer created.</summary>
-				class IItemCoordinateTransformer : public virtual IDescriptable, public Description<IItemCoordinateTransformer>
-				{
-				public:
-					/// <summary>Translate real size to virtual size.</summary>
-					/// <returns>The virtual size.</returns>
-					/// <param name="size">The real size.</param>
-					virtual Size								RealSizeToVirtualSize(Size size)=0;
-					/// <summary>Translate virtual size to real size.</summary>
-					/// <returns>The real size.</returns>
-					/// <param name="size">The virtual size.</param>
-					virtual Size								VirtualSizeToRealSize(Size size)=0;
-					/// <summary>Translate real point to virtual point.</summary>
-					/// <returns>The virtual point.</returns>
-					/// <param name="realFullSize">The real full size.</param>
-					/// <param name="point">The real point.</param>
-					virtual Point								RealPointToVirtualPoint(Size realFullSize, Point point)=0;
-					/// <summary>Translate virtual point to real point.</summary>
-					/// <returns>The real point.</returns>
-					/// <param name="realFullSize">The real full size.</param>
-					/// <param name="point">The virtual point.</param>
-					virtual Point								VirtualPointToRealPoint(Size realFullSize, Point point)=0;
-					/// <summary>Translate real bounds to virtual bounds.</summary>
-					/// <returns>The virtual bounds.</returns>
-					/// <param name="realFullSize">The real full size.</param>
-					/// <param name="rect">The real bounds.</param>
-					virtual Rect								RealRectToVirtualRect(Size realFullSize, Rect rect)=0;
-					/// <summary>Translate virtual bounds to real bounds.</summary>
-					/// <returns>The real bounds.</returns>
-					/// <param name="realFullSize">The real full size.</param>
-					/// <param name="rect">The virtual bounds.</param>
-					virtual Rect								VirtualRectToRealRect(Size realFullSize, Rect rect)=0;
-					/// <summary>Translate real margin to margin size.</summary>
-					/// <returns>The virtual margin.</returns>
-					/// <param name="margin">The real margin.</param>
-					virtual Margin								RealMarginToVirtualMargin(Margin margin)=0;
-					/// <summary>Translate virtual margin to margin size.</summary>
-					/// <returns>The real margin.</returns>
-					/// <param name="margin">The virtual margin.</param>
-					virtual Margin								VirtualMarginToRealMargin(Margin margin)=0;
-					/// <summary>Translate real key direction to virtual key direction.</summary>
-					/// <returns>The virtual key direction.</returns>
-					/// <param name="key">The real key direction.</param>
-					virtual KeyDirection						RealKeyDirectionToVirtualKeyDirection(KeyDirection key)=0;
 				};
 
 			protected:
@@ -10077,7 +10299,7 @@ List Control
 				Ptr<IItemProvider>								itemProvider;
 				Ptr<IItemStyleProvider>							itemStyleProvider;
 				Ptr<IItemArranger>								itemArranger;
-				Ptr<IItemCoordinateTransformer>					itemCoordinateTransformer;
+				Ptr<compositions::IGuiAxis>						axis;
 				Size											fullSize;
 
 				virtual void									OnItemModified(vint start, vint count, vint newCount);
@@ -10133,7 +10355,7 @@ List Control
 				/// <summary>Arranger changed event.</summary>
 				compositions::GuiNotifyEvent					ArrangerChanged;
 				/// <summary>Coordinate transformer changed event.</summary>
-				compositions::GuiNotifyEvent					CoordinateTransformerChanged;
+				compositions::GuiNotifyEvent					AxisChanged;
 
 				/// <summary>Item left mouse button down event.</summary>
 				compositions::GuiItemMouseEvent					ItemLeftButtonDown;
@@ -10179,11 +10401,11 @@ List Control
 				virtual Ptr<IItemArranger>						SetArranger(Ptr<IItemArranger> value);
 				/// <summary>Get the item coordinate transformer.</summary>
 				/// <returns>The item coordinate transformer.</returns>
-				virtual IItemCoordinateTransformer*				GetCoordinateTransformer();
+				virtual compositions::IGuiAxis*					GetAxis();
 				/// <summary>Set the item coordinate transformer</summary>
 				/// <returns>The old item coordinate transformer</returns>
 				/// <param name="value">The new item coordinate transformer</param>
-				virtual Ptr<IItemCoordinateTransformer>			SetCoordinateTransformer(Ptr<IItemCoordinateTransformer> value);
+				virtual Ptr<compositions::IGuiAxis>				SetAxis(Ptr<compositions::IGuiAxis> value);
 				/// <summary>Adjust the view location to make an item visible.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="itemIndex">The item index of the item to be made visible.</param>
@@ -10281,79 +10503,6 @@ Selectable List Control
 			};
 
 /***********************************************************************
-Predefined ItemCoordinateTransformer
-***********************************************************************/
-
-			namespace list
-			{
-				/// <summary>Default item coordinate transformer. This transformer doesn't transform any coordinate.</summary>
-				class DefaultItemCoordinateTransformer : public Object, virtual public GuiListControl::IItemCoordinateTransformer, public Description<DefaultItemCoordinateTransformer>
-				{
-				public:
-					/// <summary>Create the transformer.</summary>
-					DefaultItemCoordinateTransformer();
-					~DefaultItemCoordinateTransformer();
-
-					Size										RealSizeToVirtualSize(Size size)override;
-					Size										VirtualSizeToRealSize(Size size)override;
-					Point										RealPointToVirtualPoint(Size realFullSize, Point point)override;
-					Point										VirtualPointToRealPoint(Size realFullSize, Point point)override;
-					Rect										RealRectToVirtualRect(Size realFullSize, Rect rect)override;
-					Rect										VirtualRectToRealRect(Size realFullSize, Rect rect)override;
-					Margin										RealMarginToVirtualMargin(Margin margin)override;
-					Margin										VirtualMarginToRealMargin(Margin margin)override;
-					GuiListControl::KeyDirection				RealKeyDirectionToVirtualKeyDirection(GuiListControl::KeyDirection key)override;
-				};
-				
-				/// <summary>Axis aligned item coordinate transformer. This transformer transforms coordinates by changing the axis direction.</summary>
-				class AxisAlignedItemCoordinateTransformer : public Object, virtual public GuiListControl::IItemCoordinateTransformer, public Description<AxisAlignedItemCoordinateTransformer>
-				{
-				public:
-					/// <summary>Axis direction.</summary>
-					enum Alignment
-					{
-						/// <summary>X:left, Y:down.</summary>
-						LeftDown,
-						/// <summary>X:right, Y:down.</summary>
-						RightDown,
-						/// <summary>X:left, Y:up.</summary>
-						LeftUp,
-						/// <summary>X:right, Y:up.</summary>
-						RightUp,
-						/// <summary>X:down, Y:left.</summary>
-						DownLeft,
-						/// <summary>X:down, Y:right.</summary>
-						DownRight,
-						/// <summary>X:up, Y:left.</summary>
-						UpLeft,
-						/// <summary>X:up, Y:right.</summary>
-						UpRight,
-					};
-				protected:
-					Alignment									alignment;
-
-				public:
-					/// <summary>Create the transformer with a specified axis direction.</summary>
-					/// <param name="_alignment">The specified axis direction.</param>
-					AxisAlignedItemCoordinateTransformer(Alignment _alignment);
-					~AxisAlignedItemCoordinateTransformer();
-
-					/// <summary>Get the specified axis direction.</summary>
-					/// <returns>The specified axis direction.</returns>
-					Alignment									GetAlignment();
-					Size										RealSizeToVirtualSize(Size size)override;
-					Size										VirtualSizeToRealSize(Size size)override;
-					Point										RealPointToVirtualPoint(Size realFullSize, Point point)override;
-					Point										VirtualPointToRealPoint(Size realFullSize, Point point)override;
-					Rect										RealRectToVirtualRect(Size realFullSize, Rect rect)override;
-					Rect										VirtualRectToRealRect(Size realFullSize, Rect rect)override;
-					Margin										RealMarginToVirtualMargin(Margin margin)override;
-					Margin										VirtualMarginToRealMargin(Margin margin)override;
-					GuiListControl::KeyDirection				RealKeyDirectionToVirtualKeyDirection(GuiListControl::KeyDirection key)override;
-				};
-			};
-
-/***********************************************************************
 Predefined ItemArranger
 ***********************************************************************/
 
@@ -10410,7 +10559,7 @@ Predefined ItemArranger
 					FixedHeightItemArranger();
 					~FixedHeightItemArranger();
 
-					vint										FindItem(vint itemIndex, GuiListControl::KeyDirection key)override;
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
 				};
 
@@ -10431,7 +10580,7 @@ Predefined ItemArranger
 					FixedSizeMultiColumnItemArranger();
 					~FixedSizeMultiColumnItemArranger();
 
-					vint										FindItem(vint itemIndex, GuiListControl::KeyDirection key)override;
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
 				};
 				
@@ -10452,7 +10601,7 @@ Predefined ItemArranger
 					FixedHeightMultiColumnItemArranger();
 					~FixedHeightMultiColumnItemArranger();
 
-					vint										FindItem(vint itemIndex, GuiListControl::KeyDirection key)override;
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
 				};
 			}
@@ -11270,7 +11419,7 @@ ListView ItemStyleProvider
 					public:
 						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemCoordinateTransformer"/> for the related item style provider.</summary>
 						/// <returns>The created item coordinate transformer.</returns>
-						virtual GuiListControl::IItemCoordinateTransformer*		CreatePreferredCoordinateTransformer()=0;
+						virtual compositions::IGuiAxis*							CreatePreferredAxis()=0;
 						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemArranger"/> for the related item style provider.</summary>
 						/// <returns>The created item coordinate arranger.</returns>
 						virtual GuiListControl::IItemArranger*					CreatePreferredArranger()=0;
@@ -11393,7 +11542,7 @@ ListView ItemContentProvider
 					ListViewBigIconContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewBigIconContentProvider();
 
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -11430,7 +11579,7 @@ ListView ItemContentProvider
 					ListViewSmallIconContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewSmallIconContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -11467,7 +11616,7 @@ ListView ItemContentProvider
 					ListViewListContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewListContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -11510,7 +11659,7 @@ ListView ItemContentProvider
 					ListViewTileContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewTileContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -11554,7 +11703,7 @@ ListView ItemContentProvider
 					ListViewInformationContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
 					~ListViewInformationContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -11708,7 +11857,7 @@ ListView ItemContentProvider(Detailed)
 					ListViewDetailContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
 					~ListViewDetailContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
@@ -15733,7 +15882,7 @@ Datagrid ContentProvider
 					DataGridContentProvider();
 					~DataGridContentProvider();
 					
-					GuiListControl::IItemCoordinateTransformer*			CreatePreferredCoordinateTransformer()override;
+					compositions::IGuiAxis*								CreatePreferredAxis()override;
 					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
 					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
 					void												AttachListControl(GuiListControl* value)override;
