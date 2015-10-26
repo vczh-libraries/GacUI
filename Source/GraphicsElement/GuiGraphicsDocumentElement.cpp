@@ -124,16 +124,17 @@ SetPropertiesVisitor
 					{
 						length=run->GetRepresentationText().Length();
 
-						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.size=run->size;
-						properties.baseline=run->baseline;
-						properties.breakCondition=IGuiGraphicsParagraph::Alone;
-
 						Ptr<GuiImageFrameElement> element=GuiImageFrameElement::Create();
 						element->SetImage(run->image, run->frameIndex);
 						element->SetStretch(true);
 
-						paragraph->SetInlineObject(start, length, properties, element);
+						IGuiGraphicsParagraph::InlineObjectProperties properties;
+						properties.size=run->size;
+						properties.baseline=run->baseline;
+						properties.breakCondition=IGuiGraphicsParagraph::Alone;
+						properties.backgroundImage = element;
+
+						paragraph->SetInlineObject(start, length, properties);
 
 						if(start<selectionEnd && selectionBegin<start+length)
 						{

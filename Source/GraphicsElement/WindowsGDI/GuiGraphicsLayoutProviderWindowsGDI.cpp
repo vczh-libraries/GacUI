@@ -164,17 +164,20 @@ WindowsGDIParagraph
 					}
 				}
 
-				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value)override
+				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)override
 				{
 					if(length==0) return true;
 					if(0<=start && start<text.Length() && length>=0 && 0<=start+length && start+length<=text.Length())
 					{
-						if(paragraph->SetInlineObject(start, length, properties, value))
+						if(paragraph->SetInlineObject(start, length, properties))
 						{
-							IGuiGraphicsRenderer* renderer=value->GetRenderer();
-							if(renderer)
+							if (properties.backgroundImage)
 							{
-								renderer->SetRenderTarget(renderTarget);
+								IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
+								if(renderer)
+								{
+									renderer->SetRenderTarget(renderTarget);
+								}
 							}
 							return true;
 						}

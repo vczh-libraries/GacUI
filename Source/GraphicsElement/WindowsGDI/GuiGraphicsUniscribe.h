@@ -88,7 +88,6 @@ UniscribeFragment
 				const WString									text;
 				Ptr<WinFont>									fontObject;
 				//***************************** Document Data (Element)
-				Ptr<IGuiGraphicsElement>						element;
 				IGuiGraphicsParagraph::InlineObjectProperties	inlineObjectProperties;
 				List<Ptr<UniscribeFragment>>					cachedTextFragment;
 
@@ -311,7 +310,7 @@ UniscribeParagraph
 				bool							SetStyle(vint start, vint length, bool bold, bool italic, bool underline, bool strikeline);
 				bool							SetColor(vint start, vint length, Color value);
 				bool							SetBackgroundColor(vint start, vint length, Color value);
-				bool							SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value);
+				bool							SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties);
 				Ptr<IGuiGraphicsElement>		ResetInlineObject(vint start, vint length);
 
 				void							GetLineIndexFromTextPos(vint textPos, vint& frontLine, vint& backLine);

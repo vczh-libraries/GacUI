@@ -82,11 +82,15 @@ Layout Engine
 				struct InlineObjectProperties
 				{
 					/// <summary>The size of the inline object.</summary>
-					Size					size;
+					Size						size;
 					/// <summary>The baseline of the inline object.If the baseline is at the bottom, then set the baseline to -1.</summary>
-					vint					baseline;
+					vint						baseline;
 					/// <summary>The break condition of the inline object.</summary>
-					BreakCondition			breakCondition;
+					BreakCondition				breakCondition;
+					/// <summary>The background image, nullable.</summary>
+					Ptr<IGuiGraphicsElement>	backgroundImage;
+					/// <summary>The id for callback. If the value is -1, then no callback will be received .</summary>
+					vint						callbackId = -1;
 
 					InlineObjectProperties()
 						:baseline(-1)
@@ -155,7 +159,7 @@ Layout Engine
 				/// <param name="properties">The properties for the inline object.</param>
 				/// <param name="value">The element.</param>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				virtual bool								SetInlineObject(vint start, vint length, const InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value)=0;
+				virtual bool								SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)=0;
 				/// <summary>Unbind all inline objects to a range of text.</summary>
 				/// <param name="start">The position of the first character of the specified range.</param>
 				/// <param name="length">The length of the specified range by character.</param>

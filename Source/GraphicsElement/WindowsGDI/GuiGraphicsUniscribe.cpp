@@ -996,7 +996,7 @@ UniscribeLine
 									FOREACH(Ptr<UniscribeFragment>, elementFragment, documentFragments)
 									{
 										vint elementLength=elementFragment->text.Length();
-										if(elementFragment->element)
+										if(elementFragment->inlineObjectProperties.backgroundImage)
 										{
 											if(elementCurrent<=currentStart && currentStart+shortLength<=elementCurrent+elementLength)
 											{
@@ -1009,7 +1009,7 @@ UniscribeLine
 													run->startFromFragment=currentStart-fragmentStarts[fragmentIndex];
 													run->length=elementLength;
 													run->runText=lineText.Buffer()+currentStart;
-													run->element=elementFragment->element;
+													run->element=elementFragment->inlineObjectProperties.backgroundImage;
 													run->properties=elementFragment->inlineObjectProperties;
 													scriptRuns.Add(run);
 												}
@@ -1354,7 +1354,7 @@ UniscribeParagraph (Initialization)
 					Ptr<UniscribeLine> line;
 					FOREACH(Ptr<UniscribeFragment>, fragment, documentFragments)
 					{
-						if(fragment->element)
+						if(fragment->inlineObjectProperties.backgroundImage)
 						{
 							if(!line)
 							{
@@ -1502,7 +1502,7 @@ UniscribeParagraph (Formatting Helper)
 				if(fs==fe)
 				{
 					Ptr<UniscribeFragment> fragment=documentFragments[fs];
-					if(fragment->element)
+					if(fragment->inlineObjectProperties.backgroundImage)
 					{
 						if(ss==0 && se==fragment->text.Length())
 						{
@@ -1517,7 +1517,7 @@ UniscribeParagraph (Formatting Helper)
 				}
 				for(vint i=fs;i<=fe;i++)
 				{
-					if(documentFragments[i]->element)
+					if(documentFragments[i]->inlineObjectProperties.backgroundImage)
 					{
 						return false;
 					}
@@ -1704,7 +1704,7 @@ UniscribeParagraph (Formatting)
 				return true;
 			}
 
-			bool UniscribeParagraph::SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value)
+			bool UniscribeParagraph::SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties)
 			{
 				vint fs, ss, fe, se, f1, f2;
 				SearchFragment(start, length, fs, ss, fe, se);
@@ -1723,7 +1723,6 @@ UniscribeParagraph (Formatting)
 						documentFragments.RemoveAt(f1);
 					}
 					elementFragment->inlineObjectProperties=properties;
-					elementFragment->element=value;
 					documentFragments.Insert(f1, elementFragment);
 					built=false;
 					return true;
@@ -1739,7 +1738,7 @@ UniscribeParagraph (Formatting)
 				vint fs, ss, fe, se;
 				SearchFragment(start, length, fs, ss, fe, se);
 				Ptr<UniscribeFragment> fragment=documentFragments[fs];
-				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->element)
+				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->inlineObjectProperties.backgroundImage)
 				{
 					documentFragments.RemoveAt(fs);
 					for(vint i=0;i<fragment->cachedTextFragment.Count();i++)
@@ -1747,7 +1746,7 @@ UniscribeParagraph (Formatting)
 						documentFragments.Insert(fs+i, fragment->cachedTextFragment[i]);
 					}
 					built=false;
-					return fragment->element;
+					return fragment->inlineObjectProperties.backgroundImage;
 				}
 				return 0;
 			}

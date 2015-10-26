@@ -28,7 +28,6 @@ WindowsDirect2DElementInlineObject
 			protected:
 				vint												counter;
 				IGuiGraphicsParagraph::InlineObjectProperties		properties;
-				Ptr<IGuiGraphicsElement>							element;
 				IRendererCallback*									rendererCallback;
 				vint												start;
 				vint												length;
@@ -36,14 +35,12 @@ WindowsDirect2DElementInlineObject
 			public:
 				WindowsDirect2DElementInlineObject(
 					const IGuiGraphicsParagraph::InlineObjectProperties& _properties,
-					Ptr<IGuiGraphicsElement> _element,
 					IRendererCallback* _rendererCallback,
 					vint _start,
 					vint _length
 					)
 					:counter(1)
 					,properties(_properties)
-					,element(_element)
 					,rendererCallback(_rendererCallback)
 					,start(_start)
 					,length(_length)
@@ -52,10 +49,13 @@ WindowsDirect2DElementInlineObject
 
 				~WindowsDirect2DElementInlineObject()
 				{
-					IGuiGraphicsRenderer* graphicsRenderer=element->GetRenderer();
-					if(graphicsRenderer)
+					if (properties.backgroundImage)
 					{
-						graphicsRenderer->SetRenderTarget(0);
+						IGuiGraphicsRenderer* graphicsRenderer=properties.backgroundImage->GetRenderer();
+						if(graphicsRenderer)
+						{
+							graphicsRenderer->SetRenderTarget(0);
+						}
 					}
 				}
 
@@ -71,7 +71,7 @@ WindowsDirect2DElementInlineObject
 
 				Ptr<IGuiGraphicsElement> GetElement()
 				{
-					return element;
+					return properties.backgroundImage;
 				}
 
 				HRESULT STDMETHODCALLTYPE QueryInterface( 
@@ -111,26 +111,29 @@ WindowsDirect2DElementInlineObject
 					IUnknown* clientDrawingEffect
 					)override
 				{
-					IGuiGraphicsRenderer* graphicsRenderer=element->GetRenderer();
-					if(graphicsRenderer)
+					if (properties.backgroundImage)
 					{
-						Rect bounds(Point((vint)originX, (vint)originY), properties.size);
-						graphicsRenderer->Render(bounds);
-
-						Color color=rendererCallback->GetBackgroundColor(start);
-						if(color.a!=0)
+						IGuiGraphicsRenderer* graphicsRenderer=properties.backgroundImage->GetRenderer();
+						if(graphicsRenderer)
 						{
-							color.a/=2;
-							if(IWindowsDirect2DRenderTarget* renderTarget=rendererCallback->GetDirect2DRenderTarget())
+							Rect bounds(Point((vint)originX, (vint)originY), properties.size);
+							graphicsRenderer->Render(bounds);
+
+							Color color=rendererCallback->GetBackgroundColor(start);
+							if(color.a!=0)
 							{
-								ID2D1SolidColorBrush* brush=renderTarget->CreateDirect2DBrush(color);
+								color.a/=2;
+								if(IWindowsDirect2DRenderTarget* renderTarget=rendererCallback->GetDirect2DRenderTarget())
+								{
+									ID2D1SolidColorBrush* brush=renderTarget->CreateDirect2DBrush(color);
 
-								renderTarget->GetDirect2DRenderTarget()->FillRectangle(
-									D2D1::RectF(bounds.x1-0.5f, bounds.y1-0.5f, bounds.x2+0.5f, bounds.y2+0.5f),
-									brush
-									);
+									renderTarget->GetDirect2DRenderTarget()->FillRectangle(
+										D2D1::RectF(bounds.x1-0.5f, bounds.y1-0.5f, bounds.x2+0.5f, bounds.y2+0.5f),
+										brush
+										);
 
-								renderTarget->DestroyDirect2DBrush(color);
+									renderTarget->DestroyDirect2DBrush(color);
+								}
 							}
 						}
 					}
@@ -613,9 +616,9 @@ WindowsDirect2DParagraph (Formatting)
 					return true;
 				}
 
-				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value)override
+				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)override
 				{
-					if(inlineElements.Keys().Contains(value.Obj()))
+					if(inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
 					{
 						return false;
 					}
@@ -629,20 +632,23 @@ WindowsDirect2DParagraph (Formatting)
 					}
 					formatDataAvailable=false;
 
-					ComPtr<WindowsDirect2DElementInlineObject> inlineObject=new WindowsDirect2DElementInlineObject(properties, value, this, start, length);
+					ComPtr<WindowsDirect2DElementInlineObject> inlineObject=new WindowsDirect2DElementInlineObject(properties, this, start, length);
 					DWRITE_TEXT_RANGE range;
 					range.startPosition=(int)start;
 					range.length=(int)length;
 					HRESULT hr=textLayout->SetInlineObject(inlineObject.Obj(), range);
 					if(!FAILED(hr))
 					{
-						IGuiGraphicsRenderer* renderer=value->GetRenderer();
-						if(renderer)
+						if (properties.backgroundImage)
 						{
-							renderer->SetRenderTarget(renderTarget);
+							IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
+							if(renderer)
+							{
+								renderer->SetRenderTarget(renderTarget);
+							}
+							inlineElements.Add(properties.backgroundImage.Obj(), inlineObject);
 						}
-						inlineElements.Add(value.Obj(), inlineObject);
-						SetMap(graphicsElements, start, length, value.Obj());
+						SetMap(graphicsElements, start, length, properties.backgroundImage.Obj());
 						return true;
 					}
 					else
