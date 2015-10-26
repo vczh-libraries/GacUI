@@ -120,10 +120,10 @@
               <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                 <att.Rows>
                   <CellOption>composeType:MinSize</CellOption>
+                  <CellOption>composeType:MinSize</CellOption>
+                  <CellOption>composeType:MinSize</CellOption>
                 </att.Rows>
                 <att.Columns>
-                  <CellOption>composeType:MinSize</CellOption>
-                  <CellOption>composeType:MinSize</CellOption>
                   <CellOption>composeType:MinSize</CellOption>
                 </att.Columns>
 
