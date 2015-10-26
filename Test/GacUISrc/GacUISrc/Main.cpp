@@ -142,22 +142,20 @@ void GuiMain_Resource()
 		List<WString> errors;
 		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
 		resource->Precompile(errors);
-		if (errors.Count() == 0)
+		CHECK_ERROR(errors.Count() == 0, L"Error");
 		{
-			{
-				auto xml = resource->SaveToXml(true);
-				FileStream fileStream(L"UI.precompiled.xml", FileStream::WriteOnly);
-				StreamWriter writer(fileStream);
-				XmlPrint(xml, writer);
-			}
-			{
-				FileStream fileStream(L"UI.bin", FileStream::WriteOnly);
-				resource->SavePrecompiledBinary(fileStream);
-			}
-			{
-				FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
-				resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
-			}
+			auto xml = resource->SaveToXml(true);
+			FileStream fileStream(L"UI.precompiled.xml", FileStream::WriteOnly);
+			StreamWriter writer(fileStream);
+			XmlPrint(xml, writer);
+		}
+		{
+			FileStream fileStream(L"UI.bin", FileStream::WriteOnly);
+			resource->SavePrecompiledBinary(fileStream);
+		}
+		{
+			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
+			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		}
 		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
 	}

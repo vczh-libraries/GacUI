@@ -119,7 +119,7 @@ document_operation_visitors::DeserializeNodeVisitor
 								{
 									run->frameIndex=wtoi(att->value.value);
 								}
-								else
+								else if (att->name.value != L"source")
 								{
 									errors.Add(L"Unknown attribute in <img> \"" + att->name.value + L"\".");
 								}

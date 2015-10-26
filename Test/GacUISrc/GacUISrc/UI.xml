@@ -1,9 +1,134 @@
 <Resource>
+  <Folder name="EmbeddedDocument">
+    <Image content="File" name="Gaclib">Gaclib.png</Image>
+    <Doc name="Document">
+      <Doc>
+        <Content>
+          <p align="Center">
+            <div style="Title">
+              <b>Controls Embedded in Document</b>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>Hi, our valued GacUI users:</nop>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>This is a rich text document. There are many features in a document. For example, a paragraph can align to the left,</nop>
+            </div>
+          </p>
+          <p align="Center">
+            <div style="Body">
+              <nop>to the center,</nop>
+            </div>
+          </p>
+          <p align="Right">
+            <div style="Body">
+              <nop>or to the right,</nop>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>Even </nop>
+              <img source="res://EmbeddedDocument/Gaclib" width="250" height="100" baseline="80"/>
+              <nop> can be embedded inside a document and adjust its size.</nop>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>Besides of this, controls can be embedded into a document too, like a </nop>
+              <object name="Button"/>
+              <nop>, a </nop>
+              <object name="ListView"/>
+              <nop>, or even a </nop>
+              <object name="Menu"/>
+              <nop>.</nop>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>If you can embed a control, why not embed a composition like this: </nop>
+              <object name="Table"/>
+              <nop>?</nop>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>Obviously, embedding a </nop>
+              <a href="http://www.gaclib.net">http://www.gaclib.net</a>
+              <nop> is also a feature. You can try to click on it and see what happens.</nop>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>Hope you like this powerful tools. Thank you.</nop>
+            </div>
+          </p>
+        </Content>
+        <Styles>
+          <Style name="Content">
+            <face>Segoe UI</face>
+          </Style>
+          <Style name="Title" parent="Content">
+            <size>24</size>
+            <b>true</b>
+          </Style>
+          <Style name="Body" parent="Content">
+            <size>14</size>
+          </Style>
+        </Styles>
+      </Doc>
+    </Doc>
+  </Folder>
   <Instance name="MainWindowResource">
     <Instance ref.Class="test::MainWindow">
-      <Window Text="Window" ClientSize="x:480 y:320">
-        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+      <Window Text="Window" ClientSize="x:480 y:640">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:640"/>
         <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
+
+        <DocumentViewer EditMode="Selectable" Document-uri="res://EmbeddedDocument/Document">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+          <att.EmbeddedItems>
+            <DocumentItem Name="Button">
+              <Button Text="Button"/>
+            </DocumentItem>
+            <DocumentItem Name="ListView">
+              <ListView>
+                <att.BoundsComposition-set PreferredMinSize="x:100 y:200"/>
+              </ListView>
+            </DocumentItem>
+            <DocumentItem Name="Menu">
+            </DocumentItem>
+            <DocumentItem Name="Table">
+              <ToolstripMenuBar>
+                <MenuBarButton Text="File" Alt="F">
+                  <att.SubMenu-set>
+                    <MenuBarButton Text="New" Alt="N" ShortcutBuilder="Ctrl+N"/>
+                    <MenuBarButton Text="Open" Alt="O" ShortcutBuilder="Ctrl+O"/>
+                    <MenuBarButton Text="Save" Alt="S" ShortcutBuilder="Ctrl+S"/>
+                    <MenuBarButton Text="Save As ..." Alt="A"/>
+                    <MenuSplitter/>
+                    <MenuBarButton Text="Exit" Alt="X"/>
+                  </att.SubMenu-set>
+                </MenuBarButton>
+                <MenuBarButton Text="Edit" Alt="E">
+                  <att.SubMenu-set>
+                    <MenuBarButton Text="Undo" Alt="U" ShortcutBuilder="Ctrl+Z"/>
+                    <MenuBarButton Text="Redo" Alt="R" ShortcutBuilder="Ctrl+Y"/>
+                    <MenuSplitter/>
+                    <MenuBarButton Text="Cut" Alt="T" ShortcutBuilder="Ctrl+X"/>
+                    <MenuBarButton Text="Copy" Alt="C" ShortcutBuilder="Ctrl+C"/>
+                    <MenuBarButton Text="Paste" Alt="P" ShortcutBuilder="Ctrl+V"/>
+                    <MenuSplitter/>
+                    <MenuBarButton Text="Select All" Alt="A" ShortcutBuilder="Ctrl+A"/>
+                  </att.SubMenu-set>
+                </MenuBarButton>
+              </ToolstripMenuBar>
+            </DocumentItem>
+          </att.EmbeddedItems>
+        </DocumentViewer>
       </Window>
     </Instance>
   </Instance>
