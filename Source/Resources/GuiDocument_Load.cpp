@@ -96,11 +96,11 @@ document_operation_visitors::DeserializeNodeVisitor
 								if(run->image && run->image->GetFrameCount()>0)
 								{
 									run->size=run->image->GetFrame(0)->GetSize();
-									run->baseline=run->size.y;
 									run->frameIndex=0;
 								}
 							}
 
+							bool baselineExists = false;
 							FOREACH(Ptr<XmlAttribute>, att, node->attributes)
 							{
 								if(att->name.value==L"width")
@@ -114,6 +114,7 @@ document_operation_visitors::DeserializeNodeVisitor
 								else if(att->name.value==L"baseline")
 								{
 									run->baseline=wtoi(att->value.value);
+									baselineExists = true;
 								}
 								else if(att->name.value==L"frameIndex")
 								{
@@ -123,6 +124,11 @@ document_operation_visitors::DeserializeNodeVisitor
 								{
 									errors.Add(L"Unknown attribute in <img> \"" + att->name.value + L"\".");
 								}
+							}
+
+							if (!baselineExists)
+							{
+								run->baseline=run->size.y;
 							}
 							container->runs.Add(run);
 						}

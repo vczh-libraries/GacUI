@@ -781,7 +781,7 @@ GuiImageFrameElementRenderer
 						}
 						destination=D2D1::RectF((FLOAT)x, (FLOAT)y, (FLOAT)(x+minSize.x), (FLOAT)(y+minSize.y));
 					}
-					if(element->GetImage()->GetFormat()==INativeImage::Gif &&  element->GetFrameIndex()>0)
+					if(element->GetImage()->GetFormat()==INativeImage::Gif && element->GetFrameIndex()>0)
 					{
 						vint max=element->GetFrameIndex();
 						for(vint i=0;i<=max;i++)
