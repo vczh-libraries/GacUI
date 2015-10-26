@@ -110,7 +110,7 @@ GuiFlowComposition
 							}
 							else
 							{
-								itemLeft = rowUsedWidth + (vint)((double)(clientSize.x - rowWidth) * i / (rowItemCount - 1));
+								itemLeft = rowUsedWidth + (vint)((double)(clientSize.x - rowWidth) * i / (rowItemCount - 1)) + i * columnPadding;
 							}
 							break;
 						}
