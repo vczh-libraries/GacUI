@@ -1227,6 +1227,13 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateToolstripSubMenu, {L"subMenuStyleController"})
 			END_CLASS_MEMBER(GuiToolstripButton)
 
+			BEGIN_CLASS_MEMBER(GuiDocumentItem)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Container)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
+			END_CLASS_MEMBER(GuiDocumentItem)
+
 			BEGIN_CLASS_MEMBER(GuiDocumentCommonInterface)
 				CLASS_MEMBER_PROPERTY_FAST(Document)
 				CLASS_MEMBER_PROPERTY_FAST(EditMode)
@@ -1234,6 +1241,10 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkChanged)
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkExecuted)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+
+				CLASS_MEMBER_METHOD(AddDocumentItem, { L"value" })
+				CLASS_MEMBER_METHOD(RemoveDocumentItem, { L"value" })
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(DocumentItems)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretBegin)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretEnd)

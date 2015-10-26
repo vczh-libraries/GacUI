@@ -90,44 +90,42 @@
 
         <DocumentViewer EditMode="Selectable" Document-uri="res://EmbeddedDocument/Document">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-          <att.EmbeddedItems>
-            <DocumentItem Name="Button">
-              <Button Text="Button"/>
-            </DocumentItem>
-            <DocumentItem Name="ListView">
-              <TreeView>
-                <att.BoundsComposition-set PreferredMinSize="x:100 y:200"/>
-              </TreeView>
-            </DocumentItem>
-            <DocumentItem Name="Menu">
-              <ToolstripMenuBar>
-                <MenuBarButton Text="File" Alt="F">
-                  <att.SubMenu-set>
-                    <MenuBarButton Text="New" Alt="N" ShortcutBuilder="Ctrl+N"/>
-                    <MenuBarButton Text="Open" Alt="O" ShortcutBuilder="Ctrl+O"/>
-                    <MenuBarButton Text="Save" Alt="S" ShortcutBuilder="Ctrl+S"/>
-                    <MenuBarButton Text="Save As ..." Alt="A"/>
-                    <MenuSplitter/>
-                    <MenuBarButton Text="Exit" Alt="X"/>
-                  </att.SubMenu-set>
-                </MenuBarButton>
-                <MenuBarButton Text="Edit" Alt="E">
-                  <att.SubMenu-set>
-                    <MenuBarButton Text="Undo" Alt="U" ShortcutBuilder="Ctrl+Z"/>
-                    <MenuBarButton Text="Redo" Alt="R" ShortcutBuilder="Ctrl+Y"/>
-                    <MenuSplitter/>
-                    <MenuBarButton Text="Cut" Alt="T" ShortcutBuilder="Ctrl+X"/>
-                    <MenuBarButton Text="Copy" Alt="C" ShortcutBuilder="Ctrl+C"/>
-                    <MenuBarButton Text="Paste" Alt="P" ShortcutBuilder="Ctrl+V"/>
-                    <MenuSplitter/>
-                    <MenuBarButton Text="Select All" Alt="A" ShortcutBuilder="Ctrl+A"/>
-                  </att.SubMenu-set>
-                </MenuBarButton>
-              </ToolstripMenuBar>
-            </DocumentItem>
-            <DocumentItem Name="Table">
-            </DocumentItem>
-          </att.EmbeddedItems>
+          <DocumentItem Name="Button">
+            <Button Text="Button"/>
+          </DocumentItem>
+          <DocumentItem Name="ListView">
+            <TreeView>
+              <att.BoundsComposition-set PreferredMinSize="x:100 y:200"/>
+            </TreeView>
+          </DocumentItem>
+          <DocumentItem Name="Menu">
+            <ToolstripMenuBar>
+              <MenuBarButton Text="File" Alt="F">
+                <att.SubMenu-set>
+                  <MenuBarButton Text="New" Alt="N" ShortcutBuilder="Ctrl+N"/>
+                  <MenuBarButton Text="Open" Alt="O" ShortcutBuilder="Ctrl+O"/>
+                  <MenuBarButton Text="Save" Alt="S" ShortcutBuilder="Ctrl+S"/>
+                  <MenuBarButton Text="Save As ..." Alt="A"/>
+                  <MenuSplitter/>
+                  <MenuBarButton Text="Exit" Alt="X"/>
+                </att.SubMenu-set>
+              </MenuBarButton>
+              <MenuBarButton Text="Edit" Alt="E">
+                <att.SubMenu-set>
+                  <MenuBarButton Text="Undo" Alt="U" ShortcutBuilder="Ctrl+Z"/>
+                  <MenuBarButton Text="Redo" Alt="R" ShortcutBuilder="Ctrl+Y"/>
+                  <MenuSplitter/>
+                  <MenuBarButton Text="Cut" Alt="T" ShortcutBuilder="Ctrl+X"/>
+                  <MenuBarButton Text="Copy" Alt="C" ShortcutBuilder="Ctrl+C"/>
+                  <MenuBarButton Text="Paste" Alt="P" ShortcutBuilder="Ctrl+V"/>
+                  <MenuSplitter/>
+                  <MenuBarButton Text="Select All" Alt="A" ShortcutBuilder="Ctrl+A"/>
+                </att.SubMenu-set>
+              </MenuBarButton>
+            </ToolstripMenuBar>
+          </DocumentItem>
+          <DocumentItem Name="Table">
+          </DocumentItem>
         </DocumentViewer>
       </Window>
     </Instance>

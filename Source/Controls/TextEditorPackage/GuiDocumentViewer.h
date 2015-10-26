@@ -22,10 +22,33 @@ namespace vl
 /***********************************************************************
 GuiDocumentCommonInterface
 ***********************************************************************/
+
+			class GuiDocumentCommonInterface;
+
+			/// <summary>Embedded object in a document.</summary>
+			class GuiDocumentItem : public Object, public Description<GuiDocumentItem>
+			{
+				friend class GuiDocumentCommonInterface;
+			protected:
+				WString										name;
+				compositions::GuiBoundsComposition*			container;
+			public:
+				GuiDocumentItem(const WString& _name);
+				~GuiDocumentItem();
+				
+				/// <summary>Get the container for all embedded controls and compositions in this item.</summary>
+				/// <returns>The container.</returns>
+				compositions::GuiGraphicsComposition*		GetContainer();
+
+				/// <summary>Get the name of the document item.</summary>
+				/// <returns>The name.</returns>
+				WString										GetName();
+			};
 			
 			/// <summary>Document displayer control common interface for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentCommonInterface abstract : public Description<GuiDocumentCommonInterface>
 			{
+				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
 			public:
 				/// <summary>Represents the edit mode.</summary>
 				enum EditMode
@@ -39,6 +62,7 @@ GuiDocumentCommonInterface
 				};
 			protected:
 				Ptr<DocumentModel>							baselineDocument;
+				DocumentItemMap								documentItems;
 				GuiControl*									documentControl;
 				elements::GuiDocumentElement*				documentElement;
 				compositions::GuiBoundsComposition*			documentComposition;
@@ -72,6 +96,8 @@ GuiDocumentCommonInterface
 
 				virtual Point								GetDocumentViewPosition();
 				virtual void								EnsureRectVisible(Rect bounds);
+				
+				void										DestroyDocument();
 			public:
 				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument);
 				~GuiDocumentCommonInterface();
@@ -90,6 +116,22 @@ GuiDocumentCommonInterface
 				/// <summary>Set the document. When a document is set to this element, modifying the document without invoking <see cref="NotifyParagraphUpdated"/> will lead to undefined behavior.</summary>
 				/// <param name="value">The document.</param>
 				void										SetDocument(Ptr<DocumentModel> value);
+
+				//================ document items
+
+				/// <summary>Add a document item. The name of the document item will display in the position of the &lt;object&gt; element with the same name in the document.</summary>
+				/// <param name="value">The document item.</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										AddDocumentItem(Ptr<GuiDocumentItem> value);
+
+				/// <summary>Remove a document item.</summary>
+				/// <param name="value">The document item.</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										RemoveDocumentItem(Ptr<GuiDocumentItem> value);
+
+				/// <summary>Get all document items.</summary>
+				/// <returns>All document items.</returns>
+				const DocumentItemMap&						GetDocumentItems();
 
 				//================ caret operations
 

@@ -11,7 +11,32 @@ namespace vl
 			using namespace compositions;
 
 /***********************************************************************
-GuiDocumentViewer
+GuiDocumentItem
+***********************************************************************/
+
+			GuiDocumentItem::GuiDocumentItem(const WString& _name)
+				:name(_name)
+			{
+				container = new GuiBoundsComposition;
+			}
+
+			GuiDocumentItem::~GuiDocumentItem()
+			{
+				SafeDeleteComposition(container);
+			}
+
+			compositions::GuiGraphicsComposition* GuiDocumentItem::GetContainer()
+			{
+				return container;
+			}
+
+			WString GuiDocumentItem::GetName()
+			{
+				return name;
+			}
+
+/***********************************************************************
+GuiDocumentCommonInterface
 ***********************************************************************/
 
 			void GuiDocumentCommonInterface::UpdateCaretPoint()
@@ -477,6 +502,11 @@ GuiDocumentViewer
 			{
 			}
 
+			void GuiDocumentCommonInterface::DestroyDocument()
+			{
+				documentItems.Clear();
+			}
+
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument)
 				:baselineDocument(_baselineDocument)
 				,documentElement(0)
@@ -521,6 +551,38 @@ GuiDocumentViewer
 					value->MergeBaselineStyles(baselineDocument);
 				}
 				documentElement->SetDocument(value);
+			}
+
+			//================ document items
+
+			bool GuiDocumentCommonInterface::AddDocumentItem(Ptr<GuiDocumentItem> value)
+			{
+				if (documentItems.Keys().Contains(value->GetName()))
+				{
+					return false;
+				}
+				documentItems.Add(value->GetName(), value);
+				return true;
+			}
+
+			bool GuiDocumentCommonInterface::RemoveDocumentItem(Ptr<GuiDocumentItem> value)
+			{
+				vint index = documentItems.Keys().IndexOf(value->GetName());
+				if (index == -1)
+				{
+					return false;
+				}
+				if (documentItems.Values()[index] != value)
+				{
+					return false;
+				}
+				documentItems.Remove(value->GetName());
+				return true;
+			}
+
+			const GuiDocumentCommonInterface::DocumentItemMap& GuiDocumentCommonInterface::GetDocumentItems()
+			{
+				return documentItems;
 			}
 
 			//================ caret operations
@@ -963,6 +1025,7 @@ GuiDocumentViewer
 
 			GuiDocumentViewer::~GuiDocumentViewer()
 			{
+				DestroyDocument();
 			}
 
 			const WString& GuiDocumentViewer::GetText()
@@ -993,6 +1056,7 @@ GuiDocumentLabel
 
 			GuiDocumentLabel::~GuiDocumentLabel()
 			{
+				DestroyDocument();
 			}
 
 			const WString& GuiDocumentLabel::GetText()
