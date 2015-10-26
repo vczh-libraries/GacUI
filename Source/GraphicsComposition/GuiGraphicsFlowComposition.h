@@ -54,6 +54,8 @@ Flow Compositions
 				GuiFlowComposition();
 				~GuiFlowComposition();
 
+				const ItemCompositionList&			GetFlowItems();
+
 				Margin								GetExtraMargin();
 				void								SetExtraMargin(Margin value);
 				vint								GetRowPadding();

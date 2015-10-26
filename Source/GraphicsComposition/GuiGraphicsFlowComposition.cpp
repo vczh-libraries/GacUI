@@ -170,6 +170,11 @@ GuiFlowComposition
 			{
 			}
 
+			const GuiFlowComposition::ItemCompositionList& GuiFlowComposition::GetFlowItems()
+			{
+				return flowItems;
+			}
+
 			Margin GuiFlowComposition::GetExtraMargin()
 			{
 				return extraMargin;
