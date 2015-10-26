@@ -131,10 +131,10 @@ Stack Compositions
 				/// <param name="value">The expected bounds of a stack item.</param>
 				void								SetBounds(Rect value);
 				
-				/// <summary>Get the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for decide the stack item layout.</summary>
+				/// <summary>Get the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for deciding the stack item layout.</summary>
 				/// <returns>The extra margin for this stack item.</returns>
 				Margin								GetExtraMargin();
-				/// <summary>Set the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for decide the stack item layout.</summary>
+				/// <summary>Set the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for deciding the stack item layout.</summary>
 				/// <param name="value">The extra margin for this stack item.</param>
 				void								SetExtraMargin(Margin value);
 			};
