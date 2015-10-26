@@ -14,6 +14,7 @@ DocumentImageRun
 ***********************************************************************/
 
 		const wchar_t* DocumentImageRun::RepresentationText=L"[Image]";
+		const wchar_t* DocumentEmbeddedObjectRun::RepresentationText=L"[EmbeddedObject]";
 
 /***********************************************************************
 ExtractTextVisitor
@@ -67,6 +68,14 @@ ExtractTextVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+					if(!skipNonTextContent)
+					{
+						VisitContent(run);
+					}
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 					if(!skipNonTextContent)
 					{

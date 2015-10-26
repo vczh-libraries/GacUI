@@ -22,6 +22,7 @@ namespace vl
 		class DocumentStyleApplicationRun;
 		class DocumentHyperlinkRun;
 		class DocumentImageRun;
+		class DocumentEmbeddedObjectRun;
 		class DocumentParagraphRun;
 
 /***********************************************************************
@@ -81,6 +82,9 @@ Rich Content Document (run)
 				/// <summary>Visit operation for <see cref="DocumentImageRun"/>.</summary>
 				/// <param name="run">The run object.</param>
 				virtual void				Visit(DocumentImageRun* run)=0;
+				/// <summary>Visit operation for <see cref="DocumentEmbeddedObjectRun"/>.</summary>
+				/// <param name="run">The run object.</param>
+				virtual void				Visit(DocumentEmbeddedObjectRun* run)=0;
 				/// <summary>Visit operation for <see cref="DocumentParagraphRun"/>.</summary>
 				/// <param name="run">The run object.</param>
 				virtual void				Visit(DocumentParagraphRun* run)=0;
@@ -152,6 +156,19 @@ Rich Content Document (run)
 			WString							source;
 
 			DocumentImageRun():frameIndex(0){}
+			
+			WString							GetRepresentationText()override{return RepresentationText;}
+			void							Accept(IVisitor* visitor)override{visitor->Visit(this);}
+		};
+				
+		/// <summary>Pepresents an embedded object run.</summary>
+		class DocumentEmbeddedObjectRun : public DocumentInlineObjectRun, public Description<DocumentImageRun>
+		{
+		public:
+			static const wchar_t*			RepresentationText;
+
+			/// <summary>The object name.</summary>
+			WString							name;
 			
 			WString							GetRepresentationText()override{return RepresentationText;}
 			void							Accept(IVisitor* visitor)override{visitor->Visit(this);}

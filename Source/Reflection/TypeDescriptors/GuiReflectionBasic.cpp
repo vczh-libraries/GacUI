@@ -514,6 +514,13 @@ Type Declaration
 				CLASS_MEMBER_FIELD(source)
 			END_CLASS_MEMBER(DocumentImageRun)
 
+			BEGIN_CLASS_MEMBER(DocumentEmbeddedObjectRun)
+				CLASS_MEMBER_BASE(DocumentInlineObjectRun)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DocumentEmbeddedObjectRun>(), NO_PARAMETER)
+				
+				CLASS_MEMBER_FIELD(name)
+			END_CLASS_MEMBER(DocumentEmbeddedObjectRun)
+
 			BEGIN_CLASS_MEMBER(DocumentStylePropertiesRun)
 				CLASS_MEMBER_BASE(DocumentContainerRun)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DocumentStylePropertiesRun>(), NO_PARAMETER)

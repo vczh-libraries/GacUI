@@ -72,6 +72,7 @@ Type List
 			F(presentation::DocumentTextRun)\
 			F(presentation::DocumentInlineObjectRun)\
 			F(presentation::DocumentImageRun)\
+			F(presentation::DocumentEmbeddedObjectRun)\
 			F(presentation::DocumentStylePropertiesRun)\
 			F(presentation::DocumentStyleApplicationRun)\
 			F(presentation::DocumentHyperlinkRun)\

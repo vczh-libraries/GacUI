@@ -127,6 +127,19 @@ document_operation_visitors::DeserializeNodeVisitor
 							container->runs.Add(run);
 						}
 					}
+					else if(node->name.value==L"object")
+					{
+						Ptr<DocumentEmbeddedObjectRun> run=new DocumentEmbeddedObjectRun;
+						if(Ptr<XmlAttribute> name=XmlGetAttribute(node, L"name"))
+						{
+							run->name = name->value.value;
+							container->runs.Add(run);
+						}
+						else
+						{
+							errors.Add(L"The \"name\" attribute in <object> is missing.");
+						}
+					}
 					else if(node->name.value==L"font")
 					{
 						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();

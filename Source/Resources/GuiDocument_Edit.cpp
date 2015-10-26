@@ -73,6 +73,11 @@ document_operation_visitors::GetRunRangeVisitor
 					VisitContent(run);
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					VisitContent(run);
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -168,6 +173,10 @@ document_operation_visitors::LocateStyleVisitor
 				{
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -242,6 +251,10 @@ document_operation_visitors::LocateHyperlinkVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 				}
 
@@ -326,6 +339,13 @@ document_operation_visitors::CloneRunVisitor
 					cloned->image=run->image;
 					cloned->frameIndex=run->frameIndex;
 					cloned->source=run->source;
+					clonedRun=cloned;
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					Ptr<DocumentEmbeddedObjectRun> cloned=new DocumentEmbeddedObjectRun;
+					cloned->name=run->name;
 					clonedRun=cloned;
 				}
 
@@ -491,6 +511,23 @@ document_operation_visitors::CloneRunRecursivelyVisitor
 					}
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					clonedRun=0;
+					RunRange range=runRanges[run];
+					if(range.start<end && start<range.end)
+					{
+						if(deepCopy)
+						{
+							clonedRun=CloneRunVisitor::CopyRun(run);
+						}
+						else
+						{
+							clonedRun=run;
+						}
+					}
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -565,6 +602,10 @@ document_operation_visitors::CollectStyleNameVisitor
 				{
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -629,6 +670,10 @@ document_operation_visitors::ReplaceStyleNameVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 				}
 
@@ -746,6 +791,11 @@ document_operation_visitors::RemoveRunVisitor
 					replacedRuns.Clear();
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					replacedRuns.Clear();
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -858,6 +908,12 @@ document_operation_visitors::CutRunVisitor
 					rightRun=0;
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					leftRun=0;
+					rightRun=0;
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -929,6 +985,11 @@ document_operation_visitors::ClearRunVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+					VisitContent(run);
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 					VisitContent(run);
 				}
@@ -1014,6 +1075,11 @@ document_operation_visitors::AddContainerVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+					insertStyle=false;
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 					insertStyle=false;
 				}
@@ -1185,6 +1251,11 @@ document_operation_visitors::RemoveContainerVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+					VisitContent(run);
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 					VisitContent(run);
 				}
@@ -1401,6 +1472,10 @@ document_operation_visitors::SummerizeStyleVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 				}
 

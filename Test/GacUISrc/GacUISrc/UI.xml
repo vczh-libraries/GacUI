@@ -41,7 +41,7 @@
               <nop>Besides of this, controls can be embedded into a document too, like a </nop>
               <object name="Button"/>
               <nop>, a </nop>
-              <object name="ListView"/>
+              <object name="TreeView"/>
               <nop>, or even a </nop>
               <object name="Menu"/>
               <nop>.</nop>
@@ -95,13 +95,11 @@
               <Button Text="Button"/>
             </DocumentItem>
             <DocumentItem Name="ListView">
-              <ListView>
+              <TreeView>
                 <att.BoundsComposition-set PreferredMinSize="x:100 y:200"/>
-              </ListView>
+              </TreeView>
             </DocumentItem>
             <DocumentItem Name="Menu">
-            </DocumentItem>
-            <DocumentItem Name="Table">
               <ToolstripMenuBar>
                 <MenuBarButton Text="File" Alt="F">
                   <att.SubMenu-set>
@@ -126,6 +124,8 @@
                   </att.SubMenu-set>
                 </MenuBarButton>
               </ToolstripMenuBar>
+            </DocumentItem>
+            <DocumentItem Name="Table">
             </DocumentItem>
           </att.EmbeddedItems>
         </DocumentViewer>

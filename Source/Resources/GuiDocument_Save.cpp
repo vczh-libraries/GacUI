@@ -185,6 +185,15 @@ document_operation_visitors::SerializeRunVisitor
 						;
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					XmlElementWriter writer(parent);
+					writer
+						.Element(L"object")
+						.Attribute(L"name", run->name)
+						;
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					Ptr<XmlElement> element=new XmlElement;

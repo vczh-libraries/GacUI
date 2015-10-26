@@ -145,6 +145,10 @@ SetPropertiesVisitor
 						start+=length;
 					}
 
+					void Visit(DocumentEmbeddedObjectRun* run)override
+					{
+					}
+
 					void Visit(DocumentParagraphRun* run)override
 					{
 						VisitContainer(run);
