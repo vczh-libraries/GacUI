@@ -53,7 +53,7 @@
         <x:MutexGroupController ref.Name="groupAxis"/>
         <x:MutexGroupController ref.Name="groupAlignment"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5">
+        <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:MinSize</CellOption>
@@ -145,7 +145,7 @@
           </Cell>
 
           <Cell Site="row:2 column:0 columnSpan:3">
-            <Flow ref.Name="flowLayout" AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="20" ColumnPadding="5" ExtraMargin="left:10 top:10 right:10 bottom:10">
+            <Flow ref.Name="flowLayout" AlignmentToParent="left:0 top:0 right:0 bottom:0" RowPadding="20" ColumnPadding="5" ExtraMargin="left:10 top:10 right:10 bottom:10" MinSizeLimitation="LimitToElementAndChildren">
               <FlowItem>
                 <Button Text="Large 1">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:100 y:100"/>
