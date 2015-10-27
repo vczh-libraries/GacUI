@@ -18,6 +18,7 @@ GuiDocumentItem
 				:name(_name)
 			{
 				container = new GuiBoundsComposition;
+				container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
 			GuiDocumentItem::~GuiDocumentItem()
@@ -193,6 +194,8 @@ GuiDocumentCommonInterface
 				documentControl=_sender;
 
 				documentElement=GuiDocumentElement::Create();
+				documentElement->SetCallback(this);
+
 				documentComposition=new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(documentElement);
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
@@ -506,6 +509,23 @@ GuiDocumentCommonInterface
 			{
 				documentItems.Clear();
 			}
+
+			//================ callback
+
+			void GuiDocumentCommonInterface::OnStartRender()
+			{
+			}
+
+			void GuiDocumentCommonInterface::OnFinishRender()
+			{
+			}
+
+			Size GuiDocumentCommonInterface::OnRenderEmbeddedObject(const WString& name, const Rect& location)
+			{
+				return Size();
+			}
+
+			//================ basic
 
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument)
 				:baselineDocument(_baselineDocument)

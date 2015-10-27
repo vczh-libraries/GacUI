@@ -46,7 +46,9 @@ GuiDocumentCommonInterface
 			};
 			
 			/// <summary>Document displayer control common interface for displaying <see cref="DocumentModel"/>.</summary>
-			class GuiDocumentCommonInterface abstract : public Description<GuiDocumentCommonInterface>
+			class GuiDocumentCommonInterface abstract
+				: private virtual elements::GuiDocumentElement::ICallback
+				, public Description<GuiDocumentCommonInterface>
 			{
 				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
 			public:
@@ -74,6 +76,9 @@ GuiDocumentCommonInterface
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
 
+			private:
+
+			protected:
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
@@ -96,8 +101,13 @@ GuiDocumentCommonInterface
 
 				virtual Point								GetDocumentViewPosition();
 				virtual void								EnsureRectVisible(Rect bounds);
-				
 				void										DestroyDocument();
+
+				//================ callback
+
+				void										OnStartRender()override;
+				void										OnFinishRender()override;
+				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 			public:
 				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument);
 				~GuiDocumentCommonInterface();

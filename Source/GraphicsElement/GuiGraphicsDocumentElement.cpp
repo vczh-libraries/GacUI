@@ -656,6 +656,16 @@ GuiDocumentElement
 			{
 			}
 
+			GuiDocumentElement::ICallback* GuiDocumentElement::GetCallback()
+			{
+				return callback;
+			}
+
+			void GuiDocumentElement::SetCallback(ICallback* value)
+			{
+				callback = value;
+			}
+
 			Ptr<DocumentModel> GuiDocumentElement::GetDocument()
 			{
 				return document;

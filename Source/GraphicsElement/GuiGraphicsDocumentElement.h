@@ -27,6 +27,23 @@ Rich Content Document (element)
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDocumentElement, L"RichDocument");
 			public:
+				/// <summary>Callback interface for this element.</summary>
+				class ICallback : public virtual IDescriptable, public Description<ICallback>
+				{
+				public:
+					/// <summary>Called when the rendering is started.</summary>
+					virtual void							OnStartRender() = 0;
+
+					/// <summary>Called when the rendering is finished.</summary>
+					virtual void							OnFinishRender() = 0;
+
+					/// <summary>Called when an embedded object is being rendered.</summary>
+					/// <returns>Returns the new size of the rendered embedded object.</returns>
+					/// <param name="name">The name of the embedded object</param>
+					/// <param name="location">The location of the embedded object, relative to the left-top corner of this element.</param>
+					virtual Size							OnRenderEmbeddedObject(const WString& name, const Rect& location) = 0;
+				};
+
 				class GuiDocumentElementRenderer : public Object, public IGuiGraphicsRenderer
 				{
 					DEFINE_GUI_GRAPHICS_RENDERER(GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget)
@@ -82,6 +99,7 @@ Rich Content Document (element)
 
 			protected:
 				Ptr<DocumentModel>							document;
+				ICallback*									callback = nullptr;
 				TextPos										caretBegin;
 				TextPos										caretEnd;
 				bool										caretVisible;
@@ -93,6 +111,13 @@ Rich Content Document (element)
 				GuiDocumentElement();
 			public:
 				~GuiDocumentElement();
+				
+				/// <summary>Get the callback.</summary>
+				/// <returns>The callback.</returns>
+				ICallback*									GetCallback();
+				/// <summary>Set the callback.</summary>
+				/// <param name="value">The callback.</param>
+				void										SetCallback(ICallback* value);
 				
 				/// <summary>Get the document.</summary>
 				/// <returns>The document.</returns>
