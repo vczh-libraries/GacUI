@@ -30,6 +30,7 @@ GuiDocumentCommonInterface
 			{
 				friend class GuiDocumentCommonInterface;
 			protected:
+				bool										visible = false;
 				WString										name;
 				compositions::GuiBoundsComposition*			container;
 			public:

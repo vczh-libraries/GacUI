@@ -514,14 +514,33 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnStartRender()
 			{
+				FOREACH(Ptr<GuiDocumentItem>, item, documentItems.Values())
+				{
+					item->visible = false;
+				}
 			}
 
 			void GuiDocumentCommonInterface::OnFinishRender()
 			{
+				FOREACH(Ptr<GuiDocumentItem>, item, documentItems.Values())
+				{
+					if (item->container->GetVisible() != item->visible)
+					{
+						item->container->SetVisible(item->visible);
+					}
+				}
 			}
 
 			Size GuiDocumentCommonInterface::OnRenderEmbeddedObject(const WString& name, const Rect& location)
 			{
+				vint index = documentItems.Keys().IndexOf(name);
+				if (index != -1)
+				{
+					auto item = documentItems.Values()[index];
+					auto size = item->container->GetBounds().GetSize();
+					item->container->SetBounds(Rect(location.LeftTop(), Size(0, 0)));
+					return size;
+				}
 				return Size();
 			}
 
@@ -582,6 +601,9 @@ GuiDocumentCommonInterface
 					return false;
 				}
 				documentItems.Add(value->GetName(), value);
+				value->visible = false;
+				value->container->SetVisible(false);
+				documentComposition->AddChild(value->container);
 				return true;
 			}
 
@@ -596,6 +618,7 @@ GuiDocumentCommonInterface
 				{
 					return false;
 				}
+				documentComposition->RemoveChild(value->container);
 				documentItems.Remove(value->GetName());
 				return true;
 			}
