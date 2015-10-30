@@ -108,24 +108,24 @@
             <ToolstripMenuBar>
               <MenuBarButton Text="File" Alt="F">
                 <att.SubMenu-set>
-                  <MenuBarButton Text="New" Alt="N"/>
-                  <MenuBarButton Text="Open" Alt="O"/>
-                  <MenuBarButton Text="Save" Alt="S"/>
-                  <MenuBarButton Text="Save As ..." Alt="A"/>
+                  <MenuItemButton Text="New" Alt="N"/>
+                  <MenuItemButton Text="Open" Alt="O"/>
+                  <MenuItemButton Text="Save" Alt="S"/>
+                  <MenuItemButton Text="Save As ..." Alt="A"/>
                   <MenuSplitter/>
-                  <MenuBarButton Text="Exit" Alt="X"/>
+                  <MenuItemButton Text="Exit" Alt="X"/>
                 </att.SubMenu-set>
               </MenuBarButton>
               <MenuBarButton Text="Edit" Alt="E">
                 <att.SubMenu-set>
-                  <MenuBarButton Text="Undo" Alt="U"/>
-                  <MenuBarButton Text="Redo" Alt="R"/>
+                  <MenuItemButton Text="Undo" Alt="U"/>
+                  <MenuItemButton Text="Redo" Alt="R"/>
                   <MenuSplitter/>
-                  <MenuBarButton Text="Cut" Alt="T"/>
-                  <MenuBarButton Text="Copy" Alt="C"/>
-                  <MenuBarButton Text="Paste" Alt="P"/>
+                  <MenuItemButton Text="Cut" Alt="T"/>
+                  <MenuItemButton Text="Copy" Alt="C"/>
+                  <MenuItemButton Text="Paste" Alt="P"/>
                   <MenuSplitter/>
-                  <MenuBarButton Text="Select All" Alt="A"/>
+                  <MenuItemButton Text="Select All" Alt="A"/>
                 </att.SubMenu-set>
               </MenuBarButton>
             </ToolstripMenuBar>
