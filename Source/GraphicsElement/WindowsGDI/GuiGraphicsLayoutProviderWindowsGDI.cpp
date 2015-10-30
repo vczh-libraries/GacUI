@@ -297,7 +297,7 @@ WindowsGDIParagraph
 WindowsGDILayoutProvider
 ***********************************************************************/
 
-			Ptr<IGuiGraphicsParagraph> WindowsGDILayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget)
+			Ptr<IGuiGraphicsParagraph> WindowsGDILayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
 				return new WindowsGDIParagraph(this, text, renderTarget);
 			}

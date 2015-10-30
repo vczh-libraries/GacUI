@@ -168,6 +168,11 @@ SetPropertiesVisitor
 GuiDocumentElement::GuiDocumentElementRenderer
 ***********************************************************************/
 
+			Size GuiDocumentElement::GuiDocumentElementRenderer::OnRenderInlineObject(vint callbackId, Rect location)
+			{
+				return Size();
+			}
+
 			void GuiDocumentElement::GuiDocumentElementRenderer::InitializeInternal()
 			{
 			}
@@ -204,7 +209,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				{
 					if(!cache->graphicsParagraph)
 					{
-						cache->graphicsParagraph=layoutProvider->CreateParagraph(cache->fullText, renderTarget);
+						cache->graphicsParagraph=layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
 						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
 						SetPropertiesVisitor::SetProperty(element->document.Obj(), cache->graphicsParagraph.Obj(), paragraph, cache->selectionBegin, cache->selectionEnd);
 					}

@@ -44,7 +44,7 @@ Rich Content Document (element)
 					virtual Size							OnRenderEmbeddedObject(const WString& name, const Rect& location) = 0;
 				};
 
-				class GuiDocumentElementRenderer : public Object, public IGuiGraphicsRenderer
+				class GuiDocumentElementRenderer : public Object, public IGuiGraphicsRenderer, private IGuiGraphicsParagraphCallback
 				{
 					DEFINE_GUI_GRAPHICS_RENDERER(GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget)
 				protected:
@@ -64,6 +64,10 @@ Rich Content Document (element)
 
 					typedef collections::Array<Ptr<ParagraphCache>>		ParagraphCacheArray;
 					typedef collections::Array<vint>					ParagraphHeightArray;
+
+				private:
+
+					Size									OnRenderInlineObject(vint callbackId, Rect location)override;
 				protected:
 					vint									paragraphDistance;
 					vint									lastMaxWidth;

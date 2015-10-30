@@ -20,7 +20,7 @@ namespace vl
 			class WindowsGDILayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
 			{
 			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget)override;
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
 			};
 		}
 	}

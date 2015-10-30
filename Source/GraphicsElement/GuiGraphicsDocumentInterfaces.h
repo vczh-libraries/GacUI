@@ -218,6 +218,17 @@ Layout Engine
 				virtual bool								IsValidTextPos(vint textPos)=0;
 			};
 
+			/// <summary>Paragraph callback</summary>
+			class IGuiGraphicsParagraphCallback : public IDescriptable, public Description<IGuiGraphicsParagraphCallback>
+			{
+			public:
+				/// <summary>Called when an inline object with a valid callback id is being rendered.</summary>
+				/// <returns>Returns the new size of the rendered inline object.</returns>
+				/// <param name="callbackId">The callback id of the inline object</param>
+				/// <param name="location">The location of the inline object, relative to the left-top corner of this paragraph.</param>
+				virtual Size								OnRenderInlineObject(vint callbackId, Rect location) = 0;
+			};
+
 			/// <summary>Renderer awared rich text document layout engine provider interface.</summary>
 			class IGuiGraphicsLayoutProvider : public IDescriptable, public Description<IGuiGraphicsLayoutProvider>
 			{
@@ -226,7 +237,7 @@ Layout Engine
 				/// <param name="text">The text used to fill the paragraph.</param>
 				/// <param name="renderTarget">The render target that the created paragraph will render to.</param>
 				/// <returns>The created paragraph object.</returns>
-				virtual Ptr<IGuiGraphicsParagraph>			CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget)=0;
+				virtual Ptr<IGuiGraphicsParagraph>			CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback)=0;
 			};
 		}
 	}

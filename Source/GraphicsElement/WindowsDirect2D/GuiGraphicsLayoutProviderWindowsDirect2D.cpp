@@ -1168,7 +1168,7 @@ WindowsDirect2DParagraph (Caret)
 WindowsDirect2DLayoutProvider
 ***********************************************************************/
 
-			Ptr<IGuiGraphicsParagraph> WindowsDirect2DLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget)
+			Ptr<IGuiGraphicsParagraph> WindowsDirect2DLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
 				return new WindowsDirect2DParagraph(this, text, renderTarget);
 			}
