@@ -49,7 +49,7 @@
           </p>
           <p>
             <div style="Body">
-              <nop>If you can embed a control, why not embed a composition like this: </nop>
+              <nop>If you can embed a control, why not embed another layout composition like this: </nop>
               <object name="Table"/>
               <nop>?</nop>
             </div>
@@ -131,6 +131,47 @@
             </ToolstripMenuBar>
           </DocumentItem>
           <DocumentItem Name="Table">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+              <SolidBorder Color="#000000"/>
+              <att.Rows>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0">
+                <Label Text="XOR"/>
+              </Cell>
+              <Cell Site="row:0 column:1">
+                <Label Text="false"/>
+              </Cell>
+              <Cell Site="row:0 column:2">
+                <Label Text="true"/>
+              </Cell>
+              <Cell Site="row:1 column:0">
+                <Label Text="false"/>
+              </Cell>
+              <Cell Site="row:1 column:1">
+                <Label Text="false"/>
+              </Cell>
+              <Cell Site="row:1 column:2">
+                <Label Text="true"/>
+              </Cell>
+              <Cell Site="row:2 column:0">
+                <Label Text="true"/>
+              </Cell>
+              <Cell Site="row:2 column:1">
+                <Label Text="true"/>
+              </Cell>
+              <Cell Site="row:2 column:2">
+                <Label Text="false"/>
+              </Cell>
+            </Table>
           </DocumentItem>
         </DocumentViewer>
       </Window>
