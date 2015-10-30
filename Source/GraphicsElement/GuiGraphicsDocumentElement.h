@@ -60,11 +60,12 @@ Rich Content Document (element)
 						WString								name;
 						Size								size;
 						vint								start;
+						bool								resized = false;
 					};
 
-					typedef collections::Dictionary<vint, EmbeddedObject>		IdEmbeddedObjectMap;
-					typedef collections::Dictionary<WString, vint>				NameIdMap;
-					typedef collections::List<vint>								FreeIdList;
+					typedef collections::Dictionary<vint, Ptr<EmbeddedObject>>		IdEmbeddedObjectMap;
+					typedef collections::Dictionary<WString, vint>					NameIdMap;
+					typedef collections::List<vint>									FreeIdList;
 
 					struct ParagraphCache
 					{

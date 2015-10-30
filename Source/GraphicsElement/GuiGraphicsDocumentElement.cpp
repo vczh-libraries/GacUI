@@ -168,19 +168,19 @@ SetPropertiesVisitor
 								if (index != -1)
 								{
 									auto eo = cache->embeddedObjects.Values()[index];
-									if (eo.start == start)
+									if (eo->start == start)
 									{
-										properties.size = eo.size;
+										properties.size = eo->size;
 										properties.callbackId = id;
 									}
 								}
 							}
 							else
 							{
-								Renderer::EmbeddedObject eo;
-								eo.name = run->name;
-								eo.size = Size(0, 0);
-								eo.start = start;
+								auto eo = MakePtr<Renderer::EmbeddedObject>();
+								eo->name = run->name;
+								eo->size = Size(0, 0);
+								eo->start = start;
 
 								vint id = -1;
 								vint count = renderer->freeCallbackIds.Count();
@@ -194,7 +194,7 @@ SetPropertiesVisitor
 									id = renderer->usedCallbackIds++;
 								}
 
-								renderer->nameCallbackIdMap.Add(eo.name, id);
+								renderer->nameCallbackIdMap.Add(eo->name, id);
 								cache->embeddedObjects.Add(id, eo);
 								properties.callbackId = id;
 							}
@@ -237,10 +237,10 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					auto cache = paragraphCaches[renderingParagraph];
 					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.x2 + renderingParagraphOffset.y), location.GetSize());
 					auto eo = cache->embeddedObjects[callbackId];
-					auto size = element->callback->OnRenderEmbeddedObject(eo.name, relativeLocation);
-					eo.size = size;
-					cache->embeddedObjects.Set(callbackId, eo);
-					return eo.size;
+					auto size = element->callback->OnRenderEmbeddedObject(eo->name, relativeLocation);
+					eo->resized = eo->size != size;
+					eo->size = size;
+					return eo->size;
 				}
 				else
 				{
@@ -388,6 +388,22 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
 							cache->graphicsParagraph->Render(Rect(Point(cx, cy+y), Size(maxWidth, paragraphHeight)));
 							renderingParagraph = -1;
+
+							bool resized = false;
+							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+							{
+								auto eo = cache->embeddedObjects.Values()[j];
+								if (eo->resized)
+								{
+									eo->resized = false;
+									resized = true;
+								}
+							}
+
+							if (resized)
+							{
+								cache->graphicsParagraph = 0;
+							}
 						}
 
 						y+=paragraphHeight+paragraphDistance;
@@ -492,7 +508,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
 							{
 								auto id = cache->embeddedObjects.Keys()[j];
-								auto name = cache->embeddedObjects.Values()[j].name;
+								auto name = cache->embeddedObjects.Values()[j]->name;
 								nameCallbackIdMap.Remove(name);
 								freeCallbackIds.Add(id);
 							}
