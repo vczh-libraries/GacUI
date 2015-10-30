@@ -33,6 +33,7 @@ GuiDocumentCommonInterface
 				bool										visible = false;
 				WString										name;
 				compositions::GuiBoundsComposition*			container;
+				bool										owned = false;
 			public:
 				GuiDocumentItem(const WString& _name);
 				~GuiDocumentItem();
@@ -102,7 +103,6 @@ GuiDocumentCommonInterface
 
 				virtual Point								GetDocumentViewPosition();
 				virtual void								EnsureRectVisible(Rect bounds);
-				void										DestroyDocument();
 
 				//================ callback
 

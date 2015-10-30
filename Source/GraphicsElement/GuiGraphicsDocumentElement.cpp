@@ -156,7 +156,6 @@ SetPropertiesVisitor
 						length=run->GetRepresentationText().Length();
 
 						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.baseline=0;
 						properties.breakCondition=IGuiGraphicsParagraph::Alone;
 
 						if (run->name != L"")
@@ -172,7 +171,6 @@ SetPropertiesVisitor
 									if (eo.start == start)
 									{
 										properties.size = eo.size;
-										properties.baseline = properties.size.y;
 										properties.callbackId = id;
 									}
 								}

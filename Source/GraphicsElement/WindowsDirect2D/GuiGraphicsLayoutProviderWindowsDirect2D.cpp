@@ -147,7 +147,6 @@ WindowsDirect2DElementInlineObject
 							auto offset = rendererCallback->GetParagraphOffset();
 							auto size = callback->OnRenderInlineObject(properties.callbackId, Rect(Point(bounds.x1 - offset.x, bounds.y1 - offset.y), bounds.GetSize()));
 							properties.size = size;
-							properties.baseline = size.y;
 						}
 					}
 					return S_OK;

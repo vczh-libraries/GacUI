@@ -23,7 +23,10 @@ GuiDocumentItem
 
 			GuiDocumentItem::~GuiDocumentItem()
 			{
-				SafeDeleteComposition(container);
+				if (!owned)
+				{
+					SafeDeleteComposition(container);
+				}
 			}
 
 			compositions::GuiGraphicsComposition* GuiDocumentItem::GetContainer()
@@ -505,11 +508,6 @@ GuiDocumentCommonInterface
 			{
 			}
 
-			void GuiDocumentCommonInterface::DestroyDocument()
-			{
-				documentItems.Clear();
-			}
-
 			//================ callback
 
 			void GuiDocumentCommonInterface::OnStartRender()
@@ -602,9 +600,10 @@ GuiDocumentCommonInterface
 					return false;
 				}
 				documentItems.Add(value->GetName(), value);
-				value->visible = false;
-				value->container->SetVisible(false);
 				documentComposition->AddChild(value->container);
+				value->visible = false;
+				value->owned = true;
+				value->container->SetVisible(false);
 				return true;
 			}
 
@@ -619,6 +618,7 @@ GuiDocumentCommonInterface
 				{
 					return false;
 				}
+				value->owned = false;
 				documentComposition->RemoveChild(value->container);
 				documentItems.Remove(value->GetName());
 				return true;
@@ -1069,7 +1069,6 @@ GuiDocumentViewer
 
 			GuiDocumentViewer::~GuiDocumentViewer()
 			{
-				DestroyDocument();
 			}
 
 			const WString& GuiDocumentViewer::GetText()
@@ -1100,7 +1099,6 @@ GuiDocumentLabel
 
 			GuiDocumentLabel::~GuiDocumentLabel()
 			{
-				DestroyDocument();
 			}
 
 			const WString& GuiDocumentLabel::GetText()

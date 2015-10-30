@@ -84,7 +84,7 @@ Layout Engine
 					/// <summary>The size of the inline object.</summary>
 					Size						size;
 					/// <summary>The baseline of the inline object.If the baseline is at the bottom, then set the baseline to -1.</summary>
-					vint						baseline;
+					vint						baseline = -1;
 					/// <summary>The break condition of the inline object.</summary>
 					BreakCondition				breakCondition;
 					/// <summary>The background image, nullable.</summary>
