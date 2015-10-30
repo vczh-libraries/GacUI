@@ -103,6 +103,9 @@ Rich Content Document (element)
 					FreeIdList								freeCallbackIds;
 					vint									usedCallbackIds = 0;
 
+					vint									renderingParagraph = -1;
+					Point									renderingParagraphOffset;
+
 					void									InitializeInternal();
 					void									FinalizeInternal();
 					void									RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget);

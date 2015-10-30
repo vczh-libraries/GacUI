@@ -234,7 +234,17 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			Size GuiDocumentElement::GuiDocumentElementRenderer::OnRenderInlineObject(vint callbackId, Rect location)
 			{
-				return Size();
+				if (element->callback)
+				{
+					auto cache = paragraphCaches[renderingParagraph];
+					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.x2 + renderingParagraphOffset.y), location.GetSize());
+					auto name = cache->embeddedObjects[callbackId].name;
+					return element->callback->OnRenderEmbeddedObject(name, relativeLocation);
+				}
+				else
+				{
+					return Size();
+				}
 			}
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::InitializeInternal()
@@ -372,7 +382,11 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							}
 
 							paragraphHeight=cache->graphicsParagraph->GetHeight();
+
+							renderingParagraph = i;
+							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
 							cache->graphicsParagraph->Render(Rect(Point(cx, cy+y), Size(maxWidth, paragraphHeight)));
+							renderingParagraph = -1;
 						}
 
 						y+=paragraphHeight+paragraphDistance;
