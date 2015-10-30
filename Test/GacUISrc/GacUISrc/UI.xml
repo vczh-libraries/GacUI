@@ -88,7 +88,7 @@
         <att.BoundsComposition-set PreferredMinSize="x:480 y:640"/>
         <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
 
-        <DocumentViewer EditMode="ViewOnly" Document-uri="res://EmbeddedDocument/Document">
+        <DocumentViewer EditMode="Selectable" Document-uri="res://EmbeddedDocument/Document">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <DocumentItem Name="Button">
             <Button Text="Button"/>
