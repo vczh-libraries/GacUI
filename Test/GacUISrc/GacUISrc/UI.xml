@@ -94,8 +94,14 @@
             <Button Text="Button"/>
           </DocumentItem>
           <DocumentItem Name="TreeView">
-            <TreeView>
-              <att.BoundsComposition-set PreferredMinSize="x:100 y:200"/>
+            <TreeView HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.BoundsComposition-set PreferredMinSize="x:200 y:100"/>
+              <att.Nodes>
+                <TreeNode Text="GacUI Renderers" Expanding="true">
+                  <TreeNode Text="Direct2D"/>
+                  <TreeNode Text="GDI"/>
+                </TreeNode>
+              </att.Nodes>
             </TreeView>
           </DocumentItem>
           <DocumentItem Name="Menu">

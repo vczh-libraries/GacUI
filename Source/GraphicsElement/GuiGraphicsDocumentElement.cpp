@@ -235,7 +235,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				if (element->callback)
 				{
 					auto cache = paragraphCaches[renderingParagraph];
-					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.x2 + renderingParagraphOffset.y), location.GetSize());
+					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.y1 + renderingParagraphOffset.y), location.GetSize());
 					auto eo = cache->embeddedObjects[callbackId];
 					auto size = element->callback->OnRenderEmbeddedObject(eo->name, relativeLocation);
 					eo->resized = eo->size != size;

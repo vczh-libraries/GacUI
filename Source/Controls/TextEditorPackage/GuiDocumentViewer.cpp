@@ -19,6 +19,7 @@ GuiDocumentItem
 			{
 				container = new GuiBoundsComposition;
 				container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				container->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Arrow));
 			}
 
 			GuiDocumentItem::~GuiDocumentItem()
