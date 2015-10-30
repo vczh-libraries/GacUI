@@ -17,21 +17,27 @@ SetPropertiesVisitor
 			{
 				class SetPropertiesVisitor : public Object, public DocumentRun::IVisitor
 				{
-					typedef DocumentModel::ResolvedStyle			ResolvedStyle;
+					typedef GuiDocumentElement::GuiDocumentElementRenderer	Renderer;
+					typedef DocumentModel::ResolvedStyle					ResolvedStyle;
 				public:
-					vint						start;
-					vint						length;
-					vint						selectionBegin;
-					vint						selectionEnd;
-					List<ResolvedStyle>			styles;
-					DocumentModel*				model;
-					IGuiGraphicsParagraph*		paragraph;
+					vint							start;
+					vint							length;
+					vint							selectionBegin;
+					vint							selectionEnd;
+					List<ResolvedStyle>				styles;
 
-					SetPropertiesVisitor(DocumentModel* _model, IGuiGraphicsParagraph* _paragraph, vint _selectionBegin, vint _selectionEnd)
+					DocumentModel*					model;
+					Renderer*						renderer;
+					Ptr<Renderer::ParagraphCache>	cache;
+					IGuiGraphicsParagraph*			paragraph;
+
+					SetPropertiesVisitor(DocumentModel* _model, Renderer* _renderer, Ptr<Renderer::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
 						:start(0)
 						,length(0)
 						,model(_model)
-						,paragraph(_paragraph)
+						,renderer(_renderer)
+						,cache(_cache)
+						,paragraph(_cache->graphicsParagraph.Obj())
 						,selectionBegin(_selectionBegin)
 						,selectionEnd(_selectionEnd)
 					{
@@ -147,6 +153,64 @@ SetPropertiesVisitor
 
 					void Visit(DocumentEmbeddedObjectRun* run)override
 					{
+						length=run->GetRepresentationText().Length();
+
+						IGuiGraphicsParagraph::InlineObjectProperties properties;
+						properties.baseline=0;
+						properties.breakCondition=IGuiGraphicsParagraph::Alone;
+
+						if (run->name != L"")
+						{
+							vint index = renderer->nameCallbackIdMap.Keys().IndexOf(run->name);
+							if (index != -1)
+							{
+								auto id = renderer->nameCallbackIdMap.Values()[index];
+								index = cache->embeddedObjects.Keys().IndexOf(id);
+								if (index != -1)
+								{
+									auto& eo = cache->embeddedObjects.Values()[index];
+									if (eo.start == start)
+									{
+										properties.size = eo.size;
+										properties.baseline = properties.size.y;
+										properties.callbackId = id;
+									}
+								}
+							}
+							else
+							{
+								Renderer::EmbeddedObject eo;
+								eo.name = run->name;
+								eo.size = Size(0, 0);
+								eo.start = start;
+
+								vint id = -1;
+								vint count = renderer->freeCallbackIds.Count();
+								if (count > 0)
+								{
+									id = renderer->freeCallbackIds[count - 1];
+									renderer->freeCallbackIds.RemoveAt(count - 1);
+								}
+								else
+								{
+									id = renderer->usedCallbackIds++;
+								}
+
+								renderer->nameCallbackIdMap.Add(eo.name, id);
+								cache->embeddedObjects.Add(id, eo);
+								properties.callbackId = id;
+							}
+						}
+
+						paragraph->SetInlineObject(start, length, properties);
+
+						if(start<selectionEnd && selectionBegin<start+length)
+						{
+							ResolvedStyle style=styles[styles.Count()-1];
+							ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
+							ApplyColor(start, length, selectionStyle);
+						}
+						start+=length;
 					}
 
 					void Visit(DocumentParagraphRun* run)override
@@ -154,9 +218,9 @@ SetPropertiesVisitor
 						VisitContainer(run);
 					}
 
-					static vint SetProperty(DocumentModel* model, IGuiGraphicsParagraph* paragraph, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
+					static vint SetProperty(DocumentModel* model, Renderer* renderer, Ptr<Renderer::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
 					{
-						SetPropertiesVisitor visitor(model, paragraph, selectionBegin, selectionEnd);
+						SetPropertiesVisitor visitor(model, renderer, cache, selectionBegin, selectionEnd);
 						run->Accept(&visitor);
 						return visitor.length;
 					}
@@ -211,7 +275,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					{
 						cache->graphicsParagraph=layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
 						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
-						SetPropertiesVisitor::SetProperty(element->document.Obj(), cache->graphicsParagraph.Obj(), paragraph, cache->selectionBegin, cache->selectionEnd);
+						SetPropertiesVisitor::SetProperty(element->document.Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
 					}
 					if(cache->graphicsParagraph->GetMaxWidth()!=lastMaxWidth)
 					{
@@ -267,6 +331,10 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::Render(Rect bounds)
 			{
+				if (element->callback)
+				{
+					element->callback->OnStartRender();
+				}
 				renderTarget->PushClipper(bounds);
 				if(!renderTarget->IsClipperCoverWholeTarget())
 				{
@@ -311,6 +379,10 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					}
 				}
 				renderTarget->PopClipper();
+				if (element->callback)
+				{
+					element->callback->OnFinishRender();
+				}
 			}
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::OnElementStateChanged()
@@ -342,6 +414,10 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					cachedTotalHeight=0;
 					minSize=Size(0, 0);
 				}
+
+				nameCallbackIdMap.Clear();
+				freeCallbackIds.Clear();
+				usedCallbackIds = 0;
 			}
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
@@ -380,11 +456,6 @@ GuiDocumentElement::GuiDocumentElementRenderer
 								if(cache)
 								{
 									cache->graphicsParagraph=0;
-									if(updatedText)
-									{
-										cache->selectionBegin=-1;
-										cache->selectionEnd=-1;
-									}
 								}
 								paragraphCaches[i]=cache;
 							}
@@ -395,6 +466,22 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							paragraphHeights[i]=oldHeights[i-(newCount-oldCount)];
 						}
 						cachedTotalHeight+=paragraphHeights[i]+paragraphDistance;
+					}
+
+					if (updatedText)
+					{
+						vint count = oldCount < newCount ? oldCount : newCount;
+						for (vint i = 0; i < count; i++)
+						{
+							auto cache = oldCaches[index + i];
+							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+							{
+								auto id = cache->embeddedObjects.Keys()[j];
+								auto name = cache->embeddedObjects.Values()[j].name;
+								nameCallbackIdMap.Remove(name);
+								freeCallbackIds.Add(id);
+							}
+						}
 					}
 				}
 			}

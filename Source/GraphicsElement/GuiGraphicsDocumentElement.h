@@ -18,6 +18,11 @@ namespace vl
 		namespace elements
 		{
 
+			namespace visitors
+			{
+				class SetPropertiesVisitor;
+			}
+
 /***********************************************************************
 Rich Content Document (element)
 ***********************************************************************/
@@ -46,12 +51,26 @@ Rich Content Document (element)
 
 				class GuiDocumentElementRenderer : public Object, public IGuiGraphicsRenderer, private IGuiGraphicsParagraphCallback
 				{
+					friend class visitors::SetPropertiesVisitor;
+
 					DEFINE_GUI_GRAPHICS_RENDERER(GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget)
 				protected:
+					struct EmbeddedObject
+					{
+						WString								name;
+						Size								size;
+						vint								start;
+					};
+
+					typedef collections::Dictionary<vint, EmbeddedObject>		IdEmbeddedObjectMap;
+					typedef collections::Dictionary<WString, vint>				NameIdMap;
+					typedef collections::List<vint>								FreeIdList;
+
 					struct ParagraphCache
 					{
 						WString								fullText;
 						Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
+						IdEmbeddedObjectMap					embeddedObjects;
 						vint								selectionBegin;
 						vint								selectionEnd;
 
@@ -79,6 +98,10 @@ Rich Content Document (element)
 					TextPos									lastCaret;
 					Color									lastCaretColor;
 					bool									lastCaretFrontSide;
+
+					NameIdMap								nameCallbackIdMap;
+					FreeIdList								freeCallbackIds;
+					vint									usedCallbackIds = 0;
 
 					void									InitializeInternal();
 					void									FinalizeInternal();
