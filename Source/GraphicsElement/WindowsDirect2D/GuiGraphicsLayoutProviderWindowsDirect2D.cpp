@@ -21,8 +21,10 @@ WindowsDirect2DElementInlineObject
 				class IRendererCallback : public Interface
 				{
 				public:
-					virtual Color									GetBackgroundColor(vint textPosition)=0;
-					virtual IWindowsDirect2DRenderTarget*			GetDirect2DRenderTarget()=0;
+					virtual Color									GetBackgroundColor(vint textPosition) = 0;
+					virtual IWindowsDirect2DRenderTarget*			GetDirect2DRenderTarget() = 0;
+					virtual Point									GetParagraphOffset() = 0;
+					virtual IGuiGraphicsParagraphCallback*			GetParagraphCallback() = 0;
 				};
 
 			protected:
@@ -111,30 +113,40 @@ WindowsDirect2DElementInlineObject
 					IUnknown* clientDrawingEffect
 					)override
 				{
+					Rect bounds(Point((vint)originX, (vint)originY), properties.size);
 					if (properties.backgroundImage)
 					{
 						IGuiGraphicsRenderer* graphicsRenderer=properties.backgroundImage->GetRenderer();
 						if(graphicsRenderer)
 						{
-							Rect bounds(Point((vint)originX, (vint)originY), properties.size);
 							graphicsRenderer->Render(bounds);
+						}
+					}
 
-							Color color=rendererCallback->GetBackgroundColor(start);
-							if(color.a!=0)
-							{
-								color.a/=2;
-								if(IWindowsDirect2DRenderTarget* renderTarget=rendererCallback->GetDirect2DRenderTarget())
-								{
-									ID2D1SolidColorBrush* brush=renderTarget->CreateDirect2DBrush(color);
+					Color color=rendererCallback->GetBackgroundColor(start);
+					if(color.a!=0)
+					{
+						color.a/=2;
+						if(IWindowsDirect2DRenderTarget* renderTarget=rendererCallback->GetDirect2DRenderTarget())
+						{
+							ID2D1SolidColorBrush* brush=renderTarget->CreateDirect2DBrush(color);
 
-									renderTarget->GetDirect2DRenderTarget()->FillRectangle(
-										D2D1::RectF(bounds.x1-0.5f, bounds.y1-0.5f, bounds.x2+0.5f, bounds.y2+0.5f),
-										brush
-										);
+							renderTarget->GetDirect2DRenderTarget()->FillRectangle(
+								D2D1::RectF(bounds.x1-0.5f, bounds.y1-0.5f, bounds.x2+0.5f, bounds.y2+0.5f),
+								brush
+								);
 
-									renderTarget->DestroyDirect2DBrush(color);
-								}
-							}
+							renderTarget->DestroyDirect2DBrush(color);
+						}
+					}
+
+					if (properties.callbackId != -1)
+					{
+						if (auto callback = rendererCallback->GetParagraphCallback())
+						{
+							auto offset = rendererCallback->GetParagraphOffset();
+							auto size = callback->OnRenderInlineObject(properties.callbackId, Rect(Point(bounds.x1 - offset.x, bounds.y1 - offset.y), bounds.GetSize()));
+							properties.size = size;
 						}
 					}
 					return S_OK;
@@ -238,6 +250,9 @@ WindowsDirect2DParagraph
 				Array<DWRITE_CLUSTER_METRICS>			clusterMetrics;
 				Array<DWRITE_HIT_TEST_METRICS>			hitTestMetrics;
 				Array<vint>								charHitTestMap;
+
+				Point									paragraphOffset;
+				IGuiGraphicsParagraphCallback*			paragraphCallback;
 
 /***********************************************************************
 WindowsDirect2DParagraph (Ranges)
@@ -427,7 +442,7 @@ WindowsDirect2DParagraph (Layout Retriving)
 WindowsDirect2DParagraph (Initialization)
 ***********************************************************************/
 
-				WindowsDirect2DParagraph(IGuiGraphicsLayoutProvider* _provider, const WString& _text, IGuiGraphicsRenderTarget* _renderTarget)
+				WindowsDirect2DParagraph(IGuiGraphicsLayoutProvider* _provider, const WString& _text, IGuiGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _paragraphCallback)
 					:provider(_provider)
 					,dwriteFactory(GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory())
 					,renderTarget(dynamic_cast<IWindowsDirect2DRenderTarget*>(_renderTarget))
@@ -439,6 +454,7 @@ WindowsDirect2DParagraph (Initialization)
 					,caretFrontSide(false)
 					,caretBrush(0)
 					,formatDataAvailable(false)
+					,paragraphCallback(_paragraphCallback)
 				{
 					FontProperties defaultFont=GetCurrentController()->ResourceService()->GetDefaultFont();
 					Direct2DTextFormatPackage* package=GetWindowsDirect2DResourceManager()->CreateDirect2DTextFormat(defaultFont);
@@ -481,6 +497,16 @@ WindowsDirect2DParagraph (Initialization)
 				IGuiGraphicsRenderTarget* GetRenderTarget()override
 				{
 					return renderTarget;
+				}
+
+				Point GetParagraphOffset()override
+				{
+					return paragraphOffset;
+				}
+
+				IGuiGraphicsParagraphCallback* GetParagraphCallback()override
+				{
+					return paragraphCallback;
 				}
 
 /***********************************************************************
@@ -737,6 +763,7 @@ WindowsDirect2DParagraph (Rendering)
 
 				void Render(Rect bounds)override
 				{
+					paragraphOffset = bounds.LeftTop();
 					PrepareFormatData();
 					for(vint i=0;i<backgroundColors.Count();i++)
 					{
@@ -1170,7 +1197,7 @@ WindowsDirect2DLayoutProvider
 
 			Ptr<IGuiGraphicsParagraph> WindowsDirect2DLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
-				return new WindowsDirect2DParagraph(this, text, renderTarget);
+				return new WindowsDirect2DParagraph(this, text, renderTarget, callback);
 			}
 		}
 	}
