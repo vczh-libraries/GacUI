@@ -102,9 +102,9 @@
             <ToolstripMenuBar>
               <MenuBarButton Text="File" Alt="F">
                 <att.SubMenu-set>
-                  <MenuBarButton Text="New" Alt="N" ShortcutBuilder="Ctrl+N"/>
-                  <MenuBarButton Text="Open" Alt="O" ShortcutBuilder="Ctrl+O"/>
-                  <MenuBarButton Text="Save" Alt="S" ShortcutBuilder="Ctrl+S"/>
+                  <MenuBarButton Text="New" Alt="N"/>
+                  <MenuBarButton Text="Open" Alt="O"/>
+                  <MenuBarButton Text="Save" Alt="S"/>
                   <MenuBarButton Text="Save As ..." Alt="A"/>
                   <MenuSplitter/>
                   <MenuBarButton Text="Exit" Alt="X"/>
@@ -112,14 +112,14 @@
               </MenuBarButton>
               <MenuBarButton Text="Edit" Alt="E">
                 <att.SubMenu-set>
-                  <MenuBarButton Text="Undo" Alt="U" ShortcutBuilder="Ctrl+Z"/>
-                  <MenuBarButton Text="Redo" Alt="R" ShortcutBuilder="Ctrl+Y"/>
+                  <MenuBarButton Text="Undo" Alt="U"/>
+                  <MenuBarButton Text="Redo" Alt="R"/>
                   <MenuSplitter/>
-                  <MenuBarButton Text="Cut" Alt="T" ShortcutBuilder="Ctrl+X"/>
-                  <MenuBarButton Text="Copy" Alt="C" ShortcutBuilder="Ctrl+C"/>
-                  <MenuBarButton Text="Paste" Alt="P" ShortcutBuilder="Ctrl+V"/>
+                  <MenuBarButton Text="Cut" Alt="T"/>
+                  <MenuBarButton Text="Copy" Alt="C"/>
+                  <MenuBarButton Text="Paste" Alt="P"/>
                   <MenuSplitter/>
-                  <MenuBarButton Text="Select All" Alt="A" ShortcutBuilder="Ctrl+A"/>
+                  <MenuBarButton Text="Select All" Alt="A"/>
                 </att.SubMenu-set>
               </MenuBarButton>
             </ToolstripMenuBar>

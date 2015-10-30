@@ -539,6 +539,7 @@ GuiDocumentCommonInterface
 					auto item = documentItems.Values()[index];
 					auto size = item->container->GetBounds().GetSize();
 					item->container->SetBounds(Rect(location.LeftTop(), Size(0, 0)));
+					item->visible = true;
 					return size;
 				}
 				return Size();

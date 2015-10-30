@@ -168,7 +168,7 @@ SetPropertiesVisitor
 								index = cache->embeddedObjects.Keys().IndexOf(id);
 								if (index != -1)
 								{
-									auto& eo = cache->embeddedObjects.Values()[index];
+									auto eo = cache->embeddedObjects.Values()[index];
 									if (eo.start == start)
 									{
 										properties.size = eo.size;
@@ -238,8 +238,11 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				{
 					auto cache = paragraphCaches[renderingParagraph];
 					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.x2 + renderingParagraphOffset.y), location.GetSize());
-					auto name = cache->embeddedObjects[callbackId].name;
-					return element->callback->OnRenderEmbeddedObject(name, relativeLocation);
+					auto eo = cache->embeddedObjects[callbackId];
+					auto size = element->callback->OnRenderEmbeddedObject(eo.name, relativeLocation);
+					eo.size = size;
+					cache->embeddedObjects.Set(callbackId, eo);
+					return eo.size;
 				}
 				else
 				{
