@@ -82,6 +82,8 @@ document_operation_visitors::DeserializeNodeVisitor
 					else if(node->name.value==L"img")
 					{
 						Ptr<DocumentImageRun> run=new DocumentImageRun;
+						run->baseline = -1;
+
 						if(Ptr<XmlAttribute> source=XmlGetAttribute(node, L"source"))
 						{
 							run->source=source->value.value;
@@ -100,7 +102,6 @@ document_operation_visitors::DeserializeNodeVisitor
 								}
 							}
 
-							bool baselineExists = false;
 							FOREACH(Ptr<XmlAttribute>, att, node->attributes)
 							{
 								if(att->name.value==L"width")
@@ -114,7 +115,6 @@ document_operation_visitors::DeserializeNodeVisitor
 								else if(att->name.value==L"baseline")
 								{
 									run->baseline=wtoi(att->value.value);
-									baselineExists = true;
 								}
 								else if(att->name.value==L"frameIndex")
 								{
@@ -126,16 +126,14 @@ document_operation_visitors::DeserializeNodeVisitor
 								}
 							}
 
-							if (!baselineExists)
-							{
-								run->baseline=run->size.y;
-							}
 							container->runs.Add(run);
 						}
 					}
 					else if(node->name.value==L"object")
 					{
 						Ptr<DocumentEmbeddedObjectRun> run=new DocumentEmbeddedObjectRun;
+						run->baseline = -1;
+
 						if(Ptr<XmlAttribute> name=XmlGetAttribute(node, L"name"))
 						{
 							run->name = name->value.value;
