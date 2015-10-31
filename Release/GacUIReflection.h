@@ -941,6 +941,7 @@ Type List
 			F(presentation::DocumentTextRun)\
 			F(presentation::DocumentInlineObjectRun)\
 			F(presentation::DocumentImageRun)\
+			F(presentation::DocumentEmbeddedObjectRun)\
 			F(presentation::DocumentStylePropertiesRun)\
 			F(presentation::DocumentStyleApplicationRun)\
 			F(presentation::DocumentHyperlinkRun)\
@@ -1506,6 +1507,7 @@ Type List
 			F(presentation::controls::GuiToolstripMenuBar)\
 			F(presentation::controls::GuiToolstripToolBar)\
 			F(presentation::controls::GuiToolstripButton)\
+			F(presentation::controls::GuiDocumentItem)\
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\
 			F(presentation::controls::GuiDocumentViewer)\

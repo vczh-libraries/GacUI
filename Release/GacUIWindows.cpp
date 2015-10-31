@@ -1721,7 +1721,9 @@ NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.CPP
 ***********************************************************************/
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "d3d11.lib")
 
+#include <d3d11_1.h>
 
 namespace vl
 {
@@ -1731,15 +1733,45 @@ namespace vl
 		{
 			using namespace vl::collections;
 
+/***********************************************************************
+WindowListener
+***********************************************************************/
+
 			class Direct2DWindowsNativeWindowListener : public Object, public INativeWindowListener
 			{
 			protected:
 				ID2D1Factory*					d2dFactory;
-				ComPtr<ID2D1HwndRenderTarget>	d2dRenderTarget;
 				INativeWindow*					window;
+
+				virtual void					RebuildCanvas(Size size) = 0;
+			public:
+				Direct2DWindowsNativeWindowListener(INativeWindow* _window, ID2D1Factory* _d2dFactory)
+					:window(_window)
+					,d2dFactory(_d2dFactory)
+				{
+				}
+
+				void Moved()
+				{
+					RebuildCanvas(window->GetClientSize());
+				}
+
+				virtual ID2D1RenderTarget*		GetDirect2DRenderTarget() = 0;
+				virtual void					RecreateRenderTarget() = 0;
+				virtual bool					PresentRenderTarget() = 0;
+			};
+
+/***********************************************************************
+WindowListener 1.0
+***********************************************************************/
+
+			class Direct2DWindowsNativeWindowListener_1_0 : public Direct2DWindowsNativeWindowListener
+			{
+			protected:
+				ComPtr<ID2D1HwndRenderTarget>	d2dRenderTarget;
 				Size							previousSize;
 
-				void RebuildCanvas(Size size)
+				void RebuildCanvas(Size size)override
 				{
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
@@ -1771,36 +1803,208 @@ namespace vl
 					previousSize=size;
 				}
 			public:
-				Direct2DWindowsNativeWindowListener(INativeWindow* _window, ID2D1Factory* _d2dFactory)
-					:window(_window)
-					,d2dFactory(_d2dFactory)
-					,d2dRenderTarget(0)
+				Direct2DWindowsNativeWindowListener_1_0(INativeWindow* _window, ID2D1Factory* _d2dFactory)
+					:Direct2DWindowsNativeWindowListener(_window, _d2dFactory)
 				{
 				}
 
-				void Moved()
-				{
-					RebuildCanvas(window->GetClientSize());
-				}
-
-				void Paint()
-				{
-				}
-
-				ID2D1RenderTarget* GetDirect2DRenderTarget()
+				ID2D1RenderTarget* GetDirect2DRenderTarget()override
 				{
 					if(!d2dRenderTarget) Moved();
 					return d2dRenderTarget.Obj();
 				}
 
-				void RecreateRenderTarget()
+				void RecreateRenderTarget()override
 				{
 					if (d2dRenderTarget)
 					{
 						d2dRenderTarget = 0;
 					}
 				}
+
+				bool PresentRenderTarget()override
+				{
+					return true;
+				}
 			};
+
+/***********************************************************************
+WindowListener 1.1
+***********************************************************************/
+
+			class Direct2DWindowsNativeWindowListener_1_1 : public Direct2DWindowsNativeWindowListener
+			{
+			protected:
+				ComPtr<ID2D1Factory1>			d2dFactory1;
+				ID3D11Device*					d3d11Device;
+				ComPtr<IDXGIDevice>				dxgiDevice;
+				ComPtr<IDXGISwapChain1>			dxgiSwapChain;
+				ComPtr<ID2D1DeviceContext>		d2dDeviceContext;
+				Size							previousSize;
+
+				ComPtr<IDXGIDevice> GetDXGIDevice()
+				{
+					IDXGIDevice* device = nullptr;
+					HRESULT hr = d3d11Device->QueryInterface(&device);
+					if (!SUCCEEDED(hr)) return 0;
+					return device;
+				}
+
+				ComPtr<IDXGISwapChain1> CreateSwapChain(IDXGIDevice* dxgiDevice)
+				{
+					ComPtr<IDXGIAdapter> dxgiAdapter;
+					{
+						IDXGIAdapter* adapter = nullptr;
+						HRESULT hr = dxgiDevice->GetAdapter(&adapter);
+						if (!SUCCEEDED(hr)) return 0;
+						dxgiAdapter = adapter;
+					}
+
+					ComPtr<IDXGIFactory2> dxgiFactory;
+					{
+						IDXGIFactory2* factory = nullptr;
+						HRESULT hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&factory);
+						if (!SUCCEEDED(hr)) return 0;
+						dxgiFactory = factory;
+					}
+
+					IWindowsForm* form = GetWindowsForm(window);
+					ComPtr<IDXGISwapChain1> dxgiSwapChain;
+					{
+						DXGI_SWAP_CHAIN_DESC1 props = {};
+						props.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+						props.SampleDesc.Count = 1;
+						props.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+						props.BufferCount = 2;
+
+						IDXGISwapChain1* swapChain = nullptr;
+						HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(d3d11Device, form->GetWindowHandle(), &props, nullptr, nullptr, &swapChain);
+						if (!SUCCEEDED(hr)) return 0;
+						dxgiSwapChain = swapChain;
+					}
+
+					return dxgiSwapChain;
+				}
+
+				ComPtr<ID2D1DeviceContext> CreateDeviceContext(IDXGIDevice* dxgiDevice)
+				{
+					ComPtr<ID2D1Device> d2d1Device;
+					{
+						ID2D1Device* device = nullptr;
+						HRESULT hr = d2dFactory1->CreateDevice(dxgiDevice, &device);
+						if (!SUCCEEDED(hr)) return 0;
+						d2d1Device = device;
+					}
+
+					ComPtr<ID2D1DeviceContext> d2dDeviceContext;
+					{
+						ID2D1DeviceContext* deviceContext = nullptr;
+						HRESULT hr = d2d1Device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &deviceContext);
+						if (!SUCCEEDED(hr)) return 0;
+						d2dDeviceContext = deviceContext;
+					}
+
+					return d2dDeviceContext;
+				}
+
+				ComPtr<ID2D1Bitmap1> CreateBitmap(IDXGISwapChain1* swapChain, ID2D1DeviceContext* deviceContext)
+				{
+					ComPtr<IDXGISurface> dxgiSurface;
+					{
+						IDXGISurface* surface = nullptr;
+						HRESULT hr = swapChain->GetBuffer(0, __uuidof(IDXGISurface), (void**)&surface);
+						if (!SUCCEEDED(hr))return 0;
+						dxgiSurface = surface;
+					}
+
+					ComPtr<ID2D1Bitmap1> d2dBitmap;
+					{
+						auto props = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+
+						ID2D1Bitmap1* bitmap = nullptr;
+						HRESULT hr = deviceContext->CreateBitmapFromDxgiSurface(dxgiSurface.Obj(), props, &bitmap);
+						if (!SUCCEEDED(hr)) return 0;
+						d2dBitmap = bitmap;
+					}
+
+					return d2dBitmap;
+				}
+
+				void RebuildCanvas(Size size)override
+				{
+					if (size.x <= 1) size.x = 1;
+					if (size.y <= 1) size.y = 1;
+
+					if(!d2dDeviceContext)
+					{
+						if (!dxgiDevice)
+						{
+							dxgiDevice = GetDXGIDevice();
+						}
+
+						if (!dxgiSwapChain)
+						{
+							dxgiSwapChain = CreateSwapChain(dxgiDevice.Obj());
+						}
+
+						d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
+						auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
+						d2dDeviceContext->SetTarget(d2dBitmap.Obj());
+						d2dDeviceContext->SetDpi(96, 96);
+					}
+					else if(previousSize!=size)
+					{
+						d2dDeviceContext->SetTarget(nullptr);
+						HRESULT hr = dxgiSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+						if (SUCCEEDED(hr))
+						{
+							auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
+							d2dDeviceContext->SetTarget(d2dBitmap.Obj());
+						}
+					}
+					previousSize=size;
+				}
+			public:
+				Direct2DWindowsNativeWindowListener_1_1(INativeWindow* _window, ComPtr<ID2D1Factory1> _d2dFactory1, ID3D11Device* _d3d11Device)
+					:Direct2DWindowsNativeWindowListener(_window, _d2dFactory1.Obj())
+					,d2dFactory1(_d2dFactory1)
+					,d3d11Device(_d3d11Device)
+				{
+				}
+
+				ID2D1RenderTarget* GetDirect2DRenderTarget()override
+				{
+					if(!d2dDeviceContext) Moved();
+					return d2dDeviceContext.Obj();
+				}
+
+				void RecreateRenderTarget()override
+				{
+					if (d2dDeviceContext)
+					{
+						d2dDeviceContext = 0;
+						dxgiSwapChain = 0;
+					}
+				}
+
+				bool PresentRenderTarget()override
+				{
+					if (d2dDeviceContext)
+					{
+						if (dxgiSwapChain)
+						{
+							DXGI_PRESENT_PARAMETERS parameters = {0};
+							HRESULT hr = dxgiSwapChain->Present1(1, 0, &parameters);
+							return hr == S_OK || hr == DXGI_STATUS_OCCLUDED;
+						}
+					}
+					return false;
+				}
+			};
+
+/***********************************************************************
+ControllerListener
+***********************************************************************/
 
 			class Direct2DWindowsNativeControllerListener : public Object, public INativeControllerListener
 			{
@@ -1808,12 +2012,18 @@ namespace vl
 				Dictionary<INativeWindow*, Ptr<Direct2DWindowsNativeWindowListener>>		nativeWindowListeners;
 				ComPtr<ID2D1Factory>														d2dFactory;
 				ComPtr<IDWriteFactory>														dwrite;
+				ComPtr<ID3D11Device>														d3d11Device;
 
 				Direct2DWindowsNativeControllerListener()
 				{
 					{
+						D2D1_FACTORY_OPTIONS fo = {};
+						#ifdef _DEBUG
+						fo.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
+						#endif
+
 						ID2D1Factory* factory=0;
-						HRESULT hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory);
+						HRESULT hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, fo, &factory);
 						if(!FAILED(hr))
 						{
 							d2dFactory=factory;
@@ -1829,11 +2039,80 @@ namespace vl
 					}
 				}
 
+				ComPtr<ID3D11Device> CreateD3D11Device(D3D_DRIVER_TYPE driverType)
+				{
+					UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+					#ifdef _DEBUG
+					flags |= D3D11_CREATE_DEVICE_DEBUG;
+					#endif
+
+					D3D_FEATURE_LEVEL featureLevels[] =
+					{
+						D3D_FEATURE_LEVEL_11_1,
+						D3D_FEATURE_LEVEL_11_0,
+						D3D_FEATURE_LEVEL_10_1,
+						D3D_FEATURE_LEVEL_10_0,
+						D3D_FEATURE_LEVEL_9_3,
+						D3D_FEATURE_LEVEL_9_2,
+						D3D_FEATURE_LEVEL_9_1
+					};
+
+
+					ID3D11Device* device = nullptr;
+					HRESULT hr = D3D11CreateDevice(
+						nullptr,
+						driverType,
+						nullptr,
+						flags,
+						featureLevels,
+						sizeof(featureLevels) / sizeof(*featureLevels),
+						D3D11_SDK_VERSION,
+						&device,
+						nullptr,
+						nullptr);
+					if (SUCCEEDED(hr))
+					{
+						return device;
+					}
+					else if (device)
+					{
+						device->Release();
+					}
+					return 0;
+				}
+
 				void NativeWindowCreated(INativeWindow* window)
 				{
-					Ptr<Direct2DWindowsNativeWindowListener> listener=new Direct2DWindowsNativeWindowListener(window, d2dFactory.Obj());
+					ComPtr<ID2D1Factory1> d2dfactory1;
+					{
+						ID2D1Factory1* factory = nullptr;
+						HRESULT hr = windows::GetDirect2DFactory()->QueryInterface(&factory);
+						if (SUCCEEDED(hr))
+						{
+							d2dfactory1 = factory;
+						}
+					}
+
+					Ptr<Direct2DWindowsNativeWindowListener> listener;
+					if (d2dfactory1)
+					{
+						if (!d3d11Device)
+						{
+							d3d11Device = CreateD3D11Device(D3D_DRIVER_TYPE_HARDWARE);
+							if (!d3d11Device)
+							{
+								d3d11Device = CreateD3D11Device(D3D_DRIVER_TYPE_WARP);
+							}
+						}
+						listener = new Direct2DWindowsNativeWindowListener_1_1(window, d2dfactory1, d3d11Device.Obj());
+					}
+					else
+					{
+						listener = new Direct2DWindowsNativeWindowListener_1_0(window, d2dFactory.Obj());
+					}
 					window->InstallListener(listener.Obj());
 					nativeWindowListeners.Add(window, listener);
+
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)
@@ -1846,19 +2125,38 @@ namespace vl
 
 			Direct2DWindowsNativeControllerListener* direct2DListener=0;
 
+			Direct2DWindowsNativeWindowListener* GetNativeWindowListener(INativeWindow* window)
+			{
+				vint index = direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
+				return index == -1
+					? 0
+					: direct2DListener->nativeWindowListeners.Values().Get(index).Obj();
+			}
+
 			ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)
 			{
-				vint index=direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
-				return index==-1?0:direct2DListener->nativeWindowListeners.Values().Get(index)->GetDirect2DRenderTarget();
+				if (auto listener = GetNativeWindowListener(window))
+				{
+					return listener->GetDirect2DRenderTarget();
+				}
+				return 0;
 			}
 
 			void RecreateNativeWindowDirect2DRenderTarget(INativeWindow* window)
 			{
-				vint index=direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
-				if (index != -1)
+				if (auto listener = GetNativeWindowListener(window))
 				{
-					direct2DListener->nativeWindowListeners.Values().Get(index)->RecreateRenderTarget();
+					return listener->RecreateRenderTarget();
 				}
+			}
+
+			bool PresentNativeWindowDirect2DRenderTarget(INativeWindow* window)
+			{
+				if (auto listener = GetNativeWindowListener(window))
+				{
+					return listener->PresentRenderTarget();
+				}
+				return true;
 			}
 
 			ID2D1Factory* GetDirect2DFactory()
@@ -1884,6 +2182,11 @@ OS Supporting
 				void RecreateRenderTarget(INativeWindow* window)
 				{
 					vl::presentation::windows::RecreateNativeWindowDirect2DRenderTarget(window);
+				}
+
+				bool PresentRenderTarget(INativeWindow* window)
+				{
+					return vl::presentation::windows::PresentNativeWindowDirect2DRenderTarget(window);
 				}
 
 				ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)
@@ -5785,17 +6088,20 @@ WindowsGDIParagraph
 					}
 				}
 
-				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value)override
+				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)override
 				{
 					if(length==0) return true;
 					if(0<=start && start<text.Length() && length>=0 && 0<=start+length && start+length<=text.Length())
 					{
-						if(paragraph->SetInlineObject(start, length, properties, value))
+						if(paragraph->SetInlineObject(start, length, properties))
 						{
-							IGuiGraphicsRenderer* renderer=value->GetRenderer();
-							if(renderer)
+							if (properties.backgroundImage)
 							{
-								renderer->SetRenderTarget(renderTarget);
+								IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
+								if(renderer)
+								{
+									renderer->SetRenderTarget(renderTarget);
+								}
 							}
 							return true;
 						}
@@ -5915,7 +6221,7 @@ WindowsGDIParagraph
 WindowsGDILayoutProvider
 ***********************************************************************/
 
-			Ptr<IGuiGraphicsParagraph> WindowsGDILayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget)
+			Ptr<IGuiGraphicsParagraph> WindowsGDILayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
 				return new WindowsGDIParagraph(this, text, renderTarget);
 			}
@@ -7926,7 +8232,7 @@ UniscribeLine
 									FOREACH(Ptr<UniscribeFragment>, elementFragment, documentFragments)
 									{
 										vint elementLength=elementFragment->text.Length();
-										if(elementFragment->element)
+										if(elementFragment->inlineObjectProperties.backgroundImage)
 										{
 											if(elementCurrent<=currentStart && currentStart+shortLength<=elementCurrent+elementLength)
 											{
@@ -7939,7 +8245,7 @@ UniscribeLine
 													run->startFromFragment=currentStart-fragmentStarts[fragmentIndex];
 													run->length=elementLength;
 													run->runText=lineText.Buffer()+currentStart;
-													run->element=elementFragment->element;
+													run->element=elementFragment->inlineObjectProperties.backgroundImage;
 													run->properties=elementFragment->inlineObjectProperties;
 													scriptRuns.Add(run);
 												}
@@ -8284,7 +8590,7 @@ UniscribeParagraph (Initialization)
 					Ptr<UniscribeLine> line;
 					FOREACH(Ptr<UniscribeFragment>, fragment, documentFragments)
 					{
-						if(fragment->element)
+						if(fragment->inlineObjectProperties.backgroundImage)
 						{
 							if(!line)
 							{
@@ -8432,7 +8738,7 @@ UniscribeParagraph (Formatting Helper)
 				if(fs==fe)
 				{
 					Ptr<UniscribeFragment> fragment=documentFragments[fs];
-					if(fragment->element)
+					if(fragment->inlineObjectProperties.backgroundImage)
 					{
 						if(ss==0 && se==fragment->text.Length())
 						{
@@ -8447,7 +8753,7 @@ UniscribeParagraph (Formatting Helper)
 				}
 				for(vint i=fs;i<=fe;i++)
 				{
-					if(documentFragments[i]->element)
+					if(documentFragments[i]->inlineObjectProperties.backgroundImage)
 					{
 						return false;
 					}
@@ -8634,7 +8940,7 @@ UniscribeParagraph (Formatting)
 				return true;
 			}
 
-			bool UniscribeParagraph::SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value)
+			bool UniscribeParagraph::SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties)
 			{
 				vint fs, ss, fe, se, f1, f2;
 				SearchFragment(start, length, fs, ss, fe, se);
@@ -8653,7 +8959,6 @@ UniscribeParagraph (Formatting)
 						documentFragments.RemoveAt(f1);
 					}
 					elementFragment->inlineObjectProperties=properties;
-					elementFragment->element=value;
 					documentFragments.Insert(f1, elementFragment);
 					built=false;
 					return true;
@@ -8669,7 +8974,7 @@ UniscribeParagraph (Formatting)
 				vint fs, ss, fe, se;
 				SearchFragment(start, length, fs, ss, fe, se);
 				Ptr<UniscribeFragment> fragment=documentFragments[fs];
-				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->element)
+				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->inlineObjectProperties.backgroundImage)
 				{
 					documentFragments.RemoveAt(fs);
 					for(vint i=0;i<fragment->cachedTextFragment.Count();i++)
@@ -8677,7 +8982,7 @@ UniscribeParagraph (Formatting)
 						documentFragments.Insert(fs+i, fragment->cachedTextFragment[i]);
 					}
 					built=false;
-					return fragment->element;
+					return fragment->inlineObjectProperties.backgroundImage;
 				}
 				return 0;
 			}
@@ -9904,14 +10209,15 @@ WindowsDirect2DElementInlineObject
 				class IRendererCallback : public Interface
 				{
 				public:
-					virtual Color									GetBackgroundColor(vint textPosition)=0;
-					virtual IWindowsDirect2DRenderTarget*			GetDirect2DRenderTarget()=0;
+					virtual Color									GetBackgroundColor(vint textPosition) = 0;
+					virtual IWindowsDirect2DRenderTarget*			GetDirect2DRenderTarget() = 0;
+					virtual Point									GetParagraphOffset() = 0;
+					virtual IGuiGraphicsParagraphCallback*			GetParagraphCallback() = 0;
 				};
 
 			protected:
 				vint												counter;
 				IGuiGraphicsParagraph::InlineObjectProperties		properties;
-				Ptr<IGuiGraphicsElement>							element;
 				IRendererCallback*									rendererCallback;
 				vint												start;
 				vint												length;
@@ -9919,14 +10225,12 @@ WindowsDirect2DElementInlineObject
 			public:
 				WindowsDirect2DElementInlineObject(
 					const IGuiGraphicsParagraph::InlineObjectProperties& _properties,
-					Ptr<IGuiGraphicsElement> _element,
 					IRendererCallback* _rendererCallback,
 					vint _start,
 					vint _length
 					)
 					:counter(1)
 					,properties(_properties)
-					,element(_element)
 					,rendererCallback(_rendererCallback)
 					,start(_start)
 					,length(_length)
@@ -9935,10 +10239,13 @@ WindowsDirect2DElementInlineObject
 
 				~WindowsDirect2DElementInlineObject()
 				{
-					IGuiGraphicsRenderer* graphicsRenderer=element->GetRenderer();
-					if(graphicsRenderer)
+					if (properties.backgroundImage)
 					{
-						graphicsRenderer->SetRenderTarget(0);
+						IGuiGraphicsRenderer* graphicsRenderer=properties.backgroundImage->GetRenderer();
+						if(graphicsRenderer)
+						{
+							graphicsRenderer->SetRenderTarget(0);
+						}
 					}
 				}
 
@@ -9954,7 +10261,7 @@ WindowsDirect2DElementInlineObject
 
 				Ptr<IGuiGraphicsElement> GetElement()
 				{
-					return element;
+					return properties.backgroundImage;
 				}
 
 				HRESULT STDMETHODCALLTYPE QueryInterface( 
@@ -9994,27 +10301,40 @@ WindowsDirect2DElementInlineObject
 					IUnknown* clientDrawingEffect
 					)override
 				{
-					IGuiGraphicsRenderer* graphicsRenderer=element->GetRenderer();
-					if(graphicsRenderer)
+					Rect bounds(Point((vint)originX, (vint)originY), properties.size);
+					if (properties.backgroundImage)
 					{
-						Rect bounds(Point((vint)originX, (vint)originY), properties.size);
-						graphicsRenderer->Render(bounds);
-
-						Color color=rendererCallback->GetBackgroundColor(start);
-						if(color.a!=0)
+						IGuiGraphicsRenderer* graphicsRenderer=properties.backgroundImage->GetRenderer();
+						if(graphicsRenderer)
 						{
-							color.a/=2;
-							if(IWindowsDirect2DRenderTarget* renderTarget=rendererCallback->GetDirect2DRenderTarget())
-							{
-								ID2D1SolidColorBrush* brush=renderTarget->CreateDirect2DBrush(color);
+							graphicsRenderer->Render(bounds);
+						}
+					}
 
-								renderTarget->GetDirect2DRenderTarget()->FillRectangle(
-									D2D1::RectF(bounds.x1-0.5f, bounds.y1-0.5f, bounds.x2+0.5f, bounds.y2+0.5f),
-									brush
-									);
+					Color color=rendererCallback->GetBackgroundColor(start);
+					if(color.a!=0)
+					{
+						color.a/=2;
+						if(IWindowsDirect2DRenderTarget* renderTarget=rendererCallback->GetDirect2DRenderTarget())
+						{
+							ID2D1SolidColorBrush* brush=renderTarget->CreateDirect2DBrush(color);
 
-								renderTarget->DestroyDirect2DBrush(color);
-							}
+							renderTarget->GetDirect2DRenderTarget()->FillRectangle(
+								D2D1::RectF(bounds.x1-0.5f, bounds.y1-0.5f, bounds.x2+0.5f, bounds.y2+0.5f),
+								brush
+								);
+
+							renderTarget->DestroyDirect2DBrush(color);
+						}
+					}
+
+					if (properties.callbackId != -1)
+					{
+						if (auto callback = rendererCallback->GetParagraphCallback())
+						{
+							auto offset = rendererCallback->GetParagraphOffset();
+							auto size = callback->OnRenderInlineObject(properties.callbackId, Rect(Point(bounds.x1 - offset.x, bounds.y1 - offset.y), bounds.GetSize()));
+							properties.size = size;
 						}
 					}
 					return S_OK;
@@ -10118,6 +10438,9 @@ WindowsDirect2DParagraph
 				Array<DWRITE_CLUSTER_METRICS>			clusterMetrics;
 				Array<DWRITE_HIT_TEST_METRICS>			hitTestMetrics;
 				Array<vint>								charHitTestMap;
+
+				Point									paragraphOffset;
+				IGuiGraphicsParagraphCallback*			paragraphCallback;
 
 /***********************************************************************
 WindowsDirect2DParagraph (Ranges)
@@ -10307,7 +10630,7 @@ WindowsDirect2DParagraph (Layout Retriving)
 WindowsDirect2DParagraph (Initialization)
 ***********************************************************************/
 
-				WindowsDirect2DParagraph(IGuiGraphicsLayoutProvider* _provider, const WString& _text, IGuiGraphicsRenderTarget* _renderTarget)
+				WindowsDirect2DParagraph(IGuiGraphicsLayoutProvider* _provider, const WString& _text, IGuiGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _paragraphCallback)
 					:provider(_provider)
 					,dwriteFactory(GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory())
 					,renderTarget(dynamic_cast<IWindowsDirect2DRenderTarget*>(_renderTarget))
@@ -10319,6 +10642,7 @@ WindowsDirect2DParagraph (Initialization)
 					,caretFrontSide(false)
 					,caretBrush(0)
 					,formatDataAvailable(false)
+					,paragraphCallback(_paragraphCallback)
 				{
 					FontProperties defaultFont=GetCurrentController()->ResourceService()->GetDefaultFont();
 					Direct2DTextFormatPackage* package=GetWindowsDirect2DResourceManager()->CreateDirect2DTextFormat(defaultFont);
@@ -10361,6 +10685,16 @@ WindowsDirect2DParagraph (Initialization)
 				IGuiGraphicsRenderTarget* GetRenderTarget()override
 				{
 					return renderTarget;
+				}
+
+				Point GetParagraphOffset()override
+				{
+					return paragraphOffset;
+				}
+
+				IGuiGraphicsParagraphCallback* GetParagraphCallback()override
+				{
+					return paragraphCallback;
 				}
 
 /***********************************************************************
@@ -10496,9 +10830,9 @@ WindowsDirect2DParagraph (Formatting)
 					return true;
 				}
 
-				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value)override
+				bool SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)override
 				{
-					if(inlineElements.Keys().Contains(value.Obj()))
+					if(inlineElements.Keys().Contains(properties.backgroundImage.Obj()))
 					{
 						return false;
 					}
@@ -10512,20 +10846,23 @@ WindowsDirect2DParagraph (Formatting)
 					}
 					formatDataAvailable=false;
 
-					ComPtr<WindowsDirect2DElementInlineObject> inlineObject=new WindowsDirect2DElementInlineObject(properties, value, this, start, length);
+					ComPtr<WindowsDirect2DElementInlineObject> inlineObject=new WindowsDirect2DElementInlineObject(properties, this, start, length);
 					DWRITE_TEXT_RANGE range;
 					range.startPosition=(int)start;
 					range.length=(int)length;
 					HRESULT hr=textLayout->SetInlineObject(inlineObject.Obj(), range);
 					if(!FAILED(hr))
 					{
-						IGuiGraphicsRenderer* renderer=value->GetRenderer();
-						if(renderer)
+						if (properties.backgroundImage)
 						{
-							renderer->SetRenderTarget(renderTarget);
+							IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
+							if(renderer)
+							{
+								renderer->SetRenderTarget(renderTarget);
+							}
+							inlineElements.Add(properties.backgroundImage.Obj(), inlineObject);
 						}
-						inlineElements.Add(value.Obj(), inlineObject);
-						SetMap(graphicsElements, start, length, value.Obj());
+						SetMap(graphicsElements, start, length, properties.backgroundImage.Obj());
 						return true;
 					}
 					else
@@ -10614,6 +10951,7 @@ WindowsDirect2DParagraph (Rendering)
 
 				void Render(Rect bounds)override
 				{
+					paragraphOffset = bounds.LeftTop();
 					PrepareFormatData();
 					for(vint i=0;i<backgroundColors.Count();i++)
 					{
@@ -11045,9 +11383,9 @@ WindowsDirect2DParagraph (Caret)
 WindowsDirect2DLayoutProvider
 ***********************************************************************/
 
-			Ptr<IGuiGraphicsParagraph> WindowsDirect2DLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget)
+			Ptr<IGuiGraphicsParagraph> WindowsDirect2DLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
-				return new WindowsDirect2DParagraph(this, text, renderTarget);
+				return new WindowsDirect2DParagraph(this, text, renderTarget, callback);
 			}
 		}
 	}
@@ -11837,18 +12175,51 @@ GuiImageFrameElementRenderer
 						}
 						destination=D2D1::RectF((FLOAT)x, (FLOAT)y, (FLOAT)(x+minSize.x), (FLOAT)(y+minSize.y));
 					}
-					if(element->GetImage()->GetFormat()==INativeImage::Gif &&  element->GetFrameIndex()>0)
+
+					ID2D1DeviceContext* d2dDeviceContext = nullptr;
 					{
-						vint max=element->GetFrameIndex();
-						for(vint i=0;i<=max;i++)
+						HRESULT hr = d2dRenderTarget->QueryInterface(&d2dDeviceContext);
+						if (!SUCCEEDED(hr))
+						{
+							if (d2dDeviceContext)
+							{
+								d2dDeviceContext->Release();
+							}
+							d2dDeviceContext = nullptr;
+						}
+					}
+
+					if(element->GetImage()->GetFormat()==INativeImage::Gif && element->GetFrameIndex()>0)
+					{
+						vint max = element->GetFrameIndex();
+						for (vint i = 0; i <= max; i++)
 						{
 							ComPtr<ID2D1Bitmap> frameBitmap=renderTarget->GetBitmap(element->GetImage()->GetFrame(i), element->GetEnabled());
-							d2dRenderTarget->DrawBitmap(frameBitmap.Obj(), destination, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, source);
+							if (d2dDeviceContext)
+							{
+								d2dDeviceContext->DrawBitmap(frameBitmap.Obj(), destination, 1.0f, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC, source);
+							}
+							else
+							{
+								d2dRenderTarget->DrawBitmap(frameBitmap.Obj(), destination, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, source);
+							}
 						}
 					}
 					else
 					{
-						d2dRenderTarget->DrawBitmap(bitmap.Obj(), destination, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, source);
+						if (d2dDeviceContext)
+						{
+							d2dDeviceContext->DrawBitmap(bitmap.Obj(), destination, 1.0f, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC, source);
+						}
+						else
+						{
+							d2dRenderTarget->DrawBitmap(bitmap.Obj(), destination, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, source);
+						}
+					}
+
+					if (d2dDeviceContext)
+					{
+						d2dDeviceContext->Release();
 					}
 				}
 			}
@@ -12649,7 +13020,7 @@ WindowsDirect2DRenderTarget
 				INativeWindow*					window;
 				ID2D1RenderTarget*				d2dRenderTarget;
 				List<Rect>						clippers;
-				vint								clipperCoverWholeTargetCounter;
+				vint							clipperCoverWholeTargetCounter;
 
 				CachedSolidBrushAllocator		solidBrushes;
 				CachedLinearBrushAllocator		linearBrushes;
@@ -12714,7 +13085,7 @@ WindowsDirect2DRenderTarget
 
 				ID2D1RenderTarget* GetDirect2DRenderTarget()override
 				{
-					return d2dRenderTarget?d2dRenderTarget:GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+					return d2dRenderTarget ? d2dRenderTarget : GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
 				}
 
 				ComPtr<ID2D1Bitmap> GetBitmap(INativeImageFrame* frame, bool enabled)override
@@ -12768,7 +13139,7 @@ WindowsDirect2DRenderTarget
 
 				void StartRendering()override
 				{
-					d2dRenderTarget=GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
 					d2dRenderTarget->BeginDraw();
 					d2dRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 				}
@@ -12776,8 +13147,13 @@ WindowsDirect2DRenderTarget
 				bool StopRendering()override
 				{
 					auto result = d2dRenderTarget->EndDraw();
-					d2dRenderTarget=0;
-					return result == S_OK;
+					bool deviceAvailable = false;
+					if (result == S_OK)
+					{
+						deviceAvailable = GetWindowsDirect2DObjectProvider()->PresentRenderTarget(window);
+					}
+					d2dRenderTarget = 0;
+					return deviceAvailable;
 				}
 
 				void PushClipper(Rect clipper)override

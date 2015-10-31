@@ -628,6 +628,41 @@ Windows Platform Native Controller
 #endif
 
 /***********************************************************************
+NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Direct2D Provider for Windows Implementation
+
+Interfaces:
+***********************************************************************/
+#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
+#define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
+
+#include <d2d1_1.h>
+#include <dwrite_1.h>
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			extern ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window);
+			extern void									RecreateNativeWindowDirect2DRenderTarget(INativeWindow* window);
+			extern bool									PresentNativeWindowDirect2DRenderTarget(INativeWindow* window);
+			extern ID2D1Factory*						GetDirect2DFactory();
+			extern IDWriteFactory*						GetDirectWriteFactory();
+		}
+	}
+}
+
+extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
+
+#endif
+
+/***********************************************************************
 NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.H
 ***********************************************************************/
 /***********************************************************************
@@ -1001,40 +1036,6 @@ namespace vl
 #endif
 
 /***********************************************************************
-NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Direct2D Provider for Windows Implementation
-
-Interfaces:
-***********************************************************************/
-#ifndef VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
-#define VCZH_PRESENTATION_WINDOWS_GDI_WINDIRECT2DAPPLICATION
-
-#include <D2D1.h>
-#include <DWrite.h>
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			extern ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window);
-			extern void									RecreateNativeWindowDirect2DRenderTarget(INativeWindow* window);
-			extern ID2D1Factory*						GetDirect2DFactory();
-			extern IDWriteFactory*						GetDirectWriteFactory();
-		}
-	}
-}
-
-extern int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)());
-
-#endif
-
-/***********************************************************************
 NATIVEWINDOW\WINDOWS\GDI\WINGDIAPPLICATION.H
 ***********************************************************************/
 /***********************************************************************
@@ -1208,7 +1209,7 @@ namespace vl
 			class WindowsGDILayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
 			{
 			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget)override;
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
 			};
 		}
 	}
@@ -1307,7 +1308,6 @@ UniscribeFragment
 				const WString									text;
 				Ptr<WinFont>									fontObject;
 				//***************************** Document Data (Element)
-				Ptr<IGuiGraphicsElement>						element;
 				IGuiGraphicsParagraph::InlineObjectProperties	inlineObjectProperties;
 				List<Ptr<UniscribeFragment>>					cachedTextFragment;
 
@@ -1530,7 +1530,7 @@ UniscribeParagraph
 				bool							SetStyle(vint start, vint length, bool bold, bool italic, bool underline, bool strikeline);
 				bool							SetColor(vint start, vint length, Color value);
 				bool							SetBackgroundColor(vint start, vint length, Color value);
-				bool							SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value);
+				bool							SetInlineObject(vint start, vint length, const IGuiGraphicsParagraph::InlineObjectProperties& properties);
 				Ptr<IGuiGraphicsElement>		ResetInlineObject(vint start, vint length);
 
 				void							GetLineIndexFromTextPos(vint textPos, vint& frontLine, vint& backLine);
@@ -1926,6 +1926,7 @@ OS Supporting
 			{
 			public:
 				virtual void								RecreateRenderTarget(INativeWindow* window)=0;
+				virtual bool								PresentRenderTarget(INativeWindow* window)=0;
 				virtual ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window)=0;
 				virtual ID2D1Factory*						GetDirect2DFactory()=0;
 				virtual IDWriteFactory*						GetDirectWriteFactory()=0;
@@ -1969,7 +1970,7 @@ namespace vl
 			class WindowsDirect2DLayoutProvider : public Object, public elements::IGuiGraphicsLayoutProvider
 			{
 			public:
-				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget)override;
+				 Ptr<elements::IGuiGraphicsParagraph>		CreateParagraph(const WString& text, elements::IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)override;
 			};
 		}
 	}

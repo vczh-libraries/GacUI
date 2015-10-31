@@ -5148,6 +5148,261 @@ GuiBindableDataGridInstanceLoader
 		};
 
 /***********************************************************************
+GuiDocumentItemInstanceLoader
+***********************************************************************/
+
+		class GuiDocumentItemInstanceLoader : public Object, public IGuiInstanceLoader
+		{
+		protected:
+			GlobalStringKey					typeName;
+			GlobalStringKey					_Name;
+
+		public:
+			GuiDocumentItemInstanceLoader()
+			{
+				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiDocumentItem>()->GetTypeName());
+				_Name = GlobalStringKey::Get(L"Name");
+			}
+
+			GlobalStringKey GetTypeName()override
+			{
+				return typeName;
+			}
+
+			bool IsCreatable(const TypeInfo& typeInfo)override
+			{
+				return typeName == typeInfo.typeName;
+			}
+
+			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
+			{
+				if (typeInfo.typeName == GetTypeName())
+				{
+					vint indexName = constructorArguments.Keys().IndexOf(_Name);	
+					if (indexName == -1)
+					{
+						return Value();
+					}
+
+					auto name = UnboxValue<WString>(constructorArguments.GetByIndex(indexName)[0]);
+					auto item = MakePtr<GuiDocumentItem>(name);
+					return Value::From(item);
+				}
+				return Value();
+			}
+
+			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				if (typeInfo.typeName == GetTypeName())
+				{
+					propertyNames.Add(_Name);
+				}
+			}
+
+			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				propertyNames.Add(GlobalStringKey::Empty);
+			}
+
+			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+			{
+				if (propertyInfo.propertyName == GlobalStringKey::Empty)
+				{
+					auto info = GuiInstancePropertyInfo::Collection();
+					info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
+					info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
+					return info;
+				}
+				else if (propertyInfo.propertyName == _Name)
+				{
+					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+					info->scope = GuiInstancePropertyInfo::Constructor;
+					return info;
+				}
+				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+			}
+
+			bool SetPropertyValue(PropertyValue& propertyValue)override
+			{
+				if (auto container = dynamic_cast<GuiDocumentItem*>(propertyValue.instanceValue.GetRawPtr()))
+				{
+					if (propertyValue.propertyName == GlobalStringKey::Empty)
+					{
+						if (auto control = dynamic_cast<GuiControl*>(propertyValue.propertyValue.GetRawPtr()))
+						{
+							container->GetContainer()->AddChild(control->GetBoundsComposition());
+							return true;
+						}
+						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(propertyValue.propertyValue.GetRawPtr()))
+						{
+							container->GetContainer()->AddChild(composition);
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		};
+
+/***********************************************************************
+GuiDocumentCommonInterfaceInstanceLoader
+***********************************************************************/
+
+		class GuiDocumentCommonInterfaceInstanceLoader : public Object, public IGuiInstanceLoader
+		{
+		public:
+			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				propertyNames.Add(GlobalStringKey::Empty);
+			}
+
+			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+			{
+				if (propertyInfo.propertyName == GlobalStringKey::Empty)
+				{
+					return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiDocumentItem>());
+				}
+				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+			}
+
+			bool SetPropertyValue(PropertyValue& propertyValue)override
+			{
+				if (auto container = dynamic_cast<GuiDocumentCommonInterface*>(propertyValue.instanceValue.GetRawPtr()))
+				{
+					if (propertyValue.propertyName == GlobalStringKey::Empty)
+					{
+						if (auto item = propertyValue.propertyValue.GetSharedPtr().Cast<GuiDocumentItem>())
+						{
+							container->AddDocumentItem(item);
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		};
+
+/***********************************************************************
+GuiDocumentViewerInstanceLoader
+***********************************************************************/
+
+		class GuiDocumentViewerInstanceLoader : public GuiDocumentCommonInterfaceInstanceLoader
+		{
+		protected:
+			GlobalStringKey					typeName;
+
+		public:
+			GuiDocumentViewerInstanceLoader()
+			{
+				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiDocumentViewer>()->GetTypeName());
+			}
+
+			GlobalStringKey GetTypeName()override
+			{
+				return typeName;
+			}
+
+			bool IsCreatable(const TypeInfo& typeInfo)override
+			{
+				return GetTypeName() == typeInfo.typeName;
+			}
+
+			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
+			{
+				if(GetTypeName() == typeInfo.typeName)
+				{
+					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+					if (indexControlTemplate == -1)
+					{
+						return Value::From(g::NewDocumentViewer());
+					}
+					else
+					{
+						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
+						return Value::From(new GuiDocumentViewer(new GuiDocumentViewerTemplate_StyleProvider(factory)));
+					}
+				}
+				return Value();
+			}
+
+			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				propertyNames.Add(GlobalStringKey::_ControlTemplate);
+			}
+
+			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+			{
+				if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
+				{
+					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+					info->scope = GuiInstancePropertyInfo::Constructor;
+					return info;
+				}
+				return GuiDocumentCommonInterfaceInstanceLoader::GetPropertyType(propertyInfo);
+			}
+		};
+
+/***********************************************************************
+GuiDocumentLabelInstanceLoader
+***********************************************************************/
+
+		class GuiDocumentLabelInstanceLoader : public GuiDocumentCommonInterfaceInstanceLoader
+		{
+		protected:
+			GlobalStringKey					typeName;
+
+		public:
+			GuiDocumentLabelInstanceLoader()
+			{
+				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiDocumentLabel>()->GetTypeName());
+			}
+
+			GlobalStringKey GetTypeName()override
+			{
+				return typeName;
+			}
+
+			bool IsCreatable(const TypeInfo& typeInfo)override
+			{
+				return GetTypeName() == typeInfo.typeName;
+			}
+
+			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
+			{
+				if(GetTypeName() == typeInfo.typeName)
+				{
+					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+					if (indexControlTemplate == -1)
+					{
+						return Value::From(g::NewDocumentLabel());
+					}
+					else
+					{
+						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
+						return Value::From(new GuiDocumentLabel(new GuiDocumentLabelTemplate_StyleProvider(factory)));
+					}
+				}
+				return Value();
+			}
+
+			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				propertyNames.Add(GlobalStringKey::_ControlTemplate);
+			}
+
+			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+			{
+				if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
+				{
+					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+					info->scope = GuiInstancePropertyInfo::Constructor;
+					return info;
+				}
+				return GuiDocumentCommonInterfaceInstanceLoader::GetPropertyType(propertyInfo);
+			}
+		};
+
+/***********************************************************************
 GuiAxisInstanceLoader
 ***********************************************************************/
 
@@ -5615,6 +5870,10 @@ GuiPredefinedInstanceLoadersPlugin
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);		// VisualizerTemplates, EditorTemplate
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);			// ControlTemplate, ItemSource
 
+				manager->SetLoader(new GuiDocumentItemInstanceLoader);
+				manager->SetLoader(new GuiDocumentViewerInstanceLoader);			// ControlTemplate
+				manager->SetLoader(new GuiDocumentLabelInstanceLoader);				// ControlTemplate
+
 				manager->SetLoader(new GuiAxisInstanceLoader);
 				manager->SetLoader(new GuiCompositionInstanceLoader);
 				manager->SetLoader(new GuiTableCompositionInstanceLoader);
@@ -5629,8 +5888,6 @@ GuiPredefinedInstanceLoadersPlugin
 				ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		g::NewScrollContainer,			GuiScrollViewTemplate);			// ControlTemplate
 				ADD_TEMPLATE_CONTROL	(							GuiWindow,				g::NewWindow,					GuiWindowTemplate);				// ControlTemplate
 				ADD_TEMPLATE_CONTROL_2	(							GuiTextList,			g::NewTextList,					GuiTextListTemplate);			// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiDocumentViewer,		g::NewDocumentViewer,			GuiDocumentViewerTemplate);		// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiDocumentLabel,		g::NewDocumentLabel,			GuiDocumentLabelTemplate);		// ControlTemplate
 				ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	g::NewMultilineTextBox,			GuiMultilineTextBoxTemplate);	// ControlTemplate
 				ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	g::NewTextBox,					GuiSinglelineTextBoxTemplate);	// ControlTemplate
 				ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			g::NewDatePicker,				GuiDatePickerTemplate);			// ControlTemplate
@@ -9800,6 +10057,13 @@ Type Declaration
 				CLASS_MEMBER_FIELD(source)
 			END_CLASS_MEMBER(DocumentImageRun)
 
+			BEGIN_CLASS_MEMBER(DocumentEmbeddedObjectRun)
+				CLASS_MEMBER_BASE(DocumentInlineObjectRun)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DocumentEmbeddedObjectRun>(), NO_PARAMETER)
+				
+				CLASS_MEMBER_FIELD(name)
+			END_CLASS_MEMBER(DocumentEmbeddedObjectRun)
+
 			BEGIN_CLASS_MEMBER(DocumentStylePropertiesRun)
 				CLASS_MEMBER_BASE(DocumentContainerRun)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DocumentStylePropertiesRun>(), NO_PARAMETER)
@@ -11869,6 +12133,13 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateToolstripSubMenu, {L"subMenuStyleController"})
 			END_CLASS_MEMBER(GuiToolstripButton)
 
+			BEGIN_CLASS_MEMBER(GuiDocumentItem)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiDocumentItem>(const WString&), { L"name" })
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Container)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
+			END_CLASS_MEMBER(GuiDocumentItem)
+
 			BEGIN_CLASS_MEMBER(GuiDocumentCommonInterface)
 				CLASS_MEMBER_PROPERTY_FAST(Document)
 				CLASS_MEMBER_PROPERTY_FAST(EditMode)
@@ -11876,6 +12147,10 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkChanged)
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkExecuted)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+
+				CLASS_MEMBER_METHOD(AddDocumentItem, { L"value" })
+				CLASS_MEMBER_METHOD(RemoveDocumentItem, { L"value" })
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(DocumentItems)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretBegin)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretEnd)

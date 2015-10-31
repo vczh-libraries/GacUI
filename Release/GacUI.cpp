@@ -25532,7 +25532,37 @@ namespace vl
 			using namespace compositions;
 
 /***********************************************************************
-GuiDocumentViewer
+GuiDocumentItem
+***********************************************************************/
+
+			GuiDocumentItem::GuiDocumentItem(const WString& _name)
+				:name(_name)
+			{
+				container = new GuiBoundsComposition;
+				container->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				container->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Arrow));
+			}
+
+			GuiDocumentItem::~GuiDocumentItem()
+			{
+				if (!owned)
+				{
+					SafeDeleteComposition(container);
+				}
+			}
+
+			compositions::GuiGraphicsComposition* GuiDocumentItem::GetContainer()
+			{
+				return container;
+			}
+
+			WString GuiDocumentItem::GetName()
+			{
+				return name;
+			}
+
+/***********************************************************************
+GuiDocumentCommonInterface
 ***********************************************************************/
 
 			void GuiDocumentCommonInterface::UpdateCaretPoint()
@@ -25689,6 +25719,8 @@ GuiDocumentViewer
 				documentControl=_sender;
 
 				documentElement=GuiDocumentElement::Create();
+				documentElement->SetCallback(this);
+
 				documentComposition=new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(documentElement);
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
@@ -25998,6 +26030,43 @@ GuiDocumentViewer
 			{
 			}
 
+			//================ callback
+
+			void GuiDocumentCommonInterface::OnStartRender()
+			{
+				FOREACH(Ptr<GuiDocumentItem>, item, documentItems.Values())
+				{
+					item->visible = false;
+				}
+			}
+
+			void GuiDocumentCommonInterface::OnFinishRender()
+			{
+				FOREACH(Ptr<GuiDocumentItem>, item, documentItems.Values())
+				{
+					if (item->container->GetVisible() != item->visible)
+					{
+						item->container->SetVisible(item->visible);
+					}
+				}
+			}
+
+			Size GuiDocumentCommonInterface::OnRenderEmbeddedObject(const WString& name, const Rect& location)
+			{
+				vint index = documentItems.Keys().IndexOf(name);
+				if (index != -1)
+				{
+					auto item = documentItems.Values()[index];
+					auto size = item->container->GetBounds().GetSize();
+					item->container->SetBounds(Rect(location.LeftTop(), Size(0, 0)));
+					item->visible = true;
+					return size;
+				}
+				return Size();
+			}
+
+			//================ basic
+
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument)
 				:baselineDocument(_baselineDocument)
 				,documentElement(0)
@@ -26042,6 +26111,44 @@ GuiDocumentViewer
 					value->MergeBaselineStyles(baselineDocument);
 				}
 				documentElement->SetDocument(value);
+			}
+
+			//================ document items
+
+			bool GuiDocumentCommonInterface::AddDocumentItem(Ptr<GuiDocumentItem> value)
+			{
+				if (documentItems.Keys().Contains(value->GetName()))
+				{
+					return false;
+				}
+				documentItems.Add(value->GetName(), value);
+				documentComposition->AddChild(value->container);
+				value->visible = false;
+				value->owned = true;
+				value->container->SetVisible(false);
+				return true;
+			}
+
+			bool GuiDocumentCommonInterface::RemoveDocumentItem(Ptr<GuiDocumentItem> value)
+			{
+				vint index = documentItems.Keys().IndexOf(value->GetName());
+				if (index == -1)
+				{
+					return false;
+				}
+				if (documentItems.Values()[index] != value)
+				{
+					return false;
+				}
+				value->owned = false;
+				documentComposition->RemoveChild(value->container);
+				documentItems.Remove(value->GetName());
+				return true;
+			}
+
+			const GuiDocumentCommonInterface::DocumentItemMap& GuiDocumentCommonInterface::GetDocumentItems()
+			{
+				return documentItems;
 			}
 
 			//================ caret operations
@@ -35049,21 +35156,27 @@ SetPropertiesVisitor
 			{
 				class SetPropertiesVisitor : public Object, public DocumentRun::IVisitor
 				{
-					typedef DocumentModel::ResolvedStyle			ResolvedStyle;
+					typedef GuiDocumentElement::GuiDocumentElementRenderer	Renderer;
+					typedef DocumentModel::ResolvedStyle					ResolvedStyle;
 				public:
-					vint						start;
-					vint						length;
-					vint						selectionBegin;
-					vint						selectionEnd;
-					List<ResolvedStyle>			styles;
-					DocumentModel*				model;
-					IGuiGraphicsParagraph*		paragraph;
+					vint							start;
+					vint							length;
+					vint							selectionBegin;
+					vint							selectionEnd;
+					List<ResolvedStyle>				styles;
 
-					SetPropertiesVisitor(DocumentModel* _model, IGuiGraphicsParagraph* _paragraph, vint _selectionBegin, vint _selectionEnd)
+					DocumentModel*					model;
+					Renderer*						renderer;
+					Ptr<Renderer::ParagraphCache>	cache;
+					IGuiGraphicsParagraph*			paragraph;
+
+					SetPropertiesVisitor(DocumentModel* _model, Renderer* _renderer, Ptr<Renderer::ParagraphCache> _cache, vint _selectionBegin, vint _selectionEnd)
 						:start(0)
 						,length(0)
 						,model(_model)
-						,paragraph(_paragraph)
+						,renderer(_renderer)
+						,cache(_cache)
+						,paragraph(_cache->graphicsParagraph.Obj())
 						,selectionBegin(_selectionBegin)
 						,selectionEnd(_selectionEnd)
 					{
@@ -35156,16 +35269,77 @@ SetPropertiesVisitor
 					{
 						length=run->GetRepresentationText().Length();
 
-						IGuiGraphicsParagraph::InlineObjectProperties properties;
-						properties.size=run->size;
-						properties.baseline=run->baseline;
-						properties.breakCondition=IGuiGraphicsParagraph::Alone;
-
 						Ptr<GuiImageFrameElement> element=GuiImageFrameElement::Create();
 						element->SetImage(run->image, run->frameIndex);
 						element->SetStretch(true);
 
-						paragraph->SetInlineObject(start, length, properties, element);
+						IGuiGraphicsParagraph::InlineObjectProperties properties;
+						properties.size=run->size;
+						properties.baseline=run->baseline;
+						properties.breakCondition=IGuiGraphicsParagraph::Alone;
+						properties.backgroundImage = element;
+
+						paragraph->SetInlineObject(start, length, properties);
+
+						if(start<selectionEnd && selectionBegin<start+length)
+						{
+							ResolvedStyle style=styles[styles.Count()-1];
+							ResolvedStyle selectionStyle=model->GetStyle(DocumentModel::SelectionStyleName, style);
+							ApplyColor(start, length, selectionStyle);
+						}
+						start+=length;
+					}
+
+					void Visit(DocumentEmbeddedObjectRun* run)override
+					{
+						length=run->GetRepresentationText().Length();
+
+						IGuiGraphicsParagraph::InlineObjectProperties properties;
+						properties.breakCondition=IGuiGraphicsParagraph::Alone;
+
+						if (run->name != L"")
+						{
+							vint index = renderer->nameCallbackIdMap.Keys().IndexOf(run->name);
+							if (index != -1)
+							{
+								auto id = renderer->nameCallbackIdMap.Values()[index];
+								index = cache->embeddedObjects.Keys().IndexOf(id);
+								if (index != -1)
+								{
+									auto eo = cache->embeddedObjects.Values()[index];
+									if (eo->start == start)
+									{
+										properties.size = eo->size;
+										properties.callbackId = id;
+									}
+								}
+							}
+							else
+							{
+								auto eo = MakePtr<Renderer::EmbeddedObject>();
+								eo->name = run->name;
+								eo->size = Size(0, 0);
+								eo->start = start;
+
+								vint id = -1;
+								vint count = renderer->freeCallbackIds.Count();
+								if (count > 0)
+								{
+									id = renderer->freeCallbackIds[count - 1];
+									renderer->freeCallbackIds.RemoveAt(count - 1);
+								}
+								else
+								{
+									id = renderer->usedCallbackIds++;
+								}
+
+								renderer->nameCallbackIdMap.Add(eo->name, id);
+								cache->embeddedObjects.Add(id, eo);
+								properties.callbackId = id;
+							}
+						}
+
+						paragraph->SetInlineObject(start, length, properties);
 
 						if(start<selectionEnd && selectionBegin<start+length)
 						{
@@ -35181,9 +35355,9 @@ SetPropertiesVisitor
 						VisitContainer(run);
 					}
 
-					static vint SetProperty(DocumentModel* model, IGuiGraphicsParagraph* paragraph, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
+					static vint SetProperty(DocumentModel* model, Renderer* renderer, Ptr<Renderer::ParagraphCache> cache, Ptr<DocumentParagraphRun> run, vint selectionBegin, vint selectionEnd)
 					{
-						SetPropertiesVisitor visitor(model, paragraph, selectionBegin, selectionEnd);
+						SetPropertiesVisitor visitor(model, renderer, cache, selectionBegin, selectionEnd);
 						run->Accept(&visitor);
 						return visitor.length;
 					}
@@ -35194,6 +35368,24 @@ SetPropertiesVisitor
 /***********************************************************************
 GuiDocumentElement::GuiDocumentElementRenderer
 ***********************************************************************/
+
+			Size GuiDocumentElement::GuiDocumentElementRenderer::OnRenderInlineObject(vint callbackId, Rect location)
+			{
+				if (element->callback)
+				{
+					auto cache = paragraphCaches[renderingParagraph];
+					auto relativeLocation = Rect(Point(location.x1 + renderingParagraphOffset.x, location.y1 + renderingParagraphOffset.y), location.GetSize());
+					auto eo = cache->embeddedObjects[callbackId];
+					auto size = element->callback->OnRenderEmbeddedObject(eo->name, relativeLocation);
+					eo->resized = eo->size != size;
+					eo->size = size;
+					return eo->size;
+				}
+				else
+				{
+					return Size();
+				}
+			}
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::InitializeInternal()
 			{
@@ -35231,9 +35423,9 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				{
 					if(!cache->graphicsParagraph)
 					{
-						cache->graphicsParagraph=layoutProvider->CreateParagraph(cache->fullText, renderTarget);
+						cache->graphicsParagraph=layoutProvider->CreateParagraph(cache->fullText, renderTarget, this);
 						cache->graphicsParagraph->SetParagraphAlignment(paragraph->alignment ? paragraph->alignment.Value() : Alignment::Left);
-						SetPropertiesVisitor::SetProperty(element->document.Obj(), cache->graphicsParagraph.Obj(), paragraph, cache->selectionBegin, cache->selectionEnd);
+						SetPropertiesVisitor::SetProperty(element->document.Obj(), this, cache, paragraph, cache->selectionBegin, cache->selectionEnd);
 					}
 					if(cache->graphicsParagraph->GetMaxWidth()!=lastMaxWidth)
 					{
@@ -35289,6 +35481,10 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::Render(Rect bounds)
 			{
+				if (element->callback)
+				{
+					element->callback->OnStartRender();
+				}
 				renderTarget->PushClipper(bounds);
 				if(!renderTarget->IsClipperCoverWholeTarget())
 				{
@@ -35326,13 +35522,37 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							}
 
 							paragraphHeight=cache->graphicsParagraph->GetHeight();
+
+							renderingParagraph = i;
+							renderingParagraphOffset = Point(cx - bounds.x1, cy + y - bounds.y1);
 							cache->graphicsParagraph->Render(Rect(Point(cx, cy+y), Size(maxWidth, paragraphHeight)));
+							renderingParagraph = -1;
+
+							bool resized = false;
+							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+							{
+								auto eo = cache->embeddedObjects.Values()[j];
+								if (eo->resized)
+								{
+									eo->resized = false;
+									resized = true;
+								}
+							}
+
+							if (resized)
+							{
+								cache->graphicsParagraph = 0;
+							}
 						}
 
 						y+=paragraphHeight+paragraphDistance;
 					}
 				}
 				renderTarget->PopClipper();
+				if (element->callback)
+				{
+					element->callback->OnFinishRender();
+				}
 			}
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::OnElementStateChanged()
@@ -35364,6 +35584,10 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					cachedTotalHeight=0;
 					minSize=Size(0, 0);
 				}
+
+				nameCallbackIdMap.Clear();
+				freeCallbackIds.Clear();
+				usedCallbackIds = 0;
 			}
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
@@ -35402,11 +35626,6 @@ GuiDocumentElement::GuiDocumentElementRenderer
 								if(cache)
 								{
 									cache->graphicsParagraph=0;
-									if(updatedText)
-									{
-										cache->selectionBegin=-1;
-										cache->selectionEnd=-1;
-									}
 								}
 								paragraphCaches[i]=cache;
 							}
@@ -35417,6 +35636,22 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							paragraphHeights[i]=oldHeights[i-(newCount-oldCount)];
 						}
 						cachedTotalHeight+=paragraphHeights[i]+paragraphDistance;
+					}
+
+					if (updatedText)
+					{
+						vint count = oldCount < newCount ? oldCount : newCount;
+						for (vint i = 0; i < count; i++)
+						{
+							auto cache = oldCaches[index + i];
+							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+							{
+								auto id = cache->embeddedObjects.Keys()[j];
+								auto name = cache->embeddedObjects.Values()[j]->name;
+								nameCallbackIdMap.Remove(name);
+								freeCallbackIds.Add(id);
+							}
+						}
 					}
 				}
 			}
@@ -35681,6 +35916,16 @@ GuiDocumentElement
 
 			GuiDocumentElement::~GuiDocumentElement()
 			{
+			}
+
+			GuiDocumentElement::ICallback* GuiDocumentElement::GetCallback()
+			{
+				return callback;
+			}
+
+			void GuiDocumentElement::SetCallback(ICallback* value)
+			{
+				callback = value;
 			}
 
 			Ptr<DocumentModel> GuiDocumentElement::GetDocument()
@@ -39078,6 +39323,7 @@ DocumentImageRun
 ***********************************************************************/
 
 		const wchar_t* DocumentImageRun::RepresentationText=L"[Image]";
+		const wchar_t* DocumentEmbeddedObjectRun::RepresentationText=L"[EmbeddedObject]";
 
 /***********************************************************************
 ExtractTextVisitor
@@ -39131,6 +39377,14 @@ ExtractTextVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+					if(!skipNonTextContent)
+					{
+						VisitContent(run);
+					}
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 					if(!skipNonTextContent)
 					{
@@ -39451,6 +39705,11 @@ document_operation_visitors::GetRunRangeVisitor
 					VisitContent(run);
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					VisitContent(run);
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -39546,6 +39805,10 @@ document_operation_visitors::LocateStyleVisitor
 				{
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -39620,6 +39883,10 @@ document_operation_visitors::LocateHyperlinkVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 				}
 
@@ -39704,6 +39971,13 @@ document_operation_visitors::CloneRunVisitor
 					cloned->image=run->image;
 					cloned->frameIndex=run->frameIndex;
 					cloned->source=run->source;
+					clonedRun=cloned;
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					Ptr<DocumentEmbeddedObjectRun> cloned=new DocumentEmbeddedObjectRun;
+					cloned->name=run->name;
 					clonedRun=cloned;
 				}
 
@@ -39869,6 +40143,23 @@ document_operation_visitors::CloneRunRecursivelyVisitor
 					}
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					clonedRun=0;
+					RunRange range=runRanges[run];
+					if(range.start<end && start<range.end)
+					{
+						if(deepCopy)
+						{
+							clonedRun=CloneRunVisitor::CopyRun(run);
+						}
+						else
+						{
+							clonedRun=run;
+						}
+					}
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -39943,6 +40234,10 @@ document_operation_visitors::CollectStyleNameVisitor
 				{
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -40007,6 +40302,10 @@ document_operation_visitors::ReplaceStyleNameVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 				}
 
@@ -40124,6 +40423,11 @@ document_operation_visitors::RemoveRunVisitor
 					replacedRuns.Clear();
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					replacedRuns.Clear();
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -40236,6 +40540,12 @@ document_operation_visitors::CutRunVisitor
 					rightRun=0;
 				}
 
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					leftRun=0;
+					rightRun=0;
+				}
+
 				void Visit(DocumentParagraphRun* run)override
 				{
 					VisitContainer(run);
@@ -40307,6 +40617,11 @@ document_operation_visitors::ClearRunVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+					VisitContent(run);
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 					VisitContent(run);
 				}
@@ -40392,6 +40707,11 @@ document_operation_visitors::AddContainerVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+					insertStyle=false;
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 					insertStyle=false;
 				}
@@ -40563,6 +40883,11 @@ document_operation_visitors::RemoveContainerVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+					VisitContent(run);
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 					VisitContent(run);
 				}
@@ -40779,6 +41104,10 @@ document_operation_visitors::SummerizeStyleVisitor
 				}
 
 				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
 				}
 
@@ -41483,6 +41812,8 @@ document_operation_visitors::DeserializeNodeVisitor
 					else if(node->name.value==L"img")
 					{
 						Ptr<DocumentImageRun> run=new DocumentImageRun;
+						run->baseline = -1;
+
 						if(Ptr<XmlAttribute> source=XmlGetAttribute(node, L"source"))
 						{
 							run->source=source->value.value;
@@ -41497,7 +41828,6 @@ document_operation_visitors::DeserializeNodeVisitor
 								if(run->image && run->image->GetFrameCount()>0)
 								{
 									run->size=run->image->GetFrame(0)->GetSize();
-									run->baseline=run->size.y;
 									run->frameIndex=0;
 								}
 							}
@@ -41520,12 +41850,28 @@ document_operation_visitors::DeserializeNodeVisitor
 								{
 									run->frameIndex=wtoi(att->value.value);
 								}
-								else
+								else if (att->name.value != L"source")
 								{
 									errors.Add(L"Unknown attribute in <img> \"" + att->name.value + L"\".");
 								}
 							}
+
 							container->runs.Add(run);
+						}
+					}
+					else if(node->name.value==L"object")
+					{
+						Ptr<DocumentEmbeddedObjectRun> run=new DocumentEmbeddedObjectRun;
+						run->baseline = -1;
+
+						if(Ptr<XmlAttribute> name=XmlGetAttribute(node, L"name"))
+						{
+							run->name = name->value.value;
+							container->runs.Add(run);
+						}
+						else
+						{
+							errors.Add(L"The \"name\" attribute in <object> is missing.");
 						}
 					}
 					else if(node->name.value==L"font")
@@ -42055,6 +42401,15 @@ document_operation_visitors::SerializeRunVisitor
 						.Attribute(L"baseline", itow(run->baseline))
 						.Attribute(L"frameIndex", itow(run->frameIndex))
 						.Attribute(L"source", run->source)
+						;
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+					XmlElementWriter writer(parent);
+					writer
+						.Element(L"object")
+						.Attribute(L"name", run->name)
 						;
 				}
 

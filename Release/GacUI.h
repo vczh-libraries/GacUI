@@ -942,11 +942,15 @@ Layout Engine
 				struct InlineObjectProperties
 				{
 					/// <summary>The size of the inline object.</summary>
-					Size					size;
+					Size						size;
 					/// <summary>The baseline of the inline object.If the baseline is at the bottom, then set the baseline to -1.</summary>
-					vint					baseline;
+					vint						baseline = -1;
 					/// <summary>The break condition of the inline object.</summary>
-					BreakCondition			breakCondition;
+					BreakCondition				breakCondition;
+					/// <summary>The background image, nullable.</summary>
+					Ptr<IGuiGraphicsElement>	backgroundImage;
+					/// <summary>The id for callback. If the value is -1, then no callback will be received .</summary>
+					vint						callbackId = -1;
 
 					InlineObjectProperties()
 						:baseline(-1)
@@ -1015,7 +1019,7 @@ Layout Engine
 				/// <param name="properties">The properties for the inline object.</param>
 				/// <param name="value">The element.</param>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				virtual bool								SetInlineObject(vint start, vint length, const InlineObjectProperties& properties, Ptr<IGuiGraphicsElement> value)=0;
+				virtual bool								SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)=0;
 				/// <summary>Unbind all inline objects to a range of text.</summary>
 				/// <param name="start">The position of the first character of the specified range.</param>
 				/// <param name="length">The length of the specified range by character.</param>
@@ -1074,6 +1078,17 @@ Layout Engine
 				virtual bool								IsValidTextPos(vint textPos)=0;
 			};
 
+			/// <summary>Paragraph callback</summary>
+			class IGuiGraphicsParagraphCallback : public IDescriptable, public Description<IGuiGraphicsParagraphCallback>
+			{
+			public:
+				/// <summary>Called when an inline object with a valid callback id is being rendered.</summary>
+				/// <returns>Returns the new size of the rendered inline object.</returns>
+				/// <param name="callbackId">The callback id of the inline object</param>
+				/// <param name="location">The location of the inline object, relative to the left-top corner of this paragraph.</param>
+				virtual Size								OnRenderInlineObject(vint callbackId, Rect location) = 0;
+			};
+
 			/// <summary>Renderer awared rich text document layout engine provider interface.</summary>
 			class IGuiGraphicsLayoutProvider : public IDescriptable, public Description<IGuiGraphicsLayoutProvider>
 			{
@@ -1082,7 +1097,7 @@ Layout Engine
 				/// <param name="text">The text used to fill the paragraph.</param>
 				/// <param name="renderTarget">The render target that the created paragraph will render to.</param>
 				/// <returns>The created paragraph object.</returns>
-				virtual Ptr<IGuiGraphicsParagraph>			CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget)=0;
+				virtual Ptr<IGuiGraphicsParagraph>			CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback)=0;
 			};
 		}
 	}
@@ -3801,6 +3816,7 @@ namespace vl
 		class DocumentStyleApplicationRun;
 		class DocumentHyperlinkRun;
 		class DocumentImageRun;
+		class DocumentEmbeddedObjectRun;
 		class DocumentParagraphRun;
 
 /***********************************************************************
@@ -3860,6 +3876,9 @@ Rich Content Document (run)
 				/// <summary>Visit operation for <see cref="DocumentImageRun"/>.</summary>
 				/// <param name="run">The run object.</param>
 				virtual void				Visit(DocumentImageRun* run)=0;
+				/// <summary>Visit operation for <see cref="DocumentEmbeddedObjectRun"/>.</summary>
+				/// <param name="run">The run object.</param>
+				virtual void				Visit(DocumentEmbeddedObjectRun* run)=0;
 				/// <summary>Visit operation for <see cref="DocumentParagraphRun"/>.</summary>
 				/// <param name="run">The run object.</param>
 				virtual void				Visit(DocumentParagraphRun* run)=0;
@@ -3931,6 +3950,19 @@ Rich Content Document (run)
 			WString							source;
 
 			DocumentImageRun():frameIndex(0){}
+			
+			WString							GetRepresentationText()override{return RepresentationText;}
+			void							Accept(IVisitor* visitor)override{visitor->Visit(this);}
+		};
+				
+		/// <summary>Pepresents an embedded object run.</summary>
+		class DocumentEmbeddedObjectRun : public DocumentInlineObjectRun, public Description<DocumentImageRun>
+		{
+		public:
+			static const wchar_t*			RepresentationText;
+
+			/// <summary>The object name.</summary>
+			WString							name;
 			
 			WString							GetRepresentationText()override{return RepresentationText;}
 			void							Accept(IVisitor* visitor)override{visitor->Visit(this);}
@@ -5362,6 +5394,11 @@ namespace vl
 		namespace elements
 		{
 
+			namespace visitors
+			{
+				class SetPropertiesVisitor;
+			}
+
 /***********************************************************************
 Rich Content Document (element)
 ***********************************************************************/
@@ -5371,14 +5408,46 @@ Rich Content Document (element)
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDocumentElement, L"RichDocument");
 			public:
-				class GuiDocumentElementRenderer : public Object, public IGuiGraphicsRenderer
+				/// <summary>Callback interface for this element.</summary>
+				class ICallback : public virtual IDescriptable, public Description<ICallback>
 				{
+				public:
+					/// <summary>Called when the rendering is started.</summary>
+					virtual void							OnStartRender() = 0;
+
+					/// <summary>Called when the rendering is finished.</summary>
+					virtual void							OnFinishRender() = 0;
+
+					/// <summary>Called when an embedded object is being rendered.</summary>
+					/// <returns>Returns the new size of the rendered embedded object.</returns>
+					/// <param name="name">The name of the embedded object</param>
+					/// <param name="location">The location of the embedded object, relative to the left-top corner of this element.</param>
+					virtual Size							OnRenderEmbeddedObject(const WString& name, const Rect& location) = 0;
+				};
+
+				class GuiDocumentElementRenderer : public Object, public IGuiGraphicsRenderer, private IGuiGraphicsParagraphCallback
+				{
+					friend class visitors::SetPropertiesVisitor;
+
 					DEFINE_GUI_GRAPHICS_RENDERER(GuiDocumentElement, GuiDocumentElementRenderer, IGuiGraphicsRenderTarget)
 				protected:
+					struct EmbeddedObject
+					{
+						WString								name;
+						Size								size;
+						vint								start;
+						bool								resized = false;
+					};
+
+					typedef collections::Dictionary<vint, Ptr<EmbeddedObject>>		IdEmbeddedObjectMap;
+					typedef collections::Dictionary<WString, vint>					NameIdMap;
+					typedef collections::List<vint>									FreeIdList;
+
 					struct ParagraphCache
 					{
 						WString								fullText;
 						Ptr<IGuiGraphicsParagraph>			graphicsParagraph;
+						IdEmbeddedObjectMap					embeddedObjects;
 						vint								selectionBegin;
 						vint								selectionEnd;
 
@@ -5391,6 +5460,10 @@ Rich Content Document (element)
 
 					typedef collections::Array<Ptr<ParagraphCache>>		ParagraphCacheArray;
 					typedef collections::Array<vint>					ParagraphHeightArray;
+
+				private:
+
+					Size									OnRenderInlineObject(vint callbackId, Rect location)override;
 				protected:
 					vint									paragraphDistance;
 					vint									lastMaxWidth;
@@ -5402,6 +5475,13 @@ Rich Content Document (element)
 					TextPos									lastCaret;
 					Color									lastCaretColor;
 					bool									lastCaretFrontSide;
+
+					NameIdMap								nameCallbackIdMap;
+					FreeIdList								freeCallbackIds;
+					vint									usedCallbackIds = 0;
+
+					vint									renderingParagraph = -1;
+					Point									renderingParagraphOffset;
 
 					void									InitializeInternal();
 					void									FinalizeInternal();
@@ -5426,6 +5506,7 @@ Rich Content Document (element)
 
 			protected:
 				Ptr<DocumentModel>							document;
+				ICallback*									callback = nullptr;
 				TextPos										caretBegin;
 				TextPos										caretEnd;
 				bool										caretVisible;
@@ -5437,6 +5518,13 @@ Rich Content Document (element)
 				GuiDocumentElement();
 			public:
 				~GuiDocumentElement();
+				
+				/// <summary>Get the callback.</summary>
+				/// <returns>The callback.</returns>
+				ICallback*									GetCallback();
+				/// <summary>Set the callback.</summary>
+				/// <param name="value">The callback.</param>
+				void										SetCallback(ICallback* value);
 				
 				/// <summary>Get the document.</summary>
 				/// <returns>The document.</returns>
@@ -6808,10 +6896,10 @@ Stack Compositions
 				/// <param name="value">The expected bounds of a stack item.</param>
 				void								SetBounds(Rect value);
 				
-				/// <summary>Get the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for decide the stack item layout.</summary>
+				/// <summary>Get the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for deciding the stack item layout.</summary>
 				/// <returns>The extra margin for this stack item.</returns>
 				Margin								GetExtraMargin();
-				/// <summary>Set the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for decide the stack item layout.</summary>
+				/// <summary>Set the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for deciding the stack item layout.</summary>
 				/// <param name="value">The extra margin for this stack item.</param>
 				void								SetExtraMargin(Margin value);
 			};
@@ -6998,13 +7086,22 @@ namespace vl
 Flow Compositions
 ***********************************************************************/
 
+			/// <summary>
+			/// Alignment for a row in a flow layout
+			/// </summary>
 			enum class FlowAlignment
 			{
+				/// <summary>Align to the left.</summary>
 				Left,
+				/// <summary>Align to the center.</summary>
 				Center,
+				/// <summary>Extend to the entire row.</summary>
 				Extend,
 			};
-
+			
+			/// <summary>
+			/// Represents a flow composition.
+			/// </summary>
 			class GuiFlowComposition : public GuiBoundsComposition, public Description<GuiFlowComposition>
 			{
 				friend class GuiFlowItemComposition;
@@ -7030,38 +7127,77 @@ Flow Compositions
 			public:
 				GuiFlowComposition();
 				~GuiFlowComposition();
-
+				
+				/// <summary>Get all flow items inside the flow composition.</summary>
+				/// <returns>All flow items inside the flow composition.</returns>
 				const ItemCompositionList&			GetFlowItems();
-
+				
+				/// <summary>Get the extra margin inside the flow composition.</summary>
+				/// <returns>The extra margin inside the flow composition.</returns>
 				Margin								GetExtraMargin();
+				/// <summary>Set the extra margin inside the flow composition.</summary>
+				/// <param name="value">The extra margin inside the flow composition.</param>
 				void								SetExtraMargin(Margin value);
+				
+				/// <summary>Get the distance between rows.</summary>
+				/// <returns>The distance between rows.</returns>
 				vint								GetRowPadding();
+				/// <summary>Set the distance between rows.</summary>
+				/// <param name="value">The distance between rows.</param>
 				void								SetRowPadding(vint value);
+				
+				/// <summary>Get the distance between columns.</summary>
+				/// <returns>The distance between columns.</returns>
 				vint								GetColumnPadding();
+				/// <summary>Set the distance between columns.</summary>
+				/// <param name="value">The distance between columns.</param>
 				void								SetColumnPadding(vint value);
+				
+				/// <summary>Get the axis of the layout.</summary>
+				/// <returns>The axis.</returns>
 				Ptr<IGuiAxis>						GetAxis();
+				/// <summary>Set the axis of the layout.</summary>
+				/// <param name="value">The axis.</param>
 				void								SetAxis(Ptr<IGuiAxis> value);
+				
+				/// <summary>Get the alignment for rows.</summary>
+				/// <returns>The alignment.</returns>
 				FlowAlignment						GetAlignment();
+				/// <summary>Set the alignment for rows.</summary>
+				/// <param name="value">The alignment.</param>
 				void								SetAlignment(FlowAlignment value);
 
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 			};
-
+			
+			/// <summary>
+			/// Represnets a base line configuration for a flow item.
+			/// </summary>
 			struct GuiFlowOption
 			{
+				/// <summary>Base line calculation algorithm</summary>
 				enum BaselineType
 				{
+					/// <summary>By percentage of the height from the top.</summary>
 					Percentage,
+					/// <summary>By a distance from the top.</summary>
 					FromTop,
+					/// <summary>By a distance from the bottom.</summary>
 					FromBottom,
 				};
-
+				
+				/// <summary>The base line calculation algorithm.</summary>
 				BaselineType						baseline = FromBottom;
+				/// <summary>The percentage value.</summary>
 				double								percentage = 0.0;
+				/// <summary>The distance value.</summary>
 				vint								distance = 0;
 			};
-
+			
+			/// <summary>
+			/// Represents a flow item composition of a <see cref="GuiFlowComposition"/>.
+			/// </summary>
 			class GuiFlowItemComposition : public GuiGraphicsSite, public Description<GuiFlowItemComposition>
 			{
 				friend class GuiFlowComposition;
@@ -7080,11 +7216,19 @@ Flow Compositions
 				bool								IsSizeAffectParent()override;
 				Rect								GetBounds()override;
 				void								SetBounds(Rect value);
-
+				
+				/// <summary>Get the extra margin for this flow item. An extra margin is used to enlarge the bounds of the flow item, but only the non-extra part will be used for deciding the flow item layout.</summary>
+				/// <returns>The extra margin for this flow item.</returns>
 				Margin								GetExtraMargin();
+				/// <summary>Set the extra margin for this flow item. An extra margin is used to enlarge the bounds of the flow item, but only the non-extra part will be used for deciding the flow item layout.</summary>
+				/// <param name="value">The extra margin for this flow item.</param>
 				void								SetExtraMargin(Margin value);
 
+				/// <summary>Get the base line option for this flow item.</summary>
+				/// <returns>The base line option.</returns>
 				GuiFlowOption						GetFlowOption();
+				/// <summary>Set the base line option for this flow item.</summary>
+				/// <param name="value">The base line option.</param>
 				void								SetFlowOption(GuiFlowOption value);
 			};
 		}
@@ -14231,10 +14375,37 @@ namespace vl
 /***********************************************************************
 GuiDocumentCommonInterface
 ***********************************************************************/
+
+			class GuiDocumentCommonInterface;
+
+			/// <summary>Embedded object in a document.</summary>
+			class GuiDocumentItem : public Object, public Description<GuiDocumentItem>
+			{
+				friend class GuiDocumentCommonInterface;
+			protected:
+				bool										visible = false;
+				WString										name;
+				compositions::GuiBoundsComposition*			container;
+				bool										owned = false;
+			public:
+				GuiDocumentItem(const WString& _name);
+				~GuiDocumentItem();
+				
+				/// <summary>Get the container for all embedded controls and compositions in this item.</summary>
+				/// <returns>The container.</returns>
+				compositions::GuiGraphicsComposition*		GetContainer();
+
+				/// <summary>Get the name of the document item.</summary>
+				/// <returns>The name.</returns>
+				WString										GetName();
+			};
 			
 			/// <summary>Document displayer control common interface for displaying <see cref="DocumentModel"/>.</summary>
-			class GuiDocumentCommonInterface abstract : public Description<GuiDocumentCommonInterface>
+			class GuiDocumentCommonInterface abstract
+				: private virtual elements::GuiDocumentElement::ICallback
+				, public Description<GuiDocumentCommonInterface>
 			{
+				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
 			public:
 				/// <summary>Represents the edit mode.</summary>
 				enum EditMode
@@ -14248,6 +14419,7 @@ GuiDocumentCommonInterface
 				};
 			protected:
 				Ptr<DocumentModel>							baselineDocument;
+				DocumentItemMap								documentItems;
 				GuiControl*									documentControl;
 				elements::GuiDocumentElement*				documentElement;
 				compositions::GuiBoundsComposition*			documentComposition;
@@ -14259,6 +14431,9 @@ GuiDocumentCommonInterface
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
 
+			private:
+
+			protected:
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
@@ -14281,6 +14456,12 @@ GuiDocumentCommonInterface
 
 				virtual Point								GetDocumentViewPosition();
 				virtual void								EnsureRectVisible(Rect bounds);
+
+				//================ callback
+
+				void										OnStartRender()override;
+				void										OnFinishRender()override;
+				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 			public:
 				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument);
 				~GuiDocumentCommonInterface();
@@ -14299,6 +14480,22 @@ GuiDocumentCommonInterface
 				/// <summary>Set the document. When a document is set to this element, modifying the document without invoking <see cref="NotifyParagraphUpdated"/> will lead to undefined behavior.</summary>
 				/// <param name="value">The document.</param>
 				void										SetDocument(Ptr<DocumentModel> value);
+
+				//================ document items
+
+				/// <summary>Add a document item. The name of the document item will display in the position of the &lt;object&gt; element with the same name in the document.</summary>
+				/// <param name="value">The document item.</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										AddDocumentItem(Ptr<GuiDocumentItem> value);
+
+				/// <summary>Remove a document item.</summary>
+				/// <param name="value">The document item.</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool										RemoveDocumentItem(Ptr<GuiDocumentItem> value);
+
+				/// <summary>Get all document items.</summary>
+				/// <returns>All document items.</returns>
+				const DocumentItemMap&						GetDocumentItems();
 
 				//================ caret operations
 
