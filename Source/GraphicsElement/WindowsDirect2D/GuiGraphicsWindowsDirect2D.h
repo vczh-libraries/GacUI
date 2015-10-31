@@ -9,8 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 
-#include <D2D1.h>
-#include <DWrite.h>
+#include <d2d1_1.h>
+#include <dwrite_1.h>
 #include <wincodec.h>
 #include "..\GuiGraphicsElement.h"
 #include "..\..\GraphicsComposition\GuiGraphicsComposition.h"
