@@ -221,13 +221,14 @@ WindowListener 1.1
 							dxgiSwapChain = CreateSwapChain(dxgiDevice.Obj());
 						}
 
-						auto d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
+						d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
 						auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
 						d2dDeviceContext->SetTarget(d2dBitmap.Obj());
 						d2dDeviceContext->SetDpi(96, 96);
 					}
 					else if(previousSize!=size)
 					{
+						d2dDeviceContext->SetTarget(nullptr);
 						HRESULT hr = dxgiSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 						if (SUCCEEDED(hr))
 						{
