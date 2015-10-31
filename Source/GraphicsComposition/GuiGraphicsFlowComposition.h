@@ -18,6 +18,8 @@ namespace vl
 	{
 		namespace compositions
 		{
+			class GuiFlowComposition;
+			class GuiFlowItemComposition;
 
 /***********************************************************************
 Flow Compositions

@@ -49,7 +49,7 @@ GuiDocumentCommonInterface
 			
 			/// <summary>Document displayer control common interface for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentCommonInterface abstract
-				: private virtual elements::GuiDocumentElement::ICallback
+				: protected virtual elements::GuiDocumentElement::ICallback
 				, public Description<GuiDocumentCommonInterface>
 			{
 				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
@@ -77,8 +77,6 @@ GuiDocumentCommonInterface
 
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
-
-			private:
 
 			protected:
 				void										UpdateCaretPoint();
