@@ -276,8 +276,13 @@ ControllerListener
 				Direct2DWindowsNativeControllerListener()
 				{
 					{
+						D2D1_FACTORY_OPTIONS fo = {};
+						#ifdef _DEBUG
+						fo.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
+						#endif
+
 						ID2D1Factory* factory=0;
-						HRESULT hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory);
+						HRESULT hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, fo, &factory);
 						if(!FAILED(hr))
 						{
 							d2dFactory=factory;
