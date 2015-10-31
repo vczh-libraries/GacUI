@@ -215,6 +215,7 @@ WindowListener 1.1
 				{
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
+
 					if(!d2dDeviceContext)
 					{
 						if (!dxgiDevice)
@@ -263,6 +264,7 @@ WindowListener 1.1
 					if (d2dDeviceContext)
 					{
 						d2dDeviceContext = 0;
+						dxgiSwapChain = 0;
 					}
 				}
 

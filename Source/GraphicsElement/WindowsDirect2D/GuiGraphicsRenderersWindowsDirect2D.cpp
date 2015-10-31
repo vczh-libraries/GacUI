@@ -783,32 +783,50 @@ GuiImageFrameElementRenderer
 						destination=D2D1::RectF((FLOAT)x, (FLOAT)y, (FLOAT)(x+minSize.x), (FLOAT)(y+minSize.y));
 					}
 
-					auto interpolation = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR;
+					ID2D1DeviceContext* d2dDeviceContext = nullptr;
 					{
-						ID2D1Factory1* factory1 = nullptr;
-						HRESULT hr = windows::GetDirect2DFactory()->QueryInterface(&factory1);
-						if (SUCCEEDED(hr))
+						HRESULT hr = d2dRenderTarget->QueryInterface(&d2dDeviceContext);
+						if (!SUCCEEDED(hr))
 						{
-							//interpolation = (D2D1_BITMAP_INTERPOLATION_MODE)D2D1_INTERPOLATION_MODE_CUBIC;
-						}
-						if (factory1)
-						{
-							factory1->Release();
+							if (d2dDeviceContext)
+							{
+								d2dDeviceContext->Release();
+							}
+							d2dDeviceContext = nullptr;
 						}
 					}
 
 					if(element->GetImage()->GetFormat()==INativeImage::Gif && element->GetFrameIndex()>0)
 					{
-						vint max=element->GetFrameIndex();
-						for(vint i=0;i<=max;i++)
+						vint max = element->GetFrameIndex();
+						for (vint i = 0; i <= max; i++)
 						{
 							ComPtr<ID2D1Bitmap> frameBitmap=renderTarget->GetBitmap(element->GetImage()->GetFrame(i), element->GetEnabled());
-							d2dRenderTarget->DrawBitmap(frameBitmap.Obj(), destination, 1.0f, interpolation, source);
+							if (d2dDeviceContext)
+							{
+								d2dDeviceContext->DrawBitmap(frameBitmap.Obj(), destination, 1.0f, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC, source);
+							}
+							else
+							{
+								d2dRenderTarget->DrawBitmap(frameBitmap.Obj(), destination, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, source);
+							}
 						}
 					}
 					else
 					{
-						d2dRenderTarget->DrawBitmap(bitmap.Obj(), destination, 1.0f, interpolation, source);
+						if (d2dDeviceContext)
+						{
+							d2dDeviceContext->DrawBitmap(bitmap.Obj(), destination, 1.0f, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC, source);
+						}
+						else
+						{
+							d2dRenderTarget->DrawBitmap(bitmap.Obj(), destination, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, source);
+						}
+					}
+
+					if (d2dDeviceContext)
+					{
+						d2dDeviceContext->Release();
 					}
 				}
 			}
