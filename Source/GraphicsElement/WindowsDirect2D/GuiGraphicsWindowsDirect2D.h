@@ -122,6 +122,7 @@ OS Supporting
 			{
 			public:
 				virtual void								RecreateRenderTarget(INativeWindow* window)=0;
+				virtual bool								PresentRenderTarget(INativeWindow* window)=0;
 				virtual ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window)=0;
 				virtual ID2D1Factory*						GetDirect2DFactory()=0;
 				virtual IDWriteFactory*						GetDirectWriteFactory()=0;

@@ -789,7 +789,7 @@ GuiImageFrameElementRenderer
 						HRESULT hr = windows::GetDirect2DFactory()->QueryInterface(&factory1);
 						if (SUCCEEDED(hr))
 						{
-							interpolation = (D2D1_BITMAP_INTERPOLATION_MODE)D2D1_INTERPOLATION_MODE_CUBIC;
+							//interpolation = (D2D1_BITMAP_INTERPOLATION_MODE)D2D1_INTERPOLATION_MODE_CUBIC;
 						}
 						if (factory1)
 						{

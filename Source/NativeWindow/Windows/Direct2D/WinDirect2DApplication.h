@@ -20,6 +20,7 @@ namespace vl
 		{
 			extern ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window);
 			extern void									RecreateNativeWindowDirect2DRenderTarget(INativeWindow* window);
+			extern bool									PresentNativeWindowDirect2DRenderTarget(INativeWindow* window);
 			extern ID2D1Factory*						GetDirect2DFactory();
 			extern IDWriteFactory*						GetDirectWriteFactory();
 		}

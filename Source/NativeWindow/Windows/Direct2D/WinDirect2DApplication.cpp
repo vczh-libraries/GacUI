@@ -39,6 +39,7 @@ WindowListener
 
 				virtual ID2D1RenderTarget*		GetDirect2DRenderTarget() = 0;
 				virtual void					RecreateRenderTarget() = 0;
+				virtual bool					PresentRenderTarget() = 0;
 			};
 
 /***********************************************************************
@@ -100,6 +101,11 @@ WindowListener 1.0
 					{
 						d2dRenderTarget = 0;
 					}
+				}
+
+				bool PresentRenderTarget()override
+				{
+					return true;
 				}
 			};
 
@@ -259,6 +265,20 @@ WindowListener 1.1
 						d2dDeviceContext = 0;
 					}
 				}
+
+				bool PresentRenderTarget()override
+				{
+					if (d2dDeviceContext)
+					{
+						if (dxgiSwapChain)
+						{
+							DXGI_PRESENT_PARAMETERS parameters = {0};
+							HRESULT hr = dxgiSwapChain->Present1(1, 0, &parameters);
+							return hr == S_OK || hr == DXGI_STATUS_OCCLUDED;
+						}
+					}
+					return false;
+				}
 			};
 
 /***********************************************************************
@@ -305,8 +325,30 @@ ControllerListener
 					flags |= D3D11_CREATE_DEVICE_DEBUG;
 					#endif
 
+					D3D_FEATURE_LEVEL featureLevels[] =
+					{
+						D3D_FEATURE_LEVEL_11_1,
+						D3D_FEATURE_LEVEL_11_0,
+						D3D_FEATURE_LEVEL_10_1,
+						D3D_FEATURE_LEVEL_10_0,
+						D3D_FEATURE_LEVEL_9_3,
+						D3D_FEATURE_LEVEL_9_2,
+						D3D_FEATURE_LEVEL_9_1
+					};
+
+
 					ID3D11Device* device = nullptr;
-					HRESULT hr = D3D11CreateDevice(nullptr, driverType, nullptr, flags, nullptr, 0, D3D11_SDK_VERSION, &device, nullptr, nullptr);
+					HRESULT hr = D3D11CreateDevice(
+						nullptr,
+						driverType,
+						nullptr,
+						flags,
+						featureLevels,
+						sizeof(featureLevels) / sizeof(*featureLevels),
+						D3D11_SDK_VERSION,
+						&device,
+						nullptr,
+						nullptr);
 					if (SUCCEEDED(hr))
 					{
 						return device;
@@ -362,19 +404,38 @@ ControllerListener
 
 			Direct2DWindowsNativeControllerListener* direct2DListener=0;
 
+			Direct2DWindowsNativeWindowListener* GetNativeWindowListener(INativeWindow* window)
+			{
+				vint index = direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
+				return index == -1
+					? 0
+					: direct2DListener->nativeWindowListeners.Values().Get(index).Obj();
+			}
+
 			ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)
 			{
-				vint index=direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
-				return index==-1?0:direct2DListener->nativeWindowListeners.Values().Get(index)->GetDirect2DRenderTarget();
+				if (auto listener = GetNativeWindowListener(window))
+				{
+					return listener->GetDirect2DRenderTarget();
+				}
+				return 0;
 			}
 
 			void RecreateNativeWindowDirect2DRenderTarget(INativeWindow* window)
 			{
-				vint index=direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
-				if (index != -1)
+				if (auto listener = GetNativeWindowListener(window))
 				{
-					direct2DListener->nativeWindowListeners.Values().Get(index)->RecreateRenderTarget();
+					return listener->RecreateRenderTarget();
 				}
+			}
+
+			bool PresentNativeWindowDirect2DRenderTarget(INativeWindow* window)
+			{
+				if (auto listener = GetNativeWindowListener(window))
+				{
+					return listener->PresentRenderTarget();
+				}
+				return true;
 			}
 
 			ID2D1Factory* GetDirect2DFactory()
@@ -400,6 +461,11 @@ OS Supporting
 				void RecreateRenderTarget(INativeWindow* window)
 				{
 					vl::presentation::windows::RecreateNativeWindowDirect2DRenderTarget(window);
+				}
+
+				bool PresentRenderTarget(INativeWindow* window)
+				{
+					return vl::presentation::windows::PresentNativeWindowDirect2DRenderTarget(window);
 				}
 
 				ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)

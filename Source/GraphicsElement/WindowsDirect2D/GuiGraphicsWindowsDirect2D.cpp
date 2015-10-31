@@ -331,7 +331,7 @@ WindowsDirect2DRenderTarget
 				INativeWindow*					window;
 				ID2D1RenderTarget*				d2dRenderTarget;
 				List<Rect>						clippers;
-				vint								clipperCoverWholeTargetCounter;
+				vint							clipperCoverWholeTargetCounter;
 
 				CachedSolidBrushAllocator		solidBrushes;
 				CachedLinearBrushAllocator		linearBrushes;
@@ -396,7 +396,7 @@ WindowsDirect2DRenderTarget
 
 				ID2D1RenderTarget* GetDirect2DRenderTarget()override
 				{
-					return d2dRenderTarget?d2dRenderTarget:GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+					return d2dRenderTarget ? d2dRenderTarget : GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
 				}
 
 				ComPtr<ID2D1Bitmap> GetBitmap(INativeImageFrame* frame, bool enabled)override
@@ -450,7 +450,7 @@ WindowsDirect2DRenderTarget
 
 				void StartRendering()override
 				{
-					d2dRenderTarget=GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
 					d2dRenderTarget->BeginDraw();
 					d2dRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 				}
@@ -458,8 +458,13 @@ WindowsDirect2DRenderTarget
 				bool StopRendering()override
 				{
 					auto result = d2dRenderTarget->EndDraw();
-					d2dRenderTarget=0;
-					return result == S_OK;
+					bool deviceAvailable = false;
+					if (result == S_OK)
+					{
+						deviceAvailable = GetWindowsDirect2DObjectProvider()->PresentRenderTarget(window);
+					}
+					d2dRenderTarget = 0;
+					return deviceAvailable;
 				}
 
 				void PushClipper(Rect clipper)override
