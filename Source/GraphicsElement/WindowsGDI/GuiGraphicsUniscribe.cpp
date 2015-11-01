@@ -996,7 +996,7 @@ UniscribeLine
 									FOREACH(Ptr<UniscribeFragment>, elementFragment, documentFragments)
 									{
 										vint elementLength=elementFragment->text.Length();
-										if(elementFragment->inlineObjectProperties.backgroundImage)
+										if(elementFragment->inlineObjectProperties)
 										{
 											if(elementCurrent<=currentStart && currentStart+shortLength<=elementCurrent+elementLength)
 											{
@@ -1009,7 +1009,7 @@ UniscribeLine
 													run->startFromFragment=currentStart-fragmentStarts[fragmentIndex];
 													run->length=elementLength;
 													run->runText=lineText.Buffer()+currentStart;
-													run->properties=elementFragment->inlineObjectProperties;
+													run->properties=elementFragment->inlineObjectProperties.Value();
 													scriptRuns.Add(run);
 												}
 												skip=true;
@@ -1353,7 +1353,7 @@ UniscribeParagraph (Initialization)
 					Ptr<UniscribeLine> line;
 					FOREACH(Ptr<UniscribeFragment>, fragment, documentFragments)
 					{
-						if(fragment->inlineObjectProperties.backgroundImage)
+						if(fragment->inlineObjectProperties)
 						{
 							if(!line)
 							{
@@ -1501,7 +1501,7 @@ UniscribeParagraph (Formatting Helper)
 				if(fs==fe)
 				{
 					Ptr<UniscribeFragment> fragment=documentFragments[fs];
-					if(fragment->inlineObjectProperties.backgroundImage)
+					if(fragment->inlineObjectProperties)
 					{
 						if(ss==0 && se==fragment->text.Length())
 						{
@@ -1516,7 +1516,7 @@ UniscribeParagraph (Formatting Helper)
 				}
 				for(vint i=fs;i<=fe;i++)
 				{
-					if(documentFragments[i]->inlineObjectProperties.backgroundImage)
+					if(documentFragments[i]->inlineObjectProperties)
 					{
 						return false;
 					}
@@ -1732,12 +1732,12 @@ UniscribeParagraph (Formatting)
 				}
 			}
 
-			UniscribeParagraph::InlineObject UniscribeParagraph::ResetInlineObject(vint start, vint length)
+			InlineObject UniscribeParagraph::ResetInlineObject(vint start, vint length)
 			{
 				vint fs, ss, fe, se;
 				SearchFragment(start, length, fs, ss, fe, se);
 				Ptr<UniscribeFragment> fragment = documentFragments[fs];
-				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->inlineObjectProperties.backgroundImage)
+				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->inlineObjectProperties)
 				{
 					documentFragments.RemoveAt(fs);
 					for(vint i=0;i<fragment->cachedTextFragment.Count();i++)
@@ -2137,7 +2137,7 @@ UniscribeParagraph (Caret Helper)
 				return -1;
 			}
 
-			UniscribeParagraph::InlineObject UniscribeParagraph::GetInlineObjectFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex, vint& start, vint& length)
+			InlineObject UniscribeParagraph::GetInlineObjectFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex, vint& start, vint& length)
 			{
 				Ptr<UniscribeLine> line=lines[lineIndex];
 				if(line->virtualLines.Count()==0) return InlineObject();
@@ -2365,7 +2365,7 @@ UniscribeParagraph (Caret)
 				return GetCaretFromXWithLine(point.x, lineIndex, virtualLineIndex);
 			}
 
-			UniscribeParagraph::InlineObject UniscribeParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
+			InlineObject UniscribeParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
 			{
 				start = -1;
 				length = 0;

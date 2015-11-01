@@ -74,6 +74,8 @@ UniscribeColor
 		namespace elements_windows_gdi
 		{
 
+			typedef Nullable<IGuiGraphicsParagraph::InlineObjectProperties>	InlineObject;
+
 /***********************************************************************
 UniscribeFragment
 ***********************************************************************/
@@ -88,7 +90,7 @@ UniscribeFragment
 				const WString									text;
 				Ptr<WinFont>									fontObject;
 				//***************************** Document Data (Element)
-				IGuiGraphicsParagraph::InlineObjectProperties	inlineObjectProperties;
+				InlineObject									inlineObjectProperties;
 				List<Ptr<UniscribeFragment>>					cachedTextFragment;
 
 				UniscribeFragment(const WString& _text);
@@ -280,7 +282,6 @@ UniscribeParagraph
 
 			class UniscribeParagraph : public Object
 			{
-				typedef Nullable<IGuiGraphicsParagraph::InlineObjectProperties>		InlineObject;
 			public:
 				//***************************** Document Data
 				List<Ptr<UniscribeFragment>>	documentFragments;
