@@ -804,40 +804,40 @@ UniscribeTextRun
 			}
 
 /***********************************************************************
-UniscribeElementRun
+UniscribeEmbeddedObjectRun
 ***********************************************************************/
 
-			UniscribeElementRun::UniscribeElementRun()
+			UniscribeEmbeddedObjectRun::UniscribeEmbeddedObjectRun()
 			{
 			}
 
-			UniscribeElementRun::~UniscribeElementRun()
+			UniscribeEmbeddedObjectRun::~UniscribeEmbeddedObjectRun()
 			{
 			}
 
-			bool UniscribeElementRun::BuildUniscribeData(WinDC* dc, List<vint>& breakings)
+			bool UniscribeEmbeddedObjectRun::BuildUniscribeData(WinDC* dc, List<vint>& breakings)
 			{
 				breakings.Add(0);
 				return true;
 			}
 
-			vint UniscribeElementRun::SumWidth(vint charStart, vint charLength)
+			vint UniscribeEmbeddedObjectRun::SumWidth(vint charStart, vint charLength)
 			{
 				return properties.size.x;
 			}
 
-			vint UniscribeElementRun::SumHeight()
+			vint UniscribeEmbeddedObjectRun::SumHeight()
 			{
 				return properties.size.y;
 			}
 
-			void UniscribeElementRun::SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
+			void UniscribeEmbeddedObjectRun::SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
 			{
 				charLength=length-tempStart;
 				charAdvances=properties.size.x;
 			}
 
-			void UniscribeElementRun::Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeEmbeddedObjectRun::Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
 			{
 				RunFragmentBounds& fragment=fragmentBounds[fragmentBoundsIndex];
 				if(renderBackground)
@@ -857,14 +857,14 @@ UniscribeElementRun
 						dc->FillRect(rect);
 					}
 				}
-				else
+				else if (properties.backgroundImage)
 				{
 					Rect bounds=fragment.bounds;
 					bounds.x1+=offsetX;
 					bounds.x2+=offsetX;
 					bounds.y1+=offsetY;
 					bounds.y2+=offsetY;
-					IGuiGraphicsRenderer* renderer=element->GetRenderer();
+					IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
 					if(renderer)
 					{
 						renderer->Render(bounds);
@@ -1002,14 +1002,13 @@ UniscribeLine
 											{
 												if(elementCurrent==currentStart)
 												{
-													Ptr<UniscribeElementRun> run=new UniscribeElementRun;
+													auto run=MakePtr<UniscribeEmbeddedObjectRun>();
 													run->documentFragment=fragment;
 													run->scriptItem=scriptItem.Obj();
 													run->startFromLine=currentStart;
 													run->startFromFragment=currentStart-fragmentStarts[fragmentIndex];
 													run->length=elementLength;
 													run->runText=lineText.Buffer()+currentStart;
-													run->element=elementFragment->inlineObjectProperties.backgroundImage;
 													run->properties=elementFragment->inlineObjectProperties;
 													scriptRuns.Add(run);
 												}
@@ -1733,11 +1732,11 @@ UniscribeParagraph (Formatting)
 				}
 			}
 
-			Ptr<IGuiGraphicsElement> UniscribeParagraph::ResetInlineObject(vint start, vint length)
+			UniscribeParagraph::InlineObject UniscribeParagraph::ResetInlineObject(vint start, vint length)
 			{
 				vint fs, ss, fe, se;
 				SearchFragment(start, length, fs, ss, fe, se);
-				Ptr<UniscribeFragment> fragment=documentFragments[fs];
+				Ptr<UniscribeFragment> fragment = documentFragments[fs];
 				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->inlineObjectProperties.backgroundImage)
 				{
 					documentFragments.RemoveAt(fs);
@@ -1746,9 +1745,9 @@ UniscribeParagraph (Formatting)
 						documentFragments.Insert(fs+i, fragment->cachedTextFragment[i]);
 					}
 					built=false;
-					return fragment->inlineObjectProperties.backgroundImage;
+					return fragment->inlineObjectProperties;
 				}
-				return 0;
+				return InlineObject();
 			}
 
 /***********************************************************************
@@ -2138,29 +2137,29 @@ UniscribeParagraph (Caret Helper)
 				return -1;
 			}
 
-			Ptr<IGuiGraphicsElement> UniscribeParagraph::GetInlineObjectFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex, vint& start, vint& length)
+			UniscribeParagraph::InlineObject UniscribeParagraph::GetInlineObjectFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex, vint& start, vint& length)
 			{
 				Ptr<UniscribeLine> line=lines[lineIndex];
-				if(line->virtualLines.Count()==0) return 0;
+				if(line->virtualLines.Count()==0) return InlineObject();
 				Ptr<UniscribeVirtualLine> virtualLine=line->virtualLines[virtualLineIndex];
-				if(x<virtualLine->bounds.x1) return 0;
-				if(x>=virtualLine->bounds.x2) return 0;
+				if(x<virtualLine->bounds.x1) return InlineObject();
+				if(x>=virtualLine->bounds.x2) return InlineObject();
 
 				for(vint i=virtualLine->firstRunIndex;i<=virtualLine->lastRunIndex;i++)
 				{
 					Ptr<UniscribeRun> run=line->scriptRuns[i];
-					if(Ptr<UniscribeElementRun> elementRun=run.Cast<UniscribeElementRun>())
+					if(auto elementRun=run.Cast<UniscribeEmbeddedObjectRun>())
 					{
 						Rect bounds=run->fragmentBounds[0].bounds;
 						if(bounds.x1<=x && x<bounds.x2)
 						{
 							start=line->startFromParagraph+elementRun->startFromLine;
 							length=elementRun->length;
-							return elementRun->element;
+							return elementRun->properties;
 						}
 					}
 				}
-				return 0;
+				return InlineObject();
 			}
 
 			vint UniscribeParagraph::GetLineY(vint lineIndex)
@@ -2366,18 +2365,18 @@ UniscribeParagraph (Caret)
 				return GetCaretFromXWithLine(point.x, lineIndex, virtualLineIndex);
 			}
 
-			Ptr<IGuiGraphicsElement> UniscribeParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
+			UniscribeParagraph::InlineObject UniscribeParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
 			{
-				start=-1;
-				length=0;
-				vint lineIndex=GetLineIndexFromY(point.y);
-				if(lineIndex==-1) return 0;
+				start = -1;
+				length = 0;
+				vint lineIndex = GetLineIndexFromY(point.y);
+				if (lineIndex == -1) return InlineObject();
 
-				Ptr<UniscribeLine> line=lines[lineIndex];
-				if(line->virtualLines.Count()==0) return 0;
+				Ptr<UniscribeLine> line = lines[lineIndex];
+				if (line->virtualLines.Count() == 0) return InlineObject();
 
-				vint virtualLineIndex=GetVirtualLineIndexFromY(point.y, lineIndex);
-				if(virtualLineIndex==-1) return 0;
+				vint virtualLineIndex = GetVirtualLineIndexFromY(point.y, lineIndex);
+				if (virtualLineIndex == -1) return InlineObject();
 
 				return GetInlineObjectFromXWithLine(point.x, lineIndex, virtualLineIndex, start, length);
 			}

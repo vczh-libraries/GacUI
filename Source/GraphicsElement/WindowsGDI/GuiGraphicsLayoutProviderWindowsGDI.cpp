@@ -190,12 +190,15 @@ WindowsGDIParagraph
 					if(length==0) return true;
 					if(0<=start && start<text.Length() && length>=0 && 0<=start+length && start+length<=text.Length())
 					{
-						if(Ptr<IGuiGraphicsElement> element=paragraph->ResetInlineObject(start, length))
+						if (auto inlineObject = paragraph->ResetInlineObject(start, length))
 						{
-							IGuiGraphicsRenderer* renderer=element->GetRenderer();
-							if(renderer)
+							if (auto element = inlineObject.Value().backgroundImage)
 							{
-								renderer->SetRenderTarget(0);
+								auto renderer=element->GetRenderer();
+								if(renderer)
+								{
+									renderer->SetRenderTarget(0);
+								}
 							}
 							return true;
 						}
@@ -268,7 +271,7 @@ WindowsGDIParagraph
 					return paragraph->GetCaretFromPoint(point);
 				}
 
-				Ptr<IGuiGraphicsElement> GetInlineObjectFromPoint(Point point, vint& start, vint& length)override
+				Nullable<InlineObjectProperties> GetInlineObjectFromPoint(Point point, vint& start, vint& length)override
 				{
 					PrepareUniscribeData();
 					return paragraph->GetInlineObjectFromPoint(point, start, length);

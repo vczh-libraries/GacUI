@@ -71,6 +71,11 @@ WindowsDirect2DElementInlineObject
 					return length;
 				}
 
+				const IGuiGraphicsParagraph::InlineObjectProperties& GetProperties()
+				{
+					return properties;
+				}
+
 				Ptr<IGuiGraphicsElement> GetElement()
 				{
 					return properties.backgroundImage;
@@ -1127,7 +1132,7 @@ WindowsDirect2DParagraph (Caret)
 					return caret;
 				}
 
-				Ptr<IGuiGraphicsElement> GetInlineObjectFromPoint(Point point, vint& start, vint& length)override
+				Nullable<InlineObjectProperties> GetInlineObjectFromPoint(Point point, vint& start, vint& length)override
 				{
 					DWRITE_HIT_TEST_METRICS metrics={0};
 					BOOL trailingHit=FALSE;
@@ -1143,10 +1148,10 @@ WindowsDirect2DParagraph (Caret)
 							ComPtr<WindowsDirect2DElementInlineObject> inlineObject=inlineElements[element];
 							start=inlineObject->GetStart();
 							length=inlineObject->GetLength();
-							return inlineObject->GetElement();
+							return inlineObject->GetProperties();
 						}
 					}
-					return 0;
+					return Nullable<InlineObjectProperties>();
 				}
 
 				vint GetNearestCaretFromTextPos(vint textPos, bool frontSide)override
