@@ -5940,7 +5940,7 @@ namespace vl
 WindowsGDIParagraph
 ***********************************************************************/
 
-			class WindowsGDIParagraph : public Object, public IGuiGraphicsParagraph
+			class WindowsGDIParagraph : public Object, public IGuiGraphicsParagraph, protected UniscribeRun::IRendererCallback
 			{
 			protected:
 				IGuiGraphicsLayoutProvider*			provider;
@@ -5953,6 +5953,10 @@ WindowsGDIParagraph
 				bool								caretFrontSide;
 				Ptr<WinPen>							caretPen;
 
+				WinDC*								paragraphDC;
+				Point								paragraphOffset;
+				IGuiGraphicsParagraphCallback*		paragraphCallback;
+
 				void PrepareUniscribeData()
 				{
 					if(paragraph->BuildUniscribeData(renderTarget->GetDC()))
@@ -5961,13 +5965,30 @@ WindowsGDIParagraph
 						paragraph->Layout(width, paragraph->paragraphAlignment);
 					}
 				}
+
+				WinDC* GetWinDC()
+				{
+					return paragraphDC;
+				}
+
+				Point GetParagraphOffset()
+				{
+					return paragraphOffset;
+				}
+
+				IGuiGraphicsParagraphCallback* GetParagraphCallback()
+				{
+					return paragraphCallback;
+				}
 			public:
-				WindowsGDIParagraph(IGuiGraphicsLayoutProvider* _provider, const WString& _text, IGuiGraphicsRenderTarget* _renderTarget)
+				WindowsGDIParagraph(IGuiGraphicsLayoutProvider* _provider, const WString& _text, IGuiGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _paragraphCallback)
 					:provider(_provider)
 					,text(_text)
 					,renderTarget(dynamic_cast<IWindowsGDIRenderTarget*>(_renderTarget))
 					,caret(-1)
 					,caretFrontSide(false)
+					,paragraphDC(nullptr)
+					,paragraphCallback(_paragraphCallback)
 				{
 					paragraph=new UniscribeParagraph;
 					paragraph->paragraphText=text;
@@ -6114,12 +6135,15 @@ WindowsGDIParagraph
 					if(length==0) return true;
 					if(0<=start && start<text.Length() && length>=0 && 0<=start+length && start+length<=text.Length())
 					{
-						if(Ptr<IGuiGraphicsElement> element=paragraph->ResetInlineObject(start, length))
+						if (auto inlineObject = paragraph->ResetInlineObject(start, length))
 						{
-							IGuiGraphicsRenderer* renderer=element->GetRenderer();
-							if(renderer)
+							if (auto element = inlineObject.Value().backgroundImage)
 							{
-								renderer->SetRenderTarget(0);
+								auto renderer=element->GetRenderer();
+								if(renderer)
+								{
+									renderer->SetRenderTarget(0);
+								}
 							}
 							return true;
 						}
@@ -6156,8 +6180,13 @@ WindowsGDIParagraph
 				void Render(Rect bounds)override
 				{
 					PrepareUniscribeData();
-					paragraph->Render(renderTarget->GetDC(), bounds.Left(), bounds.Top(), true);
-					paragraph->Render(renderTarget->GetDC(), bounds.Left(), bounds.Top(), false);
+
+					paragraphDC = renderTarget->GetDC();
+					paragraphOffset = bounds.LeftTop();
+					paragraph->Render(this, true);
+					paragraph->Render(this, false);
+					paragraphDC = 0;
+
 					if(caret!=-1)
 					{
 						Rect caretBounds=GetCaretBounds(caret, caretFrontSide);
@@ -6192,7 +6221,7 @@ WindowsGDIParagraph
 					return paragraph->GetCaretFromPoint(point);
 				}
 
-				Ptr<IGuiGraphicsElement> GetInlineObjectFromPoint(Point point, vint& start, vint& length)override
+				Nullable<InlineObjectProperties> GetInlineObjectFromPoint(Point point, vint& start, vint& length)override
 				{
 					PrepareUniscribeData();
 					return paragraph->GetInlineObjectFromPoint(point, start, length);
@@ -6223,7 +6252,7 @@ WindowsGDILayoutProvider
 
 			Ptr<IGuiGraphicsParagraph> WindowsGDILayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
-				return new WindowsGDIParagraph(this, text, renderTarget);
+				return new WindowsGDIParagraph(this, text, renderTarget, callback);
 			}
 		}
 	}
@@ -7942,8 +7971,9 @@ UniscribeTextRun
 				}
 			}
 
-			void UniscribeTextRun::Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeTextRun::Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
 			{
+				auto dc = callback->GetWinDC();
 				RunFragmentBounds& fragment=fragmentBounds[fragmentBoundsIndex];
 				if(fragment.length==0) return;
 
@@ -8040,41 +8070,42 @@ UniscribeTextRun
 			}
 
 /***********************************************************************
-UniscribeElementRun
+UniscribeEmbeddedObjectRun
 ***********************************************************************/
 
-			UniscribeElementRun::UniscribeElementRun()
+			UniscribeEmbeddedObjectRun::UniscribeEmbeddedObjectRun()
 			{
 			}
 
-			UniscribeElementRun::~UniscribeElementRun()
+			UniscribeEmbeddedObjectRun::~UniscribeEmbeddedObjectRun()
 			{
 			}
 
-			bool UniscribeElementRun::BuildUniscribeData(WinDC* dc, List<vint>& breakings)
+			bool UniscribeEmbeddedObjectRun::BuildUniscribeData(WinDC* dc, List<vint>& breakings)
 			{
 				breakings.Add(0);
 				return true;
 			}
 
-			vint UniscribeElementRun::SumWidth(vint charStart, vint charLength)
+			vint UniscribeEmbeddedObjectRun::SumWidth(vint charStart, vint charLength)
 			{
 				return properties.size.x;
 			}
 
-			vint UniscribeElementRun::SumHeight()
+			vint UniscribeEmbeddedObjectRun::SumHeight()
 			{
 				return properties.size.y;
 			}
 
-			void UniscribeElementRun::SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
+			void UniscribeEmbeddedObjectRun::SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
 			{
 				charLength=length-tempStart;
 				charAdvances=properties.size.x;
 			}
 
-			void UniscribeElementRun::Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeEmbeddedObjectRun::Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
 			{
+				auto dc = callback->GetWinDC();
 				RunFragmentBounds& fragment=fragmentBounds[fragmentBoundsIndex];
 				if(renderBackground)
 				{
@@ -8095,15 +8126,30 @@ UniscribeElementRun
 				}
 				else
 				{
-					Rect bounds=fragment.bounds;
-					bounds.x1+=offsetX;
-					bounds.x2+=offsetX;
-					bounds.y1+=offsetY;
-					bounds.y2+=offsetY;
-					IGuiGraphicsRenderer* renderer=element->GetRenderer();
-					if(renderer)
+					if (properties.backgroundImage)
 					{
-						renderer->Render(bounds);
+						Rect bounds=fragment.bounds;
+						bounds.x1+=offsetX;
+						bounds.x2+=offsetX;
+						bounds.y1+=offsetY;
+						bounds.y2+=offsetY;
+						IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
+						if(renderer)
+						{
+							renderer->Render(bounds);
+						}
+					}
+
+					if (properties.callbackId != -1)
+					{
+						if (auto paragraphCallback = callback->GetParagraphCallback())
+						{
+							auto offset = callback->GetParagraphOffset();
+							vint x = fragment.bounds.x1 + offsetX - offset.x;
+							vint y = fragment.bounds.y1 + offsetY - offset.y;
+							auto size = paragraphCallback->OnRenderInlineObject(properties.callbackId, Rect(Point(x, y), fragment.bounds.GetSize()));
+							properties.size = size;
+						}
 					}
 				}
 			}
@@ -8232,21 +8278,20 @@ UniscribeLine
 									FOREACH(Ptr<UniscribeFragment>, elementFragment, documentFragments)
 									{
 										vint elementLength=elementFragment->text.Length();
-										if(elementFragment->inlineObjectProperties.backgroundImage)
+										if(elementFragment->inlineObjectProperties)
 										{
 											if(elementCurrent<=currentStart && currentStart+shortLength<=elementCurrent+elementLength)
 											{
 												if(elementCurrent==currentStart)
 												{
-													Ptr<UniscribeElementRun> run=new UniscribeElementRun;
+													auto run=MakePtr<UniscribeEmbeddedObjectRun>();
 													run->documentFragment=fragment;
 													run->scriptItem=scriptItem.Obj();
 													run->startFromLine=currentStart;
 													run->startFromFragment=currentStart-fragmentStarts[fragmentIndex];
 													run->length=elementLength;
 													run->runText=lineText.Buffer()+currentStart;
-													run->element=elementFragment->inlineObjectProperties.backgroundImage;
-													run->properties=elementFragment->inlineObjectProperties;
+													run->properties=elementFragment->inlineObjectProperties.Value();
 													scriptRuns.Add(run);
 												}
 												skip=true;
@@ -8519,13 +8564,13 @@ UniscribeLine
 				totalHeight=cy;
 			}
 
-			void UniscribeLine::Render(WinDC* dc, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeLine::Render(UniscribeRun::IRendererCallback* callback, vint offsetX, vint offsetY, bool renderBackground)
 			{
 				FOREACH(Ptr<UniscribeRun>, run, scriptRuns)
 				{
 					for(vint i=0;i<run->fragmentBounds.Count();i++)
 					{
-						run->Render(dc, i, offsetX, offsetY, renderBackground);
+						run->Render(callback, i, offsetX, offsetY, renderBackground);
 					}
 				}
 			}
@@ -8590,7 +8635,7 @@ UniscribeParagraph (Initialization)
 					Ptr<UniscribeLine> line;
 					FOREACH(Ptr<UniscribeFragment>, fragment, documentFragments)
 					{
-						if(fragment->inlineObjectProperties.backgroundImage)
+						if(fragment->inlineObjectProperties)
 						{
 							if(!line)
 							{
@@ -8691,11 +8736,12 @@ UniscribeParagraph (Initialization)
 				bounds=Rect(minX, minY, maxX, maxY+offsetY);
 			}
 
-			void UniscribeParagraph::Render(WinDC* dc, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeParagraph::Render(UniscribeRun::IRendererCallback* callback, bool renderBackground)
 			{
+				auto offset = callback->GetParagraphOffset();
 				FOREACH(Ptr<UniscribeLine>, line, lines)
 				{
-					line->Render(dc, offsetX, offsetY, renderBackground);
+					line->Render(callback, offset.x, offset.y, renderBackground);
 				}
 			}
 
@@ -8738,7 +8784,7 @@ UniscribeParagraph (Formatting Helper)
 				if(fs==fe)
 				{
 					Ptr<UniscribeFragment> fragment=documentFragments[fs];
-					if(fragment->inlineObjectProperties.backgroundImage)
+					if(fragment->inlineObjectProperties)
 					{
 						if(ss==0 && se==fragment->text.Length())
 						{
@@ -8753,7 +8799,7 @@ UniscribeParagraph (Formatting Helper)
 				}
 				for(vint i=fs;i<=fe;i++)
 				{
-					if(documentFragments[i]->inlineObjectProperties.backgroundImage)
+					if(documentFragments[i]->inlineObjectProperties)
 					{
 						return false;
 					}
@@ -8969,12 +9015,12 @@ UniscribeParagraph (Formatting)
 				}
 			}
 
-			Ptr<IGuiGraphicsElement> UniscribeParagraph::ResetInlineObject(vint start, vint length)
+			InlineObject UniscribeParagraph::ResetInlineObject(vint start, vint length)
 			{
 				vint fs, ss, fe, se;
 				SearchFragment(start, length, fs, ss, fe, se);
-				Ptr<UniscribeFragment> fragment=documentFragments[fs];
-				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->inlineObjectProperties.backgroundImage)
+				Ptr<UniscribeFragment> fragment = documentFragments[fs];
+				if(fs==fe && ss==0 && se==fragment->text.Length() && fragment->inlineObjectProperties)
 				{
 					documentFragments.RemoveAt(fs);
 					for(vint i=0;i<fragment->cachedTextFragment.Count();i++)
@@ -8982,9 +9028,9 @@ UniscribeParagraph (Formatting)
 						documentFragments.Insert(fs+i, fragment->cachedTextFragment[i]);
 					}
 					built=false;
-					return fragment->inlineObjectProperties.backgroundImage;
+					return fragment->inlineObjectProperties;
 				}
-				return 0;
+				return InlineObject();
 			}
 
 /***********************************************************************
@@ -9374,29 +9420,29 @@ UniscribeParagraph (Caret Helper)
 				return -1;
 			}
 
-			Ptr<IGuiGraphicsElement> UniscribeParagraph::GetInlineObjectFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex, vint& start, vint& length)
+			InlineObject UniscribeParagraph::GetInlineObjectFromXWithLine(vint x, vint lineIndex, vint virtualLineIndex, vint& start, vint& length)
 			{
 				Ptr<UniscribeLine> line=lines[lineIndex];
-				if(line->virtualLines.Count()==0) return 0;
+				if(line->virtualLines.Count()==0) return InlineObject();
 				Ptr<UniscribeVirtualLine> virtualLine=line->virtualLines[virtualLineIndex];
-				if(x<virtualLine->bounds.x1) return 0;
-				if(x>=virtualLine->bounds.x2) return 0;
+				if(x<virtualLine->bounds.x1) return InlineObject();
+				if(x>=virtualLine->bounds.x2) return InlineObject();
 
 				for(vint i=virtualLine->firstRunIndex;i<=virtualLine->lastRunIndex;i++)
 				{
 					Ptr<UniscribeRun> run=line->scriptRuns[i];
-					if(Ptr<UniscribeElementRun> elementRun=run.Cast<UniscribeElementRun>())
+					if(auto elementRun=run.Cast<UniscribeEmbeddedObjectRun>())
 					{
 						Rect bounds=run->fragmentBounds[0].bounds;
 						if(bounds.x1<=x && x<bounds.x2)
 						{
 							start=line->startFromParagraph+elementRun->startFromLine;
 							length=elementRun->length;
-							return elementRun->element;
+							return elementRun->properties;
 						}
 					}
 				}
-				return 0;
+				return InlineObject();
 			}
 
 			vint UniscribeParagraph::GetLineY(vint lineIndex)
@@ -9602,18 +9648,18 @@ UniscribeParagraph (Caret)
 				return GetCaretFromXWithLine(point.x, lineIndex, virtualLineIndex);
 			}
 
-			Ptr<IGuiGraphicsElement> UniscribeParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
+			InlineObject UniscribeParagraph::GetInlineObjectFromPoint(Point point, vint& start, vint& length)
 			{
-				start=-1;
-				length=0;
-				vint lineIndex=GetLineIndexFromY(point.y);
-				if(lineIndex==-1) return 0;
+				start = -1;
+				length = 0;
+				vint lineIndex = GetLineIndexFromY(point.y);
+				if (lineIndex == -1) return InlineObject();
 
-				Ptr<UniscribeLine> line=lines[lineIndex];
-				if(line->virtualLines.Count()==0) return 0;
+				Ptr<UniscribeLine> line = lines[lineIndex];
+				if (line->virtualLines.Count() == 0) return InlineObject();
 
-				vint virtualLineIndex=GetVirtualLineIndexFromY(point.y, lineIndex);
-				if(virtualLineIndex==-1) return 0;
+				vint virtualLineIndex = GetVirtualLineIndexFromY(point.y, lineIndex);
+				if (virtualLineIndex == -1) return InlineObject();
 
 				return GetInlineObjectFromXWithLine(point.x, lineIndex, virtualLineIndex, start, length);
 			}
@@ -10257,6 +10303,11 @@ WindowsDirect2DElementInlineObject
 				vint GetLength()
 				{
 					return length;
+				}
+
+				const IGuiGraphicsParagraph::InlineObjectProperties& GetProperties()
+				{
+					return properties;
 				}
 
 				Ptr<IGuiGraphicsElement> GetElement()
@@ -11315,7 +11366,7 @@ WindowsDirect2DParagraph (Caret)
 					return caret;
 				}
 
-				Ptr<IGuiGraphicsElement> GetInlineObjectFromPoint(Point point, vint& start, vint& length)override
+				Nullable<InlineObjectProperties> GetInlineObjectFromPoint(Point point, vint& start, vint& length)override
 				{
 					DWRITE_HIT_TEST_METRICS metrics={0};
 					BOOL trailingHit=FALSE;
@@ -11331,10 +11382,10 @@ WindowsDirect2DParagraph (Caret)
 							ComPtr<WindowsDirect2DElementInlineObject> inlineObject=inlineElements[element];
 							start=inlineObject->GetStart();
 							length=inlineObject->GetLength();
-							return inlineObject->GetElement();
+							return inlineObject->GetProperties();
 						}
 					}
-					return 0;
+					return Nullable<InlineObjectProperties>();
 				}
 
 				vint GetNearestCaretFromTextPos(vint textPos, bool frontSide)override

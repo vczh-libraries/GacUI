@@ -1062,7 +1062,7 @@ Layout Engine
 				/// <param name="point">The point.</param>
 				/// <param name="start">Get the start position of this element.</param>
 				/// <param name="length">Get the length of this element.</param>
-				virtual Ptr<IGuiGraphicsElement>			GetInlineObjectFromPoint(Point point, vint& start, vint& length)=0;
+				virtual Nullable<InlineObjectProperties>	GetInlineObjectFromPoint(Point point, vint& start, vint& length)=0;
 				/// <summary>Get the nearest caret from a text position.</summary>
 				/// <returns>The caret. Returns -1 if failed. If the text position is a caret, then the result will be the text position itself without considering the frontSide argument.</returns>
 				/// <param name="textPos">The caret to compare. If the position is CaretFirst or CaretLast, this argument is ignored.</param>
@@ -7081,6 +7081,8 @@ namespace vl
 	{
 		namespace compositions
 		{
+			class GuiFlowComposition;
+			class GuiFlowItemComposition;
 
 /***********************************************************************
 Flow Compositions
@@ -14402,7 +14404,7 @@ GuiDocumentCommonInterface
 			
 			/// <summary>Document displayer control common interface for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentCommonInterface abstract
-				: private virtual elements::GuiDocumentElement::ICallback
+				: protected virtual elements::GuiDocumentElement::ICallback
 				, public Description<GuiDocumentCommonInterface>
 			{
 				typedef collections::Dictionary<WString, Ptr<GuiDocumentItem>>		DocumentItemMap;
@@ -14430,8 +14432,6 @@ GuiDocumentCommonInterface
 
 				Ptr<GuiDocumentUndoRedoProcessor>			undoRedoProcessor;
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
-
-			private:
 
 			protected:
 				void										UpdateCaretPoint();
