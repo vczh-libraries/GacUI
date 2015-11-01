@@ -706,8 +706,9 @@ UniscribeTextRun
 				}
 			}
 
-			void UniscribeTextRun::Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeTextRun::Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
 			{
+				auto dc = callback->GetWinDC();
 				RunFragmentBounds& fragment=fragmentBounds[fragmentBoundsIndex];
 				if(fragment.length==0) return;
 
@@ -837,8 +838,9 @@ UniscribeEmbeddedObjectRun
 				charAdvances=properties.size.x;
 			}
 
-			void UniscribeEmbeddedObjectRun::Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeEmbeddedObjectRun::Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
 			{
+				auto dc = callback->GetWinDC();
 				RunFragmentBounds& fragment=fragmentBounds[fragmentBoundsIndex];
 				if(renderBackground)
 				{
@@ -1282,13 +1284,13 @@ UniscribeLine
 				totalHeight=cy;
 			}
 
-			void UniscribeLine::Render(WinDC* dc, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeLine::Render(UniscribeRun::IRendererCallback* callback, vint offsetX, vint offsetY, bool renderBackground)
 			{
 				FOREACH(Ptr<UniscribeRun>, run, scriptRuns)
 				{
 					for(vint i=0;i<run->fragmentBounds.Count();i++)
 					{
-						run->Render(dc, i, offsetX, offsetY, renderBackground);
+						run->Render(callback, i, offsetX, offsetY, renderBackground);
 					}
 				}
 			}
@@ -1454,11 +1456,12 @@ UniscribeParagraph (Initialization)
 				bounds=Rect(minX, minY, maxX, maxY+offsetY);
 			}
 
-			void UniscribeParagraph::Render(WinDC* dc, vint offsetX, vint offsetY, bool renderBackground)
+			void UniscribeParagraph::Render(UniscribeRun::IRendererCallback* callback, bool renderBackground)
 			{
+				auto offset = callback->GetParagraphOffset();
 				FOREACH(Ptr<UniscribeLine>, line, lines)
 				{
-					line->Render(dc, offsetX, offsetY, renderBackground);
+					line->Render(callback, offset.x, offset.y, renderBackground);
 				}
 			}
 

@@ -160,6 +160,14 @@ UniscribeRun
 					vint						length;
 					Rect						bounds;
 				};
+
+				class IRendererCallback : public Interface
+				{
+				public:
+					virtual WinDC*									GetWinDC() = 0;
+					virtual Point									GetParagraphOffset() = 0;
+					virtual IGuiGraphicsParagraphCallback*			GetParagraphCallback() = 0;
+				};
 				
 				//***************************** Document Data
 				UniscribeFragment*				documentFragment;
@@ -179,7 +187,7 @@ UniscribeRun
 				virtual vint					SumWidth(vint charStart, vint charLength)=0;
 				virtual vint					SumHeight()=0;
 				virtual void					SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)=0;
-				virtual void					Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)=0;
+				virtual void					Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)=0;
 			};
 
 /***********************************************************************
@@ -206,7 +214,7 @@ UniscribeTextRun
 				vint							SumWidth(vint charStart, vint charLength)override;
 				vint							SumHeight()override;
 				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
-				void							Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
+				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
 			};
 
 /***********************************************************************
@@ -226,7 +234,7 @@ UniscribeElementRun
 				vint							SumWidth(vint charStart, vint charLength)override;
 				vint							SumHeight()override;
 				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
-				void							Render(WinDC* dc, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
+				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
 			};
 
 /***********************************************************************
@@ -273,7 +281,7 @@ UniscribeLine
 				void							ClearUniscribeData();
 				bool							BuildUniscribeData(WinDC* dc);
 				void							Layout(vint availableWidth, Alignment alignment, vint top, vint& totalHeight);
-				void							Render(WinDC* dc, vint offsetX, vint offsetY, bool renderBackground);
+				void							Render(UniscribeRun::IRendererCallback* callback, vint offsetX, vint offsetY, bool renderBackground);
 			};
 
 /***********************************************************************
@@ -300,7 +308,7 @@ UniscribeParagraph
 				void							ClearUniscribeData();
 				bool							BuildUniscribeData(WinDC* dc);
 				void							Layout(vint availableWidth, Alignment alignment);
-				void							Render(WinDC* dc, vint offsetX, vint offsetY, bool renderBackground);
+				void							Render(UniscribeRun::IRendererCallback* callback, bool renderBackground);
 
 				void							SearchFragment(vint start, vint length, vint& fs, vint& ss, vint& fe, vint& se);
 				bool							CutFragment(vint fs, vint ss, vint fe, vint se, vint& f1, vint& f2);
