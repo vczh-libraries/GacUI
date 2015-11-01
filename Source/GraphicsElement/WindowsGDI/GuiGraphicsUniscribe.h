@@ -186,6 +186,7 @@ UniscribeRun
 				virtual bool					BuildUniscribeData(WinDC* dc, List<vint>& breakings)=0;
 				virtual vint					SumWidth(vint charStart, vint charLength)=0;
 				virtual vint					SumHeight()=0;
+				virtual vint					SumTextHeight()=0;
 				virtual void					SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)=0;
 				virtual void					Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)=0;
 			};
@@ -213,6 +214,7 @@ UniscribeTextRun
 				bool							BuildUniscribeData(WinDC* dc, List<vint>& breakings)override;
 				vint							SumWidth(vint charStart, vint charLength)override;
 				vint							SumHeight()override;
+				vint							SumTextHeight()override;
 				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
 				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
 			};
@@ -233,6 +235,7 @@ UniscribeElementRun
 				bool							BuildUniscribeData(WinDC* dc, List<vint>& breakings)override;
 				vint							SumWidth(vint charStart, vint charLength)override;
 				vint							SumHeight()override;
+				vint							SumTextHeight()override;
 				void							SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)override;
 				void							Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)override;
 			};

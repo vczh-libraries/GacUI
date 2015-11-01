@@ -645,6 +645,11 @@ UniscribeTextRun
 				return documentFragment->fontStyle.size;
 			}
 
+			vint UniscribeTextRun::SumTextHeight()
+			{
+				return SumHeight();
+			}
+
 			void UniscribeTextRun::SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
 			{
 				vint width=0;
@@ -832,10 +837,23 @@ UniscribeEmbeddedObjectRun
 				return properties.size.y;
 			}
 
+			vint UniscribeEmbeddedObjectRun::SumTextHeight()
+			{
+				return 0;
+			}
+
 			void UniscribeEmbeddedObjectRun::SearchForLineBreak(vint tempStart, vint maxWidth, bool firstRun, vint& charLength, vint& charAdvances)
 			{
-				charLength=length-tempStart;
-				charAdvances=properties.size.x;
+				if (firstRun || properties.size.x <= maxWidth)
+				{
+					charLength = length - tempStart;
+					charAdvances = properties.size.x;
+				}
+				else
+				{
+					charLength = 0;
+					charAdvances = 0;
+				}
 			}
 
 			void UniscribeEmbeddedObjectRun::Render(IRendererCallback* callback, vint fragmentBoundsIndex, vint offsetX, vint offsetY, bool renderBackground)
@@ -1152,16 +1170,20 @@ UniscribeLine
 							// calculate the max line height in this range;
 							vint availableLastRun=lastRun<scriptRuns.Count()-1?lastRun:scriptRuns.Count()-1;
 							vint maxHeight=0;
+							vint maxTextHeight=0;
 							for(vint i=startRun;i<=availableLastRun;i++)
 							{
 								if(i==lastRun && lastRunOffset==0)
 								{
 									break;
 								}
-								vint size=scriptRuns[i]->SumHeight();
-								if(maxHeight<size)
 								{
-									maxHeight=size;
+									vint size=scriptRuns[i]->SumHeight();
+									if(maxHeight<size) maxHeight=size;
+								}
+								{
+									vint size=scriptRuns[i]->SumTextHeight();
+									if(maxTextHeight<size) maxTextHeight=size;
 								}
 							}
 
@@ -1271,7 +1293,7 @@ UniscribeLine
 							}
 
 							cx=0;
-							cy+=(vint)(maxHeight*1.5);
+							cy+=(vint)(maxHeight + maxTextHeight*0.5);
 						}
 
 						startRun=lastRun;
