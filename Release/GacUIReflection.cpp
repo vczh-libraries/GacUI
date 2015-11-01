@@ -10629,7 +10629,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(IGuiAxis)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiAxis>(AxisDirection), {L"axisDirection"})
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alignment)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Direction)
 			END_CLASS_MEMBER(GuiAxis)
 
 			BEGIN_CLASS_MEMBER(GuiStackComposition)

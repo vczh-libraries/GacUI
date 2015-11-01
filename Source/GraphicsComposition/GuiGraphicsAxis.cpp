@@ -77,7 +77,7 @@ GuiAxis
 			{
 			}
 
-			AxisDirection GuiAxis::GetAlignment()
+			AxisDirection GuiAxis::GetDirection()
 			{
 				return axisDirection;
 			}

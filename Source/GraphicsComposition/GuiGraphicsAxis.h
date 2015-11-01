@@ -130,7 +130,7 @@ Axis Implementation
 
 				/// <summary>Get the specified axis direction.</summary>
 				/// <returns>The specified axis direction.</returns>
-				AxisDirection								GetAlignment();
+				AxisDirection								GetDirection();
 				Size										RealSizeToVirtualSize(Size size)override;
 				Size										VirtualSizeToRealSize(Size size)override;
 				Point										RealPointToVirtualPoint(Size realFullSize, Point point)override;
