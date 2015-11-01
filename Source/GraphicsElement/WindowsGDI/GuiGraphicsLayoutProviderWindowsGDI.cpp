@@ -16,7 +16,7 @@ namespace vl
 WindowsGDIParagraph
 ***********************************************************************/
 
-			class WindowsGDIParagraph : public Object, public IGuiGraphicsParagraph
+			class WindowsGDIParagraph : public Object, public IGuiGraphicsParagraph, protected UniscribeRun::IRendererCallback
 			{
 			protected:
 				IGuiGraphicsLayoutProvider*			provider;
@@ -29,6 +29,10 @@ WindowsGDIParagraph
 				bool								caretFrontSide;
 				Ptr<WinPen>							caretPen;
 
+				WinDC*								paragraphDC;
+				Point								paragraphOffset;
+				IGuiGraphicsParagraphCallback*		paragraphCallback;
+
 				void PrepareUniscribeData()
 				{
 					if(paragraph->BuildUniscribeData(renderTarget->GetDC()))
@@ -37,13 +41,30 @@ WindowsGDIParagraph
 						paragraph->Layout(width, paragraph->paragraphAlignment);
 					}
 				}
+
+				WinDC* GetWinDC()
+				{
+					return paragraphDC;
+				}
+
+				Point GetParagraphOffset()
+				{
+					return paragraphOffset;
+				}
+
+				IGuiGraphicsParagraphCallback* GetParagraphCallback()
+				{
+					return paragraphCallback;
+				}
 			public:
-				WindowsGDIParagraph(IGuiGraphicsLayoutProvider* _provider, const WString& _text, IGuiGraphicsRenderTarget* _renderTarget)
+				WindowsGDIParagraph(IGuiGraphicsLayoutProvider* _provider, const WString& _text, IGuiGraphicsRenderTarget* _renderTarget, IGuiGraphicsParagraphCallback* _paragraphCallback)
 					:provider(_provider)
 					,text(_text)
 					,renderTarget(dynamic_cast<IWindowsGDIRenderTarget*>(_renderTarget))
 					,caret(-1)
 					,caretFrontSide(false)
+					,paragraphDC(nullptr)
+					,paragraphCallback(_paragraphCallback)
 				{
 					paragraph=new UniscribeParagraph;
 					paragraph->paragraphText=text;
@@ -235,8 +256,13 @@ WindowsGDIParagraph
 				void Render(Rect bounds)override
 				{
 					PrepareUniscribeData();
-					paragraph->Render(renderTarget->GetDC(), bounds.Left(), bounds.Top(), true);
-					paragraph->Render(renderTarget->GetDC(), bounds.Left(), bounds.Top(), false);
+
+					paragraphDC = renderTarget->GetDC();
+					paragraphOffset = bounds.LeftTop();
+					paragraph->Render(this, true);
+					paragraph->Render(this, false);
+					paragraphDC = 0;
+
 					if(caret!=-1)
 					{
 						Rect caretBounds=GetCaretBounds(caret, caretFrontSide);
@@ -302,7 +328,7 @@ WindowsGDILayoutProvider
 
 			Ptr<IGuiGraphicsParagraph> WindowsGDILayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
-				return new WindowsGDIParagraph(this, text, renderTarget);
+				return new WindowsGDIParagraph(this, text, renderTarget, callback);
 			}
 		}
 	}

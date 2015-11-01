@@ -859,17 +859,32 @@ UniscribeEmbeddedObjectRun
 						dc->FillRect(rect);
 					}
 				}
-				else if (properties.backgroundImage)
+				else
 				{
-					Rect bounds=fragment.bounds;
-					bounds.x1+=offsetX;
-					bounds.x2+=offsetX;
-					bounds.y1+=offsetY;
-					bounds.y2+=offsetY;
-					IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
-					if(renderer)
+					if (properties.backgroundImage)
 					{
-						renderer->Render(bounds);
+						Rect bounds=fragment.bounds;
+						bounds.x1+=offsetX;
+						bounds.x2+=offsetX;
+						bounds.y1+=offsetY;
+						bounds.y2+=offsetY;
+						IGuiGraphicsRenderer* renderer=properties.backgroundImage->GetRenderer();
+						if(renderer)
+						{
+							renderer->Render(bounds);
+						}
+					}
+
+					if (properties.callbackId != -1)
+					{
+						if (auto paragraphCallback = callback->GetParagraphCallback())
+						{
+							auto offset = callback->GetParagraphOffset();
+							vint x = fragment.bounds.x1 + offsetX - offset.x;
+							vint y = fragment.bounds.y1 + offsetY - offset.y;
+							auto size = paragraphCallback->OnRenderInlineObject(properties.callbackId, Rect(Point(x, y), fragment.bounds.GetSize()));
+							properties.size = size;
+						}
 					}
 				}
 			}
