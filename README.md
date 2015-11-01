@@ -23,8 +23,8 @@ This GUI library provides the following features:
 * Develop your GUI using pure C++, [Workflow](https://github.com/vczh-libraries/Workflow) script, XML or even JavaScript (under construction)
 * Cross-platform abilities. 
     * for **Windows**: Just use the code here
-    * for **Linux**: https://github.com/milizhang/xgac 
-    * for **OSX**: https://github.com/darkfall/Gaclib_OSX
+    * for **Linux**: https://github.com/vczh-libraries/XGac
+    * for **OSX**: https://github.com/vczh-libraries/iGac
     * for running in **Browser!**: https://github.com/vczh-libraries/GacJS (under construction)
 * Rich control library. Container controls supports MVC and virtual list mode.
 * Control template system. You can write your own 
