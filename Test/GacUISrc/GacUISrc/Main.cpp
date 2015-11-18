@@ -2,7 +2,7 @@
 
 #include "..\..\..\Source\GacUI.h"
 #include "..\..\..\Source\Reflection\GuiInstanceLoader.h"
-#include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.h"
+#include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h"
 #include <Windows.h>
 
 using namespace vl::regex;
@@ -57,29 +57,62 @@ void GuiMain_GrammarIntellisense()
 	GetApplication()->Run(&window);
 }
 
-namespace test
+namespace demo
 {
+	class IViewModel : public virtual IDescriptable, public Description<IViewModel>
+	{
+	protected:
+		vint x = 0;
+		vint y = 0;
+	public:
+		vint GetX() { return x; }
+		void SetX(vint value) {if (x != value){ x = value; XChanged();} }
+		Event<void()> XChanged;
+		
+		vint GetY() { return y; }
+		void SetY(vint value) {if (y != value){ y = value; YChanged();} }
+		Event<void()> YChanged;
+	};
+
 	template<typename TImpl>
 	class MainWindow_ : public GuiWindow, public GuiInstancePartialClass<GuiWindow>, public Description<TImpl>
 	{
 	protected:
+		Ptr<IViewModel> ViewModel_;
+		GuiSinglelineTextBox* text1;
+		GuiSinglelineTextBox* text2;
 
 		void InitializeComponents()
 		{
 			InitializeFromResource();
+			GUI_INSTANCE_REFERENCE(text1);
+			GUI_INSTANCE_REFERENCE(text2);
 		}
 	public:
-		MainWindow_()
-			:GuiInstancePartialClass<GuiWindow>(L"test::MainWindow")
+		MainWindow_(Ptr<IViewModel> ViewModel)
+			:GuiInstancePartialClass<GuiWindow>(L"demo::MainWindow")
 			, GuiWindow(theme::GetCurrentTheme()->CreateWindowStyle())
 		{
+			ViewModel_ = ViewModel;
+		}
+
+		Ptr<IViewModel> GetViewModel()
+		{
+			return ViewModel_;
+		}
+
+		void buttonClear_Clicked(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+		{
+			text1->SetText(L"0");
+			text2->SetText(L"0");
 		}
 	};
 
 	class MainWindow : public MainWindow_<MainWindow>
 	{
 	public:
-		MainWindow()
+		MainWindow(Ptr<IViewModel> ViewModel)
+			:MainWindow_<MainWindow>(ViewModel)
 		{
 			InitializeComponents();
 		}
@@ -92,20 +125,38 @@ namespace vl
 	{
 		namespace description
 		{
-			DECL_TYPE_INFO(test::MainWindow)
-			IMPL_CPP_TYPE_INFO(test::MainWindow)
+#define _ ,
+			DECL_TYPE_INFO(demo::IViewModel)
+			DECL_TYPE_INFO(demo::MainWindow)
 
-			BEGIN_CLASS_MEMBER(test::MainWindow)
+			IMPL_CPP_TYPE_INFO(demo::IViewModel)
+			IMPL_CPP_TYPE_INFO(demo::MainWindow)
+
+			BEGIN_CLASS_MEMBER(demo::IViewModel)
+				CLASS_MEMBER_BASE(IDescriptable)
+
+				CLASS_MEMBER_EVENT(XChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(X, XChanged)
+				
+				CLASS_MEMBER_EVENT(YChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(Y, YChanged)
+			END_CLASS_MEMBER(demo::IViewModel)
+
+			BEGIN_CLASS_MEMBER(demo::MainWindow)
 				CLASS_MEMBER_BASE(GuiWindow)
-				CLASS_MEMBER_CONSTRUCTOR(test::MainWindow*(), NO_PARAMETER)
-			END_CLASS_MEMBER(test::MainWindow)
+				CLASS_MEMBER_CONSTRUCTOR(demo::MainWindow*(Ptr<demo::IViewModel>), { L"ViewModel" })
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModel)
+				CLASS_MEMBER_GUIEVENT_HANDLER(buttonClear_Clicked, GuiEventArgs)
+			END_CLASS_MEMBER(demo::MainWindow)
 
 			class ResourceLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)override
 				{
-					ADD_TYPE_INFO(test::MainWindow)
+					ADD_TYPE_INFO(demo::IViewModel)
+					ADD_TYPE_INFO(demo::MainWindow)
 				}
 
 				void Unload(ITypeManager* manager)override
@@ -134,7 +185,7 @@ namespace vl
 	}
 }
 
-using namespace test;
+using namespace demo;
 
 void GuiMain_Resource()
 {
@@ -159,7 +210,7 @@ void GuiMain_Resource()
 		}
 		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
 	}
-	MainWindow window;
+	MainWindow window(new IViewModel);
 	window.ForceCalculateSizeImmediately();
 	window.MoveToScreenCenter();
 	GetApplication()->Run(&window);

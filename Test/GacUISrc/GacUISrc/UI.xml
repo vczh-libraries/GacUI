@@ -1,179 +1,92 @@
 <Resource>
-  <Folder name="EmbeddedDocument">
-    <Image content="File" name="Gaclib">Gaclib.png</Image>
-    <Doc name="Document">
-      <Doc>
-        <Content>
-          <p align="Center">
-            <div style="Title">
-              <b>Controls Embedded in Document</b>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>Hi, our valued GacUI users:</nop>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>This is a rich text document. There are many features in a document. For example, a paragraph can align to the left,</nop>
-            </div>
-          </p>
-          <p align="Center">
-            <div style="Body">
-              <nop>to the center,</nop>
-            </div>
-          </p>
-          <p align="Right">
-            <div style="Body">
-              <nop>or to the right,</nop>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>Even an </nop>
-              <img source="res://EmbeddedDocument/Gaclib" width="250" height="100"/>
-              <nop> can be embedded inside a document and adjust its size.</nop>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>Besides of this, controls can be embedded into a document too, like a </nop>
-              <object name="Button"/>
-              <nop>, a </nop>
-              <object name="TreeView"/>
-              <nop>, or even a </nop>
-              <object name="Menu"/>
-              <nop>.</nop>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>If you can embed a control, why not embed another layout composition like this: </nop>
-              <object name="Table"/>
-              <nop>?</nop>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>Obviously, embedding a </nop>
-              <a href="http://www.gaclib.net">http://www.gaclib.net</a>
-              <nop> is also a feature. You can try to click on it and see what happens.</nop>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>Hope you like this powerful tools. Thank you.</nop>
-            </div>
-          </p>
-        </Content>
-        <Styles>
-          <Style name="Content">
-            <face>Segoe UI</face>
-          </Style>
-          <Style name="Title" parent="Content">
-            <size>24</size>
-            <b>true</b>
-          </Style>
-          <Style name="Body" parent="Content">
-            <size>14</size>
-          </Style>
-        </Styles>
-      </Doc>
-    </Doc>
-  </Folder>
   <Instance name="MainWindowResource">
-    <Instance ref.Class="test::MainWindow">
-      <Window Text="Window" ClientSize="x:480 y:640">
-        <att.BoundsComposition-set PreferredMinSize="x:480 y:640"/>
+    <Instance ref.Class="demo::MainWindow">
+      <ref.Parameter Name="ViewModel" Class="demo::IViewModel"/>
+      <Window Text="Window" ClientSize="x:480 y:320">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
 
-        <DocumentViewer EditMode="Selectable" Document-uri="res://EmbeddedDocument/Document">
-          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-          <DocumentItem Name="Button">
-            <Button Text="Button"/>
-          </DocumentItem>
-          <DocumentItem Name="TreeView">
-            <TreeView HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-              <att.BoundsComposition-set PreferredMinSize="x:200 y:100"/>
-              <att.Nodes>
-                <TreeNode Text="GacUI Renderers" Expanding="true">
-                  <TreeNode Text="Direct2D"/>
-                  <TreeNode Text="GDI"/>
-                </TreeNode>
-              </att.Nodes>
-            </TreeView>
-          </DocumentItem>
-          <DocumentItem Name="Menu">
-            <ToolstripMenuBar>
-              <MenuBarButton Text="File" Alt="F">
-                <att.SubMenu-set>
-                  <MenuItemButton Text="New" Alt="N"/>
-                  <MenuItemButton Text="Open" Alt="O"/>
-                  <MenuItemButton Text="Save" Alt="S"/>
-                  <MenuItemButton Text="Save As ..." Alt="A"/>
-                  <MenuSplitter/>
-                  <MenuItemButton Text="Exit" Alt="X"/>
-                </att.SubMenu-set>
-              </MenuBarButton>
-              <MenuBarButton Text="Edit" Alt="E">
-                <att.SubMenu-set>
-                  <MenuItemButton Text="Undo" Alt="U"/>
-                  <MenuItemButton Text="Redo" Alt="R"/>
-                  <MenuSplitter/>
-                  <MenuItemButton Text="Cut" Alt="T"/>
-                  <MenuItemButton Text="Copy" Alt="C"/>
-                  <MenuItemButton Text="Paste" Alt="P"/>
-                  <MenuSplitter/>
-                  <MenuItemButton Text="Select All" Alt="A"/>
-                </att.SubMenu-set>
-              </MenuBarButton>
-            </ToolstripMenuBar>
-          </DocumentItem>
-          <DocumentItem Name="Table">
-            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
-              <SolidBorder Color="#000000"/>
-              <att.Rows>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Rows>
-              <att.Columns>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-                <CellOption>composeType:MinSize</CellOption>
-              </att.Columns>
+        <att.ViewModel-set X-bind="(cast int text1.Text) ?? 0" Y-bind="(cast int text2.Text) ?? 0"/>
 
-              <Cell Site="row:0 column:0">
-                <Label Text="XOR"/>
-              </Cell>
-              <Cell Site="row:0 column:1">
-                <Label Text="false"/>
-              </Cell>
-              <Cell Site="row:0 column:2">
-                <Label Text="true"/>
-              </Cell>
-              <Cell Site="row:1 column:0">
-                <Label Text="false"/>
-              </Cell>
-              <Cell Site="row:1 column:1">
-                <Label Text="false"/>
-              </Cell>
-              <Cell Site="row:1 column:2">
-                <Label Text="true"/>
-              </Cell>
-              <Cell Site="row:2 column:0">
-                <Label Text="true"/>
-              </Cell>
-              <Cell Site="row:2 column:1">
-                <Label Text="true"/>
-              </Cell>
-              <Cell Site="row:2 column:2">
-                <Label Text="false"/>
-              </Cell>
-            </Table>
-          </DocumentItem>
-        </DocumentViewer>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <Label Text="First Number:">
+              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
+            </Label>
+          </Cell>
+          <Cell Site="row:0 column:1 columnSpan:3">
+            <SinglelineTextBox ref.Name="text1" Text="0">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <Label Text="Second Number:">
+              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
+            </Label>
+          </Cell>
+          <Cell Site="row:1 column:1 columnSpan:3">
+            <SinglelineTextBox ref.Name="text2" Text="0">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:2 column:0">
+            <Label Text-eval="'Sum:'">
+              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
+            </Label>
+          </Cell>
+          <Cell Site="row:2 column:1 columnSpan:3">
+            <Label Text-bind="ViewModel.X + ViewModel.Y">
+              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
+            </Label>
+          </Cell>
+
+          <Cell Site="row:3 column:0">
+            <Label Text-eval="'Equation:'">
+              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
+            </Label>
+          </Cell>
+          <Cell Site="row:3 column:1 columnSpan:3">
+            <Label Text-format="$(ViewModel.X) + $(ViewModel.Y) = $(ViewModel.X + ViewModel.Y)">
+              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
+            </Label>
+          </Cell>
+
+          <Cell Site="row:5 column:2">
+            <Button Text="SetNumbers">
+              <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    text1.Text = "12";
+                    text2.Text = "34";
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:5 column:3">
+            <Button Text="ClearNumbers" ev.Clicked="buttonClear_Clicked">
+              <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
+            </Button>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>

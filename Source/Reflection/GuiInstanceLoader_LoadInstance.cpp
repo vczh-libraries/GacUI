@@ -1138,10 +1138,10 @@ ExecuteBindingSetters
 						env->scope->errors.Add(
 							L"Event handler \"" +
 							eventSetter.handlerName +
-							L"\" exists but the type does not match the event \"" +
-							eventSetter.propertyValue.propertyName.ToString() +
 							L"\" of \"" +
 							env->context->instance->typeName.ToString() +
+							L"\" exists but the type does not match the event \"" +
+							eventSetter.propertyValue.propertyName.ToString() +
 							L"\".");
 					}
 				}
@@ -1150,10 +1150,10 @@ ExecuteBindingSetters
 					env->scope->errors.Add(
 						L"Failed to find event handler \"" +
 						eventSetter.handlerName +
-						L"\" when setting event \"" +
-						eventSetter.propertyValue.propertyName.ToString() +
 						L"\" of \"" +
 						env->context->instance->typeName.ToString() +
+						L"\" when setting event \"" +
+						eventSetter.propertyValue.propertyName.ToString() +
 						L"\".");
 				}
 			}
