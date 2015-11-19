@@ -445,7 +445,7 @@ Variable
 Workflow_ValidateStatement
 ***********************************************************************/
 
-		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& types, types::ErrorList& errors, const WString& code, Ptr<workflow::WfExpression> statement)
+		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& types, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
 			bool failed = false;
 			auto module = Workflow_CreateEmptyModule(context);
@@ -702,12 +702,20 @@ WorkflowCompileVisitor
 								{
 									if (binder->RequirePrecompile())
 									{
-										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, propertyInfo, expressionCode, errors))
+										auto instancePropertyInfo = info.typeInfo.typeDescriptor->GetPropertyByName(info.propertyName.ToString(), true);
+										if (instancePropertyInfo)
 										{
-											if (Workflow_ValidateStatement(context, typeInfos, errors, expressionCode, statement))
+											if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
 											{
-												statements->statements.Add(statement);
+												if (Workflow_ValidateStatement(context, typeInfos, errors, expressionCode, statement))
+												{
+													statements->statements.Add(statement);
+												}
 											}
+										}
+										else
+										{
+											errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 										}
 									}
 								}
@@ -764,12 +772,20 @@ WorkflowCompileVisitor
 								{
 									if (binder->RequirePrecompile())
 									{
-										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, propertyInfo, statementCode, errors))
+										auto instanceEventInfo = info.typeInfo.typeDescriptor->GetEventByName(info.propertyName.ToString(), true);
+										if (instanceEventInfo)
 										{
-											if (Workflow_ValidateStatement(context, typeInfos, errors, statementCode, statement))
+											if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instanceEventInfo, statementCode, errors))
 											{
-												statements->statements.Add(statement);
+												if (Workflow_ValidateStatement(context, typeInfos, errors, statementCode, statement))
+												{
+													statements->statements.Add(statement);
+												}
 											}
+										}
+										else
+										{
+											errors.Add(L"Precompile: Binder \"" + handler->binding.ToString() + L" requires event \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 										}
 									}
 								}
