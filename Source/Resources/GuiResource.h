@@ -67,10 +67,6 @@ Global String Key
 			static GlobalStringKey					_Format;
 			static GlobalStringKey					_Eval;
 			static GlobalStringKey					_Uri;
-			static GlobalStringKey					_Workflow_Assembly_Cache;
-			static GlobalStringKey					_Workflow_Global_Context;
-			static GlobalStringKey					_Shared_Workflow_Assembly_Cache;
-			static GlobalStringKey					_Shared_Workflow_Global_Context;
 			static GlobalStringKey					_ControlTemplate;
 			static GlobalStringKey					_ItemTemplate;
 
@@ -302,43 +298,17 @@ Resource Structure
 		};
 
 /***********************************************************************
-Resource Cache
-***********************************************************************/
-
-		class IGuiResourceCache : public IDescriptable, public Description<IGuiResourceCache>
-		{
-		public:
-			virtual GlobalStringKey					GetCacheTypeName() = 0;
-
-			static void								LoadFromXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
-			static void								SaveToXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
-			static void								LoadFromBinary(stream::internal::Reader& reader, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::List<GlobalStringKey>& sortedKeys = *(collections::List<GlobalStringKey>*)nullptr);
-			static void								SaveToBinary(stream::internal::Writer& writer, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::SortedList<GlobalStringKey>& sortedKeys = *(collections::SortedList<GlobalStringKey>*)nullptr);
-		};
-
-		class IGuiResourceCacheResolver : public IDescriptable, public Description<IGuiResourceCacheResolver>
-		{
-		public:
-			virtual GlobalStringKey					GetCacheTypeName() = 0;
-			virtual bool							Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream) = 0;
-			virtual Ptr<IGuiResourceCache>			Deserialize(stream::IStream& stream) = 0;
-		};
-
-/***********************************************************************
 Resource
 ***********************************************************************/
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
 		class GuiResource : public GuiResourceFolder, public Description<GuiResource>
 		{
-			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>	CacheMap;
 		protected:
 			WString									workingDirectory;
 
 			static void								ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors);
 		public:
-			CacheMap								precompiledCaches;
-
 			/// <summary>Create a resource.</summary>
 			GuiResource();
 			~GuiResource();
@@ -592,14 +562,6 @@ Resource Resolver Manager
 			/// <summary>Get the maximum precompiling pass index.</summary>
 			/// <returns>The maximum precompiling pass index.</returns>
 			virtual vint										GetMaxPrecompilePassIndex() = 0;
-			/// <summary>Get the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
-			/// <returns>The resolver.</returns>
-			/// <param name="type">The cache type.</param>
-			virtual IGuiResourceCacheResolver*					GetCacheResolver(GlobalStringKey cacheTypeName) = 0;
-			/// <summary>Set the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="resolver">The resolver.</param>
-			virtual bool										SetCacheResolver(Ptr<IGuiResourceCacheResolver> cacheResolver) = 0;
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();

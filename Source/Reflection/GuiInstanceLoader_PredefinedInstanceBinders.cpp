@@ -38,18 +38,9 @@ GuiTextInstanceBinderBase
 				return false;
 			}
 
-			void GetRequiredContexts(collections::List<GlobalStringKey>& contextNames)override
-			{
-			}
-
 			void GetExpectedValueTypes(collections::List<description::ITypeDescriptor*>& expectedTypes)override
 			{
 				expectedTypes.Add(stringTypeDescriptor);
-			}
-
-			description::Value GetValue(Ptr<GuiInstanceEnvironment> env, const description::Value& propertyValue)override
-			{
-				return Value();
 			}
 		};
 
@@ -217,11 +208,6 @@ GuiScriptInstanceBinder
 				return true;
 			}
 
-			void GetRequiredContexts(collections::List<GlobalStringKey>& contextNames)override
-			{
-				contextNames.Add(GuiWorkflowCache::CacheContextName);
-			}
-
 			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
 			{
 				auto context = env->scope->bindingContexts[GuiWorkflowCache::CacheContextName].Cast<GuiWorkflowGlobalContext>();
@@ -289,66 +275,45 @@ GuiEvalInstanceBinder
 				return true;
 			}
 
-			description::Value GetValue(Ptr<GuiInstanceEnvironment> env, const description::Value& propertyValue)override
+			WString TranslateExpression(const WString& input)override
 			{
-				if (propertyValue.GetValueType() == Value::Text)
-				{
-					Ptr<WfAssembly> assembly;
-					WString expressionCode = TranslateExpression(propertyValue.GetText());
-					GlobalStringKey cacheKey = GlobalStringKey::Get(L"<att.eval>" + expressionCode);
-					vint cacheIndex = env->context->precompiledCaches.Keys().IndexOf(cacheKey);
-					if (cacheIndex != -1)
-					{
-						assembly = env->context->precompiledCaches.Values()[cacheIndex].Cast<GuiWorkflowCache>()->assembly;
-					}
-					else
-					{
-						types::VariableTypeMap types;
-						Workflow_GetVariableTypes(env, types);
-						assembly = Workflow_CompileExpression(env->context, types, env->scope->errors, expressionCode);
-						env->context->precompiledCaches.Add(cacheKey, new GuiWorkflowCache(assembly));
-					}
+				return input;
+			}
+		};
 
-					if (assembly)
-					{
-						auto globalContext = MakePtr<WfRuntimeGlobalContext>(assembly);
-				
-						try
-						{
-							LoadFunction<void()>(globalContext, L"<initialize>")();
-						}
-						catch (const TypeDescriptorException& ex)
-						{
-							env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
-						}
+/***********************************************************************
+GuiBindInstanceBinder
+***********************************************************************/
 
-						Workflow_SetVariablesForReferenceValues(globalContext, env);
-						vint variableIndex = assembly->variableNames.IndexOf(L"<initialize-data-binding>");
-						auto variable = globalContext->globalVariables->variables[variableIndex];
-						auto proxy = UnboxValue<Ptr<IValueFunctionProxy>>(variable);
-
-						Value translated;
-						try
-						{
-							translated = proxy->Invoke(IValueList::Create());
-						}
-						catch (const TypeDescriptorException& ex)
-						{
-							env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
-						}
-
-						// the global context contains a closure variable <initialize-data-binding> which captured the context
-						// clear all variables to break the circle references
-						globalContext->globalVariables = 0;
-						return translated;
-					}
-				}
-				return Value();
+		class GuiBindInstanceBinder : public GuiScriptInstanceBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Bind;
 			}
 
 			WString TranslateExpression(const WString& input)override
 			{
-				return input;
+				return L"bind(" + input + L")";
+			}
+		};
+
+/***********************************************************************
+GuiFormatInstanceBinder
+***********************************************************************/
+
+		class GuiFormatInstanceBinder : public GuiScriptInstanceBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Format;
+			}
+
+			WString TranslateExpression(const WString& input)override
+			{
+				return L"bind($\"" + input + L"\")";
 			}
 		};
 
@@ -367,10 +332,6 @@ GuiEvalInstanceEventBinder
 			bool RequireInstanceName()override
 			{
 				return true;
-			}
-
-			void GetRequiredContexts(collections::List<GlobalStringKey>& contextNames)override
-			{
 			}
 
 			bool AttachEvent(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)
@@ -420,42 +381,6 @@ GuiEvalInstanceEventBinder
 		};
 
 /***********************************************************************
-GuiBindInstanceBinder
-***********************************************************************/
-
-		class GuiBindInstanceBinder : public GuiScriptInstanceBinder
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Bind;
-			}
-
-			WString TranslateExpression(const WString& input)override
-			{
-				return L"bind(" + input + L")";
-			}
-		};
-
-/***********************************************************************
-GuiFormatInstanceBinder
-***********************************************************************/
-
-		class GuiFormatInstanceBinder : public GuiScriptInstanceBinder
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Format;
-			}
-
-			WString TranslateExpression(const WString& input)override
-			{
-				return L"bind($\"" + input + L"\")";
-			}
-		};
-
-/***********************************************************************
 GuiPredefinedInstanceBindersPlugin
 ***********************************************************************/
 
@@ -485,8 +410,6 @@ GuiPredefinedInstanceBindersPlugin
 				}
 				{
 					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
-
-					manager->AddInstanceBindingContextFactory(new GuiInstanceBindingContextFactory<GuiWorkflowGlobalContext>(GuiWorkflowCache::CacheContextName));
 
 					manager->AddInstanceBinder(new GuiResourceInstanceBinder);
 					manager->AddInstanceBinder(new GuiReferenceInstanceBinder);

@@ -1125,62 +1125,38 @@ Workflow_GetSharedManager
 				if (visitor.dataBindings.Count() > 0 && rootTypeDescriptor)
 				{
 					auto assembly = Workflow_CompileDataBinding(context, visitor.types, rootTypeDescriptor, errors, visitor.dataBindings);
-					context->precompiledCaches.Add(GuiWorkflowCache::CacheContextName, new GuiWorkflowCache(assembly));
+					context->precompiledScript = context;
 				}
 			}
 		}
 
-/***********************************************************************
-GuiWorkflowCache
-***********************************************************************/
-
-		const GlobalStringKey& GuiWorkflowCache::CacheTypeName = GlobalStringKey::_Workflow_Assembly_Cache;
-		const GlobalStringKey& GuiWorkflowCache::CacheContextName = GlobalStringKey::_Workflow_Global_Context;
-
-		GuiWorkflowCache::GuiWorkflowCache()
+		void Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env, types::ErrorList& errors)
 		{
-		}
-
-		GuiWorkflowCache::GuiWorkflowCache(Ptr<workflow::runtime::WfAssembly> _assembly)
-			:assembly(_assembly)
-		{
-		}
-
-		GlobalStringKey GuiWorkflowCache::GetCacheTypeName()
-		{
-			return CacheTypeName;
-		}
-
-/***********************************************************************
-GuiWorkflowCacheResolver
-***********************************************************************/
-
-		GlobalStringKey GuiWorkflowCacheResolver::GetCacheTypeName()
-		{
-			return GuiWorkflowCache::CacheTypeName;
-		}
-
-		bool GuiWorkflowCacheResolver::Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)
-		{
-			if (auto obj = cache.Cast<GuiWorkflowCache>())
+			auto globalContext = MakePtr<WfRuntimeGlobalContext>(env->context->precompiledScript);
+				
+			try
 			{
-				obj->assembly->Serialize(stream);
-				return true;
+				LoadFunction<void()>(globalContext, L"<initialize>")();
 			}
-			else
+			catch (const TypeDescriptorException& ex)
 			{
-				return false;
+				env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
+			}
+
+			Workflow_SetVariablesForReferenceValues(globalContext, env);
+
+			try
+			{
+				LoadFunction<void(Value)>(globalContext, L"<initialize-data-binding>")(env->scope->rootInstance);
+			}
+			catch (const TypeDescriptorException& ex)
+			{
+				env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
 			}
 		}
 
-		Ptr<IGuiResourceCache> GuiWorkflowCacheResolver::Deserialize(stream::IStream& stream)
-		{
-			auto assembly = new WfAssembly(stream);
-			return new GuiWorkflowCache(assembly);
-		}
-
 /***********************************************************************
-Workflow_GetSharedManager
+GuiWorkflowSharedManagerPlugin
 ***********************************************************************/
 
 #undef ERROR_CODE_PREFIX
@@ -1205,9 +1181,6 @@ Workflow_GetSharedManager
 			void AfterLoad()override
 			{
 				sharedManagerPlugin = this;
-
-				auto manager=GetResourceResolverManager();
-				manager->SetCacheResolver(new GuiWorkflowCacheResolver);
 			}
 
 			void Unload()override

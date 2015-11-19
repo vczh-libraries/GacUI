@@ -11,6 +11,7 @@ Interfaces:
 
 #include "../Resources/GuiResource.h"
 #include "InstanceQuery/GuiInstanceQuery_Parser.h"
+#include "../GacWorkflowReferences.h"
 
 namespace vl
 {
@@ -165,7 +166,6 @@ Instance Context
 		{
 		public:
 			typedef collections::List<Ptr<GuiInstanceNamespace>>						NamespaceList;
-			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>	CacheMap;
 
 			struct NamespaceInfo : public Object, public Description<NamespaceInfo>
 			{
@@ -205,7 +205,7 @@ Instance Context
 
 			bool									appliedStyles = false;
 			StyleContextList						styles;
-			CacheMap								precompiledCaches;
+			Ptr<workflow::runtime::WfAssembly>		precompiledScript;
 
 			static void								CollectDefaultAttributes(GuiAttSetterRepr::ValueList& values, Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
 			static void								CollectAttributes(GuiAttSetterRepr::SetteValuerMap& setters, Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);

@@ -65,32 +65,7 @@ WorkflowCompiler (Compile)
 		extern Ptr<workflow::runtime::WfAssembly>			Workflow_CompileDataBinding(Ptr<GuiInstanceContext> context, types::VariableTypeMap& types, description::ITypeDescriptor* thisType, types::ErrorList& errors, collections::List<WorkflowDataBinding>& dataBindings);
 
 		extern void											Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
-
-/***********************************************************************
-GuiWorkflowCache
-***********************************************************************/
-
-		class GuiWorkflowCache : public Object, public IGuiResourceCache
-		{
-		public:
-			static const GlobalStringKey&					CacheTypeName;
-			static const GlobalStringKey&					CacheContextName;
-
-			Ptr<workflow::runtime::WfAssembly>				assembly;
-
-			GuiWorkflowCache();
-			GuiWorkflowCache(Ptr<workflow::runtime::WfAssembly> _assembly);
-
-			GlobalStringKey									GetCacheTypeName()override;
-		};
-
-		class GuiWorkflowCacheResolver : public Object, public IGuiResourceCacheResolver
-		{
-		public:
-			GlobalStringKey									GetCacheTypeName()override;
-			bool											Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)override;
-			Ptr<IGuiResourceCache>							Deserialize(stream::IStream& stream)override;
-		};
+		extern void											Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env, types::ErrorList& errors);
 	}
 }
 
