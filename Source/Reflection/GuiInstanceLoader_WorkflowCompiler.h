@@ -43,12 +43,13 @@ WorkflowCompiler (Compile)
 ***********************************************************************/
 
 		extern Ptr<workflow::WfModule>						Workflow_CreateEmptyModule(Ptr<GuiInstanceContext> context);
+		extern Ptr<workflow::WfModule>						Workflow_CreateModuleWithInitFunction(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfStatement> functionBody);
 
 		extern void											Workflow_CreatePointerVariable(Ptr<workflow::WfModule> module, GlobalStringKey name, description::ITypeDescriptor* type);
-		extern void											Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeInfoMap& types);
+		extern void											Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeInfoMap& typeInfos);
 		extern void											Workflow_SetVariablesForReferenceValues(Ptr<workflow::runtime::WfRuntimeGlobalContext> context, Ptr<GuiInstanceEnvironment> env);
 
-		extern bool											Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& types, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
+		extern bool											Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
 		extern WString										Workflow_ModuleToString(Ptr<workflow::WfModule> module);
 		extern void											Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
 		extern void											Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env);

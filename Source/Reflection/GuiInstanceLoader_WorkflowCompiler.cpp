@@ -323,7 +323,7 @@ Workflow_InstallEvalEvent
 		}
 
 /***********************************************************************
-Module
+Workflow_CreateEmptyModule
 ***********************************************************************/
 
 		Ptr<workflow::WfModule> Workflow_CreateEmptyModule(Ptr<GuiInstanceContext> context)
@@ -393,6 +393,35 @@ Module
 			}
 			return module;
 		}
+		
+		Ptr<workflow::WfModule> Workflow_CreateModuleWithInitFunction(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfStatement> functionBody)
+		{
+			auto module = Workflow_CreateEmptyModule(context);
+			Workflow_CreateVariablesForReferenceValues(module, typeInfos);
+			Workflow_CreatePointerVariable(module, GlobalStringKey::Get(L"<this>"), rootTypeDescriptor);
+
+			auto thisParam = MakePtr<WfFunctionArgument>();
+			thisParam->name.value = L"<this>";
+			{
+				Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
+				elementType->SetTypeDescriptor(rootTypeDescriptor);
+
+				Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::RawPtr);
+				pointerType->SetElementType(elementType);
+
+				thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
+			}
+
+			auto func = MakePtr<WfFunctionDeclaration>();
+			func->anonymity = WfFunctionAnonymity::Named;
+			func->name.value = L"<initialize-instance>";
+			func->arguments.Add(thisParam);
+			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+			func->statement = functionBody;
+			module->declarations.Add(func);
+
+			return module;
+		}
 
 /***********************************************************************
 Variable
@@ -419,12 +448,12 @@ Variable
 			module->declarations.Add(var);
 		}
 		
-		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeInfoMap& types)
+		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeInfoMap& typeInfos)
 		{
-			for (vint i = 0; i < types.Count(); i++)
+			for (vint i = 0; i < typeInfos.Count(); i++)
 			{
-				auto key = types.Keys()[i];
-				auto value = types.Values()[i].typeDescriptor;
+				auto key = typeInfos.Keys()[i];
+				auto value = typeInfos.Values()[i].typeDescriptor;
 				Workflow_CreatePointerVariable(module, key, value);
 			}
 		}
@@ -445,20 +474,10 @@ Variable
 Workflow_ValidateStatement
 ***********************************************************************/
 
-		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& types, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
+		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
 			bool failed = false;
-			auto module = Workflow_CreateEmptyModule(context);
-			Workflow_CreateVariablesForReferenceValues(module, types);
-			{
-				auto func = MakePtr<WfFunctionDeclaration>();
-				func->anonymity = WfFunctionAnonymity::Named;
-				func->name.value = L"<function>";
-				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-				func->statement = statement;
-
-				module->declarations.Add(func);
-			}
+			auto module = Workflow_CreateModuleWithInitFunction(context, typeInfos, rootTypeDescriptor, statement);
 
 			Workflow_GetSharedManager()->Clear(true, true);
 			Workflow_GetSharedManager()->AddModule(module);
@@ -636,12 +655,14 @@ WorkflowCompileVisitor
 		public:
 			Ptr<GuiInstanceContext>				context;
 			types::VariableTypeInfoMap&			typeInfos;
+			description::ITypeDescriptor*		rootTypeDescriptor;
 			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
 
-			WorkflowCompileVisitor(Ptr<GuiInstanceContext> _context, types::VariableTypeInfoMap& _typeInfos, types::ErrorList& _errors)
+			WorkflowCompileVisitor(Ptr<GuiInstanceContext> _context, types::VariableTypeInfoMap& _typeInfos, description::ITypeDescriptor* _rootTypeDescriptor, types::ErrorList& _errors)
 				:context(_context)
 				, typeInfos(_typeInfos)
+				, rootTypeDescriptor(_rootTypeDescriptor)
 				, errors(_errors)
 				, statements(MakePtr<WfBlockStatement>())
 			{
@@ -695,7 +716,7 @@ WorkflowCompileVisitor
 								expressionCode = obj->text;
 							}
 
-							if (setter->binding != GlobalStringKey::Empty)
+							if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 							{
 								auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
 								if (binder)
@@ -707,21 +728,21 @@ WorkflowCompileVisitor
 										{
 											if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
 											{
-												if (Workflow_ValidateStatement(context, typeInfos, errors, expressionCode, statement))
+												if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
 												{
-													statements->statements.Add(statement);
+													statements->statements.Add(statement);	
 												}
 											}
 										}
 										else
 										{
-											errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+											errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 										}
 									}
 								}
 								else
 								{
-									errors.Add(L"Precompile: Cannot find binder \"" + setter->binding.ToString() + L" for property \"" + propertyName.ToString() + L"\" in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+									errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
 								}
 							}
 						}
@@ -777,7 +798,7 @@ WorkflowCompileVisitor
 										{
 											if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instanceEventInfo, statementCode, errors))
 											{
-												if (Workflow_ValidateStatement(context, typeInfos, errors, statementCode, statement))
+												if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, statementCode, statement))
 												{
 													statements->statements.Add(statement);
 												}
@@ -785,13 +806,13 @@ WorkflowCompileVisitor
 										}
 										else
 										{
-											errors.Add(L"Precompile: Binder \"" + handler->binding.ToString() + L" requires event \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+											errors.Add(L"Precompile: Binder \"" + handler->binding.ToString() + L"\" requires event \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 										}
 									}
 								}
 								else
 								{
-									errors.Add(L"Precompile: Cannot find binder \"" + handler->binding.ToString() + L" for event \"" + propertyName.ToString() + L"\" in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+									errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"" + handler->binding.ToString() + L"\" cannot be found.");
 								}
 							}
 						}
@@ -853,33 +874,9 @@ Workflow_PrecompileInstanceContext
 
 			if (errors.Count() == 0)
 			{
-				auto module = Workflow_CreateEmptyModule(context);
-				Workflow_CreateVariablesForReferenceValues(module, typeInfos);
-				Workflow_CreatePointerVariable(module, GlobalStringKey::Get(L"<this>"), rootTypeDescriptor);
-
-				auto thisParam = MakePtr<WfFunctionArgument>();
-				thisParam->name.value = L"<this>";
-				{
-					Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					elementType->SetTypeDescriptor(rootTypeDescriptor);
-
-					Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::RawPtr);
-					pointerType->SetElementType(elementType);
-
-					thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
-				}
-
-				auto func = MakePtr<WfFunctionDeclaration>();
-				func->anonymity = WfFunctionAnonymity::Named;
-				func->name.value = L"<initialize-data-binding>";
-				func->arguments.Add(thisParam);
-				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-
-				WorkflowCompileVisitor visitor(context, typeInfos, errors);
+				WorkflowCompileVisitor visitor(context, typeInfos, rootTypeDescriptor, errors);
 				context->instance->Accept(&visitor);
-				
-				func->statement = visitor.statements;
-				module->declarations.Add(func);
+				auto module = Workflow_CreateModuleWithInitFunction(context, typeInfos, rootTypeDescriptor, visitor.statements);
 
 				Workflow_GetSharedManager()->Clear(true, true);
 				Workflow_GetSharedManager()->AddModule(module);
@@ -924,7 +921,7 @@ Workflow_RunPrecompiledScript
 
 			try
 			{
-				LoadFunction<void(Value)>(globalContext, L"<initialize-data-binding>")(env->scope->rootInstance);
+				LoadFunction<void(Value)>(globalContext, L"<initialize-instance>")(env->scope->rootInstance);
 			}
 			catch (const TypeDescriptorException& ex)
 			{

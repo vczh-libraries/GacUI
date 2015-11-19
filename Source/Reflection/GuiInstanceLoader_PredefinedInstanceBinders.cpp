@@ -142,18 +142,13 @@ GuiReferenceInstanceBinder
 		};
 
 /***********************************************************************
-GuiEvalInstanceBinder
+GuiPrecompilableInstanceBinder
 ***********************************************************************/
 
-		class GuiEvalInstanceBinder : public GuiTextInstanceBinderBase
+		class GuiPrecompilableInstanceBinder : public GuiTextInstanceBinderBase
 		{
 		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Eval;
-			}
-
-			bool ApplicableToConstructorArgument()override
+			bool RequireInstanceName()override
 			{
 				return true;
 			}
@@ -165,7 +160,25 @@ GuiEvalInstanceBinder
 
 			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
 			{
-				CHECK_ERROR(env->context->precompiledScript, L"Instance with -eval property binder should be precompiled.");
+				CHECK_ERROR(env->context->precompiledScript, L"Instance using this binder should be precompiled before using.");
+				return true;
+			}
+		};
+
+/***********************************************************************
+GuiEvalInstanceBinder
+***********************************************************************/
+
+		class GuiEvalInstanceBinder : public GuiPrecompilableInstanceBinder
+		{
+		public:
+			GlobalStringKey GetBindingName()override
+			{
+				return GlobalStringKey::_Eval;
+			}
+
+			bool ApplicableToConstructorArgument()override
+			{
 				return true;
 			}
 			
@@ -183,30 +196,19 @@ GuiEvalInstanceBinder
 GuiBindInstanceBinder
 ***********************************************************************/
 
-		class GuiBindInstanceBinder : public GuiTextInstanceBinderBase
+		class GuiBindInstanceBinder : public GuiPrecompilableInstanceBinder
 		{
 		public:
 			GlobalStringKey GetBindingName()override
 			{
 				return GlobalStringKey::_Bind;
 			}
-
-			bool RequirePrecompile()override
-			{
-				return true;
-			}
-
-			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
-			{
-				CHECK_ERROR(env->context->precompiledScript, L"Instance with -bind property binder should be precompiled.");
-				return true;
-			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				if (auto expression = Workflow_ParseExpression(L"bind(" + code + L")", errors))
 				{
-					return Workflow_InstallEvalProperty(variableName, propertyInfo, expression);
+					return Workflow_InstallBindProperty(variableName, propertyInfo, expression);
 				}
 				return 0;
 			}
@@ -216,30 +218,19 @@ GuiBindInstanceBinder
 GuiFormatInstanceBinder
 ***********************************************************************/
 
-		class GuiFormatInstanceBinder : public GuiTextInstanceBinderBase
+		class GuiFormatInstanceBinder : public GuiPrecompilableInstanceBinder
 		{
 		public:
 			GlobalStringKey GetBindingName()override
 			{
 				return GlobalStringKey::_Format;
 			}
-
-			bool RequirePrecompile()override
-			{
-				return true;
-			}
-
-			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
-			{
-				CHECK_ERROR(env->context->precompiledScript, L"Instance with -format property binder should be precompiled.");
-				return true;
-			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				if (auto expression = Workflow_ParseExpression(L"bind($\"" + code + L"\")", errors))
 				{
-					return Workflow_InstallEvalProperty(variableName, propertyInfo, expression);
+					return Workflow_InstallBindProperty(variableName, propertyInfo, expression);
 				}
 				return 0;
 			}
