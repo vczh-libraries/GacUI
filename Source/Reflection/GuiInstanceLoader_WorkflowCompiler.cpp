@@ -418,29 +418,13 @@ Variable
 
 			module->declarations.Add(var);
 		}
-
-		void Workflow_GetVariableTypes(Ptr<GuiInstanceEnvironment> env, types::VariableTypeMap& types)
-		{
-			FOREACH_INDEXER(GlobalStringKey, name, index, env->scope->referenceValues.Keys())
-			{
-				auto value = env->scope->referenceValues.Values()[index];
-				if (value.GetTypeDescriptor())
-				{
-					types.Add(name, value.GetTypeDescriptor());
-				}
-				else
-				{
-					types.Add(name, GetTypeDescriptor<Value>());
-				}
-			}
-		}
 		
-		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeMap& types)
+		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeInfoMap& types)
 		{
 			for (vint i = 0; i < types.Count(); i++)
 			{
 				auto key = types.Keys()[i];
-				auto value = types.Values()[i];
+				auto value = types.Values()[i].typeDescriptor;
 				Workflow_CreatePointerVariable(module, key, value);
 			}
 		}
@@ -458,43 +442,20 @@ Variable
 		}
 
 /***********************************************************************
-Workflow_ValidateExpression
+Workflow_ValidateStatement
 ***********************************************************************/
 
-		bool Workflow_ValidateExpression(Ptr<GuiInstanceContext> context, types::VariableTypeMap& types, types::ErrorList& errors, IGuiInstanceLoader::PropertyInfo& bindingTarget, const WString& expressionCode, Ptr<workflow::WfExpression>& expression)
+		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& types, types::ErrorList& errors, const WString& code, Ptr<workflow::WfExpression>& statement)
 		{
-			expression = Workflow_ParseExpression(expressionCode, errors);
-			if (!expression)
-			{
-				errors.Add(ERROR_CODE_PREFIX L"Failed to parse the workflow expression.");
-				return false;
-			}
-
 			bool failed = false;
-			auto td = bindingTarget.typeInfo.typeDescriptor;
-			auto propertyInfo = td->GetPropertyByName(bindingTarget.propertyName.ToString(), true);
-			if (!propertyInfo)
-			{
-				errors.Add(ERROR_CODE_PREFIX L"Property \"" + bindingTarget.propertyName.ToString() + L"\" does not exist in type \"" + td->GetTypeName() + L"\".");
-				failed = true;
-			}
-			else if (!propertyInfo->IsReadable() || !propertyInfo->IsWritable())
-			{
-				errors.Add(ERROR_CODE_PREFIX L"Property \"" + bindingTarget.propertyName.ToString() + L"\" of type \"" + td->GetTypeName() + L"\" should be both readable and writable.");
-				failed = true;
-			}
-
 			auto module = Workflow_CreateEmptyModule(context);
 			Workflow_CreateVariablesForReferenceValues(module, types);
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				func->anonymity = WfFunctionAnonymity::Named;
-				func->name.value = L"<initialize-data-binding>";
+				func->name.value = L"<function>";
 				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-
-				auto stat = MakePtr<WfExpressionStatement>();
-				stat->expression = expression;
-				func->statement = stat;
+				func->statement = statement;
 
 				module->declarations.Add(func);
 			}
@@ -504,266 +465,19 @@ Workflow_ValidateExpression
 			Workflow_GetSharedManager()->Rebuild(true);
 			if (Workflow_GetSharedManager()->errors.Count() > 0)
 			{
-				errors.Add(ERROR_CODE_PREFIX L"Failed to analyze the workflow expression \"" + expressionCode + L"\".");
+				errors.Add(ERROR_CODE_PREFIX L"Failed to analyze the workflow code \"" + code + L"\".");
 				FOREACH(Ptr<parsing::ParsingError>, error, Workflow_GetSharedManager()->errors)
 				{
 					errors.Add(error->errorMessage);
 				}
 				failed = true;
-			}
-			else if (propertyInfo)
-			{
-				auto bind = expression.Cast<WfBindExpression>();
-				auto result = Workflow_GetSharedManager()->expressionResolvings[(bind ? bind->expression : expression).Obj()];
-				if (result.type)
-				{
-					ITypeInfo* propertyType = propertyInfo->GetReturn();
-					if (propertyInfo->GetSetter() && propertyInfo->GetSetter()->GetParameterCount() == 1)
-					{
-						propertyType = propertyInfo->GetSetter()->GetParameter(0)->GetType();
-					}
-					if (!CanConvertToType(result.type.Obj(), propertyType, false))
-					{
-						errors.Add(ERROR_CODE_PREFIX L"Failed to analyze the workflow expression \"" + expressionCode + L"\".");
-						errors.Add(
-							WfErrors::ExpressionCannotImplicitlyConvertToType(expression.Obj(), result.type.Obj(), propertyType)
-							->errorMessage);
-						failed = true;
-					}
-				}
 			}
 
 			return !failed;
 		}
 
 /***********************************************************************
-Workflow_CompileExpression
-***********************************************************************/
-
-		Ptr<workflow::runtime::WfAssembly> Workflow_CompileExpression(Ptr<GuiInstanceContext> context, types::VariableTypeMap& types, types::ErrorList& errors, const WString& expressionCode)
-		{
-			auto expression = Workflow_ParseExpression(expressionCode, errors);
-			if (!expression)
-			{
-				errors.Add(ERROR_CODE_PREFIX L"Failed to parse the workflow expression \"" + expressionCode + L"\".");
-				return 0;
-			}
-
-			auto module = Workflow_CreateEmptyModule(context);
-			Workflow_CreateVariablesForReferenceValues(module, types);
-			{
-				auto lambda = MakePtr<WfOrderedLambdaExpression>();
-				lambda->body = expression;
-
-				auto var = MakePtr<WfVariableDeclaration>();
-				var->name.value = L"<initialize-data-binding>";
-				var->expression = lambda;
-
-				module->declarations.Add(var);
-			}
-
-			Workflow_GetSharedManager()->Clear(true, true);
-			Workflow_GetSharedManager()->AddModule(module);
-			Workflow_GetSharedManager()->Rebuild(true);
-			if (Workflow_GetSharedManager()->errors.Count() > 0)
-			{
-				errors.Add(ERROR_CODE_PREFIX L"Failed to analyze the workflow expression \"" + expressionCode + L"\".");
-				FOREACH(Ptr<parsing::ParsingError>, error, Workflow_GetSharedManager()->errors)
-				{
-					errors.Add(error->errorMessage);
-				}
-				return 0;
-			}
-
-			return GenerateAssembly(Workflow_GetSharedManager());
-		}
-
-/***********************************************************************
-Workflow_CompileEventHandler
-***********************************************************************/
-
-		Ptr<workflow::runtime::WfAssembly> Workflow_CompileEventHandler(Ptr<GuiInstanceContext> context, types::VariableTypeMap& types, types::ErrorList& errors, IGuiInstanceLoader::PropertyInfo& bindingTarget, const WString& statementCode)
-		{
-			auto statement = Workflow_ParseStatement(statementCode, errors);
-			if (!statement)
-			{
-				errors.Add(ERROR_CODE_PREFIX L"Failed to parse the workflow statement.");
-				return 0;
-			}
-
-			auto module = Workflow_CreateEmptyModule(context);
-			Workflow_CreateVariablesForReferenceValues(module, types);
-			{
-				auto func = MakePtr<WfFunctionDeclaration>();
-				func->anonymity = WfFunctionAnonymity::Named;
-				func->name.value = L"<event-handler>";
-				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-
-				auto td = bindingTarget.typeInfo.typeDescriptor;
-				auto eventInfo = td->GetEventByName(bindingTarget.propertyName.ToString(), true);
-				if (eventInfo)
-				{
-					vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
-					bool standardName = false;
-					if (count == 2)
-					{
-						auto senderType = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(1)->GetTypeDescriptor();
-						auto argumentType = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(2)->GetTypeDescriptor();
-						if (senderType == GetTypeDescriptor<GuiGraphicsComposition>())
-						{
-							auto expectedType = GetTypeDescriptor<GuiEventArgs>();
-							List<ITypeDescriptor*> types;
-							types.Add(argumentType);
-							for (vint i = 0; i < types.Count(); i++)
-							{
-								auto type = types[i];
-								if (type == expectedType)
-								{
-									standardName = true;
-									break;
-								}
-								vint baseCount = type->GetBaseTypeDescriptorCount();
-								for (vint j = 0; j < baseCount; j++)
-								{
-									auto baseType = type->GetBaseTypeDescriptor(j);
-									if (!types.Contains(baseType))
-									{
-										types.Add(baseType);
-									}
-								}
-							}
-						}
-					}
-
-					if (standardName)
-					{
-						{
-							auto arg = MakePtr<WfFunctionArgument>();
-							arg->name.value = L"sender";
-							arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(1));
-							func->arguments.Add(arg);
-						}
-						{
-							auto arg = MakePtr<WfFunctionArgument>();
-							arg->name.value = L"arguments";
-							arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(2));
-							func->arguments.Add(arg);
-						}
-					}
-					else
-					{
-						auto type = TypeInfoRetriver<Value>::CreateTypeInfo();
-						for (vint i = 0; i < count; i++)
-						{
-							auto arg = MakePtr<WfFunctionArgument>();
-							arg->name.value = L"<argument>" + itow(i + 1);
-							arg->type = GetTypeFromTypeInfo(type.Obj());
-							func->arguments.Add(arg);
-						}
-					}
-				}
-						
-				auto block = MakePtr<WfBlockStatement>();
-				block->statements.Add(statement);
-				func->statement = block;
-
-				module->declarations.Add(func);
-			}
-
-			Workflow_GetSharedManager()->Clear(true, true);
-			Workflow_GetSharedManager()->AddModule(module);
-			Workflow_GetSharedManager()->Rebuild(true);
-			if (Workflow_GetSharedManager()->errors.Count() > 0)
-			{
-				errors.Add(ERROR_CODE_PREFIX L"Failed to analyze the workflow statement \"" + statementCode + L"\".");
-				FOREACH(Ptr<parsing::ParsingError>, error, Workflow_GetSharedManager()->errors)
-				{
-					errors.Add(error->errorMessage);
-				}
-				return 0;
-			}
-
-			return GenerateAssembly(Workflow_GetSharedManager());
-		}
-
-/***********************************************************************
-Workflow_CompileDataBinding
-***********************************************************************/
-
-		WString Workflow_ModuleToString(Ptr<workflow::WfModule> module)
-		{
-			stream::MemoryStream stream;
-			{
-				stream::StreamWriter writer(stream);
-				WfPrint(module, L"", writer);
-			}
-			stream.SeekFromBegin(0);
-			stream::StreamReader reader(stream);
-			return reader.ReadToEnd();
-		}
-
-		Ptr<workflow::runtime::WfAssembly> Workflow_CompileDataBinding(Ptr<GuiInstanceContext> context, types::VariableTypeMap& types, description::ITypeDescriptor* thisType, types::ErrorList& errors, collections::List<WorkflowDataBinding>& dataBindings)
-		{
-			auto module = Workflow_CreateEmptyModule(context);
-			Workflow_CreateVariablesForReferenceValues(module, types);
-			Workflow_CreatePointerVariable(module, GlobalStringKey::Get(L"<this>"), thisType);
-
-			auto thisParam = MakePtr<WfFunctionArgument>();
-			thisParam->name.value = L"<this>";
-			{
-				Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-				elementType->SetTypeDescriptor(thisType);
-
-				Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::RawPtr);
-				pointerType->SetElementType(elementType);
-
-				thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
-			}
-
-			auto func = MakePtr<WfFunctionDeclaration>();
-			func->anonymity = WfFunctionAnonymity::Named;
-			func->name.value = L"<initialize-data-binding>";
-			func->arguments.Add(thisParam);
-			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-
-			auto block = MakePtr<WfBlockStatement>();
-			func->statement = block;
-			module->declarations.Add(func);
-			
-
-			FOREACH(WorkflowDataBinding, dataBinding, dataBindings)
-			{
-				if (dataBinding.bindExpression.Cast<WfBindExpression>())
-				{
-					block->statements.Add(Workflow_InstallBindProperty(dataBinding.variableName, dataBinding.propertyInfo, dataBinding.bindExpression));
-				}
-				else if (dataBinding.bindExpression)
-				{
-					block->statements.Add(Workflow_InstallEvalProperty(dataBinding.variableName, dataBinding.propertyInfo, dataBinding.bindExpression));
-				}
-			}
-
-			Workflow_GetSharedManager()->Clear(true, true);
-			Workflow_GetSharedManager()->AddModule(module);
-			Workflow_GetSharedManager()->Rebuild(true);
-			WString moduleCode = Workflow_ModuleToString(module);
-
-			if (Workflow_GetSharedManager()->errors.Count() > 0)
-			{
-				errors.Add(ERROR_CODE_PREFIX L"Unexpected errors are encountered when initializing data binding.");
-				FOREACH(Ptr<parsing::ParsingError>, error, Workflow_GetSharedManager()->errors)
-				{
-					errors.Add(error->errorMessage);
-				}
-				errors.Add(ERROR_CODE_PREFIX L"Print code for reference:");
-				errors.Add(moduleCode);
-				return 0;
-			}
-			return GenerateAssembly(Workflow_GetSharedManager());
-		}
-
-/***********************************************************************
-Workflow_GetSharedManager
+WorkflowReferenceNamesVisitor
 ***********************************************************************/
 
 		class WorkflowReferenceNamesVisitor : public Object, public GuiValueRepr::IVisitor
@@ -913,27 +627,24 @@ Workflow_GetSharedManager
 			}
 		};
 
+/***********************************************************************
+WorkflowCompileVisitor
+***********************************************************************/
+
 		class WorkflowCompileVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
 			Ptr<GuiInstanceContext>				context;
 			types::VariableTypeInfoMap&			typeInfos;
+			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
-			
-			types::VariableTypeMap				types;
-			List<WorkflowDataBinding>			dataBindings;
 
 			WorkflowCompileVisitor(Ptr<GuiInstanceContext> _context, types::VariableTypeInfoMap& _typeInfos, types::ErrorList& _errors)
 				:context(_context)
 				, typeInfos(_typeInfos)
 				, errors(_errors)
+				, statements(MakePtr<WfBlockStatement>())
 			{
-				for (vint i = 0; i < typeInfos.Count(); i++)
-				{
-					auto key = typeInfos.Keys()[i];
-					auto value = typeInfos.Values()[i];
-					types.Add(key, value.typeDescriptor);
-				}
 			}
 
 			void Visit(GuiTextRepr* repr)override
@@ -1087,6 +798,22 @@ Workflow_GetSharedManager
 			}
 		};
 
+/***********************************************************************
+Workflow_PrecompileInstanceContext
+***********************************************************************/
+
+		WString Workflow_ModuleToString(Ptr<workflow::WfModule> module)
+		{
+			stream::MemoryStream stream;
+			{
+				stream::StreamWriter writer(stream);
+				WfPrint(module, L"", writer);
+			}
+			stream.SeekFromBegin(0);
+			stream::StreamReader reader(stream);
+			return reader.ReadToEnd();
+		}
+
 		void Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
 		{
 			ITypeDescriptor* rootTypeDescriptor = 0;
@@ -1119,16 +846,59 @@ Workflow_GetSharedManager
 
 			if (errors.Count() == 0)
 			{
+				auto module = Workflow_CreateEmptyModule(context);
+				Workflow_CreateVariablesForReferenceValues(module, typeInfos);
+				Workflow_CreatePointerVariable(module, GlobalStringKey::Get(L"<this>"), rootTypeDescriptor);
+
+				auto thisParam = MakePtr<WfFunctionArgument>();
+				thisParam->name.value = L"<this>";
+				{
+					Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
+					elementType->SetTypeDescriptor(rootTypeDescriptor);
+
+					Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::RawPtr);
+					pointerType->SetElementType(elementType);
+
+					thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
+				}
+
+				auto func = MakePtr<WfFunctionDeclaration>();
+				func->anonymity = WfFunctionAnonymity::Named;
+				func->name.value = L"<initialize-data-binding>";
+				func->arguments.Add(thisParam);
+				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+
 				WorkflowCompileVisitor visitor(context, typeInfos, errors);
 				context->instance->Accept(&visitor);
+				
+				func->statement = visitor.statements;
+				module->declarations.Add(func);
 
-				if (visitor.dataBindings.Count() > 0 && rootTypeDescriptor)
+				Workflow_GetSharedManager()->Clear(true, true);
+				Workflow_GetSharedManager()->AddModule(module);
+				Workflow_GetSharedManager()->Rebuild(true);
+				WString moduleCode = Workflow_ModuleToString(module);
+
+				if (Workflow_GetSharedManager()->errors.Count() == 0)
 				{
-					auto assembly = Workflow_CompileDataBinding(context, visitor.types, rootTypeDescriptor, errors, visitor.dataBindings);
-					context->precompiledScript = context;
+					context->precompiledScript = GenerateAssembly(Workflow_GetSharedManager());
+				}
+				else
+				{
+					errors.Add(ERROR_CODE_PREFIX L"Unexpected errors are encountered when initializing data binding.");
+					FOREACH(Ptr<parsing::ParsingError>, error, Workflow_GetSharedManager()->errors)
+					{
+						errors.Add(error->errorMessage);
+					}
+					errors.Add(ERROR_CODE_PREFIX L"Print code for reference:");
+					errors.Add(moduleCode);
 				}
 			}
 		}
+
+/***********************************************************************
+Workflow_RunPrecompiledScript
+***********************************************************************/
 
 		void Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env)
 		{
