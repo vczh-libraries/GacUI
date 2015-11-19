@@ -445,7 +445,7 @@ Variable
 Workflow_ValidateStatement
 ***********************************************************************/
 
-		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& types, types::ErrorList& errors, const WString& code, Ptr<workflow::WfExpression>& statement)
+		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& types, types::ErrorList& errors, const WString& code, Ptr<workflow::WfExpression> statement)
 		{
 			bool failed = false;
 			auto module = Workflow_CreateEmptyModule(context);
@@ -704,7 +704,10 @@ WorkflowCompileVisitor
 									{
 										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, propertyInfo, expressionCode, errors))
 										{
-											statements->statements.Add(statement);
+											if (Workflow_ValidateStatement(context, typeInfos, errors, expressionCode, statement))
+											{
+												statements->statements.Add(statement);
+											}
 										}
 									}
 								}
@@ -763,7 +766,10 @@ WorkflowCompileVisitor
 									{
 										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, propertyInfo, statementCode, errors))
 										{
-											statements->statements.Add(statement);
+											if (Workflow_ValidateStatement(context, typeInfos, errors, statementCode, statement))
+											{
+												statements->statements.Add(statement);
+											}
 										}
 									}
 								}
