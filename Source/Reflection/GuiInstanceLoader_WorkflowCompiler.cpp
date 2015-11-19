@@ -695,49 +695,22 @@ WorkflowCompileVisitor
 								expressionCode = obj->text;
 							}
 
-							if (setter->binding == GlobalStringKey::_Bind || setter->binding == GlobalStringKey::_Format)
+							if (setter->binding != GlobalStringKey::Empty)
 							{
-								WorkflowDataBinding dataBinding;
-								dataBinding.variableName = repr->instanceName;
-
-								if (setter->binding == GlobalStringKey::_Bind)
+								auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
+								if (binder)
 								{
-									expressionCode = L"bind(" + expressionCode + L")";
-								}
-								else if (setter->binding == GlobalStringKey::_Format)
-								{
-									expressionCode = L"bind($\"" + expressionCode + L"\")";
-								}
-
-								Ptr<WfExpression> expression;
-								if (Workflow_ValidateExpression(context, types, errors, info, expressionCode, expression))
-								{
-									dataBinding.propertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
-									dataBinding.bindExpression = expression;
-								}
-
-								dataBindings.Add(dataBinding);
-							}
-							else if (setter->binding == GlobalStringKey::_Eval)
-							{
-								if (propertyInfo->scope != GuiInstancePropertyInfo::Property)
-								{
-									WString cacheKey = L"<att.eval>" + expressionCode;
-									auto assembly = Workflow_CompileExpression(context, types, errors, expressionCode);
-									context->precompiledCaches.Add(GlobalStringKey::Get(cacheKey), new GuiWorkflowCache(assembly));
+									if (binder->RequirePrecompile())
+									{
+										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, propertyInfo, expressionCode, errors))
+										{
+											statements->statements.Add(statement);
+										}
+									}
 								}
 								else
 								{
-									WorkflowDataBinding dataBinding;
-									dataBinding.variableName = repr->instanceName;
-									Ptr<WfExpression> expression;
-									if (Workflow_ValidateExpression(context, types, errors, info, expressionCode, expression))
-									{
-										dataBinding.propertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
-										dataBinding.bindExpression = expression;
-									}
-
-									dataBindings.Add(dataBinding);
+									errors.Add(L"Precompile: Cannot find binder \"" + setter->binding.ToString() + L" for property \"" + propertyName.ToString() + L"\" in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 								}
 							}
 						}
@@ -781,11 +754,23 @@ WorkflowCompileVisitor
 						{
 							WString statementCode = handler->value;
 
-							if (handler->binding == GlobalStringKey::_Eval)
+							if (handler->binding != GlobalStringKey::Empty)
 							{
-								WString cacheKey = L"<ev.eval><" + repr->instanceName.ToString() + L"><" + propertyName.ToString() + L">" + statementCode;
-								auto assembly = Workflow_CompileEventHandler(context, types, errors, info, statementCode);
-								context->precompiledCaches.Add(GlobalStringKey::Get(cacheKey), new GuiWorkflowCache(assembly));
+								auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
+								if (binder)
+								{
+									if (binder->RequirePrecompile())
+									{
+										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, propertyInfo, statementCode, errors))
+										{
+											statements->statements.Add(statement);
+										}
+									}
+								}
+								else
+								{
+									errors.Add(L"Precompile: Cannot find binder \"" + handler->binding.ToString() + L" for event \"" + propertyName.ToString() + L"\" in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+								}
 							}
 						}
 					}

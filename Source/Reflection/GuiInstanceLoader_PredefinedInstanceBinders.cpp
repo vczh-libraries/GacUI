@@ -38,6 +38,11 @@ GuiTextInstanceBinderBase
 				return false;
 			}
 
+			bool RequirePrecompile()override
+			{
+				return false;
+			}
+
 			void GetExpectedValueTypes(collections::List<description::ITypeDescriptor*>& expectedTypes)override
 			{
 				expectedTypes.Add(stringTypeDescriptor);
@@ -153,9 +158,9 @@ GuiEvalInstanceBinder
 				return true;
 			}
 
-			WString TranslateExpression(const WString& input)
+			bool RequirePrecompile()override
 			{
-				return input;
+				return true;
 			}
 
 			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
@@ -186,6 +191,11 @@ GuiBindInstanceBinder
 				return GlobalStringKey::_Bind;
 			}
 
+			bool RequirePrecompile()override
+			{
+				return true;
+			}
+
 			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
 			{
 				CHECK_ERROR(env->context->precompiledScript, L"Instance with -bind property binder should be precompiled.");
@@ -212,6 +222,11 @@ GuiFormatInstanceBinder
 			GlobalStringKey GetBindingName()override
 			{
 				return GlobalStringKey::_Format;
+			}
+
+			bool RequirePrecompile()override
+			{
+				return true;
 			}
 
 			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
@@ -243,6 +258,11 @@ GuiEvalInstanceEventBinder
 			}
 
 			bool RequireInstanceName()override
+			{
+				return true;
+			}
+
+			bool RequirePrecompile()override
 			{
 				return true;
 			}
