@@ -42,6 +42,11 @@ GuiTextInstanceBinderBase
 			{
 				expectedTypes.Add(stringTypeDescriptor);
 			}
+
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				return 0;
+			}
 		};
 
 /***********************************************************************
@@ -132,137 +137,10 @@ GuiReferenceInstanceBinder
 		};
 
 /***********************************************************************
-GuiWorkflowGlobalContext
-***********************************************************************/
-
-		class GuiWorkflowGlobalContext : public Object, public IGuiInstanceBindingContext
-		{
-		public:
-			List<WorkflowDataBinding>		dataBindings;
-			Ptr<WfRuntimeGlobalContext>		globalContext;
-
-			GuiWorkflowGlobalContext()
-			{
-			}
-
-			GlobalStringKey GetContextName()override
-			{
-				return GuiWorkflowCache::CacheContextName;
-			}
-
-			void Initialize(Ptr<GuiInstanceEnvironment> env)override
-			{
-				Ptr<WfAssembly> assembly;
-				vint cacheIndex = env->context->precompiledCaches.Keys().IndexOf(GetContextName());
-				if (cacheIndex != -1)
-				{
-					assembly = env->context->precompiledCaches.Values()[cacheIndex].Cast<GuiWorkflowCache>()->assembly;
-				}
-				else
-				{
-					types::VariableTypeMap types;
-					ITypeDescriptor* thisType = env->scope->rootInstance.GetTypeDescriptor();
-					Workflow_GetVariableTypes(env, types);
-					assembly = Workflow_CompileDataBinding(env->context, types, thisType, env->scope->errors, dataBindings);
-					env->context->precompiledCaches.Add(GetContextName(), new GuiWorkflowCache(assembly));
-				}
-
-				if (assembly)
-				{
-					globalContext = new WfRuntimeGlobalContext(assembly);
-				
-					try
-					{
-						LoadFunction<void()>(globalContext, L"<initialize>")();
-					}
-					catch (const TypeDescriptorException& ex)
-					{
-						env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
-					}
-
-					Workflow_SetVariablesForReferenceValues(globalContext, env);
-
-					try
-					{
-						LoadFunction<void(Value)>(globalContext, L"<initialize-data-binding>")(env->scope->rootInstance);
-					}
-					catch (const TypeDescriptorException& ex)
-					{
-						env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
-					}
-				}
-			}
-		};
-
-/***********************************************************************
-GuiScriptInstanceBinder
-***********************************************************************/
-
-		class GuiScriptInstanceBinder : public GuiTextInstanceBinderBase
-		{
-		public:
-			virtual WString TranslateExpression(const WString& input) = 0;
-
-			bool RequireInstanceName()override
-			{
-				return true;
-			}
-
-			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
-			{
-				auto context = env->scope->bindingContexts[GuiWorkflowCache::CacheContextName].Cast<GuiWorkflowGlobalContext>();
-				WorkflowDataBinding dataBinding;
-				dataBinding.variableName = instanceName;
-
-				if (env->context->precompiledCaches.Keys().Contains(GuiWorkflowCache::CacheContextName))
-				{
-					goto SUCCESS;
-				}
-				if (propertyValue.propertyValue.GetValueType() == Value::Text)
-				{
-					WString expressionCode = TranslateExpression(propertyValue.propertyValue.GetText());
-					Ptr<WfExpression> expression;
-					types::VariableTypeMap types;
-					Workflow_GetVariableTypes(env, types);
-					if (Workflow_ValidateExpression(env->context, types, env->scope->errors, propertyValue, expressionCode, expression))
-					{
-						auto expr = expression;
-						if (auto bind = expr.Cast<WfBindExpression>())
-						{
-							bind->expandedExpression = 0;
-							expr = bind->expression;
-						}
-						if (auto format = expr.Cast<WfFormatExpression>())
-						{
-							format->expandedExpression = 0;
-						}
-						
-						auto td = propertyValue.typeInfo.typeDescriptor;
-						auto propertyInfo = td->GetPropertyByName(propertyValue.propertyName.ToString(), true);
-						dataBinding.propertyInfo = propertyInfo;
-						dataBinding.bindExpression = expression;
-						goto SUCCESS;
-					}
-					else
-					{
-						goto FAILED;
-					}
-				}
-
-			FAILED:
-				context->dataBindings.Add(dataBinding);
-				return false;
-			SUCCESS:
-				context->dataBindings.Add(dataBinding);
-				return true;
-			}
-		};
-
-/***********************************************************************
 GuiEvalInstanceBinder
 ***********************************************************************/
 
-		class GuiEvalInstanceBinder : public GuiScriptInstanceBinder
+		class GuiEvalInstanceBinder : public GuiTextInstanceBinderBase
 		{
 		public:
 			GlobalStringKey GetBindingName()override
@@ -275,9 +153,24 @@ GuiEvalInstanceBinder
 				return true;
 			}
 
-			WString TranslateExpression(const WString& input)override
+			WString TranslateExpression(const WString& input)
 			{
 				return input;
+			}
+
+			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
+			{
+				CHECK_ERROR(env->context->precompiledScript, L"Instance with -eval property binder should be precompiled.");
+				return true;
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				if (auto expression = Workflow_ParseExpression(code, errors))
+				{
+					return Workflow_InstallEvalProperty(variableName, propertyInfo, expression);
+				}
+				return 0;
 			}
 		};
 
@@ -285,7 +178,7 @@ GuiEvalInstanceBinder
 GuiBindInstanceBinder
 ***********************************************************************/
 
-		class GuiBindInstanceBinder : public GuiScriptInstanceBinder
+		class GuiBindInstanceBinder : public GuiTextInstanceBinderBase
 		{
 		public:
 			GlobalStringKey GetBindingName()override
@@ -293,9 +186,19 @@ GuiBindInstanceBinder
 				return GlobalStringKey::_Bind;
 			}
 
-			WString TranslateExpression(const WString& input)override
+			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
 			{
-				return L"bind(" + input + L")";
+				CHECK_ERROR(env->context->precompiledScript, L"Instance with -bind property binder should be precompiled.");
+				return true;
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				if (auto expression = Workflow_ParseExpression(L"bind(" + code + L")", errors))
+				{
+					return Workflow_InstallEvalProperty(variableName, propertyInfo, expression);
+				}
+				return 0;
 			}
 		};
 
@@ -303,7 +206,7 @@ GuiBindInstanceBinder
 GuiFormatInstanceBinder
 ***********************************************************************/
 
-		class GuiFormatInstanceBinder : public GuiScriptInstanceBinder
+		class GuiFormatInstanceBinder : public GuiTextInstanceBinderBase
 		{
 		public:
 			GlobalStringKey GetBindingName()override
@@ -311,9 +214,19 @@ GuiFormatInstanceBinder
 				return GlobalStringKey::_Format;
 			}
 
-			WString TranslateExpression(const WString& input)override
+			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
 			{
-				return L"bind($\"" + input + L"\")";
+				CHECK_ERROR(env->context->precompiledScript, L"Instance with -format property binder should be precompiled.");
+				return true;
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				if (auto expression = Workflow_ParseExpression(L"bind($\"" + code + L"\")", errors))
+				{
+					return Workflow_InstallEvalProperty(variableName, propertyInfo, expression);
+				}
+				return 0;
 			}
 		};
 
@@ -336,47 +249,17 @@ GuiEvalInstanceEventBinder
 
 			bool AttachEvent(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)
 			{
-				auto handler = propertyValue.propertyValue;
-				if (handler.GetValueType() == Value::Text)
+				CHECK_ERROR(env->context->precompiledScript, L"Instance with -eval event binder should be precompiled.");
+				return true;
+			}
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors)
+			{
+				if (auto statement = Workflow_ParseStatement(code, errors))
 				{
-					Ptr<WfAssembly> assembly;
-					WString statementCode = handler.GetText();
-					GlobalStringKey cacheKey = GlobalStringKey::Get(L"<ev.eval><" + instanceName.ToString() + L"><" + propertyValue.propertyName.ToString() + L">" + statementCode);
-					vint cacheIndex = env->context->precompiledCaches.Keys().IndexOf(cacheKey);
-					if (cacheIndex != -1)
-					{
-						assembly = env->context->precompiledCaches.Values()[cacheIndex].Cast<GuiWorkflowCache>()->assembly;
-					}
-					else
-					{
-						types::VariableTypeMap types;
-						Workflow_GetVariableTypes(env, types);
-						assembly = Workflow_CompileEventHandler(env->context, types, env->scope->errors, propertyValue, statementCode);
-						env->context->precompiledCaches.Add(cacheKey, new GuiWorkflowCache(assembly));
-					}
-
-					if (assembly)
-					{
-						auto globalContext = MakePtr<WfRuntimeGlobalContext>(assembly);
-				
-						try
-						{
-							LoadFunction<void()>(globalContext, L"<initialize>")();
-						}
-						catch (const TypeDescriptorException& ex)
-						{
-							env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
-						}
-
-						Workflow_SetVariablesForReferenceValues(globalContext, env);
-						auto eventHandler = LoadFunction(globalContext, L"<event-handler>");
-						handler = BoxValue(eventHandler);
-
-						propertyValue.propertyValue = handler;
-						return loader->SetEventValue(propertyValue);
-					}
+					return Workflow_InstallEvalEvent(variableName, eventInfo, statement);
 				}
-				return false;
+				return 0;
 			}
 		};
 
