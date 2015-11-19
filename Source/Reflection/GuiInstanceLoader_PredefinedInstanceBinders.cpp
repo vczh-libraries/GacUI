@@ -55,7 +55,7 @@ GuiTextInstanceBinderBase
 		};
 
 /***********************************************************************
-GuiResourceInstanceBinder
+GuiResourceInstanceBinder (uri)
 ***********************************************************************/
 
 		class GuiResourceInstanceBinder : public GuiTextInstanceBinderBase
@@ -110,7 +110,7 @@ GuiResourceInstanceBinder
 		};
 
 /***********************************************************************
-GuiReferenceInstanceBinder
+GuiReferenceInstanceBinder (ref)
 ***********************************************************************/
 
 		class GuiReferenceInstanceBinder : public GuiTextInstanceBinderBase
@@ -166,7 +166,7 @@ GuiPrecompilableInstanceBinder
 		};
 
 /***********************************************************************
-GuiEvalInstanceBinder
+GuiEvalInstanceBinder (eval)
 ***********************************************************************/
 
 		class GuiEvalInstanceBinder : public GuiPrecompilableInstanceBinder
@@ -193,7 +193,7 @@ GuiEvalInstanceBinder
 		};
 
 /***********************************************************************
-GuiBindInstanceBinder
+GuiBindInstanceBinder (bind)
 ***********************************************************************/
 
 		class GuiBindInstanceBinder : public GuiPrecompilableInstanceBinder
@@ -215,7 +215,7 @@ GuiBindInstanceBinder
 		};
 
 /***********************************************************************
-GuiFormatInstanceBinder
+GuiFormatInstanceBinder (format)
 ***********************************************************************/
 
 		class GuiFormatInstanceBinder : public GuiPrecompilableInstanceBinder
@@ -237,7 +237,7 @@ GuiFormatInstanceBinder
 		};
 
 /***********************************************************************
-GuiEvalInstanceEventBinder
+GuiEvalInstanceEventBinder (eval)
 ***********************************************************************/
 
 		class GuiEvalInstanceEventBinder : public Object, public IGuiInstanceEventBinder

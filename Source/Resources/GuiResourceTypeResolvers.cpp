@@ -15,7 +15,7 @@ namespace vl
 		using namespace stream;
 
 /***********************************************************************
-Image Type Resolver
+Image Type Resolver (Image)
 ***********************************************************************/
 
 		class GuiResourceImageTypeResolver
@@ -118,7 +118,7 @@ Image Type Resolver
 		};
 
 /***********************************************************************
-Text Type Resolver
+Text Type Resolver (Text)
 ***********************************************************************/
 
 		class GuiResourceTextTypeResolver
@@ -196,7 +196,7 @@ Text Type Resolver
 		};
 
 /***********************************************************************
-Xml Type Resolver
+Xml Type Resolver (Xml)
 ***********************************************************************/
 
 		class GuiResourceXmlTypeResolver
@@ -292,7 +292,7 @@ Xml Type Resolver
 		};
 
 /***********************************************************************
-Doc Type Resolver
+Doc Type Resolver (Doc)
 ***********************************************************************/
 
 		class GuiResourceDocTypeResolver

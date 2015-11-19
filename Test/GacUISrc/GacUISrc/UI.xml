@@ -1,4 +1,24 @@
 <Resource>
+  <Script name="SharedScript">
+    <Workflow>
+      <![CDATA[
+        module sharedscript;
+        
+        class InitValue
+        {
+          static func GetFirstNumber() : int
+          {
+            return 5;
+          }
+          
+          static func GetSecondNumber() : int
+          {
+            return 6;
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow">
       <ref.Parameter Name="ViewModel" Class="demo::IViewModel"/>
@@ -30,7 +50,7 @@
             </Label>
           </Cell>
           <Cell Site="row:0 column:1 columnSpan:3">
-            <SinglelineTextBox ref.Name="text1" Text="0">
+            <SinglelineTextBox ref.Name="text1" Text-eval="InitValue::GetFirstNumber()">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </SinglelineTextBox>
           </Cell>
@@ -41,7 +61,7 @@
             </Label>
           </Cell>
           <Cell Site="row:1 column:1 columnSpan:3">
-            <SinglelineTextBox ref.Name="text2" Text="0">
+            <SinglelineTextBox ref.Name="text2" Text-eval="InitValue::GetSecondNumber()">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </SinglelineTextBox>
           </Cell>

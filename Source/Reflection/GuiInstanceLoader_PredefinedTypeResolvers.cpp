@@ -19,7 +19,7 @@ namespace vl
 #define ERROR_CODE_PREFIX L"================================================================"
 
 /***********************************************************************
-Instance Type Resolver
+Instance Type Resolver (Instance)
 ***********************************************************************/
 
 		class GuiResourceInstanceTypeResolver
@@ -110,7 +110,7 @@ Instance Type Resolver
 		};
 
 /***********************************************************************
-Instance Style Type Resolver
+Instance Style Type Resolver (InstanceStyle)
 ***********************************************************************/
 
 		class GuiResourceInstanceStyleResolver
@@ -164,7 +164,7 @@ Instance Style Type Resolver
 		};
 
 /***********************************************************************
-Shared Script Type Resolver
+Shared Script Type Resolver (Script)
 ***********************************************************************/
 
 		class GuiResourceSharedScriptTypeResolver
