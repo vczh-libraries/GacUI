@@ -784,10 +784,6 @@ GuiInstanceContext
 							context->states.Add(state);
 						}
 					}
-					else if (element->name.value == L"ref.Caches")
-					{
-						IGuiResourceCache::LoadFromXml(element, context->precompiledCaches);
-					}
 					else if (!context->instance)
 					{
 						context->instance=LoadCtor(element, errors);
@@ -922,14 +918,6 @@ GuiInstanceContext
 				}
 			}
 
-			if (serializePrecompiledResource && precompiledCaches.Count() > 0)
-			{
-				auto xmlCaches = MakePtr<XmlElement>();
-				xmlCaches->name.value = L"ref.Caches";
-				xmlInstance->subNodes.Add(xmlCaches);
-				IGuiResourceCache::SaveToXml(xmlCaches, precompiledCaches);
-			}
-
 			instance->FillXml(xmlInstance, serializePrecompiledResource);
 
 			auto doc = MakePtr<XmlDocument>();
@@ -1034,7 +1022,6 @@ GuiInstanceContext
 					context->states.Add(state);
 				}
 			}
-			IGuiResourceCache::LoadFromBinary(reader, context->precompiledCaches, sortedKeys);
 
 			return context;
 		}
@@ -1116,8 +1103,6 @@ GuiInstanceContext
 					writer << nameIndex << typeName << value;
 				}
 			}
-			
-			IGuiResourceCache::SaveToBinary(writer, precompiledCaches, sortedKeys);
 		}
 
 		void GuiInstanceContext::CollectUsedKey(collections::List<GlobalStringKey>& keys)
@@ -1144,12 +1129,6 @@ GuiInstanceContext
 			for (vint i = 0; i < states.Count(); i++)
 			{
 				keys.Add(states[i]->name);
-			}
-
-			for (vint i = 0; i < precompiledCaches.Count(); i++)
-			{
-				keys.Add(precompiledCaches.Keys()[i]);
-				keys.Add(precompiledCaches.Values()[i]->GetCacheTypeName());
 			}
 		}
 

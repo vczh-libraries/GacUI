@@ -167,72 +167,6 @@ Instance Style Type Resolver
 Shared Script Type Resolver
 ***********************************************************************/
 
-		class GuiSharedWorkflowCache : public Object, public IGuiResourceCache
-		{
-		public:
-			static const GlobalStringKey&					CacheTypeName;
-			static const GlobalStringKey&					CacheContextName;
-
-			List<WString>									moduleCodes;
-			Ptr<WfAssembly>									assembly;
-			Ptr<WfRuntimeGlobalContext>						globalContext;
-
-			GuiSharedWorkflowCache()
-			{
-			}
-
-			GuiSharedWorkflowCache(Ptr<WfAssembly> _assembly)
-				:assembly(_assembly)
-			{
-				Initialize();
-			}
-
-			GlobalStringKey GetCacheTypeName()override
-			{
-				return CacheTypeName;
-			}
-
-			void Initialize()
-			{
-				if (!globalContext)
-				{
-					globalContext = new WfRuntimeGlobalContext(assembly);
-					LoadFunction<void()>(globalContext, L"<initialize>")();
-				}
-			}
-		};
-
-		const GlobalStringKey& GuiSharedWorkflowCache::CacheTypeName = GlobalStringKey::_Shared_Workflow_Assembly_Cache;
-		const GlobalStringKey& GuiSharedWorkflowCache::CacheContextName = GlobalStringKey::_Shared_Workflow_Global_Context;
-
-		class GuiSharedWorkflowCacheResolver : public Object, public IGuiResourceCacheResolver 
-		{
-		public:
-			GlobalStringKey GetCacheTypeName()override
-			{
-				return GuiSharedWorkflowCache::CacheTypeName;
-			}
-
-			bool Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream)override
-			{
-				if (auto obj = cache.Cast<GuiSharedWorkflowCache>())
-				{
-					obj->assembly->Serialize(stream);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			Ptr<IGuiResourceCache> Deserialize(stream::IStream& stream)override
-			{
-				auto assembly = new WfAssembly(stream);
-				return new GuiSharedWorkflowCache(assembly);
-			}
-		};
-
 		class GuiResourceSharedScriptTypeResolver
 			: public Object
 			, public IGuiResourceTypeResolver
@@ -268,56 +202,36 @@ Shared Script Type Resolver
 					{
 						if (obj->language == L"Workflow")
 						{
-							Ptr<GuiSharedWorkflowCache> cache;
-							auto key = GuiSharedWorkflowCache::CacheContextName;
-							auto index = rootResource->precompiledCaches.Keys().IndexOf(key);
-
-							if (index == -1)
-							{
-								cache = new GuiSharedWorkflowCache;
-								rootResource->precompiledCaches.Add(key, cache);
-							}
-							else
-							{
-								cache = rootResource->precompiledCaches.Values()[index].Cast<GuiSharedWorkflowCache>();
-							}
+							/*
 							cache->moduleCodes.Add(obj->code);
+							*/
 						}
 					}
 				}
 				else if (passIndex == 1)
 				{
-					Ptr<GuiSharedWorkflowCache> cache;
-					auto key = GuiSharedWorkflowCache::CacheContextName;
-					auto index = rootResource->precompiledCaches.Keys().IndexOf(key);
+					/*
+					auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
+					List<WString> moduleCodes;
+					List<Ptr<ParsingError>> scriptErrors;
+					auto assembly = Compile(table, moduleCodes, scriptErrors);
 
-					if (index != -1)
+					if (scriptErrors.Count() > 0)
 					{
-						auto cache = rootResource->precompiledCaches.Values()[index].Cast<GuiSharedWorkflowCache>();
-						if (cache->moduleCodes.Count() > 0)
+						errors.Add(ERROR_CODE_PREFIX L"Failed to parse the shared workflow script");
+						FOREACH(Ptr<ParsingError>, error, scriptErrors)
 						{
-							auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
-							List<Ptr<ParsingError>> scriptErrors;
-							cache->assembly = Compile(table, cache->moduleCodes, scriptErrors);
-							cache->moduleCodes.Clear();
-
-							if (scriptErrors.Count() > 0)
-							{
-								errors.Add(ERROR_CODE_PREFIX L"Failed to parse the shared workflow script");
-								FOREACH(Ptr<ParsingError>, error, scriptErrors)
-								{
-									errors.Add(
-										L"Row: " + itow(error->codeRange.start.row + 1) +
-										L", Column: " + itow(error->codeRange.start.column + 1) +
-										L", Message: " + error->errorMessage);
-								}
-							}
-							else
-							{
-								cache->Initialize();
-							}
+							errors.Add(
+								L"Row: " + itow(error->codeRange.start.row + 1) +
+								L", Column: " + itow(error->codeRange.start.column + 1) +
+								L", Message: " + error->errorMessage);
 						}
 					}
+					else
+					{
+						cache->Initialize();
+					}
+					*/
 				}
 			}
 
@@ -376,7 +290,6 @@ Shared Script Type Resolver
 				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
 				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
 				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
-				manager->SetCacheResolver(new GuiSharedWorkflowCacheResolver);
 			}
 
 			void Unload()override

@@ -24,18 +24,14 @@ namespace vl
 Instance Environment
 ***********************************************************************/
 
-		class IGuiInstanceBindingContext;
-
 		class GuiInstanceContextScope : public Object, public Description<GuiInstanceContextScope>
 		{
 			typedef collections::Dictionary<GlobalStringKey, description::Value>				ValueMap;
 			typedef collections::List<WString>													ErrorList;
-			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiInstanceBindingContext>>	BindingContextMap;
 		public:
 			GlobalStringKey							typeName;
 			description::Value						rootInstance;
 			ValueMap								referenceValues;
-			BindingContextMap						bindingContexts;
 			ErrorList								errors;
 		};
 

@@ -65,7 +65,7 @@ WorkflowCompiler (Compile)
 		extern Ptr<workflow::runtime::WfAssembly>			Workflow_CompileDataBinding(Ptr<GuiInstanceContext> context, types::VariableTypeMap& types, description::ITypeDescriptor* thisType, types::ErrorList& errors, collections::List<WorkflowDataBinding>& dataBindings);
 
 		extern void											Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
-		extern void											Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env, types::ErrorList& errors);
+		extern void											Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env);
 	}
 }
 

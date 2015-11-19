@@ -194,6 +194,7 @@ void GuiMain_Resource()
 		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
 		resource->Precompile(errors);
 		CHECK_ERROR(errors.Count() == 0, L"Error");
+		/*
 		{
 			auto xml = resource->SaveToXml(true);
 			FileStream fileStream(L"UI.precompiled.xml", FileStream::WriteOnly);
@@ -208,6 +209,7 @@ void GuiMain_Resource()
 			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
 			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		}
+		*/
 		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
 	}
 	MainWindow window(new IViewModel);

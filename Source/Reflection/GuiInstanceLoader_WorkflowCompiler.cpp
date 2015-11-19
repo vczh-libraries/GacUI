@@ -1130,7 +1130,7 @@ Workflow_GetSharedManager
 			}
 		}
 
-		void Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env, types::ErrorList& errors)
+		void Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env)
 		{
 			auto globalContext = MakePtr<WfRuntimeGlobalContext>(env->context->precompiledScript);
 				
