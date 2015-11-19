@@ -190,14 +190,10 @@ GuiWorkflowGlobalContext
 					}
 
 					Workflow_SetVariablesForReferenceValues(globalContext, env);
-					{
-						vint index = assembly->variableNames.IndexOf(L"<this>");
-						globalContext->globalVariables->variables[index] = env->scope->rootInstance;
-					}
 
 					try
 					{
-						LoadFunction<void()>(globalContext, L"<initialize-data-binding>")();
+						LoadFunction<void(Value)>(globalContext, L"<initialize-data-binding>")(env->scope->rootInstance);
 					}
 					catch (const TypeDescriptorException& ex)
 					{

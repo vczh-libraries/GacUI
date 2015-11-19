@@ -10,7 +10,6 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCOMPILER
 
 #include "GuiInstanceLoader.h"
-#include "../GacWorkflowReferences.h"
 
 namespace vl
 {
@@ -26,7 +25,22 @@ namespace vl
 		
 
 /***********************************************************************
-WorkflowCompiler
+WorkflowCompiler (Parser)
+***********************************************************************/
+		
+		extern Ptr<workflow::WfExpression>					Workflow_ParseExpression(const WString& code, types::ErrorList& errors);
+		extern Ptr<workflow::WfStatement>					Workflow_ParseStatement(const WString& code, types::ErrorList& errors);
+
+/***********************************************************************
+WorkflowCompiler (Installation)
+***********************************************************************/
+
+		extern Ptr<workflow::WfStatement>					Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
+		extern Ptr<workflow::WfStatement>					Workflow_InstallEvalProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> evalExpression);
+		extern Ptr<workflow::WfStatement>					Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
+
+/***********************************************************************
+WorkflowCompiler (Compile)
 ***********************************************************************/
 
 		extern Ptr<workflow::WfModule>						Workflow_CreateEmptyModule(Ptr<GuiInstanceContext> context);

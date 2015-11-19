@@ -12,6 +12,7 @@ Interfaces:
 #include "../Controls/GuiApplication.h"
 #include "../Controls/Styles/GuiThemeStyleFactory.h"
 #include "GuiInstanceRepresentation.h"
+#include "../GacWorkflowReferences.h"
 
 namespace vl
 {
@@ -182,52 +183,15 @@ Instance Loader
 Instance Binder
 ***********************************************************************/
 
-		class IGuiInstanceBindingContext : public IDescriptable, public Description<IGuiInstanceBindingContext>
-		{
-		public:
-			virtual GlobalStringKey					GetContextName() = 0;
-			virtual void							Initialize(Ptr<GuiInstanceEnvironment> env) = 0;
-		};
-
-		class IGuiInstanceBindingContextFactory : public IDescriptable, public Description<IGuiInstanceBindingContextFactory>
-		{
-		public:
-			virtual GlobalStringKey					GetContextName() = 0;
-			virtual Ptr<IGuiInstanceBindingContext>	CreateContext() = 0;
-		};
-
-		template<typename T>
-		class GuiInstanceBindingContextFactory : public IGuiInstanceBindingContextFactory
-		{
-		protected:
-			GlobalStringKey							contextName;
-		public:
-			GuiInstanceBindingContextFactory(GlobalStringKey _contextName)
-				:contextName(_contextName)
-			{
-			}
-
-			GlobalStringKey GetContextName()override
-			{
-				return contextName;
-			}
-
-			Ptr<IGuiInstanceBindingContext> CreateContext()override
-			{
-				return new T;
-			}
-		};
-
 		class IGuiInstanceBinder : public IDescriptable, public Description<IGuiInstanceBinder>
 		{
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							ApplicableToConstructorArgument() = 0;
 			virtual bool							RequireInstanceName() = 0;
-			virtual void							GetRequiredContexts(collections::List<GlobalStringKey>& contextNames) = 0;
 			virtual void							GetExpectedValueTypes(collections::List<description::ITypeDescriptor*>& expectedTypes) = 0;
-			virtual description::Value				GetValue(Ptr<GuiInstanceEnvironment> env, const description::Value& propertyValue) = 0;
 			virtual bool							SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue) = 0;
+			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code);
 		};
 
 		class IGuiInstanceEventBinder : public IDescriptable, public Description<IGuiInstanceEventBinder>
@@ -235,8 +199,8 @@ Instance Binder
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							RequireInstanceName() = 0;
-			virtual void							GetRequiredContexts(collections::List<GlobalStringKey>& contextNames) = 0;
 			virtual bool							AttachEvent(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue) = 0;
+			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code);
 		};
 
 /***********************************************************************
@@ -246,8 +210,6 @@ Instance Loader Manager
 		class IGuiInstanceLoaderManager : public IDescriptable, public Description<IGuiInstanceLoaderManager>
 		{
 		public:
-			virtual bool								AddInstanceBindingContextFactory(Ptr<IGuiInstanceBindingContextFactory> factory) = 0;
-			virtual IGuiInstanceBindingContextFactory*	GetInstanceBindingContextFactory(GlobalStringKey contextName) = 0;
 			virtual bool								AddInstanceBinder(Ptr<IGuiInstanceBinder> binder) = 0;
 			virtual IGuiInstanceBinder*					GetInstanceBinder(GlobalStringKey bindingName) = 0;
 			virtual bool								AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder) = 0;
