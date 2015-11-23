@@ -566,7 +566,6 @@ Workflow_CreateEmptyModule
 		{
 			auto module = Workflow_CreateEmptyModule(context);
 			Workflow_CreateVariablesForReferenceValues(module, typeInfos);
-			Workflow_CreatePointerVariable(module, GlobalStringKey::Get(L"<this>"), rootTypeDescriptor);
 
 			auto thisParam = MakePtr<WfFunctionArgument>();
 			thisParam->name.value = L"<this>";

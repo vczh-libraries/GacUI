@@ -53,15 +53,6 @@ Helper Functions Declarations
 			const GlobalStringKey& dependerName
 			);
 
-		void InitializeInstanceFromConstructor(
-			Ptr<GuiInstanceEnvironment> env,
-			GuiConstructorRepr* ctor,
-			IGuiInstanceLoader* instanceLoader,
-			GlobalStringKey typeName,
-			description::Value instance,
-			bool deserialized
-			);
-
 		namespace visitors
 		{
 
@@ -416,6 +407,18 @@ FillInstance
 			GlobalStringKey typeName
 			)
 		{
+			if (attSetter->instanceName != GlobalStringKey::Empty)
+			{
+				if (env->scope->referenceValues.Keys().Contains(attSetter->instanceName))
+				{
+					env->scope->errors.Add(L"Parameter \"" + attSetter->instanceName.ToString() + L"\" conflict with an existing named object.");
+				}
+				else
+				{
+					env->scope->referenceValues.Add(attSetter->instanceName, createdInstance);
+				}
+			}
+
 			IGuiInstanceLoader::TypeInfo typeInfo(typeName, createdInstance.GetTypeDescriptor());
 			// reverse loop to set the default property (name == L"") after all other properties
 			for (vint i = attSetter->setters.Count() - 1; i >= 0; i--)
@@ -493,7 +496,7 @@ FillInstance
 						propertyValue.propertyName = propertyInfo.propertyName;
 						propertyValue.instanceValue = createdInstance;
 
-						if (auto group = createdInstance.GetTypeDescriptor()->GetMethodGroupByName(handler->value, true))
+						if (auto group = env->scope->rootInstance.GetTypeDescriptor()->GetMethodGroupByName(handler->value, true))
 						{
 							// find a correct method
 							vint count = group->GetMethodCount();
@@ -531,7 +534,7 @@ FillInstance
 
 							if (selectedMethod)
 							{
-								Value proxy = selectedMethod->CreateFunctionProxy(createdInstance);
+								Value proxy = selectedMethod->CreateFunctionProxy(env->scope->rootInstance);
 								if (!proxy.IsNull())
 								{
 									propertyValue.propertyValue = proxy;
@@ -828,7 +831,7 @@ CreateInstance
 					env->scope->rootInstance = instance;
 					ExecuteParameters(env);
 				}
-				InitializeInstanceFromConstructor(env, ctor, instanceLoader, typeName, instance, deserialized);
+				FillInstance(instance, env, ctor, instanceLoader, deserialized, typeName);
 			}
 			return instance;
 		}
@@ -898,31 +901,6 @@ LoadInstance
 InitializeInstance
 ***********************************************************************/
 
-		void InitializeInstanceFromConstructor(
-			Ptr<GuiInstanceEnvironment> env,
-			GuiConstructorRepr* ctor,
-			IGuiInstanceLoader* instanceLoader,
-			GlobalStringKey typeName,
-			description::Value instance,
-			bool deserialized
-			)
-		{
-			// fill all attributes
-			FillInstance(instance, env, ctor, instanceLoader, deserialized, typeName);
-
-			if (ctor->instanceName != GlobalStringKey::Empty)
-			{
-				if (env->scope->referenceValues.Keys().Contains(ctor->instanceName))
-				{
-					env->scope->errors.Add(L"Parameter \"" + ctor->instanceName.ToString() + L"\" conflict with an existing named object.");
-				}
-				else
-				{
-					env->scope->referenceValues.Add(ctor->instanceName, instance);
-				}
-			}
-		}
-
 		Ptr<GuiInstanceContextScope> InitializeInstanceFromContext(
 			Ptr<GuiResourceItem> resource,
 			Ptr<GuiResourcePathResolver> resolver,
@@ -940,7 +918,7 @@ InitializeInstance
 			{
 				env->scope->rootInstance = instance;
 				ExecuteParameters(env);
-				InitializeInstanceFromConstructor(env, ctor, source.loader, source.typeName, instance, false);
+				FillInstance(instance, env, ctor, source.loader, false, source.typeName);
 				Workflow_RunPrecompiledScript(env);
 				return env->scope;
 			}
