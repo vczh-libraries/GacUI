@@ -3249,10 +3249,6 @@ Global String Key
 			static GlobalStringKey					_Format;
 			static GlobalStringKey					_Eval;
 			static GlobalStringKey					_Uri;
-			static GlobalStringKey					_Workflow_Assembly_Cache;
-			static GlobalStringKey					_Workflow_Global_Context;
-			static GlobalStringKey					_Shared_Workflow_Assembly_Cache;
-			static GlobalStringKey					_Shared_Workflow_Global_Context;
 			static GlobalStringKey					_ControlTemplate;
 			static GlobalStringKey					_ItemTemplate;
 
@@ -3425,7 +3421,7 @@ Resource Structure
 			FolderMap								folders;
 
 			void									LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, collections::List<WString>& errors);
-			void									SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent, bool serializePrecompiledResource);
+			void									SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent);
 			void									CollectTypeNames(collections::List<WString>& typeNames);
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::Reader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
 			void									SaveResourceFolderToBinary(stream::internal::Writer& writer, collections::List<WString>& typeNames);
@@ -3484,43 +3480,17 @@ Resource Structure
 		};
 
 /***********************************************************************
-Resource Cache
-***********************************************************************/
-
-		class IGuiResourceCache : public IDescriptable, public Description<IGuiResourceCache>
-		{
-		public:
-			virtual GlobalStringKey					GetCacheTypeName() = 0;
-
-			static void								LoadFromXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
-			static void								SaveToXml(Ptr<parsing::xml::XmlElement> xml, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches);
-			static void								LoadFromBinary(stream::internal::Reader& reader, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::List<GlobalStringKey>& sortedKeys = *(collections::List<GlobalStringKey>*)nullptr);
-			static void								SaveToBinary(stream::internal::Writer& writer, collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>& caches, collections::SortedList<GlobalStringKey>& sortedKeys = *(collections::SortedList<GlobalStringKey>*)nullptr);
-		};
-
-		class IGuiResourceCacheResolver : public IDescriptable, public Description<IGuiResourceCacheResolver>
-		{
-		public:
-			virtual GlobalStringKey					GetCacheTypeName() = 0;
-			virtual bool							Serialize(Ptr<IGuiResourceCache> cache, stream::IStream& stream) = 0;
-			virtual Ptr<IGuiResourceCache>			Deserialize(stream::IStream& stream) = 0;
-		};
-
-/***********************************************************************
 Resource
 ***********************************************************************/
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
 		class GuiResource : public GuiResourceFolder, public Description<GuiResource>
 		{
-			typedef collections::Dictionary<GlobalStringKey, Ptr<IGuiResourceCache>>	CacheMap;
 		protected:
 			WString									workingDirectory;
 
 			static void								ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors);
 		public:
-			CacheMap								precompiledCaches;
-
 			/// <summary>Create a resource.</summary>
 			GuiResource();
 			~GuiResource();
@@ -3544,8 +3514,7 @@ Resource
 
 			/// <summary>Save the resource to xml.</summary>
 			/// <returns>The xml.</returns>
-			/// <param name="serializePrecompiledResource">Set to true to serialize all resources (including image, compiled script, etc) in the xml.</param>
-			Ptr<parsing::xml::XmlDocument>			SaveToXml(bool serializePrecompiledResource);
+			Ptr<parsing::xml::XmlDocument>			SaveToXml();
 			
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The loaded resource.</returns>
@@ -3647,6 +3616,12 @@ Resource Type Resolver
 			/// <summary>Get the type of the resource that load by this resolver.</summary>
 			/// <returns>The type.</returns>
 			virtual WString										GetType() = 0;
+			/// <summary>Test is this resource able to serialize in an XML resource or not.</summary>
+			/// <returns>Returns true if this resource is able to serialize in an XML resource.</returns>
+			virtual bool										XmlSerializable() = 0;
+			/// <summary>Test is this resource able to serialize in a precompiled binary resource or not.</summary>
+			/// <returns>Returns true if this resource is able to serialize in a precompiled binary resource.</returns>
+			virtual bool										StreamSerializable() = 0;
 			
 			/// <summary>Get the precompiler for the type resolver.</summary>
 			/// <returns>Returns null if the type resolve does not support precompiling.</returns>
@@ -3690,8 +3665,7 @@ Resource Type Resolver
 			/// <summary>Serialize a resource to an xml element. This function is called if this type resolver does not have a preload type.</summary>
 			/// <returns>The serialized xml element.</returns>
 			/// <param name="resource">The resource.</param>
-			/// <param name="serializePrecompiledResource">Set to true to serialize the precompiled version of the resource.</param>
-			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource) = 0;
+			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<DescriptableObject> resource) = 0;
 
 			/// <summary>Load a resource for a type inside an xml element.</summary>
 			/// <returns>The resource.</returns>
@@ -3736,8 +3710,7 @@ Resource Type Resolver
 			/// <summary>Serialize a resource to a resource in preload type.</summary>
 			/// <returns>The serialized resource.</returns>
 			/// <param name="resource">The resource.</param>
-			/// <param name="serializePrecompiledResource">Set to true to serialize the precompiled version of the resource.</param>
-			virtual Ptr<DescriptableObject>						Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource) = 0;
+			virtual Ptr<DescriptableObject>						Serialize(Ptr<DescriptableObject> resource) = 0;
 
 			/// <summary>Load a resource for a type from a resource loaded by the preload type resolver.</summary>
 			/// <returns>The resource.</returns>
@@ -3774,14 +3747,6 @@ Resource Resolver Manager
 			/// <summary>Get the maximum precompiling pass index.</summary>
 			/// <returns>The maximum precompiling pass index.</returns>
 			virtual vint										GetMaxPrecompilePassIndex() = 0;
-			/// <summary>Get the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
-			/// <returns>The resolver.</returns>
-			/// <param name="type">The cache type.</param>
-			virtual IGuiResourceCacheResolver*					GetCacheResolver(GlobalStringKey cacheTypeName) = 0;
-			/// <summary>Set the <see cref="IGuiResourceCacheResolver"/> for a cache type.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="resolver">The resolver.</param>
-			virtual bool										SetCacheResolver(Ptr<IGuiResourceCacheResolver> cacheResolver) = 0;
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();

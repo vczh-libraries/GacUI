@@ -318,7 +318,7 @@ Compiled Workflow Type Resolver (Script)
 
 					MemoryStream memoryStream;
 					obj->assembly->Serialize(memoryStream);
-					writer << memoryStream;
+					writer << (IStream&)memoryStream;
 				}
 			}
 
@@ -328,7 +328,7 @@ Compiled Workflow Type Resolver (Script)
 
 				vint type;
 				MemoryStream memoryStream;
-				reader << type << memoryStream;
+				reader << type << (IStream&)memoryStream;
 
 				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
