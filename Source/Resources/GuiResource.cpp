@@ -744,20 +744,20 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, GuiResource* rootResource, vint passIndex, collections::List<WString>& errors)
+		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, collections::List<WString>& errors)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto precompile = typeResolver->Precompile())
 				{
-					precompile->Precompile(item->GetContent(), rootResource, passIndex, resolver, errors);
+					precompile->Precompile(item->GetContent(), context, errors);
 				}
 			}
 
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
-				folder->PrecompileResourceFolder(resolver, rootResource, passIndex, errors);
+				folder->PrecompileResourceFolder(context, errors);
 			}
 		}
 
@@ -886,6 +886,37 @@ GuiResourceFolder
 			return 0;
 		}
 
+		bool GuiResourceFolder::CreateValueByPath(const WString& path, const WString& typeName, Ptr<DescriptableObject> value)
+		{
+			const wchar_t* buffer = path.Buffer();
+			const wchar_t* index = wcschr(buffer, L'\\');
+			if (!index) index = wcschr(buffer, '/');
+
+			if(index)
+			{
+				WString name = path.Sub(0, index - buffer);
+				Ptr<GuiResourceFolder> folder = GetFolder(name);
+				if (!folder)
+				{
+					folder = new GuiResourceFolder;
+					AddFolder(name, folder);
+				}
+				vint start = index - buffer + 1;
+				return folder->CreateValueByPath(path.Sub(start, path.Length() - start), typeName, value);
+			}
+			else
+			{
+				if(GetItem(path))
+				{
+					return false;
+				}
+
+				auto item = new GuiResourceItem;
+				item->SetContent(typeName, value);
+				return AddItem(path, item);
+			}
+		}
+
 /***********************************************************************
 GuiResource
 ***********************************************************************/
@@ -1000,11 +1031,26 @@ GuiResource
 
 		void GuiResource::Precompile(collections::List<WString>& errors)
 		{
+			if (GetFolder(L"Precompiled"))
+			{
+				errors.Add(L"A precompiled resource cannot be compiled again.");
+				return;
+			}
+
+			GuiResourcePrecompileContext context;
+			context.rootResource = this;
+			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
+			context.targetFolder = new GuiResourceFolder;
+			
 			vint maxPass = GetResourceResolverManager()->GetMaxPrecompilePassIndex();
-			Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(this, workingDirectory);
 			for (vint i = 0; i <= maxPass; i++)
 			{
-				PrecompileResourceFolder(resolver, this, i, errors);
+				context.passIndex = i;
+				PrecompileResourceFolder(context, errors);
+			}
+			if (errors.Count() == 0)
+			{
+				AddFolder(L"Precompiled", context.targetFolder);
 			}
 		}
 

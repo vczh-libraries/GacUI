@@ -5,6 +5,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace parsing::xml;
+		using namespace workflow::runtime;
 
 /***********************************************************************
 GuiInstanceSharedScript
@@ -28,6 +29,16 @@ GuiInstanceSharedScript
 			xml->subNodes.Add(cdata);
 
 			return xml;
+		}
+
+/***********************************************************************
+GuiInstanceSharedScript
+***********************************************************************/
+
+		void GuiInstanceCompiledWorkflow::Initialize()
+		{
+			context = new WfRuntimeGlobalContext(assembly);
+			LoadFunction<void()>(context, L"<initialize>")();
 		}
 	}
 }

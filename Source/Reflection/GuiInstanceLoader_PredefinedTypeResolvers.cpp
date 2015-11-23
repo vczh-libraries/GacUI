@@ -57,16 +57,16 @@ Instance Type Resolver (Instance)
 
 			vint GetMaxPassIndex()override
 			{
-				return 2;
+				return 3;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			void Precompile(Ptr<DescriptableObject> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
-				if (passIndex == 2)
+				if (context.passIndex == 3)
 				{
 					if (auto obj = resource.Cast<GuiInstanceContext>())
 					{
-						obj->ApplyStyles(resolver, errors);
+						obj->ApplyStyles(context.resolver, errors);
 						Workflow_PrecompileInstanceContext(obj, errors);
 					}
 				}
@@ -205,27 +205,67 @@ Shared Script Type Resolver (Script)
 				return 1;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			void Precompile(Ptr<DescriptableObject> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
-				if (passIndex == 0)
+				Ptr<GuiInstanceCompiledWorkflow> compiled;
+				switch (context.passIndex)
 				{
-					if (auto obj = resource.Cast<GuiInstanceSharedScript>())
+				case 0:
 					{
-						if (obj->language == L"Workflow")
+						if (auto obj = resource.Cast<GuiInstanceSharedScript>())
 						{
-							/*
-							cache->moduleCodes.Add(obj->code);
-							*/
+							WString path;
+							GuiInstanceCompiledWorkflow::AssemblyType type = GuiInstanceCompiledWorkflow::Shared;
+							if (obj->language == L"Workflow-ViewModel")
+							{
+								path = L"Workflow/ViewModel";
+								type = GuiInstanceCompiledWorkflow::ViewModel;
+							}
+							else if (obj->language == L"Workflow")
+							{
+								path = L"Workflow/Shared";
+							}
+							
+							if (path != L"")
+							{
+								compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+								if (!compiled)
+								{
+									compiled = new GuiInstanceCompiledWorkflow;
+									compiled->type = type;
+									context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
+								}
+							}
+
+							if (compiled)
+							{
+								compiled->code.Add(obj->code);
+							}
 						}
 					}
+					return;
+				case 1:
+					{
+						WString path = L"Workflow/ViewModel";
+						compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+					}
+					break;
+				case 2:
+					{
+						WString path = L"Workflow/Shared";
+						compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+					}
+					break;
+				default:
+					return;
 				}
-				else if (passIndex == 1)
+
+				if (compiled)
 				{
-					/*
 					auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
 					List<WString> moduleCodes;
 					List<Ptr<ParsingError>> scriptErrors;
-					auto assembly = Compile(table, moduleCodes, scriptErrors);
+					compiled->assembly = Compile(table, moduleCodes, scriptErrors);
 
 					if (scriptErrors.Count() > 0)
 					{
@@ -240,9 +280,8 @@ Shared Script Type Resolver (Script)
 					}
 					else
 					{
-						cache->Initialize();
+						compiled->Initialize();
 					}
-					*/
 				}
 			}
 

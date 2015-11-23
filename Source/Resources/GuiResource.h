@@ -177,6 +177,7 @@ Resource Structure
 
 		class DocumentModel;
 		class GuiResourcePathResolver;
+		struct GuiResourcePrecompileContext;
 		
 		/// <summary>Resource item.</summary>
 		class GuiResourceItem : public GuiResourceNodeBase, public Description<GuiResourceItem>
@@ -243,7 +244,7 @@ Resource Structure
 			void									CollectTypeNames(collections::List<WString>& typeNames);
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::Reader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
 			void									SaveResourceFolderToBinary(stream::internal::Writer& writer, collections::List<WString>& typeNames);
-			void									PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, GuiResource* rootResource, vint passIndex, collections::List<WString>& errors);
+			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, collections::List<WString>& errors);
 		public:
 			/// <summary>Create a resource folder.</summary>
 			GuiResourceFolder();
@@ -295,6 +296,12 @@ Resource Structure
 			/// <returns>The resource folder.</returns>
 			/// <param name="path">The path.</param>
 			Ptr<GuiResourceFolder>					GetFolderByPath(const WString& path);
+			/// <summary>Create a contained resource object using a path like "Packages\Application\Name".</summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="path">The path.</param>
+			/// <param name="typeName">The type name of this contained object.</param>
+			/// <param name="value">The contained object.</param>
+			bool									CreateValueByPath(const WString& path, const WString& typeName, Ptr<DescriptableObject> value);
 		};
 
 /***********************************************************************
@@ -455,12 +462,26 @@ Resource Type Resolver
 			virtual IGuiResourceTypeResolver_IndirectLoad*		IndirectLoad(){ return 0; }
 		};
 
+		/// <summary>Provide a context for resource precompiling</summary>
+		struct GuiResourcePrecompileContext
+		{
+			/// <summary>The folder to contain compiled objects.</summary>
+			Ptr<GuiResourceFolder>								targetFolder;
+			/// <summary>The root resource object.</summary>
+			GuiResource*										rootResource;
+			/// <summary>Indicate the pass index of this precompiling pass.</summary>
+			vint												passIndex;
+			/// <summary>The path resolver. This is only for delay load resource.</summary>
+			Ptr<GuiResourcePathResolver>						resolver;
+		};
+
 		/// <summary>
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
 		///			Pass 0: Script		(collect workflow scripts)
-		///			Pass 1: Script		(compile collected workflow scripts)
-		///			Pass 2: Instance
+		///			Pass 1: Script		(compile view model scripts)
+		///			Pass 2: Script		(compile shared scripts)
+		///			Pass 3: Instance
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
 		{
@@ -469,11 +490,10 @@ Resource Type Resolver
 			/// <returns>Returns the maximum pass index. The precompiler doesn't not need to response to every pass.</returns>
 			virtual vint										GetMaxPassIndex() = 0;
 			/// <summary>Precompile the resource item.</summary>
-			/// <param name="resource">The resource.</param>
-			/// <param name="pass">Indicate the pass index of this precompiling pass.</param>
-			/// <param name="resolver">The path resolver. This is only for delay load resource.</param>
+			/// <param name="resource">The resource to precompile.</param>
+			/// <param name="context">The context for precompiling.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual void										Precompile(Ptr<DescriptableObject> resource, GuiResource* rootResource, vint passIndex, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors) = 0;
+			virtual void										Precompile(Ptr<DescriptableObject> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource without a preload type.</summary>

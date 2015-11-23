@@ -37,8 +37,12 @@ namespace vl
 				InstanceClass,
 			};
 
-			AssemblyType								type = AssemblyType::Shared;
-			Ptr<workflow::runtime::WfAssembly>			assembly;
+			AssemblyType									type = AssemblyType::Shared;
+			collections::List<WString>						code;
+			Ptr<workflow::runtime::WfAssembly>				assembly;
+			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
+
+			void											Initialize();
 		};
 	}
 }
