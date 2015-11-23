@@ -239,7 +239,7 @@ Shared Script Type Resolver (Script)
 
 							if (compiled)
 							{
-								compiled->code.Add(obj->code);
+								compiled->codes.Add(obj->code);
 							}
 						}
 					}
@@ -263,9 +263,9 @@ Shared Script Type Resolver (Script)
 				if (compiled)
 				{
 					auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
-					List<WString> moduleCodes;
 					List<Ptr<ParsingError>> scriptErrors;
-					compiled->assembly = Compile(table, moduleCodes, scriptErrors);
+					compiled->assembly = Compile(table, compiled->codes, scriptErrors);
+					compiled->codes.Clear();
 
 					if (scriptErrors.Count() > 0)
 					{
