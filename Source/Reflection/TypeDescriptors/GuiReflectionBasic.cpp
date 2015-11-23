@@ -731,6 +731,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearFolders, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetValueByPath, { L"path" })
 				CLASS_MEMBER_METHOD(GetFolderByPath, { L"path" })
+				CLASS_MEMBER_METHOD(CreateValueByPath, { L"path" _ L"typeName" _ L"value" })
 			END_CLASS_MEMBER(GuiResourceFolder)
 
 			BEGIN_CLASS_MEMBER(GuiResource)
