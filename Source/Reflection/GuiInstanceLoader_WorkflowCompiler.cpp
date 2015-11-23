@@ -412,10 +412,23 @@ Workflow_CreateEmptyModule
 				thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
 			}
 
+			auto resolverParam = MakePtr<WfFunctionArgument>();
+			resolverParam->name.value = L"<resolver>";
+			{
+				Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
+				elementType->SetTypeDescriptor(description::GetTypeDescriptor<GuiResourcePathResolver>());
+
+				Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::RawPtr);
+				pointerType->SetElementType(elementType);
+
+				resolverParam->type = GetTypeFromTypeInfo(pointerType.Obj());
+			}
+
 			auto func = MakePtr<WfFunctionDeclaration>();
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = L"<initialize-instance>";
 			func->arguments.Add(thisParam);
+			func->arguments.Add(resolverParam);
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 			func->statement = functionBody;
 			module->declarations.Add(func);
@@ -551,7 +564,7 @@ WorkflowReferenceNamesVisitor
 						{
 							errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
 						}
-						else if (binder->RequireInstanceName() && repr->instanceName == GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
+						else if (repr->instanceName == GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
 						{
 							auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
 							repr->instanceName = name;
@@ -595,7 +608,7 @@ WorkflowReferenceNamesVisitor
 						{
 							errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"" + handler->binding.ToString() + L"\" cannot be found.");
 						}
-						else if (binder->RequireInstanceName() && repr->instanceName == GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
+						else if (repr->instanceName == GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
 						{
 							auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
 							repr->instanceName = name;
@@ -715,29 +728,30 @@ WorkflowCompileVisitor
 							{
 								expressionCode = obj->text;
 							}
+							else
+							{
+								errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires the text value of property \"" + propertyName.ToString() + L"\".");
+							}
 
 							if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 							{
 								auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
 								if (binder)
 								{
-									if (binder->RequirePrecompile())
+									auto instancePropertyInfo = info.typeInfo.typeDescriptor->GetPropertyByName(info.propertyName.ToString(), true);
+									if (instancePropertyInfo)
 									{
-										auto instancePropertyInfo = info.typeInfo.typeDescriptor->GetPropertyByName(info.propertyName.ToString(), true);
-										if (instancePropertyInfo)
+										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
 										{
-											if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
+											if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
 											{
-												if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
-												{
-													statements->statements.Add(statement);	
-												}
+												statements->statements.Add(statement);	
 											}
 										}
-										else
-										{
-											errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
-										}
+									}
+									else
+									{
+										errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 									}
 								}
 								else
@@ -791,23 +805,20 @@ WorkflowCompileVisitor
 								auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
 								if (binder)
 								{
-									if (binder->RequirePrecompile())
+									auto instanceEventInfo = info.typeInfo.typeDescriptor->GetEventByName(info.propertyName.ToString(), true);
+									if (instanceEventInfo)
 									{
-										auto instanceEventInfo = info.typeInfo.typeDescriptor->GetEventByName(info.propertyName.ToString(), true);
-										if (instanceEventInfo)
+										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instanceEventInfo, statementCode, errors))
 										{
-											if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instanceEventInfo, statementCode, errors))
+											if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, statementCode, statement))
 											{
-												if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, statementCode, statement))
-												{
-													statements->statements.Add(statement);
-												}
+												statements->statements.Add(statement);
 											}
 										}
-										else
-										{
-											errors.Add(L"Precompile: Binder \"" + handler->binding.ToString() + L"\" requires event \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
-										}
+									}
+									else
+									{
+										errors.Add(L"Precompile: Binder \"" + handler->binding.ToString() + L"\" requires event \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 									}
 								}
 								else
@@ -924,7 +935,7 @@ Workflow_RunPrecompiledScript
 
 			try
 			{
-				LoadFunction<void(Value)>(globalContext, L"<initialize-instance>")(env->scope->rootInstance);
+				LoadFunction<void(Value, Ptr<GuiResourcePathResolver>)>(globalContext, L"<initialize-instance>")(env->scope->rootInstance, env->resolver);
 			}
 			catch (const TypeDescriptorException& ex)
 			{

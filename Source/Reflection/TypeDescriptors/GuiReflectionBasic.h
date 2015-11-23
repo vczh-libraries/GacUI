@@ -98,6 +98,7 @@ Type List
 			F(presentation::GuiResourceItem)\
 			F(presentation::GuiResourceFolder)\
 			F(presentation::GuiResource)\
+			F(presentation::GuiResourcePathResolver)\
 			F(presentation::elements::IGuiGraphicsElement)\
 			F(presentation::compositions::GuiGraphicsComposition)\
 			F(presentation::compositions::GuiGraphicsComposition::MinSizeLimitation)\

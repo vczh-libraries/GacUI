@@ -186,10 +186,6 @@ Instance Binder
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							ApplicableToConstructorArgument() = 0;
-			virtual bool							RequireInstanceName() = 0;
-			virtual bool							RequirePrecompile() = 0;
-			virtual void							GetExpectedValueTypes(collections::List<description::ITypeDescriptor*>& expectedTypes) = 0;
-			virtual bool							SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue) = 0;
 			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors) = 0;
 		};
 
@@ -197,9 +193,6 @@ Instance Binder
 		{
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
-			virtual bool							RequireInstanceName() = 0;
-			virtual bool							RequirePrecompile() = 0;
-			virtual bool							AttachEvent(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue) = 0;
 			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors) = 0;
 		};
 

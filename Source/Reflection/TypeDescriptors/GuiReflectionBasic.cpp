@@ -747,6 +747,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetStringByPath, {L"path"})
 			END_CLASS_MEMBER(GuiResource)
 
+			BEGIN_CLASS_MEMBER(GuiResourcePathResolver)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiResourcePathResolver>(Ptr<GuiResource>, WString), {L"resource" _ L"workingDirectory"})
+
+				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path"})
+			END_CLASS_MEMBER(GuiResourcePathResolver)
+
 			BEGIN_CLASS_MEMBER(IGuiGraphicsElement)
 				CLASS_MEMBER_BASE(IDescriptable)
 			END_CLASS_MEMBER(IGuiGraphicsElement)

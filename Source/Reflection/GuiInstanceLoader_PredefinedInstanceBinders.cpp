@@ -15,55 +15,33 @@ namespace vl
 		using namespace controls;
 
 /***********************************************************************
-GuiTextInstanceBinderBase
+GuiResourceInstanceBinder (uri)
 ***********************************************************************/
 
-		class GuiTextInstanceBinderBase : public Object, public IGuiInstanceBinder
+		class GuiResourceInstanceBinder : public Object, public IGuiInstanceBinder
 		{
-		protected:
-			ITypeDescriptor*				stringTypeDescriptor;
 		public:
-			GuiTextInstanceBinderBase()
-				:stringTypeDescriptor(description::GetTypeDescriptor<WString>())
+			GlobalStringKey GetBindingName()override
 			{
+				return GlobalStringKey::_Uri;
 			}
 
 			bool ApplicableToConstructorArgument()override
 			{
 				return false;
 			}
-
-			bool RequireInstanceName()override
-			{
-				return false;
-			}
-
-			bool RequirePrecompile()override
-			{
-				return false;
-			}
-
-			void GetExpectedValueTypes(collections::List<description::ITypeDescriptor*>& expectedTypes)override
-			{
-				expectedTypes.Add(stringTypeDescriptor);
-			}
-
+			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
 			{
+				WString protocol, path;
+				if (!IsResourceUrl(code, protocol, path))
+				{
+					errors.Add(L"Precompile: \"" + code + L"\" is not a valid resource uri.");
+				}
+				else
+				{
+				}
 				return 0;
-			}
-		};
-
-/***********************************************************************
-GuiResourceInstanceBinder (uri)
-***********************************************************************/
-
-		class GuiResourceInstanceBinder : public GuiTextInstanceBinderBase
-		{
-		public:
-			GlobalStringKey GetBindingName()override
-			{
-				return GlobalStringKey::_Uri;
 			}
 
 			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
@@ -113,7 +91,7 @@ GuiResourceInstanceBinder (uri)
 GuiReferenceInstanceBinder (ref)
 ***********************************************************************/
 
-		class GuiReferenceInstanceBinder : public GuiTextInstanceBinderBase
+		class GuiReferenceInstanceBinder : public Object, public IGuiInstanceBinder
 		{
 		public:
 			GlobalStringKey GetBindingName()override
@@ -121,48 +99,16 @@ GuiReferenceInstanceBinder (ref)
 				return GlobalStringKey::_Ref;
 			}
 
-			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
+			bool ApplicableToConstructorArgument()override
 			{
-				if (propertyValue.propertyValue.GetValueType() == Value::Text)
-				{
-					GlobalStringKey name = GlobalStringKey::Get(propertyValue.propertyValue.GetText());
-					vint index = env->scope->referenceValues.Keys().IndexOf(name);
-					if (index != -1)
-					{
-						IGuiInstanceLoader::PropertyValue newValue = propertyValue;
-						newValue.propertyValue = env->scope->referenceValues.Values()[index];
-						if (!newValue.propertyValue.IsNull())
-						{
-							return loader->SetPropertyValue(newValue);
-						}
-					}
-				}
 				return false;
 			}
-		};
-
-/***********************************************************************
-GuiPrecompilableInstanceBinder
-***********************************************************************/
-
-		class GuiPrecompilableInstanceBinder : public GuiTextInstanceBinderBase
-		{
-		public:
-			bool RequireInstanceName()override
+			
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
 			{
-				return true;
-			}
-
-			bool RequirePrecompile()override
-			{
-				return true;
-			}
-
-			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
-			{
-				auto compiled = env->resolver->ResolveResource(L"res", L"Precompiled/Workflow/InstanceCtor/" + env->path);
-				CHECK_ERROR(compiled, L"Instance using this binder should be precompiled before using.");
-				return true;
+				auto expression = MakePtr<WfReferenceExpression>();
+				expression->name.value = code;
+				return Workflow_InstallEvalProperty(variableName, propertyInfo, expression);
 			}
 		};
 
@@ -170,7 +116,7 @@ GuiPrecompilableInstanceBinder
 GuiEvalInstanceBinder (eval)
 ***********************************************************************/
 
-		class GuiEvalInstanceBinder : public GuiPrecompilableInstanceBinder
+		class GuiEvalInstanceBinder : public Object, public IGuiInstanceBinder
 		{
 		public:
 			GlobalStringKey GetBindingName()override
@@ -197,12 +143,17 @@ GuiEvalInstanceBinder (eval)
 GuiBindInstanceBinder (bind)
 ***********************************************************************/
 
-		class GuiBindInstanceBinder : public GuiPrecompilableInstanceBinder
+		class GuiBindInstanceBinder : public Object, public IGuiInstanceBinder
 		{
 		public:
 			GlobalStringKey GetBindingName()override
 			{
 				return GlobalStringKey::_Bind;
+			}
+
+			bool ApplicableToConstructorArgument()override
+			{
+				return false;
 			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
@@ -219,12 +170,17 @@ GuiBindInstanceBinder (bind)
 GuiFormatInstanceBinder (format)
 ***********************************************************************/
 
-		class GuiFormatInstanceBinder : public GuiPrecompilableInstanceBinder
+		class GuiFormatInstanceBinder : public Object, public IGuiInstanceBinder
 		{
 		public:
 			GlobalStringKey GetBindingName()override
 			{
 				return GlobalStringKey::_Format;
+			}
+
+			bool ApplicableToConstructorArgument()override
+			{
+				return false;
 			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
@@ -247,23 +203,6 @@ GuiEvalInstanceEventBinder (eval)
 			GlobalStringKey GetBindingName()override
 			{
 				return GlobalStringKey::_Eval;
-			}
-
-			bool RequireInstanceName()override
-			{
-				return true;
-			}
-
-			bool RequirePrecompile()override
-			{
-				return true;
-			}
-
-			bool AttachEvent(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)
-			{
-				auto compiled = env->resolver->ResolveResource(L"res", L"Precompiled/Workflow/InstanceCtor/" + env->path);
-				CHECK_ERROR(compiled, L"Instance with -eval event binder should be precompiled.");
-				return true;
 			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors)

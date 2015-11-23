@@ -14,38 +14,6 @@ namespace vl
 Helper Functions Declarations
 ***********************************************************************/
 
-		struct FillInstanceBindingSetter
-		{
-			IGuiInstanceBinder*					binder;
-			IGuiInstanceLoader*					loader;
-			GuiAttSetterRepr*					bindingTarget;
-			IGuiInstanceLoader::PropertyValue	propertyValue;
-
-			FillInstanceBindingSetter()
-				:binder(0)
-				, loader(0)
-				, bindingTarget(0)
-			{
-			}
-		};
-
-		struct FillInstanceEventSetter
-		{
-			IGuiInstanceEventBinder*			binder;
-			IGuiInstanceLoader*					loader;
-			GuiAttSetterRepr*					bindingTarget;
-			Ptr<GuiInstanceEventInfo>			eventInfo;
-			IGuiInstanceLoader::PropertyValue	propertyValue;
-			WString								handlerName;
-
-			FillInstanceEventSetter()
-				:binder(0)
-				, loader(0)
-				, bindingTarget(0)
-			{
-			}
-		};
-
 		bool LoadInstancePropertyValue(
 			Ptr<GuiInstanceEnvironment> env,
 			GuiAttSetterRepr* attSetter,
@@ -54,9 +22,7 @@ Helper Functions Declarations
 			List<Ptr<GuiValueRepr>>& input,
 			IGuiInstanceLoader* propertyLoader,
 			bool constructorArgument,
-			List<Pair<Value, IGuiInstanceLoader*>>& output,
-			List<FillInstanceBindingSetter>& bindingSetters,
-			List<FillInstanceEventSetter>& eventSetters
+			List<Pair<Value, IGuiInstanceLoader*>>& output
 			);
 
 		void FillInstance(
@@ -65,9 +31,7 @@ Helper Functions Declarations
 			GuiAttSetterRepr* attSetter,
 			IGuiInstanceLoader* loader,
 			bool skipDefaultProperty,
-			GlobalStringKey typeName,
-			List<FillInstanceBindingSetter>& bindingSetters,
-			List<FillInstanceEventSetter>& eventSetters
+			GlobalStringKey typeName
 			);
 
 		description::Value CreateInstance(
@@ -75,8 +39,6 @@ Helper Functions Declarations
 			GuiConstructorRepr* ctor,
 			description::ITypeDescriptor* expectedType,
 			GlobalStringKey& typeName,
-			List<FillInstanceBindingSetter>& bindingSetters,
-			List<FillInstanceEventSetter>& eventSetters,
 			bool isRootInstance
 			);
 
@@ -91,26 +53,13 @@ Helper Functions Declarations
 			const GlobalStringKey& dependerName
 			);
 
-		void ExecuteBindingSetters(
-			Ptr<GuiInstanceEnvironment> env,
-			List<FillInstanceBindingSetter>& bindingSetters
-			);
-
-		void ExecuteEventSetters(
-			description::Value createdInstance,
-			Ptr<GuiInstanceEnvironment> env,
-			List<FillInstanceEventSetter>& eventSetters
-			);
-
 		void InitializeInstanceFromConstructor(
 			Ptr<GuiInstanceEnvironment> env,
 			GuiConstructorRepr* ctor,
 			IGuiInstanceLoader* instanceLoader,
 			GlobalStringKey typeName,
 			description::Value instance,
-			bool deserialized,
-			List<FillInstanceBindingSetter>& bindingSetters,
-			List<FillInstanceEventSetter>& eventSetters
+			bool deserialized
 			);
 
 		namespace visitors
@@ -125,16 +74,12 @@ LoadValueVisitor
 			public:
 				Ptr<GuiInstanceEnvironment>				env;
 				List<ITypeDescriptor*>&					acceptableTypes;
-				List<FillInstanceBindingSetter>&		bindingSetters;
-				List<FillInstanceEventSetter>&			eventSetters;
 				bool									result;
 				Value									loadedValue;
 
-				LoadValueVisitor(Ptr<GuiInstanceEnvironment> _env, List<ITypeDescriptor*>& _acceptableTypes, List<FillInstanceBindingSetter>& _bindingSetters, List<FillInstanceEventSetter>& _eventSetters)
+				LoadValueVisitor(Ptr<GuiInstanceEnvironment> _env, List<ITypeDescriptor*>& _acceptableTypes)
 					:env(_env)
 					, acceptableTypes(_acceptableTypes)
-					, bindingSetters(_bindingSetters)
-					, eventSetters(_eventSetters)
 					, result(false)
 				{
 				}
@@ -174,7 +119,7 @@ LoadValueVisitor
 					FOREACH(ITypeDescriptor*, typeDescriptor, acceptableTypes)
 					{
 						GlobalStringKey _typeName;
-						loadedValue = CreateInstance(env, repr, typeDescriptor, _typeName, bindingSetters, eventSetters, false);
+						loadedValue = CreateInstance(env, repr, typeDescriptor, _typeName, false);
 						if (!loadedValue.IsNull())
 						{
 							for (vint i = env->scope->errors.Count() - 1; i >= errorCount; i--)
@@ -190,9 +135,9 @@ LoadValueVisitor
 					}
 				}
 
-				static bool LoadValue(Ptr<GuiValueRepr> valueRepr, Ptr<GuiInstanceEnvironment> env, List<ITypeDescriptor*>& acceptableTypes, List<FillInstanceBindingSetter>& bindingSetters, List<FillInstanceEventSetter>& eventSetters, Value& loadedValue)
+				static bool LoadValue(Ptr<GuiValueRepr> valueRepr, Ptr<GuiInstanceEnvironment> env, List<ITypeDescriptor*>& acceptableTypes, Value& loadedValue)
 				{
-					LoadValueVisitor visitor(env, acceptableTypes, bindingSetters, eventSetters);
+					LoadValueVisitor visitor(env, acceptableTypes);
 					valueRepr->Accept(&visitor);
 					if (visitor.result)
 					{
@@ -243,9 +188,7 @@ LoadInstancePropertyValue
 			List<Ptr<GuiValueRepr>>& input,
 			IGuiInstanceLoader* propertyLoader,
 			bool constructorArgument,
-			List<Pair<Value, IGuiInstanceLoader*>>& output,
-			List<FillInstanceBindingSetter>& bindingSetters,
-			List<FillInstanceEventSetter>& eventSetters
+			List<Pair<Value, IGuiInstanceLoader*>>& output
 			)
 		{
 			GlobalStringKey instanceType;
@@ -327,7 +270,7 @@ LoadInstancePropertyValue
 									IGuiInstanceLoader* propertyInstanceLoader=GetInstanceLoaderManager()->GetLoader(propertyTypeKey);
 									if(propertyInstanceLoader)
 									{
-										FillInstance(propertyValue.propertyValue, env, propertyAttSetter.Obj(), propertyInstanceLoader, false, propertyTypeKey, bindingSetters, eventSetters);
+										FillInstance(propertyValue.propertyValue, env, propertyAttSetter.Obj(), propertyInstanceLoader, false, propertyTypeKey);
 									}
 								}
 							}
@@ -351,7 +294,7 @@ LoadInstancePropertyValue
 								{
 									// default binding: set the value directly
 									vint errorCount = env->scope->errors.Count();
-									if (LoadValueVisitor::LoadValue(valueRepr, env, propertyInfo->acceptableTypes, bindingSetters, eventSetters, propertyValue.propertyValue))
+									if (LoadValueVisitor::LoadValue(valueRepr, env, propertyInfo->acceptableTypes, propertyValue.propertyValue))
 									{
 										input[index] = 0;
 										loadedValueCount++;
@@ -395,59 +338,11 @@ LoadInstancePropertyValue
 									if (binding == GlobalStringKey::Empty)
 									{
 										// default binding: set the value directly
-										if (LoadValueVisitor::LoadValue(valueRepr, env, propertyInfo->acceptableTypes, bindingSetters, eventSetters, propertyValue.propertyValue))
+										if (LoadValueVisitor::LoadValue(valueRepr, env, propertyInfo->acceptableTypes, propertyValue.propertyValue))
 										{
 											canRemoveLoadedValue = true;
 											output.Add(Pair<Value, IGuiInstanceLoader*>(propertyValue.propertyValue, propertyLoader));
 										}
-									}
-									else if (IGuiInstanceBinder* binder=GetInstanceLoaderManager()->GetInstanceBinder(binding))
-									{
-										// other binding: provide the property value to the specified binder
-										List<ITypeDescriptor*> binderExpectedTypes;
-										binder->GetExpectedValueTypes(binderExpectedTypes);
-										if (LoadValueVisitor::LoadValue(valueRepr, env, binderExpectedTypes, bindingSetters, eventSetters, propertyValue.propertyValue))
-										{
-											canRemoveLoadedValue = true;
-											if (constructorArgument)
-											{
-												if (propertyValue.propertyValue.IsNull())
-												{
-													env->scope->errors.Add(
-														L"Assignable property \"" +
-														propertyValue.propertyName.ToString() +
-														L"\" of type \"" +
-														instanceType.ToString() +
-														L"\" cannot be assigned using binding \"" +
-														binding.ToString() +
-														L"\" because the value translation failed.");
-												}
-												else
-												{
-													output.Add(Pair<Value, IGuiInstanceLoader*>(propertyValue.propertyValue, propertyLoader));
-												}
-											}
-											else if (propertyInfo->scope == GuiInstancePropertyInfo::Property)
-											{
-												FillInstanceBindingSetter bindingSetter;
-												bindingSetter.binder = binder;
-												bindingSetter.loader = propertyLoader;
-												bindingSetter.bindingTarget = attSetter;
-												bindingSetter.propertyValue = propertyValue;
-												bindingSetters.Add(bindingSetter);
-											}
-										}
-									}
-									else
-									{
-										env->scope->errors.Add(
-											L"Assignable property \"" +
-											propertyValue.propertyName.ToString() +
-											L"\" of type \"" +
-											instanceType.ToString() +
-											L"\" cannot be assigned using binding \"" +
-											binding.ToString() +
-											L"\" because the appropriate IGuiInstanceBinder for this binding cannot be found.");
 									}
 
 									if (canRemoveLoadedValue)
@@ -475,7 +370,7 @@ LoadInstancePropertyValue
 							FOREACH_INDEXER(Ptr<GuiValueRepr>, valueRepr, index, input)
 							{
 								// default binding: add the value to the list
-								if (LoadValueVisitor::LoadValue(valueRepr, env, propertyInfo->acceptableTypes, bindingSetters, eventSetters, propertyValue.propertyValue))
+								if (LoadValueVisitor::LoadValue(valueRepr, env, propertyInfo->acceptableTypes, propertyValue.propertyValue))
 								{
 									input[index] = 0;
 									loadedValueCount++;
@@ -518,9 +413,7 @@ FillInstance
 			GuiAttSetterRepr* attSetter,
 			IGuiInstanceLoader* loader,
 			bool skipDefaultProperty,
-			GlobalStringKey typeName,
-			List<FillInstanceBindingSetter>& bindingSetters,
-			List<FillInstanceEventSetter>& eventSetters
+			GlobalStringKey typeName
 			)
 		{
 			IGuiInstanceLoader::TypeInfo typeInfo(typeName, createdInstance.GetTypeDescriptor());
@@ -545,7 +438,7 @@ FillInstance
 
 				// extract all loaded property values
 				CopyFrom(input, propertyValue->values);
-				LoadInstancePropertyValue(env, attSetter, propertyValue->binding, cachedPropertyValue, input, propertyLoader, false, output, bindingSetters, eventSetters);
+				LoadInstancePropertyValue(env, attSetter, propertyValue->binding, cachedPropertyValue, input, propertyLoader, false, output);
 
 				// if there is no binding, set all values into the specified property
 				if (propertyValue->binding == GlobalStringKey::Empty)
@@ -591,38 +484,81 @@ FillInstance
 					}
 				}
 
-				IGuiInstanceEventBinder* binder = 0;
-				if (handler->binding != GlobalStringKey::Empty)
+				if (eventLoader)
 				{
-					binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
-					if (!binder)
+					IGuiInstanceLoader::PropertyValue propertyValue;
+					propertyValue.typeInfo = propertyInfo.typeInfo;
+					propertyValue.propertyName = propertyInfo.propertyName;
+					propertyValue.instanceValue = createdInstance;
+
+					if (auto group = createdInstance.GetTypeDescriptor()->GetMethodGroupByName(handler->value, true))
+					{
+						// find a correct method
+						vint count = group->GetMethodCount();
+						IMethodInfo* selectedMethod = 0;
+						for (vint i = 0; i < count; i++)
+						{
+							auto method = group->GetMethod(i);
+							if (method->GetParameterCount() != 2) goto UNSUPPORTED;
+
+							{
+								auto returnType = method->GetReturn();
+								auto senderType = method->GetParameter(0)->GetType();
+								auto argumentType = method->GetParameter(1)->GetType();
+					
+								if (returnType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
+								if (returnType->GetTypeDescriptor() != description::GetTypeDescriptor<VoidValue>()) goto UNSUPPORTED;
+					
+								if (senderType->GetDecorator() != ITypeInfo::RawPtr) goto UNSUPPORTED;
+								senderType = senderType->GetElementType();
+								if (senderType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
+								if (senderType->GetTypeDescriptor() != description::GetTypeDescriptor<compositions::GuiGraphicsComposition>()) goto UNSUPPORTED;
+					
+								if (argumentType->GetDecorator() != ITypeInfo::RawPtr) goto UNSUPPORTED;
+								argumentType = argumentType->GetElementType();
+								if (argumentType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
+								if (argumentType->GetTypeDescriptor() != eventInfo->argumentType) goto UNSUPPORTED;
+
+								selectedMethod = method;
+								break;
+							}
+
+						UNSUPPORTED:
+							continue;
+						}
+
+						if (selectedMethod)
+						{
+							Value proxy = selectedMethod->CreateFunctionProxy(createdInstance);
+							if (!proxy.IsNull())
+							{
+								propertyValue.propertyValue = proxy;
+								eventLoader->SetEventValue(propertyValue);
+							}
+						}
+						else
+						{
+							env->scope->errors.Add(
+								L"Event handler \"" +
+								handler->value +
+								L"\" of \"" +
+								env->context->instance->typeName.ToString() +
+								L"\" exists but the type does not match the event \"" +
+								propertyValue.propertyName.ToString() +
+								L"\".");
+						}
+					}
+					else
 					{
 						env->scope->errors.Add(
-							L"Failed to attach event \"" +
-							eventName.ToString() +
-							L"\" of type \"" +
-							typeName.ToString() +
-							L"\" with the handler \"" +
+							L"Failed to find event handler \"" +
 							handler->value +
-							L"\" using event binding \"" +
-							handler->binding.ToString() +
-							L"\" because the appropriate IGuiInstanceEventBinder for this binding cannot be found.");
-						continue;
+							L"\" of \"" +
+							env->context->instance->typeName.ToString() +
+							L"\" when setting event \"" +
+							propertyValue.propertyName.ToString() +
+							L"\".");
 					}
-				}
-
-				if (eventInfo)
-				{
-					FillInstanceEventSetter eventSetter;
-					eventSetter.binder = binder;
-					eventSetter.loader = eventLoader;
-					eventSetter.bindingTarget = attSetter;
-					eventSetter.eventInfo = eventInfo;
-					eventSetter.propertyValue.typeInfo = propertyInfo.typeInfo;
-					eventSetter.propertyValue.propertyName = propertyInfo.propertyName;
-					eventSetter.propertyValue.instanceValue = createdInstance;
-					eventSetter.handlerName = handler->value;
-					eventSetters.Add(eventSetter);
 				}
 				else
 				{
@@ -637,6 +573,7 @@ FillInstance
 						handler->binding.ToString() +
 						L"\" because no IGuiInstanceLoader supports this event.");
 				}
+
 			}
 		}
 
@@ -649,8 +586,6 @@ CreateInstance
 			GuiConstructorRepr* ctor,
 			description::ITypeDescriptor* expectedType,
 			GlobalStringKey& typeName,
-			List<FillInstanceBindingSetter>& bindingSetters,
-			List<FillInstanceEventSetter>& eventSetters,
 			bool isRootInstance
 			)
 		{
@@ -790,7 +725,7 @@ CreateInstance
 										IGuiInstanceLoader::PropertyValue propertyValue(typeInfo, propertyName, Value());
 
 										CopyFrom(input, setterValue->values);
-										LoadInstancePropertyValue(env, ctor, setterValue->binding, propertyValue, input, loader, true, output, bindingSetters, eventSetters);
+										LoadInstancePropertyValue(env, ctor, setterValue->binding, propertyValue, input, loader, true, output);
 
 										for (vint i = 0; i < output.Count(); i++)
 										{
@@ -890,7 +825,7 @@ CreateInstance
 					env->scope->rootInstance = instance;
 					ExecuteParameters(env);
 				}
-				InitializeInstanceFromConstructor(env, ctor, instanceLoader, typeName, instance, deserialized, bindingSetters, eventSetters);
+				InitializeInstanceFromConstructor(env, ctor, instanceLoader, typeName, instance, deserialized);
 			}
 			return instance;
 		}
@@ -935,178 +870,6 @@ ExecuteParameters
 		}
 
 /***********************************************************************
-ExecuteBindingSetters
-***********************************************************************/
-
-		void ExecuteBindingSetters(
-			Ptr<GuiInstanceEnvironment> env,
-			List<FillInstanceBindingSetter>& bindingSetters
-			)
-		{
-			// set all binding attributes
-			FOREACH(FillInstanceBindingSetter, bindingSetter, bindingSetters)
-			{
-				if (bindingSetter.binder->RequireInstanceName())
-				{
-					if (bindingSetter.bindingTarget->instanceName == GlobalStringKey::Empty)
-					{
-						auto name = GlobalStringKey::Get(L"<temp>" + itow(env->scope->referenceValues.Count()));
-						bindingSetter.bindingTarget->instanceName = name;
-					}
-
-					auto name = bindingSetter.bindingTarget->instanceName;
-					auto value = bindingSetter.propertyValue.instanceValue;
-					if (!env->scope->referenceValues.Keys().Contains(bindingSetter.bindingTarget->instanceName))
-					{
-						env->scope->referenceValues.Add(name, value);
-					}
-				}
-
-				if (!bindingSetter.binder->SetPropertyValue(env, bindingSetter.loader, bindingSetter.bindingTarget->instanceName, bindingSetter.propertyValue))
-				{
-					auto value = bindingSetter.propertyValue.propertyValue;
-					env->scope->errors.Add(
-						L"Failed to set property \"" +
-						bindingSetter.propertyValue.propertyName.ToString() +
-						L"\" of \"" +
-						bindingSetter.propertyValue.instanceValue.GetTypeDescriptor()->GetTypeName() +
-						L"\" using binding \"" +
-						bindingSetter.binder->GetBindingName().ToString() +
-						L"\" and value \"" +
-						(
-							value.GetValueType() == Value::Null ? WString(L"null") :
-							value.GetValueType() == Value::Text ? value.GetText() :
-							(L"<" + value.GetTypeDescriptor()->GetTypeName() + L">")
-						) +
-						L"\".");
-					bindingSetter.propertyValue.propertyValue.DeleteRawPtr();
-				}
-			}
-		}
-
-/***********************************************************************
-ExecuteBindingSetters
-***********************************************************************/
-
-		void ExecuteEventSetters(
-			description::Value createdInstance,
-			Ptr<GuiInstanceEnvironment> env,
-			List<FillInstanceEventSetter>& eventSetters
-			)
-		{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			// set all event attributes
-			FOREACH(FillInstanceEventSetter, eventSetter, eventSetters)
-			{
-				if (eventSetter.binder)
-				{
-					auto propertyValue = eventSetter.propertyValue;
-					propertyValue.propertyValue = BoxValue(eventSetter.handlerName);
-
-					if (eventSetter.binder->RequireInstanceName())
-					{
-						if (eventSetter.bindingTarget->instanceName == GlobalStringKey::Empty)
-						{
-							auto name = GlobalStringKey::Get(L"<temp>" + itow(env->scope->referenceValues.Count()));
-							eventSetter.bindingTarget->instanceName = name;
-						}
-
-						auto name = eventSetter.bindingTarget->instanceName;
-						auto value = eventSetter.propertyValue.instanceValue;
-						if (!env->scope->referenceValues.Keys().Contains(eventSetter.bindingTarget->instanceName))
-						{
-							env->scope->referenceValues.Add(name, value);
-						}
-					}
-
-					if (!eventSetter.binder->AttachEvent(env, eventSetter.loader, eventSetter.bindingTarget->instanceName, propertyValue))
-					{
-						env->scope->errors.Add(
-							L"Failed to attach event \"" +
-							propertyValue.propertyName.ToString() +
-							L"\" of type \"" +
-							propertyValue.instanceValue.GetTypeDescriptor()->GetTypeName() +
-							L"\" with the handler \"" +
-							propertyValue.propertyValue.GetText() +
-							L"\" using event binding \"" +
-							eventSetter.binder->GetBindingName().ToString() +
-							L"\".");
-					}
-				}
-				else if (auto group = createdInstance.GetTypeDescriptor()->GetMethodGroupByName(eventSetter.handlerName, true))
-				{
-					// find a correct method
-					vint count = group->GetMethodCount();
-					IMethodInfo* selectedMethod = 0;
-					for (vint i = 0; i < count; i++)
-					{
-						auto method = group->GetMethod(i);
-						if (method->GetParameterCount() != 2) goto UNSUPPORTED;
-
-						{
-							auto returnType = method->GetReturn();
-							auto senderType = method->GetParameter(0)->GetType();
-							auto argumentType = method->GetParameter(1)->GetType();
-					
-							if (returnType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
-							if (returnType->GetTypeDescriptor() != description::GetTypeDescriptor<VoidValue>()) goto UNSUPPORTED;
-					
-							if (senderType->GetDecorator() != ITypeInfo::RawPtr) goto UNSUPPORTED;
-							senderType = senderType->GetElementType();
-							if (senderType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
-							if (senderType->GetTypeDescriptor() != description::GetTypeDescriptor<compositions::GuiGraphicsComposition>()) goto UNSUPPORTED;
-					
-							if (argumentType->GetDecorator() != ITypeInfo::RawPtr) goto UNSUPPORTED;
-							argumentType = argumentType->GetElementType();
-							if (argumentType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
-							if (argumentType->GetTypeDescriptor() != eventSetter.eventInfo->argumentType) goto UNSUPPORTED;
-
-							selectedMethod = method;
-							break;
-						}
-
-					UNSUPPORTED:
-						continue;
-					}
-
-					if (selectedMethod)
-					{
-						Value proxy = selectedMethod->CreateFunctionProxy(createdInstance);
-						if (!proxy.IsNull())
-						{
-							auto propertyValue = eventSetter.propertyValue;
-							propertyValue.propertyValue = proxy;
-							eventSetter.loader->SetEventValue(propertyValue);
-						}
-					}
-					else
-					{
-						env->scope->errors.Add(
-							L"Event handler \"" +
-							eventSetter.handlerName +
-							L"\" of \"" +
-							env->context->instance->typeName.ToString() +
-							L"\" exists but the type does not match the event \"" +
-							eventSetter.propertyValue.propertyName.ToString() +
-							L"\".");
-					}
-				}
-				else
-				{
-					env->scope->errors.Add(
-						L"Failed to find event handler \"" +
-						eventSetter.handlerName +
-						L"\" of \"" +
-						env->context->instance->typeName.ToString() +
-						L"\" when setting event \"" +
-						eventSetter.propertyValue.propertyName.ToString() +
-						L"\".");
-				}
-			}
-#endif
-		}
-
-/***********************************************************************
 LoadInstance
 ***********************************************************************/
 
@@ -1118,14 +881,10 @@ LoadInstance
 		{
 			auto context = resource->GetContent().Cast<GuiInstanceContext>();
 			Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(context, resource->GetResourcePath(), resolver);
-			List<FillInstanceBindingSetter> bindingSetters;
-			List<FillInstanceEventSetter> eventSetters;
-			Value instance = CreateInstance(env, context->instance.Obj(), expectedType, env->scope->typeName, bindingSetters, eventSetters, true);
+			Value instance = CreateInstance(env, context->instance.Obj(), expectedType, env->scope->typeName, true);
 			
 			if (!instance.IsNull())
 			{
-				ExecuteBindingSetters(env, bindingSetters);
-				ExecuteEventSetters(instance, env, eventSetters);
 				Workflow_RunPrecompiledScript(env);
 				return env->scope;
 			}
@@ -1142,13 +901,11 @@ InitializeInstance
 			IGuiInstanceLoader* instanceLoader,
 			GlobalStringKey typeName,
 			description::Value instance,
-			bool deserialized,
-			List<FillInstanceBindingSetter>& bindingSetters,
-			List<FillInstanceEventSetter>& eventSetters
+			bool deserialized
 			)
 		{
 			// fill all attributes
-			FillInstance(instance, env, ctor, instanceLoader, deserialized, typeName, bindingSetters, eventSetters);
+			FillInstance(instance, env, ctor, instanceLoader, deserialized, typeName);
 
 			if (ctor->instanceName != GlobalStringKey::Empty)
 			{
@@ -1169,9 +926,6 @@ InitializeInstance
 			description::Value instance
 			)
 		{
-			List<FillInstanceBindingSetter> bindingSetters;
-			List<FillInstanceEventSetter> eventSetters;
-
 			// search for a correct loader
 			auto context = resource->GetContent().Cast<GuiInstanceContext>();
 			Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(context, resource->GetResourcePath(), resolver);
@@ -1183,9 +937,7 @@ InitializeInstance
 			{
 				env->scope->rootInstance = instance;
 				ExecuteParameters(env);
-				InitializeInstanceFromConstructor(env, ctor, source.loader, source.typeName, instance, false, bindingSetters, eventSetters);
-				ExecuteBindingSetters(env, bindingSetters);
-				ExecuteEventSetters(instance, env, eventSetters);
+				InitializeInstanceFromConstructor(env, ctor, source.loader, source.typeName, instance, false);
 				Workflow_RunPrecompiledScript(env);
 				return env->scope;
 			}
