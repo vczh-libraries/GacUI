@@ -254,14 +254,26 @@ GuiResourceNodeBase
 			return name;
 		}
 
-		const WString& GuiResourceNodeBase::GetPath()
+		WString GuiResourceNodeBase::GetResourcePath()
 		{
-			return path;
+			auto resourcePath = name;
+			auto current = parent;
+			while (current)
+			{
+				resourcePath = parent->GetName() + L"/" + resourcePath;
+				current = current->GetParent();
+			}
+			return resourcePath;
 		}
 
-		void GuiResourceNodeBase::SetPath(const WString& value)
+		const WString& GuiResourceNodeBase::GetFileContentPath()
 		{
-			path = value;
+			return fileContentPath;
+		}
+
+		void GuiResourceNodeBase::SetFileContentPath(const WString& value)
+		{
+			fileContentPath = value;
 		}
 
 		GuiResourceFolder* GuiResourceNodeBase::GetParent()
@@ -353,8 +365,8 @@ GuiResourceFolder
 							{
 								if(contentAtt->value.value==L"Link")
 								{
-									folder->SetPath(XmlGetValue(element));
-									WString filePath = containingFolder + folder->GetPath();
+									folder->SetFileContentPath(XmlGetValue(element));
+									WString filePath = containingFolder + folder->GetFileContentPath();
 									WString text;
 									if(LoadTextFile(filePath, text))
 									{
@@ -437,7 +449,7 @@ GuiResourceFolder
 								}
 								else
 								{
-									item->SetPath(relativeFilePath);
+									item->SetFileContentPath(relativeFilePath);
 									resource = directLoad->ResolveResource(filePath, errors);
 								}
 
@@ -497,7 +509,7 @@ GuiResourceFolder
 					attName->name.value = L"name";
 					attName->value.value = item->GetName();
 
-					if (item->GetPath() == L"")
+					if (item->GetFileContentPath() == L"")
 					{
 						Ptr<XmlElement> xmlElement;
 
@@ -538,7 +550,7 @@ GuiResourceFolder
 						xmlElement->attributes.Add(attContent);
 
 						auto xmlText = MakePtr<XmlText>();
-						xmlText->content.value = item->GetPath();
+						xmlText->content.value = item->GetFileContentPath();
 						xmlElement->subNodes.Add(xmlText);
 					}
 				}
@@ -556,7 +568,7 @@ GuiResourceFolder
 				xmlParent->subNodes.Add(xmlFolder);
 				
 
-				if (folder->GetPath() == L"")
+				if (folder->GetFileContentPath() == L"")
 				{
 					folder->SaveResourceFolderToXml(xmlFolder);
 				}
@@ -568,7 +580,7 @@ GuiResourceFolder
 					xmlFolder->attributes.Add(attContent);
 
 					auto xmlText = MakePtr<XmlText>();
-					xmlText->content.value = folder->GetPath();
+					xmlText->content.value = folder->GetFileContentPath();
 					xmlFolder->subNodes.Add(xmlText);
 				}
 			}
@@ -751,7 +763,7 @@ GuiResourceFolder
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto precompile = typeResolver->Precompile())
 				{
-					precompile->Precompile(item->GetContent(), context, errors);
+					precompile->Precompile(item, context, errors);
 				}
 			}
 

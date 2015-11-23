@@ -155,7 +155,7 @@ Resource Structure
 		protected:
 			GuiResourceFolder*						parent;
 			WString									name;
-			WString									path;
+			WString									fileContentPath;
 			
 		public:
 			GuiResourceNodeBase();
@@ -167,12 +167,15 @@ Resource Structure
 			/// <summary>Get the name of this resource node.</summary>
 			/// <returns>The name of this resource node .</returns>
 			const WString&							GetName();
-			/// <summary>Get the path of this resource node. When saving the resource, if the path is not empty, the path will be serialized instead of the content.</summary>
-			/// <returns>The path of this resource node .</returns>
-			const WString&							GetPath();
-			/// <summary>Set the path of this resource node.</summary>
-			/// <param name="value">The path of this resource node .</param>
-			void									SetPath(const WString& value);
+			/// <summary>Get the resource path of this resource node. When saving the resource, if the path is not empty, the path will be serialized instead of the content.</summary>
+			/// <returns>The resource path of this resource node .</returns>
+			WString									GetResourcePath();
+			/// <summary>Get the file content path of this resource node. When saving the resource, if the path is not empty, the path will be serialized instead of the content.</summary>
+			/// <returns>The file content path of this resource node .</returns>
+			const WString&							GetFileContentPath();
+			/// <summary>Set the file content path of this resource node.</summary>
+			/// <param name="value">The file content path of this resource node .</param>
+			void									SetFileContentPath(const WString& value);
 		};
 
 		class DocumentModel;
@@ -493,7 +496,7 @@ Resource Type Resolver
 			/// <param name="resource">The resource to precompile.</param>
 			/// <param name="context">The context for precompiling.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual void										Precompile(Ptr<DescriptableObject> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+			virtual void										Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource without a preload type.</summary>

@@ -854,7 +854,7 @@ CreateInstance
 			else if(source.context)
 			{
 				// found another instance in the resource
-				if (Ptr<GuiInstanceContextScope> scope = LoadInstanceFromContext(source.context, env->resolver, expectedType))
+				if (Ptr<GuiInstanceContextScope> scope = LoadInstanceFromContext(source.item, env->resolver, expectedType))
 				{
 					typeName = scope->typeName;
 					instance = scope->rootInstance;
@@ -1111,12 +1111,13 @@ LoadInstance
 ***********************************************************************/
 
 		Ptr<GuiInstanceContextScope> LoadInstanceFromContext(
-			Ptr<GuiInstanceContext> context,
+			Ptr<GuiResourceItem> resource,
 			Ptr<GuiResourcePathResolver> resolver,
 			description::ITypeDescriptor* expectedType
 			)
 		{
-			Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(context, resolver);
+			auto context = resource->GetContent().Cast<GuiInstanceContext>();
+			Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(context, resource->GetResourcePath(), resolver);
 			List<FillInstanceBindingSetter> bindingSetters;
 			List<FillInstanceEventSetter> eventSetters;
 			Value instance = CreateInstance(env, context->instance.Obj(), expectedType, env->scope->typeName, bindingSetters, eventSetters, true);
@@ -1127,21 +1128,6 @@ LoadInstance
 				ExecuteEventSetters(instance, env, eventSetters);
 				Workflow_RunPrecompiledScript(env);
 				return env->scope;
-			}
-			return 0;
-		}
-
-		Ptr<GuiInstanceContextScope> LoadInstance(
-			Ptr<GuiResource> resource,
-			const WString& instancePath,
-			description::ITypeDescriptor* expectedType
-			)
-		{
-			Ptr<GuiInstanceContext> context=resource->GetValueByPath(instancePath).Cast<GuiInstanceContext>();
-			if (context)
-			{
-				Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
-				return LoadInstanceFromContext(context, resolver, expectedType);
 			}
 			return 0;
 		}
@@ -1178,7 +1164,7 @@ InitializeInstance
 		}
 
 		Ptr<GuiInstanceContextScope> InitializeInstanceFromContext(
-			Ptr<GuiInstanceContext> context,
+			Ptr<GuiResourceItem> resource,
 			Ptr<GuiResourcePathResolver> resolver,
 			description::Value instance
 			)
@@ -1187,8 +1173,9 @@ InitializeInstance
 			List<FillInstanceEventSetter> eventSetters;
 
 			// search for a correct loader
+			auto context = resource->GetContent().Cast<GuiInstanceContext>();
+			Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(context, resource->GetResourcePath(), resolver);
 			GuiConstructorRepr* ctor = context->instance.Obj();
-			Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(context, resolver);
 			InstanceLoadingSource source = FindInstanceLoadingSource(env->context, ctor);
 
 			// initialize the instance
@@ -1201,24 +1188,6 @@ InitializeInstance
 				ExecuteEventSetters(instance, env, eventSetters);
 				Workflow_RunPrecompiledScript(env);
 				return env->scope;
-			}
-			return 0;
-		}
-
-		Ptr<GuiInstanceContextScope> InitializeInstance(
-			Ptr<GuiResource> resource,
-			const WString& instancePath,
-			description::Value instance
-			)
-		{
-			if (instance.GetRawPtr())
-			{
-				Ptr<GuiInstanceContext> context=resource->GetValueByPath(instancePath).Cast<GuiInstanceContext>();
-				if (context)
-				{
-					Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
-					return InitializeInstanceFromContext(context, resolver, instance);
-				}
 			}
 			return 0;
 		}

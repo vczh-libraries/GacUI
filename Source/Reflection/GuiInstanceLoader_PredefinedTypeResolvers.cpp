@@ -60,14 +60,20 @@ Instance Type Resolver (Instance)
 				return 3;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
 				if (context.passIndex == 3)
 				{
-					if (auto obj = resource.Cast<GuiInstanceContext>())
+					if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 					{
 						obj->ApplyStyles(context.resolver, errors);
-						Workflow_PrecompileInstanceContext(obj, errors);
+						if (auto assembly = Workflow_PrecompileInstanceContext(obj, errors))
+						{
+							auto compiled = MakePtr<GuiInstanceCompiledWorkflow>();
+							compiled->type = GuiInstanceCompiledWorkflow::InstanceCtor;
+							compiled->assembly = assembly;
+							context.targetFolder->CreateValueByPath(L"Workflow/InstanceCtor/" + resource->GetResourcePath(), L"Workflow", compiled);
+						}
 					}
 				}
 			}
@@ -205,14 +211,14 @@ Shared Script Type Resolver (Script)
 				return 1;
 			}
 
-			void Precompile(Ptr<DescriptableObject> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
 				Ptr<GuiInstanceCompiledWorkflow> compiled;
 				switch (context.passIndex)
 				{
 				case 0:
 					{
-						if (auto obj = resource.Cast<GuiInstanceSharedScript>())
+						if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
 						{
 							WString path;
 							GuiInstanceCompiledWorkflow::AssemblyType type = GuiInstanceCompiledWorkflow::Shared;

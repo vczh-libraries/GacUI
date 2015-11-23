@@ -160,7 +160,8 @@ GuiPrecompilableInstanceBinder
 
 			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
 			{
-				CHECK_ERROR(env->context->precompiledScript, L"Instance using this binder should be precompiled before using.");
+				auto compiled = env->resolver->ResolveResource(L"res", L"Precompiled/Workflow/InstanceCtor/" + env->path);
+				CHECK_ERROR(compiled, L"Instance using this binder should be precompiled before using.");
 				return true;
 			}
 		};
@@ -260,7 +261,8 @@ GuiEvalInstanceEventBinder (eval)
 
 			bool AttachEvent(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)
 			{
-				CHECK_ERROR(env->context->precompiledScript, L"Instance with -eval event binder should be precompiled.");
+				auto compiled = env->resolver->ResolveResource(L"res", L"Precompiled/Workflow/InstanceCtor/" + env->path);
+				CHECK_ERROR(compiled, L"Instance with -eval event binder should be precompiled.");
 				return true;
 			}
 			

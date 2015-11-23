@@ -39,11 +39,13 @@ Instance Environment
 		{
 		public:
 			Ptr<GuiInstanceContext>					context;
+			WString									path;
 			Ptr<GuiResourcePathResolver>			resolver;
 			Ptr<GuiInstanceContextScope>			scope;
 
-			GuiInstanceEnvironment(Ptr<GuiInstanceContext> _context, Ptr<GuiResourcePathResolver> _resolver)
+			GuiInstanceEnvironment(Ptr<GuiInstanceContext> _context, const WString& _path, Ptr<GuiResourcePathResolver> _resolver)
 				:context(_context)
+				, path(_path)
 				, resolver(_resolver)
 			{
 				scope = new GuiInstanceContextScope;
@@ -227,11 +229,26 @@ Instance Loader Manager
 		{
 			IGuiInstanceLoader*						loader;
 			GlobalStringKey							typeName;
+			Ptr<GuiResourceItem>					item;
 			Ptr<GuiInstanceContext>					context;
 
-			InstanceLoadingSource() :loader(0){}
-			InstanceLoadingSource(IGuiInstanceLoader* _loader, GlobalStringKey _typeName) :loader(_loader), typeName(_typeName){}
-			InstanceLoadingSource(Ptr<GuiInstanceContext> _context) :loader(0), context(_context){}
+			InstanceLoadingSource()
+				:loader(0)
+			{
+			}
+
+			InstanceLoadingSource(IGuiInstanceLoader* _loader, GlobalStringKey _typeName)
+				:loader(_loader)
+				, typeName(_typeName)
+			{
+			}
+
+			InstanceLoadingSource(Ptr<GuiResourceItem> _item)
+				:loader(0)
+				, item(_item)
+				, context(item->GetContent().Cast<GuiInstanceContext>())
+			{
+			}
 
 			operator bool()const
 			{
@@ -245,23 +262,13 @@ Instance Loader Manager
 			GuiConstructorRepr* ctor
 			);
 		Ptr<GuiInstanceContextScope>				LoadInstanceFromContext(
-			Ptr<GuiInstanceContext> context,
+			Ptr<GuiResourceItem> resource,
 			Ptr<GuiResourcePathResolver> resolver,
-			description::ITypeDescriptor* expectedType = 0
-			);
-		extern Ptr<GuiInstanceContextScope>			LoadInstance(
-			Ptr<GuiResource> resource,
-			const WString& instancePath,
 			description::ITypeDescriptor* expectedType = 0
 			);
 		extern Ptr<GuiInstanceContextScope>			InitializeInstanceFromContext(
-			Ptr<GuiInstanceContext> context,
+			Ptr<GuiResourceItem> resource,
 			Ptr<GuiResourcePathResolver> resolver,
-			description::Value instance
-			);
-		extern Ptr<GuiInstanceContextScope>			InitializeInstance(
-			Ptr<GuiResource> resource,
-			const WString& instancePath,
 			description::Value instance
 			);
 		extern void									LogInstanceLoaderManager(stream::TextWriter& writer);

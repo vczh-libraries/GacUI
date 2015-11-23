@@ -842,7 +842,7 @@ Workflow_PrecompileInstanceContext
 			return reader.ReadToEnd();
 		}
 
-		void Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
+		Ptr<workflow::runtime::WfAssembly> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
 		{
 			ITypeDescriptor* rootTypeDescriptor = 0;
 			types::VariableTypeInfoMap typeInfos;
@@ -885,7 +885,7 @@ Workflow_PrecompileInstanceContext
 
 				if (Workflow_GetSharedManager()->errors.Count() == 0)
 				{
-					context->precompiledScript = GenerateAssembly(Workflow_GetSharedManager());
+					return GenerateAssembly(Workflow_GetSharedManager());
 				}
 				else
 				{
@@ -898,6 +898,8 @@ Workflow_PrecompileInstanceContext
 					errors.Add(moduleCode);
 				}
 			}
+
+			return nullptr;
 		}
 
 /***********************************************************************
@@ -906,7 +908,8 @@ Workflow_RunPrecompiledScript
 
 		void Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env)
 		{
-			auto globalContext = MakePtr<WfRuntimeGlobalContext>(env->context->precompiledScript);
+			auto compiled = env->resolver->ResolveResource(L"res", L"Precompiled/Workflow/InstanceCtor/" + env->path).Cast<GuiInstanceCompiledWorkflow>();
+			auto globalContext = MakePtr<WfRuntimeGlobalContext>(compiled->assembly);
 				
 			try
 			{

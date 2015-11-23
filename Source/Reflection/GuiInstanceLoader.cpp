@@ -716,6 +716,7 @@ GuiResourceInstanceLoader
 		{
 		protected:
 			Ptr<GuiResource>						resource;
+			Ptr<GuiResourceItem>					item;
 			Ptr<GuiInstanceContext>					context;
 			GlobalStringKey							contextClassName;
 
@@ -724,9 +725,10 @@ GuiResourceInstanceLoader
 				context->ApplyStyles(resolver, errors);
 			}
 		public:
-			GuiResourceInstanceLoader(Ptr<GuiResource> _resource, Ptr<GuiInstanceContext> _context)
+			GuiResourceInstanceLoader(Ptr<GuiResource> _resource, Ptr<GuiResourceItem> _item)
 				:resource(_resource)
-				, context(_context)
+				, item(_item)
+				, context(item->GetContent().Cast<GuiInstanceContext>())
 			{
 				if (context->className)
 				{
@@ -790,7 +792,7 @@ GuiResourceInstanceLoader
 					}
 
 					Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
-					auto scope = LoadInstanceFromContext(context, resolver);
+					auto scope = LoadInstanceFromContext(item, resolver);
 
 					if (scope)
 					{
@@ -814,7 +816,7 @@ GuiResourceInstanceLoader
 					List<WString> errors;
 					InitializeContext(resolver, errors);
 
-					auto scope = InitializeInstanceFromContext(context, resolver, instance);
+					auto scope = InitializeInstanceFromContext(item, resolver, instance);
 					if (scope)
 					{
 						for (vint i = 0; i < errors.Count(); i++)
@@ -983,7 +985,7 @@ GuiInstanceLoaderManager
 				}
 			}
 
-			void GetClassesInResource(Ptr<GuiResourceFolder> folder, Dictionary<GlobalStringKey, Ptr<GuiInstanceContext>>& classes)
+			void GetClassesInResource(Ptr<GuiResourceFolder> folder, Dictionary<GlobalStringKey, Ptr<GuiResourceItem>>& classes)
 			{
 				FOREACH(Ptr<GuiResourceItem>, item, folder->GetItems())
 				{
@@ -994,7 +996,7 @@ GuiInstanceLoaderManager
 							auto contextClassName = GlobalStringKey::Get(context->className.Value());
 							if (!classes.Keys().Contains(contextClassName))
 							{
-								classes.Add(contextClassName, context);
+								classes.Add(contextClassName, item);
 							}
 						}
 					}
@@ -1160,20 +1162,20 @@ GuiInstanceLoaderManager
 				if (index != -1) return false;
 
 				Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
-				Dictionary<GlobalStringKey, Ptr<GuiInstanceContext>> classes;
+				Dictionary<GlobalStringKey, Ptr<GuiResourceItem>> classes;
 				Dictionary<GlobalStringKey, GlobalStringKey> parentTypes;
 				GetClassesInResource(resource, classes);
 
-				FOREACH(Ptr<GuiInstanceContext>, context, classes.Values())
+				FOREACH(Ptr<GuiResourceItem>, item, classes.Values())
 				{
+					auto context = item->GetContent().Cast<GuiInstanceContext>();
 					auto contextClassName = GlobalStringKey::Get(context->className.Value());
 					if (typeInfos.Keys().Contains(contextClassName))
 					{
 						return false;
 					}
 
-					Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(context, resolver);
-					auto loadingSource = FindInstanceLoadingSource(env->context, context->instance.Obj());
+					auto loadingSource = FindInstanceLoadingSource(context, context->instance.Obj());
 					if (loadingSource.loader)
 					{
 						parentTypes.Add(contextClassName, loadingSource.typeName);
@@ -1182,12 +1184,13 @@ GuiInstanceLoaderManager
 				
 				FOREACH(GlobalStringKey, className, classes.Keys())
 				{
-					auto context = classes[className];
+					auto item = classes[className];
+					auto context = item->GetContent().Cast<GuiInstanceContext>();
 					vint index = parentTypes.Keys().IndexOf(className);
 					if (index == -1) continue;
 					auto parentType = parentTypes.Values()[index];
 
-					Ptr<IGuiInstanceLoader> loader = new GuiResourceInstanceLoader(resource, context);
+					Ptr<IGuiInstanceLoader> loader = new GuiResourceInstanceLoader(resource, item);
 					if (GetGlobalTypeManager()->GetTypeDescriptor(context->className.Value()))
 					{
 						SetLoader(loader);

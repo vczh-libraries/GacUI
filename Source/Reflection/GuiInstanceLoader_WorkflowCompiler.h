@@ -51,7 +51,7 @@ WorkflowCompiler (Compile)
 
 		extern bool											Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
 		extern WString										Workflow_ModuleToString(Ptr<workflow::WfModule> module);
-		extern void											Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
+		extern Ptr<workflow::runtime::WfAssembly>			Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
 		extern void											Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env);
 	}
 }
