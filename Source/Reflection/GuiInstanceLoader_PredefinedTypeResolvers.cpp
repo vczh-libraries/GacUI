@@ -15,6 +15,7 @@ namespace vl
 		using namespace workflow::runtime;
 		using namespace reflection::description;
 		using namespace collections;
+		using namespace stream;
 
 #define ERROR_CODE_PREFIX L"================================================================"
 
@@ -26,13 +27,22 @@ Instance Type Resolver (Instance)
 			: public Object
 			, public IGuiResourceTypeResolver
 			, private IGuiResourceTypeResolver_Precompile
-			, private IGuiResourceTypeResolver_DirectLoadStream
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
 		public:
 			WString GetType()override
 			{
 				return L"Instance";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
 			}
 
 			WString GetPreloadType()override
@@ -67,32 +77,16 @@ Instance Type Resolver (Instance)
 				return this;
 			}
 
-			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
-			{
-				return this;
-			}
-
 			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
 			{
 				return this;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
-			{
-				auto obj = resource.Cast<GuiInstanceContext>();
-				obj->SavePrecompiledBinary(stream);
-			}
-
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
-			{
-				return GuiInstanceContext::LoadPrecompiledBinary(stream, errors);
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
 			{
 				if (auto obj = resource.Cast<GuiInstanceContext>())
 				{
-					return obj->SaveToXml(serializePrecompiledResource);
+					return obj->SaveToXml();
 				}
 				return 0;
 			}
@@ -124,6 +118,16 @@ Instance Style Type Resolver (InstanceStyle)
 				return L"InstanceStyle";
 			}
 
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
+			}
+
 			WString GetPreloadType()override
 			{
 				return L"Xml";
@@ -139,14 +143,11 @@ Instance Style Type Resolver (InstanceStyle)
 				return this;
 			}
 
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
 			{
-				if (!serializePrecompiledResource)
+				if (auto obj = resource.Cast<GuiInstanceStyleContext>())
 				{
-					if (auto obj = resource.Cast<GuiInstanceStyleContext>())
-					{
-						return obj->SaveToXml();
-					}
+					return obj->SaveToXml();
 				}
 				return 0;
 			}
@@ -177,6 +178,16 @@ Shared Script Type Resolver (Script)
 			WString GetType()override
 			{
 				return L"Script";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
 			}
 
 			WString GetPreloadType()override
@@ -245,14 +256,11 @@ Shared Script Type Resolver (Script)
 				return this;
 			}
 
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
 			{
-				if (!serializePrecompiledResource)
+				if (auto obj = resource.Cast<GuiInstanceSharedScript>())
 				{
-					if (auto obj = resource.Cast<GuiInstanceSharedScript>())
-					{
-						return obj->SaveToXml();
-					}
+					return obj->SaveToXml();
 				}
 				return 0;
 			}
@@ -266,6 +274,66 @@ Shared Script Type Resolver (Script)
 					return schema;
 				}
 				return 0;
+			}
+		};
+
+/***********************************************************************
+Compiled Workflow Type Resolver (Script)
+***********************************************************************/
+
+		class GuiResourceCompiledWorkflowTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_DirectLoadStream
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Workflow";
+			}
+
+			bool XmlSerializable()override
+			{
+				return false;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
+			{
+				return this;
+			}
+
+			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			{
+				if (auto obj = resource.Cast<GuiInstanceCompiledWorkflow>())
+				{
+					internal::Writer writer(stream);
+
+					vint type = (vint)obj->type;
+					writer << type;
+
+					MemoryStream memoryStream;
+					obj->assembly->Serialize(memoryStream);
+					writer << memoryStream;
+				}
+			}
+
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			{
+				internal::Reader reader(stream);
+
+				vint type;
+				MemoryStream memoryStream;
+				reader << type << memoryStream;
+
+				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
+				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
+				obj->assembly = new WfAssembly(stream);
+				return obj;
 			}
 		};
 
@@ -290,6 +358,7 @@ Shared Script Type Resolver
 				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
 				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
 				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
+				manager->SetTypeResolver(new GuiResourceCompiledWorkflowTypeResolver);
 			}
 
 			void Unload()override

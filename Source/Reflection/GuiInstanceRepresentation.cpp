@@ -15,28 +15,6 @@ namespace vl
 		using namespace stream;
 
 /***********************************************************************
-GuiValueRepr
-***********************************************************************/
-
-		Ptr<GuiValueRepr> GuiValueRepr::LoadPrecompiledBinary(stream::IStream& stream, collections::List<GlobalStringKey>& keys)
-		{
-			stream::internal::Reader reader(stream);
-			vint key = -1;
-			reader << key;
-			switch (key)
-			{
-			case GuiTextRepr::BinaryKey:
-				return GuiTextRepr::LoadPrecompiledBinary(stream, keys);
-			case GuiAttSetterRepr::BinaryKey:
-				return GuiAttSetterRepr::LoadPrecompiledBinary(stream, keys);
-			case GuiConstructorRepr::BinaryKey:
-				return GuiConstructorRepr::LoadPrecompiledBinary(stream, keys);
-			default:
-				CHECK_FAIL(L"GuiValueRepr::LoadPrecompiledBinary(stream::IStream&, collections::List<presentation::GlobalStringKey>&)#Internal Error.");
-			}
-		}
-
-/***********************************************************************
 GuiTextRepr
 ***********************************************************************/
 
