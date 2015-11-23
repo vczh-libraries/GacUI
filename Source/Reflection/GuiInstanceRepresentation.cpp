@@ -48,40 +48,14 @@ GuiTextRepr
 			return repr;
 		}
 
-		void GuiTextRepr::FillXml(Ptr<parsing::xml::XmlElement> xml, bool serializePrecompiledResource)
+		void GuiTextRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
 		{
-			if (!fromStyle || serializePrecompiledResource)
+			if (!fromStyle)
 			{
 				auto xmlText = MakePtr<XmlText>();
 				xmlText->content.value = text;
 				xml->subNodes.Add(xmlText);
 			}
-		}
-
-		void GuiTextRepr::CollectUsedKey(collections::List<GlobalStringKey>& keys)
-		{
-		}
-
-		void GuiTextRepr::SavePrecompiledBinary(stream::IStream& stream, collections::SortedList<GlobalStringKey>& keys, bool saveKey)
-		{
-			stream::internal::Writer writer(stream);
-			if (saveKey)
-			{
-				vint key = BinaryKey;
-				writer << key;
-			}
-			writer << text;
-		}
-
-		Ptr<GuiTextRepr> GuiTextRepr::LoadPrecompiledBinary(stream::IStream& stream, collections::List<GlobalStringKey>& keys, Ptr<GuiTextRepr> repr)
-		{
-			stream::internal::Reader reader(stream);
-			if (!repr)
-			{
-				repr = MakePtr<GuiTextRepr>();
-			}
-			reader << repr->text;
-			return repr;
 		}
 
 /***********************************************************************
@@ -113,9 +87,9 @@ GuiAttSetterRepr
 			return repr;
 		}
 
-		void GuiAttSetterRepr::FillXml(Ptr<parsing::xml::XmlElement> xml, bool serializePrecompiledResource)
+		void GuiAttSetterRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
 		{
-			if (!fromStyle || serializePrecompiledResource)
+			if (!fromStyle)
 			{
 				if (instanceName != GlobalStringKey::Empty)
 				{
@@ -133,7 +107,7 @@ GuiAttSetterRepr
 					{
 						FOREACH(Ptr<GuiValueRepr>, repr, value->values)
 						{
-							repr->FillXml(xml, serializePrecompiledResource);
+							repr->FillXml(xml);
 						}
 					}
 					else
@@ -161,7 +135,7 @@ GuiAttSetterRepr
 							{
 								if (!repr.Cast<GuiTextRepr>())
 								{
-									repr->FillXml(xmlProp, serializePrecompiledResource);
+									repr->FillXml(xmlProp);
 								}
 							}
 							xml->subNodes.Add(xmlProp);
@@ -200,125 +174,6 @@ GuiAttSetterRepr
 			}
 		}
 
-		void GuiAttSetterRepr::CollectUsedKey(collections::List<GlobalStringKey>& keys)
-		{
-			keys.Add(instanceName);
-
-			for (vint i = 0; i < setters.Count(); i++)
-			{
-				keys.Add(setters.Keys()[i]);
-				auto value = setters.Values()[i];
-				keys.Add(value->binding);
-				for (vint j = 0; j < value->values.Count(); j++)
-				{
-					value->values[j]->CollectUsedKey(keys);
-				}
-			}
-			
-			for (vint i = 0; i < eventHandlers.Count(); i++)
-			{
-				keys.Add(eventHandlers.Keys()[i]);
-				keys.Add(eventHandlers.Values()[i]->binding);
-			}
-		}
-
-		void GuiAttSetterRepr::SavePrecompiledBinary(stream::IStream& stream, collections::SortedList<GlobalStringKey>& keys, bool saveKey)
-		{
-			stream::internal::Writer writer(stream);
-			if (saveKey)
-			{
-				vint key = BinaryKey;
-				writer << key;
-			}
-			{
-				vint count = setters.Count();
-				writer << count;
-				for (vint i = 0; i < count; i++)
-				{
-					auto keyIndex = keys.IndexOf(setters.Keys()[i]);
-					auto value = setters.Values()[i];
-					auto bindingIndex = keys.IndexOf(value->binding);
-					CHECK_ERROR(keyIndex != -1 && bindingIndex != -1, L"GuiAttSetterRepr::SavePrecompiledBinary(stream::IStream&, collections::SortedList<presentation::GlobalStringKey>&)#Internal Error.");
-					writer << keyIndex << bindingIndex;
-
-					vint valueCount = value->values.Count();
-					writer << valueCount;
-					for (vint j = 0; j < valueCount; j++)
-					{
-						value->values[j]->SavePrecompiledBinary(stream, keys, true);
-					}
-				}
-			}
-			{
-				vint count = eventHandlers.Count();
-				writer << count;
-				for (vint i = 0; i < count; i++)
-				{
-					auto keyIndex = keys.IndexOf(eventHandlers.Keys()[i]);
-					auto value = eventHandlers.Values()[i];
-					auto bindingIndex = keys.IndexOf(value->binding);
-					CHECK_ERROR(keyIndex != -1 && bindingIndex != -1, L"GuiAttSetterRepr::SavePrecompiledBinary(stream::IStream&, collections::SortedList<presentation::GlobalStringKey>&)#Internal Error.");
-					writer << keyIndex << bindingIndex << value->value;
-				}
-			}
-			{
-				vint instanceNameIndex = keys.IndexOf(instanceName);
-				CHECK_ERROR(instanceNameIndex != -1, L"GuiAttSetterRepr::SavePrecompiledBinary(stream::IStream&, collections::SortedList<presentation::GlobalStringKey>&)#Internal Error.");
-				writer << instanceNameIndex;
-			}
-		}
-
-		Ptr<GuiAttSetterRepr> GuiAttSetterRepr::LoadPrecompiledBinary(stream::IStream& stream, collections::List<GlobalStringKey>& keys, Ptr<GuiAttSetterRepr> repr)
-		{
-			stream::internal::Reader reader(stream);
-			if (!repr)
-			{
-				repr = MakePtr<GuiAttSetterRepr>();
-			}
-			{
-				vint count = -1;
-				reader << count;
-				for (vint i = 0; i < count; i++)
-				{
-					vint keyIndex = -1;
-					vint bindingIndex = -1;
-					auto value = MakePtr<SetterValue>();
-					reader << keyIndex << bindingIndex;
-					auto key = keys[keyIndex];
-					value->binding = keys[bindingIndex];
-					repr->setters.Add(key, value);
-
-					vint valueCount = -1;
-					reader << valueCount;
-					for (vint j = 0; j < valueCount; j++)
-					{
-						auto repr = GuiValueRepr::LoadPrecompiledBinary(stream, keys);
-						value->values.Add(repr);
-					}
-				}
-			}
-			{
-				vint count = -1;
-				reader << count;
-				for (vint i = 0; i < count; i++)
-				{
-					vint keyIndex = -1;
-					vint bindingIndex = -1;
-					auto value = MakePtr<EventValue>();
-					reader << keyIndex << bindingIndex << value->value;
-					auto key = keys[keyIndex];
-					value->binding = keys[bindingIndex];
-					repr->eventHandlers.Add(key, value);
-				}
-			}
-			{
-				vint instanceNameIndex = -1;
-				reader << instanceNameIndex;
-				repr->instanceName = keys[instanceNameIndex];
-			}
-			return repr;
-		}
-
 /***********************************************************************
 GuiConstructorRepr
 ***********************************************************************/
@@ -334,9 +189,9 @@ GuiConstructorRepr
 			return repr;
 		}
 
-		void GuiConstructorRepr::FillXml(Ptr<parsing::xml::XmlElement> xml, bool serializePrecompiledResource)
+		void GuiConstructorRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
 		{
-			if (!fromStyle || serializePrecompiledResource)
+			if (!fromStyle)
 			{
 				auto xmlCtor = MakePtr<XmlElement>();
 				if (typeNamespace == GlobalStringKey::Empty)
@@ -356,47 +211,9 @@ GuiConstructorRepr
 					xml->attributes.Add(attStyle);
 				}
 
-				GuiAttSetterRepr::FillXml(xmlCtor, serializePrecompiledResource);
+				GuiAttSetterRepr::FillXml(xmlCtor);
 				xml->subNodes.Add(xmlCtor);
 			}
-		}
-
-		void GuiConstructorRepr::CollectUsedKey(collections::List<GlobalStringKey>& keys)
-		{
-			GuiAttSetterRepr::CollectUsedKey(keys);
-			keys.Add(typeNamespace);
-			keys.Add(typeName);
-		}
-
-		void GuiConstructorRepr::SavePrecompiledBinary(stream::IStream& stream, collections::SortedList<GlobalStringKey>& keys, bool saveKey)
-		{
-			stream::internal::Writer writer(stream);
-			if (saveKey)
-			{
-				vint key = BinaryKey;
-				writer << key;
-			}
-			vint typeNamespaceIndex = keys.IndexOf(typeNamespace);
-			vint typeNameIndex = keys.IndexOf(typeName);
-			CHECK_ERROR(typeNamespaceIndex != -1 && typeNameIndex != -1, L"GuiConstructorRepr::SavePrecompiledBinary(stream::IStream&, collections::SortedList<presentation::GlobalStringKey>&)#Internal Error.");
-			writer << typeNamespaceIndex << typeNameIndex << styleName;
-			GuiAttSetterRepr::SavePrecompiledBinary(stream, keys, false);
-		}
-
-		Ptr<GuiConstructorRepr> GuiConstructorRepr::LoadPrecompiledBinary(stream::IStream& stream, collections::List<GlobalStringKey>& keys, Ptr<GuiConstructorRepr> repr)
-		{
-			stream::internal::Reader reader(stream);
-			if (!repr)
-			{
-				repr = MakePtr<GuiConstructorRepr>();
-			}
-			vint typeNamespaceIndex = -1;
-			vint typeNameIndex = -1;
-			reader << typeNamespaceIndex << typeNameIndex << repr->styleName;
-			repr->typeNamespace = keys[typeNamespaceIndex];
-			repr->typeName = keys[typeNameIndex];
-			GuiAttSetterRepr::LoadPrecompiledBinary(stream, keys, repr);
-			return repr;
 		}
 
 /***********************************************************************
@@ -794,7 +611,7 @@ GuiInstanceContext
 			return context->instance ? context : nullptr;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiInstanceContext::SaveToXml(bool serializePrecompiledResource)
+		Ptr<parsing::xml::XmlDocument> GuiInstanceContext::SaveToXml()
 		{
 			auto xmlInstance = MakePtr<XmlElement>();
 			xmlInstance->name.value = L"Instance";
@@ -902,7 +719,7 @@ GuiInstanceContext
 				}
 			}
 
-			if (!serializePrecompiledResource && stylePaths.Count() > 0)
+			if (stylePaths.Count() > 0)
 			{
 				auto attStyles = MakePtr<XmlAttribute>();
 				attStyles->name.value = L"ref.Styles";
@@ -918,218 +735,11 @@ GuiInstanceContext
 				}
 			}
 
-			instance->FillXml(xmlInstance, serializePrecompiledResource);
+			instance->FillXml(xmlInstance);
 
 			auto doc = MakePtr<XmlDocument>();
 			doc->rootElement = xmlInstance;
 			return doc;
-		}
-
-		Ptr<GuiInstanceContext> GuiInstanceContext::LoadPrecompiledBinary(stream::IStream& stream, collections::List<WString>& errors)
-		{
-			stream::internal::Reader reader(stream);
-			List<GlobalStringKey> sortedKeys;
-			{
-				vint count = 0;
-				reader << count;
-
-				for (vint i = 0; i < count; i++)
-				{
-					WString keyString;
-					reader << keyString;
-					sortedKeys.Add(GlobalStringKey::Get(keyString));
-				}
-			}
-
-			auto context = MakePtr<GuiInstanceContext>();
-			context->appliedStyles = true;
-			{
-				context->instance = GuiConstructorRepr::LoadPrecompiledBinary(stream, sortedKeys);
-			}
-			{
-				vint count = -1;
-				reader << count;
-				for (vint i = 0; i < count; i++)
-				{
-					vint keyIndex = -1;
-					vint valueNameIndex = -1;
-					reader << keyIndex << valueNameIndex;
-
-					auto key = sortedKeys[keyIndex];
-					auto ni = MakePtr<NamespaceInfo>();
-					ni->name = sortedKeys[valueNameIndex];
-					context->namespaces.Add(key, ni);
-
-					vint valueCount = -1;
-					reader << valueCount;
-					for (vint j = 0; j < valueCount; j++)
-					{
-						auto ns = MakePtr<GuiInstanceNamespace>();
-						reader << ns->prefix << ns->postfix;
-						ni->namespaces.Add(ns);
-					}
-				}
-			}
-			{
-				reader << context->codeBehind << context->className;
-			}
-			{
-				vint count = -1;
-				reader << count;
-				for (vint i = 0; i < count; i++)
-				{
-					vint nameIndex = -1;
-					vint classNameIndex = -1;
-					reader << nameIndex << classNameIndex;
-
-					auto parameter = MakePtr<GuiInstanceParameter>();
-					parameter->name = sortedKeys[nameIndex];
-					parameter->className = sortedKeys[classNameIndex];
-					context->parameters.Add(parameter);
-				}
-			}
-			{
-				vint count = -1;
-				reader << count;
-				for (vint i = 0; i < count; i++)
-				{
-					vint nameIndex = -1;
-					WString typeName;
-					bool readonly = false;
-					reader << nameIndex << typeName << readonly;
-
-					auto prop = MakePtr<GuiInstanceProperty>();
-					prop->name = sortedKeys[nameIndex];
-					prop->typeName = typeName;
-					prop->readonly = readonly;
-					context->properties.Add(prop);
-				}
-			}
-			{
-				vint count = -1;
-				reader << count;
-				for (vint i = 0; i < count; i++)
-				{
-					vint nameIndex = -1;
-					WString typeName;
-					WString value;
-					reader << nameIndex << typeName << value;
-
-					auto state = MakePtr<GuiInstanceState>();
-					state->name = sortedKeys[nameIndex];
-					state->typeName = typeName;
-					state->value = value;
-					context->states.Add(state);
-				}
-			}
-
-			return context;
-		}
-
-		void GuiInstanceContext::SavePrecompiledBinary(stream::IStream& stream)
-		{
-			stream::internal::Writer writer(stream);
-			SortedList<GlobalStringKey> sortedKeys;
-			{
-				List<GlobalStringKey> keys;
-				CollectUsedKey(keys);
-				CopyFrom(sortedKeys, From(keys).Distinct());
-
-				vint count = sortedKeys.Count();
-				writer << count;
-				FOREACH(GlobalStringKey, key, sortedKeys)
-				{
-					WString keyString = key.ToString();
-					writer << keyString;
-				}
-			}
-			{
-				instance->SavePrecompiledBinary(stream, sortedKeys, false);
-			}
-			{
-				vint count = namespaces.Count();
-				writer << count;
-				for (vint i = 0; i < count; i++)
-				{
-					auto keyIndex = sortedKeys.IndexOf(namespaces.Keys()[i]);
-					auto value = namespaces.Values()[i];
-					auto valueNameIndex = sortedKeys.IndexOf(value->name);
-					CHECK_ERROR(keyIndex != -1 && valueNameIndex != -1, L"GuiInstanceContext::SavePrecompiledBinary(stream::IStream&)#Internal Error.");
-					writer << keyIndex << valueNameIndex;
-
-					vint valueCount = value->namespaces.Count();
-					writer << valueCount;
-					FOREACH(Ptr<GuiInstanceNamespace>, ns, value->namespaces)
-					{
-						writer << ns->prefix << ns->postfix;
-					}
-				}
-			}
-			{
-				writer << codeBehind << className;
-			}
-			{
-				vint count = parameters.Count();
-				writer << count;
-				FOREACH(Ptr<GuiInstanceParameter>, parameter, parameters)
-				{
-					vint nameIndex = sortedKeys.IndexOf(parameter->name);
-					vint classNameIndex = sortedKeys.IndexOf(parameter->className);
-					CHECK_ERROR(nameIndex != -1 && classNameIndex != -1, L"GuiInstanceContext::SavePrecompiledBinary(stream::IStream&)#Internal Error.");
-					writer << nameIndex << classNameIndex;
-				}
-			}
-			{
-				vint count = properties.Count();
-				writer << count;
-				FOREACH(Ptr<GuiInstanceProperty>, prop, properties)
-				{
-					vint nameIndex = sortedKeys.IndexOf(prop->name);
-					WString typeName = prop->typeName;
-					bool readonly = prop->readonly;
-					CHECK_ERROR(nameIndex != -1, L"GuiInstanceContext::SavePrecompiledBinary(stream::IStream&)#Internal Error.");
-					writer << nameIndex << typeName << readonly;
-				}
-			}
-			{
-				vint count = states.Count();
-				writer << count;
-				FOREACH(Ptr<GuiInstanceState>, state, states)
-				{
-					vint nameIndex = sortedKeys.IndexOf(state->name);
-					WString typeName = state->typeName;
-					WString value = state->value;
-					CHECK_ERROR(nameIndex != -1, L"GuiInstanceContext::SavePrecompiledBinary(stream::IStream&)#Internal Error.");
-					writer << nameIndex << typeName << value;
-				}
-			}
-		}
-
-		void GuiInstanceContext::CollectUsedKey(collections::List<GlobalStringKey>& keys)
-		{
-			instance->CollectUsedKey(keys);
-			
-			for (vint i = 0; i < namespaces.Count(); i++)
-			{
-				keys.Add(namespaces.Keys()[i]);
-				keys.Add(namespaces.Values()[i]->name);
-			}
-
-			for (vint i = 0; i < parameters.Count(); i++)
-			{
-				keys.Add(parameters[i]->name);
-				keys.Add(parameters[i]->className);
-			}
-
-			for (vint i = 0; i < properties.Count(); i++)
-			{
-				keys.Add(properties[i]->name);
-			}
-
-			for (vint i = 0; i < states.Count(); i++)
-			{
-				keys.Add(states[i]->name);
-			}
 		}
 
 		bool GuiInstanceContext::ApplyStyles(Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)
@@ -1263,8 +873,7 @@ GuiInstanceStyle
 			}
 			xmlStyle->attributes.Add(attPath);
 
-			setter->FillXml(xmlStyle, true);
-
+			setter->FillXml(xmlStyle);
 			return xmlStyle;
 		}
 

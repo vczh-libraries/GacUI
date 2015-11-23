@@ -486,58 +486,61 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent, bool serializePrecompiledResource)
+		void GuiResourceFolder::SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"name";
-				attName->value.value = item->GetName();
-
-				if (serializePrecompiledResource || item->GetPath() == L"")
+				auto resolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
+				if (resolver->XmlSerializable())
 				{
-					auto resolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
-					Ptr<XmlElement> xmlElement;
+					auto attName = MakePtr<XmlAttribute>();
+					attName->name.value = L"name";
+					attName->value.value = item->GetName();
 
-					if (auto directLoad = resolver->DirectLoadXml())
+					if (item->GetPath() == L"")
 					{
-						xmlElement = directLoad->Serialize(item->GetContent(), serializePrecompiledResource);
-					}
-					else if (auto indirectLoad = resolver->IndirectLoad())
-					{
-						if (auto preloadResolver = GetResourceResolverManager()->GetTypeResolver(indirectLoad->GetPreloadType()))
+						Ptr<XmlElement> xmlElement;
+
+						if (auto directLoad = resolver->DirectLoadXml())
 						{
-							if (auto directLoad = preloadResolver->DirectLoadXml())
+							xmlElement = directLoad->Serialize(item->GetContent());
+						}
+						else if (auto indirectLoad = resolver->IndirectLoad())
+						{
+							if (auto preloadResolver = GetResourceResolverManager()->GetTypeResolver(indirectLoad->GetPreloadType()))
 							{
-								if (auto resource = indirectLoad->Serialize(item->GetContent(), serializePrecompiledResource))
+								if (auto directLoad = preloadResolver->DirectLoadXml())
 								{
-									xmlElement = directLoad->Serialize(resource, serializePrecompiledResource);
-									xmlElement->name.value = resolver->GetType();
+									if (auto resource = indirectLoad->Serialize(item->GetContent()))
+									{
+										xmlElement = directLoad->Serialize(resource);
+										xmlElement->name.value = resolver->GetType();
+									}
 								}
 							}
 						}
-					}
 
-					if (xmlElement)
+						if (xmlElement)
+						{
+							xmlElement->attributes.Add(attName);
+							xmlParent->subNodes.Add(xmlElement);
+						}
+					}
+					else
 					{
-						xmlElement->attributes.Add(attName);
+						auto xmlElement = MakePtr<XmlElement>();
+						xmlElement->name.value = item->GetTypeName();
 						xmlParent->subNodes.Add(xmlElement);
+
+						auto attContent = MakePtr<XmlAttribute>();
+						attContent->name.value = L"content";
+						attContent->value.value = L"File";
+						xmlElement->attributes.Add(attContent);
+
+						auto xmlText = MakePtr<XmlText>();
+						xmlText->content.value = item->GetPath();
+						xmlElement->subNodes.Add(xmlText);
 					}
-				}
-				else
-				{
-					auto xmlElement = MakePtr<XmlElement>();
-					xmlElement->name.value = item->GetTypeName();
-					xmlParent->subNodes.Add(xmlElement);
-
-					auto attContent = MakePtr<XmlAttribute>();
-					attContent->name.value = L"content";
-					attContent->value.value = L"File";
-					xmlElement->attributes.Add(attContent);
-
-					auto xmlText = MakePtr<XmlText>();
-					xmlText->content.value = item->GetPath();
-					xmlElement->subNodes.Add(xmlText);
 				}
 			}
 
@@ -553,9 +556,9 @@ GuiResourceFolder
 				xmlParent->subNodes.Add(xmlFolder);
 				
 
-				if (serializePrecompiledResource || folder->GetPath() == L"")
+				if (folder->GetPath() == L"")
 				{
-					folder->SaveResourceFolderToXml(xmlFolder, serializePrecompiledResource);
+					folder->SaveResourceFolderToXml(xmlFolder);
 				}
 				else
 				{
@@ -692,23 +695,26 @@ GuiResourceFolder
 
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
-				vint typeName = typeNames.IndexOf(item->GetTypeName());
-				WString name = item->GetName();
-
 				auto resolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
-				if (auto directLoad = resolver->DirectLoadStream())
+				if (resolver->StreamSerializable())
 				{
-					itemTuples.Add(ItemTuple(typeName, name, directLoad, item->GetContent()));
-				}
-				else if (auto indirectLoad = resolver->IndirectLoad())
-				{
-					if (auto preloadResolver = GetResourceResolverManager()->GetTypeResolver(indirectLoad->GetPreloadType()))
+					vint typeName = typeNames.IndexOf(item->GetTypeName());
+					WString name = item->GetName();
+				
+					if (auto directLoad = resolver->DirectLoadStream())
 					{
-						if (auto directLoad = preloadResolver->DirectLoadStream())
+						itemTuples.Add(ItemTuple(typeName, name, directLoad, item->GetContent()));
+					}
+					else if (auto indirectLoad = resolver->IndirectLoad())
+					{
+						if (auto preloadResolver = GetResourceResolverManager()->GetTypeResolver(indirectLoad->GetPreloadType()))
 						{
-							if (auto resource = indirectLoad->Serialize(item->GetContent(), true))
+							if (auto directLoad = preloadResolver->DirectLoadStream())
 							{
-								itemTuples.Add(ItemTuple(typeName, name, directLoad, resource));
+								if (auto resource = indirectLoad->Serialize(item->GetContent()))
+								{
+									itemTuples.Add(ItemTuple(typeName, name, directLoad, resource));
+								}
 							}
 						}
 					}
@@ -956,11 +962,11 @@ GuiResource
 			return 0;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResource::SaveToXml(bool serializePrecompiledResource)
+		Ptr<parsing::xml::XmlDocument> GuiResource::SaveToXml()
 		{
 			auto xmlRoot = MakePtr<XmlElement>();
 			xmlRoot->name.value = L"Resource";
-			SaveResourceFolderToXml(xmlRoot, serializePrecompiledResource);
+			SaveResourceFolderToXml(xmlRoot);
 
 			auto doc = MakePtr<XmlDocument>();
 			doc->rootElement = xmlRoot;

@@ -4579,9 +4579,9 @@ Serialization
 			//---------------------------------------------
 
 			template<>
-			struct Serialization<vint32_t>
+			struct Serialization<vint64_t>
 			{
-				static void IO(Reader& reader, vint32_t& value)
+				static void IO(Reader& reader, vint64_t& value)
 				{
 					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
 					{
@@ -4589,7 +4589,7 @@ Serialization
 					}
 				}
 					
-				static void IO(Writer& writer, vint32_t& value)
+				static void IO(Writer& writer, vint64_t& value)
 				{
 					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
 					{
@@ -4599,19 +4599,19 @@ Serialization
 			};
 
 			template<>
-			struct Serialization<vint64_t>
+			struct Serialization<vint32_t>
 			{
-				static void IO(Reader& reader, vint64_t& value)
+				static void IO(Reader& reader, vint32_t& value)
 				{
-					vint32_t v = 0;
-					Serialization<vint32_t>::IO(reader, v);
-					value = (vint64_t)v;
+					vint64_t v = 0;
+					Serialization<vint64_t>::IO(reader, v);
+					value = (vint32_t)v;
 				}
 					
-				static void IO(Writer& writer, vint64_t& value)
+				static void IO(Writer& writer, vint32_t& value)
 				{
-					vint32_t v = (vint32_t)value;
-					Serialization<vint32_t>::IO(writer, v);
+					vint64_t v = (vint64_t)value;
+					Serialization<vint64_t>::IO(writer, v);
 				}
 			};
 

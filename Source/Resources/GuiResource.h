@@ -239,7 +239,7 @@ Resource Structure
 			FolderMap								folders;
 
 			void									LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, collections::List<WString>& errors);
-			void									SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent, bool serializePrecompiledResource);
+			void									SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent);
 			void									CollectTypeNames(collections::List<WString>& typeNames);
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::Reader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
 			void									SaveResourceFolderToBinary(stream::internal::Writer& writer, collections::List<WString>& typeNames);
@@ -332,8 +332,7 @@ Resource
 
 			/// <summary>Save the resource to xml.</summary>
 			/// <returns>The xml.</returns>
-			/// <param name="serializePrecompiledResource">Set to true to serialize all resources (including image, compiled script, etc) in the xml.</param>
-			Ptr<parsing::xml::XmlDocument>			SaveToXml(bool serializePrecompiledResource);
+			Ptr<parsing::xml::XmlDocument>			SaveToXml();
 			
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The loaded resource.</returns>
@@ -435,6 +434,12 @@ Resource Type Resolver
 			/// <summary>Get the type of the resource that load by this resolver.</summary>
 			/// <returns>The type.</returns>
 			virtual WString										GetType() = 0;
+			/// <summary>Test is this resource able to serialize in an XML resource or not.</summary>
+			/// <returns>Returns true if this resource is able to serialize in an XML resource.</returns>
+			virtual bool										XmlSerializable() = 0;
+			/// <summary>Test is this resource able to serialize in a precompiled binary resource or not.</summary>
+			/// <returns>Returns true if this resource is able to serialize in a precompiled binary resource.</returns>
+			virtual bool										StreamSerializable() = 0;
 			
 			/// <summary>Get the precompiler for the type resolver.</summary>
 			/// <returns>Returns null if the type resolve does not support precompiling.</returns>
@@ -478,8 +483,7 @@ Resource Type Resolver
 			/// <summary>Serialize a resource to an xml element. This function is called if this type resolver does not have a preload type.</summary>
 			/// <returns>The serialized xml element.</returns>
 			/// <param name="resource">The resource.</param>
-			/// <param name="serializePrecompiledResource">Set to true to serialize the precompiled version of the resource.</param>
-			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource) = 0;
+			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<DescriptableObject> resource) = 0;
 
 			/// <summary>Load a resource for a type inside an xml element.</summary>
 			/// <returns>The resource.</returns>
@@ -524,8 +528,7 @@ Resource Type Resolver
 			/// <summary>Serialize a resource to a resource in preload type.</summary>
 			/// <returns>The serialized resource.</returns>
 			/// <param name="resource">The resource.</param>
-			/// <param name="serializePrecompiledResource">Set to true to serialize the precompiled version of the resource.</param>
-			virtual Ptr<DescriptableObject>						Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource) = 0;
+			virtual Ptr<DescriptableObject>						Serialize(Ptr<DescriptableObject> resource) = 0;
 
 			/// <summary>Load a resource for a type from a resource loaded by the preload type resolver.</summary>
 			/// <returns>The resource.</returns>

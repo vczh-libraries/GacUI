@@ -196,12 +196,6 @@ void GuiMain_Resource()
 		CHECK_ERROR(errors.Count() == 0, L"Error");
 		/*
 		{
-			auto xml = resource->SaveToXml(true);
-			FileStream fileStream(L"UI.precompiled.xml", FileStream::WriteOnly);
-			StreamWriter writer(fileStream);
-			XmlPrint(xml, writer);
-		}
-		{
 			FileStream fileStream(L"UI.bin", FileStream::WriteOnly);
 			resource->SavePrecompiledBinary(fileStream);
 		}

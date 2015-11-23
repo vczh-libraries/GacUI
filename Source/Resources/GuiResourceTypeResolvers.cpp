@@ -30,6 +30,16 @@ Image Type Resolver (Image)
 				return L"Image";
 			}
 
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
 			{
 				return this;
@@ -40,7 +50,7 @@ Image Type Resolver (Image)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
 			{
 				if (auto obj = resource.Cast<GuiImageData>())
 				{
@@ -133,6 +143,16 @@ Text Type Resolver (Text)
 				return L"Text";
 			}
 
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
 			{
 				return this;
@@ -143,7 +163,7 @@ Text Type Resolver (Text)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
 			{
 				if (auto obj = resource.Cast<GuiTextData>())
 				{
@@ -211,6 +231,16 @@ Xml Type Resolver (Xml)
 				return L"Xml";
 			}
 
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
 			IGuiResourceTypeResolver_DirectLoadXml* DirectLoadXml()override
 			{
 				return this;
@@ -221,7 +251,7 @@ Xml Type Resolver (Xml)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
 			{
 				if (auto obj = resource.Cast<XmlDocument>())
 				{
@@ -306,6 +336,16 @@ Doc Type Resolver (Doc)
 				return L"Doc";
 			}
 
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
 			WString GetPreloadType()override
 			{
 				return L"Xml";
@@ -321,7 +361,7 @@ Doc Type Resolver (Doc)
 				return this;
 			}
 
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource, bool serializePrecompiledResource)override
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
 			{
 				if (auto obj = resource.Cast<DocumentModel>())
 				{
