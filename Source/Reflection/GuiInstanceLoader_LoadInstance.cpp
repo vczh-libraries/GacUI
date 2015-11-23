@@ -486,78 +486,81 @@ FillInstance
 
 				if (eventLoader)
 				{
-					IGuiInstanceLoader::PropertyValue propertyValue;
-					propertyValue.typeInfo = propertyInfo.typeInfo;
-					propertyValue.propertyName = propertyInfo.propertyName;
-					propertyValue.instanceValue = createdInstance;
-
-					if (auto group = createdInstance.GetTypeDescriptor()->GetMethodGroupByName(handler->value, true))
+					if (handler->binding == GlobalStringKey::Empty)
 					{
-						// find a correct method
-						vint count = group->GetMethodCount();
-						IMethodInfo* selectedMethod = 0;
-						for (vint i = 0; i < count; i++)
+						IGuiInstanceLoader::PropertyValue propertyValue;
+						propertyValue.typeInfo = propertyInfo.typeInfo;
+						propertyValue.propertyName = propertyInfo.propertyName;
+						propertyValue.instanceValue = createdInstance;
+
+						if (auto group = createdInstance.GetTypeDescriptor()->GetMethodGroupByName(handler->value, true))
 						{
-							auto method = group->GetMethod(i);
-							if (method->GetParameterCount() != 2) goto UNSUPPORTED;
-
+							// find a correct method
+							vint count = group->GetMethodCount();
+							IMethodInfo* selectedMethod = 0;
+							for (vint i = 0; i < count; i++)
 							{
-								auto returnType = method->GetReturn();
-								auto senderType = method->GetParameter(0)->GetType();
-								auto argumentType = method->GetParameter(1)->GetType();
-					
-								if (returnType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
-								if (returnType->GetTypeDescriptor() != description::GetTypeDescriptor<VoidValue>()) goto UNSUPPORTED;
-					
-								if (senderType->GetDecorator() != ITypeInfo::RawPtr) goto UNSUPPORTED;
-								senderType = senderType->GetElementType();
-								if (senderType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
-								if (senderType->GetTypeDescriptor() != description::GetTypeDescriptor<compositions::GuiGraphicsComposition>()) goto UNSUPPORTED;
-					
-								if (argumentType->GetDecorator() != ITypeInfo::RawPtr) goto UNSUPPORTED;
-								argumentType = argumentType->GetElementType();
-								if (argumentType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
-								if (argumentType->GetTypeDescriptor() != eventInfo->argumentType) goto UNSUPPORTED;
+								auto method = group->GetMethod(i);
+								if (method->GetParameterCount() != 2) goto UNSUPPORTED;
 
-								selectedMethod = method;
-								break;
+								{
+									auto returnType = method->GetReturn();
+									auto senderType = method->GetParameter(0)->GetType();
+									auto argumentType = method->GetParameter(1)->GetType();
+					
+									if (returnType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
+									if (returnType->GetTypeDescriptor() != description::GetTypeDescriptor<VoidValue>()) goto UNSUPPORTED;
+					
+									if (senderType->GetDecorator() != ITypeInfo::RawPtr) goto UNSUPPORTED;
+									senderType = senderType->GetElementType();
+									if (senderType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
+									if (senderType->GetTypeDescriptor() != description::GetTypeDescriptor<compositions::GuiGraphicsComposition>()) goto UNSUPPORTED;
+					
+									if (argumentType->GetDecorator() != ITypeInfo::RawPtr) goto UNSUPPORTED;
+									argumentType = argumentType->GetElementType();
+									if (argumentType->GetDecorator() != ITypeInfo::TypeDescriptor) goto UNSUPPORTED;
+									if (argumentType->GetTypeDescriptor() != eventInfo->argumentType) goto UNSUPPORTED;
+
+									selectedMethod = method;
+									break;
+								}
+
+							UNSUPPORTED:
+								continue;
 							}
 
-						UNSUPPORTED:
-							continue;
-						}
-
-						if (selectedMethod)
-						{
-							Value proxy = selectedMethod->CreateFunctionProxy(createdInstance);
-							if (!proxy.IsNull())
+							if (selectedMethod)
 							{
-								propertyValue.propertyValue = proxy;
-								eventLoader->SetEventValue(propertyValue);
+								Value proxy = selectedMethod->CreateFunctionProxy(createdInstance);
+								if (!proxy.IsNull())
+								{
+									propertyValue.propertyValue = proxy;
+									eventLoader->SetEventValue(propertyValue);
+								}
+							}
+							else
+							{
+								env->scope->errors.Add(
+									L"Event handler \"" +
+									handler->value +
+									L"\" of \"" +
+									env->context->instance->typeName.ToString() +
+									L"\" exists but the type does not match the event \"" +
+									propertyValue.propertyName.ToString() +
+									L"\".");
 							}
 						}
 						else
 						{
 							env->scope->errors.Add(
-								L"Event handler \"" +
+								L"Failed to find event handler \"" +
 								handler->value +
 								L"\" of \"" +
 								env->context->instance->typeName.ToString() +
-								L"\" exists but the type does not match the event \"" +
+								L"\" when setting event \"" +
 								propertyValue.propertyName.ToString() +
 								L"\".");
 						}
-					}
-					else
-					{
-						env->scope->errors.Add(
-							L"Failed to find event handler \"" +
-							handler->value +
-							L"\" of \"" +
-							env->context->instance->typeName.ToString() +
-							L"\" when setting event \"" +
-							propertyValue.propertyName.ToString() +
-							L"\".");
 					}
 				}
 				else

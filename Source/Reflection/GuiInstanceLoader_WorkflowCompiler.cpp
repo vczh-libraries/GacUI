@@ -34,6 +34,174 @@ Parser
 Workflow_InstallBindProperty
 ***********************************************************************/
 
+		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& protocol, const WString& path)
+		{
+			auto subBlock = MakePtr<WfBlockStatement>();
+			{
+				auto refResolver = MakePtr<WfReferenceExpression>();
+				refResolver->name.value = L"<resolver>";
+
+				auto member = MakePtr<WfMemberExpression>();
+				member->parent = refResolver;
+				member->name.value = L"ResolveResource";
+
+				auto valueProtocol = MakePtr<WfStringExpression>();
+				valueProtocol->value.value = protocol;
+
+				auto valuePath = MakePtr<WfStringExpression>();
+				valuePath->value.value = path;
+
+				auto call = MakePtr<WfCallExpression>();
+				call->function = member;
+				call->arguments.Add(valueProtocol);
+				call->arguments.Add(valuePath);
+
+				auto varDesc = MakePtr<WfVariableDeclaration>();
+				varDesc->name.value = L"<resource-item>";
+				varDesc->expression = call;
+
+				auto varStat = MakePtr<WfVariableStatement>();
+				varStat->variable = varDesc;
+				subBlock->statements.Add(varStat);
+			}
+			{
+				auto refResourceItem = MakePtr<WfReferenceExpression>();
+				refResourceItem->name.value = L"<resource-item>";
+
+				auto isNull = MakePtr<WfTypeTestingExpression>();
+				isNull->expression = refResourceItem;
+				isNull->test = WfTypeTesting::IsNull;
+
+				auto valueException = MakePtr<WfStringExpression>();
+				valueException->value.value = L"Resource \"" + protocol + L"://" + path + L"\" does not exist.";
+
+				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+				raiseStat->expression = valueException;
+				
+				auto ifBlock = MakePtr<WfBlockStatement>();
+				ifBlock->statements.Add(raiseStat);
+
+				auto ifStat = MakePtr<WfIfStatement>();
+				ifStat->expression = isNull;
+				ifStat->trueBranch = ifBlock;
+				subBlock->statements.Add(ifStat);
+			}
+
+			auto td = propertyInfo->GetReturn()->GetTypeDescriptor();
+			Ptr<ITypeInfo> convertedType;
+			if (td->GetValueSerializer())
+			{
+				convertedType = TypeInfoRetriver<Ptr<GuiTextData>>::CreateTypeInfo();
+			}
+			else if (td == description::GetTypeDescriptor<INativeImage>() || td == description::GetTypeDescriptor<GuiImageData>())
+			{
+				convertedType = TypeInfoRetriver<Ptr<GuiImageData>>::CreateTypeInfo();
+			}
+			else
+			{
+				convertedType = CopyTypeInfo(propertyInfo->GetReturn());
+			}
+
+			{
+				auto refResourceItem = MakePtr<WfReferenceExpression>();
+				refResourceItem->name.value = L"<resource-item>";
+
+				auto cast = MakePtr<WfTypeCastingExpression>();
+				cast->expression = refResourceItem;
+				cast->type = GetTypeFromTypeInfo(convertedType.Obj());
+				cast->strategy = WfTypeCastingStrategy::Weak;
+
+				auto varDesc = MakePtr<WfVariableDeclaration>();
+				varDesc->name.value = L"<resource-value>";
+				varDesc->expression = cast;
+
+				auto varStat = MakePtr<WfVariableStatement>();
+				varStat->variable = varDesc;
+				subBlock->statements.Add(varStat);
+			}
+			{
+				auto refResourceValue = MakePtr<WfReferenceExpression>();
+				refResourceValue->name.value = L"<resource-value>";
+
+				auto isNull = MakePtr<WfTypeTestingExpression>();
+				isNull->expression = refResourceValue;
+				isNull->test = WfTypeTesting::IsNull;
+
+				auto valueException = MakePtr<WfStringExpression>();
+				valueException->value.value = L"Resource \"" + protocol + L"://" + path + L"\" cannot be read as type \"" + convertedType->GetTypeDescriptor()->GetTypeName() + L"\".";
+
+				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+				raiseStat->expression = valueException;
+
+				auto ifBlock = MakePtr<WfBlockStatement>();
+				ifBlock->statements.Add(raiseStat);
+
+				auto ifStat = MakePtr<WfIfStatement>();
+				ifStat->expression = isNull;
+				ifStat->trueBranch = ifBlock;
+				subBlock->statements.Add(ifStat);
+			}
+
+			Ptr<WfExpression> evalExpression;
+			if (td->GetValueSerializer())
+			{
+				auto refResourceValue = MakePtr<WfReferenceExpression>();
+				refResourceValue->name.value = L"<resource-value>";
+
+				auto member = MakePtr<WfMemberExpression>();
+				member->parent = refResourceValue;
+				member->name.value = L"Text";
+
+				auto cast = MakePtr<WfTypeCastingExpression>();
+				cast->expression = member;
+				cast->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+				cast->strategy = WfTypeCastingStrategy::Strong;
+
+				evalExpression = cast;
+			}
+			else if (td == description::GetTypeDescriptor<INativeImage>())
+			{
+				auto refResourceValue = MakePtr<WfReferenceExpression>();
+				refResourceValue->name.value = L"<resource-value>";
+
+				auto member = MakePtr<WfMemberExpression>();
+				member->parent = refResourceValue;
+				member->name.value = L"Image";
+
+				evalExpression = member;
+			}
+			else
+			{
+				auto refResourceValue = MakePtr<WfReferenceExpression>();
+				refResourceValue->name.value = L"<resource-value>";
+
+				evalExpression = refResourceValue;
+			}
+
+			{
+				auto refSubscribee = MakePtr<WfReferenceExpression>();
+				refSubscribee->name.value = variableName.ToString();
+
+				auto member = MakePtr<WfMemberExpression>();
+				member->parent = refSubscribee;
+				member->name.value = propertyInfo->GetName();
+
+				auto assign = MakePtr<WfBinaryExpression>();
+				assign->op = WfBinaryOperator::Assign;
+				assign->first = member;
+				assign->second = evalExpression;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = assign;
+				subBlock->statements.Add(stat);
+			}
+			return subBlock;
+		}
+
+/***********************************************************************
+Workflow_InstallBindProperty
+***********************************************************************/
+
 		Ptr<workflow::WfStatement> Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression)
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
@@ -721,7 +889,7 @@ WorkflowCompileVisitor
 						{
 							errors.Add(L"Precompile: Cannot find property \"" + propertyName.ToString() + L"\" in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 						}
-						else
+						else if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 						{
 							WString expressionCode;
 							if (auto obj = setter->values[0].Cast<GuiTextRepr>())
@@ -733,31 +901,28 @@ WorkflowCompileVisitor
 								errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires the text value of property \"" + propertyName.ToString() + L"\".");
 							}
 
-							if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
+							auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
+							if (binder)
 							{
-								auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
-								if (binder)
+								auto instancePropertyInfo = info.typeInfo.typeDescriptor->GetPropertyByName(info.propertyName.ToString(), true);
+								if (instancePropertyInfo)
 								{
-									auto instancePropertyInfo = info.typeInfo.typeDescriptor->GetPropertyByName(info.propertyName.ToString(), true);
-									if (instancePropertyInfo)
+									if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
 									{
-										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
+										if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
 										{
-											if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
-											{
-												statements->statements.Add(statement);	
-											}
+											statements->statements.Add(statement);	
 										}
-									}
-									else
-									{
-										errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 									}
 								}
 								else
 								{
-									errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
+									errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 								}
+							}
+							else
+							{
+								errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
 							}
 						}
 					}

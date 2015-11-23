@@ -37,53 +37,12 @@ GuiResourceInstanceBinder (uri)
 				if (!IsResourceUrl(code, protocol, path))
 				{
 					errors.Add(L"Precompile: \"" + code + L"\" is not a valid resource uri.");
+					return 0;
 				}
 				else
 				{
+					return Workflow_InstallUriProperty(variableName, propertyInfo, protocol, path);
 				}
-				return 0;
-			}
-
-			bool SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue)override
-			{
-				if (propertyValue.propertyValue.GetValueType() == Value::Text)
-				{
-					WString protocol, path;
-					if (IsResourceUrl(propertyValue.propertyValue.GetText(), protocol, path))
-					{
-						if(Ptr<DescriptableObject> resource=env->resolver->ResolveResource(protocol, path))
-						{
-							Value value;
-							if(Ptr<GuiTextData> text=resource.Cast<GuiTextData>())
-							{
-								value=Value::From(text->GetText(), stringTypeDescriptor);
-							}
-							else if(Ptr<DescriptableObject> obj=resource.Cast<DescriptableObject>())
-							{
-								if (auto image = obj.Cast<GuiImageData>())
-								{
-									auto td = propertyValue.typeInfo.typeDescriptor;
-									if (auto prop = td->GetPropertyByName(propertyValue.propertyName.ToString(), true))
-									{
-										if (prop->GetReturn() && prop->GetReturn()->GetTypeDescriptor()->GetTypeName() == L"presentation::INativeImage")
-										{
-											obj = image->GetImage();
-										}
-									}
-								}
-								value = Value::From(obj);
-							}
-
-							if(!value.IsNull())
-							{
-								IGuiInstanceLoader::PropertyValue newValue = propertyValue;
-								newValue.propertyValue = value;
-								return loader->SetPropertyValue(newValue);
-							}
-						}
-					}
-				}
-				return false;
 			}
 		};
 
