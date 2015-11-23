@@ -103,9 +103,12 @@ GuiStackComposition
 			{
 				GuiBoundsComposition::OnChildInserted(child);
 				GuiStackItemComposition* item = dynamic_cast<GuiStackItemComposition*>(child);
-				if (item && !stackItems.Contains(item))
+				if (item)
 				{
-					stackItems.Add(item);
+					if (!stackItems.Contains(item))
+					{
+						stackItems.Add(item);
+					}
 					UpdateStackItemBounds();
 				}
 			}

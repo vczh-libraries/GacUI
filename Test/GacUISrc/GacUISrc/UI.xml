@@ -19,14 +19,56 @@
       ]]>
     </Workflow>
   </Script>
+  <Folder name="Data">
+    <Image name="Gaclib" content="File">Gaclib.png</Image>
+    <Text name="Title">Window</Text>
+    <Doc name="Document">
+      <Doc>
+        <Content>
+          <p align="Center">
+            <div style="Title">
+              <b>This is a document</b>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>Hi, our valued GacUI users:</nop>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>This is a document.</nop>
+            </div>
+          </p>
+          <p>
+            <div style="Body">
+              <nop>Thank you</nop>
+            </div>
+          </p>
+        </Content>
+        <Styles>
+          <Style name="Content">
+            <face>Segoe UI</face>
+          </Style>
+          <Style name="Title" parent="Content">
+            <size>24</size>
+            <b>true</b>
+          </Style>
+          <Style name="Body" parent="Content">
+            <size>14</size>
+          </Style>
+        </Styles>
+      </Doc>
+    </Doc>
+  </Folder>
   <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow">
+    <Instance ref.Class="demo::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
       <ref.Parameter Name="ViewModel" Class="demo::IViewModel"/>
-      <Window Text="Window" ClientSize="x:480 y:320">
+      <Window Text-uri="res://Data/Title" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
-
         <att.ViewModel-set X-bind="(cast int text1.Text) ?? 0" Y-bind="(cast int text2.Text) ?? 0"/>
+        <x:MutexGroupController ref.Name="groupRadio"/>
 
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
@@ -86,6 +128,38 @@
             <Label Text-format="$(ViewModel.X) + $(ViewModel.Y) = $(ViewModel.X + ViewModel.Y)">
               <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
             </Label>
+          </Cell>
+
+          <Cell Site="row:4 column:0">
+            <GroupBox Text="Radio Buttons">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+                <StackItem>
+                  <RadioButton Text="Item1" GroupController-ref="groupRadio" Selected="true"/>
+                </StackItem>
+                <StackItem>
+                  <RadioButton Text="Item2" GroupController-ref="groupRadio"/>
+                </StackItem>
+                <StackItem>
+                  <RadioButton Text="Item3" GroupController-ref="groupRadio"/>
+                </StackItem>
+              </Stack>
+            </GroupBox>
+          </Cell>
+          <Cell Site="row:4 column:1 columnSpan:3">
+            <Tab>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <TabPage Text="Image">
+                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                  <ImageFrame Image-uri="res://Data/Gaclib" Stretch="true"/>
+                </Bounds>
+              </TabPage>
+              <TabPage Text="Document">
+                <DocumentLabel Document-uri="res://Data/Document">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </DocumentLabel>
+              </TabPage>
+            </Tab>
           </Cell>
 
           <Cell Site="row:5 column:2">
