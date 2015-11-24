@@ -1,4 +1,6 @@
 #include "GuiReflectionEvents.h"
+#include "../../Controls/Styles/GuiWin7Styles.h"
+#include "../../Controls/Styles/GuiWin8Styles.h"
 
 namespace vl
 {

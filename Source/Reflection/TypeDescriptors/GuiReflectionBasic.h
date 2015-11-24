@@ -9,7 +9,6 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 
-#include "../../GacUI.h"
 #include "../GuiInstanceLoader.h"
 #include "../GuiInstanceSharedScript.h"
 
