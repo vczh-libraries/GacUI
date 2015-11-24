@@ -65,6 +65,9 @@ Interface Proxy
 #pragma warning(disable:4250)
 			namespace interface_proxy
 			{
+				using namespace presentation;
+				using namespace presentation::compositions;
+
 				class composition_IGuiGraphicsAnimation : public ValueInterfaceRoot, public virtual IGuiGraphicsAnimation
 				{
 				public:

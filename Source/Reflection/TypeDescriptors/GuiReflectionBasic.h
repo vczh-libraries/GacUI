@@ -119,33 +119,33 @@ Type Declaration
 ***********************************************************************/
 
 			template<>
-			struct TypedValueSerializerProvider<Color>
+			struct TypedValueSerializerProvider<presentation::Color>
 			{
-				static Color GetDefaultValue();
-				static bool Serialize(const Color& input, WString& output);
-				static bool Deserialize(const WString& input, Color& output);
+				static presentation::Color GetDefaultValue();
+				static bool Serialize(const presentation::Color& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::Color& output);
 			};
 
 			template<>
-			struct CustomTypeDescriptorSelector<Color>
+			struct CustomTypeDescriptorSelector<presentation::Color>
 			{
 			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<Color>> CustomTypeDescriptorImpl;
+				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::Color>> CustomTypeDescriptorImpl;
 			};
 
 			template<>
-			struct TypedValueSerializerProvider<GlobalStringKey>
+			struct TypedValueSerializerProvider<presentation::GlobalStringKey>
 			{
-				static GlobalStringKey GetDefaultValue();
-				static bool Serialize(const GlobalStringKey& input, WString& output);
-				static bool Deserialize(const WString& input, GlobalStringKey& output);
+				static presentation::GlobalStringKey GetDefaultValue();
+				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
 			};
 
 			template<>
-			struct CustomTypeDescriptorSelector<GlobalStringKey>
+			struct CustomTypeDescriptorSelector<presentation::GlobalStringKey>
 			{
 			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<GlobalStringKey>> CustomTypeDescriptorImpl;
+				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::GlobalStringKey>> CustomTypeDescriptorImpl;
 			};
 
 /***********************************************************************
@@ -154,6 +154,9 @@ Interface Proxy
 
 			namespace interface_proxy
 			{
+				using namespace presentation;
+				using namespace presentation::controls;
+
 				class GuiControl_IStyleController : public ValueInterfaceRoot, public virtual GuiControl::IStyleController
 				{
 				public:

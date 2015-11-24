@@ -44,6 +44,10 @@ GuiEventInfoImpl
 			template<typename T>
 			class GuiEventInfoImpl : public EventInfoImpl
 			{
+				using GuiGraphicsComposition = presentation::compositions::GuiGraphicsComposition;
+
+				template<typename U>
+				using GuiGraphicsEvent = presentation::compositions::GuiGraphicsEvent<U>;
 			protected:
 				typedef Func<GuiGraphicsEvent<T>*(DescriptableObject*, bool)>		EventRetriverFunction;
 

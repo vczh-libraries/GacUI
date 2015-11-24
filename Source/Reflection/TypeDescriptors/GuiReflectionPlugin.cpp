@@ -11,6 +11,8 @@ namespace vl
 	{
 		namespace description
 		{
+			using namespace presentation::controls;
+
 			class GuiReflectionPlugin : public Object, public IGuiPlugin
 			{
 			public:

@@ -12,6 +12,11 @@ namespace vl
 		using namespace compositions;
 		using namespace theme;
 		using namespace helper_types;
+		
+		using namespace elements;
+		using namespace compositions;
+		using namespace controls;
+		using namespace templates;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 

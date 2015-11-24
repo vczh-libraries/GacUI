@@ -17,6 +17,8 @@ namespace vl
 		using namespace collections;
 		using namespace stream;
 
+		using namespace controls;
+
 #define ERROR_CODE_PREFIX L"================================================================"
 
 /***********************************************************************

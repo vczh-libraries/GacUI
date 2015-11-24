@@ -7,6 +7,8 @@ namespace vl
 		namespace description
 		{
 			using namespace collections;
+			using namespace presentation;
+			using namespace presentation::compositions;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 

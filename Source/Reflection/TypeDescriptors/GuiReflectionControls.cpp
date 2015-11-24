@@ -13,9 +13,11 @@ namespace vl
 			using namespace parsing::analyzing;
 			using namespace parsing::xml;
 			using namespace stream;
-			using namespace list;
-			using namespace tree;
-			using namespace text;
+			using namespace presentation;
+			using namespace presentation::controls;
+			using namespace presentation::controls::list;
+			using namespace presentation::controls::tree;
+			using namespace presentation::elements::text;
 			using namespace theme;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION

@@ -64,6 +64,9 @@ Interface Proxy
 #pragma warning(disable:4250)
 			namespace interface_proxy
 			{
+				using namespace presentation;
+				using namespace presentation::templates;
+
 				class GuiTemplate_IFactory : public ValueInterfaceRoot, public virtual GuiTemplate::IFactory
 				{
 				public:

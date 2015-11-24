@@ -11,6 +11,10 @@ namespace vl
 			using namespace parsing::tabling;
 			using namespace parsing::xml;
 			using namespace stream;
+			using namespace presentation;
+			using namespace presentation::elements;
+			using namespace presentation::compositions;
+			using namespace presentation::controls;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 

@@ -12,6 +12,9 @@ namespace vl
 		using namespace reflection::description;
 		using namespace collections;
 
+		using namespace controls;
+		using namespace compositions;
+
 #define ERROR_CODE_PREFIX L"================================================================"
 
 /***********************************************************************
