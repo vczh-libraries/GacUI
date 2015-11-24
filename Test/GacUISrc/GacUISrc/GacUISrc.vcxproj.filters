@@ -369,9 +369,6 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_LoadInstance.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_Log.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceBinders.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>

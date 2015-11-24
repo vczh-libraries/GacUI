@@ -258,7 +258,7 @@ GuiResourceNodeBase
 		{
 			auto resourcePath = name;
 			auto current = parent;
-			while (current)
+			while (current && current->GetParent())
 			{
 				resourcePath = parent->GetName() + L"/" + resourcePath;
 				current = current->GetParent();

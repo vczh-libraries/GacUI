@@ -381,6 +381,54 @@ Workflow_InstallEvalProperty
 		}
 
 /***********************************************************************
+Workflow_InstallEvent
+***********************************************************************/
+
+		Ptr<workflow::WfStatement> Workflow_InstallEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName)
+		{
+			vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
+
+			auto subBlock = MakePtr<WfBlockStatement>();
+			{
+				auto var = MakePtr<WfReferenceExpression>();
+				var->name.value = variableName.ToString();
+
+				auto member = MakePtr<WfMemberExpression>();
+				member->parent = var;
+				member->name.value = eventInfo->GetName();
+
+				auto refThis = MakePtr<WfReferenceExpression>();
+				refThis->name.value = L"<this>";
+
+				auto handler = MakePtr<WfMemberExpression>();
+				handler->parent = refThis;
+				handler->name.value = handlerName;
+
+				auto call = MakePtr<WfCallExpression>();
+				call->function = handler;
+				for (vint i = 0; i < count; i++)
+				{
+					auto argument = MakePtr<WfOrderedNameExpression>();
+					argument->name.value = L"$" + itow(i + 1);
+					call->arguments.Add(argument);
+				}
+
+				auto eventHandler = MakePtr<WfOrderedLambdaExpression>();
+				eventHandler->body = call;
+
+				auto attachEvent = MakePtr<WfAttachEventExpression>();
+				attachEvent->event = member;
+				attachEvent->function = eventHandler;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = attachEvent;
+				subBlock->statements.Add(stat);
+			}
+
+			return subBlock;
+		}
+
+/***********************************************************************
 Workflow_InstallEvalEvent
 ***********************************************************************/
 
@@ -775,12 +823,13 @@ WorkflowReferenceNamesVisitor
 						{
 							errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"" + handler->binding.ToString() + L"\" cannot be found.");
 						}
-						else if (repr->instanceName == GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
-						{
-							auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
-							repr->instanceName = name;
-							typeInfos.Add(name, reprTypeInfo);
-						}
+					}
+
+					if (repr->instanceName == GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
+					{
+						auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
+						repr->instanceName = name;
+						typeInfos.Add(name, reprTypeInfo);
 					}
 				}
 			}
@@ -937,57 +986,39 @@ WorkflowCompileVisitor
 					if (reprTypeInfo.typeDescriptor)
 					{
 						GlobalStringKey propertyName = repr->eventHandlers.Keys()[index];
-						Ptr<GuiInstanceEventInfo> eventInfo;
-						IGuiInstanceLoader::PropertyInfo info;
-						info.typeInfo = reprTypeInfo;
-						info.propertyName = propertyName;
-
-						{
-							auto currentLoader = GetInstanceLoaderManager()->GetLoader(info.typeInfo.typeName);
-
-							while (currentLoader && !eventInfo)
-							{
-								eventInfo = currentLoader->GetEventType(info);
-								if (eventInfo && eventInfo->support == GuiInstanceEventInfo::NotSupport)
-								{
-									eventInfo = 0;
-								}
-								currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
-							}
-						}
+						auto td = reprTypeInfo.typeDescriptor;
+						auto eventInfo = td->GetEventByName(propertyName.ToString(), true);
 
 						if (!eventInfo)
 						{
-							errors.Add(L"Precompile: Cannot find event \"" + propertyName.ToString() + L"\" in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+							errors.Add(L"Precompile: Event \"" + propertyName.ToString() + L"\" cannot be found in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 						}
 						else
 						{
-							WString statementCode = handler->value;
+							Ptr<WfStatement> statement;
 
-							if (handler->binding != GlobalStringKey::Empty)
+							if (handler->binding == GlobalStringKey::Empty)
+							{
+								statement = Workflow_InstallEvent(repr->instanceName, eventInfo, handler->value);
+							}
+							else
 							{
 								auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
 								if (binder)
 								{
-									auto instanceEventInfo = info.typeInfo.typeDescriptor->GetEventByName(info.propertyName.ToString(), true);
-									if (instanceEventInfo)
-									{
-										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instanceEventInfo, statementCode, errors))
-										{
-											if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, statementCode, statement))
-											{
-												statements->statements.Add(statement);
-											}
-										}
-									}
-									else
-									{
-										errors.Add(L"Precompile: Binder \"" + handler->binding.ToString() + L"\" requires event \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
-									}
+									statement = binder->GenerateInstallStatement(repr->instanceName, eventInfo, handler->value, errors);
 								}
 								else
 								{
 									errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"" + handler->binding.ToString() + L"\" cannot be found.");
+								}
+							}
+
+							if (statement)
+							{
+								if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, handler->value, statement))
+								{
+									statements->statements.Add(statement);
 								}
 							}
 						}

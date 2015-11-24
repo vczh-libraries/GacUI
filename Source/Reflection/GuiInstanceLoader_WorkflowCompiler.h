@@ -37,6 +37,7 @@ WorkflowCompiler (Installation)
 		extern Ptr<workflow::WfStatement>					Workflow_InstallUriProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& protocol, const WString& path);
 		extern Ptr<workflow::WfStatement>					Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
 		extern Ptr<workflow::WfStatement>					Workflow_InstallEvalProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> evalExpression);
+		extern Ptr<workflow::WfStatement>					Workflow_InstallEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
 		extern Ptr<workflow::WfStatement>					Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
 
 /***********************************************************************

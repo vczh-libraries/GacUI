@@ -15,6 +15,7 @@ using namespace vl::stream;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::collections;
+using namespace vl::filesystem;
 
 //#define GUI_GRAPHICS_RENDERER_GDI
 #define GUI_GRAPHICS_RENDERER_DIRECT2D
@@ -194,17 +195,22 @@ void GuiMain_Resource()
 		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
 		resource->Precompile(errors);
 		CHECK_ERROR(errors.Count() == 0, L"Error");
-		/*
 		{
 			FileStream fileStream(L"UI.bin", FileStream::WriteOnly);
 			resource->SavePrecompiledBinary(fileStream);
 		}
 		{
-			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
-			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
+			//FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
+			//resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		}
-		*/
 		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
+
+		{
+			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceCtor/MainWindowResource");
+			auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
+			auto code = compiled->assembly->insAfterCodegen->moduleCodes[0];
+			File(L"UI.txt").WriteAllText(code);
+		}
 	}
 	MainWindow window(new IViewModel);
 	window.ForceCalculateSizeImmediately();

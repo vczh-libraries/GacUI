@@ -171,10 +171,6 @@ Instance Loader
 			virtual Ptr<GuiInstancePropertyInfo>	GetPropertyType(const PropertyInfo& propertyInfo);
 			virtual bool							GetPropertyValue(PropertyValue& propertyValue);
 			virtual bool							SetPropertyValue(PropertyValue& propertyValue);
-
-			virtual void							GetEventNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& eventNames);
-			virtual Ptr<GuiInstanceEventInfo>		GetEventType(const PropertyInfo& eventInfo);
-			virtual bool							SetEventValue(PropertyValue& propertyValue);
 		};
 
 /***********************************************************************
@@ -264,7 +260,6 @@ Instance Loader Manager
 			Ptr<GuiResourcePathResolver> resolver,
 			description::Value instance
 			);
-		extern void									LogInstanceLoaderManager(stream::TextWriter& writer);
 
 /***********************************************************************
 Instance Scope Wrapper
