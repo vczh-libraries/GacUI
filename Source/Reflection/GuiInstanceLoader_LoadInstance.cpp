@@ -142,32 +142,6 @@ LoadValueVisitor
 		using namespace visitors;
 
 /***********************************************************************
-FindInstanceLoadingSource
-***********************************************************************/
-
-		InstanceLoadingSource FindInstanceLoadingSource(
-			Ptr<GuiInstanceContext> context,
-			GuiConstructorRepr* ctor
-			)
-		{
-			vint index=context->namespaces.Keys().IndexOf(ctor->typeNamespace);
-			if(index!=-1)
-			{
-				Ptr<GuiInstanceContext::NamespaceInfo> namespaceInfo=context->namespaces.Values()[index];
-				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
-				{
-					auto fullName = GlobalStringKey::Get(ns->prefix + ctor->typeName.ToString() + ns->postfix);
-					IGuiInstanceLoader* loader = GetInstanceLoaderManager()->GetLoader(fullName);
-					if(loader)
-					{
-						return InstanceLoadingSource(loader, fullName);
-					}
-				}
-			}
-			return InstanceLoadingSource();
-		}
-
-/***********************************************************************
 LoadInstancePropertyValue
 ***********************************************************************/
 

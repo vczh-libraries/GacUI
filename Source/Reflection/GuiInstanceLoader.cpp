@@ -85,67 +85,10 @@ GuiInstancePropertyInfo
 		}
 
 /***********************************************************************
-GuiInstanceEventInfo
-***********************************************************************/
-
-		GuiInstanceEventInfo::GuiInstanceEventInfo()
-			:support(NotSupport)
-			, argumentType(0)
-		{
-		}
-
-		GuiInstanceEventInfo::~GuiInstanceEventInfo()
-		{
-		}
-
-		Ptr<GuiInstanceEventInfo> GuiInstanceEventInfo::Unsupported()
-		{
-			return new GuiInstanceEventInfo;
-		}
-
-		Ptr<GuiInstanceEventInfo> GuiInstanceEventInfo::Assign(description::ITypeDescriptor* typeDescriptor)
-		{
-			Ptr<GuiInstanceEventInfo> info = new GuiInstanceEventInfo;
-			info->support = SupportAssign;
-			info->argumentType = typeDescriptor;
-			return info;
-		}
-
-/***********************************************************************
 IGuiInstanceLoader
 ***********************************************************************/
 
-		bool IGuiInstanceLoader::IsDeserializable(const TypeInfo& typeInfo)
-		{
-			return false;
-		}
-
-		description::Value IGuiInstanceLoader::Deserialize(const TypeInfo& typeInfo, const WString& text)
-		{
-			return Value();
-		}
-
-		bool IGuiInstanceLoader::IsCreatable(const TypeInfo& typeInfo)
-		{
-			return false;
-		}
-
-		description::Value IGuiInstanceLoader::CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)
-		{
-			return Value();
-		}
-
-		bool IGuiInstanceLoader::IsInitializable(const TypeInfo& typeInfo)
-		{
-			return false;
-		}
-
-		Ptr<GuiInstanceContextScope> IGuiInstanceLoader::InitializeInstance(const TypeInfo& typeInfo, description::Value instance)
-		{
-			return 0;
-		}
-
-		void IGuiInstanceLoader::GetPropertyNames(const TypeInfo& typeInfo, List<GlobalStringKey>& propertyNames)
+		void IGuiInstanceLoader::GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
 		{
 		}
 
@@ -153,19 +96,33 @@ IGuiInstanceLoader
 		{
 		}
 
+		void IGuiInstanceLoader::GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)
+		{
+		}
+
 		Ptr<GuiInstancePropertyInfo> IGuiInstanceLoader::GetPropertyType(const PropertyInfo& propertyInfo)
 		{
-			return 0;
+			return nullptr;
 		}
 
-		bool IGuiInstanceLoader::GetPropertyValue(PropertyValue& propertyValue)
+		bool IGuiInstanceLoader::CanCreate(const TypeInfo& typeInfo)
 		{
 			return false;
 		}
 
-		bool IGuiInstanceLoader::SetPropertyValue(PropertyValue& propertyValue)
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments)
 		{
-			return false;
+			CHECK_FAIL(L"IGuiInstanceLoader::CreateInstance(const TypeInfo&, GlobalStringKey, ArgumentMap&)#This function is not implemented.");
+		}
+
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments)
+		{
+			CHECK_FAIL(L"IGuiInstanceLoader::AssignParameters(const TypeInfo&, GlobalStringKey, ArgumentMap&)#This function is not implemented.");
+		}
+
+		Ptr<workflow::WfExpression> IGuiInstanceLoader::GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName)
+		{
+			CHECK_FAIL(L"IGuiInstanceLoader::GetParameter(const PropertyInfo&, GlobalStringKey)#This function is not implemented.");
 		}
 
 /***********************************************************************
@@ -729,6 +686,32 @@ GuiResourceInstanceLoader
 				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 			}
 		};
+
+/***********************************************************************
+FindInstanceLoadingSource
+***********************************************************************/
+
+		InstanceLoadingSource FindInstanceLoadingSource(
+			Ptr<GuiInstanceContext> context,
+			GuiConstructorRepr* ctor
+			)
+		{
+			vint index=context->namespaces.Keys().IndexOf(ctor->typeNamespace);
+			if(index!=-1)
+			{
+				Ptr<GuiInstanceContext::NamespaceInfo> namespaceInfo=context->namespaces.Values()[index];
+				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
+				{
+					auto fullName = GlobalStringKey::Get(ns->prefix + ctor->typeName.ToString() + ns->postfix);
+					IGuiInstanceLoader* loader = GetInstanceLoaderManager()->GetLoader(fullName);
+					if(loader)
+					{
+						return InstanceLoadingSource(loader, fullName);
+					}
+				}
+			}
+			return InstanceLoadingSource();
+		}
 
 /***********************************************************************
 GuiInstanceLoaderManager

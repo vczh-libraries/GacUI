@@ -94,26 +94,6 @@ Instance Loader
 			static Ptr<GuiInstancePropertyInfo>		Array(description::ITypeDescriptor* typeDescriptor = 0);
 		};
 
-		class GuiInstanceEventInfo : public IDescriptable, public Description<GuiInstanceEventInfo>
-		{
-			typedef collections::List<description::ITypeDescriptor*>		TypeDescriptorList;
-		public:
-			enum Support
-			{
-				NotSupport,
-				SupportAssign,
-			};
-
-			Support									support;
-			description::ITypeDescriptor*			argumentType;
-
-			GuiInstanceEventInfo();
-			~GuiInstanceEventInfo();
-
-			static Ptr<GuiInstanceEventInfo>		Unsupported();
-			static Ptr<GuiInstanceEventInfo>		Assign(description::ITypeDescriptor* typeDescriptor);
-		};
-
 		class IGuiInstanceLoader : public IDescriptable, public Description<IGuiInstanceLoader>
 		{
 		public:
@@ -157,20 +137,19 @@ Instance Loader
 				}
 			};
 
-			virtual GlobalStringKey					GetTypeName() = 0;
+			typedef collections::Group<GlobalStringKey, Ptr<workflow::WfExpression>>	ArgumentMap;
 
-			virtual bool							IsDeserializable(const TypeInfo& typeInfo);
-			virtual description::Value				Deserialize(const TypeInfo& typeInfo, const WString& text);
-			virtual bool							IsCreatable(const TypeInfo& typeInfo);
-			virtual description::Value				CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments);
-			virtual bool							IsInitializable(const TypeInfo& typeInfo);
-			virtual Ptr<GuiInstanceContextScope>	InitializeInstance(const TypeInfo& typeInfo, description::Value instance);
+			virtual GlobalStringKey					GetTypeName() = 0;
 
 			virtual void							GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual void							GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual void							GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual Ptr<GuiInstancePropertyInfo>	GetPropertyType(const PropertyInfo& propertyInfo);
-			virtual bool							GetPropertyValue(PropertyValue& propertyValue);
-			virtual bool							SetPropertyValue(PropertyValue& propertyValue);
+
+			virtual bool							CanCreate(const TypeInfo& typeInfo);
+			virtual Ptr<workflow::WfStatement>		CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments);
+			virtual Ptr<workflow::WfStatement>		AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments);
+			virtual Ptr<workflow::WfExpression>		GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName);
 		};
 
 /***********************************************************************
@@ -246,20 +225,7 @@ Instance Loader Manager
 		};
 
 		extern IGuiInstanceLoaderManager*			GetInstanceLoaderManager();
-		extern InstanceLoadingSource				FindInstanceLoadingSource(
-			Ptr<GuiInstanceContext> context,
-			GuiConstructorRepr* ctor
-			);
-		Ptr<GuiInstanceContextScope>				LoadInstanceFromContext(
-			Ptr<GuiResourceItem> resource,
-			Ptr<GuiResourcePathResolver> resolver,
-			description::ITypeDescriptor* expectedType = 0
-			);
-		extern Ptr<GuiInstanceContextScope>			InitializeInstanceFromContext(
-			Ptr<GuiResourceItem> resource,
-			Ptr<GuiResourcePathResolver> resolver,
-			description::Value instance
-			);
+		extern InstanceLoadingSource				FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
 
 /***********************************************************************
 Instance Scope Wrapper
