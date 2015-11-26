@@ -385,6 +385,13 @@ ControllerListener
 								d3d11Device = CreateD3D11Device(D3D_DRIVER_TYPE_WARP);
 							}
 						}
+#if _DEBUG
+						CHECK_ERROR(d3d11Device, L"Direct2DWindowsNativeControllerListener::NativeWindowCreated(INativeWindow*)#Failed to create Direct3D 11 Device.");
+#endif
+					}
+
+					if (d2dfactory1 && d3d11Device)
+					{
 						listener = new Direct2DWindowsNativeWindowListener_1_1(window, d2dfactory1, d3d11Device.Obj());
 					}
 					else
@@ -393,7 +400,6 @@ ControllerListener
 					}
 					window->InstallListener(listener.Obj());
 					nativeWindowListeners.Add(window, listener);
-
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)
