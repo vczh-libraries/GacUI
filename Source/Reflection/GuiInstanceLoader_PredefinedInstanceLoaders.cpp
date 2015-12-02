@@ -33,10 +33,12 @@ GuiVrtualTypeInstanceLoader
 		protected:
 			GlobalStringKey								typeName;
 			WString										styleMethod;
+			bool										createArgument;
 		public:
-			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod)
+			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, bool _createArgument)
 				:typeName(GlobalStringKey::Get(_typeName))
 				, styleMethod(_styleMethod)
+				, createArgument(_createArgument)
 			{
 			}
 
@@ -70,6 +72,8 @@ GuiVrtualTypeInstanceLoader
 			{
 				CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
 				vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+
+				Ptr<WfExpression> createStyleExpr;
 				if (indexControlTemplate == -1)
 				{
 					auto refPresentation = MakePtr<WfTopQualifiedExpression>();
@@ -89,24 +93,7 @@ GuiVrtualTypeInstanceLoader
 
 					auto createStyle = MakePtr<WfCallExpression>();
 					createStyle->function = refStyleMethod;
-					
-					auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
-
-					auto createControl = MakePtr<WfNewTypeExpression>();
-					createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-					createControl->arguments.Add(createStyle);
-
-					auto refVariable = MakePtr<WfReferenceExpression>();
-					refVariable->name.value = variableName.ToString();
-
-					auto assignExpr = MakePtr<WfBinaryExpression>();
-					assignExpr->op = WfBinaryOperator::Assign;
-					assignExpr->first = refVariable;
-					assignExpr->second = createControl;
-
-					auto assignStat = MakePtr<WfExpressionStatement>();
-					assignStat->expression = assignExpr;
-					return assignStat;
+					createStyleExpr = createStyle;
 				}
 				else
 				{
@@ -184,10 +171,45 @@ GuiVrtualTypeInstanceLoader
 					auto createStyle = MakePtr<WfNewTypeExpression>();
 					createStyle->type = GetTypeFromTypeInfo(styleType.Obj());
 					createStyle->arguments.Add(refFactory);
+					createStyleExpr = createStyle;
+				}
+				
+				auto block = MakePtr<WfBlockStatement>();
+				{
+					auto varTemplate = MakePtr<WfVariableDeclaration>();
+					varTemplate->name.value = L"<controlStyle>";
+					varTemplate->expression = createStyleExpr;
+
+					auto varStat = MakePtr<WfVariableStatement>();
+					varStat->variable = varTemplate;
+					block->statements.Add(varStat);
+				}
+				{
+					auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
 
 					auto createControl = MakePtr<WfNewTypeExpression>();
 					createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-					createControl->arguments.Add(createStyle);
+					{
+						auto refControlStyle = MakePtr<WfReferenceExpression>();
+						refControlStyle->name.value = L"<controlStyle>";
+
+						createControl->arguments.Add(refControlStyle);
+					}
+
+					if (createArgument)
+					{
+						auto refControlStyle = MakePtr<WfReferenceExpression>();
+						refControlStyle->name.value = L"<controlStyle>";
+
+						auto refCreateArgument = MakePtr<WfMemberExpression>();
+						refCreateArgument->parent = refControlStyle;
+						refCreateArgument->name.value = L"CreateArgument";
+
+						auto call = MakePtr<WfCallExpression>();
+						call->function = refCreateArgument;
+
+						createControl->arguments.Add(call);
+					}
 
 					auto refVariable = MakePtr<WfReferenceExpression>();
 					refVariable->name.value = variableName.ToString();
@@ -201,6 +223,7 @@ GuiVrtualTypeInstanceLoader
 					assignStat->expression = assignExpr;
 					return assignStat;
 				}
+				return block;
 			}
 		};
 
