@@ -18,52 +18,31 @@ namespace vl
 		using namespace controls;
 		using namespace templates;
 
+		using namespace workflow;
+		using namespace workflow::analyzer;
+
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 GuiVrtualTypeInstanceLoader
 ***********************************************************************/
 
+		template<typename TControl, typename TControlStyle, typename TTemplate>
 		class GuiTemplateControlInstanceLoader : public Object, public IGuiInstanceLoader
 		{
 		protected:
 			GlobalStringKey								typeName;
-			Func<Value()>								defaultConstructor;
-			Func<Value(Ptr<GuiTemplate::IFactory>)>		templateConstructor;
+			WString										styleMethod;
 		public:
-			GuiTemplateControlInstanceLoader(const WString& _typeName, const Func<Value()>& _defaultConstructor, const Func<Value(Ptr<GuiTemplate::IFactory>)>& _templateConstructor)
+			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod)
 				:typeName(GlobalStringKey::Get(_typeName))
-				, defaultConstructor(_defaultConstructor)
-				, templateConstructor(_templateConstructor)
+				, styleMethod(_styleMethod)
 			{
 			}
 
 			GlobalStringKey GetTypeName()override
 			{
 				return typeName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return typeName == typeInfo.typeName;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if(typeName==typeInfo.typeName)
-				{
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
-					{
-						return defaultConstructor();
-					}
-					else
-					{
-						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-						return templateConstructor(factory);
-					}
-				}
-				return Value();
 			}
 
 			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -80,6 +59,148 @@ GuiVrtualTypeInstanceLoader
 					return info;
 				}
 				return 0;
+			}
+
+			bool CanCreate(const TypeInfo& typeInfo)override
+			{
+				return typeName == typeInfo.typeName;
+			}
+
+			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+			{
+				CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
+				vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+				if (indexControlTemplate == -1)
+				{
+					auto refPresentation = MakePtr<WfTopQualifiedExpression>();
+					refPresentation->name.value = L"presentation";
+
+					auto refTheme = MakePtr<WfMemberExpression>();
+					refTheme->parent = refPresentation;
+					refTheme->name.value = L"theme";
+
+					auto refITheme = MakePtr<WfMemberExpression>();
+					refITheme->parent = refTheme;
+					refITheme->name.value = L"ITheme";
+
+					auto refStyleMethod = MakePtr<WfMemberExpression>();
+					refStyleMethod->parent = refITheme;
+					refStyleMethod->name.value = styleMethod;
+
+					auto createStyle = MakePtr<WfCallExpression>();
+					createStyle->function = refStyleMethod;
+					
+					auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
+
+					auto createControl = MakePtr<WfNewTypeExpression>();
+					createControl->type = GetTypeFromTypeInfo(controlType.Obj());
+					createControl->arguments.Add(createStyle);
+
+					auto refVariable = MakePtr<WfReferenceExpression>();
+					refVariable->name.value = variableName.ToString();
+
+					auto assignExpr = MakePtr<WfBinaryExpression>();
+					assignExpr->op = WfBinaryOperator::Assign;
+					assignExpr->first = refVariable;
+					assignExpr->second = createControl;
+
+					auto assignStat = MakePtr<WfExpressionStatement>();
+					assignStat->expression = assignExpr;
+					return assignStat;
+				}
+				else
+				{
+					auto controlTemplateNameExpr = arguments.GetByIndex(indexControlTemplate).Cast<WfStringExpression>();
+					if (!controlTemplateNameExpr)
+					{
+						errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
+						return nullptr;
+					}
+
+					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateNameExpr->value.value);
+					if (!controlTemplateTd)
+					{
+						errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\", does not exist.");
+						return nullptr;
+					}
+
+					Ptr<ITypeInfo> controlTemplateType;
+					{
+						auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+						elementType->SetTypeDescriptor(controlTemplateTd);
+
+						auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
+						pointerType->SetElementType(elementType);
+
+						controlTemplateType = pointerType;
+					}
+					auto factoryType = TypeInfoRetriver<Ptr<GuiTemplate::IFactory>>::CreateTypeInfo();
+					auto templateType = TypeInfoRetriver<GuiTemplate*>::CreateTypeInfo();
+
+					auto refFactory = MakePtr<WfNewTypeExpression>();
+					refFactory->type = GetTypeFromTypeInfo(factoryType.Obj());
+					{
+						auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
+						funcCreateTemplate->anonymity = WfFunctionAnonymity::Named;
+						funcCreateTemplate->name.value = L"CreateTemplate";
+						funcCreateTemplate->returnType = GetTypeFromTypeInfo(templateType.Obj());
+
+						auto argViewModel = MakePtr<WfFunctionArgument>();
+						argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
+						argViewModel->name.value = L"<viewModel>";
+						funcCreateTemplate->arguments.Add(argViewModel);
+
+						auto block = MakePtr<WfBlockStatement>();
+						funcCreateTemplate->statement = block;
+
+						{
+							auto createControlTemplate = MakePtr<WfNewTypeExpression>();
+							controlControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
+
+							auto varTemplate = MakePtr<WfVariableDeclaration>();
+							varTemplate->type = GetTypeFromTypeInfo(templateType.Obj());
+							varTemplate->name.value = L"<template>";
+							varTemplate->expression = createControlTemplate;
+
+							auto varStat = MakePtr<WfVariableStatement>();
+							varStat->variable = varTemplate;
+							block->statements.Add(varStat);
+						}
+						{
+							auto refTemplate = MakePtr<WfReferenceExpression>();
+							refTemplate->name.value = L"<template>";
+
+							auto returnStat = MakePtr<WfReturnStatement>();
+							returnStat->expression = refTemplate;
+							block->statements.Add(returnStat);
+						}
+
+						refFactory->functions.Add(funcCreateTemplate);
+					}
+
+					auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
+					auto styleType = TypeInfoRetriver<TControlStyle*>::CreateTypeInfo();
+
+					auto createStyle = MakePtr<WfNewTypeExpression>();
+					createStyle->type = GetTypeFromTypeInfo(styleType.Obj());
+					createStyle->arguments.Add(refFactory);
+
+					auto createControl = MakePtr<WfNewTypeExpression>();
+					createControl->type = GetTypeFromTypeInfo(controlType.Obj());
+					createControl->arguments.Add(createStyle);
+
+					auto refVariable = MakePtr<WfReferenceExpression>();
+					refVariable->name.value = variableName.ToString();
+
+					auto assignExpr = MakePtr<WfBinaryExpression>();
+					assignExpr->op = WfBinaryOperator::Assign;
+					assignExpr->first = refVariable;
+					assignExpr->second = createControl;
+
+					auto assignStat = MakePtr<WfExpressionStatement>();
+					assignStat->expression = assignExpr;
+					return assignStat;
+				}
 			}
 		};
 
@@ -2211,7 +2332,7 @@ GuiPredefinedInstanceLoadersPlugin
 				ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			g::NewDatePicker,				GuiDatePickerTemplate);			// ControlTemplate
 				ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		g::NewDateComboBox,				GuiDateComboBoxTemplate);		// ControlTemplate
 				ADD_TEMPLATE_CONTROL	(							GuiStringGrid,			g::NewStringGrid,				GuiListViewTemplate);			// ControlTemplate
-																																							// ControlTemplate
+
 				ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				g::NewGroupBox,					GuiControlTemplate);			// ControlTemplate
 				ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				g::NewMenuSplitter,				GuiControlTemplate);			// ControlTemplate
 				ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		g::NewMenuBarButton,			GuiToolstripButtonTemplate);	// ControlTemplate
