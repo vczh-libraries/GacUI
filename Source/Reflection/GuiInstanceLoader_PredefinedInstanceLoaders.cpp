@@ -30,17 +30,85 @@ GuiVrtualTypeInstanceLoader
 		template<typename TControl, typename TControlStyle, typename TTemplate>
 		class GuiTemplateControlInstanceLoader : public Object, public IGuiInstanceLoader
 		{
-			typedef Func<void(const WString&, Ptr<WfBlockStatement>)> InitFunctionType;
+			using ArgumentRawFunctionType	= Ptr<WfExpression>();
+			using InitRawFunctionType		= void(const WString&, Ptr<WfBlockStatement>);
+			using ArgumentFunctionType		= Func<ArgumentRawFunctionType>;
+			using InitFunctionType			= Func<InitRawFunctionType>;
 		protected:
 			GlobalStringKey								typeName;
 			WString										styleMethod;
-			WString										argumentStyleMethod;
+			ArgumentFunctionType						argumentFunction;
 			InitFunctionType							initFunction;
+
 		public:
-			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, const WString& _argumentStyleMethod = L"", InitFunctionType _initFunction = InitFunctionType())
+
+			static Ptr<WfExpression> CreateIThemeCall(const WString& method)
+			{
+				auto refPresentation = MakePtr<WfTopQualifiedExpression>();
+				refPresentation->name.value = L"presentation";
+
+				auto refTheme = MakePtr<WfMemberExpression>();
+				refTheme->parent = refPresentation;
+				refTheme->name.value = L"theme";
+
+				auto refITheme = MakePtr<WfMemberExpression>();
+				refITheme->parent = refTheme;
+				refITheme->name.value = L"ITheme";
+
+				auto refStyleMethod = MakePtr<WfMemberExpression>();
+				refStyleMethod->parent = refITheme;
+				refStyleMethod->name.value = method;
+
+				auto createStyle = MakePtr<WfCallExpression>();
+				createStyle->function = refStyleMethod;
+				return createStyle;
+			}
+
+			static Ptr<WfExpression> CreateStyleMethodArgument(const WString& method)
+			{
+				if (indexControlTemplate == -1)
+				{
+					auto refControlStyle = MakePtr<WfReferenceExpression>();
+					refControlStyle->name.value = L"<controlStyle>";
+
+					auto refCreateArgument = MakePtr<WfMemberExpression>();
+					refCreateArgument->parent = refControlStyle;
+					refCreateArgument->name.value = L"CreateArgument";
+
+					auto call = MakePtr<WfCallExpression>();
+					call->function = refCreateArgument;
+
+					createControl->arguments.Add(call);
+				}
+				else
+				{
+					createControl->arguments.Add(CreateIThemeCall(method));
+				}
+			}
+		public:
+			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod)
 				:typeName(GlobalStringKey::Get(_typeName))
 				, styleMethod(_styleMethod)
-				, argumentStyleMethod(_argumentStyleMethod)
+			{
+			}
+
+			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, WString argumentStyleMethod)
+				:typeName(GlobalStringKey::Get(_typeName))
+				, styleMethod(_styleMethod)
+				, argumentFunction([argumentStyleMethod](){return CreateStyleMethodArgument(argumentStyleMethod);})
+			{
+			}
+
+			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, ArgumentRawFunctionType* _argumentFunction)
+				:typeName(GlobalStringKey::Get(_typeName))
+				, styleMethod(_styleMethod)
+				, argumentFunction(_argumentFunction)
+			{
+			}
+
+			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, InitRawFunctionType* _initFunction)
+				:typeName(GlobalStringKey::Get(_typeName))
+				, styleMethod(_styleMethod)
 				, initFunction(_initFunction)
 			{
 			}
@@ -69,28 +137,6 @@ GuiVrtualTypeInstanceLoader
 			bool CanCreate(const TypeInfo& typeInfo)override
 			{
 				return typeName == typeInfo.typeName;
-			}
-
-			Ptr<WfExpression> CreateIThemeCall(const WString& method)
-			{
-				auto refPresentation = MakePtr<WfTopQualifiedExpression>();
-				refPresentation->name.value = L"presentation";
-
-				auto refTheme = MakePtr<WfMemberExpression>();
-				refTheme->parent = refPresentation;
-				refTheme->name.value = L"theme";
-
-				auto refITheme = MakePtr<WfMemberExpression>();
-				refITheme->parent = refTheme;
-				refITheme->name.value = L"ITheme";
-
-				auto refStyleMethod = MakePtr<WfMemberExpression>();
-				refStyleMethod->parent = refITheme;
-				refStyleMethod->name.value = method;
-
-				auto createStyle = MakePtr<WfCallExpression>();
-				createStyle->function = refStyleMethod;
-				return createStyle;
 			}
 
 			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
@@ -204,26 +250,9 @@ GuiVrtualTypeInstanceLoader
 						createControl->arguments.Add(refControlStyle);
 					}
 
-					if (argumentStyleMethod != L"")
+					if (argumentFunction != L"")
 					{
-						if (indexControlTemplate == -1)
-						{
-							auto refControlStyle = MakePtr<WfReferenceExpression>();
-							refControlStyle->name.value = L"<controlStyle>";
-
-							auto refCreateArgument = MakePtr<WfMemberExpression>();
-							refCreateArgument->parent = refControlStyle;
-							refCreateArgument->name.value = L"CreateArgument";
-
-							auto call = MakePtr<WfCallExpression>();
-							call->function = refCreateArgument;
-
-							createControl->arguments.Add(call);
-						}
-						else
-						{
-							createControl->arguments.Add(CreateIThemeCall(argumentStyleMethod));
-						}
+						createControl->arguments.Add(argumentFunction());
 					}
 
 					auto refVariable = MakePtr<WfReferenceExpression>();
@@ -438,8 +467,15 @@ GuiToolstripMenuInstanceLoader
 		class GuiToolstripMenuInstanceLoader : public BASE_TYPE
 		{
 		public:
+			static Ptr<WfExpression> ArgumentFunction()
+			{
+				auto expr = MakePtr<WfLiteralExpression>();
+				expr->value = WfLiteralValue::Null;
+				return expr;
+			}
+		public:
 			GuiToolstripMenuInstanceLoader()
-				:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripMenu>()->GetTypeName(), L"CreateMenuStyle", <nullptr>)
+				:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripMenu>()->GetTypeName(), L"CreateMenuStyle", ArgumentFunction)
 			{
 			}
 
@@ -2021,6 +2057,20 @@ GuiTreeNodeInstanceLoader
 GuiPredefinedInstanceLoadersPlugin
 ***********************************************************************/
 
+		Ptr<WfExpression> CreateStandardDataPicker()
+		{
+			using TControl = GuiDatePicker;
+			using TControlStyle = GuiDateComboBoxTemplate_StyleProvider;
+			using TTemplate = GuiDatePickerTemplate;
+
+			auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
+			auto createControl = MakePtr<WfNewTypeExpression>();
+			createControl->type = GetTypeFromTypeInfo(controlType.Obj());
+			createControl->arguments.Add(GuiTemplateControlInstanceLoader<TControl, TControlStyle, TTemplate>::CreateIThemeCall(L"CreateDatePickerStyle"));
+
+			return createControl;
+		}
+
 		void InitializeTrackerProgressBar(const WString& variableName, Ptr<WfBlockStatement> block)
 		{
 			auto refVariable = MakePtr<WfReferenceExpression>();
@@ -2077,6 +2127,15 @@ GuiPredefinedInstanceLoadersPlugin
 			)\
 		)
 
+#define ADD_TEMPLATE_CONTROL_3(TYPENAME, STYLE_METHOD, ARGUMENT_FUNCTION, TEMPLATE)\
+	manager->SetLoader(\
+	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
+			L"presentation::controls::" L ## #TYPENAME,\
+			L ## #STYLE_METHOD,\
+			ARGUMENT_FUNCTION\
+			)\
+		)
+
 #define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE)\
 	manager->CreateVirtualType(GlobalStringKey::Get(description::GetTypeDescriptor<TYPENAME>()->GetTypeName()),\
 	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
@@ -2099,7 +2158,6 @@ GuiPredefinedInstanceLoadersPlugin
 	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 			L ## #STYLE_METHOD,\
-			L"",\
 			INIT_FUNCTION\
 			)\
 		)
@@ -2142,7 +2200,7 @@ GuiPredefinedInstanceLoadersPlugin
 				ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	CreateMultilineTextBoxStyle,										GuiMultilineTextBoxTemplate									);
 				ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	CreateTextBoxStyle,													GuiSinglelineTextBoxTemplate								);
 				ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			CreateDatePickerStyle,												GuiDatePickerTemplate										);
-				ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		CreateComboBoxStyle,												GuiDateComboBoxTemplate										);
+				ADD_TEMPLATE_CONTROL_3	(							GuiDateComboBox,		CreateComboBoxStyle,				CreateStandardDataPicker,		GuiDateComboBoxTemplate										);
 				ADD_TEMPLATE_CONTROL	(							GuiStringGrid,			CreateListViewStyle,												GuiListViewTemplate											);
 
 				ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				CreateGroupBoxStyle,												GuiControlTemplate											);
