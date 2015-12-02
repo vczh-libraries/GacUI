@@ -2078,7 +2078,7 @@ GuiPredefinedInstanceLoadersPlugin
 		)
 
 #define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE)\
-	manager->SetLoader(\
+	manager->CreateVirtualType(GlobalStringKey::Get(description::GetTypeDescriptor<TYPENAME>()->GetTypeName()),\
 	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 			L ## #STYLE_METHOD\
@@ -2086,7 +2086,7 @@ GuiPredefinedInstanceLoadersPlugin
 		)
 
 #define ADD_VIRTUAL_CONTROL_2(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, ARGUMENT_METHOD, TEMPLATE)\
-	manager->SetLoader(\
+	manager->CreateVirtualType(GlobalStringKey::Get(description::GetTypeDescriptor<TYPENAME>()->GetTypeName()),\
 	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 			L ## #STYLE_METHOD,\
@@ -2095,7 +2095,7 @@ GuiPredefinedInstanceLoadersPlugin
 		)
 
 #define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE, INIT_FUNCTION)\
-	manager->SetLoader(\
+	manager->CreateVirtualType(GlobalStringKey::Get(description::GetTypeDescriptor<TYPENAME>()->GetTypeName()),\
 	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 			L ## #STYLE_METHOD,\
