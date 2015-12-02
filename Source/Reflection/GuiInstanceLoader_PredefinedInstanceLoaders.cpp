@@ -37,7 +37,7 @@ GuiVrtualTypeInstanceLoader
 			WString										argumentStyleMethod;
 			InitFunctionType							initFunction;
 		public:
-			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, const WString& _argumentStyleMethod, InitFunctionType _initFunction = InitFunctionType())
+			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, const WString& _argumentStyleMethod = L"", InitFunctionType _initFunction = InitFunctionType())
 				:typeName(GlobalStringKey::Get(_typeName))
 				, styleMethod(_styleMethod)
 				, argumentStyleMethod(_argumentStyleMethod)
@@ -330,53 +330,18 @@ GuiControlInstanceLoader
 GuiTabInstanceLoader
 ***********************************************************************/
 
-		class GuiTabInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiTab, GuiTabTemplate_StyleProvider, GuiTabTemplate>
+		class GuiTabInstanceLoader : public BASE_TYPE
 		{
-		protected:
-			GlobalStringKey					typeName;
-
 		public:
 			GuiTabInstanceLoader()
+				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiTab>()->GetTypeName()), L"CreateTabStyle")
 			{
-				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiTab>()->GetTypeName());
-			}
-
-			GlobalStringKey GetTypeName()override
-			{
-				return typeName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return GetTypeName() == typeInfo.typeName;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if(GetTypeName() == typeInfo.typeName)
-				{
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
-					{
-						return Value::From(g::NewTab());
-					}
-					else
-					{
-						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-						return Value::From(new GuiTab(new GuiTabTemplate_StyleProvider(factory)));
-					}
-				}
-				return Value();
 			}
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
 				propertyNames.Add(GlobalStringKey::Empty);
-			}
-
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				propertyNames.Add(GlobalStringKey::_ControlTemplate);
 			}
 
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -391,7 +356,7 @@ GuiTabInstanceLoader
 					info->scope = GuiInstancePropertyInfo::Constructor;
 					return info;
 				}
-				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
 
 			bool SetPropertyValue(PropertyValue& propertyValue)override
@@ -410,6 +375,7 @@ GuiTabInstanceLoader
 				return false;
 			}
 		};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiTabPageInstanceLoader
@@ -474,43 +440,13 @@ GuiTabPageInstanceLoader
 GuiToolstripMenuInstanceLoader
 ***********************************************************************/
 
-		class GuiToolstripMenuInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenu, GuiMenuTemplate_StyleProvider, GuiMenuTemplate>
+		class GuiToolstripMenuInstanceLoader : public BASE_TYPE
 		{
-		protected:
-			GlobalStringKey					typeName;
-
 		public:
 			GuiToolstripMenuInstanceLoader()
+				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripMenu>()->GetTypeName()), L"CreateMenuStyle", <nullptr>)
 			{
-				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripMenu>()->GetTypeName());
-			}
-
-			GlobalStringKey GetTypeName()override
-			{
-				return typeName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return GetTypeName() == typeInfo.typeName;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if(GetTypeName() == typeInfo.typeName)
-				{
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
-					{
-						return Value::From(g::NewMenu(0));
-					}
-					else
-					{
-						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-						return Value::From(new GuiToolstripMenu(new GuiMenuTemplate_StyleProvider(factory), 0));
-					}
-				}
-				return Value();
 			}
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -535,7 +471,7 @@ GuiToolstripMenuInstanceLoader
 					info->scope = GuiInstancePropertyInfo::Constructor;
 					return info;
 				}
-				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
 
 			bool SetPropertyValue(PropertyValue& propertyValue)override
@@ -554,48 +490,20 @@ GuiToolstripMenuInstanceLoader
 				return false;
 			}
 		};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiToolstripMenuBarInstanceLoader
 ***********************************************************************/
 
-		class GuiToolstripMenuBarInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenuBar, GuiControlTemplate_StyleProvider, GuiControlTemplate>
+		class GuiToolstripMenuBarInstanceLoader : public BASE_TYPE
 		{
-		protected:
-			GlobalStringKey					typeName;
-
 		public:
 			GuiToolstripMenuBarInstanceLoader()
+				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripMenuBar>()->GetTypeName()), L"CreateMenuBarStyle")
 			{
 				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripMenuBar>()->GetTypeName());
-			}
-
-			GlobalStringKey GetTypeName()override
-			{
-				return typeName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return GetTypeName() == typeInfo.typeName;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if(GetTypeName() == typeInfo.typeName)
-				{
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
-					{
-						return Value::From(new GuiToolstripMenuBar(GetCurrentTheme()->CreateMenuBarStyle()));
-					}
-					else
-					{
-						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-						return Value::From(new GuiToolstripMenuBar(new GuiControlTemplate_StyleProvider(factory)));
-					}
-				}
-				return Value();
 			}
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -620,7 +528,7 @@ GuiToolstripMenuBarInstanceLoader
 					info->scope = GuiInstancePropertyInfo::Constructor;
 					return info;
 				}
-				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
 
 			bool SetPropertyValue(PropertyValue& propertyValue)override
@@ -639,48 +547,19 @@ GuiToolstripMenuBarInstanceLoader
 				return false;
 			}
 		};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiToolstripToolBarInstanceLoader
 ***********************************************************************/
 
-		class GuiToolstripToolBarInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripToolBar, GuiControlTemplate_StyleProvider, GuiControlTemplate>
+		class GuiToolstripToolBarInstanceLoader : public BASE_TYPE
 		{
-		protected:
-			GlobalStringKey					typeName;
-
 		public:
 			GuiToolstripToolBarInstanceLoader()
+				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripToolBar>()->GetTypeName()), L"CreateToolBarStyle")
 			{
-				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripToolBar>()->GetTypeName());
-			}
-
-			GlobalStringKey GetTypeName()override
-			{
-				return typeName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return GetTypeName() == typeInfo.typeName;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if(GetTypeName() == typeInfo.typeName)
-				{
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
-					{
-						return Value::From(new GuiToolstripToolBar(GetCurrentTheme()->CreateToolBarStyle()));
-					}
-					else
-					{
-						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-						return Value::From(new GuiToolstripToolBar(new GuiControlTemplate_StyleProvider(factory)));
-					}
-				}
-				return Value();
 			}
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -705,7 +584,7 @@ GuiToolstripToolBarInstanceLoader
 					info->scope = GuiInstancePropertyInfo::Constructor;
 					return info;
 				}
-				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
 
 			bool SetPropertyValue(PropertyValue& propertyValue)override
@@ -724,50 +603,23 @@ GuiToolstripToolBarInstanceLoader
 				return false;
 			}
 		};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiToolstripButtonInstanceLoader
 ***********************************************************************/
 
-		class GuiToolstripButtonInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripButton, GuiToolstripButtonTemplate_StyleProvider, GuiToolstripButtonTemplate>
+		class GuiToolstripButtonInstanceLoader : public BASE_TYPE
 		{
 		protected:
-			GlobalStringKey					typeName;
 			GlobalStringKey					_SubMenu;
 
 		public:
 			GuiToolstripButtonInstanceLoader()
+				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripButton>()->GetTypeName()), L"CreateToolBarButtonStyle")
 			{
-				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripButton>()->GetTypeName());
 				_SubMenu = GlobalStringKey::Get(L"SubMenu");
-			}
-
-			GlobalStringKey GetTypeName()override
-			{
-				return typeName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return typeInfo.typeName == GetTypeName();
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if (typeInfo.typeName == GetTypeName())
-				{
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
-					{
-						return Value::From(g::NewToolBarButton());
-					}
-					else
-					{
-						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-						return Value::From(new GuiToolstripButton(new GuiToolstripButtonTemplate_StyleProvider(factory)));
-					}
-				}
-				return Value();
 			}
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -792,7 +644,7 @@ GuiToolstripButtonInstanceLoader
 				{
 					return GuiInstancePropertyInfo::Set(description::GetTypeDescriptor<GuiToolstripMenu>());
 				}
-				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
 
 			bool GetPropertyValue(PropertyValue& propertyValue)override
@@ -812,6 +664,7 @@ GuiToolstripButtonInstanceLoader
 				return false;
 			}
 		};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiSelectableListControlInstanceLoader
@@ -2292,8 +2145,7 @@ GuiPredefinedInstanceLoadersPlugin
 	manager->SetLoader(\
 	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::" L ## #TYPENAME,\
-			L ## #STYLE_METHOD,\
-			L""\
+			L ## #STYLE_METHOD\
 			)\
 		)
 
@@ -2310,8 +2162,7 @@ GuiPredefinedInstanceLoadersPlugin
 	manager->SetLoader(\
 	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-			L ## #STYLE_METHOD,\
-			L""\
+			L ## #STYLE_METHOD\
 			)\
 		)
 
