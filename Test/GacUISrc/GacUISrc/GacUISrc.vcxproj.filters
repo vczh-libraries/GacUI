@@ -88,6 +88,9 @@
     <Filter Include="GacUI\Reflection\TypeDescriptors">
       <UniqueIdentifier>{7c80b45c-b016-4b4e-98ef-9cc02785d4b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GacUI\Reflection\InstanceLoaders">
+      <UniqueIdentifier>{4a36159b-3df7-4c48-b8a0-c3eb090ca16b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Import\VlppWorkflow.cpp">
@@ -372,9 +375,6 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceBinders.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceLoaders.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_WorkflowCompiler.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
@@ -428,6 +428,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.cpp">
       <Filter>GacUI\GraphicsComposition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Plugin.cpp">
+      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Tab.cpp">
+      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Toolstrip.cpp">
+      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_List.cpp">
+      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Document.cpp">
+      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Compositions.cpp">
+      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -754,6 +772,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.h">
       <Filter>GacUI\GraphicsComposition</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_TemplateControl.h">
+      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
