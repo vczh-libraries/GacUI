@@ -335,7 +335,7 @@ GuiTabInstanceLoader
 		{
 		public:
 			GuiTabInstanceLoader()
-				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiTab>()->GetTypeName()), L"CreateTabStyle")
+				:BASE_TYPE(description::GetTypeDescriptor<GuiTab>()->GetTypeName(), L"CreateTabStyle")
 			{
 			}
 
@@ -349,12 +349,6 @@ GuiTabInstanceLoader
 				if (propertyInfo.propertyName == GlobalStringKey::Empty)
 				{
 					return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiTabPage>());
-				}
-				else if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-				{
-					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-					info->scope = GuiInstancePropertyInfo::Constructor;
-					return info;
 				}
 				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
@@ -445,7 +439,7 @@ GuiToolstripMenuInstanceLoader
 		{
 		public:
 			GuiToolstripMenuInstanceLoader()
-				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripMenu>()->GetTypeName()), L"CreateMenuStyle", <nullptr>)
+				:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripMenu>()->GetTypeName(), L"CreateMenuStyle", <nullptr>)
 			{
 			}
 
@@ -454,22 +448,11 @@ GuiToolstripMenuInstanceLoader
 				propertyNames.Add(GlobalStringKey::Empty);
 			}
 
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				propertyNames.Add(GlobalStringKey::_ControlTemplate);
-			}
-
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 			{
 				if (propertyInfo.propertyName == GlobalStringKey::Empty)
 				{
 					return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
-				}
-				else if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-				{
-					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-					info->scope = GuiInstancePropertyInfo::Constructor;
-					return info;
 				}
 				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
@@ -501,9 +484,8 @@ GuiToolstripMenuBarInstanceLoader
 		{
 		public:
 			GuiToolstripMenuBarInstanceLoader()
-				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripMenuBar>()->GetTypeName()), L"CreateMenuBarStyle")
+				:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripMenuBar>()->GetTypeName(), L"CreateMenuBarStyle")
 			{
-				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripMenuBar>()->GetTypeName());
 			}
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -511,22 +493,11 @@ GuiToolstripMenuBarInstanceLoader
 				propertyNames.Add(GlobalStringKey::Empty);
 			}
 
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				propertyNames.Add(GlobalStringKey::_ControlTemplate);
-			}
-
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 			{
 				if (propertyInfo.propertyName == GlobalStringKey::Empty)
 				{
 					return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
-				}
-				else if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-				{
-					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-					info->scope = GuiInstancePropertyInfo::Constructor;
-					return info;
 				}
 				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
@@ -558,7 +529,7 @@ GuiToolstripToolBarInstanceLoader
 		{
 		public:
 			GuiToolstripToolBarInstanceLoader()
-				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripToolBar>()->GetTypeName()), L"CreateToolBarStyle")
+				:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripToolBar>()->GetTypeName(), L"CreateToolBarStyle")
 			{
 			}
 
@@ -567,22 +538,11 @@ GuiToolstripToolBarInstanceLoader
 				propertyNames.Add(GlobalStringKey::Empty);
 			}
 
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				propertyNames.Add(GlobalStringKey::_ControlTemplate);
-			}
-
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 			{
 				if (propertyInfo.propertyName == GlobalStringKey::Empty)
 				{
 					return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
-				}
-				else if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-				{
-					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-					info->scope = GuiInstancePropertyInfo::Constructor;
-					return info;
 				}
 				return BASE_TYPE::GetPropertyType(propertyInfo);
 			}
@@ -617,7 +577,7 @@ GuiToolstripButtonInstanceLoader
 
 		public:
 			GuiToolstripButtonInstanceLoader()
-				:BASE_TYPE(GlobalStringKey::Get(description::GetTypeDescriptor<GuiToolstripButton>()->GetTypeName()), L"CreateToolBarButtonStyle")
+				:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripButton>()->GetTypeName(), L"CreateToolBarButtonStyle")
 			{
 				_SubMenu = GlobalStringKey::Get(L"SubMenu");
 			}
@@ -627,20 +587,9 @@ GuiToolstripButtonInstanceLoader
 				propertyNames.Add(_SubMenu);
 			}
 
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				propertyNames.Add(GlobalStringKey::_ControlTemplate);
-			}
-
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 			{
-				if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-				{
-					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-					info->scope = GuiInstancePropertyInfo::Constructor;
-					return info;
-				}
-				else if (propertyInfo.propertyName == _SubMenu)
+				if (propertyInfo.propertyName == _SubMenu)
 				{
 					return GuiInstancePropertyInfo::Set(description::GetTypeDescriptor<GuiToolstripMenu>());
 				}
@@ -1621,121 +1570,91 @@ GuiDocumentCommonInterfaceInstanceLoader
 GuiDocumentViewerInstanceLoader
 ***********************************************************************/
 
-		class GuiDocumentViewerInstanceLoader : public GuiDocumentCommonInterfaceInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer, GuiDocumentViewerTemplate_StyleProvider, GuiDocumentViewerTemplate>
+		class GuiDocumentViewerInstanceLoader : public BASE_TYPE
 		{
-		protected:
-			GlobalStringKey					typeName;
-
 		public:
 			GuiDocumentViewerInstanceLoader()
+				:BASE_TYPE(description::GetTypeDescriptor<GuiDocumentViewer>()->GetTypeName(), L"CreateDocumentViewerStyle")
 			{
-				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiDocumentViewer>()->GetTypeName());
 			}
 
-			GlobalStringKey GetTypeName()override
+			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
-				return typeName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return GetTypeName() == typeInfo.typeName;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if(GetTypeName() == typeInfo.typeName)
-				{
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
-					{
-						return Value::From(g::NewDocumentViewer());
-					}
-					else
-					{
-						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-						return Value::From(new GuiDocumentViewer(new GuiDocumentViewerTemplate_StyleProvider(factory)));
-					}
-				}
-				return Value();
-			}
-
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				propertyNames.Add(GlobalStringKey::_ControlTemplate);
+				propertyNames.Add(GlobalStringKey::Empty);
 			}
 
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 			{
-				if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
+				if (propertyInfo.propertyName == GlobalStringKey::Empty)
 				{
-					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-					info->scope = GuiInstancePropertyInfo::Constructor;
-					return info;
+					return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiDocumentItem>());
 				}
-				return GuiDocumentCommonInterfaceInstanceLoader::GetPropertyType(propertyInfo);
+				return BASE_TYPE::GetPropertyType(propertyInfo);
+			}
+
+			bool SetPropertyValue(PropertyValue& propertyValue)override
+			{
+				if (auto container = dynamic_cast<GuiDocumentCommonInterface*>(propertyValue.instanceValue.GetRawPtr()))
+				{
+					if (propertyValue.propertyName == GlobalStringKey::Empty)
+					{
+						if (auto item = propertyValue.propertyValue.GetSharedPtr().Cast<GuiDocumentItem>())
+						{
+							container->AddDocumentItem(item);
+							return true;
+						}
+					}
+				}
+				return false;
 			}
 		};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiDocumentLabelInstanceLoader
 ***********************************************************************/
-
-		class GuiDocumentLabelInstanceLoader : public GuiDocumentCommonInterfaceInstanceLoader
+		
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentLabel, GuiDocumentLabelTemplate_StyleProvider, GuiDocumentLabelTemplate>
+		class GuiDocumentLabelInstanceLoader : public BASE_TYPE
 		{
-		protected:
-			GlobalStringKey					typeName;
-
 		public:
 			GuiDocumentLabelInstanceLoader()
+				:BASE_TYPE(description::GetTypeDescriptor<GuiDocumentLabel>()->GetTypeName(), L"CreateDocumentLabelStyle")
 			{
-				typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiDocumentLabel>()->GetTypeName());
 			}
 
-			GlobalStringKey GetTypeName()override
+			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
-				return typeName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return GetTypeName() == typeInfo.typeName;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if(GetTypeName() == typeInfo.typeName)
-				{
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
-					{
-						return Value::From(g::NewDocumentLabel());
-					}
-					else
-					{
-						auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-						return Value::From(new GuiDocumentLabel(new GuiDocumentLabelTemplate_StyleProvider(factory)));
-					}
-				}
-				return Value();
-			}
-
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
-				propertyNames.Add(GlobalStringKey::_ControlTemplate);
+				propertyNames.Add(GlobalStringKey::Empty);
 			}
 
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 			{
-				if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
+				if (propertyInfo.propertyName == GlobalStringKey::Empty)
 				{
-					auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-					info->scope = GuiInstancePropertyInfo::Constructor;
-					return info;
+					return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiDocumentItem>());
 				}
-				return GuiDocumentCommonInterfaceInstanceLoader::GetPropertyType(propertyInfo);
+				return BASE_TYPE::GetPropertyType(propertyInfo);
+			}
+
+			bool SetPropertyValue(PropertyValue& propertyValue)override
+			{
+				if (auto container = dynamic_cast<GuiDocumentCommonInterface*>(propertyValue.instanceValue.GetRawPtr()))
+				{
+					if (propertyValue.propertyName == GlobalStringKey::Empty)
+					{
+						if (auto item = propertyValue.propertyValue.GetSharedPtr().Cast<GuiDocumentItem>())
+						{
+							container->AddDocumentItem(item);
+							return true;
+						}
+					}
+				}
+				return false;
 			}
 		};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiAxisInstanceLoader
