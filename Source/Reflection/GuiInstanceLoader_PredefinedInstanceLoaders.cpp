@@ -30,15 +30,18 @@ GuiVrtualTypeInstanceLoader
 		template<typename TControl, typename TControlStyle, typename TTemplate>
 		class GuiTemplateControlInstanceLoader : public Object, public IGuiInstanceLoader
 		{
+			typedef Func<void(const WString&, Ptr<WfBlockStatement>)> InitFunctionType;
 		protected:
 			GlobalStringKey								typeName;
 			WString										styleMethod;
-			bool										createArgument;
+			WString										argumentStyleMethod;
+			InitFunctionType							initFunction;
 		public:
-			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, bool _createArgument)
+			GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, const WString& _argumentStyleMethod, InitFunctionType _initFunction = InitFunctionType())
 				:typeName(GlobalStringKey::Get(_typeName))
 				, styleMethod(_styleMethod)
-				, createArgument(_createArgument)
+				, argumentStyleMethod(_argumentStyleMethod)
+				, initFunction(_initFunction)
 			{
 			}
 
@@ -68,6 +71,28 @@ GuiVrtualTypeInstanceLoader
 				return typeName == typeInfo.typeName;
 			}
 
+			Ptr<WfExpression> CreateIThemeCall(const WString& method)
+			{
+				auto refPresentation = MakePtr<WfTopQualifiedExpression>();
+				refPresentation->name.value = L"presentation";
+
+				auto refTheme = MakePtr<WfMemberExpression>();
+				refTheme->parent = refPresentation;
+				refTheme->name.value = L"theme";
+
+				auto refITheme = MakePtr<WfMemberExpression>();
+				refITheme->parent = refTheme;
+				refITheme->name.value = L"ITheme";
+
+				auto refStyleMethod = MakePtr<WfMemberExpression>();
+				refStyleMethod->parent = refITheme;
+				refStyleMethod->name.value = method;
+
+				auto createStyle = MakePtr<WfCallExpression>();
+				createStyle->function = refStyleMethod;
+				return createStyle;
+			}
+
 			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
 				CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
@@ -76,24 +101,7 @@ GuiVrtualTypeInstanceLoader
 				Ptr<WfExpression> createStyleExpr;
 				if (indexControlTemplate == -1)
 				{
-					auto refPresentation = MakePtr<WfTopQualifiedExpression>();
-					refPresentation->name.value = L"presentation";
-
-					auto refTheme = MakePtr<WfMemberExpression>();
-					refTheme->parent = refPresentation;
-					refTheme->name.value = L"theme";
-
-					auto refITheme = MakePtr<WfMemberExpression>();
-					refITheme->parent = refTheme;
-					refITheme->name.value = L"ITheme";
-
-					auto refStyleMethod = MakePtr<WfMemberExpression>();
-					refStyleMethod->parent = refITheme;
-					refStyleMethod->name.value = styleMethod;
-
-					auto createStyle = MakePtr<WfCallExpression>();
-					createStyle->function = refStyleMethod;
-					createStyleExpr = createStyle;
+					createStyleExpr = CreateIThemeCall(styleMethod);
 				}
 				else
 				{
@@ -196,19 +204,26 @@ GuiVrtualTypeInstanceLoader
 						createControl->arguments.Add(refControlStyle);
 					}
 
-					if (createArgument)
+					if (argumentStyleMethod != L"")
 					{
-						auto refControlStyle = MakePtr<WfReferenceExpression>();
-						refControlStyle->name.value = L"<controlStyle>";
+						if (indexControlTemplate == -1)
+						{
+							auto refControlStyle = MakePtr<WfReferenceExpression>();
+							refControlStyle->name.value = L"<controlStyle>";
 
-						auto refCreateArgument = MakePtr<WfMemberExpression>();
-						refCreateArgument->parent = refControlStyle;
-						refCreateArgument->name.value = L"CreateArgument";
+							auto refCreateArgument = MakePtr<WfMemberExpression>();
+							refCreateArgument->parent = refControlStyle;
+							refCreateArgument->name.value = L"CreateArgument";
 
-						auto call = MakePtr<WfCallExpression>();
-						call->function = refCreateArgument;
+							auto call = MakePtr<WfCallExpression>();
+							call->function = refCreateArgument;
 
-						createControl->arguments.Add(call);
+							createControl->arguments.Add(call);
+						}
+						else
+						{
+							createControl->arguments.Add(CreateIThemeCall(argumentStyleMethod));
+						}
 					}
 
 					auto refVariable = MakePtr<WfReferenceExpression>();
@@ -221,7 +236,12 @@ GuiVrtualTypeInstanceLoader
 
 					auto assignStat = MakePtr<WfExpressionStatement>();
 					assignStat->expression = assignExpr;
-					return assignStat;
+					block->statements.Add(assignStat);
+				}
+
+				if (initFunction)
+				{
+					initFunction(variableName.ToString(), block);
 				}
 				return block;
 			}
@@ -2229,9 +2249,25 @@ GuiTreeNodeInstanceLoader
 GuiPredefinedInstanceLoadersPlugin
 ***********************************************************************/
 
-		void InitializeTrackerProgressBar(GuiScroll* control)
+		void InitializeTrackerProgressBar(const WString& variableName, Ptr<WfBlockStatement> block)
 		{
-			control->SetPageSize(0);
+			auto refVariable = MakePtr<WfReferenceExpression>();
+			refVariable->name.value = variableName;
+
+			auto refSetPageSize = MakePtr<WfMemberExpression>();
+			refSetPageSize->parent = refVariable;
+			refSetPageSize->name.value = L"SetPageSize";
+
+			auto refZero = MakePtr<WfIntegerExpression>();
+			refZero->value.value = L"0";
+
+			auto call = MakePtr<WfCallExpression>();
+			call->function = refSetPageSize;
+			call->arguments.Add(refZero);
+
+			auto stat = MakePtr<WfExpressionStatement>();
+			stat->expression = call;
+			block->statements.Add(stat);
 		}
 
 		class GuiPredefinedInstanceLoadersPlugin : public Object, public IGuiPlugin
@@ -2252,66 +2288,49 @@ GuiPredefinedInstanceLoadersPlugin
 		new LOADER\
 		)
 
-#define ADD_TEMPLATE_CONTROL(TYPENAME, CONSTRUCTOR, TEMPLATE)\
+#define ADD_TEMPLATE_CONTROL(TYPENAME, STYLE_METHOD, TEMPLATE)\
 	manager->SetLoader(\
-		new GuiTemplateControlInstanceLoader(\
+	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::" L ## #TYPENAME,\
-			[](){return Value::From(CONSTRUCTOR());},\
-			[](Ptr<GuiTemplate::IFactory> factory){return Value::From(new TYPENAME(new TEMPLATE##_StyleProvider(factory))); }\
+			L ## #STYLE_METHOD,\
+			L""\
 			)\
 		)
 
-#define ADD_TEMPLATE_CONTROL_2(TYPENAME, CONSTRUCTOR, TEMPLATE)\
+#define ADD_TEMPLATE_CONTROL_2(TYPENAME, STYLE_METHOD, ARGUMENT_METHOD, TEMPLATE)\
 	manager->SetLoader(\
-		new GuiTemplateControlInstanceLoader(\
+	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::" L ## #TYPENAME,\
-			[](){return Value::From(CONSTRUCTOR());},\
-			[](Ptr<GuiTemplate::IFactory> factory)\
-			{\
-				auto style = new TEMPLATE##_StyleProvider(factory);\
-				auto argument = style->CreateArgument();\
-				return Value::From(new TYPENAME(style, argument));\
-			}\
+			L ## #STYLE_METHOD,\
+			L ## #ARGUMENT_METHOD\
 			)\
 		)
 
-#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, CONSTRUCTOR, TEMPLATE)\
-	manager->CreateVirtualType(\
-		GlobalStringKey::Get(description::GetTypeDescriptor<TYPENAME>()->GetTypeName()),\
-		new GuiTemplateControlInstanceLoader(\
+#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE)\
+	manager->SetLoader(\
+	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-			[](){return Value::From(CONSTRUCTOR());},\
-			[](Ptr<GuiTemplate::IFactory> factory){return Value::From(new TYPENAME(new TEMPLATE##_StyleProvider(factory))); }\
+			L ## #STYLE_METHOD,\
+			L""\
 			)\
 		)
 
-#define ADD_VIRTUAL_CONTROL_2(VIRTUALTYPENAME, TYPENAME, CONSTRUCTOR, TEMPLATE)\
-	manager->CreateVirtualType(\
-		GlobalStringKey::Get(description::GetTypeDescriptor<TYPENAME>()->GetTypeName()),\
-		new GuiTemplateControlInstanceLoader(\
+#define ADD_VIRTUAL_CONTROL_2(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, ARGUMENT_METHOD, TEMPLATE)\
+	manager->SetLoader(\
+	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-			[](){return Value::From(CONSTRUCTOR());},\
-			[](Ptr<GuiTemplate::IFactory> factory)\
-			{\
-				auto style = new TEMPLATE##_StyleProvider(factory);\
-				auto argument = style->CreateArgument();\
-				return Value::From(new TYPENAME(style, argument));\
-			}\
+			L ## #STYLE_METHOD,\
+			L ## #ARGUMENT_METHOD\
 			)\
 		)
 
-#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, CONSTRUCTOR, TEMPLATE, FUNCTION)\
-	manager->CreateVirtualType(\
-		GlobalStringKey::Get(description::GetTypeDescriptor<TYPENAME>()->GetTypeName()),\
-		new GuiTemplateControlInstanceLoader(\
+#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE, INIT_FUNCTION)\
+	manager->SetLoader(\
+	new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 			L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-			[](){return Value::From(CONSTRUCTOR());},\
-			[](Ptr<GuiTemplate::IFactory> factory)\
-			{\
-				auto control = new TYPENAME(new TEMPLATE##_StyleProvider(factory));\
-				FUNCTION(control);\
-				return Value::From(control);\
-			}\
+			L ## #STYLE_METHOD,\
+			L"",\
+			INIT_FUNCTION\
 			)\
 		)
 
@@ -2344,34 +2363,34 @@ GuiPredefinedInstanceLoadersPlugin
 				ADD_VIRTUAL_TYPE_LOADER(GuiComboBoxListControl,						GuiComboBoxInstanceLoader);				// ControlTemplate
 				ADD_VIRTUAL_TYPE_LOADER(tree::MemoryNodeProvider,					GuiTreeNodeInstanceLoader);
 
-				ADD_TEMPLATE_CONTROL	(							GuiCustomControl,		g::NewCustomControl,			GuiControlTemplate);			// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiLabel,				g::NewLabel,					GuiLabelTemplate);				// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiButton,				g::NewButton,					GuiButtonTemplate);				// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		g::NewScrollContainer,			GuiScrollViewTemplate);			// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiWindow,				g::NewWindow,					GuiWindowTemplate);				// ControlTemplate
-				ADD_TEMPLATE_CONTROL_2	(							GuiTextList,			g::NewTextList,					GuiTextListTemplate);			// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	g::NewMultilineTextBox,			GuiMultilineTextBoxTemplate);	// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	g::NewTextBox,					GuiSinglelineTextBoxTemplate);	// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			g::NewDatePicker,				GuiDatePickerTemplate);			// ControlTemplate
-				ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		g::NewDateComboBox,				GuiDateComboBoxTemplate);		// ControlTemplate
-				ADD_TEMPLATE_CONTROL	(							GuiStringGrid,			g::NewStringGrid,				GuiListViewTemplate);			// ControlTemplate
+				ADD_TEMPLATE_CONTROL	(							GuiCustomControl,		CreateCustomControlStyle,											GuiControlTemplate											);
+				ADD_TEMPLATE_CONTROL	(							GuiLabel,				CreateLabelStyle,													GuiLabelTemplate											);
+				ADD_TEMPLATE_CONTROL	(							GuiButton,				CreateButtonStyle,													GuiButtonTemplate											);
+				ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		CreateScrollContainerStyle,											GuiScrollViewTemplate										);
+				ADD_TEMPLATE_CONTROL	(							GuiWindow,				CreateWindowStyle,													GuiWindowTemplate											);
+				ADD_TEMPLATE_CONTROL_2	(							GuiTextList,			CreateTextListStyle,				CreateTextListItemStyle,		GuiTextListTemplate											);
+				ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	CreateMultilineTextBoxStyle,										GuiMultilineTextBoxTemplate									);
+				ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	CreateTextBoxStyle,													GuiSinglelineTextBoxTemplate								);
+				ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			CreateDatePickerStyle,												GuiDatePickerTemplate										);
+				ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		CreateComboBoxStyle,												GuiDateComboBoxTemplate										);
+				ADD_TEMPLATE_CONTROL	(							GuiStringGrid,			CreateListViewStyle,												GuiListViewTemplate											);
 
-				ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				g::NewGroupBox,					GuiControlTemplate);			// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				g::NewMenuSplitter,				GuiControlTemplate);			// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		g::NewMenuBarButton,			GuiToolstripButtonTemplate);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,		g::NewMenuItemButton,			GuiToolstripButtonTemplate);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		g::NewToolBarDropdownButton,	GuiToolstripButtonTemplate);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		g::NewToolBarSplitButton,		GuiToolstripButtonTemplate);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				g::NewToolBarSplitter,			GuiControlTemplate);			// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,	g::NewCheckBox,					GuiSelectableButtonTemplate);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,	g::NewRadioButton,				GuiSelectableButtonTemplate);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,				g::NewHScroll,					GuiScrollTemplate);				// ControlTemplate
-				ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,				g::NewVScroll,					GuiScrollTemplate);				// ControlTemplate
-				ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,				g::NewHTracker,					GuiScrollTemplate,				InitializeTrackerProgressBar);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				g::NewVTracker,					GuiScrollTemplate,				InitializeTrackerProgressBar);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				g::NewProgressBar,				GuiScrollTemplate,				InitializeTrackerProgressBar);	// ControlTemplate
-				ADD_VIRTUAL_CONTROL_2	(CheckTextList,				GuiTextList,			g::NewCheckTextList,			GuiTextListTemplate);			// ControlTemplate
-				ADD_VIRTUAL_CONTROL_2	(RadioTextList,				GuiTextList,			g::NewRadioTextList,			GuiTextListTemplate);			// ControlTemplate
+				ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				CreateGroupBoxStyle,												GuiControlTemplate											);
+				ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				CreateMenuSplitterStyle,											GuiControlTemplate											);
+				ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		CreateMenuBarButtonStyle,											GuiToolstripButtonTemplate									);
+				ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,		CreateMenuItemButtonStyle,											GuiToolstripButtonTemplate									);
+				ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		CreateToolBarDropdownButtonStyle,									GuiToolstripButtonTemplate									);
+				ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		CreateToolBarSplitButtonStyle,										GuiToolstripButtonTemplate									);
+				ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				CreateToolBarSplitterStyle,											GuiControlTemplate											);
+				ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,	CreateCheckBoxStyle,												GuiSelectableButtonTemplate									);
+				ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,	CreateRadioButtonStyle,												GuiSelectableButtonTemplate									);
+				ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,				CreateHScrollStyle,													GuiScrollTemplate											);
+				ADD_VIRTUAL_CONTROL		(VScroll,					GuiScroll,				CreateVScrollStyle,													GuiScrollTemplate											);
+				ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,				CreateHTrackerStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
+				ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				CreateVTrackerStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
+				ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				CreateProgressBarStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
+				ADD_VIRTUAL_CONTROL_2	(CheckTextList,				GuiTextList,			CreateTextListStyle,				CreateCheckTextListItemStyle,	GuiTextListTemplate											);
+				ADD_VIRTUAL_CONTROL_2	(RadioTextList,				GuiTextList,			CreateTextListStyle,				CreateRadioTextListItemStyle,	GuiTextListTemplate											);
 
 				auto bindableTextListName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiBindableTextList>()->GetTypeName());						// ControlTemplate, ItemSource
 				manager->CreateVirtualType(bindableTextListName, new GuiBindableTextListInstanceLoader(L"Check", [](){return GetCurrentTheme()->CreateCheckTextListItemStyle(); }));
