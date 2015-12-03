@@ -1,8 +1,11 @@
 # GacUI
 ### GPU Accelerated C++ User Interface, with WYSIWYG developing tools, XML supports, built-in data binding and MVVM features.
 
-// THE WEBSITE IS OUT OF DATE AND I AM MAKING A NEW ONE
-Refer to http://gaclib.net for more information.
+New website:
+ - http://www.gaclib.net
+ - https://vczh-libraries.github.io
+
+This website is under construction, but it is somehow useable now. The old one (http://gaclib.net) is deprecated. After the new website is finished, I will update all domains to the new website.
 
 * The [Getting Started](http://www.gaclib.net/GettingStart.html) section tells you how to begin using this marvelous GUI library.
 * The [DEMOS](http://www.gaclib.net/Demos.html) section show you all demos using this GUI library.
