@@ -147,7 +147,7 @@ GuiVrtualTypeInstanceLoader
 				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
-					vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
 
 					Ptr<WfExpression> createStyleExpr;
 					if (indexControlTemplate == -1)
@@ -156,7 +156,7 @@ GuiVrtualTypeInstanceLoader
 					}
 					else
 					{
-						auto controlTemplateNameExpr = arguments.GetByIndex(indexControlTemplate).Cast<WfStringExpression>();
+						auto controlTemplateNameExpr = arguments.GetByIndex(indexControlTemplate)[0].expression.Cast<WfStringExpression>();
 						if (!controlTemplateNameExpr)
 						{
 							errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
@@ -201,7 +201,7 @@ GuiVrtualTypeInstanceLoader
 
 							{
 								auto createControlTemplate = MakePtr<WfNewTypeExpression>();
-								controlControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
+								createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
 
 								auto varTemplate = MakePtr<WfVariableDeclaration>();
 								varTemplate->type = GetTypeFromTypeInfo(templateType.Obj());
@@ -255,7 +255,7 @@ GuiVrtualTypeInstanceLoader
 							createControl->arguments.Add(refControlStyle);
 						}
 
-						if (argumentFunction != L"")
+						if (argumentFunction)
 						{
 							createControl->arguments.Add(argumentFunction());
 						}

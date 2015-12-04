@@ -137,7 +137,13 @@ Instance Loader
 				}
 			};
 
-			typedef collections::Group<GlobalStringKey, Ptr<workflow::WfExpression>>	ArgumentMap;
+			struct ArgumentInfo
+			{
+				Ptr<workflow::WfExpression>			expression;
+				description::ITypeDescriptor*		type;
+			};
+
+			typedef collections::Group<GlobalStringKey, ArgumentInfo>	ArgumentMap;
 
 			virtual GlobalStringKey					GetTypeName() = 0;
 
