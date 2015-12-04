@@ -8,6 +8,54 @@ namespace vl
 	{
 		namespace instance_loaders
 		{
+			Ptr<workflow::WfStatement> AddControlToToolstrip(GlobalStringKey variableName, IGuiInstanceLoader::ArgumentMap& arguments, collections::List<WString>& errors)
+			{
+				auto block = MakePtr<WfBlockStatement>();
+
+				FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+				{
+					const auto& values = arguments.GetByIndex(index);
+					if (prop == GlobalStringKey::Empty)
+					{
+						auto value = values[0].expression;
+						auto type = values[0].type;
+
+						Ptr<WfExpression> expr;
+						if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+						{
+							auto refControl = MakePtr<WfReferenceExpression>();
+							refControl->name.value = variableName.ToString();
+
+							auto refToolstripItems = MakePtr<WfMemberExpression>();
+							refToolstripItems->parent = refControl;
+							refToolstripItems->name.value = L"ToolstripItems";
+
+							auto refAdd = MakePtr<WfMemberExpression>();
+							refAdd->parent = refToolstripItems;
+							refAdd->name.value = L"Add";
+
+							auto call = MakePtr<WfCallExpression>();
+							call->function = refAdd;
+							call->arguments.Add(value);
+
+							expr = call;
+						}
+
+						if (expr)
+						{
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = expr;
+							block->statements.Add(stat);
+						}
+					}
+				}
+
+				if (block->statements.Count() > 0)
+				{
+					return block;
+				}
+				return nullptr;
+			}
 
 /***********************************************************************
 GuiToolstripMenuInstanceLoader
@@ -17,7 +65,7 @@ GuiToolstripMenuInstanceLoader
 			class GuiToolstripMenuInstanceLoader : public BASE_TYPE
 			{
 			public:
-				static Ptr<WfExpression> ArgumentFunction()
+				static Ptr<WfExpression> ArgumentFunction(ArgumentMap&)
 				{
 					auto expr = MakePtr<WfLiteralExpression>();
 					expr->value = WfLiteralValue::Null;
@@ -43,20 +91,13 @@ GuiToolstripMenuInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (auto container = dynamic_cast<GuiToolstripMenu*>(propertyValue.instanceValue.GetRawPtr()))
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == GlobalStringKey::Empty)
-						{
-							if (auto control = dynamic_cast<GuiControl*>(propertyValue.propertyValue.GetRawPtr()))
-							{
-								container->GetToolstripItems().Add(control);
-								return true;
-							}
-						}
+						return AddControlToToolstrip(variableName, arguments, errors);
 					}
-					return false;
+					return nullptr;
 				}
 			};
 #undef BASE_TYPE
@@ -88,20 +129,13 @@ GuiToolstripMenuBarInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (auto container = dynamic_cast<GuiToolstripMenuBar*>(propertyValue.instanceValue.GetRawPtr()))
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == GlobalStringKey::Empty)
-						{
-							if (auto control = dynamic_cast<GuiControl*>(propertyValue.propertyValue.GetRawPtr()))
-							{
-								container->GetToolstripItems().Add(control);
-								return true;
-							}
-						}
+						return AddControlToToolstrip(variableName, arguments, errors);
 					}
-					return false;
+					return nullptr;
 				}
 			};
 #undef BASE_TYPE
@@ -133,20 +167,13 @@ GuiToolstripToolBarInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (auto container = dynamic_cast<GuiToolstripToolBar*>(propertyValue.instanceValue.GetRawPtr()))
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == GlobalStringKey::Empty)
-						{
-							if (auto control = dynamic_cast<GuiControl*>(propertyValue.propertyValue.GetRawPtr()))
-							{
-								container->GetToolstripItems().Add(control);
-								return true;
-							}
-						}
+						return AddControlToToolstrip(variableName, arguments, errors);
 					}
-					return false;
+					return nullptr;
 				}
 			};
 #undef BASE_TYPE
@@ -182,21 +209,26 @@ GuiToolstripButtonInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				bool GetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
 				{
-					if (auto container = dynamic_cast<GuiToolstripButton*>(propertyValue.instanceValue.GetRawPtr()))
+					if (propertyInfo.typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == _SubMenu)
+						if (propertyInfo.propertyName == _SubMenu)
 						{
-							if (!container->GetToolstripSubMenu())
-							{
-								container->CreateToolstripSubMenu();
-							}
-							propertyValue.propertyValue = Value::From(container->GetToolstripSubMenu());
-							return true;
+							auto refControl = MakePtr<WfReferenceExpression>();
+							refControl->name.value = variableName.ToString();
+
+							auto refEnsureToolstripSubMenu = MakePtr<WfMemberExpression>();
+							refEnsureToolstripSubMenu->parent = refControl;
+							refEnsureToolstripSubMenu->name.value = L"EnsureToolstripSubMenu";
+
+							auto call = MakePtr<WfCallExpression>();
+							call->function = refEnsureToolstripSubMenu;
+
+							return call;
 						}
 					}
-					return false;
+					return nullptr;
 				}
 			};
 #undef BASE_TYPE

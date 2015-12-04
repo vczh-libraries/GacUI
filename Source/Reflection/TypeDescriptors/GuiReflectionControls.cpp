@@ -1229,6 +1229,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Command)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ToolstripSubMenu)
 
+				CLASS_MEMBER_METHOD(EnsureToolstripSubMenu, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateToolstripSubMenu, {L"subMenuStyleController"})
 			END_CLASS_MEMBER(GuiToolstripButton)
 

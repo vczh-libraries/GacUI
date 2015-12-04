@@ -238,6 +238,10 @@ Toolstrip Component
 				/// <summary>Get the toolstrip sub menu. If the sub menu is not created, it returns null.</summary>
 				/// <returns>The toolstrip sub menu.</returns>
 				GuiToolstripMenu*								GetToolstripSubMenu();
+
+				/// <summary>Get the toolstrip sub menu. If the sub menu is not created, it returns null.</summary>
+				/// <returns>The toolstrip sub menu.</returns>
+				GuiToolstripMenu*								EnsureToolstripSubMenu();
 				/// <summary>Create the toolstrip sub menu if necessary. The created toolstrip sub menu is owned by this menu button.</summary>
 				/// <param name="subMenuStyleController">The style controller for the toolstrip sub menu. If this argument is null, it will call <see cref="IStyleController::CreateSubMenuStyleController"/> for a style controller.</param>
 				void											CreateToolstripSubMenu(GuiToolstripMenu::IStyleController* subMenuStyleController=0);

@@ -476,6 +476,15 @@ GuiToolstripButton
 				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
 			}
 
+			GuiToolstripMenu* GuiToolstripButton::EnsureToolstripSubMenu()
+			{
+				if (!GetSubMenu())
+				{
+					CreateToolstripSubMenu();
+				}
+				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
+			}
+
 			void GuiToolstripButton::CreateToolstripSubMenu(GuiToolstripMenu::IStyleController* subMenuStyleController)
 			{
 				if(!subMenu)
