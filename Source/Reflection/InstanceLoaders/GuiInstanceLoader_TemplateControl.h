@@ -35,16 +35,24 @@ GuiVrtualTypeInstanceLoader
 			template<typename TControl, typename TControlStyle, typename TTemplate>
 			class GuiTemplateControlInstanceLoader : public Object, public IGuiInstanceLoader
 			{
-				using ArgumentRawFunctionType	= Ptr<WfExpression>();
-				using InitRawFunctionType		= void(const WString&, Ptr<WfBlockStatement>);
-				using ArgumentFunctionType		= Func<ArgumentRawFunctionType>;
-				using InitFunctionType			= Func<InitRawFunctionType>;
+				typedef Ptr<WfExpression>				ArgumentRawFunctionType(ArgumentMap&);
+				typedef void							InitRawFunctionType(const WString&, Ptr<WfBlockStatement>);
+				typedef Func<ArgumentRawFunctionType>	ArgumentFunctionType;
+				typedef Func<InitRawFunctionType>		InitFunctionType;
+
 			protected:
 				GlobalStringKey								typeName;
 				WString										styleMethod;
 				ArgumentFunctionType						argumentFunction;
 				InitFunctionType							initFunction;
 
+				virtual void PrepareAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)
+				{
+				}
+
+				virtual void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)
+				{
+				}
 			public:
 
 				static Ptr<WfExpression> CreateIThemeCall(const WString& method)
@@ -69,8 +77,9 @@ GuiVrtualTypeInstanceLoader
 					return createStyle;
 				}
 
-				static Ptr<WfExpression> CreateStyleMethodArgument(const WString& method)
+				static Ptr<WfExpression> CreateStyleMethodArgument(const WString& method, ArgumentMap& arguments)
 				{
+					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
 					if (indexControlTemplate == -1)
 					{
 						auto refControlStyle = MakePtr<WfReferenceExpression>();
@@ -83,11 +92,11 @@ GuiVrtualTypeInstanceLoader
 						auto call = MakePtr<WfCallExpression>();
 						call->function = refCreateArgument;
 
-						createControl->arguments.Add(call);
+						return call;
 					}
 					else
 					{
-						createControl->arguments.Add(CreateIThemeCall(method));
+						return CreateIThemeCall(method);
 					}
 				}
 			public:
@@ -100,7 +109,7 @@ GuiVrtualTypeInstanceLoader
 				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, WString argumentStyleMethod)
 					:typeName(GlobalStringKey::Get(_typeName))
 					, styleMethod(_styleMethod)
-					, argumentFunction([argumentStyleMethod](){return CreateStyleMethodArgument(argumentStyleMethod);})
+					, argumentFunction([argumentStyleMethod](ArgumentMap& arguments){return CreateStyleMethodArgument(argumentStyleMethod, arguments);})
 				{
 				}
 
@@ -243,6 +252,7 @@ GuiVrtualTypeInstanceLoader
 						varStat->variable = varTemplate;
 						block->statements.Add(varStat);
 					}
+					PrepareAdditionalArguments(typeInfo, variableName, arguments, errors, block);
 					{
 						auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
 
@@ -257,8 +267,9 @@ GuiVrtualTypeInstanceLoader
 
 						if (argumentFunction)
 						{
-							createControl->arguments.Add(argumentFunction());
+							createControl->arguments.Add(argumentFunction(arguments));
 						}
+						AddAdditionalArguments(typeInfo, variableName, arguments, errors, createControl);
 
 						auto refVariable = MakePtr<WfReferenceExpression>();
 						refVariable->name.value = variableName.ToString();

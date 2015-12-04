@@ -549,6 +549,11 @@ GuiInstanceRootObject
 				}
 			}
 
+			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
+			{
+				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
+			}
+
 			bool GuiInstanceRootObject::RemoveComponent(GuiComponent* component)
 			{
 				vint index = components.IndexOf(component);

@@ -144,6 +144,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ContainsSubscription, {L"subscription"})
 
 				CLASS_MEMBER_METHOD(AddComponent, {L"component"})
+				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
 				CLASS_MEMBER_METHOD(RemoveComponent, {L"component"})
 				CLASS_MEMBER_METHOD(ContainsComponent, {L"component"})
 			END_CLASS_MEMBER(GuiInstanceRootObject)

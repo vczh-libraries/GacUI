@@ -50,41 +50,101 @@ GuiControlInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
 				{
-					if (auto container = dynamic_cast<GuiInstanceRootObject*>(propertyValue.instanceValue.GetRawPtr()))
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == GlobalStringKey::Empty)
+						auto block = MakePtr<WfBlockStatement>();
+
+						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 						{
-							if (auto component = dynamic_cast<GuiComponent*>(propertyValue.propertyValue.GetRawPtr()))
+							const auto& values = arguments.GetByIndex(index);
+							if (prop == GlobalStringKey::Empty)
 							{
-								container->AddComponent(component);
-								return true;
-							}
-							else if (auto controlHost = dynamic_cast<GuiControlHost*>(propertyValue.propertyValue.GetRawPtr()))
-							{
-								container->AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
-								return true;
+								auto value = values[0].expression;
+								auto type = values[0].type;
+
+								Ptr<WfExpression> expr;
+								if (type->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
+								{
+									auto refControl = MakePtr<WfReferenceExpression>();
+									refControl->name.value = variableName.ToString();
+
+									auto refAddComponent = MakePtr<WfMemberExpression>();
+									refAddComponent->parent = refControl;
+									refAddComponent->name.value = L"AddComponent";
+
+									auto call = MakePtr<WfCallExpression>();
+									call->function = refAddComponent;
+									call->arguments.Add(value);
+
+									expr = call;
+								}
+								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
+								{
+									auto refControl = MakePtr<WfReferenceExpression>();
+									refControl->name.value = variableName.ToString();
+
+									auto refAddControlHostComponent = MakePtr<WfMemberExpression>();
+									refAddControlHostComponent->parent = refControl;
+									refAddControlHostComponent->name.value = L"AddControlHostComponent";
+
+									auto call = MakePtr<WfCallExpression>();
+									call->function = refAddControlHostComponent;
+									call->arguments.Add(value);
+
+									expr = call;
+								}
+								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+								{
+									auto refControl = MakePtr<WfReferenceExpression>();
+									refControl->name.value = variableName.ToString();
+
+									auto refAddChild = MakePtr<WfMemberExpression>();
+									refAddChild->parent = refControl;
+									refAddChild->name.value = L"AddChild";
+
+									auto call = MakePtr<WfCallExpression>();
+									call->function = refAddChild;
+									call->arguments.Add(value);
+
+									expr = call;
+								}
+								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+								{
+									auto refControl = MakePtr<WfReferenceExpression>();
+									refControl->name.value = variableName.ToString();
+
+									auto refContainerComposition = MakePtr<WfMemberExpression>();
+									refContainerComposition->parent = refControl;
+									refContainerComposition->name.value = L"ContainerComposition";
+
+									auto refAddChild = MakePtr<WfMemberExpression>();
+									refAddChild->parent = refContainerComposition;
+									refAddChild->name.value = L"AddChild";
+
+									auto call = MakePtr<WfCallExpression>();
+									call->function = refAddChild;
+									call->arguments.Add(value);
+
+									expr = call;
+								}
+
+								if (expr)
+								{
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = expr;
+									block->statements.Add(stat);
+								}
 							}
 						}
-					}
-					if (auto container = dynamic_cast<GuiControl*>(propertyValue.instanceValue.GetRawPtr()))
-					{
-						if (propertyValue.propertyName == GlobalStringKey::Empty)
+
+						if (block->statements.Count() > 0)
 						{
-							if (auto control = dynamic_cast<GuiControl*>(propertyValue.propertyValue.GetRawPtr()))
-							{
-								container->AddChild(control);
-								return true;
-							}
-							else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(propertyValue.propertyValue.GetRawPtr()))
-							{
-								container->GetContainerComposition()->AddChild(composition);
-								return true;
-							}
+							return block;
 						}
 					}
-					return false;
+					return nullptr;
 				}
 			};
 
@@ -92,74 +152,31 @@ GuiControlInstanceLoader
 GuiComboBoxInstanceLoader
 ***********************************************************************/
 
-			class GuiComboBoxInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboBoxListControl, GuiComboBoxTemplate_StyleProvider, GuiComboBoxTemplate>
+			class GuiComboBoxInstanceLoader : public BASE_TYPE
 			{
 			protected:
-				GlobalStringKey						typeName;
 				GlobalStringKey						_ListControl;
 
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				{
+					vint indexListControl = arguments.Keys().IndexOf(_ListControl);
+					if (indexListControl != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexListControl)[0].expression);
+					}
+				}
 			public:
 				GuiComboBoxInstanceLoader()
-					:typeName(GlobalStringKey::Get(L"presentation::controls::GuiComboBox"))
+					:BASE_TYPE(L"presentation::controls::GuiComboBox", L"CreateComboBoxStyle")
 				{
 					_ListControl = GlobalStringKey::Get(L"ListControl");
-				}
-
-				GlobalStringKey GetTypeName()override
-				{
-					return typeName;
-				}
-
-				bool IsCreatable(const TypeInfo& typeInfo)override
-				{
-					return typeInfo.typeName == GetTypeName();
-				}
-
-				description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						vint indexListControl = constructorArguments.Keys().IndexOf(_ListControl);
-						vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-						if (indexListControl != -1)
-						{
-							Ptr<GuiTemplate::IFactory> factory;
-							if (indexControlTemplate != -1)
-							{
-								factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-							}
-
-							GuiComboBoxBase::IStyleController* styleController = 0;
-							if (factory)
-							{
-								styleController = new GuiComboBoxTemplate_StyleProvider(factory);
-							}
-							else
-							{
-								styleController = GetCurrentTheme()->CreateComboBoxStyle();
-							}
-
-							auto listControl = UnboxValue<GuiSelectableListControl*>(constructorArguments.GetByIndex(indexListControl)[0]);
-							auto comboBox = new GuiComboBoxListControl(styleController, listControl);
-							return Value::From(comboBox);
-						}
-					}
-					return Value();
 				}
 
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
-						propertyNames.Add(_ListControl);
-					}
-				}
-
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(GlobalStringKey::_ControlTemplate);
 						propertyNames.Add(_ListControl);
 					}
 				}
@@ -173,15 +190,10 @@ GuiComboBoxInstanceLoader
 						info->required = true;
 						return info;
 					}
-					else if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
-					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 			};
+#undef BASE_TYPE
 
 #endif
 			
@@ -189,7 +201,7 @@ GuiComboBoxInstanceLoader
 GuiPredefinedInstanceLoadersPlugin
 ***********************************************************************/
 
-			Ptr<WfExpression> CreateStandardDataPicker()
+			Ptr<WfExpression> CreateStandardDataPicker(IGuiInstanceLoader::ArgumentMap&)
 			{
 				using TControl = GuiDatePicker;
 				using TControlStyle = GuiDateComboBoxTemplate_StyleProvider;
