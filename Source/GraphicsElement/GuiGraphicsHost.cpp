@@ -195,9 +195,10 @@ GuiGraphicsHost
 					vint count = actions.Count();
 					for (vint i = 0; i < count; i++)
 					{
+						WString key = actions.Keys()[i];
 						const auto& values = actions.GetByIndex(i);
 						vint numberLength = 0;
-						if (values.Count() == 1)
+						if (values.Count() == 1 && key.Length() > 0)
 						{
 							numberLength = 0;
 						}
@@ -262,7 +263,7 @@ GuiGraphicsHost
 				{
 					auto key = currentActiveAltTitles.Keys()[i];
 					auto value = currentActiveAltTitles.Values()[i];
-					if (key.Length() > 0 && key.Length() >= currentAltPrefix.Length() && key.Left(currentAltPrefix.Length()) == currentAltPrefix)
+					if (key.Length() >= currentAltPrefix.Length() && key.Left(currentAltPrefix.Length()) == currentAltPrefix)
 					{
 						value->SetVisible(true);
 						if (currentAltPrefix.Length() <= key.Length())

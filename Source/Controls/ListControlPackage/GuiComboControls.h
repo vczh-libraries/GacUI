@@ -63,7 +63,8 @@ ComboBox Base
 
 				Ptr<CommandExecutor>						commandExecutor;
 				IStyleController*							styleController;
-
+				
+				bool										IsAltAvailable()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
 				virtual void								SelectItem();
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

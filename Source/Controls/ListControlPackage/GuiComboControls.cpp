@@ -29,6 +29,11 @@ GuiComboBoxBase::CommandExecutor
 GuiComboBoxBase
 ***********************************************************************/
 
+			bool GuiComboBoxBase::IsAltAvailable()
+			{
+				return false;
+			}
+
 			IGuiMenuService::Direction GuiComboBoxBase::GetSubMenuDirection()
 			{
 				return IGuiMenuService::Horizontal;
