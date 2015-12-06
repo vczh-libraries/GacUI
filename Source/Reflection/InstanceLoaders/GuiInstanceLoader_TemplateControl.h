@@ -239,38 +239,38 @@ GuiVrtualTypeInstanceLoader
 					return CreateTemplateFactory(controlTemplateTds, errors);
 				}
 
-				static ITypeDescriptor* GetControlTemplateType(Ptr<WfExpression> argument, collections::List<WString>& errors)
+				static ITypeDescriptor* GetControlTemplateType(Ptr<WfExpression> argument, const TypeInfo& controlTypeInfo, collections::List<WString>& errors)
 				{
 					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
 					if (!controlTemplateNameExpr)
 					{
-						errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
+						errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L"\" of type \"" + controlTypeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
 						return nullptr;
 					}
 
 					auto controlTemplateName = controlTemplateNameExpr->value.value;
 					if (wcschr(controlTemplateName.Buffer(), L';') == nullptr)
 					{
-						errors.Add(L"Precompile: \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\", is illegal because control template should not have multiple choices.");
+						errors.Add(L"Precompile: \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + controlTypeInfo.typeName.ToString() + L"\", is illegal because control template should not have multiple choices.");
 						return nullptr;
 					}
 
 					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
 					if (!controlTemplateTd)
 					{
-						errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\", does not exist.");
+						errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + controlTypeInfo.typeName.ToString() + L"\", does not exist.");
 						return nullptr;
 					}
 
 					return controlTemplateTd;
 				}
 
-				static void GetItemTemplateType(Ptr<WfExpression> argument, List<ITypeDescriptor*>& tds, collections::List<WString>& errors)
+				static void GetItemTemplateType(Ptr<WfExpression> argument, const TypeInfo& controlTypeInfo, List<ITypeDescriptor*>& tds, collections::List<WString>& errors)
 				{
 					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
 					if (!controlTemplateNameExpr)
 					{
-						errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
+						errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ItemTemplate.ToString() + L"\" of type \"" + controlTypeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
 						return;
 					}
 
@@ -282,7 +282,7 @@ GuiVrtualTypeInstanceLoader
 						auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
 						if (!controlTemplateTd)
 						{
-							errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\", does not exist.");
+							errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + controlTypeInfo.typeName.ToString() + L"\", does not exist.");
 							continue;
 						}
 						tds.Add(controlTemplateTd);
@@ -355,7 +355,7 @@ GuiVrtualTypeInstanceLoader
 					}
 					else
 					{
-						if (auto controlTemplateTd = GetControlTemplateType(arguments.GetByIndex(indexControlTemplate)[0].expression, errors))
+						if (auto controlTemplateTd = GetControlTemplateType(arguments.GetByIndex(indexControlTemplate)[0].expression, typeInfo, errors))
 						{
 							auto styleType = TypeInfoRetriver<TControlStyle*>::CreateTypeInfo();
 

@@ -10,11 +10,11 @@ namespace vl
 		{
 
 			template<typename IItemTemplateStyle, typename ITemplate>
-			Ptr<WfStatement> CreateSetControlTemplateStyle(GlobalStringKey variableName, Ptr<WfExpression> argument, const WString& propertyName, collections::List<WString>& errors)
+			Ptr<WfStatement> CreateSetControlTemplateStyle(GlobalStringKey variableName, Ptr<WfExpression> argument, const TypeInfo& controlTypeInfo, const WString& propertyName, collections::List<WString>& errors)
 			{
 				using Helper = GuiTemplateControlInstanceLoader<void, IItemTemplateStyle, ITemplate>;
 				List<ITypeDescriptor*> controlTemplateTds;
-				Helper::GetItemTemplateType(argument, controlTemplateTds, errors);
+				Helper::GetItemTemplateType(argument, controlTemplateTds, controlTypeInfo, errors);
 
 				if (controlTemplateTds.Count() > 0)
 				{
@@ -89,7 +89,7 @@ GuiSelectableListControlInstanceLoader
 							const auto& values = arguments.GetByIndex(index);
 							if (prop == GlobalStringKey::_ItemTemplate)
 							{
-								if (auto stat = CreateSetControlTemplateStyle<GuiListItemTemplate_ItemStyleProvider, GuiListItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, L"StyleProvider", errors))
+								if (auto stat = CreateSetControlTemplateStyle<GuiListItemTemplate_ItemStyleProvider, GuiListItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", errors))
 								{
 									block->statements.Add(stat);
 								}
@@ -151,7 +151,7 @@ GuiVirtualTreeViewInstanceLoader
 							const auto& values = arguments.GetByIndex(index);
 							if (prop == GlobalStringKey::_ItemTemplate)
 							{
-								if (auto stat = CreateSetControlTemplateStyle<GuiTreeItemTemplate_ItemStyleProvider, GuiTreeItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, L"NodeStyleProvider", errors))
+								if (auto stat = CreateSetControlTemplateStyle<GuiTreeItemTemplate_ItemStyleProvider, GuiTreeItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"NodeStyleProvider", errors))
 								{
 									block->statements.Add(stat);
 								}
