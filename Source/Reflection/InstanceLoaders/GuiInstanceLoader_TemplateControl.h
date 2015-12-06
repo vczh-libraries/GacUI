@@ -168,14 +168,14 @@ GuiVrtualTypeInstanceLoader
 						auto controlTemplateNameExpr = arguments.GetByIndex(indexControlTemplate)[0].expression.Cast<WfStringExpression>();
 						if (!controlTemplateNameExpr)
 						{
-							errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
+							errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
 							return nullptr;
 						}
 
 						auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateNameExpr->value.value);
 						if (!controlTemplateTd)
 						{
-							errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\", does not exist.");
+							errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\", does not exist.");
 							return nullptr;
 						}
 
