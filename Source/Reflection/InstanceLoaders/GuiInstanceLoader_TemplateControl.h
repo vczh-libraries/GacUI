@@ -99,6 +99,146 @@ GuiVrtualTypeInstanceLoader
 						return CreateIThemeCall(method);
 					}
 				}
+
+				static Ptr<WfExpression> CreateTemplateFactory(List<ITypeDescriptor*>& controlTemplateTds, collections::List<WString>& errors)
+				{
+					auto templateType = TypeInfoRetriver<TTemplate*>::CreateTypeInfo();
+					auto factoryType = TypeInfoRetriver<Ptr<GuiTemplate::IFactory>>::CreateTypeInfo();
+
+					auto refFactory = MakePtr<WfNewTypeExpression>();
+					refFactory->type = GetTypeFromTypeInfo(factoryType.Obj());
+					{
+						auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
+						funcCreateTemplate->anonymity = WfFunctionAnonymity::Named;
+						funcCreateTemplate->name.value = L"CreateTemplate";
+						funcCreateTemplate->returnType = GetTypeFromTypeInfo(templateType.Obj());
+
+						auto argViewModel = MakePtr<WfFunctionArgument>();
+						argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
+						argViewModel->name.value = L"<viewModel>";
+						funcCreateTemplate->arguments.Add(argViewModel);
+
+						auto block = MakePtr<WfBlockStatement>();
+						funcCreateTemplate->statement = block;
+						
+						ITypeDescriptor* stopControlTemplateTd = nullptr;
+						FOREACH(ITypeDescriptor*, controlTemplateTd, controlTemplateTds)
+						{
+							if (stopControlTemplateTd)
+							{
+								errors.Add(L"Precompile: Type \"" + controlTemplateTd->GetTypeName() + L"\" will never be tried, because \"" + stopControlTemplateTd->GetTypeName() + L"\", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.");
+								continue;
+							}
+
+							ITypeInfo* viewModelType = nullptr;
+							{
+								auto ctors = controlTemplateTd->GetConstructorGroup();
+								if (ctors->GetMethodCount() != 1)
+								{
+									errors.Add(L"Precompile: To use type \"" + controlTemplateTd->GetTypeName() + L"\" as a control template or item template, it should have exactly one constructor.");
+									continue;
+								}
+
+								auto ctor = ctors->GetMethod(0);
+								if (ctor->GetParameterCount() > 1)
+								{
+									errors.Add(L"Precompile: To use type \"" + controlTemplateTd->GetTypeName() + L"\" as a control template or item template, its constructor cannot have more than one parameter.");
+									continue;
+								}
+
+								if (ctor->GetParameterCount() != 0)
+								{
+									viewModelType = ctor->GetParameter(0)->GetType();
+								}
+							}
+
+							if (!viewModelType)
+							{
+								stopControlTemplateTd = controlTemplateTd;
+							}
+
+							auto subBlock = MakePtr<WfBlockStatement>();
+							block->statements.Add(subBlock);
+
+							Ptr<ITypeInfo> controlTemplateType;
+							{
+								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+								elementType->SetTypeDescriptor(controlTemplateTd);
+
+								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
+								pointerType->SetElementType(elementType);
+
+								controlTemplateType = pointerType;
+							}
+
+							Ptr<WfBlockStatement> returnStatBlock;
+							if (viewModelType)
+							{
+								auto refViewModel = MakePtr<WfReferenceExpression>();
+								refViewModel->name.value = L"<viewModel>";
+
+								auto condition = MakePtr<WfTypeTestingExpression>();
+								condition->test = WfTypeTesting::IsType;
+								condition->expression = refViewModel;
+								condition->type = GetTypeFromTypeInfo(viewModelType);
+
+								auto ifStat = MakePtr<WfIfStatement>();
+								ifStat->expression = condition;
+
+								returnStatBlock = MakePtr<WfBlockStatement>();
+								ifStat->trueBranch = returnStatBlock;
+							}
+							else
+							{
+								returnStatBlock = subBlock;
+							}
+
+							{
+								auto createControlTemplate = MakePtr<WfNewTypeExpression>();
+								createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
+								if (viewModelType)
+								{
+									auto refViewModel = MakePtr<WfReferenceExpression>();
+									refViewModel->name.value = L"<viewModel>";
+									createControlTemplate->arguments.Add(refViewModel);
+								}
+
+								auto varTemplate = MakePtr<WfVariableDeclaration>();
+								varTemplate->type = GetTypeFromTypeInfo(templateType.Obj());
+								varTemplate->name.value = L"<template>";
+								varTemplate->expression = createControlTemplate;
+
+								auto varStat = MakePtr<WfVariableStatement>();
+								varStat->variable = varTemplate;
+								returnStatBlock->statements.Add(varStat);
+							}
+							{
+								auto refTemplate = MakePtr<WfReferenceExpression>();
+								refTemplate->name.value = L"<template>";
+
+								auto returnStat = MakePtr<WfReturnStatement>();
+								returnStat->expression = refTemplate;
+								returnStatBlock->statements.Add(returnStat);
+							}
+						}
+
+						if (!stopControlTemplateTd)
+						{
+						}
+
+						refFactory->functions.Add(funcCreateTemplate);
+					}
+
+					return refFactory;
+				}
+
+				static Ptr<WfExpression> CreateTemplateFactory(ITypeDescriptor* controlTemplateTd, collections::List<WString>& errors)
+				{
+					List<ITypeDescriptor*> controlTemplateTds;
+					controlTemplateTds.Add(controlTemplateTd);
+					return CreateTemplateFactory(controlTemplateTds, errors);
+				}
+
 			public:
 				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod)
 					:typeName(GlobalStringKey::Get(_typeName))
@@ -172,66 +312,21 @@ GuiVrtualTypeInstanceLoader
 							return nullptr;
 						}
 
-						auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateNameExpr->value.value);
+						auto controlTemplateName = controlTemplateNameExpr->value.value;
+						if (wcschr(controlTemplateName.Buffer(), L';') == nullptr)
+						{
+							errors.Add(L"Precompile: \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\", is illegal because control template should not have multiple choices.");
+							return nullptr;
+						}
+
+						auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
 						if (!controlTemplateTd)
 						{
 							errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + typeInfo.typeName.ToString() + L"\", does not exist.");
 							return nullptr;
 						}
 
-						Ptr<ITypeInfo> controlTemplateType;
-						{
-							auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-							elementType->SetTypeDescriptor(controlTemplateTd);
-
-							auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
-							pointerType->SetElementType(elementType);
-
-							controlTemplateType = pointerType;
-						}
-						auto factoryType = TypeInfoRetriver<Ptr<GuiTemplate::IFactory>>::CreateTypeInfo();
-						auto templateType = TypeInfoRetriver<GuiTemplate*>::CreateTypeInfo();
-
-						auto refFactory = MakePtr<WfNewTypeExpression>();
-						refFactory->type = GetTypeFromTypeInfo(factoryType.Obj());
-						{
-							auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
-							funcCreateTemplate->anonymity = WfFunctionAnonymity::Named;
-							funcCreateTemplate->name.value = L"CreateTemplate";
-							funcCreateTemplate->returnType = GetTypeFromTypeInfo(templateType.Obj());
-
-							auto argViewModel = MakePtr<WfFunctionArgument>();
-							argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
-							argViewModel->name.value = L"<viewModel>";
-							funcCreateTemplate->arguments.Add(argViewModel);
-
-							auto block = MakePtr<WfBlockStatement>();
-							funcCreateTemplate->statement = block;
-
-							{
-								auto createControlTemplate = MakePtr<WfNewTypeExpression>();
-								createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
-
-								auto varTemplate = MakePtr<WfVariableDeclaration>();
-								varTemplate->type = GetTypeFromTypeInfo(templateType.Obj());
-								varTemplate->name.value = L"<template>";
-								varTemplate->expression = createControlTemplate;
-
-								auto varStat = MakePtr<WfVariableStatement>();
-								varStat->variable = varTemplate;
-								block->statements.Add(varStat);
-							}
-							{
-								auto refTemplate = MakePtr<WfReferenceExpression>();
-								refTemplate->name.value = L"<template>";
-
-								auto returnStat = MakePtr<WfReturnStatement>();
-								returnStat->expression = refTemplate;
-								block->statements.Add(returnStat);
-							}
-
-							refFactory->functions.Add(funcCreateTemplate);
-						}
+						auto refFactory = CreateTemplateFactory(controlTemplateTd, errors);
 
 						auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
 						auto styleType = TypeInfoRetriver<TControlStyle*>::CreateTypeInfo();
