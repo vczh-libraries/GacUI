@@ -9,6 +9,40 @@ namespace vl
 		namespace instance_loaders
 		{
 
+			template<typename IItemTemplateStyle, typename ITemplate>
+			Ptr<WfStatement> CreateSetControlTemplateStyle(GlobalStringKey variableName, Ptr<WfExpression> argument, const WString& propertyName, collections::List<WString>& errors)
+			{
+				using Helper = GuiTemplateControlInstanceLoader<void, IItemTemplateStyle, ITemplate>;
+				List<ITypeDescriptor*> controlTemplateTds;
+				Helper::GetItemTemplateType(argument, controlTemplateTds, errors);
+
+				if (controlTemplateTds.Count() > 0)
+				{
+					auto refFactory = Helper::CreateTemplateFactory(controlTemplateTds, errors);
+					auto createStyle = MakePtr<WfNewTypeExpression>();
+					createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IItemTemplateStyle>>::CreateTypeInfo().Obj());
+					createStyle->arguments.Add(refFactory);
+
+					auto refControl = MakePtr<WfReferenceExpression>();
+					refControl->name.value = variableName.ToString();
+
+					auto refStyleProvider = MakePtr<WfMemberExpression>();
+					refStyleProvider->parent = refControl;
+					refStyleProvider->name.value = propertyName;
+
+					auto assign = MakePtr<WfBinaryExpression>();
+					assign->op = WfBinaryOperator::Assign;
+					assign->first = refStyleProvider;
+					assign->second = createStyle;
+
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = assign;
+					return stat;
+				}
+
+				return nullptr;
+			}
+
 /***********************************************************************
 GuiSelectableListControlInstanceLoader
 ***********************************************************************/
@@ -44,19 +78,30 @@ GuiSelectableListControlInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (auto container = dynamic_cast<GuiSelectableListControl*>(propertyValue.instanceValue.GetRawPtr()))
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == GlobalStringKey::_ItemTemplate)
+						auto block = MakePtr<WfBlockStatement>();
+
+						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 						{
-							auto factory = CreateTemplateFactory(propertyValue.propertyValue.GetText());
-							auto styleProvider = new GuiListItemTemplate_ItemStyleProvider(factory);
-							container->SetStyleProvider(styleProvider);
-							return true;
+							const auto& values = arguments.GetByIndex(index);
+							if (prop == GlobalStringKey::_ItemTemplate)
+							{
+								if (auto stat = CreateSetControlTemplateStyle<GuiListItemTemplate_ItemStyleProvider, GuiListItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, L"StyleProvider", errors))
+								{
+									block->statements.Add(stat);
+								}
+							}
+						}
+
+						if (block->statements.Count() > 0)
+						{
+							return block;
 						}
 					}
-					return false;
+					return nullptr;
 				}
 			};
 
@@ -95,19 +140,30 @@ GuiVirtualTreeViewInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (auto container = dynamic_cast<GuiVirtualTreeListControl*>(propertyValue.instanceValue.GetRawPtr()))
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == GlobalStringKey::_ItemTemplate)
+						auto block = MakePtr<WfBlockStatement>();
+
+						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 						{
-							auto factory = CreateTemplateFactory(propertyValue.propertyValue.GetText());
-							auto styleProvider = new GuiTreeItemTemplate_ItemStyleProvider(factory);
-							container->SetNodeStyleProvider(styleProvider);
-							return true;
+							const auto& values = arguments.GetByIndex(index);
+							if (prop == GlobalStringKey::_ItemTemplate)
+							{
+								if (auto stat = CreateSetControlTemplateStyle<GuiTreeItemTemplate_ItemStyleProvider, GuiTreeItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, L"NodeStyleProvider", errors))
+								{
+									block->statements.Add(stat);
+								}
+							}
+						}
+
+						if (block->statements.Count() > 0)
+						{
+							return block;
 						}
 					}
-					return false;
+					return nullptr;
 				}
 			};
 
