@@ -73,7 +73,7 @@ GuiToolstripMenuInstanceLoader
 				}
 			public:
 				GuiToolstripMenuInstanceLoader()
-					:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripMenu>()->GetTypeName(), L"CreateMenuStyle", ArgumentFunction)
+					:BASE_TYPE(description::TypeInfo<GuiToolstripMenu>::TypeName, L"CreateMenuStyle", ArgumentFunction)
 				{
 				}
 
@@ -111,7 +111,7 @@ GuiToolstripMenuBarInstanceLoader
 			{
 			public:
 				GuiToolstripMenuBarInstanceLoader()
-					:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripMenuBar>()->GetTypeName(), L"CreateMenuBarStyle")
+					:BASE_TYPE(description::TypeInfo<GuiToolstripMenuBar>::TypeName, L"CreateMenuBarStyle")
 				{
 				}
 
@@ -149,7 +149,7 @@ GuiToolstripToolBarInstanceLoader
 			{
 			public:
 				GuiToolstripToolBarInstanceLoader()
-					:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripToolBar>()->GetTypeName(), L"CreateToolBarStyle")
+					:BASE_TYPE(description::TypeInfo<GuiToolstripToolBar>::TypeName, L"CreateToolBarStyle")
 				{
 				}
 
@@ -190,7 +190,7 @@ GuiToolstripButtonInstanceLoader
 
 			public:
 				GuiToolstripButtonInstanceLoader()
-					:BASE_TYPE(description::GetTypeDescriptor<GuiToolstripButton>()->GetTypeName(), L"CreateToolBarButtonStyle")
+					:BASE_TYPE(description::TypeInfo<GuiToolstripButton>::TypeName, L"CreateToolBarButtonStyle")
 				{
 					_SubMenu = GlobalStringKey::Get(L"SubMenu");
 				}

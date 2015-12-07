@@ -10,7 +10,7 @@ namespace vl
 		{
 
 			template<typename IItemTemplateStyle, typename ITemplate>
-			Ptr<WfStatement> CreateSetControlTemplateStyle(GlobalStringKey variableName, Ptr<WfExpression> argument, const TypeInfo& controlTypeInfo, const WString& propertyName, collections::List<WString>& errors)
+			Ptr<WfStatement> CreateSetControlTemplateStyle(GlobalStringKey variableName, Ptr<WfExpression> argument, const IGuiInstanceLoader::TypeInfo& controlTypeInfo, const WString& propertyName, collections::List<WString>& errors)
 			{
 				using Helper = GuiTemplateControlInstanceLoader<void, IItemTemplateStyle, ITemplate>;
 				List<ITypeDescriptor*> controlTemplateTds;
@@ -55,7 +55,7 @@ GuiSelectableListControlInstanceLoader
 			public:
 				GuiSelectableListControlInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiSelectableListControl>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiSelectableListControl>::TypeName);
 				}
 
 				GlobalStringKey GetTypeName()override
@@ -117,7 +117,7 @@ GuiVirtualTreeViewInstanceLoader
 			public:
 				GuiVirtualTreeViewInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiVirtualTreeView>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiVirtualTreeView>::TypeName);
 				}
 
 				GlobalStringKey GetTypeName()override
@@ -171,6 +171,61 @@ GuiVirtualTreeViewInstanceLoader
 GuiListViewInstanceLoader
 ***********************************************************************/
 
+#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl, GuiListViewTemplate_StyleProvider, GuiListViewTemplate>
+			template<typename TControl>
+			class GuiListViewInstanceLoaderBase : public BASE_TYPE
+			{
+			protected:
+				bool				bindable;
+				GlobalStringKey		_View, _IconSize;
+
+				void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)override
+				{
+				}
+
+			public:
+				GuiListViewInstanceLoaderBase()
+					:BASE_TYPE(description::TypeInfo<TControl>::TypeName, L"CreateListViewStyle")
+				{
+					_View = GlobalStringKey::Get(L"View");
+					_IconSize = GlobalStringKey::Get(L"IconSize");
+				}
+
+				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (typeInfo.typeName == GetTypeName())
+					{
+						propertyNames.Add(GlobalStringKey::_ControlTemplate);
+						propertyNames.Add(_View);
+						propertyNames.Add(_IconSize);
+					}
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						info->scope = GuiInstancePropertyInfo::Constructor;
+						return info;
+					}
+					else if (propertyInfo.propertyName == _View)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<ListViewViewType>());
+						info->scope = GuiInstancePropertyInfo::Constructor;
+						return info;
+					}
+					else if (propertyInfo.propertyName == _IconSize)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Size>());
+						info->scope = GuiInstancePropertyInfo::Constructor;
+						return info;
+					}
+					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+				}
+			};
+#undef BASE_TYPE
+
 			class GuiListViewInstanceLoader : public Object, public IGuiInstanceLoader
 			{
 			protected:
@@ -184,11 +239,11 @@ GuiListViewInstanceLoader
 				{
 					if (bindable)
 					{
-						typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiBindableListView>()->GetTypeName());
+						typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableListView>::TypeName);
 					}
 					else
 					{
-						typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiListView>()->GetTypeName());
+						typeName = GlobalStringKey::Get(description::TypeInfo<GuiListView>::TypeName);
 					}
 					_View = GlobalStringKey::Get(L"View");
 					_IconSize = GlobalStringKey::Get(L"IconSize");
@@ -351,11 +406,11 @@ GuiTreeViewInstanceLoader
 				{
 					if (bindable)
 					{
-						typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiBindableTreeView>()->GetTypeName());
+						typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableTreeView>::TypeName);
 					}
 					else
 					{
-						typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiTreeView>()->GetTypeName());
+						typeName = GlobalStringKey::Get(description::TypeInfo<GuiTreeView>::TypeName);
 					}
 					_IconSize = GlobalStringKey::Get(L"IconSize");
 					_ItemSource = GlobalStringKey::Get(L"ItemSource");
@@ -594,7 +649,7 @@ GuiBindableDataColumnInstanceLoader
 			public:
 				GuiBindableDataColumnInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<list::BindableDataColumn>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<list::BindableDataColumn>::TypeName);
 					_VisualizerTemplates = GlobalStringKey::Get(L"VisualizerTemplates");
 					_EditorTemplate = GlobalStringKey::Get(L"EditorTemplate");
 				}
@@ -675,7 +730,7 @@ GuiBindableDataGridInstanceLoader
 			public:
 				GuiBindableDataGridInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiBindableDataGrid>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::TypeName);
 					_ItemSource = GlobalStringKey::Get(L"ItemSource");
 					_ViewModelContext = GlobalStringKey::Get(L"ViewModelContext");
 					_Columns = GlobalStringKey::Get(L"Columns");
@@ -912,12 +967,12 @@ Initialization
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);
 
-				auto bindableTextListName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiBindableTextList>()->GetTypeName());
+				auto bindableTextListName = GlobalStringKey::Get(description::TypeInfo<GuiBindableTextList>::TypeName);
 				manager->CreateVirtualType(bindableTextListName, new GuiBindableTextListInstanceLoader(L"Check", [](){return GetCurrentTheme()->CreateCheckTextListItemStyle(); }));
 				manager->CreateVirtualType(bindableTextListName, new GuiBindableTextListInstanceLoader(L"Radio", [](){return GetCurrentTheme()->CreateRadioTextListItemStyle(); }));
 				
 				manager->CreateVirtualType(
-					GlobalStringKey::Get(description::GetTypeDescriptor<tree::MemoryNodeProvider>()->GetTypeName()),
+					GlobalStringKey::Get(description::TypeInfo<tree::MemoryNodeProvider>::TypeName),
 					new GuiTreeNodeInstanceLoader
 					);
 			}

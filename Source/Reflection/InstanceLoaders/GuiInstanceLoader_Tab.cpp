@@ -18,7 +18,7 @@ GuiTabInstanceLoader
 			{
 			public:
 				GuiTabInstanceLoader()
-					:BASE_TYPE(description::GetTypeDescriptor<GuiTab>()->GetTypeName(), L"CreateTabStyle")
+					:BASE_TYPE(description::TypeInfo<GuiTab>::TypeName, L"CreateTabStyle")
 				{
 				}
 
@@ -98,7 +98,7 @@ GuiTabPageInstanceLoader
 			public:
 				GuiTabPageInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiTabPage>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiTabPage>::TypeName);
 				}
 
 				GlobalStringKey GetTypeName()override

@@ -53,6 +53,10 @@ GuiVrtualTypeInstanceLoader
 				virtual void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)
 				{
 				}
+
+				virtual void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)
+				{
+				}
 			public:
 
 				static Ptr<WfExpression> CreateIThemeCall(const WString& method)
@@ -289,6 +293,29 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
+				template<typename TStruct>
+				static Value ParseConstantArgument(Ptr<WfExpression> value, const TypeInfo& typeName, const WString& propertyName, const WString& formatSample)
+				{
+					auto castExpr = value.Cast<WfTypeCastingExpression>();
+					if (!castExpr)
+					{
+						errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
+					}
+					auto stringExpr = castExpr->expression.Cast<WfStringExpression>();
+					if (!stringExpr)
+					{
+						errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
+					}
+
+					Value siteValue;
+					if (!description::GetTypeDescriptor<TStruct>()->GetValueSerializer()->Parse(stringExpr->value.value,siteValue))
+					{
+						errors.Add(L"Precompile: \"" + stringExpr->value.value + L"\" is not in a right format." + (formatSample == L"" ? WString() : L" It should be \"" + formatSample + L"\", in which components are all optional.");
+					}
+
+					return siteValue;
+				}
+
 			public:
 				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod)
 					:typeName(GlobalStringKey::Get(_typeName))
@@ -413,6 +440,7 @@ GuiVrtualTypeInstanceLoader
 						block->statements.Add(assignStat);
 					}
 
+					PrepareAdditionalArgumentsAfterCreation(typeInfo, variableName, arguments, errors, block);
 					if (initFunction)
 					{
 						initFunction(variableName.ToString(), block);

@@ -22,7 +22,7 @@ GuiAxisInstanceLoader
 			public:
 				GuiAxisInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiAxis>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiAxis>::TypeName);
 					_AxisDirection = GlobalStringKey::Get(L"AxisDirection");
 				}
 
@@ -96,7 +96,7 @@ GuiCompositionInstanceLoader
 			public:
 				GuiCompositionInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiGraphicsComposition>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiGraphicsComposition>::TypeName);
 				}
 
 				GlobalStringKey GetTypeName()override
@@ -219,7 +219,7 @@ GuiTableCompositionInstanceLoader
 			public:
 				GuiTableCompositionInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiTableComposition>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiTableComposition>::TypeName);
 					_Rows = GlobalStringKey::Get(L"Rows");
 					_Columns = GlobalStringKey::Get(L"Columns");
 				}
@@ -362,7 +362,7 @@ GuiCellCompositionInstanceLoader
 			public:
 				GuiCellCompositionInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::GetTypeDescriptor<GuiCellComposition>()->GetTypeName());
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiCellComposition>::TypeName);
 					_Site = GlobalStringKey::Get(L"Site");
 				}
 
@@ -396,25 +396,7 @@ GuiCellCompositionInstanceLoader
 							if (prop == _Site)
 							{
 								auto value = arguments.GetByIndex(index)[0].expression;
-								auto castExpr = value.Cast<WfTypeCastingExpression>();
-								if (!castExpr)
-								{
-									errors.Add(L"Precompile: The value of property \"Site\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
-									continue;
-								}
-								auto stringExpr = castExpr->expression.Cast<WfStringExpression>();
-								if (!stringExpr)
-								{
-									errors.Add(L"Precompile: The value of property \"Site\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
-									continue;
-								}
-
-								Value siteValue;
-								if (!description::GetTypeDescriptor<SiteValue>()->GetValueSerializer()->Parse(stringExpr->value.value,siteValue))
-								{
-									errors.Add(L"Precompile: \"" + stringExpr->value.value + L"\" is not in a right format. It should be \"row:<integer> column:<integer> rowSpan:<integer> columnSpan:<integer>\", in which components are all optional.");
-									continue;
-								}
+								Value siteValue = GuiTemplateControlInstanceLoader<void, void, void>::ParseConstantArgument<SiteValue>(value, typeName, L"Site", L"row:<integer> column:<integer> rowSpan:<integer> columnSpan:<integer>");
 
 								{
 									auto refComposition = MakePtr<WfReferenceExpression>();
