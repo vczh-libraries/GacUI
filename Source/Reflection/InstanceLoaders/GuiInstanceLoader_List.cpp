@@ -327,6 +327,18 @@ GuiListViewInstanceLoader
 					}
 				}
 
+				bool CanEvalToConstructorParameter(const PropertyInfo& propertyInfo)
+				{
+					if (propertyInfo.typeInfo.typeName == GetTypeName())
+					{
+						if (propertyInfo.propertyName == _ItemSource)
+						{
+							return true;
+						}
+					}
+					return BASE_TYPE::CanEvalToConstructorParameter(propertyInfo);
+				}
+
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _ItemSource)
@@ -348,85 +360,56 @@ GuiListViewInstanceLoader
 GuiTreeViewInstanceLoader
 ***********************************************************************/
 
-			class GuiTreeViewInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl, GuiTreeViewTemplate_StyleProvider, GuiTreeViewTemplate>
+			template<typename TControl>
+			class GuiTreeViewInstanceLoaderBase : public BASE_TYPE
 			{
 			protected:
 				bool				bindable;
-				GlobalStringKey		typeName;
-				GlobalStringKey		_IconSize, _ItemSource, _Nodes;
+				GlobalStringKey		_Nodes, _IconSize;
+
+				void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)override
+				{
+					vint indexIconSize = arguments.Keys().IndexOf(_IconSize);
+					if (indexIconSize != -1)
+					{
+						Ptr<ITypeInfo> itemStyleType = TypeInfoRetriver<Ptr<tree::TreeViewNodeItemStyleProvider>>::CreateTypeInfo();
+
+						auto createStyle = MakePtr<WfNewTypeExpression>();
+						createStyle->type = GetTypeFromTypeInfo(itemStyleType.Obj());
+						{
+							auto iconSize = arguments.GetByIndex(indexIconSize)[0].expression;
+							createStyle->arguments.Add(iconSize);
+						}
+						{
+							auto falseValue = MakePtr<WfLiteralExpression>();
+							falseValue->value = WfLiteralValue::False;
+							createStyle->arguments.Add(falseValue);
+						}
+
+						auto refControl = MakePtr<WfReferenceExpression>();
+						refControl->name.value = variableName.ToString();
+
+						auto refChangeItemStyle = MakePtr<WfMemberExpression>();
+						refChangeItemStyle->parent = refControl;
+						refChangeItemStyle->name.value = L"ChangeItemStyle";
+
+						auto call = MakePtr<WfCallExpression>();
+						call->function = refChangeItemStyle;
+						call->arguments.Add(createStyle);
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = call;
+						block->statements.Add(stat);
+					}
+				}
 
 			public:
-				GuiTreeViewInstanceLoader(bool _bindable)
-					:bindable(_bindable)
+				GuiTreeViewInstanceLoaderBase()
+					:BASE_TYPE(description::TypeInfo<TControl>::TypeName, L"CreateTreeViewStyle")
 				{
-					if (bindable)
-					{
-						typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableTreeView>::TypeName);
-					}
-					else
-					{
-						typeName = GlobalStringKey::Get(description::TypeInfo<GuiTreeView>::TypeName);
-					}
-					_IconSize = GlobalStringKey::Get(L"IconSize");
-					_ItemSource = GlobalStringKey::Get(L"ItemSource");
 					_Nodes = GlobalStringKey::Get(L"Nodes");
-				}
-
-				GlobalStringKey GetTypeName()override
-				{
-					return typeName;
-				}
-
-				bool IsCreatable(const TypeInfo& typeInfo)override
-				{
-					return typeInfo.typeName == GetTypeName();
-				}
-
-				description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						vint indexItemSource = constructorArguments.Keys().IndexOf(_ItemSource);
-						GuiVirtualTreeView::IStyleProvider* styleProvider = 0;
-						{
-							vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-							if (indexControlTemplate == -1)
-							{
-								styleProvider = GetCurrentTheme()->CreateTreeViewStyle();
-							}
-							else
-							{
-								auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-								styleProvider = new GuiTreeViewTemplate_StyleProvider(factory);
-							}
-						}
-
-						GuiVirtualTreeView* treeView = 0;
-						if (bindable)
-						{
-							if (indexItemSource == -1)
-							{
-								return Value();
-							}
-
-							auto itemSource = constructorArguments.GetByIndex(indexItemSource)[0];
-							treeView = new GuiBindableTreeView(styleProvider, itemSource);
-						}
-						else
-						{
-							treeView = new GuiTreeView(styleProvider);
-						}
-
-						vint indexIconSize = constructorArguments.Keys().IndexOf(_IconSize);
-						if (indexIconSize != -1)
-						{
-							auto iconSize = UnboxValue<Size>(constructorArguments.GetByIndex(indexIconSize)[0]);
-							treeView->SetNodeStyleProvider(new tree::TreeViewNodeItemStyleProvider(iconSize, false));
-						}
-
-						return Value::From(treeView);
-					}
-					return Value();
+					_IconSize = GlobalStringKey::Get(L"IconSize");
 				}
 
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -441,12 +424,8 @@ GuiTreeViewInstanceLoader
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
-						propertyNames.Add(GlobalStringKey::_ControlTemplate);
+						propertyNames.Add(_View);
 						propertyNames.Add(_IconSize);
-						if (bindable)
-						{
-							propertyNames.Add(_ItemSource);
-						}
 					}
 				}
 
@@ -459,22 +438,6 @@ GuiTreeViewInstanceLoader
 							return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<tree::MemoryNodeProvider>());
 						}
 					}
-					else if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
-					}
-					else if (propertyInfo.propertyName == _ItemSource)
-					{
-						if (bindable)
-						{
-							auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
-							info->scope = GuiInstancePropertyInfo::Constructor;
-							info->required = true;
-							return info;
-						}
-					}
 					else if (propertyInfo.propertyName == _IconSize)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Size>());
@@ -484,20 +447,109 @@ GuiTreeViewInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (auto container = dynamic_cast<GuiTreeView*>(propertyValue.instanceValue.GetRawPtr()))
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == _Nodes)
+						auto block = MakePtr<WfBlockStatement>();
+
+						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 						{
-							auto item = UnboxValue<Ptr<tree::MemoryNodeProvider>>(propertyValue.propertyValue);
-							container->Nodes()->Children().Add(item);
+							if (prop == _Nodes)
+							{
+								auto refControl = MakePtr<WfReferenceExpression>();
+								refControl->name.value = variableName.ToString();
+
+								auto refNodes = MakePtr<WfMemberExpression>();
+								refNodes->parent = refControl;
+								refNodes->name.value = L"Nodes";
+
+								auto refChildren = MakePtr<WfMemberExpression>();
+								refChildren->parent = refNodes;
+								refChildren->name.value = L"Children";
+
+								auto refAdd = MakePtr<WfMemberExpression>();
+								refAdd->parent = refChildren;
+								refAdd->name.value = L"Add";
+
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAdd;
+								call->arguments = arguments.GetByIndex(index)[0].expression;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = call;
+								block->statements.Add(stat);
+							}
+						}
+
+						if (block->statements.Count() > 0)
+						{
+							return block;
+						}
+					}
+					return nullptr;
+				}
+			};
+#undef BASE_TYPE
+
+			class GuiTreeViewInstanceLoader : public GuiTreeViewInstanceLoaderBase<GuiTreeView>
+			{
+			};
+
+#define BASE_TYPE GuiTreeViewInstanceLoaderBase<GuiBindableTreeView>
+			class GuiBindableTreeViewInstanceLoader : public BASE_TYPE
+			{
+			protected:
+				GlobalStringKey		_ItemSource;
+
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				{
+					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
+					if (indexItemSource != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
+					}
+				}
+			public:
+				GuiBindableTreeViewInstanceLoader()
+				{
+					_ItemSource = GlobalStringKey::Get(L"ItemSource");
+				}
+
+				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
+					if (typeInfo.typeName == GetTypeName())
+					{
+						propertyNames.Add(_ItemSource);
+					}
+				}
+
+				bool CanEvalToConstructorParameter(const PropertyInfo& propertyInfo)
+				{
+					if (propertyInfo.typeInfo.typeName == GetTypeName())
+					{
+						if (propertyInfo.propertyName == _ItemSource)
+						{
 							return true;
 						}
 					}
-					return false;
+					return BASE_TYPE::CanEvalToConstructorParameter(propertyInfo);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _ItemSource)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
+						info->scope = GuiInstancePropertyInfo::Constructor;
+						info->required = true;
+						return info;
+					}
+					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 			};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiBindableTextListInstanceLoader
@@ -918,9 +970,10 @@ Initialization
 				manager->SetLoader(new GuiListViewInstanceLoader);
 				manager->SetLoader(new GuiBindableListViewInstanceLoader);
 
-				manager->SetLoader(new GuiTreeViewInstanceLoader(false));
+				manager->SetLoader(new GuiTreeViewInstanceLoader);
+				manager->SetLoader(new GuiBindableTreeViewInstanceLoader);
+
 				manager->SetLoader(new GuiBindableTextListInstanceLoader(L"", [](){return GetCurrentTheme()->CreateTextListItemStyle(); }));
-				manager->SetLoader(new GuiTreeViewInstanceLoader(true));
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);
 
