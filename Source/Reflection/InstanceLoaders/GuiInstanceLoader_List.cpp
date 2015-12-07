@@ -555,18 +555,27 @@ GuiTreeViewInstanceLoader
 GuiBindableTextListInstanceLoader
 ***********************************************************************/
 
-			class GuiBindableTextListInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableTextList, GuiTextListTemplate_StyleProvider, GuiTextListTemplate>
+			class GuiBindableTextListInstanceLoader : public BASE_TYPE
 			{
-				typedef Func<list::TextItemStyleProvider::ITextItemStyleProvider*()>		ItemStyleProviderFactory;
 			protected:
-				GlobalStringKey					typeName;
-				ItemStyleProviderFactory		itemStyleProviderFactory;
 				GlobalStringKey					_ItemSource;
-
+				
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				{
+					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
+					if (indexItemSource != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
+					}
+				}
 			public:
-				GuiBindableTextListInstanceLoader(const WString& type, const ItemStyleProviderFactory& factory)
-					:typeName(GlobalStringKey::Get(L"presentation::controls::GuiBindable" + type + L"TextList"))
-					, itemStyleProviderFactory(factory)
+				GuiBindableTextListInstanceLoader(const WString& type)
+					:BASE_TYPE(
+						L"presentation::controls::GuiBindable" + type + L"TextList",
+						L"CreateTextListStyle",
+						L"Create" + type + L"TextListItemStyle"
+						)
 				{
 					_ItemSource = GlobalStringKey::Get(L"ItemSource");
 				}
@@ -575,62 +584,16 @@ GuiBindableTextListInstanceLoader
 				{
 					return typeName;
 				}
-
-				bool IsCreatable(const TypeInfo& typeInfo)override
-				{
-					return typeInfo.typeName == GetTypeName();
-				}
-
-				description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						vint indexItemSource = constructorArguments.Keys().IndexOf(_ItemSource);
-						if (indexItemSource != -1)
-						{
-							GuiTextListTemplate_StyleProvider* styleProvider = 0;
-							{
-								vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-								if (indexControlTemplate != -1)
-								{
-									auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-									styleProvider = new GuiTextListTemplate_StyleProvider(factory);
-								}
-							}
-
-							auto itemSource = UnboxValue<Ptr<IValueEnumerable>>(constructorArguments.GetByIndex(indexItemSource)[0]);
-							GuiBindableTextList* control = 0;
-							if (styleProvider)
-							{
-								control = new GuiBindableTextList(styleProvider, styleProvider->CreateArgument(), itemSource);
-							}
-							else
-							{
-								control = new GuiBindableTextList(GetCurrentTheme()->CreateTextListStyle(), itemStyleProviderFactory(), itemSource);
-							}
-							return Value::From(control);
-						}
-					}
-					return Value();
-				}
-
 				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
-						propertyNames.Add(GlobalStringKey::_ControlTemplate);
 						propertyNames.Add(_ItemSource);
 					}
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
-					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
-					}
 					if (propertyInfo.propertyName == _ItemSource)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<IValueEnumerable>());
@@ -641,6 +604,7 @@ GuiBindableTextListInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 			};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiBindableDataColumnInstanceLoader
@@ -973,13 +937,12 @@ Initialization
 				manager->SetLoader(new GuiTreeViewInstanceLoader);
 				manager->SetLoader(new GuiBindableTreeViewInstanceLoader);
 
-				manager->SetLoader(new GuiBindableTextListInstanceLoader(L"", [](){return GetCurrentTheme()->CreateTextListItemStyle(); }));
+				manager->SetLoader(new GuiBindableTextListInstanceLoader(L""));
+				manager->SetLoader(new GuiBindableTextListInstanceLoader(L"Check"));
+				manager->SetLoader(new GuiBindableTextListInstanceLoader(L"Radio"));
+
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);
-
-				auto bindableTextListName = GlobalStringKey::Get(description::TypeInfo<GuiBindableTextList>::TypeName);
-				manager->CreateVirtualType(bindableTextListName, new GuiBindableTextListInstanceLoader(L"Check", [](){return GetCurrentTheme()->CreateCheckTextListItemStyle(); }));
-				manager->CreateVirtualType(bindableTextListName, new GuiBindableTextListInstanceLoader(L"Radio", [](){return GetCurrentTheme()->CreateRadioTextListItemStyle(); }));
 				
 				manager->CreateVirtualType(
 					GlobalStringKey::Get(description::TypeInfo<tree::MemoryNodeProvider>::TypeName),
