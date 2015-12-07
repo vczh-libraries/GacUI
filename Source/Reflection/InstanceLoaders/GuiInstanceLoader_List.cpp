@@ -181,6 +181,81 @@ GuiListViewInstanceLoader
 
 				void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)override
 				{
+					auto view = ListViewViewType::Detail;
+					Ptr<WfExpression> iconSize;
+					{
+						vint indexView = arguments.Keys().IndexOf(_View);
+						if (indexView != -1)
+						{
+							auto value = arguments.GetByIndex(indexView)[0].expression;
+							auto viewValue = ParseConstantArgument<ListViewViewType>(value, typeInfo, L"View", L"", errors);
+							view = UnboxValue<ListViewViewType>(viewValue);
+						}
+
+						vint indexIconSize = arguments.Keys().IndexOf(_IconSize);
+						if (indexIconSize != -1)
+						{
+							iconSize = arguments.GetByIndex(indexIconSize)[0].expression;
+						}
+					}
+
+					Ptr<ITypeInfo> itemStyleType;
+					switch (view)
+					{
+#define VIEW_TYPE_CASE(NAME) case ListViewViewType::NAME: itemStyleType = TypeInfoRetriver<Ptr<list::ListView##NAME##ContentProvider>>::CreateTypeInfo(); break;
+						VIEW_TYPE_CASE(BigIcon)
+						VIEW_TYPE_CASE(SmallIcon)
+						VIEW_TYPE_CASE(List)
+						VIEW_TYPE_CASE(Tile)
+						VIEW_TYPE_CASE(Information)
+						VIEW_TYPE_CASE(Detail)
+#undef VIEW_TYPE_CASE
+					}
+
+					auto createStyle = MakePtr<WfNewTypeExpression>();
+					createStyle->type = GetTypeFromTypeInfo(itemStyleType.Obj());
+
+					if (iconSize)
+					{
+						createStyle->arguments.Add(iconSize);
+
+						auto falseValue = MakePtr<WfLiteralExpression>();
+						falseValue->value = WfLiteralValue::False;
+						createStyle->arguments.Add(falseValue);
+					}
+					else
+					{
+						{
+							auto stringValue = MakePtr<WfStringExpression>();
+							stringValue->value.value = L"x:32 y:32";
+
+							auto iconSizeValue = MakePtr<WfTypeCastingExpression>();
+							iconSizeValue->type = GetTypeFromTypeInfo(TypeInfoRetriver<Size>::CreateTypeInfo().Obj());
+							iconSizeValue->expression = stringValue;
+
+							createStyle->arguments.Add(iconSizeValue);
+						}
+						{
+							auto trueValue = MakePtr<WfLiteralExpression>();
+							trueValue->value = WfLiteralValue::True;
+							createStyle->arguments.Add(trueValue);
+						}
+					}
+
+					auto refControl = MakePtr<WfReferenceExpression>();
+					refControl->name.value = variableName.ToString();
+
+					auto refChangeItemStyle = MakePtr<WfMemberExpression>();
+					refChangeItemStyle->parent = refControl;
+					refChangeItemStyle->name.value = L"ChangeItemStyle";
+
+					auto call = MakePtr<WfCallExpression>();
+					call->function = refChangeItemStyle;
+					call->arguments.Add(createStyle);
+
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = call;
+					block->statements.Add(stat);
 				}
 
 			public:
@@ -195,7 +270,6 @@ GuiListViewInstanceLoader
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
-						propertyNames.Add(GlobalStringKey::_ControlTemplate);
 						propertyNames.Add(_View);
 						propertyNames.Add(_IconSize);
 					}
@@ -203,13 +277,7 @@ GuiListViewInstanceLoader
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
-					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
-					}
-					else if (propertyInfo.propertyName == _View)
+					if (propertyInfo.propertyName == _View)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<ListViewViewType>());
 						info->scope = GuiInstancePropertyInfo::Constructor;
@@ -226,156 +294,42 @@ GuiListViewInstanceLoader
 			};
 #undef BASE_TYPE
 
-			class GuiListViewInstanceLoader : public Object, public IGuiInstanceLoader
+			class GuiListViewInstanceLoader : public GuiListViewInstanceLoaderBase<GuiListView>
+			{
+			};
+
+#define BASE_TYPE GuiListViewInstanceLoaderBase<GuiBindableListView>
+			class GuiBindableListViewInstanceLoader : public BASE_TYPE
 			{
 			protected:
-				bool				bindable;
-				GlobalStringKey		typeName;
-				GlobalStringKey		_View, _IconSize, _ItemSource;
+				GlobalStringKey		_ItemSource;
 
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				{
+					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
+					if (indexItemSource != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
+					}
+				}
 			public:
-				GuiListViewInstanceLoader(bool _bindable)
-					:bindable(_bindable)
+				GuiBindableListViewInstanceLoader()
 				{
-					if (bindable)
-					{
-						typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableListView>::TypeName);
-					}
-					else
-					{
-						typeName = GlobalStringKey::Get(description::TypeInfo<GuiListView>::TypeName);
-					}
-					_View = GlobalStringKey::Get(L"View");
-					_IconSize = GlobalStringKey::Get(L"IconSize");
 					_ItemSource = GlobalStringKey::Get(L"ItemSource");
-				}
-
-				GlobalStringKey GetTypeName()override
-				{
-					return typeName;
-				}
-
-				bool IsCreatable(const TypeInfo& typeInfo)override
-				{
-					return typeInfo.typeName == GetTypeName();
-				}
-
-				description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						Ptr<IValueEnumerable> itemSource;
-						ListViewViewType viewType = ListViewViewType::Detail;
-						GuiListViewBase::IStyleProvider* styleProvider = 0;
-						Size iconSize;
-						{
-							vint indexItemSource = constructorArguments.Keys().IndexOf(_ItemSource);
-							if (indexItemSource != -1)
-							{
-								itemSource = UnboxValue<Ptr<IValueEnumerable>>(constructorArguments.GetByIndex(indexItemSource)[0]);
-							}
-							else if (bindable)
-							{
-								return Value();
-							}
-
-							vint indexView = constructorArguments.Keys().IndexOf(_View);
-							if (indexView != -1)
-							{
-								viewType = UnboxValue<ListViewViewType>(constructorArguments.GetByIndex(indexView)[0]);
-							}
-
-							vint indexIconSize = constructorArguments.Keys().IndexOf(_IconSize);
-							if (indexIconSize != -1)
-							{
-								iconSize = UnboxValue<Size>(constructorArguments.GetByIndex(indexIconSize)[0]);
-							}
-
-							vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-							if (indexControlTemplate == -1)
-							{
-								styleProvider = GetCurrentTheme()->CreateListViewStyle();
-							}
-							else
-							{
-								auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-								styleProvider = new GuiListViewTemplate_StyleProvider(factory);
-							}
-						}
-
-						GuiVirtualListView* listView = 0;
-						if (bindable)
-						{
-							listView = new GuiBindableListView(styleProvider, itemSource);
-						}
-						else
-						{
-							listView = new GuiListView(styleProvider);
-						}
-						switch (viewType)
-						{
-	#define VIEW_TYPE_CASE(NAME)\
-						case ListViewViewType::NAME:\
-							if (iconSize == Size())\
-							{\
-								listView->ChangeItemStyle(new list::ListView##NAME##ContentProvider);\
-							}\
-							else\
-							{\
-								listView->ChangeItemStyle(new list::ListView##NAME##ContentProvider(iconSize, false));\
-							}\
-							break;\
-
-							VIEW_TYPE_CASE(BigIcon)
-							VIEW_TYPE_CASE(SmallIcon)
-							VIEW_TYPE_CASE(List)
-							VIEW_TYPE_CASE(Tile)
-							VIEW_TYPE_CASE(Information)
-							VIEW_TYPE_CASE(Detail)
-
-	#undef VIEW_TYPE_CASE
-						}
-
-						return Value::From(listView);
-					}
-					return Value();
 				}
 
 				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 					if (typeInfo.typeName == GetTypeName())
 					{
-						propertyNames.Add(GlobalStringKey::_ControlTemplate);
-						propertyNames.Add(_View);
-						propertyNames.Add(_IconSize);
-						if (bindable)
-						{
-							propertyNames.Add(_ItemSource);
-						}
+						propertyNames.Add(_ItemSource);
 					}
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
-					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
-					}
-					else if (propertyInfo.propertyName == _View)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<ListViewViewType>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
-					}
-					else if (propertyInfo.propertyName == _IconSize)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Size>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
-					}
-					else if (propertyInfo.propertyName == _ItemSource)
+					if (propertyInfo.propertyName == _ItemSource)
 					{
 						if (bindable)
 						{
@@ -385,9 +339,10 @@ GuiListViewInstanceLoader
 							return info;
 						}
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 			};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiTreeViewInstanceLoader
@@ -959,10 +914,12 @@ Initialization
 			{
 				manager->SetLoader(new GuiSelectableListControlInstanceLoader);
 				manager->SetLoader(new GuiVirtualTreeViewInstanceLoader);
-				manager->SetLoader(new GuiListViewInstanceLoader(false));
+
+				manager->SetLoader(new GuiListViewInstanceLoader);
+				manager->SetLoader(new GuiBindableListViewInstanceLoader);
+
 				manager->SetLoader(new GuiTreeViewInstanceLoader(false));
 				manager->SetLoader(new GuiBindableTextListInstanceLoader(L"", [](){return GetCurrentTheme()->CreateTextListItemStyle(); }));
-				manager->SetLoader(new GuiListViewInstanceLoader(true));
 				manager->SetLoader(new GuiTreeViewInstanceLoader(true));
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);

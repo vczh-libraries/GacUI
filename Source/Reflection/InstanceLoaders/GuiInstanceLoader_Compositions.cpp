@@ -396,7 +396,11 @@ GuiCellCompositionInstanceLoader
 							if (prop == _Site)
 							{
 								auto value = arguments.GetByIndex(index)[0].expression;
-								Value siteValue = GuiTemplateControlInstanceLoader<void, void, void>::ParseConstantArgument<SiteValue>(value, typeName, L"Site", L"row:<integer> column:<integer> rowSpan:<integer> columnSpan:<integer>");
+								Value siteValue = ParseConstantArgument<SiteValue>(value, typeInfo, L"Site", L"row:<integer> column:<integer> rowSpan:<integer> columnSpan:<integer>", errors);
+								if (siteValue.IsNull())
+								{
+									continue;
+								}
 
 								{
 									auto refComposition = MakePtr<WfReferenceExpression>();

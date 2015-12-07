@@ -29,6 +29,33 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
+Helper Functions
+***********************************************************************/
+
+			template<typename TStruct>
+			Value ParseConstantArgument(Ptr<WfExpression> value, const IGuiInstanceLoader::TypeInfo& typeInfo, const WString& propertyName, const WString& formatSample, collections::List<WString>& errors)
+			{
+				auto castExpr = value.Cast<WfTypeCastingExpression>();
+				if (!castExpr)
+				{
+					errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
+				}
+				auto stringExpr = castExpr->expression.Cast<WfStringExpression>();
+				if (!stringExpr)
+				{
+					errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
+				}
+
+				Value siteValue;
+				if (!description::GetTypeDescriptor<TStruct>()->GetValueSerializer()->Parse(stringExpr->value.value, siteValue))
+				{
+					errors.Add(L"Precompile: \"" + stringExpr->value.value + L"\" is not in a right format." + (formatSample == L"" ? WString() : L" It should be \"" + formatSample + L"\", in which components are all optional."));
+				}
+
+				return siteValue;
+			}
+
+/***********************************************************************
 GuiVrtualTypeInstanceLoader
 ***********************************************************************/
 
@@ -291,29 +318,6 @@ GuiVrtualTypeInstanceLoader
 						}
 						tds.Add(controlTemplateTd);
 					}
-				}
-
-				template<typename TStruct>
-				static Value ParseConstantArgument(Ptr<WfExpression> value, const TypeInfo& typeName, const WString& propertyName, const WString& formatSample)
-				{
-					auto castExpr = value.Cast<WfTypeCastingExpression>();
-					if (!castExpr)
-					{
-						errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
-					}
-					auto stringExpr = castExpr->expression.Cast<WfStringExpression>();
-					if (!stringExpr)
-					{
-						errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
-					}
-
-					Value siteValue;
-					if (!description::GetTypeDescriptor<TStruct>()->GetValueSerializer()->Parse(stringExpr->value.value,siteValue))
-					{
-						errors.Add(L"Precompile: \"" + stringExpr->value.value + L"\" is not in a right format." + (formatSample == L"" ? WString() : L" It should be \"" + formatSample + L"\", in which components are all optional.");
-					}
-
-					return siteValue;
 				}
 
 			public:
