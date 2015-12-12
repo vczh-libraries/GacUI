@@ -12,7 +12,7 @@ namespace vl
 			template<typename IItemTemplateStyle, typename ITemplate>
 			Ptr<WfStatement> CreateSetControlTemplateStyle(GlobalStringKey variableName, Ptr<WfExpression> argument, const IGuiInstanceLoader::TypeInfo& controlTypeInfo, const WString& propertyName, collections::List<WString>& errors)
 			{
-				using Helper = GuiTemplateControlInstanceLoader<void, void, ITemplate>;
+				using Helper = GuiTemplateControlInstanceLoader<Value, Value, ITemplate>;
 				List<ITypeDescriptor*> controlTemplateTds;
 				Helper::GetItemTemplateType(argument, controlTemplateTds, controlTypeInfo, GlobalStringKey::_ItemTemplate.ToString(), errors);
 
@@ -424,7 +424,7 @@ GuiTreeViewInstanceLoader
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
-						propertyNames.Add(_View);
+						propertyNames.Add(_Nodes);
 						propertyNames.Add(_IconSize);
 					}
 				}
@@ -474,7 +474,7 @@ GuiTreeViewInstanceLoader
 
 								auto call = MakePtr<WfCallExpression>();
 								call->function = refAdd;
-								call->arguments = arguments.GetByIndex(index)[0].expression;
+								call->arguments.Add(arguments.GetByIndex(index)[0].expression);
 
 								auto stat = MakePtr<WfExpressionStatement>();
 								stat->expression = call;
@@ -659,7 +659,7 @@ GuiBindableDataColumnInstanceLoader
 						{
 							if (prop == _VisualizerTemplates)
 							{
-								using Helper = GuiTemplateControlInstanceLoader<void, void, GuiGridVisualizerTemplate>;
+								using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiGridVisualizerTemplate>;
 								List<ITypeDescriptor*> controlTemplateTds;
 								Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
 
@@ -722,7 +722,7 @@ GuiBindableDataColumnInstanceLoader
 							}
 							else if (prop == _EditorTemplate)
 							{
-								using Helper = GuiTemplateControlInstanceLoader<void, void, GuiGridEditorTemplate>;
+								using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiGridEditorTemplate>;
 								List<ITypeDescriptor*> controlTemplateTds;
 								Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
 
@@ -847,20 +847,6 @@ GuiBindableDataGridInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
-				{
-					if (auto container = dynamic_cast<GuiBindableDataGrid*>(propertyValue.instanceValue.GetRawPtr()))
-					{
-						if (propertyValue.propertyName == _Columns)
-						{
-							auto column = UnboxValue<Ptr<list::BindableDataColumn>>(propertyValue.propertyValue);
-							container->AddBindableColumn(column);
-							return true;
-						}
-					}
-					return false;
-				}
-
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					if (typeInfo.typeName == GetTypeName())
@@ -871,6 +857,20 @@ GuiBindableDataGridInstanceLoader
 						{
 							if (prop == _Columns)
 							{
+								auto refControl = MakePtr<WfReferenceExpression>();
+								refControl->name.value = variableName.ToString();
+
+								auto refAddBindableColumn = MakePtr<WfMemberExpression>();
+								refAddBindableColumn->parent = refControl;
+								refAddBindableColumn->name.value = L"AddBindableColumn";
+
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddBindableColumn;
+								call->arguments.Add(arguments.GetByIndex(index)[0].expression);
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = call;
+								block->statements.Add(stat);
 							}
 						}
 
@@ -882,6 +882,7 @@ GuiBindableDataGridInstanceLoader
 					return nullptr;
 				}
 			};
+#undef BASE_TYPE
 
 /***********************************************************************
 GuiTreeNodeInstanceLoader
@@ -905,22 +906,6 @@ GuiTreeNodeInstanceLoader
 				GlobalStringKey GetTypeName()override
 				{
 					return typeName;
-				}
-
-				bool IsCreatable(const TypeInfo& typeInfo)override
-				{
-					return typeInfo.typeName == GetTypeName();
-				}
-
-				description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						Ptr<tree::TreeViewItem> item = new tree::TreeViewItem;
-						Ptr<tree::MemoryNodeProvider> node = new tree::MemoryNodeProvider(item);
-						return Value::From(node);
-					}
-					return Value();
 				}
 
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -952,44 +937,120 @@ GuiTreeNodeInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				bool CanCreate(const TypeInfo& typeInfo)override
 				{
-					if (auto container = dynamic_cast<tree::MemoryNodeProvider*>(propertyValue.instanceValue.GetRawPtr()))
+					return typeInfo.typeName == GetTypeName();
+				}
+
+				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				{
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == _Text)
+						auto createItem = MakePtr<WfNewTypeExpression>();
+						createItem->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
+
+						auto createNode = MakePtr<WfNewTypeExpression>();
+						createNode->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo().Obj());
+						createNode->arguments.Add(createItem);
+
+						auto refNode = MakePtr<WfReferenceExpression>();
+						refNode->name.value = variableName.ToString();
+
+						auto assign = MakePtr<WfBinaryExpression>();
+						assign->op = WfBinaryOperator::Assign;
+						assign->first = refNode;
+						assign->second = createNode;
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = assign;
+						return stat;
+					}
+					return nullptr;
+				}
+
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				{
+					if (typeInfo.typeName == GetTypeName())
+					{
+						auto block = MakePtr<WfBlockStatement>();
+
+						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 						{
-							if (auto item = container->GetData().Cast<tree::TreeViewItem>())
+							if (prop == GlobalStringKey::Empty)
 							{
-								item->text = UnboxValue<WString>(propertyValue.propertyValue);
-								container->NotifyDataModified();
-								return true;
+								auto refNode = MakePtr<WfReferenceExpression>();
+								refNode->name.value = variableName.ToString();
+
+								auto refChildren = MakePtr<WfMemberExpression>();
+								refChildren->parent = refNode;
+								refChildren->name.value = L"Children";
+
+								auto refAdd = MakePtr<WfMemberExpression>();
+								refAdd->parent = refChildren;
+								refAdd->name.value = L"Add";
+
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAdd;
+								call->arguments.Add(arguments.GetByIndex(index)[0].expression);
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = call;
+								block->statements.Add(stat);
+							}
+							else if (prop == _Text || prop == _Image || prop == _Tag)
+							{
+								{
+									auto refNode = MakePtr<WfReferenceExpression>();
+									refNode->name.value = variableName.ToString();
+
+									auto refData = MakePtr<WfMemberExpression>();
+									refData->parent = refNode;
+									refData->name.value = L"Data";
+
+									auto castExpr = MakePtr<WfTypeCastingExpression>();
+									castExpr->strategy = WfTypeCastingStrategy::Strong;
+									castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
+									castExpr->expression = refData;
+
+									auto refProp = MakePtr<WfMemberExpression>();
+									refProp->parent = castExpr;
+									refProp->name.value = prop.ToString();
+
+									auto assign = MakePtr<WfBinaryExpression>();
+									assign->op = WfBinaryOperator::Assign;
+									assign->first = refProp;
+									assign->second = arguments.GetByIndex(index)[0].expression;
+
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = assign;
+									block->statements.Add(stat);
+								}
+
+								if (prop != _Tag)
+								{
+									auto refNode = MakePtr<WfReferenceExpression>();
+									refNode->name.value = variableName.ToString();
+
+									auto refNotifyDataModified = MakePtr<WfMemberExpression>();
+									refNotifyDataModified->parent = refNode;
+									refNotifyDataModified->name.value = L"NotifyDataModified";
+
+									auto call = MakePtr<WfCallExpression>();
+									call->function = refNotifyDataModified;
+
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = call;
+									block->statements.Add(stat);
+								}
 							}
 						}
-						else if (propertyValue.propertyName == _Image)
+
+						if (block->statements.Count() > 0)
 						{
-							if (auto item = container->GetData().Cast<tree::TreeViewItem>())
-							{
-								item->image = UnboxValue<Ptr<GuiImageData>>(propertyValue.propertyValue);
-								container->NotifyDataModified();
-								return true;
-							}
-						}
-						else if (propertyValue.propertyName == _Tag)
-						{
-							if (auto item = container->GetData().Cast<tree::TreeViewItem>())
-							{
-								item->tag = propertyValue.propertyValue;
-								return true;
-							}
-						}
-						else if (propertyValue.propertyName == GlobalStringKey::Empty)
-						{
-							auto item = UnboxValue<Ptr<tree::MemoryNodeProvider>>(propertyValue.propertyValue);
-							container->Children().Add(item);
-							return true;
+							return block;
 						}
 					}
-					return false;
+					return nullptr;
 				}
 			};
 
