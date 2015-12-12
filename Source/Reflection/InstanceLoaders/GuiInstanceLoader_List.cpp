@@ -12,9 +12,9 @@ namespace vl
 			template<typename IItemTemplateStyle, typename ITemplate>
 			Ptr<WfStatement> CreateSetControlTemplateStyle(GlobalStringKey variableName, Ptr<WfExpression> argument, const IGuiInstanceLoader::TypeInfo& controlTypeInfo, const WString& propertyName, collections::List<WString>& errors)
 			{
-				using Helper = GuiTemplateControlInstanceLoader<void, IItemTemplateStyle, ITemplate>;
+				using Helper = GuiTemplateControlInstanceLoader<void, void, ITemplate>;
 				List<ITypeDescriptor*> controlTemplateTds;
-				Helper::GetItemTemplateType(argument, controlTemplateTds, controlTypeInfo, errors);
+				Helper::GetItemTemplateType(argument, controlTemplateTds, controlTypeInfo, GlobalStringKey::_ItemTemplate.ToString(), errors);
 
 				if (controlTemplateTds.Count() > 0)
 				{
@@ -649,40 +649,120 @@ GuiBindableDataColumnInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				bool SetPropertyValue(PropertyValue& propertyValue)override
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (auto container = dynamic_cast<list::BindableDataColumn*>(propertyValue.instanceValue.GetRawPtr()))
+					if (typeInfo.typeName == GetTypeName())
 					{
-						if (propertyValue.propertyName == _VisualizerTemplates)
+						auto block = MakePtr<WfBlockStatement>();
+
+						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 						{
-							List<WString> types;
-							SplitBySemicolon(propertyValue.propertyValue.GetText(), types);
-							Ptr<list::IDataVisualizerFactory> factory;
-							FOREACH(WString, type, types)
+							if (prop == _VisualizerTemplates)
 							{
-								auto templateFactory = CreateTemplateFactory(type);
-								if (factory)
+								using Helper = GuiTemplateControlInstanceLoader<void, void, GuiGridVisualizerTemplate>;
+								List<ITypeDescriptor*> controlTemplateTds;
+								Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
+
+								if (controlTemplateTds.Count() > 0)
 								{
-									factory = new GuiBindableDataVisualizer::DecoratedFactory(templateFactory, container, factory);
-								}
-								else
-								{
-									factory = new GuiBindableDataVisualizer::Factory(templateFactory, container);
+									FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
+									{
+										auto refFactory = Helper::CreateTemplateFactory(controlTemplateTd, errors);
+										auto createStyle = MakePtr<WfNewTypeExpression>();
+										if (index == 0)
+										{
+											createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::Factory>>::CreateTypeInfo().Obj());
+										}
+										else
+										{
+											createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::DecoratedFactory>>::CreateTypeInfo().Obj());
+										}
+										createStyle->arguments.Add(refFactory);
+										{
+											auto refContainer = MakePtr<WfReferenceExpression>();
+											refContainer->name.value = variableName.ToString();
+											createStyle->arguments.Add(refContainer);
+										}
+										if (index > 0)
+										{
+											auto refPreviousFactory = MakePtr<WfReferenceExpression>();
+											refPreviousFactory->name.value = L"<factory>" + itow(index - 1);
+											createStyle->arguments.Add(refPreviousFactory);
+										}
+
+										auto varDecl = MakePtr<WfVariableDeclaration>();
+										varDecl->name.value = L"<factory>" + itow(index);
+										varDecl->expression = createStyle;
+
+										auto stat = MakePtr<WfVariableStatement>();
+										stat->variable = varDecl;
+										block->statements.Add(stat);
+									}
+
+									auto refContainer = MakePtr<WfReferenceExpression>();
+									refContainer->name.value = variableName.ToString();
+
+									auto refVisualizerFactory = MakePtr<WfMemberExpression>();
+									refVisualizerFactory->parent = refContainer;
+									refVisualizerFactory->name.value = L"Visualizer";
+									
+									auto refLastFactory = MakePtr<WfMemberExpression>();
+									refLastFactory->parent = refContainer;
+									refLastFactory->name.value = L"<factory>" + itow(controlTemplateTds.Count() - 1);
+
+									auto assign = MakePtr<WfBinaryExpression>();
+									assign->op = WfBinaryOperator::Assign;
+									assign->first = refVisualizerFactory;
+									assign->second = refLastFactory;
+
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = assign;
+									block->statements.Add(stat);
 								}
 							}
+							else if (prop == _EditorTemplate)
+							{
+								using Helper = GuiTemplateControlInstanceLoader<void, void, GuiGridEditorTemplate>;
+								List<ITypeDescriptor*> controlTemplateTds;
+								Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
 
-							container->SetVisualizerFactory(factory);
-							return true;
+								if (controlTemplateTds.Count() > 0)
+								{
+									auto refFactory = Helper::CreateTemplateFactory(controlTemplateTds, errors);
+									auto createStyle = MakePtr<WfNewTypeExpression>();
+									createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataEditor::Factory>>::CreateTypeInfo().Obj());
+									createStyle->arguments.Add(refFactory);
+									{
+										auto refContainer = MakePtr<WfReferenceExpression>();
+										refContainer->name.value = variableName.ToString();
+										createStyle->arguments.Add(refContainer);
+									}
+
+									auto refContainer = MakePtr<WfReferenceExpression>();
+									refContainer->name.value = variableName.ToString();
+
+									auto refEditorFactory = MakePtr<WfMemberExpression>();
+									refEditorFactory->parent = refContainer;
+									refEditorFactory->name.value = L"EditorFactory";
+
+									auto assign = MakePtr<WfBinaryExpression>();
+									assign->op = WfBinaryOperator::Assign;
+									assign->first = refEditorFactory;
+									assign->second = createStyle;
+
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = assign;
+									block->statements.Add(stat);
+								}
+							}
 						}
-						else if (propertyValue.propertyName == _EditorTemplate)
+
+						if (block->statements.Count() > 0)
 						{
-							auto templateFactory = CreateTemplateFactory(propertyValue.propertyValue.GetText());
-							auto factory = new GuiBindableDataEditor::Factory(templateFactory, container);
-							container->SetEditorFactory(factory);
-							return true;
+							return block;
 						}
 					}
-					return false;
+					return nullptr;
 				}
 			};
 
@@ -690,16 +770,35 @@ GuiBindableDataColumnInstanceLoader
 GuiBindableDataGridInstanceLoader
 ***********************************************************************/
 
-			class GuiBindableDataGridInstanceLoader : public Object, public IGuiInstanceLoader
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid, GuiListViewTemplate_StyleProvider, GuiListViewTemplate>
+			class GuiBindableDataGridInstanceLoader : public BASE_TYPE
 			{
 			protected:
 				GlobalStringKey		typeName;
 				GlobalStringKey		_ItemSource;
 				GlobalStringKey		_ViewModelContext;
 				GlobalStringKey		_Columns;
+				
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				{
+					auto indexItemSource = arguments.Keys().IndexOf(_ItemSource);
+					createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
 
+					auto indexViewModelContext = arguments.Keys().IndexOf(_ViewModelContext);
+					if (indexViewModelContext == -1)
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						createControl->arguments.Add(nullExpr);
+					}
+					else
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexViewModelContext)[0].expression);
+					}
+				}
 			public:
 				GuiBindableDataGridInstanceLoader()
+					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::TypeName, L"CreateListViewStyle")
 				{
 					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::TypeName);
 					_ItemSource = GlobalStringKey::Get(L"ItemSource");
@@ -712,48 +811,6 @@ GuiBindableDataGridInstanceLoader
 					return typeName;
 				}
 
-				bool IsCreatable(const TypeInfo& typeInfo)override
-				{
-					return typeInfo.typeName == GetTypeName();
-				}
-
-				description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						vint indexItemSource = constructorArguments.Keys().IndexOf(_ItemSource);	
-						if (indexItemSource == -1)
-						{
-							return Value();
-						}
-
-						GuiBindableDataGrid::IStyleProvider* styleProvider = 0;
-						vint indexControlTemplate = constructorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-						if (indexControlTemplate == -1)
-						{
-							styleProvider = GetCurrentTheme()->CreateListViewStyle();
-						}
-						else
-						{
-							auto factory = CreateTemplateFactory(constructorArguments.GetByIndex(indexControlTemplate)[0].GetText());
-							styleProvider = new GuiListViewTemplate_StyleProvider(factory);
-						}
-					
-						auto itemSource = UnboxValue<Ptr<IValueEnumerable>>(constructorArguments.GetByIndex(indexItemSource)[0]);
-
-						Value viewModelContext;
-						vint indexViewModelContext = constructorArguments.Keys().IndexOf(_ViewModelContext);
-						if (indexViewModelContext != -1)
-						{
-							viewModelContext = constructorArguments.GetByIndex(indexViewModelContext)[0];
-						}
-
-						auto dataGrid = new GuiBindableDataGrid(styleProvider, itemSource, viewModelContext);
-						return Value::From(dataGrid);
-					}
-					return Value();
-				}
-
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(_Columns);
@@ -763,7 +820,6 @@ GuiBindableDataGridInstanceLoader
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
-						propertyNames.Add(GlobalStringKey::_ControlTemplate);
 						propertyNames.Add(_ItemSource);
 						propertyNames.Add(_ViewModelContext);
 					}
@@ -774,12 +830,6 @@ GuiBindableDataGridInstanceLoader
 					if (propertyInfo.propertyName == _Columns)
 					{
 						return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<list::BindableDataColumn>());
-					}
-					else if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
 					}
 					else if (propertyInfo.propertyName == _ItemSource)
 					{
@@ -809,6 +859,27 @@ GuiBindableDataGridInstanceLoader
 						}
 					}
 					return false;
+				}
+
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				{
+					if (typeInfo.typeName == GetTypeName())
+					{
+						auto block = MakePtr<WfBlockStatement>();
+
+						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						{
+							if (prop == _Columns)
+							{
+							}
+						}
+
+						if (block->statements.Count() > 0)
+						{
+							return block;
+						}
+					}
+					return nullptr;
 				}
 			};
 

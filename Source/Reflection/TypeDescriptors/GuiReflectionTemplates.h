@@ -78,6 +78,11 @@ Type List
 			F(presentation::templates::GuiListItemTemplate_ItemStyleController)\
 			F(presentation::templates::GuiListItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiTreeItemTemplate_ItemStyleProvider)\
+			F(presentation::templates::GuiBindableDataVisualizer)\
+			F(presentation::templates::GuiBindableDataVisualizer::Factory)\
+			F(presentation::templates::GuiBindableDataVisualizer::DecoratedFactory)\
+			F(presentation::templates::GuiBindableDataEditor)\
+			F(presentation::templates::GuiBindableDataEditor::Factory)\
 
 			GUIREFLECTIONTEMPLATES_TYPELIST(DECL_TYPE_INFO)
 
