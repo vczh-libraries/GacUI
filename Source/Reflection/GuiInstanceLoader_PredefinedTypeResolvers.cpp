@@ -211,7 +211,7 @@ Shared Script Type Resolver (Script)
 
 			vint GetMaxPassIndex()override
 			{
-				return 1;
+				return 2;
 			}
 
 			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
@@ -289,7 +289,7 @@ Shared Script Type Resolver (Script)
 					}
 					else
 					{
-						compiled->Initialize();
+						compiled->Initialize(true);
 					}
 				}
 			}
@@ -332,6 +332,7 @@ Compiled Workflow Type Resolver (Script)
 		class GuiResourceCompiledWorkflowTypeResolver
 			: public Object
 			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Initialize
 			, private IGuiResourceTypeResolver_DirectLoadStream
 		{
 		public:
@@ -348,6 +349,44 @@ Compiled Workflow Type Resolver (Script)
 			bool StreamSerializable()override
 			{
 				return true;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return 2;
+			}
+
+			void Initialize(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context)override
+			{
+				if (auto compiled = resource->GetContent().Cast<GuiInstanceCompiledWorkflow>())
+				{
+					switch (context.passIndex)
+					{
+					case 0:
+						if (compiled->type == GuiInstanceCompiledWorkflow::ViewModel)
+						{
+							compiled->Initialize(false);
+						}
+						break;
+					case 1:
+						if (compiled->type == GuiInstanceCompiledWorkflow::Shared)
+						{
+							compiled->Initialize(true);
+						}
+						break;
+					case 2:
+						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor && compiled->type != GuiInstanceCompiledWorkflow::InstanceClass)
+						{
+							compiled->Initialize(false);
+						}
+						break;
+					}
+				}
+			}
+
+			IGuiResourceTypeResolver_Initialize* Initialize()override
+			{
+				return this;
 			}
 
 			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
@@ -376,11 +415,11 @@ Compiled Workflow Type Resolver (Script)
 				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 
 				vint type;
-				MemoryStream memoryStream;
-				reader << type << obj->classFullName << (IStream&)memoryStream;
+				auto memoryStream = MakePtr<MemoryStream>();;
+				reader << type << obj->classFullName << (IStream&)*memoryStream.Obj();
 
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
-				obj->assembly = new WfAssembly(memoryStream);
+				obj->binaryToLoad = memoryStream;
 				return obj;
 			}
 		};

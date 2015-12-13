@@ -248,6 +248,7 @@ Resource Structure
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::Reader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
 			void									SaveResourceFolderToBinary(stream::internal::Writer& writer, collections::List<WString>& typeNames);
 			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, collections::List<WString>& errors);
+			void									InitializeResourceFolder(GuiResourcePrecompileContext& context);
 		public:
 			/// <summary>Create a resource folder.</summary>
 			GuiResourceFolder();
@@ -357,6 +358,9 @@ Resource
 			/// <summary>Precompile this resource to improve performance.</summary>
 			/// <param name="errors">All collected errors during precompiling a resource.</param>
 			void									Precompile(collections::List<WString>& errors);
+
+			/// <summary>Initialize a precompiled resource.</summary>
+			void									Initialize();
 			
 			/// <summary>Get a contained document model using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>
 			/// <returns>The containd resource object.</returns>
@@ -433,6 +437,7 @@ Resource Type Resolver
 ***********************************************************************/
 
 		class IGuiResourceTypeResolver_Precompile;
+		class IGuiResourceTypeResolver_Initialize;
 		class IGuiResourceTypeResolver_DirectLoadXml;
 		class IGuiResourceTypeResolver_DirectLoadStream;
 		class IGuiResourceTypeResolver_IndirectLoad;
@@ -454,6 +459,9 @@ Resource Type Resolver
 			/// <summary>Get the precompiler for the type resolver.</summary>
 			/// <returns>Returns null if the type resolve does not support precompiling.</returns>
 			virtual IGuiResourceTypeResolver_Precompile*		Precompile(){ return 0; }
+			/// <summary>Get the initializer for the type resolver.</summary>
+			/// <returns>Returns null if the type resolve does not support initializing.</returns>
+			virtual IGuiResourceTypeResolver_Initialize*		Initialize(){ return 0; }
 			/// <summary>Get the object for convert the resource between xml and object.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
 			virtual IGuiResourceTypeResolver_DirectLoadXml*		DirectLoadXml(){ return 0; }
@@ -497,6 +505,26 @@ Resource Type Resolver
 			/// <param name="context">The context for precompiling.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual void										Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+		};
+
+		/// <summary>
+		///		Represents a precompiler for resources of a specified type.
+		///		Current resources that needs precompiling:
+		///			Pass 0: Script		(initialize view model scripts)
+		///			Pass 1: Script		(initialize shared scripts)
+		///			Pass 3: Script		(initialize instance scripts)
+		/// </summary>
+		class IGuiResourceTypeResolver_Initialize : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
+		{
+		public:
+			/// <summary>Get the maximum pass index that the initializer needs.</summary>
+			/// <returns>Returns the maximum pass index. The initializer doesn't not need to response to every pass.</returns>
+			virtual vint										GetMaxPassIndex() = 0;
+			/// <summary>Initialize the resource item.</summary>
+			/// <param name="resource">The resource to initializer.</param>
+			/// <param name="context">The context for initializing.</param>
+			/// <param name="errors">All collected errors during loading a resource.</param>
+			virtual void										Initialize(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource without a preload type.</summary>
@@ -588,6 +616,9 @@ Resource Resolver Manager
 			/// <summary>Get the maximum precompiling pass index.</summary>
 			/// <returns>The maximum precompiling pass index.</returns>
 			virtual vint										GetMaxPrecompilePassIndex() = 0;
+			/// <summary>Get the maximum initializing pass index.</summary>
+			/// <returns>The maximum initializing pass index.</returns>
+			virtual vint										GetMaxInitializePassIndex() = 0;
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();

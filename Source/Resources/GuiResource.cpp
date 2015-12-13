@@ -773,6 +773,23 @@ GuiResourceFolder
 			}
 		}
 
+		void GuiResourceFolder::InitializeResourceFolder(GuiResourcePrecompileContext& context)
+		{
+			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			{
+				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
+				if (auto initialize = typeResolver->Initialize())
+				{
+					initialize->Initialize(item, context);
+				}
+			}
+
+			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			{
+				folder->InitializeResourceFolder(context);
+			}
+		}
+
 		GuiResourceFolder::GuiResourceFolder()
 		{
 		}
@@ -1066,6 +1083,28 @@ GuiResource
 			}
 		}
 
+		void GuiResource::Initialize()
+		{
+			auto precompiledFolder = GetFolder(L"Precompiled");
+			if (!precompiledFolder)
+			{
+				CHECK_FAIL(L"GuiResource::Initialize()#Cannot initialize a non-precompiled resource.");
+				return;
+			}
+			
+			GuiResourcePrecompileContext context;
+			context.rootResource = this;
+			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
+			context.targetFolder = precompiledFolder;
+
+			vint maxPass = GetResourceResolverManager()->GetMaxInitializePassIndex();
+			for (vint i = 0; i <= maxPass; i++)
+			{
+				context.passIndex = i;
+				InitializeResourceFolder(context);
+			}
+		}
+
 		Ptr<DocumentModel> GuiResource::GetDocumentByPath(const WString& path)
 		{
 			Ptr<DocumentModel> result=GetValueByPath(path).Cast<DocumentModel>();
@@ -1308,6 +1347,23 @@ IGuiResourceResolverManager
 					if (auto precompile = resolver->Precompile())
 					{
 						vint pass = precompile->GetMaxPassIndex();
+						if (maxPass < pass)
+						{
+							maxPass = pass;
+						}
+					}
+				}
+				return maxPass;
+			}
+
+			vint GetMaxInitializePassIndex()
+			{
+				vint maxPass = -1;
+				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
+				{
+					if (auto initialize = resolver->Initialize())
+					{
+						vint pass = initialize->GetMaxPassIndex();
 						if (maxPass < pass)
 						{
 							maxPass = pass;

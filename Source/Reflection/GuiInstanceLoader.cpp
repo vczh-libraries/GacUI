@@ -897,6 +897,7 @@ GuiInstanceLoaderManager
 				vint index = resources.Keys().IndexOf(name);
 				if (index != -1) return false;
 				
+				resource->Initialize();
 				resources.Add(name, resource);
 				GetClassesInResource(resource, resource);
 				return true;

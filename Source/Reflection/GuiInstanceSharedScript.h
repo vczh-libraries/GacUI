@@ -36,14 +36,16 @@ namespace vl
 				InstanceCtor,
 				InstanceClass,
 			};
+			
+			collections::List<WString>						codes;
+			Ptr<stream::MemoryStream>						binaryToLoad;
 
 			AssemblyType									type = AssemblyType::Shared;
 			WString											classFullName;
-			collections::List<WString>						codes;
 			Ptr<workflow::runtime::WfAssembly>				assembly;
 			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
 
-			void											Initialize();
+			void											Initialize(bool initializeContext);
 		};
 	}
 }
