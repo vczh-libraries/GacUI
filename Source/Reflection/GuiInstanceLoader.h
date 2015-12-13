@@ -150,7 +150,7 @@ Instance Binder
 Instance Loader Manager
 ***********************************************************************/
 
-		class InstanceConstructorResult : public Object
+		class GuiInstanceConstructorResult : public Object
 		{
 		public:
 			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
@@ -172,7 +172,7 @@ Instance Loader Manager
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
 			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
-			virtual Ptr<InstanceConstructorResult>		RunInstanceConstructor(const WString& classFullName, description::Value instance) = 0;
+			virtual Ptr<GuiInstanceConstructorResult>	RunInstanceConstructor(const WString& classFullName, description::Value instance) = 0;
 		};
 
 		struct InstanceLoadingSource

@@ -634,7 +634,7 @@ GuiInstanceLoaderManager
 			typedef Dictionary<GlobalStringKey, Ptr<VirtualTypeInfo>>		VirtualTypeInfoMap;
 			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
 			typedef Pair<Ptr<GuiResource>, Ptr<GuiResourceItem>>			ResourceItemPair;
-			typedef Dictionary<GlobalStringKey, ResourceItemPair>			ResourceItemMap;
+			typedef Dictionary<WString, ResourceItemPair>					ResourceItemMap;
 
 			Ptr<IGuiInstanceLoader>					rootLoader;
 			BinderMap								binders;
@@ -730,10 +730,9 @@ GuiInstanceLoaderManager
 					{
 						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor)
 						{
-							auto contextClassName = GlobalStringKey::Get(compiled->classFullName);
-							if (!instanceCtors.Keys().Contains(contextClassName))
+							if (!instanceCtors.Keys().Contains(compiled->classFullName))
 							{
-								instanceCtors.Add(contextClassName, ResourceItemPair(resource, item));
+								instanceCtors.Add(compiled->classFullName, ResourceItemPair(resource, item));
 							}
 						}
 					}
@@ -909,13 +908,16 @@ GuiInstanceLoaderManager
 				return index == -1 ? nullptr : resources.Values()[index];
 			}
 
-			Ptr<InstanceConstructorResult> RunInstanceConstructor(const WString& classFullName, description::Value instance)override
+			Ptr<GuiInstanceConstructorResult> RunInstanceConstructor(const WString& classFullName, description::Value instance)override
 			{
 				vint index = instanceCtors.Keys().IndexOf(classFullName);
 				if (index == -1) return nullptr;
 
 				auto pair = instanceCtors.Values()[index];
-				return Workflow_RunPrecompiledScript(pair.key, pair.value, instance);
+				auto context = Workflow_RunPrecompiledScript(pair.key, pair.value, instance);
+				auto result = MakePtr<GuiInstanceConstructorResult>();
+				result->context = context;
+				return result;
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiInstanceLoaderManager)
