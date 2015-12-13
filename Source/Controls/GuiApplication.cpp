@@ -424,8 +424,8 @@ GuiApplicationMain
 				GuiApplication app;
 				application=&app;
 				
-				GetPluginManager()->Load();
 				GetGlobalTypeManager()->Load();
+				GetPluginManager()->Load();
 				theme::SetCurrentTheme(theme.Obj());
 				GuiMain();
 				theme::SetCurrentTheme(0);

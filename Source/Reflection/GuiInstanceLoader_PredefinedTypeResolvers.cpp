@@ -380,7 +380,7 @@ Compiled Workflow Type Resolver (Script)
 				reader << type << obj->classFullName << (IStream&)memoryStream;
 
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
-				obj->assembly = new WfAssembly(stream);
+				obj->assembly = new WfAssembly(memoryStream);
 				return obj;
 			}
 		};
