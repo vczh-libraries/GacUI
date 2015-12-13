@@ -11,46 +11,14 @@ Interfaces:
 
 #include "../Controls/GuiApplication.h"
 #include "../Controls/Styles/GuiThemeStyleFactory.h"
-#include "GuiInstanceRepresentation.h"
 #include "../GacWorkflowReferences.h"
+#include "GuiInstanceRepresentation.h"
 
 namespace vl
 {
 	namespace presentation
 	{
 		using namespace reflection;
-
-/***********************************************************************
-Instance Environment
-***********************************************************************/
-
-		class GuiInstanceContextScope : public Object, public Description<GuiInstanceContextScope>
-		{
-			typedef collections::Dictionary<GlobalStringKey, description::Value>				ValueMap;
-			typedef collections::List<WString>													ErrorList;
-		public:
-			GlobalStringKey							typeName;
-			description::Value						rootInstance;
-			ValueMap								referenceValues;
-			ErrorList								errors;
-		};
-
-		class GuiInstanceEnvironment : public Object, public Description<GuiInstanceEnvironment>
-		{
-		public:
-			Ptr<GuiInstanceContext>					context;
-			WString									path;
-			Ptr<GuiResourcePathResolver>			resolver;
-			Ptr<GuiInstanceContextScope>			scope;
-
-			GuiInstanceEnvironment(Ptr<GuiInstanceContext> _context, const WString& _path, Ptr<GuiResourcePathResolver> _resolver)
-				:context(_context)
-				, path(_path)
-				, resolver(_resolver)
-			{
-				scope = new GuiInstanceContextScope;
-			}
-		};
 
 /***********************************************************************
 Instance Loader
@@ -182,6 +150,12 @@ Instance Binder
 Instance Loader Manager
 ***********************************************************************/
 
+		class InstanceConstructorResult : public Object
+		{
+		public:
+			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
+		};
+
 		class IGuiInstanceLoaderManager : public IDescriptable, public Description<IGuiInstanceLoaderManager>
 		{
 		public:
@@ -198,6 +172,7 @@ Instance Loader Manager
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
 			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
+			virtual Ptr<InstanceConstructorResult>		RunInstanceConstructor(const WString& classFullName, description::Value instance) = 0;
 		};
 
 		struct InstanceLoadingSource
@@ -238,43 +213,24 @@ Instance Loader Manager
 Instance Scope Wrapper
 ***********************************************************************/
 
-		class IGuiInstancePartialClass
-		{
-		public:
-			virtual Ptr<GuiInstanceContextScope> GetScope() = 0;
-		};
-
 		template<typename T>
-		class GuiInstancePartialClass : public IGuiInstancePartialClass
+		class GuiInstancePartialClass
 		{
 		private:
-			GlobalStringKey							className;
-			Ptr<GuiInstanceContextScope>			scope;
+			WString											className;
+			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
 
 		protected:
 			bool InitializeFromResource()
 			{
-				if (scope) return false;
-				if (auto loader = GetInstanceLoaderManager()->GetLoader(className))
+				if (!context)
 				{
-					IGuiInstanceLoader::TypeInfo typeInfo(className, description::GetTypeDescriptor<T>());
-					if (loader->IsInitializable(typeInfo))
+					auto value = description::Value::From(dynamic_cast<T*>(this));
+					if (auto result = GetInstanceLoaderManager()->RunInstanceConstructor(className, value))
 					{
-						auto value = description::Value::From(dynamic_cast<T*>(this));
-						if ((scope = loader->InitializeInstance(typeInfo, value)))
-						{
-#ifdef _DEBUG
-							CHECK_ERROR(scope->errors.Count() == 0, L"vl::presentation::GuiInstancePartialClass<T>::InitializeFromResource()#There is something wrong with the resource.");
-#endif
-							return true;
-						}
+						context = result->context;
+						return true;
 					}
-#ifdef _DEBUG
-					else
-					{
-						CHECK_FAIL(L"vl::presentation::GuiInstancePartialClass<T>::InitializeFromResource()#Cannot initialize this instance from the resource.");
-					}
-#endif
 				}
 				return false;
 			}
@@ -283,18 +239,14 @@ Instance Scope Wrapper
 			void LoadInstanceReference(const WString& name, TControl*& reference)
 			{
 				reference = 0;
-				vint index = scope->referenceValues.Keys().IndexOf(GlobalStringKey::Get(name));
-				if (index == -1)
-				{
-					scope->errors.Add(L"Failed to find instance reference \"" + name + L"\".");
-					return;
-				}
+				vint index = context->assembly->variableNames.IndexOf(name);
+				CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Failed to find instance reference.");
 
-				auto value = scope->referenceValues.Values()[index];
+				auto value = context->globalVariables->variables[index];
 				auto td = description::GetTypeDescriptor<TControl>();
 				if (!value.GetTypeDescriptor() || !value.GetTypeDescriptor()->CanConvertTo(td))
 				{
-					scope->errors.Add(L"Failed to convert instance reference \"" + name + L"\" to \"" + td->GetTypeName() + L"\".");
+					CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Wrong instance reference type.");
 					return;
 				}
 
@@ -302,17 +254,12 @@ Instance Scope Wrapper
 			}
 		public:
 			GuiInstancePartialClass(const WString& _className)
-				:className(GlobalStringKey::Get(_className))
+				:className(_className)
 			{
 			}
 
 			virtual ~GuiInstancePartialClass()
 			{
-			}
-
-			Ptr<GuiInstanceContextScope> GetScope()
-			{
-				return scope;
 			}
 		};
 

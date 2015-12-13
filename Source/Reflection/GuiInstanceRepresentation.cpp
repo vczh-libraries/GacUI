@@ -601,13 +601,10 @@ GuiInstanceContext
 				xmlInstance->attributes.Add(attCodeBehind);
 			}
 			
-			if (className)
-			{
-				auto attClass = MakePtr<XmlAttribute>();
-				attClass->name.value = L"ref.Class";
-				attClass->value.value = className.Value();
-				xmlInstance->attributes.Add(attClass);
-			}
+			auto attClass = MakePtr<XmlAttribute>();
+			attClass->name.value = L"ref.Class";
+			attClass->value.value = className;
+			xmlInstance->attributes.Add(attClass);
 
 			for (vint i = 0; i < namespaces.Count(); i++)
 			{

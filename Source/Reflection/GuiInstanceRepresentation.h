@@ -185,7 +185,7 @@ Instance Context
 			Ptr<GuiConstructorRepr>					instance;
 			NamespaceMap							namespaces;
 			bool									codeBehind = true;
-			Nullable<WString>						className;
+			WString									className;
 			ParameterList							parameters;
 			PropertyList							properties;
 			StateList								states;

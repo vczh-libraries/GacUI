@@ -200,8 +200,8 @@ void GuiMain_Resource()
 			resource->SavePrecompiledBinary(fileStream);
 		}
 		{
-			//FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
-			//resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
+			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
+			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		}
 		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
 

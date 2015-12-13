@@ -73,6 +73,7 @@ Instance Type Resolver (Instance)
 						{
 							auto compiled = MakePtr<GuiInstanceCompiledWorkflow>();
 							compiled->type = GuiInstanceCompiledWorkflow::InstanceCtor;
+							compiled->classFullName = obj->className;
 							compiled->assembly = assembly;
 							context.targetFolder->CreateValueByPath(L"Workflow/InstanceCtor/" + resource->GetResourcePath(), L"Workflow", compiled);
 						}
@@ -361,7 +362,7 @@ Compiled Workflow Type Resolver (Script)
 					internal::Writer writer(stream);
 
 					vint type = (vint)obj->type;
-					writer << type;
+					writer << type << obj->classFullName;
 
 					MemoryStream memoryStream;
 					obj->assembly->Serialize(memoryStream);
@@ -372,12 +373,12 @@ Compiled Workflow Type Resolver (Script)
 			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
 				internal::Reader reader(stream);
+				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 
 				vint type;
 				MemoryStream memoryStream;
-				reader << type << (IStream&)memoryStream;
+				reader << type << obj->classFullName << (IStream&)memoryStream;
 
-				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
 				obj->assembly = new WfAssembly(stream);
 				return obj;

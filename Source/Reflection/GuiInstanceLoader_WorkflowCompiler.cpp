@@ -689,18 +689,6 @@ Variable
 			}
 		}
 
-		void Workflow_SetVariablesForReferenceValues(Ptr<workflow::runtime::WfRuntimeGlobalContext> context, Ptr<GuiInstanceEnvironment> env)
-		{
-			FOREACH_INDEXER(GlobalStringKey, name, index, env->scope->referenceValues.Keys())
-			{
-				vint variableIndex = context->assembly->variableNames.IndexOf(name.ToString());
-				if (variableIndex != -1)
-				{
-					context->globalVariables->variables[variableIndex] = env->scope->referenceValues.Values()[index];
-				}
-			}
-		}
-
 /***********************************************************************
 Workflow_ValidateStatement
 ***********************************************************************/
@@ -840,9 +828,10 @@ WorkflowReferenceNamesVisitor
 			void Visit(GuiConstructorRepr* repr)override
 			{
 				bool found = false;
-				if (repr == context->instance.Obj() && context->className)
+
+				if (repr == context->instance.Obj())
 				{
-					auto fullName = GlobalStringKey::Get(context->className.Value());
+					auto fullName = GlobalStringKey::Get(context->className);
 					auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName);
 					if (td)
 					{
@@ -1054,6 +1043,17 @@ Workflow_PrecompileInstanceContext
 		Ptr<workflow::runtime::WfAssembly> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
 		{
 			ITypeDescriptor* rootTypeDescriptor = 0;
+			if (context->className == L"")
+			{
+				errors.Add(
+					L"Precompile: Instance  \"" +
+					(context->instance->typeNamespace == GlobalStringKey::Empty
+						? context->instance->typeName.ToString()
+						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
+						) +
+					L"\" should have the class name specified in the ref.Class attribute.");
+			}
+
 			types::VariableTypeInfoMap typeInfos;
 			{
 				FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
@@ -1115,30 +1115,16 @@ Workflow_PrecompileInstanceContext
 Workflow_RunPrecompiledScript
 ***********************************************************************/
 
-		void Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env)
+		Ptr<workflow::runtime::WfRuntimeGlobalContext> Workflow_RunPrecompiledScript(Ptr<GuiResource> resource, Ptr<GuiResourceItem> resourceItem, description::Value rootInstance)
 		{
-			auto compiled = env->resolver->ResolveResource(L"res", L"Precompiled/Workflow/InstanceCtor/" + env->path).Cast<GuiInstanceCompiledWorkflow>();
+			auto compiled = resourceItem->GetContent().Cast<GuiInstanceCompiledWorkflow>();
 			auto globalContext = MakePtr<WfRuntimeGlobalContext>(compiled->assembly);
-				
-			try
-			{
-				LoadFunction<void()>(globalContext, L"<initialize>")();
-			}
-			catch (const TypeDescriptorException& ex)
-			{
-				env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
-			}
 
-			Workflow_SetVariablesForReferenceValues(globalContext, env);
+			LoadFunction<void()>(globalContext, L"<initialize>")();
+			auto resolver = MakePtr<GuiResourcePathResolver>(resource, resource->GetWorkingDirectory());
+			LoadFunction<void(Value, Ptr<GuiResourcePathResolver>)>(globalContext, L"<initialize-instance>")(rootInstance, resolver);
 
-			try
-			{
-				LoadFunction<void(Value, Ptr<GuiResourcePathResolver>)>(globalContext, L"<initialize-instance>")(env->scope->rootInstance, env->resolver);
-			}
-			catch (const TypeDescriptorException& ex)
-			{
-				env->scope->errors.Add(L"Workflow Script Exception: " + ex.Message());
-			}
+			return globalContext;
 		}
 
 /***********************************************************************

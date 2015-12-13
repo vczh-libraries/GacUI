@@ -38,6 +38,7 @@ namespace vl
 			};
 
 			AssemblyType									type = AssemblyType::Shared;
+			WString											classFullName;
 			collections::List<WString>						codes;
 			Ptr<workflow::runtime::WfAssembly>				assembly;
 			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;

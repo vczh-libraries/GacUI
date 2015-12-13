@@ -574,163 +574,6 @@ GuiDefaultInstanceLoader
 		};
 
 /***********************************************************************
-GuiResourceInstanceLoader
-***********************************************************************/
-
-		class GuiResourceInstanceLoader : public Object, public IGuiInstanceLoader
-		{
-		protected:
-			Ptr<GuiResource>						resource;
-			Ptr<GuiResourceItem>					item;
-			Ptr<GuiInstanceContext>					context;
-			GlobalStringKey							contextClassName;
-
-			void InitializeContext(Ptr<GuiResourcePathResolver> resolver, List<WString>& errors)
-			{
-				context->ApplyStyles(resolver, errors);
-			}
-		public:
-			GuiResourceInstanceLoader(Ptr<GuiResource> _resource, Ptr<GuiResourceItem> _item)
-				:resource(_resource)
-				, item(_item)
-				, context(item->GetContent().Cast<GuiInstanceContext>())
-			{
-				if (context->className)
-				{
-					contextClassName = GlobalStringKey::Get(context->className.Value());
-				}
-			}
-
-			GlobalStringKey GetTypeName()override
-			{
-				return contextClassName;
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return typeInfo.typeName == contextClassName;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if (typeInfo.typeName == contextClassName)
-				{
-					if (auto typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(typeInfo.typeName.ToString()))
-					{
-						InitializeContext(env->resolver, env->scope->errors);
-						SortedList<GlobalStringKey> argumentNames;
-						{
-							List<GlobalStringKey> names;
-							GetConstructorParameters(typeInfo, names);
-							CopyFrom(argumentNames, names);
-						}
-						auto group = typeDescriptor->GetConstructorGroup();
-						for (vint i = 0; i < group->GetMethodCount(); i++)
-						{
-							auto method = group->GetMethod(i);
-							List<GlobalStringKey> parameterNames;
-							for (vint j = 0; j < method->GetParameterCount(); j++)
-							{
-								parameterNames.Add(GlobalStringKey::Get(method->GetParameter(j)->GetName()));
-							}
-
-							auto f = [](GlobalStringKey a, GlobalStringKey b){return GlobalStringKey::Compare(a, b); };
-							if (CompareEnumerable(argumentNames, From(parameterNames).OrderBy(f)) == 0)
-							{
-								Array<Value> arguments(constructorArguments.Count());
-								for (vint j = 0; j < arguments.Count(); j++)
-								{
-									arguments[j] = constructorArguments[parameterNames[j]][0];
-								}
-								Value result = method->Invoke(Value(), arguments);
-
-								if (auto partialClass = dynamic_cast<IGuiInstancePartialClass*>(result.GetRawPtr()))
-								{
-									if (auto partialScope = partialClass->GetScope())
-									{
-										CopyFrom(env->scope->errors, partialScope->errors, true);
-									}
-								}
-								return result;
-							}
-						}
-					}
-
-					Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
-					auto scope = LoadInstanceFromContext(item, resolver);
-
-					if (scope)
-					{
-						CopyFrom(env->scope->errors, scope->errors, true);
-						return scope->rootInstance;
-					}
-				}
-				return Value();
-			}
-
-			bool IsInitializable(const TypeInfo& typeInfo)override
-			{
-				return typeInfo.typeName == contextClassName;
-			}
-
-			Ptr<GuiInstanceContextScope> InitializeInstance(const TypeInfo& typeInfo, description::Value instance)override
-			{
-				if (typeInfo.typeName == contextClassName)
-				{
-					Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
-					List<WString> errors;
-					InitializeContext(resolver, errors);
-
-					auto scope = InitializeInstanceFromContext(item, resolver, instance);
-					if (scope)
-					{
-						for (vint i = 0; i < errors.Count(); i++)
-						{
-							scope->errors.Insert(i, errors[i]);
-						}
-					}
-					return scope;
-				}
-				return 0;
-			}
-
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
-			{
-				if (typeInfo.typeName == contextClassName)
-				{
-					FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
-					{
-						if (description::GetTypeDescriptor(parameter->className.ToString()))
-						{
-							propertyNames.Add(parameter->name);
-						}
-					}
-				}
-			}
-
-			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)
-			{
-				if (propertyInfo.typeInfo.typeName == contextClassName)
-				{
-					FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
-					{
-						if (parameter->name == propertyInfo.propertyName)
-						{
-							if (auto td = description::GetTypeDescriptor(parameter->className.ToString()))
-							{
-								auto info = GuiInstancePropertyInfo::Assign(td);
-								info->required = true;
-								info->scope = GuiInstancePropertyInfo::ViewModel;
-								return info;
-							}
-						}
-					}
-				}
-				return IGuiInstanceLoader::GetPropertyType(propertyInfo);
-			}
-		};
-
-/***********************************************************************
 FindInstanceLoadingSource
 ***********************************************************************/
 
@@ -788,14 +631,17 @@ GuiInstanceLoaderManager
 				{
 				}
 			};
-			typedef Dictionary<GlobalStringKey, Ptr<VirtualTypeInfo>>					VirtualTypeInfoMap;
-			typedef Dictionary<WString, Ptr<GuiResource>>								ResourceMap;
+			typedef Dictionary<GlobalStringKey, Ptr<VirtualTypeInfo>>		VirtualTypeInfoMap;
+			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
+			typedef Pair<Ptr<GuiResource>, Ptr<GuiResourceItem>>			ResourceItemPair;
+			typedef Dictionary<GlobalStringKey, ResourceItemPair>			ResourceItemMap;
 
 			Ptr<IGuiInstanceLoader>					rootLoader;
 			BinderMap								binders;
 			EventBinderMap							eventBinders;
 			VirtualTypeInfoMap						typeInfos;
 			ResourceMap								resources;
+			ResourceItemMap							instanceCtors;
 
 			bool IsTypeExists(GlobalStringKey name)
 			{
@@ -876,25 +722,25 @@ GuiInstanceLoaderManager
 				}
 			}
 
-			void GetClassesInResource(Ptr<GuiResourceFolder> folder, Dictionary<GlobalStringKey, Ptr<GuiResourceItem>>& classes)
+			void GetClassesInResource(Ptr<GuiResource> resource, Ptr<GuiResourceFolder> folder)
 			{
 				FOREACH(Ptr<GuiResourceItem>, item, folder->GetItems())
 				{
-					if (auto context = item->GetContent().Cast<GuiInstanceContext>())
+					if (auto compiled = item->GetContent().Cast<GuiInstanceCompiledWorkflow>())
 					{
-						if (context->className)
+						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor)
 						{
-							auto contextClassName = GlobalStringKey::Get(context->className.Value());
-							if (!classes.Keys().Contains(contextClassName))
+							auto contextClassName = GlobalStringKey::Get(compiled->classFullName);
+							if (!instanceCtors.Keys().Contains(contextClassName))
 							{
-								classes.Add(contextClassName, item);
+								instanceCtors.Add(contextClassName, ResourceItemPair(resource, item));
 							}
 						}
 					}
 				}
 				FOREACH(Ptr<GuiResourceFolder>, subFolder, folder->GetFolders())
 				{
-					GetClassesInResource(subFolder, classes);
+					GetClassesInResource(resource, subFolder);
 				}
 			}
 		public:
@@ -1051,48 +897,9 @@ GuiInstanceLoaderManager
 			{
 				vint index = resources.Keys().IndexOf(name);
 				if (index != -1) return false;
-
-				Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
-				Dictionary<GlobalStringKey, Ptr<GuiResourceItem>> classes;
-				Dictionary<GlobalStringKey, GlobalStringKey> parentTypes;
-				GetClassesInResource(resource, classes);
-
-				FOREACH(Ptr<GuiResourceItem>, item, classes.Values())
-				{
-					auto context = item->GetContent().Cast<GuiInstanceContext>();
-					auto contextClassName = GlobalStringKey::Get(context->className.Value());
-					if (typeInfos.Keys().Contains(contextClassName))
-					{
-						return false;
-					}
-
-					auto loadingSource = FindInstanceLoadingSource(context, context->instance.Obj());
-					if (loadingSource.loader)
-					{
-						parentTypes.Add(contextClassName, loadingSource.typeName);
-					}
-				}
 				
-				FOREACH(GlobalStringKey, className, classes.Keys())
-				{
-					auto item = classes[className];
-					auto context = item->GetContent().Cast<GuiInstanceContext>();
-					vint index = parentTypes.Keys().IndexOf(className);
-					if (index == -1) continue;
-					auto parentType = parentTypes.Values()[index];
-
-					Ptr<IGuiInstanceLoader> loader = new GuiResourceInstanceLoader(resource, item);
-					if (GetGlobalTypeManager()->GetTypeDescriptor(context->className.Value()))
-					{
-						SetLoader(loader);
-					}
-					else
-					{
-						CreateVirtualType(parentType, loader);
-					}
-				}
-
 				resources.Add(name, resource);
+				GetClassesInResource(resource, resource);
 				return true;
 			}
 
@@ -1100,6 +907,15 @@ GuiInstanceLoaderManager
 			{
 				vint index = resources.Keys().IndexOf(name);
 				return index == -1 ? nullptr : resources.Values()[index];
+			}
+
+			Ptr<InstanceConstructorResult> RunInstanceConstructor(const WString& classFullName, description::Value instance)override
+			{
+				vint index = instanceCtors.Keys().IndexOf(classFullName);
+				if (index == -1) return nullptr;
+
+				auto pair = instanceCtors.Values()[index];
+				return Workflow_RunPrecompiledScript(pair.key, pair.value, instance);
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiInstanceLoaderManager)
