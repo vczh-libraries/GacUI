@@ -17,6 +17,8 @@ namespace vl
 		using namespace regex;
 		using namespace reflection::description;
 		using namespace stream;
+		using namespace workflow;
+		using namespace workflow::analyzer;
 
 /***********************************************************************
 GuiInstancePropertyInfo
@@ -208,54 +210,6 @@ GuiDefaultInstanceLoader
 			GlobalStringKey GetTypeName()override
 			{
 				return GlobalStringKey::Empty;
-			}
-
-			//***********************************************************************************
-
-			bool IsDeserializable(const TypeInfo& typeInfo)override
-			{
-				return typeInfo.typeDescriptor->GetValueSerializer() != 0;
-			}
-
-			description::Value Deserialize(const TypeInfo& typeInfo, const WString& text)override
-			{
-				if (IValueSerializer* serializer = typeInfo.typeDescriptor->GetValueSerializer())
-				{
-					Value loadedValue;
-					if (serializer->Parse(text, loadedValue))
-					{
-						return loadedValue;
-					}
-				}
-				return Value();
-			}
-
-			bool IsCreatable(const TypeInfo& typeInfo)override
-			{
-				return GetDefaultConstructor(typeInfo.typeDescriptor) != 0;
-			}
-
-			description::Value CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments)override
-			{
-				if (IMethodInfo* method = GetDefaultConstructor(typeInfo.typeDescriptor))
-				{
-					return method->Invoke(Value(), (Value_xs()));
-				}
-				else
-				{
-					env->scope->errors.Add(L"Failed to create \"" + typeInfo.typeName.ToString() + L"\" because no there is no default constructor.");
-					return Value();
-				}
-			}
-
-			bool IsInitializable(const TypeInfo& typeInfo)override
-			{
-				return false;
-			}
-
-			Ptr<GuiInstanceContextScope> InitializeInstance(const TypeInfo& typeInfo, description::Value instance)override
-			{
-				return 0;
 			}
 
 			//***********************************************************************************
@@ -493,45 +447,129 @@ GuiDefaultInstanceLoader
 				return GetPropertyTypeCached(propertyInfo).f0;
 			}
 
-			bool GetPropertyValue(PropertyValue& propertyValue)override
+			//***********************************************************************************
+
+			bool CanCreate(const TypeInfo& typeInfo)override
 			{
-				if (IPropertyInfo* prop = GetPropertyTypeCached(propertyValue).f1)
-				{
-					if (prop->IsReadable())
-					{
-						propertyValue.propertyValue = prop->GetValue(propertyValue.instanceValue);
-						return true;
-					}
-				}
-				return false;
+				return GetDefaultConstructor(typeInfo.typeDescriptor) != 0;
 			}
 
-			bool SetPropertyValue(PropertyValue& propertyValue)override
+			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
 			{
-				PropertyType propertyType = GetPropertyTypeCached(propertyValue);
-				if (propertyType.f1)
+				auto create = MakePtr<WfNewTypeExpression>();
+				create->type = GetTypeFromTypeInfo(GetDefaultConstructor(typeInfo.typeDescriptor)->GetReturn());
+
+				auto refValue = MakePtr<WfReferenceExpression>();
+				refValue->name.value = variableName.ToString();
+
+				auto assign = MakePtr<WfBinaryExpression>();
+				assign->op = WfBinaryOperator::Assign;
+				assign->first = refValue;
+				assign->second = create;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = assign;
+				return stat;
+			}
+
+			Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+			{
+				if (typeInfo.typeName == GetTypeName())
 				{
-					switch (propertyType.f0->support)
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-					case GuiInstancePropertyInfo::SupportCollection:
+						PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
+						if (propertyType.f1)
 						{
-							Value value = propertyType.f1->GetValue(propertyValue.instanceValue);
-							if (auto list = dynamic_cast<IValueList*>(value.GetRawPtr()))
+							switch (propertyType.f0->support)
 							{
-								list->Add(propertyValue.propertyValue);
-								return true;
+							case GuiInstancePropertyInfo::SupportCollection:
+								{
+									const auto& values = arguments.GetByIndex(index);
+									if (values.Count() > 0)
+									{
+										{
+											auto refValue = MakePtr<WfReferenceExpression>();
+											refValue->name.value = variableName.ToString();
+
+											auto refProp = MakePtr<WfMemberExpression>();
+											refProp->parent = refValue;
+											refProp->name.value = prop.ToString();
+
+											auto varDesc = MakePtr<WfVariableDeclaration>();
+											varDesc->name.value = L"<collection>";
+											varDesc->expression = refProp;
+
+											auto stat = MakePtr<WfVariableStatement>();
+											stat->variable = varDesc;
+											block->statements.Add(stat);
+										}
+
+										for (vint i = 0; i < values.Count(); i++)
+										{
+											auto refCollection = MakePtr<WfReferenceExpression>();
+											refCollection->name.value = L"<collection>";
+
+											auto refAdd = MakePtr<WfMemberExpression>();
+											refAdd->parent = refCollection;
+											refAdd->name.value = L"Add";
+
+											auto call = MakePtr<WfCallExpression>();
+											call->function = refAdd;
+											call->arguments.Add(values[i].expression);
+
+											auto stat = MakePtr<WfExpressionStatement>();
+											stat->expression = call;
+											block->statements.Add(stat);
+										}
+									}
+								}
+								break;
+							case GuiInstancePropertyInfo::SupportAssign:
+							case GuiInstancePropertyInfo::SupportArray:
+								{										  
+									auto refValue = MakePtr<WfReferenceExpression>();
+									refValue->name.value = variableName.ToString();
+
+									auto refProp = MakePtr<WfMemberExpression>();
+									refProp->parent = refValue;
+									refProp->name.value = prop.ToString();
+
+									auto assign = MakePtr<WfBinaryExpression>();
+									assign->op = WfBinaryOperator::Assign;
+									assign->first = refProp;
+									assign->second = arguments.GetByIndex(index)[0].expression;
+
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = assign;
+									block->statements.Add(stat);
+								}
+								break;
+							default:;
 							}
 						}
-						break;
-					case GuiInstancePropertyInfo::SupportAssign:
-					case GuiInstancePropertyInfo::SupportArray:
-						propertyValue.instanceValue.SetProperty(propertyValue.propertyName.ToString(), propertyValue.propertyValue);
-						propertyType.f1->SetValue(propertyValue.instanceValue, propertyValue.propertyValue);
-						return true;
-					default:;
+					}
+
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 				}
-				return false;
+				return nullptr;
+			}
+
+			Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
+			{
+				auto refValue = MakePtr<WfReferenceExpression>();
+				refValue->name.value = variableName.ToString();
+
+				auto refProp = MakePtr<WfMemberExpression>();
+				refProp->parent = refValue;
+				refProp->name.value = variableName.ToString();
+
+				return refProp;
 			}
 		};
 

@@ -825,6 +825,22 @@ GuiBindableDataGridInstanceLoader
 					}
 				}
 
+				bool CanEvalToConstructorParameter(const PropertyInfo& propertyInfo)
+				{
+					if (propertyInfo.typeInfo.typeName == GetTypeName())
+					{
+						if (propertyInfo.propertyName == _ItemSource)
+						{
+							return true;
+						}
+						else if (propertyInfo.propertyName == _ViewModelContext)
+						{
+							return true;
+						}
+					}
+					return BASE_TYPE::CanEvalToConstructorParameter(propertyInfo);
+				}
+
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _Columns)
