@@ -3,7 +3,7 @@
 #include "../Resources/GuiParserManager.h"
 #include "InstanceQuery/GuiInstanceQuery.h"
 #include "GuiInstanceSharedScript.h"
-#include "GuiInstanceLoader_WorkflowCompiler.h"
+#include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 
 namespace vl
 {

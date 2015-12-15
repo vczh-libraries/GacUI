@@ -6,10 +6,10 @@ GacUI Reflection: Instance Schema Representation
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCOMPILER
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCOMPILER
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCODEGEN
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCODEGEN
 
-#include "GuiInstanceLoader.h"
+#include "../GuiInstanceLoader.h"
 
 namespace vl
 {
@@ -29,6 +29,7 @@ WorkflowCompiler (Parser)
 		
 		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression(const WString& code, types::ErrorList& errors);
 		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, types::ErrorList& errors);
+		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
 
 /***********************************************************************
 WorkflowCompiler (Installation)
@@ -51,7 +52,6 @@ WorkflowCompiler (Compile)
 		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeInfoMap& typeInfos);
 
 		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
-		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::runtime::WfAssembly>				Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
 		extern Ptr<workflow::runtime::WfRuntimeGlobalContext>	Workflow_RunPrecompiledScript(Ptr<GuiResource> resource, Ptr<GuiResourceItem> resourceItem, description::Value rootInstance);
 	}

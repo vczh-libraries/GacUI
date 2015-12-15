@@ -171,13 +171,8 @@
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceHelperTypes.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader.cpp" />
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_LoadInstance.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceBinders.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedTypeResolvers.cpp" />
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_WorkflowCompiler.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Compositions.cpp" />
@@ -201,6 +196,12 @@
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowCollectReferences.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateBindings.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowInstallBindings.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowModule.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Edit.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Load.cpp" />
@@ -307,7 +308,6 @@
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceHelperTypes.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceLoader.h" />
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceLoader_WorkflowCompiler.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h" />
     <ClInclude Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_TemplateControl.h" />
@@ -319,6 +319,7 @@
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionElements.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiDocument.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiParserManager.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiResource.h" />
