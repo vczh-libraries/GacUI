@@ -6,8 +6,6 @@ namespace vl
 	namespace presentation
 	{
 		using namespace workflow;
-		using namespace workflow::analyzer;
-		using namespace workflow::runtime;
 
 /***********************************************************************
 Parser

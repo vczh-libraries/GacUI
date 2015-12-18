@@ -199,6 +199,7 @@
     <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowCollectReferences.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateBindings.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateCreating.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowInstallBindings.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowModule.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp" />

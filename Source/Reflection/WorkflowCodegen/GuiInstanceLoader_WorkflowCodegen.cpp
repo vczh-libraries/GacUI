@@ -47,7 +47,8 @@ Workflow_PrecompileInstanceContext (Passes)
 ***********************************************************************/
 
 		extern ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, types::ErrorList& errors);
-		extern Ptr<WfBlockStatement> Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors);
+		extern void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
+		extern void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
 
 /***********************************************************************
 Workflow_PrecompileInstanceContext
@@ -94,7 +95,9 @@ Workflow_PrecompileInstanceContext
 
 			if (errors.Count() == 0)
 			{
-				auto statements = Workflow_GenerateBindings(context, typeInfos, rootTypeDescriptor, errors);
+				auto statements = MakePtr<WfBlockStatement>();
+				Workflow_GenerateCreating(context, typeInfos, rootTypeDescriptor, statements, errors);
+				Workflow_GenerateBindings(context, typeInfos, rootTypeDescriptor, statements, errors);
 				auto module = Workflow_CreateModuleWithInitFunction(context, typeInfos, rootTypeDescriptor, statements);
 
 				Workflow_GetSharedManager()->Clear(true, true);

@@ -7,6 +7,9 @@ Test/Output/
 Test/Linux/Coverage/
 Tools/*.exe
 Tools/*.dll
+GacUISrc/UI.error.txt
+GacUISrc/UI.bin
+GacUISrc/UI.txt
 
 # User-specific files
 *.suo

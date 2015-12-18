@@ -194,7 +194,22 @@ void GuiMain_Resource()
 		List<WString> errors;
 		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
 		resource->Precompile(errors);
-		CHECK_ERROR(errors.Count() == 0, L"Error");
+
+		if (errors.Count() > 0)
+		{
+			{
+				FileStream fileStream(L"UI.error.txt", FileStream::WriteOnly);
+				Utf16Encoder encoder;
+				EncoderStream encoderStream(fileStream, encoder);
+				StreamWriter writer(encoderStream);
+
+				FOREACH(WString, error, errors)
+				{
+					writer.WriteLine(error);
+				}
+			}
+			CHECK_FAIL(L"Error");
+		}
 		{
 			FileStream fileStream(L"UI.bin", FileStream::WriteOnly);
 			resource->SavePrecompiledBinary(fileStream);

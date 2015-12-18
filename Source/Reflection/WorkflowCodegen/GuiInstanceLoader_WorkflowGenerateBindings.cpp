@@ -7,19 +7,13 @@ namespace vl
 	namespace presentation
 	{
 		using namespace workflow;
-		using namespace workflow::analyzer;
-		using namespace workflow::runtime;
-		using namespace reflection::description;
 		using namespace collections;
 
-		using namespace controls;
-		using namespace compositions;
-
 /***********************************************************************
-WorkflowCompileVisitor
+WorkflowGenerateBindingVisitor
 ***********************************************************************/
 
-		class WorkflowCompileVisitor : public Object, public GuiValueRepr::IVisitor
+		class WorkflowGenerateBindingVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
 			Ptr<GuiInstanceContext>				context;
@@ -28,12 +22,12 @@ WorkflowCompileVisitor
 			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
 
-			WorkflowCompileVisitor(Ptr<GuiInstanceContext> _context, types::VariableTypeInfoMap& _typeInfos, description::ITypeDescriptor* _rootTypeDescriptor, types::ErrorList& _errors)
+			WorkflowGenerateBindingVisitor(Ptr<GuiInstanceContext> _context, types::VariableTypeInfoMap& _typeInfos, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
 				:context(_context)
 				, typeInfos(_typeInfos)
 				, rootTypeDescriptor(_rootTypeDescriptor)
 				, errors(_errors)
-				, statements(MakePtr<WfBlockStatement>())
+				, statements(_statements)
 			{
 			}
 
@@ -55,11 +49,11 @@ WorkflowCompileVisitor
 					{
 						GlobalStringKey propertyName = repr->setters.Keys()[index];
 						Ptr<GuiInstancePropertyInfo> propertyInfo;
-						IGuiInstanceLoader::PropertyInfo info;
-						info.typeInfo = reprTypeInfo;
-						info.propertyName = propertyName;
 
 						{
+							IGuiInstanceLoader::PropertyInfo info;
+							info.typeInfo = reprTypeInfo;
+							info.propertyName = propertyName;
 							auto currentLoader = GetInstanceLoaderManager()->GetLoader(info.typeInfo.typeName);
 
 							while (currentLoader && !propertyInfo)
@@ -92,7 +86,7 @@ WorkflowCompileVisitor
 							auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
 							if (binder)
 							{
-								auto instancePropertyInfo = info.typeInfo.typeDescriptor->GetPropertyByName(info.propertyName.ToString(), true);
+								auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
 								if (instancePropertyInfo)
 								{
 									if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
@@ -172,11 +166,10 @@ WorkflowCompileVisitor
 			}
 		};
 
-		Ptr<WfBlockStatement> Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors)
+		void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
 		{
-			WorkflowCompileVisitor visitor(context, typeInfos, rootTypeDescriptor, errors);
+			WorkflowGenerateBindingVisitor visitor(context, typeInfos, rootTypeDescriptor, statements, errors);
 			context->instance->Accept(&visitor);
-			return visitor.statements;
 		}
 	}
 }
