@@ -9,7 +9,7 @@ Tools/*.exe
 Tools/*.dll
 GacUISrc/UI.error.txt
 GacUISrc/UI.bin
-GacUISrc/UI.txt
+Test/GacUISrc/GacUISrc/UI.bin
 
 # User-specific files
 *.suo
@@ -164,3 +164,4 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+Test/GacUISrc/GacUISrc/UI.txt

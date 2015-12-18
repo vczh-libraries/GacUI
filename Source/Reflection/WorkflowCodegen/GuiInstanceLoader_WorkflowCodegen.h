@@ -17,8 +17,21 @@ namespace vl
 	{
 		namespace types
 		{
+			struct PropertyResolving
+			{
+				IGuiInstanceLoader*								loader;
+				Ptr<GuiInstancePropertyInfo>					info;
+			};
+
 			typedef collections::Dictionary<GlobalStringKey, IGuiInstanceLoader::TypeInfo>		VariableTypeInfoMap;
+			typedef collections::Dictionary<GuiValueRepr*, Ptr<PropertyResolving>>				PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
+
+			struct ResolvingResult
+			{
+				VariableTypeInfoMap								typeInfos;
+				PropertyResolvingMap							propertyResolvings;
+			};
 		}
 		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager();
 		

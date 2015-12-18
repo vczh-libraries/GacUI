@@ -17,14 +17,14 @@ WorkflowGenerateBindingVisitor
 		{
 		public:
 			Ptr<GuiInstanceContext>				context;
-			types::VariableTypeInfoMap&			typeInfos;
+			types::ResolvingResult&				resolvingResult;
 			description::ITypeDescriptor*		rootTypeDescriptor;
 			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
-
-			WorkflowGenerateBindingVisitor(Ptr<GuiInstanceContext> _context, types::VariableTypeInfoMap& _typeInfos, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
+			
+			WorkflowGenerateBindingVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
 				:context(_context)
-				, typeInfos(_typeInfos)
+				, resolvingResult(_resolvingResult)
 				, rootTypeDescriptor(_rootTypeDescriptor)
 				, errors(_errors)
 				, statements(_statements)
@@ -40,12 +40,12 @@ WorkflowGenerateBindingVisitor
 				IGuiInstanceLoader::TypeInfo reprTypeInfo;
 				if (repr->instanceName != GlobalStringKey::Empty)
 				{
-					reprTypeInfo = typeInfos[repr->instanceName];
+					reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				}
-
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+				
+				if (reprTypeInfo.typeDescriptor && reprTypeInfo.typeDescriptor->GetValueSerializer() == nullptr)
 				{
-					if (reprTypeInfo.typeDescriptor)
+					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 					{
 						GlobalStringKey propertyName = repr->setters.Keys()[index];
 						Ptr<GuiInstancePropertyInfo> propertyInfo;
@@ -67,51 +67,52 @@ WorkflowGenerateBindingVisitor
 							}
 						}
 
-						if (!propertyInfo)
+						if (propertyInfo)
 						{
-							errors.Add(L"Precompile: Cannot find property \"" + propertyName.ToString() + L"\" in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
-						}
-						else if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
-						{
-							WString expressionCode;
-							if (auto obj = setter->values[0].Cast<GuiTextRepr>())
+							if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 							{
-								expressionCode = obj->text;
-							}
-							else
-							{
-								errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires the text value of property \"" + propertyName.ToString() + L"\".");
-							}
-
-							auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
-							if (binder)
-							{
-								auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
-								if (instancePropertyInfo)
+								WString expressionCode;
+								if (auto obj = setter->values[0].Cast<GuiTextRepr>())
 								{
-									if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
+									expressionCode = obj->text;
+								}
+								else
+								{
+									errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires the text value of property \"" + propertyName.ToString() + L"\".");
+								}
+
+								auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
+								if (binder)
+								{
+									auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
+									if (instancePropertyInfo)
 									{
-										if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
+										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
 										{
-											statements->statements.Add(statement);	
+											if (Workflow_ValidateStatement(context, resolvingResult.typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
+											{
+												statements->statements.Add(statement);	
+											}
 										}
+									}
+									else
+									{
+										errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 									}
 								}
 								else
 								{
-									errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+									errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
 								}
 							}
 							else
 							{
-								errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
+								FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+								{
+									value->Accept(this);
+								}
 							}
 						}
-					}
-
-					FOREACH(Ptr<GuiValueRepr>, value, setter->values)
-					{
-						value->Accept(this);
 					}
 				}
 
@@ -150,7 +151,7 @@ WorkflowGenerateBindingVisitor
 
 							if (statement)
 							{
-								if (Workflow_ValidateStatement(context, typeInfos, rootTypeDescriptor, errors, handler->value, statement))
+								if (Workflow_ValidateStatement(context, resolvingResult.typeInfos, rootTypeDescriptor, errors, handler->value, statement))
 								{
 									statements->statements.Add(statement);
 								}
@@ -166,9 +167,9 @@ WorkflowGenerateBindingVisitor
 			}
 		};
 
-		void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
+		void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
 		{
-			WorkflowGenerateBindingVisitor visitor(context, typeInfos, rootTypeDescriptor, statements, errors);
+			WorkflowGenerateBindingVisitor visitor(context, resolvingResult, rootTypeDescriptor, statements, errors);
 			context->instance->Accept(&visitor);
 		}
 	}

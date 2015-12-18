@@ -17,16 +17,16 @@ WorkflowReferenceNamesVisitor
 		{
 		public:
 			Ptr<GuiInstanceContext>				context;
-			types::VariableTypeInfoMap&			typeInfos;
+			types::ResolvingResult&				resolvingResult;
 			types::ErrorList&					errors;
 
 			IGuiInstanceLoader::TypeInfo		bindingTargetTypeInfo;
 			vint								generatedNameCount;
 			ITypeDescriptor*					rootTypeDescriptor;
 
-			WorkflowReferenceNamesVisitor(Ptr<GuiInstanceContext> _context, types::VariableTypeInfoMap& _typeInfos, types::ErrorList& _errors)
+			WorkflowReferenceNamesVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, types::ErrorList& _errors)
 				:context(_context)
-				, typeInfos(_typeInfos)
+				, resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, generatedNameCount(0)
 				, rootTypeDescriptor(0)
@@ -44,13 +44,13 @@ WorkflowReferenceNamesVisitor
 
 				if (repr->instanceName != GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
 				{
-					if (typeInfos.Keys().Contains(repr->instanceName))
+					if (resolvingResult.typeInfos.Keys().Contains(repr->instanceName))
 					{
 						errors.Add(L"Precompile: Parameter \"" + repr->instanceName.ToString() + L"\" conflict with an existing named object.");
 					}
 					else
 					{
-						typeInfos.Add(repr->instanceName, reprTypeInfo);
+						resolvingResult.typeInfos.Add(repr->instanceName, reprTypeInfo);
 					}
 				}
 				
@@ -69,7 +69,7 @@ WorkflowReferenceNamesVisitor
 						{
 							auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
 							repr->instanceName = name;
-							typeInfos.Add(name, reprTypeInfo);
+							resolvingResult.typeInfos.Add(name, reprTypeInfo);
 						}
 					}
 
@@ -115,7 +115,7 @@ WorkflowReferenceNamesVisitor
 					{
 						auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
 						repr->instanceName = name;
-						typeInfos.Add(name, reprTypeInfo);
+						resolvingResult.typeInfos.Add(name, reprTypeInfo);
 					}
 				}
 			}
@@ -162,9 +162,9 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
-		ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, types::ErrorList& errors)
+		ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
-			WorkflowReferenceNamesVisitor visitor(context, typeInfos, errors);
+			WorkflowReferenceNamesVisitor visitor(context, resolvingResult, errors);
 			context->instance->Accept(&visitor);
 			return visitor.rootTypeDescriptor;
 		}

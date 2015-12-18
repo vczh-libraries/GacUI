@@ -17,14 +17,14 @@ WorkflowGenerateCreatingVisitor
 		{
 		public:
 			Ptr<GuiInstanceContext>				context;
-			types::VariableTypeInfoMap&			typeInfos;
+			types::ResolvingResult&				resolvingResult;
 			description::ITypeDescriptor*		rootTypeDescriptor;
 			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
 			
-			WorkflowGenerateCreatingVisitor(Ptr<GuiInstanceContext> _context, types::VariableTypeInfoMap& _typeInfos, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
+			WorkflowGenerateCreatingVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
 				:context(_context)
-				, typeInfos(_typeInfos)
+				, resolvingResult(_resolvingResult)
 				, rootTypeDescriptor(_rootTypeDescriptor)
 				, errors(_errors)
 				, statements(_statements)
@@ -40,12 +40,12 @@ WorkflowGenerateCreatingVisitor
 				IGuiInstanceLoader::TypeInfo reprTypeInfo;
 				if (repr->instanceName != GlobalStringKey::Empty)
 				{
-					reprTypeInfo = typeInfos[repr->instanceName];
+					reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				}
-
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+				
+				if (reprTypeInfo.typeDescriptor && reprTypeInfo.typeDescriptor->GetValueSerializer() == nullptr)
 				{
-					if (reprTypeInfo.typeDescriptor)
+					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 					{
 						GlobalStringKey propertyName = repr->setters.Keys()[index];
 						Ptr<GuiInstancePropertyInfo> propertyInfo;
@@ -77,11 +77,11 @@ WorkflowGenerateCreatingVisitor
 						else if (setter->binding == GlobalStringKey::_Set)
 						{
 						}
-					}
 
-					FOREACH(Ptr<GuiValueRepr>, value, setter->values)
-					{
-						value->Accept(this);
+						FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+						{
+							value->Accept(this);
+						}
 					}
 				}
 			}
@@ -92,9 +92,9 @@ WorkflowGenerateCreatingVisitor
 			}
 		};
 
-		void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
+		void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
 		{
-			WorkflowGenerateCreatingVisitor visitor(context, typeInfos, rootTypeDescriptor, statements, errors);
+			WorkflowGenerateCreatingVisitor visitor(context, resolvingResult, rootTypeDescriptor, statements, errors);
 			context->instance->Accept(&visitor);
 		}
 	}

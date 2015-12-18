@@ -46,9 +46,9 @@ Workflow_ValidateStatement
 Workflow_PrecompileInstanceContext (Passes)
 ***********************************************************************/
 
-		extern ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, types::ErrorList& errors);
-		extern void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
-		extern void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
+		extern ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
+		extern void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
+		extern void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
 
 /***********************************************************************
 Workflow_PrecompileInstanceContext
@@ -68,7 +68,7 @@ Workflow_PrecompileInstanceContext
 					L"\" should have the class name specified in the ref.Class attribute.");
 			}
 
-			types::VariableTypeInfoMap typeInfos;
+			types::ResolvingResult resolvingResult;
 			{
 				FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
 				{
@@ -77,7 +77,7 @@ Workflow_PrecompileInstanceContext
 					{
 						errors.Add(L"Precompile: Cannot find type \"" + parameter->className.ToString() + L"\".");
 					}
-					else if (typeInfos.Keys().Contains(parameter->name))
+					else if (resolvingResult.typeInfos.Keys().Contains(parameter->name))
 					{
 						errors.Add(L"Precompile: Parameter \"" + parameter->name.ToString() + L"\" conflict with an existing named object.");
 					}
@@ -86,19 +86,19 @@ Workflow_PrecompileInstanceContext
 						IGuiInstanceLoader::TypeInfo typeInfo;
 						typeInfo.typeDescriptor = type;
 						typeInfo.typeName = GlobalStringKey::Get(type->GetTypeName());
-						typeInfos.Add(parameter->name, typeInfo);
+						resolvingResult.typeInfos.Add(parameter->name, typeInfo);
 					}
 				}
 
-				rootTypeDescriptor = Workflow_CollectReferences(context, typeInfos, errors);
+				rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
 			}
 
 			if (errors.Count() == 0)
 			{
 				auto statements = MakePtr<WfBlockStatement>();
-				Workflow_GenerateCreating(context, typeInfos, rootTypeDescriptor, statements, errors);
-				Workflow_GenerateBindings(context, typeInfos, rootTypeDescriptor, statements, errors);
-				auto module = Workflow_CreateModuleWithInitFunction(context, typeInfos, rootTypeDescriptor, statements);
+				Workflow_GenerateCreating(context, resolvingResult, rootTypeDescriptor, statements, errors);
+				Workflow_GenerateBindings(context, resolvingResult, rootTypeDescriptor, statements, errors);
+				auto module = Workflow_CreateModuleWithInitFunction(context, resolvingResult.typeInfos, rootTypeDescriptor, statements);
 
 				Workflow_GetSharedManager()->Clear(true, true);
 				Workflow_GetSharedManager()->AddModule(module);
