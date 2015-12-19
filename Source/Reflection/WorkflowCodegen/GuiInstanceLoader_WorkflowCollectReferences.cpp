@@ -18,18 +18,19 @@ WorkflowReferenceNamesVisitor
 		public:
 			Ptr<GuiInstanceContext>				context;
 			types::ResolvingResult&				resolvingResult;
+			vint&								generatedNameCount;
 			types::ErrorList&					errors;
 
-			IGuiInstanceLoader::TypeInfo		bindingTargetTypeInfo;
-			vint								generatedNameCount;
-			ITypeDescriptor*					rootTypeDescriptor;
+			List<types::PropertyResolving>&		candidatePropertyTypeInfos;
+			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
+			vint								selectedPropertyTypeInfo = -1;
 
-			WorkflowReferenceNamesVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, types::ErrorList& _errors)
+			WorkflowReferenceNamesVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, types::ErrorList& _errors)
 				:context(_context)
 				, resolvingResult(_resolvingResult)
+				, candidatePropertyTypeInfos(_candidatePropertyTypeInfos)
+				, generatedNameCount(_generatedNameCount)
 				, errors(_errors)
-				, generatedNameCount(0)
-				, rootTypeDescriptor(0)
 			{
 			}
 
@@ -39,64 +40,83 @@ WorkflowReferenceNamesVisitor
 
 			void Visit(GuiAttSetterRepr* repr)override
 			{
-				auto reprTypeInfo = bindingTargetTypeInfo;
-				auto loader = GetInstanceLoaderManager()->GetLoader(reprTypeInfo.typeName);
-
-				if (repr->instanceName != GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
+				if (resolvedTypeInfo.typeDescriptor == nullptr)
 				{
-					if (resolvingResult.typeInfos.Keys().Contains(repr->instanceName))
+					return;
+				}
+
+				if (repr->instanceName == GlobalStringKey::Empty)
+				{
+					if (resolvedTypeInfo.typeDescriptor->GetValueSerializer() == nullptr)
 					{
-						errors.Add(L"Precompile: Parameter \"" + repr->instanceName.ToString() + L"\" conflict with an existing named object.");
-					}
-					else
-					{
-						resolvingResult.typeInfos.Add(repr->instanceName, reprTypeInfo);
+						auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
+						repr->instanceName = name;
+						resolvingResult.typeInfos.Add(name, resolvedTypeInfo);
 					}
 				}
-				
+				else if (resolvingResult.typeInfos.Keys().Contains(repr->instanceName))
+				{
+					errors.Add(L"Precompile: Referece name \"" + repr->instanceName.ToString() + L"\" conflict with an existing named object.");
+				}
+				else if (resolvedTypeInfo.typeDescriptor->GetValueSerializer())
+				{
+					errors.Add(L"Precompile: Reference name \"" + repr->instanceName.ToString() + L"\" cannot be added to a non-reference instance of type \"" + resolvedTypeInfo.typeName.ToString() + L"\".");
+				}
+				else
+				{
+					resolvingResult.typeInfos.Add(repr->instanceName, resolvedTypeInfo);
+				}
+			
+				auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
+
 				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 				{
+					List<types::PropertyResolving> possibleInfos;
 					IGuiInstanceLoader::TypeInfo propertyTypeInfo;
 
-					if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
+					if (setter->binding == GlobalStringKey::_Set)
+					{
+						IGuiInstanceLoader::PropertyInfo info(resolvedTypeInfo, repr->setters.Keys()[index]);
+						auto currentLoader = loader;
+
+						while (currentLoader)
+						{
+							if (auto propertyTypeInfo = currentLoader->GetPropertyType(info))
+							{
+								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
+								{
+									errors.Add(L"Precompile: Property \"" + info.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\" is not supported.");
+									break;
+								}
+								else
+								{
+									types::PropertyResolving resolving;
+									resolving.loader = currentLoader;
+									resolving.info = propertyTypeInfo;
+									possibleInfos.Add(resolving);
+								}
+
+								if (!propertyTypeInfo->tryParent)
+								{
+									break;
+								}
+							}
+							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
+						}
+					}
+					else if (setter->binding != GlobalStringKey::Empty)
 					{
 						auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
 						if (!binder)
 						{
 							errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
 						}
-						else if (repr->instanceName == GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
-						{
-							auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
-							repr->instanceName = name;
-							resolvingResult.typeInfos.Add(name, reprTypeInfo);
-						}
-					}
-
-					if (setter->binding == GlobalStringKey::_Set)
-					{
-						IGuiInstanceLoader::PropertyInfo info;
-						info.typeInfo = reprTypeInfo;
-						info.propertyName = repr->setters.Keys()[index];
-						auto currentLoader = loader;
-
-						while (currentLoader)
-						{
-							auto typeInfo = currentLoader->GetPropertyType(info);
-							if (typeInfo && typeInfo->support != GuiInstancePropertyInfo::NotSupport)
-							{
-								propertyTypeInfo.typeDescriptor = typeInfo->acceptableTypes[0];
-								propertyTypeInfo.typeName = GlobalStringKey::Get(typeInfo->acceptableTypes[0]->GetTypeName());
-								break;
-							}
-							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
-						}
 					}
 
 					FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 					{
-						bindingTargetTypeInfo = propertyTypeInfo;
-						value->Accept(this);
+						// check serializable values
+						// pass to ctors
 					}
 				}
 
@@ -109,13 +129,6 @@ WorkflowReferenceNamesVisitor
 						{
 							errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"" + handler->binding.ToString() + L"\" cannot be found.");
 						}
-					}
-
-					if (repr->instanceName == GlobalStringKey::Empty && reprTypeInfo.typeDescriptor)
-					{
-						auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
-						repr->instanceName = name;
-						resolvingResult.typeInfos.Add(name, reprTypeInfo);
 					}
 				}
 			}
@@ -131,19 +144,24 @@ WorkflowReferenceNamesVisitor
 					if (td)
 					{
 						found = true;
-						bindingTargetTypeInfo.typeName = fullName;
-						bindingTargetTypeInfo.typeDescriptor = td;
+						resolvedTypeInfo.typeName = fullName;
+						resolvedTypeInfo.typeDescriptor = td;
 					}
 				}
 
 				if (!found)
 				{
 					auto source = FindInstanceLoadingSource(context, repr);
-					bindingTargetTypeInfo.typeName = source.typeName;
-					bindingTargetTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+					resolvedTypeInfo.typeName = source.typeName;
+					resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 				}
 
-				if (!bindingTargetTypeInfo.typeDescriptor)
+				if (resolvedTypeInfo.typeDescriptor)
+				{
+					// select property type info
+					Visit((GuiAttSetterRepr*)repr);
+				}
+				else
 				{
 					errors.Add(
 						L"Precompile: Failed to find type \"" +
@@ -153,20 +171,36 @@ WorkflowReferenceNamesVisitor
 							) +
 						L"\".");
 				}
-
-				if (context->instance.Obj() == repr)
-				{
-					rootTypeDescriptor = bindingTargetTypeInfo.typeDescriptor;
-				}
-				Visit((GuiAttSetterRepr*)repr);
 			}
 		};
 
 		ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
-			WorkflowReferenceNamesVisitor visitor(context, resolvingResult, errors);
+			FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+			{
+				auto type = GetTypeDescriptor(parameter->className.ToString());
+				if (!type)
+				{
+					errors.Add(L"Precompile: Cannot find type \"" + parameter->className.ToString() + L"\".");
+				}
+				else if (resolvingResult.typeInfos.Keys().Contains(parameter->name))
+				{
+					errors.Add(L"Precompile: Parameter \"" + parameter->name.ToString() + L"\" conflict with an existing named object.");
+				}
+				else
+				{
+					IGuiInstanceLoader::TypeInfo typeInfo;
+					typeInfo.typeDescriptor = type;
+					typeInfo.typeName = GlobalStringKey::Get(type->GetTypeName());
+					resolvingResult.typeInfos.Add(parameter->name, typeInfo);
+				}
+			}
+			
+			List<types::PropertyResolving> infos;
+			vint generatedNameCount = 0;
+			WorkflowReferenceNamesVisitor visitor(context, resolvingResult, infos, generatedNameCount, errors);
 			context->instance->Accept(&visitor);
-			return visitor.rootTypeDescriptor;
+			return visitor.resolvedTypeInfo.typeDescriptor;
 		}
 	}
 }

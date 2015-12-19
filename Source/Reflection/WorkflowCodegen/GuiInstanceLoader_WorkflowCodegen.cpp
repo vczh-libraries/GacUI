@@ -69,29 +69,7 @@ Workflow_PrecompileInstanceContext
 			}
 
 			types::ResolvingResult resolvingResult;
-			{
-				FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
-				{
-					auto type = GetTypeDescriptor(parameter->className.ToString());
-					if (!type)
-					{
-						errors.Add(L"Precompile: Cannot find type \"" + parameter->className.ToString() + L"\".");
-					}
-					else if (resolvingResult.typeInfos.Keys().Contains(parameter->name))
-					{
-						errors.Add(L"Precompile: Parameter \"" + parameter->name.ToString() + L"\" conflict with an existing named object.");
-					}
-					else
-					{
-						IGuiInstanceLoader::TypeInfo typeInfo;
-						typeInfo.typeDescriptor = type;
-						typeInfo.typeName = GlobalStringKey::Get(type->GetTypeName());
-						resolvingResult.typeInfos.Add(parameter->name, typeInfo);
-					}
-				}
-
-				rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
-			}
+			rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
 
 			if (errors.Count() == 0)
 			{

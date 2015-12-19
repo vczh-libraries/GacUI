@@ -47,29 +47,10 @@ WorkflowGenerateBindingVisitor
 				{
 					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 					{
-						GlobalStringKey propertyName = repr->setters.Keys()[index];
-						Ptr<GuiInstancePropertyInfo> propertyInfo;
-
+						auto propertyName = repr->setters.Keys()[index];
+						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 						{
-							IGuiInstanceLoader::PropertyInfo info;
-							info.typeInfo = reprTypeInfo;
-							info.propertyName = propertyName;
-							auto currentLoader = GetInstanceLoaderManager()->GetLoader(info.typeInfo.typeName);
-
-							while (currentLoader && !propertyInfo)
-							{
-								propertyInfo = currentLoader->GetPropertyType(info);
-								if (propertyInfo && propertyInfo->support == GuiInstancePropertyInfo::NotSupport)
-								{
-									propertyInfo = 0;
-								}
-								currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
-							}
-						}
-
-						if (propertyInfo)
-						{
-							if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
+							if (auto propertyInfo = resolvingResult.propertyResolvings[setter->values[0].Obj()]->info)
 							{
 								WString expressionCode;
 								if (auto obj = setter->values[0].Cast<GuiTextRepr>())
@@ -105,12 +86,12 @@ WorkflowGenerateBindingVisitor
 									errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
 								}
 							}
-							else
+						}
+						else
+						{
+							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
-								FOREACH(Ptr<GuiValueRepr>, value, setter->values)
-								{
-									value->Accept(this);
-								}
+								value->Accept(this);
 							}
 						}
 					}
