@@ -19,12 +19,13 @@ namespace vl
 		{
 			struct PropertyResolving
 			{
-				IGuiInstanceLoader*								loader;
+				IGuiInstanceLoader*								loader = nullptr;
+				IGuiInstanceLoader::PropertyInfo				propertyInfo;
 				Ptr<GuiInstancePropertyInfo>					info;
 			};
 
 			typedef collections::Dictionary<GlobalStringKey, IGuiInstanceLoader::TypeInfo>		VariableTypeInfoMap;
-			typedef collections::Dictionary<GuiValueRepr*, Ptr<PropertyResolving>>				PropertyResolvingMap;
+			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
 
 			struct ResolvingResult

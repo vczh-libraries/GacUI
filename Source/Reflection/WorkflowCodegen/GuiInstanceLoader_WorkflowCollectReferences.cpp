@@ -36,13 +36,57 @@ WorkflowReferenceNamesVisitor
 
 			void Visit(GuiTextRepr* repr)override
 			{
+				if (selectedPropertyTypeInfo == -1)
+				{
+					selectedPropertyTypeInfo = 0;
+				}
+				
+				auto candidate = candidatePropertyTypeInfos[selectedPropertyTypeInfo];
+				auto propertyInfo = candidate.propertyInfo;
+				auto td = candidate.info->acceptableTypes[0];
+
+				if (auto serializer = td->GetValueSerializer())
+				{
+					if (serializer->Validate(repr->text))
+					{
+						resolvingResult.propertyResolvings.Add(repr, candidate);
+					}
+					else
+					{
+						auto error
+							= L"Precompile: Property \""
+							+ propertyInfo.propertyName.ToString()
+							+ L"\" of type \""
+							+ propertyInfo.typeInfo.typeName.ToString()
+							+ L"\" does not accept a value of text \""
+							+ repr->text
+							+ L"\" because it is not in a correct format of the serializable type \""
+							+ td->GetTypeName()
+							+ L"\".";
+						errors.Add(error);
+					}
+				}
+				else
+				{
+					auto error
+						= L"Precompile: Property \""
+						+ propertyInfo.propertyName.ToString()
+						+ L"\" of type \""
+						+ propertyInfo.typeInfo.typeName.ToString()
+						+ L"\" does not accept a value of text \""
+						+ repr->text
+						+ L"\" because its type \""
+						+ td->GetTypeName()
+						+ L"\" is not serializable.";
+					errors.Add(error);
+				}
 			}
 
 			void Visit(GuiAttSetterRepr* repr)override
 			{
-				if (resolvedTypeInfo.typeDescriptor == nullptr)
+				if (candidatePropertyTypeInfos.Count() > 0)
 				{
-					return;
+					resolvingResult.propertyResolvings.Add(repr, candidatePropertyTypeInfos[selectedPropertyTypeInfo]);
 				}
 
 				if (repr->instanceName == GlobalStringKey::Empty)
@@ -72,28 +116,33 @@ WorkflowReferenceNamesVisitor
 				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 				{
 					List<types::PropertyResolving> possibleInfos;
-					IGuiInstanceLoader::TypeInfo propertyTypeInfo;
+					IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, repr->setters.Keys()[index]);
+					auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
 
-					if (setter->binding == GlobalStringKey::_Set)
 					{
-						IGuiInstanceLoader::PropertyInfo info(resolvedTypeInfo, repr->setters.Keys()[index]);
 						auto currentLoader = loader;
 
 						while (currentLoader)
 						{
-							if (auto propertyTypeInfo = currentLoader->GetPropertyType(info))
+							if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
 							{
 								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
 								{
-									errors.Add(L"Precompile: Property \"" + info.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\" is not supported.");
+									errors.Add(errorPrefix + L" is not supported.");
 									break;
 								}
 								else
 								{
 									types::PropertyResolving resolving;
 									resolving.loader = currentLoader;
+									resolving.propertyInfo = propertyInfo;
 									resolving.info = propertyTypeInfo;
 									possibleInfos.Add(resolving);
+
+									if (setter->binding == GlobalStringKey::_Set)
+									{
+										break;
+									}
 								}
 
 								if (!propertyTypeInfo->tryParent)
@@ -104,19 +153,54 @@ WorkflowReferenceNamesVisitor
 							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
 						}
 					}
-					else if (setter->binding != GlobalStringKey::Empty)
-					{
-						auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
-						if (!binder)
-						{
-							errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
-						}
-					}
 
-					FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+					if (possibleInfos.Count() == 0)
 					{
-						// check serializable values
-						// pass to ctors
+						errors.Add(errorPrefix + L" does not exist.");
+					}
+					else
+					{
+						if (setter->binding == GlobalStringKey::Empty)
+						{
+							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							{
+								WorkflowReferenceNamesVisitor visitor(context, resolvingResult, possibleInfos, generatedNameCount, errors);
+								value->Accept(&visitor);
+							}
+						}
+						else  if (setter->binding == GlobalStringKey::_Set)
+						{
+							if (possibleInfos[0].info->support == GuiInstancePropertyInfo::SupportSet)
+							{
+								WorkflowReferenceNamesVisitor visitor(context, resolvingResult, possibleInfos, generatedNameCount, errors);
+								auto td = possibleInfos[0].info->acceptableTypes[0];
+								visitor.selectedPropertyTypeInfo = 0;
+								visitor.resolvedTypeInfo.typeDescriptor = td;
+								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+								setter->values[0]->Accept(&visitor);
+							}
+							else
+							{
+								errors.Add(errorPrefix + L" does not support the \"-set\" binding.");
+							}
+						}
+						else if (setter->binding != GlobalStringKey::Empty)
+						{
+							auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
+							if (!binder)
+							{
+								errors.Add(errorPrefix + L" cannot be assigned using an unexisting binding \"" + setter->binding.ToString() + L"\".");
+							}
+
+							if (setter->values.Count() == 1 && setter->values[0].Cast<GuiTextRepr>())
+							{
+								resolvingResult.propertyResolvings.Add(setter->values[0].Obj(), possibleInfos[0]);
+							}
+							else
+							{
+								errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires the text value of property \"" + propertyInfo.propertyName.ToString() + L"\".");
+							}
+						}
 					}
 				}
 
@@ -158,8 +242,71 @@ WorkflowReferenceNamesVisitor
 
 				if (resolvedTypeInfo.typeDescriptor)
 				{
-					// select property type info
-					Visit((GuiAttSetterRepr*)repr);
+					for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
+					{
+						const auto& tds = candidatePropertyTypeInfos[i].info->acceptableTypes;
+						for (vint j = 0; j < tds.Count(); j++)
+						{
+							if (resolvedTypeInfo.typeDescriptor->CanConvertTo(tds[j]))
+							{
+								selectedPropertyTypeInfo = i;
+								goto FINISH_MATCHING;
+							}
+						}
+					}
+				FINISH_MATCHING:
+
+					if (selectedPropertyTypeInfo == -1 && candidatePropertyTypeInfos.Count() > 0)
+					{
+						auto propertyInfo = candidatePropertyTypeInfos[0].propertyInfo;
+						auto error 
+							= L"Precompile: Property \""
+							+ propertyInfo.propertyName.ToString()
+							+ L"\" of type \""
+							+ propertyInfo.typeInfo.typeName.ToString()
+							+ L"\" does not accept a value of type \""
+							+ resolvedTypeInfo.typeName.ToKey()
+							+ L"\" because it only accepts value of the following types: ";
+						
+						for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
+						{
+							const auto& tds = candidatePropertyTypeInfos[i].info->acceptableTypes;
+							for (vint j = 0; j < tds.Count(); j++)
+							{
+								if (i != 0 || j != 0)
+								{
+									error += L", ";
+								}
+								error += L"\"" + tds[j]->GetTypeName() + L"\"";
+							}
+						}
+
+						error += L".";
+						errors.Add(error);
+					}
+					else
+					{
+						if (repr->setters.Count() == 1 && repr->setters.Keys()[0]==GlobalStringKey::Empty)
+						{
+							auto setter = repr->setters.Values()[0];
+							if (setter->values.Count() == 1)
+							{
+								if (auto text = setter->values[0].Cast<GuiTextRepr>())
+								{
+									if (candidatePropertyTypeInfos.Count() == 0)
+									{
+										errors.Add(L"Precompile: Type \"" + resolvedTypeInfo.typeName.ToString() + L"\" cannot be used to create an instance.");
+									}
+									else
+									{
+										Visit(text.Obj());
+									}
+									return;
+								}
+							}
+						}
+						Visit((GuiAttSetterRepr*)repr);
+					}
 				}
 				else
 				{

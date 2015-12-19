@@ -50,41 +50,31 @@ WorkflowGenerateBindingVisitor
 						auto propertyName = repr->setters.Keys()[index];
 						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 						{
-							if (auto propertyInfo = resolvingResult.propertyResolvings[setter->values[0].Obj()]->info)
-							{
-								WString expressionCode;
-								if (auto obj = setter->values[0].Cast<GuiTextRepr>())
-								{
-									expressionCode = obj->text;
-								}
-								else
-								{
-									errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires the text value of property \"" + propertyName.ToString() + L"\".");
-								}
+							auto propertyInfo = resolvingResult.propertyResolvings[setter->values[0].Obj()].info;
+							WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
 
-								auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
-								if (binder)
+							auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
+							if (binder)
+							{
+								auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
+								if (instancePropertyInfo)
 								{
-									auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
-									if (instancePropertyInfo)
+									if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
 									{
-										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
+										if (Workflow_ValidateStatement(context, resolvingResult.typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
 										{
-											if (Workflow_ValidateStatement(context, resolvingResult.typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
-											{
-												statements->statements.Add(statement);	
-											}
+											statements->statements.Add(statement);	
 										}
 									}
-									else
-									{
-										errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
-									}
 								}
 								else
 								{
-									errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
+									errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 								}
+							}
+							else
+							{
+								errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
 							}
 						}
 						else
