@@ -7,17 +7,16 @@ New website:
 
 This website is under construction, but it is somehow useable now. The old one (http://gaclib.net) is deprecated. After the new website is finished, I will update all domains to the new website.
 
-* The [Getting Started](http://www.gaclib.net/GettingStart.html) section tells you how to begin using this marvelous GUI library.
-* The [DEMOS](http://www.gaclib.net/Demos.html) section show you all demos using this GUI library.
-* The [DOCUMENT](http://www.gaclib.net/Document/reference_gacui.html) section show you all simple documentation organized by C++ classes and functions.
+* The [Tutorial](http://www.gaclib.net/#~/Tutorial) section tells you how to begin using this marvelous GUI library.
+* The [DEMOES](http://www.gaclib.net/#~/Demo) section show you all demos using this GUI library.
+* The [DOCUMENT](http://www.gaclib.net/Document.html#~/) section show you all simple documentation organized by C++ classes and functions.
 
 ### Notice
-The release of the GacUI project is put in [vczh-libraries/Release](https://github.com/vczh-libraries/Release).
+The release of the GacUI project is put in [vczh-libraries/Release](https://github.com/vczh-libraries/Release). **This GacUI repo is for development only**. Don't download the code from here to use, because in most of the time it does not run.
 
-Using this library requires you to use C++ source files (you should put them together) in
+Using this library requires you to use C++ source files directly in
 
-* The [Import folder](https://github.com/vczh-libraries/GacUI/tree/master/Import) for Vlpp and Workflow.
-* The [Release folder](https://github.com/vczh-libraries/GacUI/tree/master/Release) for this library.
+* The [Release folder](https://github.com/vczh-libraries/GacUI/tree/master/Release) for Vlpp, Workflow or GacUI.
 * The [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) if you prefer to use XML to build your UI.
 
 All other files are for librari development only.
