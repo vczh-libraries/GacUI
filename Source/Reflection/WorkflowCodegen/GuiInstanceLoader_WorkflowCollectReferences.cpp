@@ -237,7 +237,53 @@ WorkflowReferenceNamesVisitor
 						})
 						.Distinct()
 					);
-				// check IGuiInstanceLoader::GetPairedProperties
+
+				while (properties.Count() > 0)
+				{
+					auto prop = properties.Keys()[0];
+					auto loader = properties.GetByIndex(0)[0];
+					IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
+
+					List<GlobalStringKey> pairProps;
+					loader->GetPairedProperties(propertyInfo, pairProps);
+					if (pairProps.Count() > 0)
+					{
+						List<GlobalStringKey> missingProps;
+						FOREACH(GlobalStringKey, key, pairProps)
+						{
+							if (!properties.Contains(key, loader))
+							{
+								missingProps.Add(key);
+							}
+						}
+
+						if (missingProps.Count() > 0)
+						{
+							WString error
+								= L"Precompile: When you assign to property \""
+								+ prop.ToString()
+								+ L"\" of type \""
+								+ resolvedTypeInfo.typeName.ToString()
+								+ L"\", the following missing properties are required: ";
+							FOREACH_INDEXER(GlobalStringKey, key, index, missingProps)
+							{
+								if (index > 0)error += L", ";
+								error += L"\"" + key.ToString() + L"\"";
+							}
+							error += L".";
+							errors.Add(error);
+						}
+						
+						FOREACH(GlobalStringKey, key, pairProps)
+						{
+							properties.Remove(key, loader);
+						}
+					}
+					else
+					{
+						properties.Remove(prop, loader);
+					}
+				}
 
 				FOREACH(Ptr<GuiAttSetterRepr::EventValue>, handler, repr->eventHandlers.Values())
 				{
