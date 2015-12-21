@@ -327,18 +327,6 @@ GuiListViewInstanceLoader
 					}
 				}
 
-				bool CanEvalToConstructorParameter(const PropertyInfo& propertyInfo)
-				{
-					if (propertyInfo.typeInfo.typeName == GetTypeName())
-					{
-						if (propertyInfo.propertyName == _ItemSource)
-						{
-							return true;
-						}
-					}
-					return BASE_TYPE::CanEvalToConstructorParameter(propertyInfo);
-				}
-
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _ItemSource)
@@ -348,6 +336,7 @@ GuiListViewInstanceLoader
 							auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<IValueEnumerable>());
 							info->scope = GuiInstancePropertyInfo::Constructor;
 							info->required = true;
+							info->bindable = true;
 							return info;
 						}
 					}
@@ -525,18 +514,6 @@ GuiTreeViewInstanceLoader
 					}
 				}
 
-				bool CanEvalToConstructorParameter(const PropertyInfo& propertyInfo)
-				{
-					if (propertyInfo.typeInfo.typeName == GetTypeName())
-					{
-						if (propertyInfo.propertyName == _ItemSource)
-						{
-							return true;
-						}
-					}
-					return BASE_TYPE::CanEvalToConstructorParameter(propertyInfo);
-				}
-
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _ItemSource)
@@ -544,6 +521,7 @@ GuiTreeViewInstanceLoader
 						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
+						info->bindable = true;
 						return info;
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
@@ -825,22 +803,6 @@ GuiBindableDataGridInstanceLoader
 					}
 				}
 
-				bool CanEvalToConstructorParameter(const PropertyInfo& propertyInfo)
-				{
-					if (propertyInfo.typeInfo.typeName == GetTypeName())
-					{
-						if (propertyInfo.propertyName == _ItemSource)
-						{
-							return true;
-						}
-						else if (propertyInfo.propertyName == _ViewModelContext)
-						{
-							return true;
-						}
-					}
-					return BASE_TYPE::CanEvalToConstructorParameter(propertyInfo);
-				}
-
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _Columns)
@@ -852,12 +814,14 @@ GuiBindableDataGridInstanceLoader
 						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<IValueEnumerable>());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
+						info->bindable = true;
 						return info;
 					}
 					else if (propertyInfo.propertyName == _ViewModelContext)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
 						info->scope = GuiInstancePropertyInfo::Constructor;
+						info->bindable = true;
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);

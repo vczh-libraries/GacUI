@@ -76,7 +76,7 @@ WorkflowGenerateBindingVisitor
 								}
 								else
 								{
-									errors.Add(L"The appropriate IGuiInstanceBinder of binding \"" + setter->binding.ToString() + L"\" cannot be found.");
+									errors.Add(L"The appropriate IGuiInstanceBinder of binding \"-" + setter->binding.ToString() + L"\" cannot be found.");
 								}
 							}
 						}
@@ -119,7 +119,7 @@ WorkflowGenerateBindingVisitor
 								}
 								else
 								{
-									errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"" + handler->binding.ToString() + L"\" cannot be found.");
+									errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"-" + handler->binding.ToString() + L"\" cannot be found.");
 								}
 							}
 

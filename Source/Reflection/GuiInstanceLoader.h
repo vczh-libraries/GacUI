@@ -44,14 +44,12 @@ Instance Loader
 				Property,		// property of the class
 			};
 
-			Support									support;
-			bool									tryParent;
-			bool									required;
-			PropertyScope							scope;
+			Support									support = NotSupport;
+			bool									tryParent = false;
+			bool									required = false;			// only apply to constructor
+			bool									bindable = false;			// only apply to constructor
+			PropertyScope							scope = Property;
 			TypeDescriptorList						acceptableTypes;
-
-			GuiInstancePropertyInfo();
-			~GuiInstancePropertyInfo();
 
 			static Ptr<GuiInstancePropertyInfo>		Unsupported();
 			static Ptr<GuiInstancePropertyInfo>		Assign(description::ITypeDescriptor* typeDescriptor = 0);
@@ -117,7 +115,6 @@ Instance Loader
 
 			virtual void							GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual void							GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual bool							CanEvalToConstructorParameter(const PropertyInfo& propertyInfo);
 			virtual void							GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual Ptr<GuiInstancePropertyInfo>	GetPropertyType(const PropertyInfo& propertyInfo);
 

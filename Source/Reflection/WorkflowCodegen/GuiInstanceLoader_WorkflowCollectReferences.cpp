@@ -187,9 +187,23 @@ WorkflowReferenceNamesVisitor
 						else if (setter->binding != GlobalStringKey::Empty)
 						{
 							auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
-							if (!binder)
+							if (binder)
 							{
-								errors.Add(errorPrefix + L" cannot be assigned using an unexisting binding \"" + setter->binding.ToString() + L"\".");
+								if (possibleInfos[0].info->scope == GuiInstancePropertyInfo::Constructor)
+								{
+									if (!possibleInfos[0].info->bindable)
+									{
+										errors.Add(errorPrefix + L" cannot be assigned using binding \"-" + setter->binding.ToString() + L"\". Because it is a non-bindable constructor argument.");
+									}
+									else if (!binder->ApplicableToConstructorArgument())
+									{
+										errors.Add(errorPrefix + L" cannot be assigned using binding \"-" + setter->binding.ToString() + L"\". Because it is a constructor argument, and this binding does not apply to any constructor argument.");
+									}
+								}
+							}
+							else
+							{
+								errors.Add(errorPrefix + L" cannot be assigned using an unexisting binding \"-" + setter->binding.ToString() + L"\".");
 							}
 
 							if (setter->values.Count() == 1 && setter->values[0].Cast<GuiTextRepr>())
@@ -204,6 +218,27 @@ WorkflowReferenceNamesVisitor
 					}
 				}
 
+				Group<GlobalStringKey, IGuiInstanceLoader*> properties;
+				CopyFrom(
+					properties,
+					From(repr->setters)
+						.SelectMany([=](Pair<GlobalStringKey, Ptr<GuiAttSetterRepr::SetterValue>> item)
+						{
+							return From(item.value->values)
+								.Where([=](Ptr<GuiValueRepr> value)
+								{
+									return resolvingResult.propertyResolvings.Keys().Contains(value.Obj());
+								})
+								.Select([=](Ptr<GuiValueRepr> value)
+								{
+									auto loader = resolvingResult.propertyResolvings[value.Obj()].loader;
+									return Pair<GlobalStringKey, IGuiInstanceLoader*>(item.key, loader);
+								});
+						})
+						.Distinct()
+					);
+				// check IGuiInstanceLoader::GetPairedProperties
+
 				FOREACH(Ptr<GuiAttSetterRepr::EventValue>, handler, repr->eventHandlers.Values())
 				{
 					if (handler->binding != GlobalStringKey::Empty)
@@ -211,7 +246,7 @@ WorkflowReferenceNamesVisitor
 						auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
 						if (!binder)
 						{
-							errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"" + handler->binding.ToString() + L"\" cannot be found.");
+							errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"-" + handler->binding.ToString() + L"\" cannot be found.");
 						}
 					}
 				}

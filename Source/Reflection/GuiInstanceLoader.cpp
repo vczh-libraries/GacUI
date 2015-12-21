@@ -24,18 +24,6 @@ namespace vl
 GuiInstancePropertyInfo
 ***********************************************************************/
 
-		GuiInstancePropertyInfo::GuiInstancePropertyInfo()
-			:support(NotSupport)
-			, tryParent(false)
-			, required(false)
-			, scope(Property)
-		{
-		}
-
-		GuiInstancePropertyInfo::~GuiInstancePropertyInfo()
-		{
-		}
-
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Unsupported()
 		{
 			return new GuiInstancePropertyInfo;
@@ -96,11 +84,6 @@ IGuiInstanceLoader
 
 		void IGuiInstanceLoader::GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
 		{
-		}
-
-		bool IGuiInstanceLoader::CanEvalToConstructorParameter(const PropertyInfo& propertyInfo)
-		{
-			return false;
 		}
 
 		void IGuiInstanceLoader::GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)
