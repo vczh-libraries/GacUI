@@ -238,6 +238,17 @@ WorkflowReferenceNamesVisitor
 						.Distinct()
 					);
 
+				List<GlobalStringKey> ctorProps;
+				loader->GetConstructorParameters(resolvedTypeInfo, ctorProps);
+				FOREACH(GlobalStringKey, prop, ctorProps)
+				{
+					auto info = loader->GetPropertyType(IGuiInstanceLoader::PropertyInfo(resolvedTypeInfo, prop));
+					if (info->required && !properties.Contains(prop, loader))
+					{
+						errors.Add(L"Precompile: Missing constructor argument \"" + prop.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\".");
+					}
+				}
+
 				while (properties.Count() > 0)
 				{
 					auto prop = properties.Keys()[0];
