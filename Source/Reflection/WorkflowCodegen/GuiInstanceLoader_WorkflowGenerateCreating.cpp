@@ -6,8 +6,10 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace workflow;
 		using namespace collections;
+		using namespace workflow;
+		using namespace workflow::analyzer;
+		using namespace reflection::description;
 
 /***********************************************************************
 WorkflowGenerateCreatingVisitor
@@ -29,6 +31,64 @@ WorkflowGenerateCreatingVisitor
 				, errors(_errors)
 				, statements(_statements)
 			{
+			}
+
+			Ptr<WfExpression> GetValueExpression(GuiValueRepr* repr)
+			{
+				ITypeDescriptor* td = nullptr;
+				WString textValue;
+				GuiConstructorRepr* ctor = nullptr;
+
+				if (auto text = dynamic_cast<GuiTextRepr*>(repr))
+				{
+					td = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+					textValue = text->text;
+				}
+				else if (ctor = dynamic_cast<GuiConstructorRepr*>(repr))
+				{
+					td = resolvingResult.typeInfos[ctor->instanceName].typeDescriptor;
+					if (td->GetValueSerializer() != nullptr)
+					{
+						textValue = ctor->setters.Values()[0]->values[0].Cast<GuiTextRepr>()->text;
+					}
+					else
+					{
+						td = nullptr;
+					}
+				}
+
+				if (td)
+				{
+					if (td == description::GetTypeDescriptor<WString>())
+					{
+						auto str = MakePtr<WfStringExpression>();
+						str->value.value = textValue;
+						return str;
+					}
+					else
+					{
+						auto str = MakePtr<WfStringExpression>();
+						str->value.value = textValue;
+
+						auto type = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+						type->SetTypeDescriptor(td);
+
+						auto cast = MakePtr<WfTypeCastingExpression>();
+						cast->type = GetTypeFromTypeInfo(type.Obj());
+						cast->strategy = WfTypeCastingStrategy::Strong;
+						cast->expression = str;
+
+						return cast;
+					}
+				}
+				else
+				{
+					repr->Accept(this);
+
+					auto ref = MakePtr<WfReferenceExpression>();
+					ref->name.value = ctor->instanceName.ToString();
+					return ref;
+				}
 			}
 
 			void Visit(GuiTextRepr* repr)override
