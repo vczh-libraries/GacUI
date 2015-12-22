@@ -238,14 +238,17 @@ WorkflowReferenceNamesVisitor
 						.Distinct()
 					);
 
-				List<GlobalStringKey> ctorProps;
-				loader->GetConstructorParameters(resolvedTypeInfo, ctorProps);
-				FOREACH(GlobalStringKey, prop, ctorProps)
+				if (context->instance.Obj() != repr)
 				{
-					auto info = loader->GetPropertyType(IGuiInstanceLoader::PropertyInfo(resolvedTypeInfo, prop));
-					if (info->required && !properties.Contains(prop, loader))
+					List<GlobalStringKey> ctorProps;
+					loader->GetConstructorParameters(resolvedTypeInfo, ctorProps);
+					FOREACH(GlobalStringKey, prop, ctorProps)
 					{
-						errors.Add(L"Precompile: Missing constructor argument \"" + prop.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\".");
+						auto info = loader->GetPropertyType(IGuiInstanceLoader::PropertyInfo(resolvedTypeInfo, prop));
+						if (info->required && !properties.Contains(prop, loader))
+						{
+							errors.Add(L"Precompile: Missing constructor argument \"" + prop.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\".");
+						}
 					}
 				}
 
@@ -395,6 +398,23 @@ WorkflowReferenceNamesVisitor
 									}
 									return;
 								}
+							}
+						}
+
+						if (context->instance.Obj() != repr)
+						{
+							auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
+							while (loader)
+							{
+								if (loader->CanCreate(resolvedTypeInfo))
+								{
+									break;
+								}
+								loader = GetInstanceLoaderManager()->GetParentLoader(loader);
+							}
+							if (!loader)
+							{
+								errors.Add(L"Precompile: Type \"" + resolvedTypeInfo.typeName.ToString() + L"\" cannot be used to create an instance.");
 							}
 						}
 						Visit((GuiAttSetterRepr*)repr);
