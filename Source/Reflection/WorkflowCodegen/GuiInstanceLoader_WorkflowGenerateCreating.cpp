@@ -101,20 +101,108 @@ WorkflowGenerateCreatingVisitor
 
 			void Visit(GuiAttSetterRepr* repr)override
 			{
-				IGuiInstanceLoader::TypeInfo reprTypeInfo;
-				if (repr->instanceName != GlobalStringKey::Empty)
-				{
-					reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
-				}
+				auto reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				
 				if (reprTypeInfo.typeDescriptor && reprTypeInfo.typeDescriptor->GetValueSerializer() == nullptr)
 				{
+					Group<GlobalStringKey, IGuiInstanceLoader*> usedProps;
 					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 					{
-						//FOREACH(Ptr<GuiValueRepr>, value, setter->values)
-						//{
-						//	value->Accept(this);
-						//}
+						auto prop = repr->setters.Keys()[index];
+						IGuiInstanceLoader::PropertyInfo propInfo(reprTypeInfo, prop);
+						if (setter->binding == GlobalStringKey::_Set)
+						{
+							auto info = resolvingResult.propertyResolvings[setter->values[0].Obj()];
+							vint errorCount = errors.Count();
+							if (auto expr = info.loader->GetParameter(propInfo, repr->instanceName, errors))
+							{
+								auto refInstance = MakePtr<WfReferenceExpression>();
+								refInstance->name.value = repr->instanceName.ToString();
+
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refInstance;
+								assign->second = expr;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assign;
+
+								statements->statements.Add(stat);
+							}
+							else if (errorCount == errors.Count())
+							{
+								errors.Add(L"Precompile: Something is wrong when retriving the property \"" + prop.ToString() + L"\" from an instance of type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+							}
+						}
+						else if (setter->binding == GlobalStringKey::Empty)
+						{
+							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							{
+								auto info = resolvingResult.propertyResolvings[value.Obj()];
+								if (info.info->scope == GuiInstancePropertyInfo::Property)
+								{
+									if (info.info->support == GuiInstancePropertyInfo::SupportCollection)
+									{
+										if (!usedProps.Contains(prop, info.loader))
+										{
+											usedProps.Add(prop, info.loader);
+										}
+
+										vint errorCount = errors.Count();
+										IGuiInstanceLoader::ArgumentMap arguments;
+										arguments.Add(prop, GetArgumentInfo(value.Obj()));
+										if (auto stat = info.loader->AssignParameters(reprTypeInfo, repr->instanceName, arguments, errors))
+										{
+											statements->statements.Add(stat);
+										}
+										else if (errorCount != errors.Count())
+										{
+											errors.Add(L"Precompile: Something is wrong when assigning to property " + prop.ToString() + L" to an instance of type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+										}
+									}
+									else if (!usedProps.Contains(prop, info.loader))
+									{
+										List<GlobalStringKey> pairedProps;
+										info.loader->GetPairedProperties(propInfo, pairedProps);
+										if (pairedProps.Count() == 0)
+										{
+											pairedProps.Add(prop);
+										}
+
+										IGuiInstanceLoader::ArgumentMap arguments;
+										FOREACH(GlobalStringKey, pairedProp, pairedProps)
+										{
+											usedProps.Add(pairedProp, info.loader);
+											auto pairedSetter = repr->setters[pairedProp];
+											FOREACH(Ptr<GuiValueRepr>, pairedValue, pairedSetter->values)
+											{
+												auto pairedInfo = resolvingResult.propertyResolvings[pairedValue.Obj()];
+												if (pairedInfo.loader == info.loader)
+												{
+													arguments.Add(pairedProp, GetArgumentInfo(pairedValue.Obj()));
+												}
+											}
+										}
+
+										vint errorCount = errors.Count();
+										if (auto stat = info.loader->AssignParameters(reprTypeInfo, repr->instanceName, arguments, errors))
+										{
+											statements->statements.Add(stat);
+										}
+										else if (errorCount != errors.Count())
+										{
+											WString propNames;
+											FOREACH_INDEXER(GlobalStringKey, pairedProp, propIndex, pairedProps)
+											{
+												if (propIndex > 0)propNames += L", ";
+												propNames += L"\"" + pairedProp.ToString() + L"\"";
+											}
+											errors.Add(L"Precompile: Something is wrong when assigning to properties " + propNames + L" to an instance of type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -180,9 +268,14 @@ WorkflowGenerateCreatingVisitor
 						}
 					}
 
+					vint errorCount = errors.Count();
 					if (auto ctorStats = loader->CreateInstance(typeInfo, repr->instanceName, arguments, errors))
 					{
 						statements->statements.Add(ctorStats);
+					}
+					else if (errorCount == errors.Count())
+					{
+						errors.Add(L"Precompile: Something is wrong when creating an isntance of type \"" + typeInfo.typeName.ToString() + L"\".");
 					}
 				}
 				Visit((GuiAttSetterRepr*)repr);
