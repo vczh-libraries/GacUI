@@ -4381,7 +4381,18 @@ GuiTreeNodeInstanceLoader
 
 								auto refProp = MakePtr<WfMemberExpression>();
 								refProp->parent = castExpr;
-								refProp->name.value = prop.ToString();
+								if (prop == _Text)
+								{
+									refProp->name.value = L"text";
+								}
+								else if (prop == _Image)
+								{
+									refProp->name.value = L"image";
+								}
+								else if (prop == _Tag)
+								{
+									refProp->name.value = L"tag";
+								}
 
 								auto assign = MakePtr<WfBinaryExpression>();
 								assign->op = WfBinaryOperator::Assign;

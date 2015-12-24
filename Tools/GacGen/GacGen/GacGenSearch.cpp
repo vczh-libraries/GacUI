@@ -136,11 +136,11 @@ protected:
 	Ptr<CodegenConfig>								config;
 	Dictionary<WString, Ptr<Instance>>&				instances;
 	Ptr<Instance>									instance;
-	Dictionary<WString, ITypeDescriptor*>&			eventHandlers;
+	Dictionary<WString, EventHandlerInfo>&			eventHandlers;
 	IGuiInstanceLoader::TypeInfo					typeInfo;
 
 public:
-	SearchAllEventHandlersVisitor(Ptr<CodegenConfig> _config, Dictionary<WString, Ptr<Instance>>& _instances, Ptr<Instance> _instance, Dictionary<WString, ITypeDescriptor*>& _eventHandlers)
+	SearchAllEventHandlersVisitor(Ptr<CodegenConfig> _config, Dictionary<WString, Ptr<Instance>>& _instances, Ptr<Instance> _instance, Dictionary<WString, EventHandlerInfo>& _eventHandlers)
 		:config(_config)
 		, instances(_instances)
 		, instance(_instance)
@@ -170,7 +170,7 @@ public:
 		return 0;
 	}
 
-	static ITypeDescriptor* GetEventArgumentType(const IGuiInstanceLoader::TypeInfo& typeInfo, GlobalStringKey name)
+	static Ptr<EventHandlerInfo> GetEventInfo(const IGuiInstanceLoader::TypeInfo& typeInfo, GlobalStringKey name)
 	{
 		auto eventInfo = typeInfo.typeDescriptor->GetEventByName(name.ToString(), true);
 
@@ -198,7 +198,10 @@ public:
 			return nullptr;
 		}
 
-		return argumentType->GetTypeDescriptor();
+		auto info = MakePtr<EventHandlerInfo>();
+		info->eventInfo = eventInfo;
+		info->argumentType = argumentType->GetTypeDescriptor();
+		return info;
 	}
 
 	void Visit(GuiTextRepr* repr)
@@ -214,9 +217,9 @@ public:
 			{
 				if (!eventHandlers.Keys().Contains(eventName.ToString()))
 				{
-					if (auto type = GetEventArgumentType(typeInfo, eventName))
+					if (auto info = GetEventInfo(typeInfo, eventName))
 					{
-						eventHandlers.Add(handler->value, type);
+						eventHandlers.Add(handler->value, *info.Obj());
 					}
 				}
 			}
@@ -253,7 +256,7 @@ public:
 	}
 };
 
-void SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Dictionary<WString, ITypeDescriptor*>& eventHandlers)
+void SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Dictionary<WString, EventHandlerInfo>& eventHandlers)
 {
 	SearchAllEventHandlersVisitor visitor(config, instances, instance, eventHandlers);
 	instance->context->instance->Accept(&visitor);

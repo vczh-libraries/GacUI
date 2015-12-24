@@ -140,8 +140,7 @@ private:
 	{
 	protected:
 		ResourceMockTypeLoader*					loader;
-		ITypeDescriptor*						baseType;
-		Ptr<GuiInstanceContext>					context;
+		Ptr<Instance>							instance;
 
 		void LoadInternal()override
 		{
@@ -153,7 +152,7 @@ private:
 				pointerType->SetElementType(descriptorType);
 
 				auto ctor = new ConstructorInfo(pointerType);
-				FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+				FOREACH(Ptr<GuiInstanceParameter>, parameter, instance->context->parameters)
 				{
 					if (auto td = description::GetTypeDescriptor(parameter->className.ToString()))
 					{
@@ -176,12 +175,22 @@ private:
 				AddConstructor(ctor);
 			}
 
-			AddBaseType(baseType);
+			AddBaseType(instance->baseType);
+
+			FOREACH_INDEXER(WString, handler, index, instance->eventHandlers.Keys())
+			{
+				auto info = instance->eventHandlers.Values()[index];
+				auto type = info.eventInfo->GetHandlerType()->GetElementType();
+				auto method = MakePtr<MethodInfo>(type->GetGenericArgument(0));
+				method->AddParameter(new ParameterInfoImpl(method.Obj(), L"sender", CopyTypeInfo(type->GetGenericArgument(1))));
+				method->AddParameter(new ParameterInfoImpl(method.Obj(), L"arguments", CopyTypeInfo(type->GetGenericArgument(2))));
+				AddMethod(handler, method);
+			}
 
 			auto voidType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
 			voidType->SetTypeDescriptor(description::GetTypeDescriptor<void>());
 
-			FOREACH(Ptr<GuiInstanceProperty>, prop, context->properties)
+			FOREACH(Ptr<GuiInstanceProperty>, prop, instance->context->properties)
 			{
 				if (!IsPropertyExists(prop->name.ToString(), false))
 				{
@@ -208,7 +217,7 @@ private:
 				}
 			}
 
-			FOREACH(Ptr<GuiInstanceState>, state, context->states)
+			FOREACH(Ptr<GuiInstanceState>, state, instance->context->states)
 			{
 				if (!IsPropertyExists(state->name.ToString(), false))
 				{
@@ -221,11 +230,10 @@ private:
 		}
 
 	public:
-		InstanceTypeDescriptor(ResourceMockTypeLoader* _loader, ITypeDescriptor* _baseType, Ptr<GuiInstanceContext> _context)
-			:TypeDescriptorImpl(_context->className, _context->className)
+		InstanceTypeDescriptor(ResourceMockTypeLoader* _loader, Ptr<Instance> _instance)
+			:TypeDescriptorImpl(_instance->context->className, _instance->context->className)
 			, loader(_loader)
-			, baseType(_baseType)
-			, context(_context)
+			, instance(_instance)
 		{
 		}
 	};
@@ -267,6 +275,7 @@ public:
 		, regexClassName(L"((<namespace>[^:]+)::)*(<type>[^:]+)")
 	{
 		Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
+		SearchAllInstances(regexClassName, resolver, resource, instances);
 		{
 			List<WString> schemaPaths;
 			List<Ptr<GuiInstanceSharedScript>> schemas;
@@ -324,7 +333,6 @@ public:
 				}
 			}
 		}
-		SearchAllInstances(regexClassName, resolver, resource, instances);
 
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
@@ -334,15 +342,11 @@ public:
 
 	void Load(ITypeManager* manager)
 	{
-		if (assembly && assembly->typeImpl)
-		{
-			assembly->typeImpl->Load(manager);
-		}
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
 			if (instance->baseType)
 			{
-				Ptr<ITypeDescriptor> typeDescriptor = new InstanceTypeDescriptor(this, instance->baseType, instance->context);
+				Ptr<ITypeDescriptor> typeDescriptor = new InstanceTypeDescriptor(this, instance);
 				manager->SetTypeDescriptor(typeDescriptor->GetTypeName(), typeDescriptor);
 			}
 		}
@@ -350,16 +354,11 @@ public:
 
 	void Unload(ITypeManager* manager)
 	{
-		if (assembly && assembly->typeImpl)
-		{
-			assembly->typeImpl->Unload(manager);
-		}
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
 			if (instance->baseType)
 			{
-				Ptr<ITypeDescriptor> typeDescriptor = new InstanceTypeDescriptor(this, instance->baseType, instance->context);
-				manager->SetTypeDescriptor(typeDescriptor->GetTypeName(), nullptr);
+				manager->SetTypeDescriptor(instance->context->className, nullptr);
 			}
 		}
 	}

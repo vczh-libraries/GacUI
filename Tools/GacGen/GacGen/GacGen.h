@@ -27,6 +27,12 @@ extern void										PrintInformationMessage(const WString& message);
 Object Model
 ***********************************************************************/
 
+struct EventHandlerInfo
+{
+	IEventInfo*									eventInfo;
+	ITypeDescriptor*							argumentType;
+};
+
 struct Instance
 {
 	Ptr<GuiInstanceContext>						context;
@@ -34,7 +40,7 @@ struct Instance
 	List<WString>								namespaces;
 	WString										typeName;
 	Dictionary<WString, GuiConstructorRepr*>	fields;
-	Dictionary<WString, ITypeDescriptor*>		eventHandlers;
+	Dictionary<WString, EventHandlerInfo>		eventHandlers;
 
 	WString										GetFullName();
 };
@@ -101,7 +107,7 @@ Search
 void											SearchAllFields(Ptr<GuiInstanceContext> context, Dictionary<WString, GuiConstructorRepr*>& fields);
 void											SearchAllSchemas(const Regex& regexClassName, Ptr<GuiResourceFolder> folder, List<WString>& schemaPaths, List<Ptr<GuiInstanceSharedScript>>& schemas);
 void											SearchAllInstances(const Regex& regexClassName, Ptr<GuiResourcePathResolver> resolver, Ptr<GuiResourceFolder> folder, Dictionary<WString, Ptr<Instance>>& instances);
-void											SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Dictionary<WString, ITypeDescriptor*>& eventHandlers);
+void											SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Dictionary<WString, EventHandlerInfo>& eventHandlers);
 
 /***********************************************************************
 Codegen::Utility

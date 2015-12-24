@@ -519,7 +519,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 			writer.WriteLine(L"");
 			FOREACH(WString, name, instance->eventHandlers.Keys())
 			{
-				writer.WriteLine(prefix + L"\tCLASS_MEMBER_GUIEVENT_HANDLER(" + name + L", " + GetCppTypeName(instance->eventHandlers[name]) + L")");
+				writer.WriteLine(prefix + L"\tCLASS_MEMBER_GUIEVENT_HANDLER(" + name + L", " + GetCppTypeName(instance->eventHandlers[name].argumentType) + L")");
 			}
 		}
 		
