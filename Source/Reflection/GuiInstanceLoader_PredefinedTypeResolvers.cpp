@@ -356,7 +356,7 @@ Compiled Workflow Type Resolver (Script)
 				return 2;
 			}
 
-			void Initialize(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context)override
+			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context)override
 			{
 				if (auto compiled = resource->GetContent().Cast<GuiInstanceCompiledWorkflow>())
 				{
@@ -365,7 +365,10 @@ Compiled Workflow Type Resolver (Script)
 					case 0:
 						if (compiled->type == GuiInstanceCompiledWorkflow::ViewModel)
 						{
-							compiled->Initialize(false);
+							if (context.usage == GuiResourceUsage::DevelopmentTool)
+							{
+								compiled->Initialize(false);
+							}
 						}
 						break;
 					case 1:

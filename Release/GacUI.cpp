@@ -43434,7 +43434,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::InitializeResourceFolder(GuiResourcePrecompileContext& context)
+		void GuiResourceFolder::InitializeResourceFolder(GuiResourceInitializeContext& context)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
@@ -43744,7 +43744,7 @@ GuiResource
 			}
 		}
 
-		void GuiResource::Initialize()
+		void GuiResource::Initialize(GuiResourceUsage usage)
 		{
 			auto precompiledFolder = GetFolder(L"Precompiled");
 			if (!precompiledFolder)
@@ -43753,10 +43753,11 @@ GuiResource
 				return;
 			}
 			
-			GuiResourcePrecompileContext context;
+			GuiResourceInitializeContext context;
 			context.rootResource = this;
 			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
 			context.targetFolder = precompiledFolder;
+			context.usage = usage;
 
 			vint maxPass = GetResourceResolverManager()->GetMaxInitializePassIndex();
 			for (vint i = 0; i <= maxPass; i++)

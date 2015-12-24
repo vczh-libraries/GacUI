@@ -181,6 +181,7 @@ Resource Structure
 		class DocumentModel;
 		class GuiResourcePathResolver;
 		struct GuiResourcePrecompileContext;
+		struct GuiResourceInitializeContext;
 		
 		/// <summary>Resource item.</summary>
 		class GuiResourceItem : public GuiResourceNodeBase, public Description<GuiResourceItem>
@@ -248,7 +249,7 @@ Resource Structure
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::Reader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
 			void									SaveResourceFolderToBinary(stream::internal::Writer& writer, collections::List<WString>& typeNames);
 			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, collections::List<WString>& errors);
-			void									InitializeResourceFolder(GuiResourcePrecompileContext& context);
+			void									InitializeResourceFolder(GuiResourceInitializeContext& context);
 		public:
 			/// <summary>Create a resource folder.</summary>
 			GuiResourceFolder();
@@ -311,6 +312,12 @@ Resource Structure
 /***********************************************************************
 Resource
 ***********************************************************************/
+
+		enum class GuiResourceUsage
+		{
+			DevelopmentTool,
+			Application,
+		};
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
 		class GuiResource : public GuiResourceFolder, public Description<GuiResource>
@@ -360,7 +367,7 @@ Resource
 			void									Precompile(collections::List<WString>& errors);
 
 			/// <summary>Initialize a precompiled resource.</summary>
-			void									Initialize();
+			void									Initialize(GuiResourceUsage usage);
 			
 			/// <summary>Get a contained document model using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>
 			/// <returns>The containd resource object.</returns>
@@ -507,6 +514,12 @@ Resource Type Resolver
 			virtual void										Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
 		};
 
+		/// <summary>Provide a context for resource initializing</summary>
+		struct GuiResourceInitializeContext : GuiResourcePrecompileContext
+		{
+			GuiResourceUsage									usage;
+		};
+
 		/// <summary>
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
@@ -524,7 +537,7 @@ Resource Type Resolver
 			/// <param name="resource">The resource to initializer.</param>
 			/// <param name="context">The context for initializing.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual void										Initialize(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context) = 0;
+			virtual void										Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource without a preload type.</summary>

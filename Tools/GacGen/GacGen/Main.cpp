@@ -403,7 +403,7 @@ void GuiMain()
 		return;
 	}
 
-	GetInstanceLoaderManager()->SetResource(L"GACGEN", resource);
+	GetInstanceLoaderManager()->SetResource(L"GACGEN", resource, GuiResourceUsage::DevelopmentTool);
 
 	if (config->cppOutput)
 	{

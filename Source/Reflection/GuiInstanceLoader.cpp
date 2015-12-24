@@ -872,12 +872,12 @@ GuiInstanceLoaderManager
 				return GlobalStringKey::Empty;
 			}
 
-			bool SetResource(const WString& name, Ptr<GuiResource> resource)override
+			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
 			{
 				vint index = resources.Keys().IndexOf(name);
 				if (index != -1) return false;
 				
-				resource->Initialize();
+				resource->Initialize(usage);
 				resources.Add(name, resource);
 				GetClassesInResource(resource, resource);
 				return true;

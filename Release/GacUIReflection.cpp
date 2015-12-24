@@ -977,12 +977,12 @@ GuiInstanceLoaderManager
 				return GlobalStringKey::Empty;
 			}
 
-			bool SetResource(const WString& name, Ptr<GuiResource> resource)override
+			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
 			{
 				vint index = resources.Keys().IndexOf(name);
 				if (index != -1) return false;
 				
-				resource->Initialize();
+				resource->Initialize(usage);
 				resources.Add(name, resource);
 				GetClassesInResource(resource, resource);
 				return true;
@@ -1588,7 +1588,7 @@ Compiled Workflow Type Resolver (Script)
 				return 2;
 			}
 
-			void Initialize(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context)override
+			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context)override
 			{
 				if (auto compiled = resource->GetContent().Cast<GuiInstanceCompiledWorkflow>())
 				{
@@ -1597,7 +1597,10 @@ Compiled Workflow Type Resolver (Script)
 					case 0:
 						if (compiled->type == GuiInstanceCompiledWorkflow::ViewModel)
 						{
-							compiled->Initialize(false);
+							if (context.usage == GuiResourceUsage::DevelopmentTool)
+							{
+								compiled->Initialize(false);
+							}
 						}
 						break;
 					case 1:

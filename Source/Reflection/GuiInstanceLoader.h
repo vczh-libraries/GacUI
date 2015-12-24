@@ -167,7 +167,7 @@ Instance Loader Manager
 			virtual description::ITypeDescriptor*		GetTypeDescriptorForType(GlobalStringKey typeName) = 0;
 			virtual void								GetVirtualTypes(collections::List<GlobalStringKey>& typeNames) = 0;
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
-			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource) = 0;
+			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::Application) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
 			virtual Ptr<GuiInstanceConstructorResult>	RunInstanceConstructor(const WString& classFullName, description::Value instance) = 0;
 		};
