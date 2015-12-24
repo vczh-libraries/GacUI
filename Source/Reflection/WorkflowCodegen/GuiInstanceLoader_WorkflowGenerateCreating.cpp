@@ -48,7 +48,14 @@ WorkflowGenerateCreatingVisitor
 				}
 				else if (ctor = dynamic_cast<GuiConstructorRepr*>(repr))
 				{
-					td = resolvingResult.typeInfos[ctor->instanceName].typeDescriptor;
+					if (ctor->instanceName == GlobalStringKey::Empty)
+					{
+						td = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+					}
+					else
+					{
+						td = resolvingResult.typeInfos[ctor->instanceName].typeDescriptor;
+					}
 					if (td->GetValueSerializer() != nullptr)
 					{
 						serializable = true;
@@ -112,12 +119,13 @@ WorkflowGenerateCreatingVisitor
 						IGuiInstanceLoader::PropertyInfo propInfo(reprTypeInfo, prop);
 						if (setter->binding == GlobalStringKey::_Set)
 						{
-							auto info = resolvingResult.propertyResolvings[setter->values[0].Obj()];
+							auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
+							auto info = resolvingResult.propertyResolvings[setTarget];
 							vint errorCount = errors.Count();
 							if (auto expr = info.loader->GetParameter(propInfo, repr->instanceName, errors))
 							{
 								auto refInstance = MakePtr<WfReferenceExpression>();
-								refInstance->name.value = repr->instanceName.ToString();
+								refInstance->name.value = setTarget->instanceName.ToString();
 
 								auto assign = MakePtr<WfBinaryExpression>();
 								assign->op = WfBinaryOperator::Assign;
@@ -133,6 +141,7 @@ WorkflowGenerateCreatingVisitor
 							{
 								errors.Add(L"Precompile: Something is wrong when retriving the property \"" + prop.ToString() + L"\" from an instance of type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 							}
+							setTarget->Accept(this);
 						}
 						else if (setter->binding == GlobalStringKey::Empty)
 						{
@@ -155,7 +164,7 @@ WorkflowGenerateCreatingVisitor
 										{
 											statements->statements.Add(stat);
 										}
-										else if (errorCount != errors.Count())
+										else if (errorCount == errors.Count())
 										{
 											errors.Add(L"Precompile: Something is wrong when assigning to property " + prop.ToString() + L" to an instance of type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 										}
@@ -189,7 +198,7 @@ WorkflowGenerateCreatingVisitor
 										{
 											statements->statements.Add(stat);
 										}
-										else if (errorCount != errors.Count())
+										else if (errorCount == errors.Count())
 										{
 											WString propNames;
 											FOREACH_INDEXER(GlobalStringKey, pairedProp, propIndex, pairedProps)
