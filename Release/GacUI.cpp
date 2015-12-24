@@ -430,8 +430,8 @@ GuiApplicationMain
 				GuiApplication app;
 				application=&app;
 				
-				GetPluginManager()->Load();
 				GetGlobalTypeManager()->Load();
+				GetPluginManager()->Load();
 				theme::SetCurrentTheme(theme.Obj());
 				GuiMain();
 				theme::SetCurrentTheme(0);
@@ -998,6 +998,11 @@ GuiInstanceRootObject
 					component->Attach(this);
 					return true;
 				}
+			}
+
+			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
+			{
+				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
 			}
 
 			bool GuiInstanceRootObject::RemoveComponent(GuiComponent* component)
@@ -5706,6 +5711,11 @@ GuiComboBoxBase::CommandExecutor
 /***********************************************************************
 GuiComboBoxBase
 ***********************************************************************/
+
+			bool GuiComboBoxBase::IsAltAvailable()
+			{
+				return false;
+			}
 
 			IGuiMenuService::Direction GuiComboBoxBase::GetSubMenuDirection()
 			{
@@ -31990,6 +32000,15 @@ GuiToolstripButton
 				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
 			}
 
+			GuiToolstripMenu* GuiToolstripButton::EnsureToolstripSubMenu()
+			{
+				if (!GetSubMenu())
+				{
+					CreateToolstripSubMenu();
+				}
+				return dynamic_cast<GuiToolstripMenu*>(GetSubMenu());
+			}
+
 			void GuiToolstripButton::CreateToolstripSubMenu(GuiToolstripMenu::IStyleController* subMenuStyleController)
 			{
 				if(!subMenu)
@@ -34085,9 +34104,12 @@ GuiStackComposition
 			{
 				GuiBoundsComposition::OnChildInserted(child);
 				GuiStackItemComposition* item = dynamic_cast<GuiStackItemComposition*>(child);
-				if (item && !stackItems.Contains(item))
+				if (item)
 				{
-					stackItems.Add(item);
+					if (!stackItems.Contains(item))
+					{
+						stackItems.Add(item);
+					}
 					UpdateStackItemBounds();
 				}
 			}
@@ -37214,9 +37236,10 @@ GuiGraphicsHost
 					vint count = actions.Count();
 					for (vint i = 0; i < count; i++)
 					{
+						WString key = actions.Keys()[i];
 						const auto& values = actions.GetByIndex(i);
 						vint numberLength = 0;
-						if (values.Count() == 1)
+						if (values.Count() == 1 && key.Length() > 0)
 						{
 							numberLength = 0;
 						}
@@ -42892,14 +42915,26 @@ GuiResourceNodeBase
 			return name;
 		}
 
-		const WString& GuiResourceNodeBase::GetPath()
+		WString GuiResourceNodeBase::GetResourcePath()
 		{
-			return path;
+			auto resourcePath = name;
+			auto current = parent;
+			while (current && current->GetParent())
+			{
+				resourcePath = parent->GetName() + L"/" + resourcePath;
+				current = current->GetParent();
+			}
+			return resourcePath;
 		}
 
-		void GuiResourceNodeBase::SetPath(const WString& value)
+		const WString& GuiResourceNodeBase::GetFileContentPath()
 		{
-			path = value;
+			return fileContentPath;
+		}
+
+		void GuiResourceNodeBase::SetFileContentPath(const WString& value)
+		{
+			fileContentPath = value;
 		}
 
 		GuiResourceFolder* GuiResourceNodeBase::GetParent()
@@ -42991,8 +43026,8 @@ GuiResourceFolder
 							{
 								if(contentAtt->value.value==L"Link")
 								{
-									folder->SetPath(XmlGetValue(element));
-									WString filePath = containingFolder + folder->GetPath();
+									folder->SetFileContentPath(XmlGetValue(element));
+									WString filePath = containingFolder + folder->GetFileContentPath();
 									WString text;
 									if(LoadTextFile(filePath, text))
 									{
@@ -43075,7 +43110,7 @@ GuiResourceFolder
 								}
 								else
 								{
-									item->SetPath(relativeFilePath);
+									item->SetFileContentPath(relativeFilePath);
 									resource = directLoad->ResolveResource(filePath, errors);
 								}
 
@@ -43135,7 +43170,7 @@ GuiResourceFolder
 					attName->name.value = L"name";
 					attName->value.value = item->GetName();
 
-					if (item->GetPath() == L"")
+					if (item->GetFileContentPath() == L"")
 					{
 						Ptr<XmlElement> xmlElement;
 
@@ -43176,7 +43211,7 @@ GuiResourceFolder
 						xmlElement->attributes.Add(attContent);
 
 						auto xmlText = MakePtr<XmlText>();
-						xmlText->content.value = item->GetPath();
+						xmlText->content.value = item->GetFileContentPath();
 						xmlElement->subNodes.Add(xmlText);
 					}
 				}
@@ -43194,7 +43229,7 @@ GuiResourceFolder
 				xmlParent->subNodes.Add(xmlFolder);
 				
 
-				if (folder->GetPath() == L"")
+				if (folder->GetFileContentPath() == L"")
 				{
 					folder->SaveResourceFolderToXml(xmlFolder);
 				}
@@ -43206,7 +43241,7 @@ GuiResourceFolder
 					xmlFolder->attributes.Add(attContent);
 
 					auto xmlText = MakePtr<XmlText>();
-					xmlText->content.value = folder->GetPath();
+					xmlText->content.value = folder->GetFileContentPath();
 					xmlFolder->subNodes.Add(xmlText);
 				}
 			}
@@ -43382,20 +43417,37 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::PrecompileResourceFolder(Ptr<GuiResourcePathResolver> resolver, GuiResource* rootResource, vint passIndex, collections::List<WString>& errors)
+		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, collections::List<WString>& errors)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto precompile = typeResolver->Precompile())
 				{
-					precompile->Precompile(item->GetContent(), rootResource, passIndex, resolver, errors);
+					precompile->Precompile(item, context, errors);
 				}
 			}
 
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
-				folder->PrecompileResourceFolder(resolver, rootResource, passIndex, errors);
+				folder->PrecompileResourceFolder(context, errors);
+			}
+		}
+
+		void GuiResourceFolder::InitializeResourceFolder(GuiResourcePrecompileContext& context)
+		{
+			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			{
+				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
+				if (auto initialize = typeResolver->Initialize())
+				{
+					initialize->Initialize(item, context);
+				}
+			}
+
+			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			{
+				folder->InitializeResourceFolder(context);
 			}
 		}
 
@@ -43524,6 +43576,37 @@ GuiResourceFolder
 			return 0;
 		}
 
+		bool GuiResourceFolder::CreateValueByPath(const WString& path, const WString& typeName, Ptr<DescriptableObject> value)
+		{
+			const wchar_t* buffer = path.Buffer();
+			const wchar_t* index = wcschr(buffer, L'\\');
+			if (!index) index = wcschr(buffer, '/');
+
+			if(index)
+			{
+				WString name = path.Sub(0, index - buffer);
+				Ptr<GuiResourceFolder> folder = GetFolder(name);
+				if (!folder)
+				{
+					folder = new GuiResourceFolder;
+					AddFolder(name, folder);
+				}
+				vint start = index - buffer + 1;
+				return folder->CreateValueByPath(path.Sub(start, path.Length() - start), typeName, value);
+			}
+			else
+			{
+				if(GetItem(path))
+				{
+					return false;
+				}
+
+				auto item = new GuiResourceItem;
+				item->SetContent(typeName, value);
+				return AddItem(path, item);
+			}
+		}
+
 /***********************************************************************
 GuiResource
 ***********************************************************************/
@@ -43638,11 +43721,48 @@ GuiResource
 
 		void GuiResource::Precompile(collections::List<WString>& errors)
 		{
+			if (GetFolder(L"Precompiled"))
+			{
+				errors.Add(L"A precompiled resource cannot be compiled again.");
+				return;
+			}
+
+			GuiResourcePrecompileContext context;
+			context.rootResource = this;
+			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
+			context.targetFolder = new GuiResourceFolder;
+			
 			vint maxPass = GetResourceResolverManager()->GetMaxPrecompilePassIndex();
-			Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(this, workingDirectory);
 			for (vint i = 0; i <= maxPass; i++)
 			{
-				PrecompileResourceFolder(resolver, this, i, errors);
+				context.passIndex = i;
+				PrecompileResourceFolder(context, errors);
+			}
+			if (errors.Count() == 0)
+			{
+				AddFolder(L"Precompiled", context.targetFolder);
+			}
+		}
+
+		void GuiResource::Initialize()
+		{
+			auto precompiledFolder = GetFolder(L"Precompiled");
+			if (!precompiledFolder)
+			{
+				CHECK_FAIL(L"GuiResource::Initialize()#Cannot initialize a non-precompiled resource.");
+				return;
+			}
+			
+			GuiResourcePrecompileContext context;
+			context.rootResource = this;
+			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
+			context.targetFolder = precompiledFolder;
+
+			vint maxPass = GetResourceResolverManager()->GetMaxInitializePassIndex();
+			for (vint i = 0; i <= maxPass; i++)
+			{
+				context.passIndex = i;
+				InitializeResourceFolder(context);
 			}
 		}
 
@@ -43888,6 +44008,23 @@ IGuiResourceResolverManager
 					if (auto precompile = resolver->Precompile())
 					{
 						vint pass = precompile->GetMaxPassIndex();
+						if (maxPass < pass)
+						{
+							maxPass = pass;
+						}
+					}
+				}
+				return maxPass;
+			}
+
+			vint GetMaxInitializePassIndex()
+			{
+				vint maxPass = -1;
+				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
+				{
+					if (auto initialize = resolver->Initialize())
+					{
+						vint pass = initialize->GetMaxPassIndex();
 						if (maxPass < pass)
 						{
 							maxPass = pass;

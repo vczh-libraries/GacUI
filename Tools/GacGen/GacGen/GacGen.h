@@ -67,7 +67,6 @@ public:
 	class ResOutput :public Output
 	{
 	public:
-		WString									precompiledOutput;
 		WString									precompiledBinary;
 		WString									precompiledCompressed;
 	};
@@ -99,10 +98,10 @@ WString											GetCppTypeNameFromWorkflowType(Ptr<CodegenConfig> config, cons
 Search
 ***********************************************************************/
 
-void											SearchAllFields(Ptr<GuiInstanceEnvironment> env, Ptr<GuiInstanceContext> context, Dictionary<WString, GuiConstructorRepr*>& fields);
+void											SearchAllFields(Ptr<GuiInstanceContext> context, Dictionary<WString, GuiConstructorRepr*>& fields);
 void											SearchAllSchemas(const Regex& regexClassName, Ptr<GuiResourceFolder> folder, List<WString>& schemaPaths, List<Ptr<GuiInstanceSharedScript>>& schemas);
 void											SearchAllInstances(const Regex& regexClassName, Ptr<GuiResourcePathResolver> resolver, Ptr<GuiResourceFolder> folder, Dictionary<WString, Ptr<Instance>>& instances);
-void											SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Ptr<GuiInstanceEnvironment> env, Dictionary<WString, ITypeDescriptor*>& eventHandlers);
+void											SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Dictionary<WString, ITypeDescriptor*>& eventHandlers);
 
 /***********************************************************************
 Codegen::Utility

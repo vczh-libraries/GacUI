@@ -22,8 +22,7 @@ bool DetermineCppType(
 
 	while (currentContext)
 	{
-		Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(currentContext, resolver);
-		auto loadingSource = FindInstanceLoadingSource(env->context, currentCtor);
+		auto loadingSource = FindInstanceLoadingSource(currentContext, currentCtor);
 		currentContext = loadingSource.context;
 		currentCtor = currentContext ? currentContext->instance.Obj() : 0;
 		typeName = loadingSource.typeName;

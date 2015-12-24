@@ -102,7 +102,6 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 	{
 		auto out = MakePtr<CodegenConfig::ResOutput>();
 		if (!LoadConfigString(folder, L"Output", out->output)) return nullptr;
-		LoadConfigString(folder, L"PrecompiledOutput", out->precompiledOutput, true);
 		LoadConfigString(folder, L"PrecompiledBinary", out->precompiledBinary, true);
 		LoadConfigString(folder, L"PrecompiledCompressed", out->precompiledCompressed, true);
 

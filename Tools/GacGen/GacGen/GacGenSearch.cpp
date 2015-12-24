@@ -7,13 +7,13 @@ SearchAllFields
 class SearchAllFieldsVisitor : public Object, public GuiValueRepr::IVisitor
 {
 protected:
-	Ptr<GuiInstanceEnvironment>						env;
+	Ptr<GuiInstanceContext>							context;
 	Dictionary<WString, GuiConstructorRepr*>&		fields;
 	IGuiInstanceLoader::TypeInfo					typeInfo;
 
 public:
-	SearchAllFieldsVisitor(Ptr<GuiInstanceEnvironment> _env, Dictionary<WString, GuiConstructorRepr*>& _fields)
-		:env(_env)
+	SearchAllFieldsVisitor(Ptr<GuiInstanceContext> _context, Dictionary<WString, GuiConstructorRepr*>& _fields)
+		:context(_context)
 		, fields(_fields)
 	{
 	}
@@ -37,7 +37,7 @@ public:
 	{
 		if (repr->instanceName != GlobalStringKey::Empty && !fields.Keys().Contains(repr->instanceName.ToString()))
 		{
-			auto loadingSource = FindInstanceLoadingSource(env->context, repr);
+			auto loadingSource = FindInstanceLoadingSource(context, repr);
 			
 			auto name = repr->instanceName.ToString();
 			if (name.Length() > 0 && name[0] != L'<')
@@ -49,9 +49,9 @@ public:
 	}
 };
 
-void SearchAllFields(Ptr<GuiInstanceEnvironment> env, Ptr<GuiInstanceContext> context, Dictionary<WString, GuiConstructorRepr*>& fields)
+void SearchAllFields(Ptr<GuiInstanceContext> context, Dictionary<WString, GuiConstructorRepr*>& fields)
 {
-	SearchAllFieldsVisitor visitor(env, fields);
+	SearchAllFieldsVisitor visitor(context, fields);
 	context->instance->Accept(&visitor);
 }
 
@@ -67,7 +67,7 @@ void SearchAllSchemas(const Regex& regexClassName, Ptr<GuiResourceFolder> folder
 		{
 			if (schema->language == L"Workflow-ViewModel")
 			{
-				schemaPaths.Add(item->GetPath());
+				schemaPaths.Add(item->GetResourcePath());
 				schemas.Add(schema);
 			}
 		}
@@ -88,17 +88,15 @@ void SearchAllInstances(const Regex& regexClassName, Ptr<GuiResourcePathResolver
 	{
 		auto context = item->GetContent().Cast<GuiInstanceContext>();
 		if (!context) continue;
-		if (!context->className) continue;
-		if (instances.Keys().Contains(context->className.Value())) continue;
-		auto match = regexClassName.MatchHead(context->className.Value());
+		if (instances.Keys().Contains(context->className)) continue;
+		auto match = regexClassName.MatchHead(context->className);
 		if (!match)
 		{
-			PrintErrorMessage(L"Skip code generation for \"" + context->className.Value() + L"\" because this type name is illegal.");
+			PrintErrorMessage(L"Skip code generation for \"" + context->className + L"\" because this type name is illegal.");
 			continue;
 		}
 
-		Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(context, resolver);
-		auto loadingSource = FindInstanceLoadingSource(env->context, context->instance.Obj());
+		auto loadingSource = FindInstanceLoadingSource(context, context->instance.Obj());
 		if (!loadingSource.loader) continue;
 		auto typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(loadingSource.typeName.ToString());
 		if (!typeDescriptor) continue;
@@ -118,9 +116,9 @@ void SearchAllInstances(const Regex& regexClassName, Ptr<GuiResourcePathResolver
 				);
 		}
 		instance->typeName = match->Groups()[L"type"][0].Value();
-		SearchAllFields(env, context, instance->fields);
+		SearchAllFields(context, instance->fields);
 
-		instances.Add(context->className.Value(), instance);
+		instances.Add(context->className, instance);
 	}
 	FOREACH(Ptr<GuiResourceFolder>, subFolder, folder->GetFolders())
 	{
@@ -138,16 +136,14 @@ protected:
 	Ptr<CodegenConfig>								config;
 	Dictionary<WString, Ptr<Instance>>&				instances;
 	Ptr<Instance>									instance;
-	Ptr<GuiInstanceEnvironment>						env;
 	Dictionary<WString, ITypeDescriptor*>&			eventHandlers;
 	IGuiInstanceLoader::TypeInfo					typeInfo;
 
 public:
-	SearchAllEventHandlersVisitor(Ptr<CodegenConfig> _config, Dictionary<WString, Ptr<Instance>>& _instances, Ptr<Instance> _instance, Ptr<GuiInstanceEnvironment> _env, Dictionary<WString, ITypeDescriptor*>& _eventHandlers)
+	SearchAllEventHandlersVisitor(Ptr<CodegenConfig> _config, Dictionary<WString, Ptr<Instance>>& _instances, Ptr<Instance> _instance, Dictionary<WString, ITypeDescriptor*>& _eventHandlers)
 		:config(_config)
 		, instances(_instances)
 		, instance(_instance)
-		, env(_env)
 		, eventHandlers(_eventHandlers)
 	{
 	}
@@ -174,26 +170,35 @@ public:
 		return 0;
 	}
 
-	static Ptr<GuiInstanceEventInfo> GetEventInfo(const IGuiInstanceLoader::TypeInfo& typeInfo, GlobalStringKey name, IGuiInstanceLoader*& loader)
+	static ITypeDescriptor* GetEventArgumentType(const IGuiInstanceLoader::TypeInfo& typeInfo, GlobalStringKey name)
 	{
-		loader = GetInstanceLoaderManager()->GetLoader(typeInfo.typeName);
-		auto propertyInfo = IGuiInstanceLoader::PropertyInfo(typeInfo, name);
-		while (loader)
+		auto eventInfo = typeInfo.typeDescriptor->GetEventByName(name.ToString(), true);
+
+		auto funcPtr = eventInfo->GetHandlerType();
+		if (funcPtr->GetDecorator() != ITypeInfo::SharedPtr)
 		{
-			if (auto info = loader->GetEventType(propertyInfo))
-			{
-				if (info->support == GuiInstanceEventInfo::NotSupport)
-				{
-					return 0;
-				}
-				else
-				{
-					return info;
-				}
-			}
-			loader = GetInstanceLoaderManager()->GetParentLoader(loader);
+			return nullptr;
 		}
-		return 0;
+
+		auto funcType = funcPtr->GetElementType();
+		if (funcType->GetGenericArgumentCount() != 3)
+		{
+			return nullptr;
+		}
+
+		auto senderType = funcType->GetGenericArgument(1);
+		if (senderType->GetDecorator() != ITypeInfo::RawPtr && senderType->GetTypeDescriptor() != description::GetTypeDescriptor<GuiGraphicsComposition>())
+		{
+			return nullptr;
+		}
+
+		auto argumentType = funcType->GetGenericArgument(2);
+		if (argumentType->GetDecorator() != ITypeInfo::RawPtr && !argumentType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiEventArgs>()))
+		{
+			return nullptr;
+		}
+
+		return argumentType->GetTypeDescriptor();
 	}
 
 	void Visit(GuiTextRepr* repr)
@@ -209,10 +214,9 @@ public:
 			{
 				if (!eventHandlers.Keys().Contains(eventName.ToString()))
 				{
-					IGuiInstanceLoader* loader = 0;
-					if (auto info = GetEventInfo(typeInfo, eventName, loader))
+					if (auto type = GetEventArgumentType(typeInfo, eventName))
 					{
-						eventHandlers.Add(handler->value, info->argumentType);
+						eventHandlers.Add(handler->value, type);
 					}
 				}
 			}
@@ -249,8 +253,8 @@ public:
 	}
 };
 
-void SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Ptr<GuiInstanceEnvironment> env, Dictionary<WString, ITypeDescriptor*>& eventHandlers)
+void SearchAllEventHandlers(Ptr<CodegenConfig> config, Dictionary<WString, Ptr<Instance>>& instances, Ptr<Instance> instance, Dictionary<WString, ITypeDescriptor*>& eventHandlers)
 {
-	SearchAllEventHandlersVisitor visitor(config, instances, instance, env, eventHandlers);
+	SearchAllEventHandlersVisitor visitor(config, instances, instance, eventHandlers);
 	instance->context->instance->Accept(&visitor);
 }

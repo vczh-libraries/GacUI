@@ -374,7 +374,7 @@ Instance Context
 			Ptr<GuiConstructorRepr>					instance;
 			NamespaceMap							namespaces;
 			bool									codeBehind = true;
-			Nullable<WString>						className;
+			WString									className;
 			ParameterList							parameters;
 			PropertyList							properties;
 			StateList								states;
@@ -382,7 +382,6 @@ Instance Context
 
 			bool									appliedStyles = false;
 			StyleContextList						styles;
-			Ptr<workflow::runtime::WfAssembly>		precompiledScript;
 
 			static void								CollectDefaultAttributes(GuiAttSetterRepr::ValueList& values, Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
 			static void								CollectAttributes(GuiAttSetterRepr::SetteValuerMap& setters, Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
@@ -444,36 +443,6 @@ namespace vl
 		using namespace reflection;
 
 /***********************************************************************
-Instance Environment
-***********************************************************************/
-
-		class GuiInstanceContextScope : public Object, public Description<GuiInstanceContextScope>
-		{
-			typedef collections::Dictionary<GlobalStringKey, description::Value>				ValueMap;
-			typedef collections::List<WString>													ErrorList;
-		public:
-			GlobalStringKey							typeName;
-			description::Value						rootInstance;
-			ValueMap								referenceValues;
-			ErrorList								errors;
-		};
-
-		class GuiInstanceEnvironment : public Object, public Description<GuiInstanceEnvironment>
-		{
-		public:
-			Ptr<GuiInstanceContext>					context;
-			Ptr<GuiResourcePathResolver>			resolver;
-			Ptr<GuiInstanceContextScope>			scope;
-
-			GuiInstanceEnvironment(Ptr<GuiInstanceContext> _context, Ptr<GuiResourcePathResolver> _resolver)
-				:context(_context)
-				, resolver(_resolver)
-			{
-				scope = new GuiInstanceContextScope;
-			}
-		};
-
-/***********************************************************************
 Instance Loader
 ***********************************************************************/
 
@@ -497,14 +466,12 @@ Instance Loader
 				Property,		// property of the class
 			};
 
-			Support									support;
-			bool									tryParent;
-			bool									required;
-			PropertyScope							scope;
+			Support									support = NotSupport;
+			bool									tryParent = false;
+			bool									required = false;			// only apply to constructor
+			bool									bindable = false;			// only apply to constructor
+			PropertyScope							scope = Property;
 			TypeDescriptorList						acceptableTypes;
-
-			GuiInstancePropertyInfo();
-			~GuiInstancePropertyInfo();
 
 			static Ptr<GuiInstancePropertyInfo>		Unsupported();
 			static Ptr<GuiInstancePropertyInfo>		Assign(description::ITypeDescriptor* typeDescriptor = 0);
@@ -513,26 +480,6 @@ Instance Loader
 			static Ptr<GuiInstancePropertyInfo>		CollectionWithParent(description::ITypeDescriptor* typeDescriptor = 0);
 			static Ptr<GuiInstancePropertyInfo>		Set(description::ITypeDescriptor* typeDescriptor = 0);
 			static Ptr<GuiInstancePropertyInfo>		Array(description::ITypeDescriptor* typeDescriptor = 0);
-		};
-
-		class GuiInstanceEventInfo : public IDescriptable, public Description<GuiInstanceEventInfo>
-		{
-			typedef collections::List<description::ITypeDescriptor*>		TypeDescriptorList;
-		public:
-			enum Support
-			{
-				NotSupport,
-				SupportAssign,
-			};
-
-			Support									support;
-			description::ITypeDescriptor*			argumentType;
-
-			GuiInstanceEventInfo();
-			~GuiInstanceEventInfo();
-
-			static Ptr<GuiInstanceEventInfo>		Unsupported();
-			static Ptr<GuiInstanceEventInfo>		Assign(description::ITypeDescriptor* typeDescriptor);
 		};
 
 		class IGuiInstanceLoader : public IDescriptable, public Description<IGuiInstanceLoader>
@@ -578,24 +525,25 @@ Instance Loader
 				}
 			};
 
-			virtual GlobalStringKey					GetTypeName() = 0;
+			struct ArgumentInfo
+			{
+				Ptr<workflow::WfExpression>			expression;
+				description::ITypeDescriptor*		type;
+			};
 
-			virtual bool							IsDeserializable(const TypeInfo& typeInfo);
-			virtual description::Value				Deserialize(const TypeInfo& typeInfo, const WString& text);
-			virtual bool							IsCreatable(const TypeInfo& typeInfo);
-			virtual description::Value				CreateInstance(Ptr<GuiInstanceEnvironment> env, const TypeInfo& typeInfo, collections::Group<GlobalStringKey, description::Value>& constructorArguments);
-			virtual bool							IsInitializable(const TypeInfo& typeInfo);
-			virtual Ptr<GuiInstanceContextScope>	InitializeInstance(const TypeInfo& typeInfo, description::Value instance);
+			typedef collections::Group<GlobalStringKey, ArgumentInfo>	ArgumentMap;
+
+			virtual GlobalStringKey					GetTypeName() = 0;
 
 			virtual void							GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual void							GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual void							GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual Ptr<GuiInstancePropertyInfo>	GetPropertyType(const PropertyInfo& propertyInfo);
-			virtual bool							GetPropertyValue(PropertyValue& propertyValue);
-			virtual bool							SetPropertyValue(PropertyValue& propertyValue);
 
-			virtual void							GetEventNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& eventNames);
-			virtual Ptr<GuiInstanceEventInfo>		GetEventType(const PropertyInfo& eventInfo);
-			virtual bool							SetEventValue(PropertyValue& propertyValue);
+			virtual bool							CanCreate(const TypeInfo& typeInfo);
+			virtual Ptr<workflow::WfStatement>		CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfStatement>		AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfExpression>		GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors);
 		};
 
 /***********************************************************************
@@ -607,10 +555,6 @@ Instance Binder
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							ApplicableToConstructorArgument() = 0;
-			virtual bool							RequireInstanceName() = 0;
-			virtual bool							RequirePrecompile() = 0;
-			virtual void							GetExpectedValueTypes(collections::List<description::ITypeDescriptor*>& expectedTypes) = 0;
-			virtual bool							SetPropertyValue(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue) = 0;
 			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors) = 0;
 		};
 
@@ -618,15 +562,18 @@ Instance Binder
 		{
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
-			virtual bool							RequireInstanceName() = 0;
-			virtual bool							RequirePrecompile() = 0;
-			virtual bool							AttachEvent(Ptr<GuiInstanceEnvironment> env, IGuiInstanceLoader* loader, GlobalStringKey instanceName, IGuiInstanceLoader::PropertyValue& propertyValue) = 0;
 			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors) = 0;
 		};
 
 /***********************************************************************
 Instance Loader Manager
 ***********************************************************************/
+
+		class GuiInstanceConstructorResult : public Object
+		{
+		public:
+			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
+		};
 
 		class IGuiInstanceLoaderManager : public IDescriptable, public Description<IGuiInstanceLoaderManager>
 		{
@@ -644,17 +591,33 @@ Instance Loader Manager
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
 			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
+			virtual Ptr<GuiInstanceConstructorResult>	RunInstanceConstructor(const WString& classFullName, description::Value instance) = 0;
 		};
 
 		struct InstanceLoadingSource
 		{
 			IGuiInstanceLoader*						loader;
 			GlobalStringKey							typeName;
+			Ptr<GuiResourceItem>					item;
 			Ptr<GuiInstanceContext>					context;
 
-			InstanceLoadingSource() :loader(0){}
-			InstanceLoadingSource(IGuiInstanceLoader* _loader, GlobalStringKey _typeName) :loader(_loader), typeName(_typeName){}
-			InstanceLoadingSource(Ptr<GuiInstanceContext> _context) :loader(0), context(_context){}
+			InstanceLoadingSource()
+				:loader(0)
+			{
+			}
+
+			InstanceLoadingSource(IGuiInstanceLoader* _loader, GlobalStringKey _typeName)
+				:loader(_loader)
+				, typeName(_typeName)
+			{
+			}
+
+			InstanceLoadingSource(Ptr<GuiResourceItem> _item)
+				:loader(0)
+				, item(_item)
+				, context(item->GetContent().Cast<GuiInstanceContext>())
+			{
+			}
 
 			operator bool()const
 			{
@@ -663,73 +626,30 @@ Instance Loader Manager
 		};
 
 		extern IGuiInstanceLoaderManager*			GetInstanceLoaderManager();
-		extern InstanceLoadingSource				FindInstanceLoadingSource(
-			Ptr<GuiInstanceContext> context,
-			GuiConstructorRepr* ctor
-			);
-		Ptr<GuiInstanceContextScope>				LoadInstanceFromContext(
-			Ptr<GuiInstanceContext> context,
-			Ptr<GuiResourcePathResolver> resolver,
-			description::ITypeDescriptor* expectedType = 0
-			);
-		extern Ptr<GuiInstanceContextScope>			LoadInstance(
-			Ptr<GuiResource> resource,
-			const WString& instancePath,
-			description::ITypeDescriptor* expectedType = 0
-			);
-		extern Ptr<GuiInstanceContextScope>			InitializeInstanceFromContext(
-			Ptr<GuiInstanceContext> context,
-			Ptr<GuiResourcePathResolver> resolver,
-			description::Value instance
-			);
-		extern Ptr<GuiInstanceContextScope>			InitializeInstance(
-			Ptr<GuiResource> resource,
-			const WString& instancePath,
-			description::Value instance
-			);
-		extern void									LogInstanceLoaderManager(stream::TextWriter& writer);
+		extern InstanceLoadingSource				FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
 
 /***********************************************************************
 Instance Scope Wrapper
 ***********************************************************************/
 
-		class IGuiInstancePartialClass
-		{
-		public:
-			virtual Ptr<GuiInstanceContextScope> GetScope() = 0;
-		};
-
 		template<typename T>
-		class GuiInstancePartialClass : public IGuiInstancePartialClass
+		class GuiInstancePartialClass
 		{
 		private:
-			GlobalStringKey							className;
-			Ptr<GuiInstanceContextScope>			scope;
+			WString											className;
+			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
 
 		protected:
 			bool InitializeFromResource()
 			{
-				if (scope) return false;
-				if (auto loader = GetInstanceLoaderManager()->GetLoader(className))
+				if (!context)
 				{
-					IGuiInstanceLoader::TypeInfo typeInfo(className, description::GetTypeDescriptor<T>());
-					if (loader->IsInitializable(typeInfo))
+					auto value = description::Value::From(dynamic_cast<T*>(this));
+					if (auto result = GetInstanceLoaderManager()->RunInstanceConstructor(className, value))
 					{
-						auto value = description::Value::From(dynamic_cast<T*>(this));
-						if ((scope = loader->InitializeInstance(typeInfo, value)))
-						{
-#ifdef _DEBUG
-							CHECK_ERROR(scope->errors.Count() == 0, L"vl::presentation::GuiInstancePartialClass<T>::InitializeFromResource()#There is something wrong with the resource.");
-#endif
-							return true;
-						}
+						context = result->context;
+						return true;
 					}
-#ifdef _DEBUG
-					else
-					{
-						CHECK_FAIL(L"vl::presentation::GuiInstancePartialClass<T>::InitializeFromResource()#Cannot initialize this instance from the resource.");
-					}
-#endif
 				}
 				return false;
 			}
@@ -738,18 +658,14 @@ Instance Scope Wrapper
 			void LoadInstanceReference(const WString& name, TControl*& reference)
 			{
 				reference = 0;
-				vint index = scope->referenceValues.Keys().IndexOf(GlobalStringKey::Get(name));
-				if (index == -1)
-				{
-					scope->errors.Add(L"Failed to find instance reference \"" + name + L"\".");
-					return;
-				}
+				vint index = context->assembly->variableNames.IndexOf(name);
+				CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Failed to find instance reference.");
 
-				auto value = scope->referenceValues.Values()[index];
+				auto value = context->globalVariables->variables[index];
 				auto td = description::GetTypeDescriptor<TControl>();
 				if (!value.GetTypeDescriptor() || !value.GetTypeDescriptor()->CanConvertTo(td))
 				{
-					scope->errors.Add(L"Failed to convert instance reference \"" + name + L"\" to \"" + td->GetTypeName() + L"\".");
+					CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Wrong instance reference type.");
 					return;
 				}
 
@@ -757,22 +673,101 @@ Instance Scope Wrapper
 			}
 		public:
 			GuiInstancePartialClass(const WString& _className)
-				:className(GlobalStringKey::Get(_className))
+				:className(_className)
 			{
 			}
 
 			virtual ~GuiInstancePartialClass()
 			{
 			}
-
-			Ptr<GuiInstanceContextScope> GetScope()
-			{
-				return scope;
-			}
 		};
 
 #define GUI_INSTANCE_REFERENCE(NAME) LoadInstanceReference(L ## #NAME, this->NAME)
 	}
+}
+
+#endif
+
+/***********************************************************************
+GUIINSTANCEHELPERTYPES.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Instance Helper Types
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+
+
+#if defined(__APPLE__) || defined(__APPLE_CC__)
+
+using namespace vl;
+using namespace vl::presentation;
+using namespace vl::presentation::elements;
+using namespace vl::presentation::compositions;
+using namespace vl::presentation::controls;
+using namespace vl::presentation::templates;
+using namespace vl::presentation::theme;
+
+#endif
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+Helper Types
+***********************************************************************/
+
+		namespace helper_types
+		{
+			struct SiteValue
+			{
+				vint			row;
+				vint			column;
+				vint			rowSpan;
+				vint			columnSpan;
+
+				SiteValue() :row(0), column(0), rowSpan(1), columnSpan(1){}
+			};
+
+			enum class ListViewViewType
+			{
+				BigIcon,
+				SmallIcon,
+				List,
+				Tile,
+				Information,
+				Detail,
+			};
+		}
+	}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Type List
+***********************************************************************/
+
+#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
+			F(presentation::helper_types::SiteValue)\
+			F(presentation::helper_types::ListViewViewType)\
+
+			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
+		}
+	}
+
+#endif
 }
 
 #endif
@@ -816,9 +811,16 @@ namespace vl
 				InstanceCtor,
 				InstanceClass,
 			};
+			
+			collections::List<WString>						codes;
+			Ptr<stream::MemoryStream>						binaryToLoad;
 
-			AssemblyType								type = AssemblyType::Shared;
-			Ptr<workflow::runtime::WfAssembly>			assembly;
+			AssemblyType									type = AssemblyType::Shared;
+			WString											classFullName;
+			Ptr<workflow::runtime::WfAssembly>				assembly;
+			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
+
+			void											Initialize(bool initializeContext);
 		};
 	}
 }
@@ -925,6 +927,7 @@ Type List
 			F(presentation::GuiResourceItem)\
 			F(presentation::GuiResourceFolder)\
 			F(presentation::GuiResource)\
+			F(presentation::GuiResourcePathResolver)\
 			F(presentation::elements::IGuiGraphicsElement)\
 			F(presentation::compositions::GuiGraphicsComposition)\
 			F(presentation::compositions::GuiGraphicsComposition::MinSizeLimitation)\
@@ -945,33 +948,33 @@ Type Declaration
 ***********************************************************************/
 
 			template<>
-			struct TypedValueSerializerProvider<Color>
+			struct TypedValueSerializerProvider<presentation::Color>
 			{
-				static Color GetDefaultValue();
-				static bool Serialize(const Color& input, WString& output);
-				static bool Deserialize(const WString& input, Color& output);
+				static presentation::Color GetDefaultValue();
+				static bool Serialize(const presentation::Color& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::Color& output);
 			};
 
 			template<>
-			struct CustomTypeDescriptorSelector<Color>
+			struct CustomTypeDescriptorSelector<presentation::Color>
 			{
 			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<Color>> CustomTypeDescriptorImpl;
+				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::Color>> CustomTypeDescriptorImpl;
 			};
 
 			template<>
-			struct TypedValueSerializerProvider<GlobalStringKey>
+			struct TypedValueSerializerProvider<presentation::GlobalStringKey>
 			{
-				static GlobalStringKey GetDefaultValue();
-				static bool Serialize(const GlobalStringKey& input, WString& output);
-				static bool Deserialize(const WString& input, GlobalStringKey& output);
+				static presentation::GlobalStringKey GetDefaultValue();
+				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
 			};
 
 			template<>
-			struct CustomTypeDescriptorSelector<GlobalStringKey>
+			struct CustomTypeDescriptorSelector<presentation::GlobalStringKey>
 			{
 			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<GlobalStringKey>> CustomTypeDescriptorImpl;
+				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::GlobalStringKey>> CustomTypeDescriptorImpl;
 			};
 
 /***********************************************************************
@@ -980,6 +983,9 @@ Interface Proxy
 
 			namespace interface_proxy
 			{
+				using namespace presentation;
+				using namespace presentation::controls;
+
 				class GuiControl_IStyleController : public ValueInterfaceRoot, public virtual GuiControl::IStyleController
 				{
 				public:
@@ -1210,6 +1216,9 @@ Interface Proxy
 #pragma warning(disable:4250)
 			namespace interface_proxy
 			{
+				using namespace presentation;
+				using namespace presentation::compositions;
+
 				class composition_IGuiGraphicsAnimation : public ValueInterfaceRoot, public virtual IGuiGraphicsAnimation
 				{
 				public:
@@ -3333,85 +3342,135 @@ Type Loader
 #endif
 
 /***********************************************************************
-GUIINSTANCEHELPERTYPES.H
+TYPEDESCRIPTORS\GUIREFLECTIONTEMPLATES.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI Reflection: Instance Helper Types
+GacUI Reflection: Basic
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIREFLECTIOTEMPLATES
+#define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIOTEMPLATES
 
-
-#if defined(__APPLE__) || defined(__APPLE_CC__)
-
-using namespace vl;
-using namespace vl::presentation;
-using namespace vl::presentation::elements;
-using namespace vl::presentation::compositions;
-using namespace vl::presentation::controls;
-using namespace vl::presentation::templates;
-using namespace vl::presentation::theme;
-
-#endif
 
 namespace vl
 {
-	namespace presentation
-	{
-
-/***********************************************************************
-Helper Types
-***********************************************************************/
-
-		namespace helper_types
-		{
-			struct SiteValue
-			{
-				vint			row;
-				vint			column;
-				vint			rowSpan;
-				vint			columnSpan;
-
-				SiteValue() :row(0), column(0), rowSpan(1), columnSpan(1){}
-			};
-
-			enum class ListViewViewType
-			{
-				BigIcon,
-				SmallIcon,
-				List,
-				Tile,
-				Information,
-				Detail,
-			};
-		}
-	}
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
 	namespace reflection
 	{
 		namespace description
 		{
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 /***********************************************************************
 Type List
 ***********************************************************************/
 
-#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
-			F(presentation::helper_types::SiteValue)\
-			F(presentation::helper_types::ListViewViewType)\
+#define GUIREFLECTIONTEMPLATES_TYPELIST(F)\
+			F(presentation::templates::BoolOption)\
+			F(presentation::templates::GuiTemplate)\
+			F(presentation::templates::GuiTemplate::IFactory)\
+			F(presentation::templates::GuiControlTemplate)\
+			F(presentation::templates::GuiLabelTemplate)\
+			F(presentation::templates::GuiSinglelineTextBoxTemplate)\
+			F(presentation::templates::GuiDocumentLabelTemplate)\
+			F(presentation::templates::GuiMultilineTextBoxTemplate)\
+			F(presentation::templates::GuiDocumentViewerTemplate)\
+			F(presentation::templates::GuiMenuTemplate)\
+			F(presentation::templates::GuiWindowTemplate)\
+			F(presentation::templates::GuiButtonTemplate)\
+			F(presentation::templates::GuiSelectableButtonTemplate)\
+			F(presentation::templates::GuiToolstripButtonTemplate)\
+			F(presentation::templates::GuiListViewColumnHeaderTemplate)\
+			F(presentation::templates::GuiComboBoxTemplate)\
+			F(presentation::templates::GuiDatePickerTemplate)\
+			F(presentation::templates::GuiDateComboBoxTemplate)\
+			F(presentation::templates::GuiScrollTemplate)\
+			F(presentation::templates::GuiScrollViewTemplate)\
+			F(presentation::templates::GuiTextListTemplate)\
+			F(presentation::templates::GuiListViewTemplate)\
+			F(presentation::templates::GuiTreeViewTemplate)\
+			F(presentation::templates::GuiTabTemplate)\
+			F(presentation::templates::GuiListItemTemplate)\
+			F(presentation::templates::GuiTreeItemTemplate)\
+			F(presentation::templates::GuiGridVisualizerTemplate)\
+			F(presentation::templates::GuiGridEditorTemplate)\
+			F(presentation::templates::GuiControlTemplate_StyleProvider)\
+			F(presentation::templates::GuiLabelTemplate_StyleProvider)\
+			F(presentation::templates::GuiSinglelineTextBoxTemplate_StyleProvider)\
+			F(presentation::templates::GuiDocumentLabelTemplate_StyleProvider)\
+			F(presentation::templates::GuiMultilineTextBoxTemplate_StyleProvider)\
+			F(presentation::templates::GuiDocumentViewerTemplate_StyleProvider)\
+			F(presentation::templates::GuiMenuTemplate_StyleProvider)\
+			F(presentation::templates::GuiWindowTemplate_StyleProvider)\
+			F(presentation::templates::GuiButtonTemplate_StyleProvider)\
+			F(presentation::templates::GuiSelectableButtonTemplate_StyleProvider)\
+			F(presentation::templates::GuiToolstripButtonTemplate_StyleProvider)\
+			F(presentation::templates::GuiListViewColumnHeaderTemplate_StyleProvider)\
+			F(presentation::templates::GuiComboBoxTemplate_StyleProvider)\
+			F(presentation::templates::GuiDatePickerTemplate_StyleProvider)\
+			F(presentation::templates::GuiDateComboBoxTemplate_StyleProvider)\
+			F(presentation::templates::GuiScrollTemplate_StyleProvider)\
+			F(presentation::templates::GuiScrollViewTemplate_StyleProvider)\
+			F(presentation::templates::GuiTextListTemplate_StyleProvider)\
+			F(presentation::templates::GuiListViewTemplate_StyleProvider)\
+			F(presentation::templates::GuiTreeViewTemplate_StyleProvider)\
+			F(presentation::templates::GuiTabTemplate_StyleProvider)\
+			F(presentation::templates::GuiListItemTemplate_ItemStyleController)\
+			F(presentation::templates::GuiListItemTemplate_ItemStyleProvider)\
+			F(presentation::templates::GuiTreeItemTemplate_ItemStyleProvider)\
+			F(presentation::templates::GuiBindableDataVisualizer)\
+			F(presentation::templates::GuiBindableDataVisualizer::Factory)\
+			F(presentation::templates::GuiBindableDataVisualizer::DecoratedFactory)\
+			F(presentation::templates::GuiBindableDataEditor)\
+			F(presentation::templates::GuiBindableDataEditor::Factory)\
 
-			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
-		}
-	}
+			GUIREFLECTIONTEMPLATES_TYPELIST(DECL_TYPE_INFO)
+
+/***********************************************************************
+Interface Proxy
+***********************************************************************/
+
+#pragma warning(push)
+#pragma warning(disable:4250)
+			namespace interface_proxy
+			{
+				using namespace presentation;
+				using namespace presentation::templates;
+
+				class GuiTemplate_IFactory : public ValueInterfaceRoot, public virtual GuiTemplate::IFactory
+				{
+				public:
+					GuiTemplate_IFactory(Ptr<IValueInterfaceProxy> _proxy)
+						:ValueInterfaceRoot(_proxy)
+					{
+					}
+
+					static Ptr<GuiTemplate::IFactory> Create(Ptr<IValueInterfaceProxy> proxy)
+					{
+						return new GuiTemplate_IFactory(proxy);
+					}
+
+					GuiTemplate* CreateTemplate(const Value& viewModel)override
+					{
+						return INVOKEGET_INTERFACE_PROXY(CreateTemplate, viewModel);
+					}
+				};
+			}
+#pragma warning(pop)
+
+/***********************************************************************
+Type Loader
+***********************************************************************/
 
 #endif
+
+			extern bool						LoadGuiTemplateTypes();
+		}
+	}
 }
 
 #endif
@@ -3464,6 +3523,10 @@ GuiEventInfoImpl
 			template<typename T>
 			class GuiEventInfoImpl : public EventInfoImpl
 			{
+				using GuiGraphicsComposition = presentation::compositions::GuiGraphicsComposition;
+
+				template<typename U>
+				using GuiGraphicsEvent = presentation::compositions::GuiGraphicsEvent<U>;
 			protected:
 				typedef Func<GuiGraphicsEvent<T>*(DescriptableObject*, bool)>		EventRetriverFunction;
 
@@ -3648,7 +3711,7 @@ namespace vl
 #endif
 
 /***********************************************************************
-GUIINSTANCELOADER_WORKFLOWCOMPILER.H
+WORKFLOWCODEGEN\GUIINSTANCELOADER_WORKFLOWCODEGEN.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -3658,8 +3721,8 @@ GacUI Reflection: Instance Schema Representation
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCOMPILER
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCOMPILER
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCODEGEN
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCODEGEN
 
 
 namespace vl
@@ -3668,145 +3731,527 @@ namespace vl
 	{
 		namespace types
 		{
+			struct PropertyResolving
+			{
+				IGuiInstanceLoader*								loader = nullptr;
+				IGuiInstanceLoader::PropertyInfo				propertyInfo;
+				Ptr<GuiInstancePropertyInfo>					info;
+			};
+
 			typedef collections::Dictionary<GlobalStringKey, IGuiInstanceLoader::TypeInfo>		VariableTypeInfoMap;
+			typedef collections::Dictionary<GlobalStringKey, Ptr<description::ITypeInfo>>		TypeOverrideMap;
+			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
+
+			struct ResolvingResult
+			{
+				VariableTypeInfoMap								typeInfos;
+				TypeOverrideMap									typeOverrides;
+				PropertyResolvingMap							propertyResolvings;
+			};
 		}
-		extern workflow::analyzer::WfLexicalScopeManager*	Workflow_GetSharedManager();
+		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager();
 		
 
 /***********************************************************************
 WorkflowCompiler (Parser)
 ***********************************************************************/
 		
-		extern Ptr<workflow::WfExpression>					Workflow_ParseExpression(const WString& code, types::ErrorList& errors);
-		extern Ptr<workflow::WfStatement>					Workflow_ParseStatement(const WString& code, types::ErrorList& errors);
+		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression(const WString& code, types::ErrorList& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, types::ErrorList& errors);
+		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
 
 /***********************************************************************
 WorkflowCompiler (Installation)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfStatement>					Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
-		extern Ptr<workflow::WfStatement>					Workflow_InstallEvalProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> evalExpression);
-		extern Ptr<workflow::WfStatement>					Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& protocol, const WString& path);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> evalExpression);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
 
 /***********************************************************************
 WorkflowCompiler (Compile)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfModule>						Workflow_CreateEmptyModule(Ptr<GuiInstanceContext> context);
-		extern Ptr<workflow::WfModule>						Workflow_CreateModuleWithInitFunction(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfStatement> functionBody);
+		extern Ptr<workflow::WfModule>							Workflow_CreateEmptyModule(Ptr<GuiInstanceContext> context);
+		extern Ptr<workflow::WfModule>							Workflow_CreateModuleWithInitFunction(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfStatement> functionBody);
 
-		extern void											Workflow_CreatePointerVariable(Ptr<workflow::WfModule> module, GlobalStringKey name, description::ITypeDescriptor* type);
-		extern void											Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeInfoMap& typeInfos);
-		extern void											Workflow_SetVariablesForReferenceValues(Ptr<workflow::runtime::WfRuntimeGlobalContext> context, Ptr<GuiInstanceEnvironment> env);
+		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfModule> module, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride);
+		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::ResolvingResult& resolvingResult);
 
-		extern bool											Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
-		extern WString										Workflow_ModuleToString(Ptr<workflow::WfModule> module);
-		extern void											Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
-		extern void											Workflow_RunPrecompiledScript(Ptr<GuiInstanceEnvironment> env);
+		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
+		extern Ptr<workflow::runtime::WfAssembly>				Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
+		extern Ptr<workflow::runtime::WfRuntimeGlobalContext>	Workflow_RunPrecompiledScript(Ptr<GuiResource> resource, Ptr<GuiResourceItem> resourceItem, description::Value rootInstance);
 	}
 }
 
 #endif
 
 /***********************************************************************
-TYPEDESCRIPTORS\GUIREFLECTIONTEMPLATES.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Basic
-
-Interfaces:
+INSTANCELOADERS\GUIINSTANCELOADER_TEMPLATECONTROL.H
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIREFLECTIOTEMPLATES
-#define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIOTEMPLATES
-
+#ifndef VCZH_PRESENTATION_REFLECTION_INSTANCELOADERS_GUIINSTANCELOADER_TEMPLATECONTROL
+#define VCZH_PRESENTATION_REFLECTION_INSTANCELOADERS_GUIINSTANCELOADER_TEMPLATECONTROL
 
 namespace vl
 {
-	namespace reflection
+	namespace presentation
 	{
-		namespace description
+		namespace instance_loaders
 		{
+			using namespace collections;
+			using namespace reflection::description;
+			using namespace controls;
+			using namespace compositions;
+			using namespace theme;
+			using namespace helper_types;
+		
+			using namespace elements;
+			using namespace compositions;
+			using namespace controls;
+			using namespace templates;
+
+			using namespace workflow;
+			using namespace workflow::analyzer;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
-Type List
+Helper Functions
 ***********************************************************************/
 
-#define GUIREFLECTIONTEMPLATES_TYPELIST(F)\
-			F(presentation::templates::BoolOption)\
-			F(presentation::templates::GuiTemplate)\
-			F(presentation::templates::GuiTemplate::IFactory)\
-			F(presentation::templates::GuiControlTemplate)\
-			F(presentation::templates::GuiLabelTemplate)\
-			F(presentation::templates::GuiSinglelineTextBoxTemplate)\
-			F(presentation::templates::GuiDocumentLabelTemplate)\
-			F(presentation::templates::GuiMultilineTextBoxTemplate)\
-			F(presentation::templates::GuiDocumentViewerTemplate)\
-			F(presentation::templates::GuiMenuTemplate)\
-			F(presentation::templates::GuiWindowTemplate)\
-			F(presentation::templates::GuiButtonTemplate)\
-			F(presentation::templates::GuiSelectableButtonTemplate)\
-			F(presentation::templates::GuiToolstripButtonTemplate)\
-			F(presentation::templates::GuiListViewColumnHeaderTemplate)\
-			F(presentation::templates::GuiComboBoxTemplate)\
-			F(presentation::templates::GuiDatePickerTemplate)\
-			F(presentation::templates::GuiDateComboBoxTemplate)\
-			F(presentation::templates::GuiScrollTemplate)\
-			F(presentation::templates::GuiScrollViewTemplate)\
-			F(presentation::templates::GuiTextListTemplate)\
-			F(presentation::templates::GuiListViewTemplate)\
-			F(presentation::templates::GuiTreeViewTemplate)\
-			F(presentation::templates::GuiTabTemplate)\
-			F(presentation::templates::GuiListItemTemplate)\
-			F(presentation::templates::GuiTreeItemTemplate)\
-			F(presentation::templates::GuiGridVisualizerTemplate)\
-			F(presentation::templates::GuiGridEditorTemplate)\
-
-			GUIREFLECTIONTEMPLATES_TYPELIST(DECL_TYPE_INFO)
-
-/***********************************************************************
-Interface Proxy
-***********************************************************************/
-
-#pragma warning(push)
-#pragma warning(disable:4250)
-			namespace interface_proxy
+			template<typename TStruct>
+			Value ParseConstantArgument(Ptr<WfExpression> value, const IGuiInstanceLoader::TypeInfo& typeInfo, const WString& propertyName, const WString& formatSample, collections::List<WString>& errors)
 			{
-				class GuiTemplate_IFactory : public ValueInterfaceRoot, public virtual GuiTemplate::IFactory
+				auto castExpr = value.Cast<WfTypeCastingExpression>();
+				if (!castExpr)
 				{
-				public:
-					GuiTemplate_IFactory(Ptr<IValueInterfaceProxy> _proxy)
-						:ValueInterfaceRoot(_proxy)
-					{
-					}
+					errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
+				}
+				auto stringExpr = castExpr->expression.Cast<WfStringExpression>();
+				if (!stringExpr)
+				{
+					errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
+				}
 
-					static Ptr<GuiTemplate::IFactory> Create(Ptr<IValueInterfaceProxy> proxy)
-					{
-						return new GuiTemplate_IFactory(proxy);
-					}
+				Value siteValue;
+				if (!description::GetTypeDescriptor<TStruct>()->GetValueSerializer()->Parse(stringExpr->value.value, siteValue))
+				{
+					errors.Add(L"Precompile: \"" + stringExpr->value.value + L"\" is not in a right format." + (formatSample == L"" ? WString() : L" It should be \"" + formatSample + L"\", in which components are all optional."));
+				}
 
-					GuiTemplate* CreateTemplate(const Value& viewModel)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(CreateTemplate, viewModel);
-					}
-				};
+				return siteValue;
 			}
-#pragma warning(pop)
 
 /***********************************************************************
-Type Loader
+GuiVrtualTypeInstanceLoader
 ***********************************************************************/
 
-#endif
+			template<typename TControl, typename TControlStyle, typename TTemplate>
+			class GuiTemplateControlInstanceLoader : public Object, public IGuiInstanceLoader
+			{
+				typedef Ptr<WfExpression>				ArgumentRawFunctionType(ArgumentMap&);
+				typedef void							InitRawFunctionType(const WString&, Ptr<WfBlockStatement>);
+				typedef Func<ArgumentRawFunctionType>	ArgumentFunctionType;
+				typedef Func<InitRawFunctionType>		InitFunctionType;
 
-			extern bool						LoadGuiTemplateTypes();
+			protected:
+				GlobalStringKey								typeName;
+				WString										styleMethod;
+				ArgumentFunctionType						argumentFunction;
+				InitFunctionType							initFunction;
+
+				virtual void PrepareAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)
+				{
+				}
+
+				virtual void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)
+				{
+				}
+
+				virtual void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)
+				{
+				}
+			public:
+
+				static Ptr<WfExpression> CreateIThemeCall(const WString& method)
+				{
+					auto refPresentation = MakePtr<WfTopQualifiedExpression>();
+					refPresentation->name.value = L"presentation";
+
+					auto refTheme = MakePtr<WfChildExpression>();
+					refTheme->parent = refPresentation;
+					refTheme->name.value = L"theme";
+
+					auto refITheme = MakePtr<WfChildExpression>();
+					refITheme->parent = refTheme;
+					refITheme->name.value = L"ITheme";
+
+					auto refGetCurrentTheme = MakePtr<WfChildExpression>();
+					refGetCurrentTheme->parent = refITheme;
+					refGetCurrentTheme->name.value = L"GetCurrentTheme";
+
+					auto call = MakePtr<WfCallExpression>();
+					call->function = refGetCurrentTheme;
+
+					auto refStyleMethod = MakePtr<WfMemberExpression>();
+					refStyleMethod->parent = call;
+					refStyleMethod->name.value = method;
+
+					auto createStyle = MakePtr<WfCallExpression>();
+					createStyle->function = refStyleMethod;
+					return createStyle;
+				}
+
+				static Ptr<WfExpression> CreateStyleMethodArgument(const WString& method, ArgumentMap& arguments)
+				{
+					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+					if (indexControlTemplate == -1)
+					{
+						auto refControlStyle = MakePtr<WfReferenceExpression>();
+						refControlStyle->name.value = L"<controlStyle>";
+
+						auto refCreateArgument = MakePtr<WfMemberExpression>();
+						refCreateArgument->parent = refControlStyle;
+						refCreateArgument->name.value = L"CreateArgument";
+
+						auto call = MakePtr<WfCallExpression>();
+						call->function = refCreateArgument;
+
+						return call;
+					}
+					else
+					{
+						return CreateIThemeCall(method);
+					}
+				}
+
+				static Ptr<WfExpression> CreateTemplateFactory(List<ITypeDescriptor*>& controlTemplateTds, collections::List<WString>& errors)
+				{
+					auto templateType = TypeInfoRetriver<TTemplate*>::CreateTypeInfo();
+					auto factoryType = TypeInfoRetriver<Ptr<GuiTemplate::IFactory>>::CreateTypeInfo();
+
+					auto refFactory = MakePtr<WfNewTypeExpression>();
+					refFactory->type = GetTypeFromTypeInfo(factoryType.Obj());
+					{
+						auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
+						funcCreateTemplate->anonymity = WfFunctionAnonymity::Named;
+						funcCreateTemplate->name.value = L"CreateTemplate";
+						funcCreateTemplate->returnType = GetTypeFromTypeInfo(templateType.Obj());
+
+						auto argViewModel = MakePtr<WfFunctionArgument>();
+						argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
+						argViewModel->name.value = L"<viewModel>";
+						funcCreateTemplate->arguments.Add(argViewModel);
+
+						auto block = MakePtr<WfBlockStatement>();
+						funcCreateTemplate->statement = block;
+						
+						ITypeDescriptor* stopControlTemplateTd = nullptr;
+						FOREACH(ITypeDescriptor*, controlTemplateTd, controlTemplateTds)
+						{
+							if (stopControlTemplateTd)
+							{
+								errors.Add(L"Precompile: Type \"" + controlTemplateTd->GetTypeName() + L"\" will never be tried, because \"" + stopControlTemplateTd->GetTypeName() + L"\", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.");
+								continue;
+							}
+
+							ITypeInfo* viewModelType = nullptr;
+							{
+								auto ctors = controlTemplateTd->GetConstructorGroup();
+								if (ctors->GetMethodCount() != 1)
+								{
+									errors.Add(L"Precompile: To use type \"" + controlTemplateTd->GetTypeName() + L"\" as a control template or item template, it should have exactly one constructor.");
+									continue;
+								}
+
+								auto ctor = ctors->GetMethod(0);
+								if (ctor->GetParameterCount() > 1)
+								{
+									errors.Add(L"Precompile: To use type \"" + controlTemplateTd->GetTypeName() + L"\" as a control template or item template, its constructor cannot have more than one parameter.");
+									continue;
+								}
+
+								if (ctor->GetParameterCount() != 0)
+								{
+									viewModelType = ctor->GetParameter(0)->GetType();
+								}
+							}
+
+							if (!viewModelType)
+							{
+								stopControlTemplateTd = controlTemplateTd;
+							}
+
+							auto subBlock = MakePtr<WfBlockStatement>();
+							block->statements.Add(subBlock);
+
+							Ptr<ITypeInfo> controlTemplateType;
+							{
+								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+								elementType->SetTypeDescriptor(controlTemplateTd);
+
+								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
+								pointerType->SetElementType(elementType);
+
+								controlTemplateType = pointerType;
+							}
+
+							Ptr<WfBlockStatement> returnStatBlock;
+							if (viewModelType)
+							{
+								auto refViewModel = MakePtr<WfReferenceExpression>();
+								refViewModel->name.value = L"<viewModel>";
+
+								auto condition = MakePtr<WfTypeTestingExpression>();
+								condition->test = WfTypeTesting::IsType;
+								condition->expression = refViewModel;
+								condition->type = GetTypeFromTypeInfo(viewModelType);
+
+								auto ifStat = MakePtr<WfIfStatement>();
+								ifStat->expression = condition;
+
+								returnStatBlock = MakePtr<WfBlockStatement>();
+								ifStat->trueBranch = returnStatBlock;
+							}
+							else
+							{
+								returnStatBlock = subBlock;
+							}
+
+							{
+								auto createControlTemplate = MakePtr<WfNewTypeExpression>();
+								createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
+								if (viewModelType)
+								{
+									auto refViewModel = MakePtr<WfReferenceExpression>();
+									refViewModel->name.value = L"<viewModel>";
+									createControlTemplate->arguments.Add(refViewModel);
+								}
+
+								auto varTemplate = MakePtr<WfVariableDeclaration>();
+								varTemplate->type = GetTypeFromTypeInfo(templateType.Obj());
+								varTemplate->name.value = L"<template>";
+								varTemplate->expression = createControlTemplate;
+
+								auto varStat = MakePtr<WfVariableStatement>();
+								varStat->variable = varTemplate;
+								returnStatBlock->statements.Add(varStat);
+							}
+							{
+								auto refTemplate = MakePtr<WfReferenceExpression>();
+								refTemplate->name.value = L"<template>";
+
+								auto returnStat = MakePtr<WfReturnStatement>();
+								returnStat->expression = refTemplate;
+								returnStatBlock->statements.Add(returnStat);
+							}
+						}
+
+						if (!stopControlTemplateTd)
+						{
+						}
+
+						refFactory->functions.Add(funcCreateTemplate);
+					}
+
+					return refFactory;
+				}
+
+				static Ptr<WfExpression> CreateTemplateFactory(ITypeDescriptor* controlTemplateTd, collections::List<WString>& errors)
+				{
+					List<ITypeDescriptor*> controlTemplateTds;
+					controlTemplateTds.Add(controlTemplateTd);
+					return CreateTemplateFactory(controlTemplateTds, errors);
+				}
+
+				static ITypeDescriptor* GetControlTemplateType(Ptr<WfExpression> argument, const TypeInfo& controlTypeInfo, collections::List<WString>& errors)
+				{
+					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
+					if (!controlTemplateNameExpr)
+					{
+						errors.Add(L"Precompile: The value of contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L"\" of type \"" + controlTypeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
+						return nullptr;
+					}
+
+					auto controlTemplateName = controlTemplateNameExpr->value.value;
+					if (wcschr(controlTemplateName.Buffer(), L';') == nullptr)
+					{
+						errors.Add(L"Precompile: \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + controlTypeInfo.typeName.ToString() + L"\", is illegal because control template should not have multiple choices.");
+						return nullptr;
+					}
+
+					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
+					if (!controlTemplateTd)
+					{
+						errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + controlTypeInfo.typeName.ToString() + L"\", does not exist.");
+						return nullptr;
+					}
+
+					return controlTemplateTd;
+				}
+
+				static void GetItemTemplateType(Ptr<WfExpression> argument, List<ITypeDescriptor*>& tds, const TypeInfo& controlTypeInfo, const WString& propertyName, collections::List<WString>& errors)
+				{
+					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
+					if (!controlTemplateNameExpr)
+					{
+						errors.Add(L"Precompile: The value of contructor parameter \"" + propertyName + L"\" of type \"" + controlTypeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
+						return;
+					}
+
+					List<WString> typeNames;
+					SplitBySemicolon(controlTemplateNameExpr->value.value, typeNames);
+
+					FOREACH(WString, controlTemplateName, typeNames)
+					{
+						auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
+						if (!controlTemplateTd)
+						{
+							errors.Add(L"Precompile: Type \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + propertyName + L" of type \"" + controlTypeInfo.typeName.ToString() + L"\", does not exist.");
+							continue;
+						}
+						tds.Add(controlTemplateTd);
+					}
+				}
+
+			public:
+				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod)
+					:typeName(GlobalStringKey::Get(_typeName))
+					, styleMethod(_styleMethod)
+				{
+				}
+
+				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, WString argumentStyleMethod)
+					:typeName(GlobalStringKey::Get(_typeName))
+					, styleMethod(_styleMethod)
+					, argumentFunction([argumentStyleMethod](ArgumentMap& arguments){return CreateStyleMethodArgument(argumentStyleMethod, arguments);})
+				{
+				}
+
+				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, ArgumentRawFunctionType* _argumentFunction)
+					:typeName(GlobalStringKey::Get(_typeName))
+					, styleMethod(_styleMethod)
+					, argumentFunction(_argumentFunction)
+				{
+				}
+
+				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod, InitRawFunctionType* _initFunction)
+					:typeName(GlobalStringKey::Get(_typeName))
+					, styleMethod(_styleMethod)
+					, initFunction(_initFunction)
+				{
+				}
+
+				GlobalStringKey GetTypeName()override
+				{
+					return typeName;
+				}
+
+				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					propertyNames.Add(GlobalStringKey::_ControlTemplate);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						info->scope = GuiInstancePropertyInfo::Constructor;
+						return info;
+					}
+					return 0;
+				}
+
+				bool CanCreate(const TypeInfo& typeInfo)override
+				{
+					return typeName == typeInfo.typeName;
+				}
+
+				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				{
+					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
+					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+
+					Ptr<WfExpression> createStyleExpr;
+					if (indexControlTemplate == -1)
+					{
+						createStyleExpr = CreateIThemeCall(styleMethod);
+					}
+					else
+					{
+						if (auto controlTemplateTd = GetControlTemplateType(arguments.GetByIndex(indexControlTemplate)[0].expression, typeInfo, errors))
+						{
+							auto styleType = TypeInfoRetriver<TControlStyle*>::CreateTypeInfo();
+
+							auto refFactory = CreateTemplateFactory(controlTemplateTd, errors);
+							auto createStyle = MakePtr<WfNewTypeExpression>();
+							createStyle->type = GetTypeFromTypeInfo(styleType.Obj());
+							createStyle->arguments.Add(refFactory);
+							createStyleExpr = createStyle;
+						}
+						else
+						{
+							return nullptr;
+						}
+					}
+				
+					auto block = MakePtr<WfBlockStatement>();
+					{
+						auto varTemplate = MakePtr<WfVariableDeclaration>();
+						varTemplate->name.value = L"<controlStyle>";
+						varTemplate->expression = createStyleExpr;
+
+						auto varStat = MakePtr<WfVariableStatement>();
+						varStat->variable = varTemplate;
+						block->statements.Add(varStat);
+					}
+					PrepareAdditionalArguments(typeInfo, variableName, arguments, errors, block);
+					{
+						auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
+
+						auto createControl = MakePtr<WfNewTypeExpression>();
+						createControl->type = GetTypeFromTypeInfo(controlType.Obj());
+						{
+							auto refControlStyle = MakePtr<WfReferenceExpression>();
+							refControlStyle->name.value = L"<controlStyle>";
+
+							createControl->arguments.Add(refControlStyle);
+						}
+
+						if (argumentFunction)
+						{
+							createControl->arguments.Add(argumentFunction(arguments));
+						}
+						AddAdditionalArguments(typeInfo, variableName, arguments, errors, createControl);
+
+						auto refVariable = MakePtr<WfReferenceExpression>();
+						refVariable->name.value = variableName.ToString();
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->op = WfBinaryOperator::Assign;
+						assignExpr->first = refVariable;
+						assignExpr->second = createControl;
+
+						auto assignStat = MakePtr<WfExpressionStatement>();
+						assignStat->expression = assignExpr;
+						block->statements.Add(assignStat);
+					}
+
+					PrepareAdditionalArgumentsAfterCreation(typeInfo, variableName, arguments, errors, block);
+					if (initFunction)
+					{
+						initFunction(variableName.ToString(), block);
+					}
+					return block;
+				}
+			};
+#endif
 		}
 	}
 }
-
 #endif

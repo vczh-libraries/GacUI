@@ -222,7 +222,7 @@ private:
 
 	public:
 		InstanceTypeDescriptor(ResourceMockTypeLoader* _loader, ITypeDescriptor* _baseType, Ptr<GuiInstanceContext> _context)
-			:TypeDescriptorImpl(_context->className.Value(), _context->className.Value())
+			:TypeDescriptorImpl(_context->className, _context->className)
 			, loader(_loader)
 			, baseType(_baseType)
 			, context(_context)
@@ -328,8 +328,7 @@ public:
 
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
-			Ptr<GuiInstanceEnvironment> env = new GuiInstanceEnvironment(instance->context, resolver);
-			SearchAllEventHandlers(config, instances, instance, env, instance->eventHandlers);
+			SearchAllEventHandlers(config, instances, instance, instance->eventHandlers);
 		}
 	}
 
@@ -341,7 +340,7 @@ public:
 		}
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
-			if (instance->context->className && instance->baseType)
+			if (instance->baseType)
 			{
 				Ptr<ITypeDescriptor> typeDescriptor = new InstanceTypeDescriptor(this, instance->baseType, instance->context);
 				manager->SetTypeDescriptor(typeDescriptor->GetTypeName(), typeDescriptor);
@@ -357,7 +356,7 @@ public:
 		}
 		FOREACH(Ptr<Instance>, instance, instances.Values())
 		{
-			if (instance->context->className && instance->baseType)
+			if (instance->baseType)
 			{
 				Ptr<ITypeDescriptor> typeDescriptor = new InstanceTypeDescriptor(this, instance->baseType, instance->context);
 				manager->SetTypeDescriptor(typeDescriptor->GetTypeName(), nullptr);
@@ -425,13 +424,6 @@ void GuiMain()
 	else if (config->resOutput)
 	{
 		filesystem::Folder(resource->GetWorkingDirectory() + config->resOutput->output).Create(true);
-		if (config->resOutput->precompiledOutput != L"")
-		{
-			WString fileName = config->resOutput->output + config->resOutput->precompiledOutput;
-			auto xml = resource->SaveToXml(true);
-			OPEN_FILE(L"Precompiled Xml Resource");
-			XmlPrint(xml, writer);
-		}
 		if (config->resOutput->precompiledBinary != L"")
 		{
 			WString fileName = config->resOutput->output + config->resOutput->precompiledBinary;
