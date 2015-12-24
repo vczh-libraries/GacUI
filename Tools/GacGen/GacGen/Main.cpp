@@ -398,6 +398,11 @@ void GuiMain()
 	{
 		PrintErrorMessage(error);
 	}
+	if (errors.Count() > 0)
+	{
+		return;
+	}
+
 	GetInstanceLoaderManager()->SetResource(L"GACGEN", resource);
 
 	if (config->cppOutput)
@@ -416,11 +421,7 @@ void GuiMain()
 		WriteGlobalHeaderFile(config, typeLoader->instances);
 	}
 
-	if (errors.Count() > 0)
-	{
-		PrintErrorMessage(L"Skip generate precompiled resource because there are compilation errors.");
-	}
-	else if (config->resOutput)
+	if (config->resOutput)
 	{
 		filesystem::Folder(resource->GetWorkingDirectory() + config->resOutput->output).Create(true);
 		if (config->resOutput->precompiledBinary != L"")

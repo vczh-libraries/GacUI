@@ -448,7 +448,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTooltip)
 				CLASS_MEMBER_BASE(GuiPopup)
-				CONTROL_CONSTRUCTOR_CONTROLLER(GuiPopup)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTooltip)
 				
 				CLASS_MEMBER_PROPERTY_FAST(PreferredContentWidth)
 				CLASS_MEMBER_PROPERTY_FAST(TemporaryContentControl)
@@ -1224,7 +1224,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiToolstripButton)
 				CLASS_MEMBER_BASE(GuiMenuButton)
-				CONTROL_CONSTRUCTOR_CONTROLLER(GuiToolstripToolBar)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiToolstripButton)
 
 				CLASS_MEMBER_PROPERTY_FAST(Command)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ToolstripSubMenu)
