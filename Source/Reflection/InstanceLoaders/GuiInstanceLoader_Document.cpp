@@ -99,59 +99,56 @@ GuiDocumentItemInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						const auto& values = arguments.GetByIndex(index);
+						if (prop == GlobalStringKey::Empty)
 						{
-							const auto& values = arguments.GetByIndex(index);
-							if (prop == GlobalStringKey::Empty)
+							auto value = values[0].expression;
+							auto type = values[0].type;
+
+							Ptr<WfExpression> compositionExpr;
+							if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
-								auto value = values[0].expression;
-								auto type = values[0].type;
+								auto member = MakePtr<WfMemberExpression>();
+								member->parent = value;
+								member->name.value = L"BoundsComposition";
+								compositionExpr = member;
+							}
+							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							{
+								compositionExpr = value;
+							}
 
-								Ptr<WfExpression> compositionExpr;
-								if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
-								{
-									auto member = MakePtr<WfMemberExpression>();
-									member->parent = value;
-									member->name.value = L"BoundsComposition";
-									compositionExpr = member;
-								}
-								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
-								{
-									compositionExpr = value;
-								}
+							if (compositionExpr)
+							{
+								auto refItem = MakePtr<WfReferenceExpression>();
+								refItem->name.value = variableName.ToString();
 
-								if (compositionExpr)
-								{
-									auto refItem = MakePtr<WfReferenceExpression>();
-									refItem->name.value = variableName.ToString();
+								auto refContainer = MakePtr<WfMemberExpression>();
+								refContainer->parent = refItem;
+								refContainer->name.value = L"Container";
 
-									auto refContainer = MakePtr<WfMemberExpression>();
-									refContainer->parent = refItem;
-									refContainer->name.value = L"Container";
+								auto refAddChild = MakePtr<WfMemberExpression>();
+								refAddChild->parent = refContainer;
+								refAddChild->name.value = L"AddChild";
 
-									auto refAddChild = MakePtr<WfMemberExpression>();
-									refAddChild->parent = refContainer;
-									refAddChild->name.value = L"AddChild";
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddChild;
+								call->arguments.Add(compositionExpr);
 
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refAddChild;
-									call->arguments.Add(compositionExpr);
-
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = call;
-									block->statements.Add(stat);
-								}
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = call;
+								block->statements.Add(stat);
 							}
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -186,38 +183,35 @@ GuiDocumentViewerInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						const auto& values = arguments.GetByIndex(index);
+						if (prop == GlobalStringKey::Empty)
 						{
-							const auto& values = arguments.GetByIndex(index);
-							if (prop == GlobalStringKey::Empty)
-							{
-								auto type = values[0].type;
+							auto type = values[0].type;
 
-								auto refControl = MakePtr<WfReferenceExpression>();
-								refControl->name.value = variableName.ToString();
+							auto refControl = MakePtr<WfReferenceExpression>();
+							refControl->name.value = variableName.ToString();
 
-								auto refAddDocumentItem = MakePtr<WfMemberExpression>();
-								refAddDocumentItem->parent = refControl;
-								refAddDocumentItem->name.value = L"AddDocumentItem";
+							auto refAddDocumentItem = MakePtr<WfMemberExpression>();
+							refAddDocumentItem->parent = refControl;
+							refAddDocumentItem->name.value = L"AddDocumentItem";
 
-								auto call = MakePtr<WfCallExpression>();
-								call->function = refAddDocumentItem;
-								call->arguments.Add(values[0].expression);
+							auto call = MakePtr<WfCallExpression>();
+							call->function = refAddDocumentItem;
+							call->arguments.Add(values[0].expression);
 
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = call;
-								block->statements.Add(stat);
-							}
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = call;
+							block->statements.Add(stat);
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -253,38 +247,35 @@ GuiDocumentLabelInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						const auto& values = arguments.GetByIndex(index);
+						if (prop == GlobalStringKey::Empty)
 						{
-							const auto& values = arguments.GetByIndex(index);
-							if (prop == GlobalStringKey::Empty)
-							{
-								auto type = values[0].type;
+							auto type = values[0].type;
 
-								auto refControl = MakePtr<WfReferenceExpression>();
-								refControl->name.value = variableName.ToString();
+							auto refControl = MakePtr<WfReferenceExpression>();
+							refControl->name.value = variableName.ToString();
 
-								auto refAddDocumentItem = MakePtr<WfMemberExpression>();
-								refAddDocumentItem->parent = refControl;
-								refAddDocumentItem->name.value = L"AddDocumentItem";
+							auto refAddDocumentItem = MakePtr<WfMemberExpression>();
+							refAddDocumentItem->parent = refControl;
+							refAddDocumentItem->name.value = L"AddDocumentItem";
 
-								auto call = MakePtr<WfCallExpression>();
-								call->function = refAddDocumentItem;
-								call->arguments.Add(values[0].expression);
+							auto call = MakePtr<WfCallExpression>();
+							call->function = refAddDocumentItem;
+							call->arguments.Add(values[0].expression);
 
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = call;
-								block->statements.Add(stat);
-							}
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = call;
+							block->statements.Add(stat);
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}

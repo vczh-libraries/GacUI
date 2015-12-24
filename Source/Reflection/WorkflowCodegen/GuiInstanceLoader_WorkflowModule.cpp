@@ -132,6 +132,17 @@ Variable
 		{
 			auto var = MakePtr<WfVariableDeclaration>();
 			var->name.value = name.ToString();
+
+			if (auto ctors = type->GetConstructorGroup())
+			{
+				if (ctors->GetMethodCount() > 0)
+				{
+					auto ctor = ctors->GetMethod(0);
+					var->type = GetTypeFromTypeInfo(ctor->GetReturn());
+				}
+			}
+
+			if (!var->type)
 			{
 				Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
 				elementType->SetTypeDescriptor(type);

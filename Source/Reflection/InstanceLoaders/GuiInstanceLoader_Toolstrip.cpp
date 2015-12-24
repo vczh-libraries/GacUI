@@ -93,11 +93,7 @@ GuiToolstripMenuInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						return AddControlToToolstrip(variableName, arguments, errors);
-					}
-					return nullptr;
+					return AddControlToToolstrip(variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -131,11 +127,7 @@ GuiToolstripMenuBarInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						return AddControlToToolstrip(variableName, arguments, errors);
-					}
-					return nullptr;
+					return AddControlToToolstrip(variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -169,11 +161,7 @@ GuiToolstripToolBarInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						return AddControlToToolstrip(variableName, arguments, errors);
-					}
-					return nullptr;
+					return AddControlToToolstrip(variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE

@@ -91,16 +91,23 @@ GuiVrtualTypeInstanceLoader
 					auto refPresentation = MakePtr<WfTopQualifiedExpression>();
 					refPresentation->name.value = L"presentation";
 
-					auto refTheme = MakePtr<WfMemberExpression>();
+					auto refTheme = MakePtr<WfChildExpression>();
 					refTheme->parent = refPresentation;
 					refTheme->name.value = L"theme";
 
-					auto refITheme = MakePtr<WfMemberExpression>();
+					auto refITheme = MakePtr<WfChildExpression>();
 					refITheme->parent = refTheme;
 					refITheme->name.value = L"ITheme";
 
+					auto refGetCurrentTheme = MakePtr<WfChildExpression>();
+					refGetCurrentTheme->parent = refITheme;
+					refGetCurrentTheme->name.value = L"GetCurrentTheme";
+
+					auto call = MakePtr<WfCallExpression>();
+					call->function = refGetCurrentTheme;
+
 					auto refStyleMethod = MakePtr<WfMemberExpression>();
-					refStyleMethod->parent = refITheme;
+					refStyleMethod->parent = call;
 					refStyleMethod->name.value = method;
 
 					auto createStyle = MakePtr<WfCallExpression>();

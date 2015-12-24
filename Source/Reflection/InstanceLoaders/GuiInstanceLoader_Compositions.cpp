@@ -124,83 +124,80 @@ GuiCompositionInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						const auto& values = arguments.GetByIndex(index);
+						if (prop == GlobalStringKey::Empty)
 						{
-							const auto& values = arguments.GetByIndex(index);
-							if (prop == GlobalStringKey::Empty)
+							auto value = values[0].expression;
+							auto type = values[0].type;
+
+							Ptr<WfExpression> expr;
+							if (type->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
 							{
-								auto value = values[0].expression;
-								auto type = values[0].type;
+								auto refComposition = MakePtr<WfReferenceExpression>();
+								refComposition->name.value = variableName.ToString();
 
-								Ptr<WfExpression> expr;
-								if (type->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
-								{
-									auto refComposition = MakePtr<WfReferenceExpression>();
-									refComposition->name.value = variableName.ToString();
+								auto refOwnedElement = MakePtr<WfMemberExpression>();
+								refOwnedElement->parent = refComposition;
+								refOwnedElement->name.value = L"OwnedElement";
 
-									auto refOwnedElement = MakePtr<WfMemberExpression>();
-									refOwnedElement->parent = refComposition;
-									refOwnedElement->name.value = L"OwnedElement";
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refOwnedElement;
+								assign->second = value;
 
-									auto assign = MakePtr<WfBinaryExpression>();
-									assign->op = WfBinaryOperator::Assign;
-									assign->first = refOwnedElement;
-									assign->second = value;
+								expr = assign;
+							}
+							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							{
+								auto refBoundsComposition = MakePtr<WfMemberExpression>();
+								refBoundsComposition->parent = value;
+								refBoundsComposition->name.value = L"BoundsComposition";
 
-									expr = assign;
-								}
-								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
-								{
-									auto refBoundsComposition = MakePtr<WfMemberExpression>();
-									refBoundsComposition->parent = value;
-									refBoundsComposition->name.value = L"BoundsComposition";
+								auto refComposition = MakePtr<WfReferenceExpression>();
+								refComposition->name.value = variableName.ToString();
 
-									auto refComposition = MakePtr<WfReferenceExpression>();
-									refComposition->name.value = variableName.ToString();
+								auto refAddChild = MakePtr<WfMemberExpression>();
+								refAddChild->parent = refComposition;
+								refAddChild->name.value = L"AddChild";
 
-									auto refAddChild = MakePtr<WfMemberExpression>();
-									refAddChild->parent = refComposition;
-									refAddChild->name.value = L"AddChild";
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddChild;
+								call->arguments.Add(refBoundsComposition);
 
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refAddChild;
-									call->arguments.Add(refBoundsComposition);
+								expr = call;
+							}
+							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							{
+								auto refComposition = MakePtr<WfReferenceExpression>();
+								refComposition->name.value = variableName.ToString();
 
-									expr = call;
-								}
-								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
-								{
-									auto refComposition = MakePtr<WfReferenceExpression>();
-									refComposition->name.value = variableName.ToString();
+								auto refAddChild = MakePtr<WfMemberExpression>();
+								refAddChild->parent = refComposition;
+								refAddChild->name.value = L"AddChild";
 
-									auto refAddChild = MakePtr<WfMemberExpression>();
-									refAddChild->parent = refComposition;
-									refAddChild->name.value = L"AddChild";
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddChild;
+								call->arguments.Add(value);
 
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refAddChild;
-									call->arguments.Add(value);
+								expr = call;
+							}
 
-									expr = call;
-								}
-
-								if (expr)
-								{
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = expr;
-									block->statements.Add(stat);
-								}
+							if (expr)
+							{
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = expr;
+								block->statements.Add(stat);
 							}
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -255,95 +252,92 @@ GuiTableCompositionInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						if (prop == _Rows)
 						{
-							if (prop == _Rows)
+							auto indexColumns = arguments.Keys().IndexOf(_Columns);
+							if (indexColumns != -1)
 							{
-								auto indexColumns = arguments.Keys().IndexOf(_Columns);
-								if (indexColumns != -1)
+								auto& rows = arguments.GetByIndex(index);
+								auto& columns = arguments.GetByIndex(indexColumns);
+
 								{
-									auto& rows = arguments.GetByIndex(index);
-									auto& columns = arguments.GetByIndex(indexColumns);
+									auto refComposition = MakePtr<WfReferenceExpression>();
+									refComposition->name.value = variableName.ToString();
 
-									{
-										auto refComposition = MakePtr<WfReferenceExpression>();
-										refComposition->name.value = variableName.ToString();
+									auto refSetRowsAndColumns = MakePtr<WfMemberExpression>();
+									refSetRowsAndColumns->parent = refComposition;
+									refSetRowsAndColumns->name.value = L"SetRowsAndColumns";
 
-										auto refSetRowsAndColumns = MakePtr<WfMemberExpression>();
-										refSetRowsAndColumns->parent = refComposition;
-										refSetRowsAndColumns->name.value = L"SetRowsAndColumns";
+									auto rowsExpr = MakePtr<WfIntegerExpression>();
+									rowsExpr->value.value = itow(rows.Count());
 
-										auto rowsExpr = MakePtr<WfIntegerExpression>();
-										rowsExpr->value.value = itow(rows.Count());
+									auto columnsExpr = MakePtr<WfIntegerExpression>();
+									columnsExpr->value.value = itow(columns.Count());
 
-										auto columnsExpr = MakePtr<WfIntegerExpression>();
-										columnsExpr->value.value = itow(columns.Count());
+									auto call = MakePtr<WfCallExpression>();
+									call->function = refSetRowsAndColumns;
+									call->arguments.Add(rowsExpr);
+									call->arguments.Add(columnsExpr);
 
-										auto call = MakePtr<WfCallExpression>();
-										call->function = refSetRowsAndColumns;
-										call->arguments.Add(rowsExpr);
-										call->arguments.Add(columnsExpr);
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = call;
+									block->statements.Add(stat);
+								}
 
-										auto stat = MakePtr<WfExpressionStatement>();
-										stat->expression = call;
-										block->statements.Add(stat);
-									}
+								for (vint i = 0; i < rows.Count(); i++)
+								{
+									auto refComposition = MakePtr<WfReferenceExpression>();
+									refComposition->name.value = variableName.ToString();
 
-									for (vint i = 0; i < rows.Count(); i++)
-									{
-										auto refComposition = MakePtr<WfReferenceExpression>();
-										refComposition->name.value = variableName.ToString();
+									auto refSetRowOption = MakePtr<WfMemberExpression>();
+									refSetRowOption->parent = refComposition;
+									refSetRowOption->name.value = L"SetRowOption";
 
-										auto refSetRowOption = MakePtr<WfMemberExpression>();
-										refSetRowOption->parent = refComposition;
-										refSetRowOption->name.value = L"SetRowOption";
+									auto indexExpr = MakePtr<WfIntegerExpression>();
+									indexExpr->value.value = itow(i);
 
-										auto indexExpr = MakePtr<WfIntegerExpression>();
-										indexExpr->value.value = itow(i);
+									auto call = MakePtr<WfCallExpression>();
+									call->function = refSetRowOption;
+									call->arguments.Add(indexExpr);
+									call->arguments.Add(rows[i].expression);
 
-										auto call = MakePtr<WfCallExpression>();
-										call->function = refSetRowOption;
-										call->arguments.Add(indexExpr);
-										call->arguments.Add(rows[index].expression);
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = call;
+									block->statements.Add(stat);
+								}
 
-										auto stat = MakePtr<WfExpressionStatement>();
-										stat->expression = call;
-										block->statements.Add(stat);
-									}
+								for (vint i = 0; i < columns.Count(); i++)
+								{
+									auto refComposition = MakePtr<WfReferenceExpression>();
+									refComposition->name.value = variableName.ToString();
 
-									for (vint i = 0; i < columns.Count(); i++)
-									{
-										auto refComposition = MakePtr<WfReferenceExpression>();
-										refComposition->name.value = variableName.ToString();
+									auto refSetColumnOption = MakePtr<WfMemberExpression>();
+									refSetColumnOption->parent = refComposition;
+									refSetColumnOption->name.value = L"SetColumnOption";
 
-										auto refSetColumnOption = MakePtr<WfMemberExpression>();
-										refSetColumnOption->parent = refComposition;
-										refSetColumnOption->name.value = L"SetColumnOption";
+									auto indexExpr = MakePtr<WfIntegerExpression>();
+									indexExpr->value.value = itow(i);
 
-										auto indexExpr = MakePtr<WfIntegerExpression>();
-										indexExpr->value.value = itow(i);
+									auto call = MakePtr<WfCallExpression>();
+									call->function = refSetColumnOption;
+									call->arguments.Add(indexExpr);
+									call->arguments.Add(columns[i].expression);
 
-										auto call = MakePtr<WfCallExpression>();
-										call->function = refSetColumnOption;
-										call->arguments.Add(indexExpr);
-										call->arguments.Add(columns[index].expression);
-
-										auto stat = MakePtr<WfExpressionStatement>();
-										stat->expression = call;
-										block->statements.Add(stat);
-									}
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = call;
+									block->statements.Add(stat);
 								}
 							}
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -387,63 +381,60 @@ GuiCellCompositionInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						if (prop == _Site)
 						{
-							if (prop == _Site)
+							auto value = arguments.GetByIndex(index)[0].expression;
+							Value siteValue = ParseConstantArgument<SiteValue>(value, typeInfo, L"Site", L"row:<integer> column:<integer> rowSpan:<integer> columnSpan:<integer>", errors);
+							if (siteValue.IsNull())
 							{
-								auto value = arguments.GetByIndex(index)[0].expression;
-								Value siteValue = ParseConstantArgument<SiteValue>(value, typeInfo, L"Site", L"row:<integer> column:<integer> rowSpan:<integer> columnSpan:<integer>", errors);
-								if (siteValue.IsNull())
+								continue;
+							}
+
+							{
+								auto refComposition = MakePtr<WfReferenceExpression>();
+								refComposition->name.value = variableName.ToString();
+
+								auto refSetSite = MakePtr<WfMemberExpression>();
+								refSetSite->parent = refComposition;
+								refSetSite->name.value = L"SetSite";
+
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refSetSite;
 								{
-									continue;
+									auto arg = MakePtr<WfIntegerExpression>();
+									arg->value.value = siteValue.GetProperty(L"row").GetText();
+									call->arguments.Add(arg);
+								}
+								{
+									auto arg = MakePtr<WfIntegerExpression>();
+									arg->value.value = siteValue.GetProperty(L"column").GetText();
+									call->arguments.Add(arg);
+								}
+								{
+									auto arg = MakePtr<WfIntegerExpression>();
+									arg->value.value = siteValue.GetProperty(L"rowSpan").GetText();
+									call->arguments.Add(arg);
+								}
+								{
+									auto arg = MakePtr<WfIntegerExpression>();
+									arg->value.value = siteValue.GetProperty(L"columnSpan").GetText();
+									call->arguments.Add(arg);
 								}
 
-								{
-									auto refComposition = MakePtr<WfReferenceExpression>();
-									refComposition->name.value = variableName.ToString();
-
-									auto refSetSite = MakePtr<WfMemberExpression>();
-									refSetSite->parent = refComposition;
-									refSetSite->name.value = L"SetSite";
-
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refSetSite;
-									{
-										auto arg = MakePtr<WfIntegerExpression>();
-										arg->value.value = siteValue.GetProperty(L"row").GetText();
-										call->arguments.Add(arg);
-									}
-									{
-										auto arg = MakePtr<WfIntegerExpression>();
-										arg->value.value = siteValue.GetProperty(L"column").GetText();
-										call->arguments.Add(arg);
-									}
-									{
-										auto arg = MakePtr<WfIntegerExpression>();
-										arg->value.value = siteValue.GetProperty(L"rowSpan").GetText();
-										call->arguments.Add(arg);
-									}
-									{
-										auto arg = MakePtr<WfIntegerExpression>();
-										arg->value.value = siteValue.GetProperty(L"columnSpan").GetText();
-										call->arguments.Add(arg);
-									}
-
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = call;
-									block->statements.Add(stat);
-								}
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = call;
+								block->statements.Add(stat);
 							}
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}

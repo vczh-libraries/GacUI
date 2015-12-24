@@ -457,88 +457,85 @@ GuiDefaultInstanceLoader
 
 			Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
 			{
-				if (typeInfo.typeName == GetTypeName())
+				auto block = MakePtr<WfBlockStatement>();
+
+				FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 				{
-					auto block = MakePtr<WfBlockStatement>();
-
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
+					if (propertyType.f1)
 					{
-						PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
-						if (propertyType.f1)
+						switch (propertyType.f0->support)
 						{
-							switch (propertyType.f0->support)
+						case GuiInstancePropertyInfo::SupportCollection:
 							{
-							case GuiInstancePropertyInfo::SupportCollection:
+								const auto& values = arguments.GetByIndex(index);
+								if (values.Count() > 0)
 								{
-									const auto& values = arguments.GetByIndex(index);
-									if (values.Count() > 0)
 									{
-										{
-											auto refValue = MakePtr<WfReferenceExpression>();
-											refValue->name.value = variableName.ToString();
+										auto refValue = MakePtr<WfReferenceExpression>();
+										refValue->name.value = variableName.ToString();
 
-											auto refProp = MakePtr<WfMemberExpression>();
-											refProp->parent = refValue;
-											refProp->name.value = prop.ToString();
+										auto refProp = MakePtr<WfMemberExpression>();
+										refProp->parent = refValue;
+										refProp->name.value = prop.ToString();
 
-											auto varDesc = MakePtr<WfVariableDeclaration>();
-											varDesc->name.value = L"<collection>";
-											varDesc->expression = refProp;
+										auto varDesc = MakePtr<WfVariableDeclaration>();
+										varDesc->name.value = L"<collection>";
+										varDesc->expression = refProp;
 
-											auto stat = MakePtr<WfVariableStatement>();
-											stat->variable = varDesc;
-											block->statements.Add(stat);
-										}
+										auto stat = MakePtr<WfVariableStatement>();
+										stat->variable = varDesc;
+										block->statements.Add(stat);
+									}
 
-										for (vint i = 0; i < values.Count(); i++)
-										{
-											auto refCollection = MakePtr<WfReferenceExpression>();
-											refCollection->name.value = L"<collection>";
+									for (vint i = 0; i < values.Count(); i++)
+									{
+										auto refCollection = MakePtr<WfReferenceExpression>();
+										refCollection->name.value = L"<collection>";
 
-											auto refAdd = MakePtr<WfMemberExpression>();
-											refAdd->parent = refCollection;
-											refAdd->name.value = L"Add";
+										auto refAdd = MakePtr<WfMemberExpression>();
+										refAdd->parent = refCollection;
+										refAdd->name.value = L"Add";
 
-											auto call = MakePtr<WfCallExpression>();
-											call->function = refAdd;
-											call->arguments.Add(values[i].expression);
+										auto call = MakePtr<WfCallExpression>();
+										call->function = refAdd;
+										call->arguments.Add(values[i].expression);
 
-											auto stat = MakePtr<WfExpressionStatement>();
-											stat->expression = call;
-											block->statements.Add(stat);
-										}
+										auto stat = MakePtr<WfExpressionStatement>();
+										stat->expression = call;
+										block->statements.Add(stat);
 									}
 								}
-								break;
-							case GuiInstancePropertyInfo::SupportAssign:
-							case GuiInstancePropertyInfo::SupportArray:
-								{										  
-									auto refValue = MakePtr<WfReferenceExpression>();
-									refValue->name.value = variableName.ToString();
-
-									auto refProp = MakePtr<WfMemberExpression>();
-									refProp->parent = refValue;
-									refProp->name.value = prop.ToString();
-
-									auto assign = MakePtr<WfBinaryExpression>();
-									assign->op = WfBinaryOperator::Assign;
-									assign->first = refProp;
-									assign->second = arguments.GetByIndex(index)[0].expression;
-
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = assign;
-									block->statements.Add(stat);
-								}
-								break;
-							default:;
 							}
+							break;
+						case GuiInstancePropertyInfo::SupportAssign:
+						case GuiInstancePropertyInfo::SupportArray:
+							{										  
+								auto refValue = MakePtr<WfReferenceExpression>();
+								refValue->name.value = variableName.ToString();
+
+								auto refProp = MakePtr<WfMemberExpression>();
+								refProp->parent = refValue;
+								refProp->name.value = prop.ToString();
+
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refProp;
+								assign->second = arguments.GetByIndex(index)[0].expression;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assign;
+								block->statements.Add(stat);
+							}
+							break;
+						default:;
 						}
 					}
+				}
 
-					if (block->statements.Count() > 0)
-					{
-						return block;
-					}
+				if (block->statements.Count() > 0)
+				{
+					return block;
 				}
 				return nullptr;
 			}
@@ -550,7 +547,7 @@ GuiDefaultInstanceLoader
 
 				auto refProp = MakePtr<WfMemberExpression>();
 				refProp->parent = refValue;
-				refProp->name.value = variableName.ToString();
+				refProp->name.value = propertyInfo.propertyName.ToString();
 
 				return refProp;
 			}

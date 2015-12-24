@@ -52,97 +52,94 @@ GuiControlInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						const auto& values = arguments.GetByIndex(index);
+						if (prop == GlobalStringKey::Empty)
 						{
-							const auto& values = arguments.GetByIndex(index);
-							if (prop == GlobalStringKey::Empty)
+							auto value = values[0].expression;
+							auto type = values[0].type;
+
+							Ptr<WfExpression> expr;
+							if (type->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
 							{
-								auto value = values[0].expression;
-								auto type = values[0].type;
+								auto refControl = MakePtr<WfReferenceExpression>();
+								refControl->name.value = variableName.ToString();
 
-								Ptr<WfExpression> expr;
-								if (type->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
-								{
-									auto refControl = MakePtr<WfReferenceExpression>();
-									refControl->name.value = variableName.ToString();
+								auto refAddComponent = MakePtr<WfMemberExpression>();
+								refAddComponent->parent = refControl;
+								refAddComponent->name.value = L"AddComponent";
 
-									auto refAddComponent = MakePtr<WfMemberExpression>();
-									refAddComponent->parent = refControl;
-									refAddComponent->name.value = L"AddComponent";
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddComponent;
+								call->arguments.Add(value);
 
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refAddComponent;
-									call->arguments.Add(value);
+								expr = call;
+							}
+							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
+							{
+								auto refControl = MakePtr<WfReferenceExpression>();
+								refControl->name.value = variableName.ToString();
 
-									expr = call;
-								}
-								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
-								{
-									auto refControl = MakePtr<WfReferenceExpression>();
-									refControl->name.value = variableName.ToString();
+								auto refAddControlHostComponent = MakePtr<WfMemberExpression>();
+								refAddControlHostComponent->parent = refControl;
+								refAddControlHostComponent->name.value = L"AddControlHostComponent";
 
-									auto refAddControlHostComponent = MakePtr<WfMemberExpression>();
-									refAddControlHostComponent->parent = refControl;
-									refAddControlHostComponent->name.value = L"AddControlHostComponent";
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddControlHostComponent;
+								call->arguments.Add(value);
 
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refAddControlHostComponent;
-									call->arguments.Add(value);
+								expr = call;
+							}
+							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							{
+								auto refControl = MakePtr<WfReferenceExpression>();
+								refControl->name.value = variableName.ToString();
 
-									expr = call;
-								}
-								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
-								{
-									auto refControl = MakePtr<WfReferenceExpression>();
-									refControl->name.value = variableName.ToString();
+								auto refAddChild = MakePtr<WfMemberExpression>();
+								refAddChild->parent = refControl;
+								refAddChild->name.value = L"AddChild";
 
-									auto refAddChild = MakePtr<WfMemberExpression>();
-									refAddChild->parent = refControl;
-									refAddChild->name.value = L"AddChild";
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddChild;
+								call->arguments.Add(value);
 
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refAddChild;
-									call->arguments.Add(value);
+								expr = call;
+							}
+							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							{
+								auto refControl = MakePtr<WfReferenceExpression>();
+								refControl->name.value = variableName.ToString();
 
-									expr = call;
-								}
-								else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
-								{
-									auto refControl = MakePtr<WfReferenceExpression>();
-									refControl->name.value = variableName.ToString();
+								auto refContainerComposition = MakePtr<WfMemberExpression>();
+								refContainerComposition->parent = refControl;
+								refContainerComposition->name.value = L"ContainerComposition";
 
-									auto refContainerComposition = MakePtr<WfMemberExpression>();
-									refContainerComposition->parent = refControl;
-									refContainerComposition->name.value = L"ContainerComposition";
+								auto refAddChild = MakePtr<WfMemberExpression>();
+								refAddChild->parent = refContainerComposition;
+								refAddChild->name.value = L"AddChild";
 
-									auto refAddChild = MakePtr<WfMemberExpression>();
-									refAddChild->parent = refContainerComposition;
-									refAddChild->name.value = L"AddChild";
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refAddChild;
+								call->arguments.Add(value);
 
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refAddChild;
-									call->arguments.Add(value);
+								expr = call;
+							}
 
-									expr = call;
-								}
-
-								if (expr)
-								{
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = expr;
-									block->statements.Add(stat);
-								}
+							if (expr)
+							{
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = expr;
+								block->statements.Add(stat);
 							}
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}

@@ -117,6 +117,7 @@ WorkflowReferenceNamesVisitor
 				{
 					List<types::PropertyResolving> possibleInfos;
 					IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, repr->setters.Keys()[index]);
+
 					auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
 
 					{
@@ -395,6 +396,13 @@ WorkflowReferenceNamesVisitor
 									else
 									{
 										Visit(text.Obj());
+										auto index = resolvingResult.propertyResolvings.Keys().IndexOf(text.Obj());
+										if (index != -1)
+										{
+											auto value = resolvingResult.propertyResolvings.Values()[index];
+											resolvingResult.propertyResolvings.Remove(text.Obj());
+											resolvingResult.propertyResolvings.Add(repr, value);
+										}
 									}
 									return;
 								}

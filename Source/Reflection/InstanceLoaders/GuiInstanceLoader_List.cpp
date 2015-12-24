@@ -80,26 +80,23 @@ GuiSelectableListControlInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						auto block = MakePtr<WfBlockStatement>();
+					auto block = MakePtr<WfBlockStatement>();
 
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					{
+						const auto& values = arguments.GetByIndex(index);
+						if (prop == GlobalStringKey::_ItemTemplate)
 						{
-							const auto& values = arguments.GetByIndex(index);
-							if (prop == GlobalStringKey::_ItemTemplate)
+							if (auto stat = CreateSetControlTemplateStyle<GuiListItemTemplate_ItemStyleProvider, GuiListItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", errors))
 							{
-								if (auto stat = CreateSetControlTemplateStyle<GuiListItemTemplate_ItemStyleProvider, GuiListItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", errors))
-								{
-									block->statements.Add(stat);
-								}
+								block->statements.Add(stat);
 							}
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -142,26 +139,23 @@ GuiVirtualTreeViewInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						auto block = MakePtr<WfBlockStatement>();
+					auto block = MakePtr<WfBlockStatement>();
 
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					{
+						const auto& values = arguments.GetByIndex(index);
+						if (prop == GlobalStringKey::_ItemTemplate)
 						{
-							const auto& values = arguments.GetByIndex(index);
-							if (prop == GlobalStringKey::_ItemTemplate)
+							if (auto stat = CreateSetControlTemplateStyle<GuiTreeItemTemplate_ItemStyleProvider, GuiTreeItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"NodeStyleProvider", errors))
 							{
-								if (auto stat = CreateSetControlTemplateStyle<GuiTreeItemTemplate_ItemStyleProvider, GuiTreeItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"NodeStyleProvider", errors))
-								{
-									block->statements.Add(stat);
-								}
+								block->statements.Add(stat);
 							}
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -438,43 +432,40 @@ GuiTreeViewInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						if (prop == _Nodes)
 						{
-							if (prop == _Nodes)
-							{
-								auto refControl = MakePtr<WfReferenceExpression>();
-								refControl->name.value = variableName.ToString();
+							auto refControl = MakePtr<WfReferenceExpression>();
+							refControl->name.value = variableName.ToString();
 
-								auto refNodes = MakePtr<WfMemberExpression>();
-								refNodes->parent = refControl;
-								refNodes->name.value = L"Nodes";
+							auto refNodes = MakePtr<WfMemberExpression>();
+							refNodes->parent = refControl;
+							refNodes->name.value = L"Nodes";
 
-								auto refChildren = MakePtr<WfMemberExpression>();
-								refChildren->parent = refNodes;
-								refChildren->name.value = L"Children";
+							auto refChildren = MakePtr<WfMemberExpression>();
+							refChildren->parent = refNodes;
+							refChildren->name.value = L"Children";
 
-								auto refAdd = MakePtr<WfMemberExpression>();
-								refAdd->parent = refChildren;
-								refAdd->name.value = L"Add";
+							auto refAdd = MakePtr<WfMemberExpression>();
+							refAdd->parent = refChildren;
+							refAdd->name.value = L"Add";
 
-								auto call = MakePtr<WfCallExpression>();
-								call->function = refAdd;
-								call->arguments.Add(arguments.GetByIndex(index)[0].expression);
+							auto call = MakePtr<WfCallExpression>();
+							call->function = refAdd;
+							call->arguments.Add(arguments.GetByIndex(index)[0].expression);
 
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = call;
-								block->statements.Add(stat);
-							}
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = call;
+							block->statements.Add(stat);
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -629,116 +620,113 @@ GuiBindableDataColumnInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						if (prop == _VisualizerTemplates)
 						{
-							if (prop == _VisualizerTemplates)
+							using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiGridVisualizerTemplate>;
+							List<ITypeDescriptor*> controlTemplateTds;
+							Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
+
+							if (controlTemplateTds.Count() > 0)
 							{
-								using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiGridVisualizerTemplate>;
-								List<ITypeDescriptor*> controlTemplateTds;
-								Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
-
-								if (controlTemplateTds.Count() > 0)
+								FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
 								{
-									FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
-									{
-										auto refFactory = Helper::CreateTemplateFactory(controlTemplateTd, errors);
-										auto createStyle = MakePtr<WfNewTypeExpression>();
-										if (index == 0)
-										{
-											createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::Factory>>::CreateTypeInfo().Obj());
-										}
-										else
-										{
-											createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::DecoratedFactory>>::CreateTypeInfo().Obj());
-										}
-										createStyle->arguments.Add(refFactory);
-										{
-											auto refContainer = MakePtr<WfReferenceExpression>();
-											refContainer->name.value = variableName.ToString();
-											createStyle->arguments.Add(refContainer);
-										}
-										if (index > 0)
-										{
-											auto refPreviousFactory = MakePtr<WfReferenceExpression>();
-											refPreviousFactory->name.value = L"<factory>" + itow(index - 1);
-											createStyle->arguments.Add(refPreviousFactory);
-										}
-
-										auto varDecl = MakePtr<WfVariableDeclaration>();
-										varDecl->name.value = L"<factory>" + itow(index);
-										varDecl->expression = createStyle;
-
-										auto stat = MakePtr<WfVariableStatement>();
-										stat->variable = varDecl;
-										block->statements.Add(stat);
-									}
-
-									auto refContainer = MakePtr<WfReferenceExpression>();
-									refContainer->name.value = variableName.ToString();
-
-									auto refVisualizerFactory = MakePtr<WfMemberExpression>();
-									refVisualizerFactory->parent = refContainer;
-									refVisualizerFactory->name.value = L"Visualizer";
-									
-									auto refLastFactory = MakePtr<WfMemberExpression>();
-									refLastFactory->parent = refContainer;
-									refLastFactory->name.value = L"<factory>" + itow(controlTemplateTds.Count() - 1);
-
-									auto assign = MakePtr<WfBinaryExpression>();
-									assign->op = WfBinaryOperator::Assign;
-									assign->first = refVisualizerFactory;
-									assign->second = refLastFactory;
-
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = assign;
-									block->statements.Add(stat);
-								}
-							}
-							else if (prop == _EditorTemplate)
-							{
-								using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiGridEditorTemplate>;
-								List<ITypeDescriptor*> controlTemplateTds;
-								Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
-
-								if (controlTemplateTds.Count() > 0)
-								{
-									auto refFactory = Helper::CreateTemplateFactory(controlTemplateTds, errors);
+									auto refFactory = Helper::CreateTemplateFactory(controlTemplateTd, errors);
 									auto createStyle = MakePtr<WfNewTypeExpression>();
-									createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataEditor::Factory>>::CreateTypeInfo().Obj());
+									if (index == 0)
+									{
+										createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::Factory>>::CreateTypeInfo().Obj());
+									}
+									else
+									{
+										createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::DecoratedFactory>>::CreateTypeInfo().Obj());
+									}
 									createStyle->arguments.Add(refFactory);
 									{
 										auto refContainer = MakePtr<WfReferenceExpression>();
 										refContainer->name.value = variableName.ToString();
 										createStyle->arguments.Add(refContainer);
 									}
+									if (index > 0)
+									{
+										auto refPreviousFactory = MakePtr<WfReferenceExpression>();
+										refPreviousFactory->name.value = L"<factory>" + itow(index - 1);
+										createStyle->arguments.Add(refPreviousFactory);
+									}
 
-									auto refContainer = MakePtr<WfReferenceExpression>();
-									refContainer->name.value = variableName.ToString();
+									auto varDecl = MakePtr<WfVariableDeclaration>();
+									varDecl->name.value = L"<factory>" + itow(index);
+									varDecl->expression = createStyle;
 
-									auto refEditorFactory = MakePtr<WfMemberExpression>();
-									refEditorFactory->parent = refContainer;
-									refEditorFactory->name.value = L"EditorFactory";
-
-									auto assign = MakePtr<WfBinaryExpression>();
-									assign->op = WfBinaryOperator::Assign;
-									assign->first = refEditorFactory;
-									assign->second = createStyle;
-
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = assign;
+									auto stat = MakePtr<WfVariableStatement>();
+									stat->variable = varDecl;
 									block->statements.Add(stat);
 								}
+
+								auto refContainer = MakePtr<WfReferenceExpression>();
+								refContainer->name.value = variableName.ToString();
+
+								auto refVisualizerFactory = MakePtr<WfMemberExpression>();
+								refVisualizerFactory->parent = refContainer;
+								refVisualizerFactory->name.value = L"Visualizer";
+									
+								auto refLastFactory = MakePtr<WfMemberExpression>();
+								refLastFactory->parent = refContainer;
+								refLastFactory->name.value = L"<factory>" + itow(controlTemplateTds.Count() - 1);
+
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refVisualizerFactory;
+								assign->second = refLastFactory;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assign;
+								block->statements.Add(stat);
 							}
 						}
-
-						if (block->statements.Count() > 0)
+						else if (prop == _EditorTemplate)
 						{
-							return block;
+							using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiGridEditorTemplate>;
+							List<ITypeDescriptor*> controlTemplateTds;
+							Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
+
+							if (controlTemplateTds.Count() > 0)
+							{
+								auto refFactory = Helper::CreateTemplateFactory(controlTemplateTds, errors);
+								auto createStyle = MakePtr<WfNewTypeExpression>();
+								createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataEditor::Factory>>::CreateTypeInfo().Obj());
+								createStyle->arguments.Add(refFactory);
+								{
+									auto refContainer = MakePtr<WfReferenceExpression>();
+									refContainer->name.value = variableName.ToString();
+									createStyle->arguments.Add(refContainer);
+								}
+
+								auto refContainer = MakePtr<WfReferenceExpression>();
+								refContainer->name.value = variableName.ToString();
+
+								auto refEditorFactory = MakePtr<WfMemberExpression>();
+								refEditorFactory->parent = refContainer;
+								refEditorFactory->name.value = L"EditorFactory";
+
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refEditorFactory;
+								assign->second = createStyle;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assign;
+								block->statements.Add(stat);
+							}
 						}
+					}
+
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -829,35 +817,32 @@ GuiBindableDataGridInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
 					{
-						auto block = MakePtr<WfBlockStatement>();
-
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+						if (prop == _Columns)
 						{
-							if (prop == _Columns)
-							{
-								auto refControl = MakePtr<WfReferenceExpression>();
-								refControl->name.value = variableName.ToString();
+							auto refControl = MakePtr<WfReferenceExpression>();
+							refControl->name.value = variableName.ToString();
 
-								auto refAddBindableColumn = MakePtr<WfMemberExpression>();
-								refAddBindableColumn->parent = refControl;
-								refAddBindableColumn->name.value = L"AddBindableColumn";
+							auto refAddBindableColumn = MakePtr<WfMemberExpression>();
+							refAddBindableColumn->parent = refControl;
+							refAddBindableColumn->name.value = L"AddBindableColumn";
 
-								auto call = MakePtr<WfCallExpression>();
-								call->function = refAddBindableColumn;
-								call->arguments.Add(arguments.GetByIndex(index)[0].expression);
+							auto call = MakePtr<WfCallExpression>();
+							call->function = refAddBindableColumn;
+							call->arguments.Add(arguments.GetByIndex(index)[0].expression);
 
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = call;
-								block->statements.Add(stat);
-							}
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = call;
+							block->statements.Add(stat);
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}
@@ -950,85 +935,82 @@ GuiTreeNodeInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						auto block = MakePtr<WfBlockStatement>();
+					auto block = MakePtr<WfBlockStatement>();
 
-						FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					{
+						if (prop == GlobalStringKey::Empty)
 						{
-							if (prop == GlobalStringKey::Empty)
+							auto refNode = MakePtr<WfReferenceExpression>();
+							refNode->name.value = variableName.ToString();
+
+							auto refChildren = MakePtr<WfMemberExpression>();
+							refChildren->parent = refNode;
+							refChildren->name.value = L"Children";
+
+							auto refAdd = MakePtr<WfMemberExpression>();
+							refAdd->parent = refChildren;
+							refAdd->name.value = L"Add";
+
+							auto call = MakePtr<WfCallExpression>();
+							call->function = refAdd;
+							call->arguments.Add(arguments.GetByIndex(index)[0].expression);
+
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = call;
+							block->statements.Add(stat);
+						}
+						else if (prop == _Text || prop == _Image || prop == _Tag)
+						{
 							{
 								auto refNode = MakePtr<WfReferenceExpression>();
 								refNode->name.value = variableName.ToString();
 
-								auto refChildren = MakePtr<WfMemberExpression>();
-								refChildren->parent = refNode;
-								refChildren->name.value = L"Children";
+								auto refData = MakePtr<WfMemberExpression>();
+								refData->parent = refNode;
+								refData->name.value = L"Data";
 
-								auto refAdd = MakePtr<WfMemberExpression>();
-								refAdd->parent = refChildren;
-								refAdd->name.value = L"Add";
+								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								castExpr->strategy = WfTypeCastingStrategy::Strong;
+								castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
+								castExpr->expression = refData;
+
+								auto refProp = MakePtr<WfMemberExpression>();
+								refProp->parent = castExpr;
+								refProp->name.value = prop.ToString();
+
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refProp;
+								assign->second = arguments.GetByIndex(index)[0].expression;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assign;
+								block->statements.Add(stat);
+							}
+
+							if (prop != _Tag)
+							{
+								auto refNode = MakePtr<WfReferenceExpression>();
+								refNode->name.value = variableName.ToString();
+
+								auto refNotifyDataModified = MakePtr<WfMemberExpression>();
+								refNotifyDataModified->parent = refNode;
+								refNotifyDataModified->name.value = L"NotifyDataModified";
 
 								auto call = MakePtr<WfCallExpression>();
-								call->function = refAdd;
-								call->arguments.Add(arguments.GetByIndex(index)[0].expression);
+								call->function = refNotifyDataModified;
 
 								auto stat = MakePtr<WfExpressionStatement>();
 								stat->expression = call;
 								block->statements.Add(stat);
 							}
-							else if (prop == _Text || prop == _Image || prop == _Tag)
-							{
-								{
-									auto refNode = MakePtr<WfReferenceExpression>();
-									refNode->name.value = variableName.ToString();
-
-									auto refData = MakePtr<WfMemberExpression>();
-									refData->parent = refNode;
-									refData->name.value = L"Data";
-
-									auto castExpr = MakePtr<WfTypeCastingExpression>();
-									castExpr->strategy = WfTypeCastingStrategy::Strong;
-									castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
-									castExpr->expression = refData;
-
-									auto refProp = MakePtr<WfMemberExpression>();
-									refProp->parent = castExpr;
-									refProp->name.value = prop.ToString();
-
-									auto assign = MakePtr<WfBinaryExpression>();
-									assign->op = WfBinaryOperator::Assign;
-									assign->first = refProp;
-									assign->second = arguments.GetByIndex(index)[0].expression;
-
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = assign;
-									block->statements.Add(stat);
-								}
-
-								if (prop != _Tag)
-								{
-									auto refNode = MakePtr<WfReferenceExpression>();
-									refNode->name.value = variableName.ToString();
-
-									auto refNotifyDataModified = MakePtr<WfMemberExpression>();
-									refNotifyDataModified->parent = refNode;
-									refNotifyDataModified->name.value = L"NotifyDataModified";
-
-									auto call = MakePtr<WfCallExpression>();
-									call->function = refNotifyDataModified;
-
-									auto stat = MakePtr<WfExpressionStatement>();
-									stat->expression = call;
-									block->statements.Add(stat);
-								}
-							}
 						}
+					}
 
-						if (block->statements.Count() > 0)
-						{
-							return block;
-						}
+					if (block->statements.Count() > 0)
+					{
+						return block;
 					}
 					return nullptr;
 				}

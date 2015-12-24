@@ -81,7 +81,6 @@ Workflow_PrecompileInstanceContext
 				Workflow_GetSharedManager()->Clear(true, true);
 				Workflow_GetSharedManager()->AddModule(module);
 				Workflow_GetSharedManager()->Rebuild(true);
-				WString moduleCode = Workflow_ModuleToString(module);
 
 				if (Workflow_GetSharedManager()->errors.Count() == 0)
 				{
@@ -95,7 +94,7 @@ Workflow_PrecompileInstanceContext
 						errors.Add(error->errorMessage);
 					}
 					errors.Add(ERROR_CODE_PREFIX L"Print code for reference:");
-					errors.Add(moduleCode);
+					errors.Add(Workflow_ModuleToString(module));
 				}
 			}
 
