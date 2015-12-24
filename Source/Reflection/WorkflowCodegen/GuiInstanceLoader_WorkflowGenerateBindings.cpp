@@ -63,7 +63,7 @@ WorkflowGenerateBindingVisitor
 									{
 										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
 										{
-											if (Workflow_ValidateStatement(context, resolvingResult.typeInfos, rootTypeDescriptor, errors, expressionCode, statement))
+											if (Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, expressionCode, statement))
 											{
 												statements->statements.Add(statement);	
 											}
@@ -125,7 +125,7 @@ WorkflowGenerateBindingVisitor
 
 							if (statement)
 							{
-								if (Workflow_ValidateStatement(context, resolvingResult.typeInfos, rootTypeDescriptor, errors, handler->value, statement))
+								if (Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, handler->value, statement))
 								{
 									statements->statements.Add(statement);
 								}

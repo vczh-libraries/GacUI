@@ -8,6 +8,7 @@ namespace vl
 	{
 		using namespace reflection::description;
 		using namespace collections;
+		using namespace workflow::analyzer;
 
 /***********************************************************************
 WorkflowReferenceNamesVisitor
@@ -116,7 +117,8 @@ WorkflowReferenceNamesVisitor
 				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 				{
 					List<types::PropertyResolving> possibleInfos;
-					IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, repr->setters.Keys()[index]);
+					auto prop = repr->setters.Keys()[index];
+					IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
 
 					auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
 
@@ -173,12 +175,19 @@ WorkflowReferenceNamesVisitor
 						{
 							if (possibleInfos[0].info->support == GuiInstancePropertyInfo::SupportSet)
 							{
+								auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
+
 								WorkflowReferenceNamesVisitor visitor(context, resolvingResult, possibleInfos, generatedNameCount, errors);
 								auto td = possibleInfos[0].info->acceptableTypes[0];
 								visitor.selectedPropertyTypeInfo = 0;
 								visitor.resolvedTypeInfo.typeDescriptor = td;
 								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
-								setter->values[0]->Accept(&visitor);
+								setTarget->Accept(&visitor);
+
+								if (auto propInfo = resolvedTypeInfo.typeDescriptor->GetPropertyByName(prop.ToString(), true))
+								{
+									resolvingResult.typeOverrides.Add(setTarget->instanceName, CopyTypeInfo(propInfo->GetReturn()));
+								}
 							}
 							else
 							{
@@ -456,10 +465,21 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					IGuiInstanceLoader::TypeInfo typeInfo;
-					typeInfo.typeDescriptor = type;
-					typeInfo.typeName = GlobalStringKey::Get(type->GetTypeName());
-					resolvingResult.typeInfos.Add(parameter->name, typeInfo);
+					{
+						IGuiInstanceLoader::TypeInfo typeInfo;
+						typeInfo.typeDescriptor = type;
+						typeInfo.typeName = GlobalStringKey::Get(type->GetTypeName());
+						resolvingResult.typeInfos.Add(parameter->name, typeInfo);
+					}
+					{
+						auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+						elementType->SetTypeDescriptor(type);
+
+						auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
+						pointerType->SetElementType(elementType);
+
+						resolvingResult.typeOverrides.Add(parameter->name, pointerType);
+					}
 				}
 			}
 			

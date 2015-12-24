@@ -195,21 +195,19 @@ void GuiMain_Resource()
 		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
 		resource->Precompile(errors);
 
-		if (errors.Count() > 0)
 		{
-			{
-				FileStream fileStream(L"UI.error.txt", FileStream::WriteOnly);
-				Utf16Encoder encoder;
-				EncoderStream encoderStream(fileStream, encoder);
-				StreamWriter writer(encoderStream);
+			FileStream fileStream(L"UI.error.txt", FileStream::WriteOnly);
+			Utf16Encoder encoder;
+			EncoderStream encoderStream(fileStream, encoder);
+			StreamWriter writer(encoderStream);
 
-				FOREACH(WString, error, errors)
-				{
-					writer.WriteLine(error);
-				}
+			FOREACH(WString, error, errors)
+			{
+				writer.WriteLine(error);
 			}
-			CHECK_FAIL(L"Error");
 		}
+		CHECK_ERROR(errors.Count() == 0, L"Error");
+
 		{
 			FileStream fileStream(L"UI.bin", FileStream::WriteOnly);
 			resource->SavePrecompiledBinary(fileStream);

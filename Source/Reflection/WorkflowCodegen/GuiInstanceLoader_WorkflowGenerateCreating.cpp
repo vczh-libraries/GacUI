@@ -220,21 +220,45 @@ WorkflowGenerateCreatingVisitor
 			{
 				if (context->instance.Obj() == repr)
 				{
-					auto refInstance = MakePtr<WfReferenceExpression>();
-					refInstance->name.value = repr->instanceName.ToString();
+					{
+						auto refInstance = MakePtr<WfReferenceExpression>();
+						refInstance->name.value = repr->instanceName.ToString();
 
-					auto refThis = MakePtr<WfReferenceExpression>();
-					refThis->name.value = L"<this>";
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<this>";
 
-					auto assign = MakePtr<WfBinaryExpression>();
-					assign->op = WfBinaryOperator::Assign;
-					assign->first = refInstance;
-					assign->second = refThis;
+						auto assign = MakePtr<WfBinaryExpression>();
+						assign->op = WfBinaryOperator::Assign;
+						assign->first = refInstance;
+						assign->second = refThis;
 
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = assign;
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = assign;
 
-					statements->statements.Add(stat);
+						statements->statements.Add(stat);
+					}
+					FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+					{
+						auto refInstance = MakePtr<WfReferenceExpression>();
+						refInstance->name.value = parameter->name.ToString();
+
+						auto refThis = MakePtr<WfReferenceExpression>();
+						refThis->name.value = L"<this>";
+
+						auto refParameter = MakePtr<WfMemberExpression>();
+						refParameter->parent = refThis;
+						refParameter->name.value = parameter->name.ToString();
+
+						auto assign = MakePtr<WfBinaryExpression>();
+						assign->op = WfBinaryOperator::Assign;
+						assign->first = refInstance;
+						assign->second = refParameter;
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = assign;
+
+						statements->statements.Add(stat);
+					}
 				}
 				else
 				{

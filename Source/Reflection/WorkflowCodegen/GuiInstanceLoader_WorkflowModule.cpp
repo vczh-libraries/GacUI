@@ -83,10 +83,10 @@ Workflow_CreateEmptyModule
 			return module;
 		}
 		
-		Ptr<workflow::WfModule> Workflow_CreateModuleWithInitFunction(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfStatement> functionBody)
+		Ptr<workflow::WfModule> Workflow_CreateModuleWithInitFunction(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfStatement> functionBody)
 		{
 			auto module = Workflow_CreateEmptyModule(context);
-			Workflow_CreateVariablesForReferenceValues(module, typeInfos);
+			Workflow_CreateVariablesForReferenceValues(module, resolvingResult);
 
 			auto thisParam = MakePtr<WfFunctionArgument>();
 			thisParam->name.value = L"<this>";
@@ -128,17 +128,25 @@ Workflow_CreateEmptyModule
 Variable
 ***********************************************************************/
 
-		void Workflow_CreatePointerVariable(Ptr<workflow::WfModule> module, GlobalStringKey name, description::ITypeDescriptor* type)
+		void Workflow_CreatePointerVariable(Ptr<workflow::WfModule> module, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride)
 		{
 			auto var = MakePtr<WfVariableDeclaration>();
 			var->name.value = name.ToString();
 
-			if (auto ctors = type->GetConstructorGroup())
+			if (typeOverride)
 			{
-				if (ctors->GetMethodCount() > 0)
+				var->type = GetTypeFromTypeInfo(typeOverride);
+			}
+
+			if (!var->type)
+			{
+				if (auto ctors = type->GetConstructorGroup())
 				{
-					auto ctor = ctors->GetMethod(0);
-					var->type = GetTypeFromTypeInfo(ctor->GetReturn());
+					if (ctors->GetMethodCount() > 0)
+					{
+						auto ctor = ctors->GetMethod(0);
+						var->type = GetTypeFromTypeInfo(ctor->GetReturn());
+					}
 				}
 			}
 
@@ -160,13 +168,21 @@ Variable
 			module->declarations.Add(var);
 		}
 		
-		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::VariableTypeInfoMap& typeInfos)
+		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::ResolvingResult& resolvingResult)
 		{
+			const auto& typeInfos = resolvingResult.typeInfos;
 			for (vint i = 0; i < typeInfos.Count(); i++)
 			{
 				auto key = typeInfos.Keys()[i];
 				auto value = typeInfos.Values()[i].typeDescriptor;
-				Workflow_CreatePointerVariable(module, key, value);
+
+				ITypeInfo* typeOverride = nullptr;
+				vint index = resolvingResult.typeOverrides.Keys().IndexOf(key);
+				if (index != -1)
+				{
+					typeOverride = resolvingResult.typeOverrides.Values()[index].Obj();
+				}
+				Workflow_CreatePointerVariable(module, key, value, typeOverride);
 			}
 		}
 	}

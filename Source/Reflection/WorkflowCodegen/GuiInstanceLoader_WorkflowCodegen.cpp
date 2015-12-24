@@ -21,10 +21,10 @@ namespace vl
 Workflow_ValidateStatement
 ***********************************************************************/
 
-		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::VariableTypeInfoMap& typeInfos, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
+		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
 			bool failed = false;
-			auto module = Workflow_CreateModuleWithInitFunction(context, typeInfos, rootTypeDescriptor, statement);
+			auto module = Workflow_CreateModuleWithInitFunction(context, resolvingResult, rootTypeDescriptor, statement);
 
 			Workflow_GetSharedManager()->Clear(true, true);
 			Workflow_GetSharedManager()->AddModule(module);
@@ -76,7 +76,7 @@ Workflow_PrecompileInstanceContext
 				auto statements = MakePtr<WfBlockStatement>();
 				Workflow_GenerateCreating(context, resolvingResult, rootTypeDescriptor, statements, errors);
 				Workflow_GenerateBindings(context, resolvingResult, rootTypeDescriptor, statements, errors);
-				auto module = Workflow_CreateModuleWithInitFunction(context, resolvingResult.typeInfos, rootTypeDescriptor, statements);
+				auto module = Workflow_CreateModuleWithInitFunction(context, resolvingResult, rootTypeDescriptor, statements);
 
 				Workflow_GetSharedManager()->Clear(true, true);
 				Workflow_GetSharedManager()->AddModule(module);
