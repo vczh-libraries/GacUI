@@ -113,9 +113,9 @@ WorkflowGenerateCreatingVisitor
 				if (reprTypeInfo.typeDescriptor && reprTypeInfo.typeDescriptor->GetValueSerializer() == nullptr)
 				{
 					Group<GlobalStringKey, IGuiInstanceLoader*> usedProps;
-					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+					FOREACH(GlobalStringKey, prop, From(repr->setters.Keys()).Reverse())
 					{
-						auto prop = repr->setters.Keys()[index];
+						auto setter = repr->setters[prop];
 						IGuiInstanceLoader::PropertyInfo propInfo(reprTypeInfo, prop);
 						if (setter->binding == GlobalStringKey::_Set)
 						{
