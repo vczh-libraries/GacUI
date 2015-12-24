@@ -359,13 +359,14 @@ GuiMenuButton
 				return subMenu;
 			}
 
-			void GuiMenuButton::CreateSubMenu(GuiMenu::IStyleController* subMenuStyleController)
+			GuiMenu* GuiMenuButton::CreateSubMenu(GuiMenu::IStyleController* subMenuStyleController)
 			{
 				if(!subMenu)
 				{
 					GuiMenu* newSubMenu=new GuiMenu(subMenuStyleController?subMenuStyleController:styleController->CreateSubMenuStyleController(), this);
 					SetSubMenu(newSubMenu, true);
 				}
+				return subMenu;
 			}
 
 			void GuiMenuButton::SetSubMenu(GuiMenu* value, bool owned)

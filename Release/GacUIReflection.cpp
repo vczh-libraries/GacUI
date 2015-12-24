@@ -704,18 +704,14 @@ GuiInstanceLoaderManager
 			struct VirtualTypeInfo
 			{
 				GlobalStringKey						typeName;
-				ITypeDescriptor*					typeDescriptor;
+				ITypeDescriptor*					typeDescriptor = nullptr;
 				GlobalStringKey						parentTypeName;				// for virtual type only
 				Ptr<IGuiInstanceLoader>				loader;
 
 				List<ITypeDescriptor*>				parentTypes;				// all direct or indirect base types that does not has a type info
 				List<VirtualTypeInfo*>				parentTypeInfos;			// type infos for all registered direct or indirect base types
-
-				VirtualTypeInfo()
-					:typeDescriptor(0)
-				{
-				}
 			};
+
 			typedef Dictionary<GlobalStringKey, Ptr<VirtualTypeInfo>>		VirtualTypeInfoMap;
 			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
 			typedef Pair<Ptr<GuiResource>, Ptr<GuiResourceItem>>			ResourceItemPair;
@@ -759,6 +755,10 @@ GuiInstanceLoaderManager
 
 			void FillParentTypeInfos(Ptr<VirtualTypeInfo> typeInfo)
 			{
+				if (typeInfo->parentTypeName != GlobalStringKey::Empty)
+				{
+					typeInfo->typeDescriptor = nullptr;
+				}
 				typeInfo->parentTypes.Clear();
 				typeInfo->parentTypeInfos.Clear();
 
@@ -5241,22 +5241,19 @@ GuiToolstripButtonInstanceLoader
 
 				Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
 				{
-					if (propertyInfo.typeInfo.typeName == GetTypeName())
+					if (propertyInfo.propertyName == _SubMenu)
 					{
-						if (propertyInfo.propertyName == _SubMenu)
-						{
-							auto refControl = MakePtr<WfReferenceExpression>();
-							refControl->name.value = variableName.ToString();
+						auto refControl = MakePtr<WfReferenceExpression>();
+						refControl->name.value = variableName.ToString();
 
-							auto refEnsureToolstripSubMenu = MakePtr<WfMemberExpression>();
-							refEnsureToolstripSubMenu->parent = refControl;
-							refEnsureToolstripSubMenu->name.value = L"EnsureToolstripSubMenu";
+						auto refEnsureToolstripSubMenu = MakePtr<WfMemberExpression>();
+						refEnsureToolstripSubMenu->parent = refControl;
+						refEnsureToolstripSubMenu->name.value = L"EnsureToolstripSubMenu";
 
-							auto call = MakePtr<WfCallExpression>();
-							call->function = refEnsureToolstripSubMenu;
+						auto call = MakePtr<WfCallExpression>();
+						call->function = refEnsureToolstripSubMenu;
 
-							return call;
-						}
+						return call;
 					}
 					return nullptr;
 				}

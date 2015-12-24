@@ -11330,8 +11330,9 @@ MenuButton
 				/// <returns>The sub menu.</returns>
 				GuiMenu*								GetSubMenu();
 				/// <summary>Create the sub menu if necessary. The created sub menu is owned by this menu button.</summary>
+				/// <returns>The created sub menu.</returns>
 				/// <param name="subMenuStyleController">The style controller for the sub menu. If this argument is null, it will call <see cref="IStyleController::CreateSubMenuStyleController"/> for a style controller.</param>
-				void									CreateSubMenu(GuiMenu::IStyleController* subMenuStyleController=0);
+				GuiMenu*								CreateSubMenu(GuiMenu::IStyleController* subMenuStyleController=0);
 				/// <summary>Associate a sub menu if there is no sub menu binded in this menu button. The associated sub menu is not owned by this menu button if the "owned" argument is set to false.</summary>
 				/// <param name="value">The sub menu to associate.</param>
 				/// <param name="owned">Set to true if the menu is expected to be owned.</param>

@@ -199,22 +199,19 @@ GuiToolstripButtonInstanceLoader
 
 				Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
 				{
-					if (propertyInfo.typeInfo.typeName == GetTypeName())
+					if (propertyInfo.propertyName == _SubMenu)
 					{
-						if (propertyInfo.propertyName == _SubMenu)
-						{
-							auto refControl = MakePtr<WfReferenceExpression>();
-							refControl->name.value = variableName.ToString();
+						auto refControl = MakePtr<WfReferenceExpression>();
+						refControl->name.value = variableName.ToString();
 
-							auto refEnsureToolstripSubMenu = MakePtr<WfMemberExpression>();
-							refEnsureToolstripSubMenu->parent = refControl;
-							refEnsureToolstripSubMenu->name.value = L"EnsureToolstripSubMenu";
+						auto refEnsureToolstripSubMenu = MakePtr<WfMemberExpression>();
+						refEnsureToolstripSubMenu->parent = refControl;
+						refEnsureToolstripSubMenu->name.value = L"EnsureToolstripSubMenu";
 
-							auto call = MakePtr<WfCallExpression>();
-							call->function = refEnsureToolstripSubMenu;
+						auto call = MakePtr<WfCallExpression>();
+						call->function = refEnsureToolstripSubMenu;
 
-							return call;
-						}
+						return call;
 					}
 					return nullptr;
 				}

@@ -599,18 +599,14 @@ GuiInstanceLoaderManager
 			struct VirtualTypeInfo
 			{
 				GlobalStringKey						typeName;
-				ITypeDescriptor*					typeDescriptor;
+				ITypeDescriptor*					typeDescriptor = nullptr;
 				GlobalStringKey						parentTypeName;				// for virtual type only
 				Ptr<IGuiInstanceLoader>				loader;
 
 				List<ITypeDescriptor*>				parentTypes;				// all direct or indirect base types that does not has a type info
 				List<VirtualTypeInfo*>				parentTypeInfos;			// type infos for all registered direct or indirect base types
-
-				VirtualTypeInfo()
-					:typeDescriptor(0)
-				{
-				}
 			};
+
 			typedef Dictionary<GlobalStringKey, Ptr<VirtualTypeInfo>>		VirtualTypeInfoMap;
 			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
 			typedef Pair<Ptr<GuiResource>, Ptr<GuiResourceItem>>			ResourceItemPair;
@@ -654,6 +650,10 @@ GuiInstanceLoaderManager
 
 			void FillParentTypeInfos(Ptr<VirtualTypeInfo> typeInfo)
 			{
+				if (typeInfo->parentTypeName != GlobalStringKey::Empty)
+				{
+					typeInfo->typeDescriptor = nullptr;
+				}
 				typeInfo->parentTypes.Clear();
 				typeInfo->parentTypeInfos.Clear();
 
