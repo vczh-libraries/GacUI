@@ -10573,7 +10573,32 @@ WorkflowReferenceNamesVisitor
 
 								if (auto propInfo = resolvedTypeInfo.typeDescriptor->GetPropertyByName(prop.ToString(), true))
 								{
-									resolvingResult.typeOverrides.Add(setTarget->instanceName, CopyTypeInfo(propInfo->GetReturn()));
+									auto propType = propInfo->GetReturn();
+									if (propType->GetTypeDescriptor() == td)
+									{
+										resolvingResult.typeOverrides.Add(setTarget->instanceName, CopyTypeInfo(propInfo->GetReturn()));
+									}
+									else
+									{
+										switch (propType->GetDecorator())
+										{
+										case ITypeInfo::Nullable:
+										case ITypeInfo::RawPtr:
+										case ITypeInfo::SharedPtr:
+											{
+												auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+												elementType->SetTypeDescriptor(td);
+
+												auto decoratedType = MakePtr<TypeInfoImpl>(propType->GetDecorator());
+												decoratedType->SetElementType(elementType);
+												
+												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
+											}
+											break;
+										default:
+											resolvingResult.typeOverrides.Add(setTarget->instanceName, CopyTypeInfo(propInfo->GetReturn()));
+										}
+									}
 								}
 							}
 							else
