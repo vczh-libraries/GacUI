@@ -20562,8 +20562,8 @@ WfMethodBase
 			}
 
 
-			WfMethodBase::WfMethodBase()
-				:MethodInfoImpl(nullptr, nullptr, true)
+			WfMethodBase::WfMethodBase(bool isStatic)
+				:MethodInfoImpl(nullptr, nullptr, isStatic)
 			{
 			}
 
@@ -20598,6 +20598,11 @@ WfStaticMethod
 				return Value::From(lambda);
 			}
 
+			WfStaticMethod::WfStaticMethod()
+				:WfMethodBase(true)
+			{
+			}
+
 /***********************************************************************
 WfInterfaceMethod
 ***********************************************************************/
@@ -20610,6 +20615,11 @@ WfInterfaceMethod
 			Value WfInterfaceMethod::CreateFunctionProxyInternal(const Value& thisObject)
 			{
 				throw 0;
+			}
+
+			WfInterfaceMethod::WfInterfaceMethod()
+				:WfMethodBase(false)
+			{
 			}
 
 /***********************************************************************
