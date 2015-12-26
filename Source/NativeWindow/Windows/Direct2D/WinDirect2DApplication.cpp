@@ -455,6 +455,11 @@ ControllerListener
 			{
 				return direct2DListener->dwrite.Obj();
 			}
+
+			ID3D11Device* GetD3D11Device()
+			{
+				return direct2DListener->d3d11Device.Obj();
+			}
 		}
 
 		namespace elements_windows_d2d

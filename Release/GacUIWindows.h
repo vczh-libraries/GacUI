@@ -654,6 +654,7 @@ namespace vl
 			extern bool									PresentNativeWindowDirect2DRenderTarget(INativeWindow* window);
 			extern ID2D1Factory*						GetDirect2DFactory();
 			extern IDWriteFactory*						GetDirectWriteFactory();
+			extern ID3D11Device*						GetD3D11Device();
 		}
 	}
 }
