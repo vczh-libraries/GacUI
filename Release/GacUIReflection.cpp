@@ -3580,7 +3580,7 @@ GuiListViewInstanceLoader
 				bool				bindable;
 				GlobalStringKey		_View, _IconSize;
 
-				void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)override
+				void PrepareAdditionalArgumentsAfterCreation(const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)override
 				{
 					auto view = ListViewViewType::Detail;
 					Ptr<WfExpression> iconSize;
@@ -3667,16 +3667,16 @@ GuiListViewInstanceLoader
 					_IconSize = GlobalStringKey::Get(L"IconSize");
 				}
 
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetConstructorParameters(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					if (typeInfo.typeName == BASE_TYPE::GetTypeName())
 					{
 						propertyNames.Add(_View);
 						propertyNames.Add(_IconSize);
 					}
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const typename BASE_TYPE::PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _View)
 					{
@@ -3758,7 +3758,7 @@ GuiTreeViewInstanceLoader
 				bool				bindable;
 				GlobalStringKey		_Nodes, _IconSize;
 
-				void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)override
+				void PrepareAdditionalArgumentsAfterCreation(const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)override
 				{
 					vint indexIconSize = arguments.Keys().IndexOf(_IconSize);
 					if (indexIconSize != -1)
@@ -3802,7 +3802,7 @@ GuiTreeViewInstanceLoader
 					_IconSize = GlobalStringKey::Get(L"IconSize");
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (!bindable)
 					{
@@ -3810,16 +3810,16 @@ GuiTreeViewInstanceLoader
 					}
 				}
 
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetConstructorParameters(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					if (typeInfo.typeName == BASE_TYPE::GetTypeName())
 					{
 						propertyNames.Add(_Nodes);
 						propertyNames.Add(_IconSize);
 					}
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const typename BASE_TYPE::PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _Nodes)
 					{
@@ -3837,7 +3837,7 @@ GuiTreeViewInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -11103,7 +11103,7 @@ WorkflowGenerateCreatingVisitor
 					serializable = true;
 					textValue = text->text;
 				}
-				else if (ctor = dynamic_cast<GuiConstructorRepr*>(repr))
+				else if ((ctor = dynamic_cast<GuiConstructorRepr*>(repr)))
 				{
 					if (ctor->instanceName == GlobalStringKey::Empty)
 					{

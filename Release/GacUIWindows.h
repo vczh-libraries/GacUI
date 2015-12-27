@@ -642,6 +642,7 @@ Interfaces:
 
 #include <d2d1_1.h>
 #include <dwrite_1.h>
+#include <d3d11_1.h>
 
 namespace vl
 {

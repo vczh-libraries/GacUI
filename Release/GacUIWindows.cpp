@@ -1723,7 +1723,6 @@ NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.CPP
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "d3d11.lib")
 
-#include <d3d11_1.h>
 
 namespace vl
 {
