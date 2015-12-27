@@ -2,7 +2,6 @@
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "d3d11.lib")
 
-#include <d3d11_1.h>
 #include "WinDirect2DApplication.h"
 #include "..\..\..\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.h"
 
