@@ -46,7 +46,7 @@ WorkflowGenerateCreatingVisitor
 					serializable = true;
 					textValue = text->text;
 				}
-				else if (ctor = dynamic_cast<GuiConstructorRepr*>(repr))
+				else if ((ctor = dynamic_cast<GuiConstructorRepr*>(repr)))
 				{
 					if (ctor->instanceName == GlobalStringKey::Empty)
 					{
