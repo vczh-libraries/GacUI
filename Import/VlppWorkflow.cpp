@@ -18260,7 +18260,8 @@ Serialization (TypeImpl)
 					
 				static void IO(Writer& writer, WfTypeImpl& value)
 				{
-					bool hasTypeImpl = &value != nullptr;
+					auto pvalue = &value; // clang++: -Wtautological-undefined-compare
+					bool hasTypeImpl = pvalue != nullptr;
 					writer << hasTypeImpl;
 					if (hasTypeImpl)
 					{
