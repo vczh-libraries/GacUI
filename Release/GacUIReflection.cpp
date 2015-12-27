@@ -542,7 +542,7 @@ GuiDefaultInstanceLoader
 				return GetDefaultConstructor(typeInfo.typeDescriptor) != 0;
 			}
 
-			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
 				auto create = MakePtr<WfNewTypeExpression>();
 				create->type = GetTypeFromTypeInfo(GetDefaultConstructor(typeInfo.typeDescriptor)->GetReturn());
@@ -560,7 +560,7 @@ GuiDefaultInstanceLoader
 				return stat;
 			}
 
-			Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+			Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
 				auto block = MakePtr<WfBlockStatement>();
 
@@ -645,7 +645,7 @@ GuiDefaultInstanceLoader
 				return nullptr;
 			}
 
-			Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
+			Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)override
 			{
 				auto refValue = MakePtr<WfReferenceExpression>();
 				refValue->name.value = variableName.ToString();
@@ -1175,7 +1175,7 @@ GuiEvalInstanceEventBinder (eval)
 				return GlobalStringKey::_Eval;
 			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors)
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				if (auto statement = Workflow_ParseStatement(code, errors))
 				{
@@ -2876,7 +2876,7 @@ GuiTableCompositionInstanceLoader
 					propertyNames.Add(_Columns);
 				}
 
-				void GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)
+				void GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (propertyInfo.propertyName == _Rows || propertyInfo.propertyName == _Columns)
 					{
@@ -3169,12 +3169,12 @@ GuiDocumentItemInstanceLoader
 				}
 
 				
-				bool CanCreate(const TypeInfo& typeInfo)
+				bool CanCreate(const TypeInfo& typeInfo)override
 				{
 					return typeName == typeInfo.typeName;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
@@ -5239,7 +5239,7 @@ GuiToolstripButtonInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
+				Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)override
 				{
 					if (propertyInfo.propertyName == _SubMenu)
 					{

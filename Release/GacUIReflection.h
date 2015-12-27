@@ -1707,7 +1707,7 @@ Interface Proxy
 						INVOKE_INTERFACE_PROXY(SetTabAlt, index, value, host);
 					}
 
-					compositions::IGuiAltAction* GetTabAltAction(vint index)
+					compositions::IGuiAltAction* GetTabAltAction(vint index)override
 					{
 						return INVOKEGET_INTERFACE_PROXY(GetTabAltAction, index);
 					}
@@ -1770,7 +1770,7 @@ Interface Proxy
 						INVOKE_INTERFACE_PROXY_NOPARAMS(InitializeNativeWindowProperties);
 					}
 
-					void SetSizeState(INativeWindow::WindowSizeState value)
+					void SetSizeState(INativeWindow::WindowSizeState value)override
 					{
 						INVOKE_INTERFACE_PROXY(SetSizeState, value);
 					}
