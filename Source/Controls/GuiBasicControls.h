@@ -216,7 +216,7 @@ Basic Construction
 				virtual void							SetVisible(bool value);
 				/// <summary>Get the Alt-combined shortcut key associated with this control.</summary>
 				/// <returns>The Alt-combined shortcut key associated with this control.</returns>
-				virtual const WString&					GetAlt();
+				virtual const WString&					GetAlt()override;
 				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="value">The Alt-combined shortcut key to associate. Only zero, sigle or multiple upper case letters are legal.</param>

@@ -158,7 +158,7 @@ Datagrid ContentProvider
 
 					void												NotifyCloseEditor();
 					void												NotifySelectCell(vint row, vint column);
-					void												RequestSaveData();
+					void												RequestSaveData()override;
 					IDataEditor*										OpenEditor(vint row, vint column, IDataEditorFactory* editorFactory);
 					void												CloseEditor(bool forOpenNewEditor);
 				public:

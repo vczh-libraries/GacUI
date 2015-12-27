@@ -232,7 +232,7 @@ GuiTableCompositionInstanceLoader
 					propertyNames.Add(_Columns);
 				}
 
-				void GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)
+				void GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (propertyInfo.propertyName == _Rows || propertyInfo.propertyName == _Columns)
 					{

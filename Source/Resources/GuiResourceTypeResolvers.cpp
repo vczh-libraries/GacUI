@@ -108,7 +108,7 @@ Image Type Resolver (Image)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
 				stream::internal::Reader reader(stream);
 				MemoryStream memoryStream;
@@ -206,7 +206,7 @@ Text Type Resolver (Text)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
 				stream::internal::Reader reader(stream);
 				WString text;
@@ -310,7 +310,7 @@ Xml Type Resolver (Xml)
 				return 0;
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
 				stream::internal::Reader reader(stream);
 				WString text;

@@ -1340,7 +1340,7 @@ IGuiResourceResolverManager
 				return true;
 			}
 
-			vint GetMaxPrecompilePassIndex()
+			vint GetMaxPrecompilePassIndex()override
 			{
 				vint maxPass = -1;
 				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
@@ -1357,7 +1357,7 @@ IGuiResourceResolverManager
 				return maxPass;
 			}
 
-			vint GetMaxInitializePassIndex()
+			vint GetMaxInitializePassIndex()override
 			{
 				vint maxPass = -1;
 				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())

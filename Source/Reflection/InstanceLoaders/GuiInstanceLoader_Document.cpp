@@ -64,12 +64,12 @@ GuiDocumentItemInstanceLoader
 				}
 
 				
-				bool CanCreate(const TypeInfo& typeInfo)
+				bool CanCreate(const TypeInfo& typeInfo)override
 				{
 					return typeName == typeInfo.typeName;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{

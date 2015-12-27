@@ -164,7 +164,7 @@ GuiEvalInstanceEventBinder (eval)
 				return GlobalStringKey::_Eval;
 			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors)
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				if (auto statement = Workflow_ParseStatement(code, errors))
 				{

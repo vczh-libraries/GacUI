@@ -437,7 +437,7 @@ GuiDefaultInstanceLoader
 				return GetDefaultConstructor(typeInfo.typeDescriptor) != 0;
 			}
 
-			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
 				auto create = MakePtr<WfNewTypeExpression>();
 				create->type = GetTypeFromTypeInfo(GetDefaultConstructor(typeInfo.typeDescriptor)->GetReturn());
@@ -455,7 +455,7 @@ GuiDefaultInstanceLoader
 				return stat;
 			}
 
-			Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+			Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
 				auto block = MakePtr<WfBlockStatement>();
 
@@ -540,7 +540,7 @@ GuiDefaultInstanceLoader
 				return nullptr;
 			}
 
-			Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
+			Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)override
 			{
 				auto refValue = MakePtr<WfReferenceExpression>();
 				refValue->name.value = variableName.ToString();

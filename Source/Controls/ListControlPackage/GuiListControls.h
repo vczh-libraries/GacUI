@@ -653,7 +653,7 @@ Predefined ItemProvider
 				class ListProvider : public ItemProviderBase, public ItemsBase<T>
 				{
 				protected:
-					void NotifyUpdateInternal(vint start, vint count, vint newCount)
+					void NotifyUpdateInternal(vint start, vint count, vint newCount)override
 					{
 						InvokeOnItemModified(start, count, newCount);
 					}
