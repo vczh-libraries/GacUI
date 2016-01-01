@@ -1084,6 +1084,13 @@ GuiDialogBase
 							return dynamic_cast<GuiWindow*>(host);
 						}
 					}
+					else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(rootObject))
+					{
+						if (auto host = composition->GetRelatedControlHost())
+						{
+							return dynamic_cast<GuiWindow*>(host);
+						}
+					}
 				}
 				return nullptr;
 			}
