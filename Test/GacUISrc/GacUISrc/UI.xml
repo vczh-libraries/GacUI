@@ -1,186 +1,27 @@
 <Resource>
-  <Script name="SharedScript">
-    <Workflow>
-      <![CDATA[
-        module sharedscript;
-        
-        class InitValue
-        {
-          static func GetFirstNumber() : int
-          {
-            return 5;
-          }
-          
-          static func GetSecondNumber() : int
-          {
-            return 6;
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
-  <Folder name="Data">
-    <Image name="Gaclib" content="File">Gaclib.png</Image>
-    <Text name="Title">Window</Text>
-    <Doc name="Document">
-      <Doc>
-        <Content>
-          <p align="Center">
-            <div style="Title">
-              <b>This is a document</b>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>Hi, our valued GacUI users:</nop>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>This is a document.</nop>
-            </div>
-          </p>
-          <p>
-            <div style="Body">
-              <nop>Thank you</nop>
-            </div>
-          </p>
-        </Content>
-        <Styles>
-          <Style name="Content">
-            <face>Segoe UI</face>
-          </Style>
-          <Style name="Title" parent="Content">
-            <size>24</size>
-            <b>true</b>
-          </Style>
-          <Style name="Body" parent="Content">
-            <size>14</size>
-          </Style>
-        </Styles>
-      </Doc>
-    </Doc>
-  </Folder>
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
-      <ref.Parameter Name="ViewModel" Class="demo::IViewModel"/>
-      <Window Text-uri="res://Data/Title" ClientSize="x:480 y:320">
+      <Window Text="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
-        <att.ViewModel-set X-bind="(cast int text1.Text) ?? 0" Y-bind="(cast int text2.Text) ?? 0"/>
-        <x:MutexGroupController ref.Name="groupRadio"/>
 
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
-          <att.Rows>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:MinSize</CellOption>
-          </att.Columns>
+        <ToolstripCommand ref.Name="commandNewText" Text="Text File" ShortcutBuilder="Ctrl+Shift+T"/>
+        <ToolstripCommand ref.Name="commandNewXml" Text="Xml File" ShortcutBuilder="Ctrl+Shift+X"/>
+        <ToolstripCommand ref.Name="commandOpen" Text="Open" ShortcutBuilder="Ctrl+O"/>
+        <ToolstripCommand ref.Name="commandSave" Text="Save" ShortcutBuilder="Ctrl+S"/>
 
-          <Cell Site="row:0 column:0">
-            <Label Text="First Number:">
-              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
-            </Label>
-          </Cell>
-          <Cell Site="row:0 column:1 columnSpan:3">
-            <SinglelineTextBox ref.Name="text1" Text-eval="InitValue::GetFirstNumber()">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </SinglelineTextBox>
-          </Cell>
-
-          <Cell Site="row:1 column:0">
-            <Label Text="Second Number:">
-              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
-            </Label>
-          </Cell>
-          <Cell Site="row:1 column:1 columnSpan:3">
-            <SinglelineTextBox ref.Name="text2" Text-eval="InitValue::GetSecondNumber()">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </SinglelineTextBox>
-          </Cell>
-
-          <Cell Site="row:2 column:0">
-            <Label Text-eval="'Sum:'">
-              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
-            </Label>
-          </Cell>
-          <Cell Site="row:2 column:1 columnSpan:3">
-            <Label Text-bind="ViewModel.X + ViewModel.Y">
-              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
-            </Label>
-          </Cell>
-
-          <Cell Site="row:3 column:0">
-            <Label Text-eval="'Equation:'">
-              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
-            </Label>
-          </Cell>
-          <Cell Site="row:3 column:1 columnSpan:3">
-            <Label Text-format="$(ViewModel.X) + $(ViewModel.Y) = $(ViewModel.X + ViewModel.Y)">
-              <att.BoundsComposition-set AlignmentToParent="left:6 top:3 right:6 bottom:3"/>
-            </Label>
-          </Cell>
-
-          <Cell Site="row:4 column:0">
-            <GroupBox Text="Radio Buttons">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5">
-                <StackItem>
-                  <RadioButton Text="Item1" GroupController-ref="groupRadio" Selected="true"/>
-                </StackItem>
-                <StackItem>
-                  <RadioButton Text="Item2" GroupController-ref="groupRadio"/>
-                </StackItem>
-                <StackItem>
-                  <RadioButton Text="Item3" GroupController-ref="groupRadio"/>
-                </StackItem>
-              </Stack>
-            </GroupBox>
-          </Cell>
-          <Cell Site="row:4 column:1 columnSpan:3">
-            <Tab>
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <TabPage Text="Image">
-                <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-                  <ImageFrame Image-uri="res://Data/Gaclib" Stretch="true"/>
-                </Bounds>
-              </TabPage>
-              <TabPage Text="Document">
-                <DocumentLabel Document-uri="res://Data/Document">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </DocumentLabel>
-              </TabPage>
-            </Tab>
-          </Cell>
-
-          <Cell Site="row:5 column:2">
-            <Button Text="SetNumbers">
-              <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    text1.Text = "12";
-                    text2.Text = "34";
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </Cell>
-          <Cell Site="row:5 column:3">
-            <Button Text="ClearNumbers" ev.Clicked="buttonClear_Clicked">
-              <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
-            </Button>
-          </Cell>
-        </Table>
+        <MenuBarButton Text="File">
+          <att.SubMenu-set>
+            <MenuItemButton Text="New">
+              <att.SubMenu-set>
+                <MenuItemButton Command-ref="commandNewText"/>
+                <MenuItemButton Command-ref="commandNewXml"/>
+              </att.SubMenu-set>
+            </MenuItemButton>
+            <MenuItemButton Command-ref="commandOpen"/>
+            <MenuItemButton Command-ref="commandSave"/>
+            <MenuItemButton Text="Exit"/>
+          </att.SubMenu-set>
+        </MenuBarButton>
       </Window>
     </Instance>
   </Instance>
