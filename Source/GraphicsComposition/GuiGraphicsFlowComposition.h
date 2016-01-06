@@ -105,7 +105,8 @@ Flow Compositions
 				/// <summary>Set the alignment for rows.</summary>
 				/// <param name="value">The alignment.</param>
 				void								SetAlignment(FlowAlignment value);
-
+				
+				void								ForceCalculateSizeImmediately()override;
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 			};

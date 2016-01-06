@@ -1096,7 +1096,6 @@ GuiPopup
 				INativeWindow* window=GetNativeWindow();
 				if(window)
 				{
-					Size size=window->GetBounds().GetSize();
 					Rect bounds(Point(0, 0), control->GetBoundsComposition()->GetBounds().GetSize());
 					ShowPopup(control, bounds, preferredTopBottomSide);
 				}

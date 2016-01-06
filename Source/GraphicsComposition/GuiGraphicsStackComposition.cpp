@@ -177,6 +177,12 @@ GuiStackComposition
 				padding = value;
 				EnsureStackItemVisible();
 			}
+
+			void GuiStackComposition::ForceCalculateSizeImmediately()
+			{
+				GuiBoundsComposition::ForceCalculateSizeImmediately();
+				UpdateStackItemBounds();
+			}
 			
 			Size GuiStackComposition::GetMinPreferredClientSize()
 			{

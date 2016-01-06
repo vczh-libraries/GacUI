@@ -60,60 +60,27 @@ void GuiMain_GrammarIntellisense()
 
 namespace demo
 {
-	class IViewModel : public virtual IDescriptable, public Description<IViewModel>
-	{
-	protected:
-		vint x = 0;
-		vint y = 0;
-	public:
-		vint GetX() { return x; }
-		void SetX(vint value) {if (x != value){ x = value; XChanged();} }
-		Event<void()> XChanged;
-		
-		vint GetY() { return y; }
-		void SetY(vint value) {if (y != value){ y = value; YChanged();} }
-		Event<void()> YChanged;
-	};
-
 	template<typename TImpl>
 	class MainWindow_ : public GuiWindow, public GuiInstancePartialClass<GuiWindow>, public Description<TImpl>
 	{
 	protected:
-		Ptr<IViewModel> ViewModel_;
-		GuiSinglelineTextBox* text1;
-		GuiSinglelineTextBox* text2;
 
 		void InitializeComponents()
 		{
 			InitializeFromResource();
-			GUI_INSTANCE_REFERENCE(text1);
-			GUI_INSTANCE_REFERENCE(text2);
 		}
 	public:
-		MainWindow_(Ptr<IViewModel> ViewModel)
+		MainWindow_()
 			:GuiInstancePartialClass<GuiWindow>(L"demo::MainWindow")
 			, GuiWindow(theme::GetCurrentTheme()->CreateWindowStyle())
 		{
-			ViewModel_ = ViewModel;
-		}
-
-		Ptr<IViewModel> GetViewModel()
-		{
-			return ViewModel_;
-		}
-
-		void buttonClear_Clicked(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-		{
-			text1->SetText(L"0");
-			text2->SetText(L"0");
 		}
 	};
 
 	class MainWindow : public MainWindow_<MainWindow>
 	{
 	public:
-		MainWindow(Ptr<IViewModel> ViewModel)
-			:MainWindow_<MainWindow>(ViewModel)
+		MainWindow()
 		{
 			InitializeComponents();
 		}
@@ -127,28 +94,13 @@ namespace vl
 		namespace description
 		{
 #define _ ,
-			DECL_TYPE_INFO(demo::IViewModel)
 			DECL_TYPE_INFO(demo::MainWindow)
 
-			IMPL_CPP_TYPE_INFO(demo::IViewModel)
 			IMPL_CPP_TYPE_INFO(demo::MainWindow)
-
-			BEGIN_CLASS_MEMBER(demo::IViewModel)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_EVENT(XChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(X, XChanged)
-				
-				CLASS_MEMBER_EVENT(YChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(Y, YChanged)
-			END_CLASS_MEMBER(demo::IViewModel)
 
 			BEGIN_CLASS_MEMBER(demo::MainWindow)
 				CLASS_MEMBER_BASE(GuiWindow)
-				CLASS_MEMBER_CONSTRUCTOR(demo::MainWindow*(Ptr<demo::IViewModel>), { L"ViewModel" })
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModel)
-				CLASS_MEMBER_GUIEVENT_HANDLER(buttonClear_Clicked, GuiEventArgs)
+				CLASS_MEMBER_CONSTRUCTOR(demo::MainWindow*(), NO_PARAMETER)
 			END_CLASS_MEMBER(demo::MainWindow)
 
 			class ResourceLoader : public Object, public ITypeLoader
@@ -156,7 +108,6 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)override
 				{
-					ADD_TYPE_INFO(demo::IViewModel)
 					ADD_TYPE_INFO(demo::MainWindow)
 				}
 
@@ -225,7 +176,7 @@ void GuiMain_Resource()
 			File(L"UI.txt").WriteAllText(code);
 		}
 	}
-	MainWindow window(new IViewModel);
+	MainWindow window;
 	window.ForceCalculateSizeImmediately();
 	window.MoveToScreenCenter();
 	GetApplication()->Run(&window);

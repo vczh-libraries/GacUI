@@ -89,7 +89,8 @@ Stack Compositions
 				/// <summary>Set the stack item padding.</summary>
 				/// <param name="value">The stack item padding.</param>
 				void								SetPadding(vint value);
-
+				
+				void								ForceCalculateSizeImmediately()override;
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 				

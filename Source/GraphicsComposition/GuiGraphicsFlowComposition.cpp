@@ -238,6 +238,12 @@ GuiFlowComposition
 				alignment = value;
 				needUpdate = true;
 			}
+
+			void GuiFlowComposition::ForceCalculateSizeImmediately()
+			{
+				GuiBoundsComposition::ForceCalculateSizeImmediately();
+				UpdateFlowItemBounds(true);
+			}
 			
 			Size GuiFlowComposition::GetMinPreferredClientSize()
 			{

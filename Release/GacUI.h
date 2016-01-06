@@ -6886,7 +6886,8 @@ Stack Compositions
 				/// <summary>Set the stack item padding.</summary>
 				/// <param name="value">The stack item padding.</param>
 				void								SetPadding(vint value);
-
+				
+				void								ForceCalculateSizeImmediately()override;
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 				
@@ -7200,7 +7201,8 @@ Flow Compositions
 				/// <summary>Set the alignment for rows.</summary>
 				/// <param name="value">The alignment.</param>
 				void								SetAlignment(FlowAlignment value);
-
+				
+				void								ForceCalculateSizeImmediately()override;
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 			};
