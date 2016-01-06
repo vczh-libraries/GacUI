@@ -137,7 +137,6 @@ GuiSharedSizeRootComposition
 
 				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
 				{
-					auto text = item->GetOwnedElement().Cast<GuiSolidLabelElement>()->GetText();
 					auto group = item->GetGroup();
 					auto minSize = item->GetPreferredMinSize();
 					item->SetPreferredMinSize(Size(0, 0));
