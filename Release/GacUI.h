@@ -5307,6 +5307,11 @@ Colorized Plain Text (element)
 				/// <param name="value">The color table to bind.</param>
 				void								SetColors(const ColorArray& value);
 				/// <summary>
+				/// Reset color of all characters
+				/// </summary>
+				/// <param name="index">Color index of all characters.</param>
+				void								ResetTextColorIndex(vint index);
+				/// <summary>
 				/// Get the font configuration for all characters.
 				/// </summary>
 				/// <returns>The font configuration.</returns>
@@ -13974,6 +13979,7 @@ Common Interface
 			/// <summary>Common interface for text box controls.</summary>
 			class GuiTextBoxCommonInterface abstract : public Description<GuiTextBoxCommonInterface>
 			{
+				typedef collections::Array<elements::text::ColorEntry>			ColorArray;
 			protected:
 				class ICallback : public virtual IDescriptable, public Description<ICallback>
 				{
@@ -14015,6 +14021,9 @@ Common Interface
 				Ptr<GuiTextBoxColorizerBase>						colorizer;
 				Ptr<GuiTextBoxAutoCompleteBase>						autoComplete;
 				Ptr<GuiTextBoxUndoRedoProcessor>					undoRedoProcessor;
+
+				bool												filledDefaultColors = false;
+				ColorArray											defaultColors;
 
 				SpinLock											elementModifyLock;
 				collections::List<Ptr<ICommonTextEditCallback>>		textEditCallbacks;

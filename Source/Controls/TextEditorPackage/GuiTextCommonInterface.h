@@ -28,6 +28,7 @@ Common Interface
 			/// <summary>Common interface for text box controls.</summary>
 			class GuiTextBoxCommonInterface abstract : public Description<GuiTextBoxCommonInterface>
 			{
+				typedef collections::Array<elements::text::ColorEntry>			ColorArray;
 			protected:
 				class ICallback : public virtual IDescriptable, public Description<ICallback>
 				{
@@ -69,6 +70,9 @@ Common Interface
 				Ptr<GuiTextBoxColorizerBase>						colorizer;
 				Ptr<GuiTextBoxAutoCompleteBase>						autoComplete;
 				Ptr<GuiTextBoxUndoRedoProcessor>					undoRedoProcessor;
+
+				bool												filledDefaultColors = false;
+				ColorArray											defaultColors;
 
 				SpinLock											elementModifyLock;
 				collections::List<Ptr<ICommonTextEditCallback>>		textEditCallbacks;

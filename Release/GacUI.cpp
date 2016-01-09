@@ -27470,6 +27470,12 @@ GuiTextBoxCommonInterface
 
 			void GuiTextBoxCommonInterface::SetColorizer(Ptr<GuiTextBoxColorizerBase> value)
 			{
+				if (!filledDefaultColors)
+				{
+					filledDefaultColors = true;
+					CopyFrom(defaultColors, GetTextElement()->GetColors());
+				}
+
 				if(colorizer)
 				{
 					DetachTextEditCallback(colorizer);
@@ -27479,6 +27485,11 @@ GuiTextBoxCommonInterface
 				{
 					AttachTextEditCallback(colorizer);
 					GetTextElement()->SetColors(colorizer->GetColors());
+				}
+				else
+				{
+					GetTextElement()->SetColors(defaultColors);
+					GetTextElement()->ResetTextColorIndex(0);
 				}
 			}
 
@@ -32703,7 +32714,6 @@ GuiSharedSizeRootComposition
 
 				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
 				{
-					auto text = item->GetOwnedElement().Cast<GuiSolidLabelElement>()->GetText();
 					auto group = item->GetGroup();
 					auto minSize = item->GetPreferredMinSize();
 					item->SetPreferredMinSize(Size(0, 0));
@@ -38998,6 +39008,21 @@ GuiColorizedTextElement
 				if(renderer)
 				{
 					renderer->OnElementStateChanged();
+				}
+			}
+
+			void GuiColorizedTextElement::ResetTextColorIndex(vint index)
+			{
+				vint lineCount = lines.GetCount();
+				for (vint i = 0; i < lineCount; i++)
+				{
+					auto& line = lines.GetLine(i);
+					line.lexerFinalState = -1;
+					line.contextFinalState = -1;
+					for (vint j = 0; j < line.dataLength; j++)
+					{
+						line.att[j].colorIndex = index;
+					}
 				}
 			}
 

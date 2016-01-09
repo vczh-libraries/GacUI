@@ -700,6 +700,21 @@ GuiColorizedTextElement
 				}
 			}
 
+			void GuiColorizedTextElement::ResetTextColorIndex(vint index)
+			{
+				vint lineCount = lines.GetCount();
+				for (vint i = 0; i < lineCount; i++)
+				{
+					auto& line = lines.GetLine(i);
+					line.lexerFinalState = -1;
+					line.contextFinalState = -1;
+					for (vint j = 0; j < line.dataLength; j++)
+					{
+						line.att[j].colorIndex = index;
+					}
+				}
+			}
+
 			const FontProperties& GuiColorizedTextElement::GetFont()
 			{
 				return font;

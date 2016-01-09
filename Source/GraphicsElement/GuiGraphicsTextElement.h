@@ -475,6 +475,11 @@ Colorized Plain Text (element)
 				/// <param name="value">The color table to bind.</param>
 				void								SetColors(const ColorArray& value);
 				/// <summary>
+				/// Reset color of all characters
+				/// </summary>
+				/// <param name="index">Color index of all characters.</param>
+				void								ResetTextColorIndex(vint index);
+				/// <summary>
 				/// Get the font configuration for all characters.
 				/// </summary>
 				/// <returns>The font configuration.</returns>

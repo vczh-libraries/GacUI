@@ -813,6 +813,12 @@ GuiTextBoxCommonInterface
 
 			void GuiTextBoxCommonInterface::SetColorizer(Ptr<GuiTextBoxColorizerBase> value)
 			{
+				if (!filledDefaultColors)
+				{
+					filledDefaultColors = true;
+					CopyFrom(defaultColors, GetTextElement()->GetColors());
+				}
+
 				if(colorizer)
 				{
 					DetachTextEditCallback(colorizer);
@@ -822,6 +828,11 @@ GuiTextBoxCommonInterface
 				{
 					AttachTextEditCallback(colorizer);
 					GetTextElement()->SetColors(colorizer->GetColors());
+				}
+				else
+				{
+					GetTextElement()->SetColors(defaultColors);
+					GetTextElement()->ResetTextColorIndex(0);
 				}
 			}
 
