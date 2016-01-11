@@ -575,7 +575,15 @@ GuiImageFrameElementRenderer
 					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
 					INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
 					bitmap=resourceManager->GetBitmap(frame, element->GetEnabled());
-					minSize=frame->GetSize();
+
+					if (element->GetStretch())
+					{
+						minSize=Size(0,0);
+					}
+					else
+					{
+						minSize=frame->GetSize();
+					}
 				}
 				else
 				{
@@ -610,6 +618,8 @@ GuiImageFrameElementRenderer
 					Rect destination;
 					if(element->GetStretch())
 					{
+						INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
+						source = Rect(Point(0, 0), frame->GetSize());
 						destination=Rect(bounds.x1, bounds.y1, bounds.x2, bounds.y2);
 					}
 					else
