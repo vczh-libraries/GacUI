@@ -42340,7 +42340,49 @@ document_operation_visitors::SerializeRunVisitor
 					if(run->text!=L"")
 					{
 						XmlElementWriter writer(parent);
-						writer.Text(run->text);
+						auto begin = run->text.Buffer();
+						auto reading = begin;
+						auto last = reading;
+						while (true)
+						{
+							const wchar_t* tag = nullptr;
+							auto c = *reading;
+							switch (c)
+							{
+							case L'\n':
+								tag = L"br";
+								break;
+							case L' ':
+								tag = L"sp";
+								break;
+							case L'\t':
+								tag = L"tab";
+								break;
+							}
+
+							if (tag || c == 0)
+							{
+								if (reading > last)
+								{
+									auto end = reading[-1] == L'\r' ? reading - 1 : reading;
+									if (end > last)
+									{
+										writer.Text(run->text.Sub(last - begin, end - last));
+									}
+									last = reading;
+								}
+							}
+
+							if (tag)
+							{
+								writer.Element(tag);
+							}
+							else if (c == 0)
+							{
+								break;
+							}
+							reading++;
+						}
 					}
 				}
 
