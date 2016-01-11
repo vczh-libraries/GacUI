@@ -6847,7 +6847,15 @@ GuiImageFrameElementRenderer
 					IWindowsGDIResourceManager* resourceManager=GetWindowsGDIResourceManager();
 					INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
 					bitmap=resourceManager->GetBitmap(frame, element->GetEnabled());
-					minSize=frame->GetSize();
+
+					if (element->GetStretch())
+					{
+						minSize=Size(0,0);
+					}
+					else
+					{
+						minSize=frame->GetSize();
+					}
 				}
 				else
 				{
@@ -6882,6 +6890,8 @@ GuiImageFrameElementRenderer
 					Rect destination;
 					if(element->GetStretch())
 					{
+						INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
+						source = Rect(Point(0, 0), frame->GetSize());
 						destination=Rect(bounds.x1, bounds.y1, bounds.x2, bounds.y2);
 					}
 					else
@@ -12191,7 +12201,15 @@ GuiImageFrameElementRenderer
 				{
 					INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
 					bitmap=renderTarget->GetBitmap(frame, element->GetEnabled());
-					minSize=frame->GetSize();
+
+					if (element->GetStretch())
+					{
+						minSize=Size(0,0);
+					}
+					else
+					{
+						minSize=frame->GetSize();
+					}
 				}
 				else
 				{
@@ -12226,6 +12244,9 @@ GuiImageFrameElementRenderer
 					D2D1_RECT_F destination;
 					if(element->GetStretch())
 					{
+						INativeImageFrame* frame=element->GetImage()->GetFrame(element->GetFrameIndex());
+						auto size = frame->GetSize();
+						source = D2D1::RectF(0, 0, (FLOAT)size.x, (FLOAT)size.y);
 						destination=D2D1::RectF((FLOAT)bounds.x1, (FLOAT)bounds.y1, (FLOAT)bounds.x2, (FLOAT)bounds.y2);
 					}
 					else

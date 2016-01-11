@@ -16143,6 +16143,9 @@ namespace vl
 			WString						fullPath;
 
 			void						Initialize();
+
+			static void					GetPathComponents(WString path, collections::List<WString>& components);
+			static WString				ComponentsToPath(const collections::List<WString>& components);
 		public:
 #if defined VCZH_MSVC
 			static const wchar_t		Delimiter = L'\\';
@@ -16199,6 +16202,7 @@ namespace vl
 			/// <returns>The relative path.</returns>
 			/// <param name="_filePath">The referencing folder.</param>
 			WString						GetRelativePathFor(const FilePath& _filePath);
+
 		};
 
 		/// <summary>Representing a file reference.</summary>

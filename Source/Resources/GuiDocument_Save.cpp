@@ -94,6 +94,7 @@ document_operation_visitors::SerializeRunVisitor
 							{
 								break;
 							}
+							reading++;
 						}
 					}
 				}
