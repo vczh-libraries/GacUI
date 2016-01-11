@@ -173,6 +173,10 @@ public:
 	static Ptr<EventHandlerInfo> GetEventInfo(const IGuiInstanceLoader::TypeInfo& typeInfo, GlobalStringKey name)
 	{
 		auto eventInfo = typeInfo.typeDescriptor->GetEventByName(name.ToString(), true);
+		if (!eventInfo)
+		{
+			return nullptr;
+		}
 
 		auto funcPtr = eventInfo->GetHandlerType();
 		if (funcPtr->GetDecorator() != ITypeInfo::SharedPtr)
