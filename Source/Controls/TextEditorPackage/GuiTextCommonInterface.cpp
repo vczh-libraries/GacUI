@@ -715,6 +715,11 @@ GuiTextBoxCommonInterface
 				return GetFragmentText(start, end);
 			}
 
+			vint GuiTextBoxCommonInterface::GetRowCount()
+			{
+				return textElement->GetLines().GetCount();
+			}
+
 			WString GuiTextBoxCommonInterface::GetFragmentText(TextPos start, TextPos end)
 			{
 				start=textElement->GetLines().Normalize(start);

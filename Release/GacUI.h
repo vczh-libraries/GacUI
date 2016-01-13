@@ -14115,6 +14115,9 @@ Common Interface
 				/// <returns>The text from a specified row number.</returns>
 				/// <param name="row">The specified row number.</param>
 				WString												GetRowText(vint row);
+				/// <summary>Get the number of rows.</summary>
+				/// <returns>The number of rows.</returns>
+				vint												GetRowCount();
 				/// <summary>Get the text from a specified range.</summary>
 				/// <returns>The text from a specified range.</returns>
 				/// <param name="start">The specified start position.</param>
