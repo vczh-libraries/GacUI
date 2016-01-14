@@ -56,6 +56,7 @@ Workflow_PrecompileInstanceContext
 
 		Ptr<workflow::runtime::WfAssembly> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
 		{
+			vint previousErrorCount = errors.Count();
 			ITypeDescriptor* rootTypeDescriptor = 0;
 			if (context->className == L"")
 			{
@@ -71,7 +72,7 @@ Workflow_PrecompileInstanceContext
 			types::ResolvingResult resolvingResult;
 			rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
 
-			if (errors.Count() == 0)
+			if (errors.Count() == previousErrorCount)
 			{
 				auto statements = MakePtr<WfBlockStatement>();
 				Workflow_GenerateCreating(context, resolvingResult, rootTypeDescriptor, statements, errors);

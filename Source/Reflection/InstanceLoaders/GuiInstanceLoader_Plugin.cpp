@@ -170,13 +170,13 @@ GuiComboBoxInstanceLoader
 					_ListControl = GlobalStringKey::Get(L"ListControl");
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
 						propertyNames.Add(_ListControl);
 					}
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override

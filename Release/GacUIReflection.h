@@ -3940,7 +3940,7 @@ GuiVrtualTypeInstanceLoader
 						auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
 						funcCreateTemplate->anonymity = WfFunctionAnonymity::Named;
 						funcCreateTemplate->name.value = L"CreateTemplate";
-						funcCreateTemplate->returnType = GetTypeFromTypeInfo(templateType.Obj());
+						funcCreateTemplate->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<GuiTemplate*>::CreateTypeInfo().Obj());
 
 						auto argViewModel = MakePtr<WfFunctionArgument>();
 						argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());

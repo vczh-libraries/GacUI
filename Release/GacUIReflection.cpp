@@ -4675,13 +4675,13 @@ GuiComboBoxInstanceLoader
 					_ListControl = GlobalStringKey::Get(L"ListControl");
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
 						propertyNames.Add(_ListControl);
 					}
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -10335,6 +10335,7 @@ Workflow_PrecompileInstanceContext
 
 		Ptr<workflow::runtime::WfAssembly> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
 		{
+			vint previousErrorCount = errors.Count();
 			ITypeDescriptor* rootTypeDescriptor = 0;
 			if (context->className == L"")
 			{
@@ -10350,7 +10351,7 @@ Workflow_PrecompileInstanceContext
 			types::ResolvingResult resolvingResult;
 			rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
 
-			if (errors.Count() == 0)
+			if (errors.Count() == previousErrorCount)
 			{
 				auto statements = MakePtr<WfBlockStatement>();
 				Workflow_GenerateCreating(context, resolvingResult, rootTypeDescriptor, statements, errors);
