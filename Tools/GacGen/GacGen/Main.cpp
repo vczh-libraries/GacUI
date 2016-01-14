@@ -1,5 +1,7 @@
 #include "GacGen.h"
 
+using namespace vl::filesystem;
+
 Array<WString>* arguments = 0;
 
 int wmain(int argc, wchar_t* argv[])
@@ -364,6 +366,22 @@ public:
 	}
 };
 
+void SaveErrors(FilePath errorFilePath, List<WString>& errors)
+{
+	FileStream fileStream(errorFilePath.GetFullPath(), FileStream::WriteOnly);
+	BomEncoder encoder(BomEncoder::Utf16);
+	EncoderStream encoderStream(fileStream, encoder);
+	StreamWriter writer(encoderStream);
+
+	FOREACH(WString, error, errors)
+	{
+		PrintErrorMessage(error);
+		writer.WriteLine(error);
+	}
+
+	PrintInformationMessage(L"gacgen> Error information is saved at : " + errorFilePath.GetFullPath());
+}
+
 void GuiMain()
 {
 	Console::WriteLine(L"Vczh GacUI Resource Code Generator for C++");
@@ -374,12 +392,34 @@ void GuiMain()
 	}
 
 	WString inputPath = arguments->Get(0);
+	
+	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath);
+	FilePath logFolderPath = inputPath + L".log";
+	Folder logFolder(logFolderPath);
+	if (logFolder.Exists())
+	{
+		if (!logFolder.Delete(true))
+		{
+			PrintSuccessMessage(L"gacgen> Unable to delete log folder : " + logFolderPath.GetFullPath());
+		}
+	}
+	if (!logFolder.Create(true))
+	{
+		PrintSuccessMessage(L"gacgen> Unable to create log folder : " + logFolderPath.GetFullPath());
+	}
+
+	FilePath errorFilePath = logFolderPath / L"Errors.txt";
+
 	PrintSuccessMessage(L"gacgen> Making : " + inputPath);
 	List<WString> errors;
 	auto resource = GuiResource::LoadFromXml(arguments->Get(0), errors);
 	if (!resource)
 	{
 		PrintErrorMessage(L"error> Failed to load resource.");
+		if (errors.Count() > 0)
+		{
+			SaveErrors(errorFilePath, errors);
+		}
 		return;
 	}
 
@@ -394,12 +434,9 @@ void GuiMain()
 	GetGlobalTypeManager()->AddTypeLoader(typeLoader);
 	PrintSuccessMessage(L"gacgen> Compiling...");
 	resource->Precompile(errors);
-	FOREACH(WString, error, errors)
-	{
-		PrintErrorMessage(error);
-	}
 	if (errors.Count() > 0)
 	{
+		SaveErrors(errorFilePath, errors);
 		return;
 	}
 
