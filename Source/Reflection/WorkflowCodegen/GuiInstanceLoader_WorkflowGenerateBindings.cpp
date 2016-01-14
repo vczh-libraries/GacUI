@@ -50,18 +50,21 @@ WorkflowGenerateBindingVisitor
 						auto propertyName = repr->setters.Keys()[index];
 						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 						{
-							auto propertyInfo = resolvingResult.propertyResolvings[setter->values[0].Obj()].info;
-							if (propertyInfo->scope != GuiInstancePropertyInfo::Constructor)
+							if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
 							{
-								WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
-
-								auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
-								if (binder)
+								auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
+								if (propertyResolving.info->scope == GuiInstancePropertyInfo::Constructor)
 								{
+									errors.Add(L"Precompile: Binding to constructor arguments will be implemented in the future.");
+								}
+								else
+								{
+									WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
 									auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
-									if (instancePropertyInfo)
+
+									if (instancePropertyInfo || !binder->RequirePropertyExist())
 									{
-										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, expressionCode, errors))
+										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, propertyResolving.loader, propertyResolving.propertyInfo, propertyResolving.info, expressionCode, errors))
 										{
 											if (Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, expressionCode, statement))
 											{
@@ -74,10 +77,10 @@ WorkflowGenerateBindingVisitor
 										errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 									}
 								}
-								else
-								{
-									errors.Add(L"The appropriate IGuiInstanceBinder of binding \"-" + setter->binding.ToString() + L"\" cannot be found.");
-								}
+							}
+							else
+							{
+								errors.Add(L"Precompile: The appropriate IGuiInstanceBinder of binding \"-" + setter->binding.ToString() + L"\" cannot be found.");
 							}
 						}
 						else

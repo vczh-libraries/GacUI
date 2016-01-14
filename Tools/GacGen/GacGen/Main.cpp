@@ -431,12 +431,17 @@ void GuiMain()
 		Folder logFolder(logFolderPath);
 		if (logFolder.Exists())
 		{
-			if (!logFolder.Delete(true))
+			List<File> files;
+			logFolder.GetFiles(files);
+			FOREACH(File, file, files)
 			{
-				PrintSuccessMessage(L"gacgen> Unable to delete log folder : " + logFolderPath.GetFullPath());
+				if (!file.Delete())
+				{
+					PrintSuccessMessage(L"gacgen> Unable to delete file in the log folder : " + file.GetFilePath().GetFullPath());
+				}
 			}
 		}
-		if (!logFolder.Create(true))
+		else if (!logFolder.Create(true))
 		{
 			PrintSuccessMessage(L"gacgen> Unable to create log folder : " + logFolderPath.GetFullPath());
 		}

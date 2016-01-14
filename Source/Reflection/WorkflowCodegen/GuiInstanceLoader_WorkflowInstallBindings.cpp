@@ -18,7 +18,7 @@ namespace vl
 Workflow_InstallBindProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& protocol, const WString& path)
+		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, collections::List<WString>& errors)
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
@@ -71,7 +71,7 @@ Workflow_InstallBindProperty
 				subBlock->statements.Add(ifStat);
 			}
 
-			auto td = propertyInfo->GetReturn()->GetTypeDescriptor();
+			auto td = propInfo->acceptableTypes[0];
 			Ptr<ITypeInfo> convertedType;
 			if (td->GetValueSerializer())
 			{
@@ -83,7 +83,12 @@ Workflow_InstallBindProperty
 			}
 			else
 			{
-				convertedType = CopyTypeInfo(propertyInfo->GetReturn());
+				auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+				elementType->SetTypeDescriptor(td);
+
+				auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
+				pointerType->SetElementType(elementType);
+				convertedType = pointerType;
 			}
 
 			{
@@ -136,9 +141,12 @@ Workflow_InstallBindProperty
 				member->parent = refResourceValue;
 				member->name.value = L"Text";
 
+				auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+				elementType->SetTypeDescriptor(td);
+
 				auto cast = MakePtr<WfTypeCastingExpression>();
 				cast->expression = member;
-				cast->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+				cast->type = GetTypeFromTypeInfo(elementType.Obj());
 				cast->strategy = WfTypeCastingStrategy::Strong;
 
 				evalExpression = cast;
@@ -163,21 +171,18 @@ Workflow_InstallBindProperty
 			}
 
 			{
-				auto refSubscribee = MakePtr<WfReferenceExpression>();
-				refSubscribee->name.value = variableName.ToString();
+				IGuiInstanceLoader::ArgumentMap arguments;
+				{
+					IGuiInstanceLoader::ArgumentInfo argumentInfo;
+					argumentInfo.type = td;
+					argumentInfo.expression = evalExpression;
+					arguments.Add(prop.propertyName, argumentInfo);
+				}
 
-				auto member = MakePtr<WfMemberExpression>();
-				member->parent = refSubscribee;
-				member->name.value = propertyInfo->GetName();
-
-				auto assign = MakePtr<WfBinaryExpression>();
-				assign->op = WfBinaryOperator::Assign;
-				assign->first = member;
-				assign->second = evalExpression;
-
-				auto stat = MakePtr<WfExpressionStatement>();
-				stat->expression = assign;
-				subBlock->statements.Add(stat);
+				if (auto stat = loader->AssignParameters(prop.typeInfo, variableName, arguments, errors))
+				{
+					subBlock->statements.Add(stat);
+				}
 			}
 			return subBlock;
 		}
@@ -344,24 +349,17 @@ Workflow_InstallBindProperty
 Workflow_InstallEvalProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvalProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> evalExpression)
+		Ptr<workflow::WfStatement> Workflow_InstallEvalProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, collections::List<WString>& errors)
 		{
-			auto refSubscribee = MakePtr<WfReferenceExpression>();
-			refSubscribee->name.value = variableName.ToString();
+			IGuiInstanceLoader::ArgumentMap arguments;
+			{
+				IGuiInstanceLoader::ArgumentInfo argumentInfo;
+				argumentInfo.type = propInfo->acceptableTypes[0];
+				argumentInfo.expression = evalExpression;
+				arguments.Add(prop.propertyName, argumentInfo);
+			}
 
-			auto member = MakePtr<WfMemberExpression>();
-			member->parent = refSubscribee;
-			member->name.value = propertyInfo->GetName();
-
-			auto assign = MakePtr<WfBinaryExpression>();
-			assign->op = WfBinaryOperator::Assign;
-			assign->first = member;
-			assign->second = evalExpression;
-
-			auto stat = MakePtr<WfExpressionStatement>();
-			stat->expression = assign;
-			
-			return stat;
+			return loader->AssignParameters(prop.typeInfo, variableName, arguments, errors);
 		}
 
 /***********************************************************************

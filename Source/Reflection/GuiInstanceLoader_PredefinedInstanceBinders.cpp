@@ -30,8 +30,13 @@ GuiResourceInstanceBinder (uri)
 			{
 				return false;
 			}
+
+			bool RequirePropertyExist()override
+			{
+				return false;
+			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				WString protocol, path;
 				if (!IsResourceUrl(code, protocol, path))
@@ -41,7 +46,7 @@ GuiResourceInstanceBinder (uri)
 				}
 				else
 				{
-					return Workflow_InstallUriProperty(variableName, propertyInfo, protocol, path);
+					return Workflow_InstallUriProperty(variableName, loader, prop, propInfo, protocol, path, errors);
 				}
 			}
 		};
@@ -62,12 +67,17 @@ GuiReferenceInstanceBinder (ref)
 			{
 				return false;
 			}
+
+			bool RequirePropertyExist()override
+			{
+				return false;
+			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				auto expression = MakePtr<WfReferenceExpression>();
 				expression->name.value = code;
-				return Workflow_InstallEvalProperty(variableName, propertyInfo, expression);
+				return Workflow_InstallEvalProperty(variableName, loader, prop, propInfo, expression, errors);
 			}
 		};
 
@@ -87,12 +97,17 @@ GuiEvalInstanceBinder (eval)
 			{
 				return true;
 			}
+
+			bool RequirePropertyExist()override
+			{
+				return false;
+			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				if (auto expression = Workflow_ParseExpression(code, errors))
 				{
-					return Workflow_InstallEvalProperty(variableName, propertyInfo, expression);
+					return Workflow_InstallEvalProperty(variableName, loader, prop, propInfo, expression, errors);
 				}
 				return 0;
 			}
@@ -114,8 +129,13 @@ GuiBindInstanceBinder (bind)
 			{
 				return false;
 			}
+
+			bool RequirePropertyExist()override
+			{
+				return true;
+			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				if (auto expression = Workflow_ParseExpression(L"bind(" + code + L")", errors))
 				{
@@ -141,8 +161,13 @@ GuiFormatInstanceBinder (format)
 			{
 				return false;
 			}
+
+			bool RequirePropertyExist()override
+			{
+				return true;
+			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, const WString& code, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
 				if (auto expression = Workflow_ParseExpression(L"bind($\"" + code + L"\")", errors))
 				{
