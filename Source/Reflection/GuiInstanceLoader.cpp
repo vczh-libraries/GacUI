@@ -508,9 +508,35 @@ GuiDefaultInstanceLoader
 								}
 							}
 							break;
-						case GuiInstancePropertyInfo::SupportAssign:
 						case GuiInstancePropertyInfo::SupportArray:
-							{										  
+							{
+								auto refArray = MakePtr<WfConstructorExpression>();
+								FOREACH(ArgumentInfo, item, arguments.GetByIndex(index))
+								{
+									auto argument = MakePtr<WfConstructorArgument>();
+									argument->key = item.expression;
+									refArray->arguments.Add(argument);
+								}
+
+								auto refValue = MakePtr<WfReferenceExpression>();
+								refValue->name.value = variableName.ToString();
+
+								auto refProp = MakePtr<WfMemberExpression>();
+								refProp->parent = refValue;
+								refProp->name.value = prop.ToString();
+
+								auto assign = MakePtr<WfBinaryExpression>();
+								assign->op = WfBinaryOperator::Assign;
+								assign->first = refProp;
+								assign->second = refArray;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assign;
+								block->statements.Add(stat);
+							}
+							break;
+						case GuiInstancePropertyInfo::SupportAssign:
+							{
 								auto refValue = MakePtr<WfReferenceExpression>();
 								refValue->name.value = variableName.ToString();
 

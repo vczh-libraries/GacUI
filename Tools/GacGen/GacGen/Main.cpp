@@ -369,17 +369,24 @@ public:
 void SaveErrors(FilePath errorFilePath, List<WString>& errors)
 {
 	FileStream fileStream(errorFilePath.GetFullPath(), FileStream::WriteOnly);
-	BomEncoder encoder(BomEncoder::Utf16);
-	EncoderStream encoderStream(fileStream, encoder);
-	StreamWriter writer(encoderStream);
-
-	FOREACH(WString, error, errors)
+	if (fileStream.IsAvailable())
 	{
-		PrintErrorMessage(error);
-		writer.WriteLine(error);
-	}
+		BomEncoder encoder(BomEncoder::Utf16);
+		EncoderStream encoderStream(fileStream, encoder);
+		StreamWriter writer(encoderStream);
 
-	PrintInformationMessage(L"gacgen> Error information is saved at : " + errorFilePath.GetFullPath());
+		FOREACH(WString, error, errors)
+		{
+			PrintErrorMessage(error);
+			writer.WriteLine(error);
+		}
+
+		PrintInformationMessage(L"gacgen> Error information is saved at : " + errorFilePath.GetFullPath());
+	}
+	else
+	{
+		PrintErrorMessage(L"gacgen> Unable to write : " + errorFilePath.GetFullPath());
+	}
 }
 
 void GuiMain()

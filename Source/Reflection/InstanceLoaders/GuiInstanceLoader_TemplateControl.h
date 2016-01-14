@@ -287,7 +287,7 @@ GuiVrtualTypeInstanceLoader
 					}
 
 					auto controlTemplateName = controlTemplateNameExpr->value.value;
-					if (wcschr(controlTemplateName.Buffer(), L';') == nullptr)
+					if (wcschr(controlTemplateName.Buffer(), L';') != nullptr)
 					{
 						errors.Add(L"Precompile: \"" + controlTemplateNameExpr->value.value + L"\", which is assigned to contructor parameter \"" + GlobalStringKey::_ControlTemplate.ToString() + L" of type \"" + controlTypeInfo.typeName.ToString() + L"\", is illegal because control template should not have multiple choices.");
 						return nullptr;
