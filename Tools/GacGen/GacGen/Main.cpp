@@ -480,40 +480,6 @@ void GuiMain()
 		}
 	}
 
-	{
-		PrintSuccessMessage(L"gacgen> Dumping workflow scripts ... : " + inputPath);
-		CompiledScriptMap scripts;
-		CollectWorkflowScripts(resource, scripts);
-
-		Group<WString, WString> paths;
-		FOREACH(WString, path, scripts.Keys())
-		{
-			auto pair = INVLOC.FindLast(path, L"/", Locale::None);
-			auto key = path.Right(path.Length() - pair.key - pair.value);
-			paths.Add(key, path);
-		}
-
-		FOREACH_INDEXER(WString, key, keyIndex, paths.Keys())
-		{
-			auto& pathList = paths.GetByIndex(keyIndex);
-			FOREACH_INDEXER(WString, path, pathIndex, pathList)
-			{
-				auto compiled = scripts[path];
-				auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
-
-				WString text = path + L"\r\n";
-				FOREACH_INDEXER(WString, code, codeIndex, codes)
-				{
-					text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
-					text += code + L"\r\n";
-				}
-
-				auto fileName = logFolderPath / (pathList.Count() > 1 ? key + L"[" + itow(pathIndex) + L"].txt" : key + L".txt");
-				File(fileName).WriteAllText(text);
-			}
-		}
-	}
-
 	GetInstanceLoaderManager()->SetResource(L"GACGEN", resource, GuiResourceUsage::DevelopmentTool);
 
 	if (config->cppOutput)
@@ -551,4 +517,38 @@ void GuiMain()
 		}
 	}
 	GetGlobalTypeManager()->RemoveTypeLoader(typeLoader);
+
+	{
+		PrintSuccessMessage(L"gacgen> Dumping workflow scripts ... : " + inputPath);
+		CompiledScriptMap scripts;
+		CollectWorkflowScripts(resource, scripts);
+
+		Group<WString, WString> paths;
+		FOREACH(WString, path, scripts.Keys())
+		{
+			auto pair = INVLOC.FindLast(path, L"/", Locale::None);
+			auto key = path.Right(path.Length() - pair.key - pair.value);
+			paths.Add(key, path);
+		}
+
+		FOREACH_INDEXER(WString, key, keyIndex, paths.Keys())
+		{
+			auto& pathList = paths.GetByIndex(keyIndex);
+			FOREACH_INDEXER(WString, path, pathIndex, pathList)
+			{
+				auto compiled = scripts[path];
+				auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
+
+				WString text = path + L"\r\n";
+				FOREACH_INDEXER(WString, code, codeIndex, codes)
+				{
+					text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
+					text += code + L"\r\n";
+				}
+
+				auto fileName = logFolderPath / (pathList.Count() > 1 ? key + L"[" + itow(pathIndex) + L"].txt" : key + L".txt");
+				File(fileName).WriteAllText(text);
+			}
+		}
+	}
 }

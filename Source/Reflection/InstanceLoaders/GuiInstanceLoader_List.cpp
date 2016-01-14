@@ -374,12 +374,12 @@ GuiTreeViewInstanceLoader
 						auto refControl = MakePtr<WfReferenceExpression>();
 						refControl->name.value = variableName.ToString();
 
-						auto refChangeItemStyle = MakePtr<WfMemberExpression>();
-						refChangeItemStyle->parent = refControl;
-						refChangeItemStyle->name.value = L"ChangeItemStyle";
+						auto refSetNodeStyleProvider = MakePtr<WfMemberExpression>();
+						refSetNodeStyleProvider->parent = refControl;
+						refSetNodeStyleProvider->name.value = L"SetNodeStyleProvider";
 
 						auto call = MakePtr<WfCallExpression>();
-						call->function = refChangeItemStyle;
+						call->function = refSetNodeStyleProvider;
 						call->arguments.Add(createStyle);
 
 						auto stat = MakePtr<WfExpressionStatement>();

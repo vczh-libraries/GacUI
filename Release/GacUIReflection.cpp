@@ -3809,12 +3809,12 @@ GuiTreeViewInstanceLoader
 						auto refControl = MakePtr<WfReferenceExpression>();
 						refControl->name.value = variableName.ToString();
 
-						auto refChangeItemStyle = MakePtr<WfMemberExpression>();
-						refChangeItemStyle->parent = refControl;
-						refChangeItemStyle->name.value = L"ChangeItemStyle";
+						auto refSetNodeStyleProvider = MakePtr<WfMemberExpression>();
+						refSetNodeStyleProvider->parent = refControl;
+						refSetNodeStyleProvider->name.value = L"SetNodeStyleProvider";
 
 						auto call = MakePtr<WfCallExpression>();
-						call->function = refChangeItemStyle;
+						call->function = refSetNodeStyleProvider;
 						call->arguments.Add(createStyle);
 
 						auto stat = MakePtr<WfExpressionStatement>();
@@ -7590,6 +7590,7 @@ Type Declaration
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin8Theme, NO_PARAMETER, Ptr<ITheme>(*)(), &CreateWin8Theme)
 
 				CLASS_MEMBER_METHOD(CreateWindowStyle, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreateCustomControlStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateTooltipStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateLabelStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateShortcutKeyStyle, NO_PARAMETER)
@@ -7620,6 +7621,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateButtonStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateCheckBoxStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateRadioButtonStyle, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreateDatePickerStyle, NO_PARAMETER)
 
 				CLASS_MEMBER_METHOD(CreateHScrollStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateVScrollStyle, NO_PARAMETER)
@@ -8513,7 +8515,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)
 				INTERFACE_EXTERNALCTOR(tree, INodeItemStyleController)
 
-				CLASS_MEMBER_METHOD(GetNodeStyleProvider, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(NodeStyleProvider)
 			END_CLASS_MEMBER(INodeItemStyleController)
 
 			BEGIN_CLASS_MEMBER(INodeItemStyleProvider)
