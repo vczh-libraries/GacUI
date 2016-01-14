@@ -25,6 +25,7 @@ GuiTabInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -82,7 +83,7 @@ GuiTabInstanceLoader
 					{
 						return block;
 					}
-					return nullptr;
+					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE

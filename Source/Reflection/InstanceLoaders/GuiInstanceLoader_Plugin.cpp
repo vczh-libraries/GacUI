@@ -176,6 +176,7 @@ GuiComboBoxInstanceLoader
 					{
 						propertyNames.Add(_ListControl);
 					}
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -187,7 +188,7 @@ GuiComboBoxInstanceLoader
 						info->required = true;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 			};
 #undef BASE_TYPE

@@ -3275,6 +3275,7 @@ GuiDocumentViewerInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -3318,7 +3319,7 @@ GuiDocumentViewerInstanceLoader
 					{
 						return block;
 					}
-					return nullptr;
+					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -3339,6 +3340,7 @@ GuiDocumentLabelInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -3382,7 +3384,7 @@ GuiDocumentLabelInstanceLoader
 					{
 						return block;
 					}
-					return nullptr;
+					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -3674,6 +3676,7 @@ GuiListViewInstanceLoader
 						propertyNames.Add(_View);
 						propertyNames.Add(_IconSize);
 					}
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const typename BASE_TYPE::PropertyInfo& propertyInfo)override
@@ -3690,7 +3693,7 @@ GuiListViewInstanceLoader
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 			};
 #undef BASE_TYPE
@@ -3721,11 +3724,11 @@ GuiListViewInstanceLoader
 
 				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 					if (typeInfo.typeName == GetTypeName())
 					{
 						propertyNames.Add(_ItemSource);
 					}
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -3808,6 +3811,7 @@ GuiTreeViewInstanceLoader
 					{
 						propertyNames.Add(_Nodes);
 					}
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				void GetConstructorParameters(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -3817,6 +3821,7 @@ GuiTreeViewInstanceLoader
 						propertyNames.Add(_Nodes);
 						propertyNames.Add(_IconSize);
 					}
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const typename BASE_TYPE::PropertyInfo& propertyInfo)override
@@ -3834,7 +3839,7 @@ GuiTreeViewInstanceLoader
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, collections::List<WString>& errors)override
@@ -3874,7 +3879,7 @@ GuiTreeViewInstanceLoader
 					{
 						return block;
 					}
-					return nullptr;
+					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -3905,11 +3910,11 @@ GuiTreeViewInstanceLoader
 
 				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 					if (typeInfo.typeName == GetTypeName())
 					{
 						propertyNames.Add(_ItemSource);
 					}
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -3966,6 +3971,7 @@ GuiBindableTextListInstanceLoader
 					{
 						propertyNames.Add(_ItemSource);
 					}
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -3977,7 +3983,7 @@ GuiBindableTextListInstanceLoader
 						info->required = true;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 			};
 #undef BASE_TYPE
@@ -4187,6 +4193,7 @@ GuiBindableDataGridInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(_Columns);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -4196,6 +4203,7 @@ GuiBindableDataGridInstanceLoader
 						propertyNames.Add(_ItemSource);
 						propertyNames.Add(_ViewModelContext);
 					}
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -4219,7 +4227,7 @@ GuiBindableDataGridInstanceLoader
 						info->bindable = true;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
@@ -4251,7 +4259,7 @@ GuiBindableDataGridInstanceLoader
 					{
 						return block;
 					}
-					return nullptr;
+					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -4647,6 +4655,7 @@ GuiComboBoxInstanceLoader
 					{
 						propertyNames.Add(_ListControl);
 					}
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -4658,7 +4667,7 @@ GuiComboBoxInstanceLoader
 						info->required = true;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 			};
 #undef BASE_TYPE
@@ -4866,6 +4875,7 @@ GuiTabInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -4923,7 +4933,7 @@ GuiTabInstanceLoader
 					{
 						return block;
 					}
-					return nullptr;
+					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -5122,6 +5132,7 @@ GuiToolstripMenuInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -5135,7 +5146,14 @@ GuiToolstripMenuInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					return AddControlToToolstrip(variableName, arguments, errors);
+					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
+					{
+						return statement;
+					}
+					else
+					{
+						return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
+					}
 				}
 			};
 #undef BASE_TYPE
@@ -5156,6 +5174,7 @@ GuiToolstripMenuBarInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -5169,7 +5188,14 @@ GuiToolstripMenuBarInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					return AddControlToToolstrip(variableName, arguments, errors);
+					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
+					{
+						return statement;
+					}
+					else
+					{
+						return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
+					}
 				}
 			};
 #undef BASE_TYPE
@@ -5190,6 +5216,7 @@ GuiToolstripToolBarInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -5203,7 +5230,14 @@ GuiToolstripToolBarInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					return AddControlToToolstrip(variableName, arguments, errors);
+					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
+					{
+						return statement;
+					}
+					else
+					{
+						return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
+					}
 				}
 			};
 #undef BASE_TYPE
@@ -5228,6 +5262,7 @@ GuiToolstripButtonInstanceLoader
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(_SubMenu);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -5255,7 +5290,7 @@ GuiToolstripButtonInstanceLoader
 
 						return call;
 					}
-					return nullptr;
+					return BASE_TYPE::GetParameter(propertyInfo, variableName, errors);
 				}
 			};
 #undef BASE_TYPE
