@@ -389,6 +389,30 @@ void SaveErrors(FilePath errorFilePath, List<WString>& errors)
 	}
 }
 
+typedef Dictionary<WString, Ptr<GuiInstanceCompiledWorkflow>>	CompiledScriptMap;
+
+void CollectWorkflowScriptsInFolder(Ptr<GuiResourceFolder> folder, CompiledScriptMap& scripts)
+{
+	FOREACH(Ptr<GuiResourceItem>, item, folder->GetItems())
+	{
+		auto compiled = item->GetContent().Cast<GuiInstanceCompiledWorkflow>();
+		if (compiled)
+		{
+			scripts.Add(item->GetResourcePath(), compiled);
+		}
+	}
+	FOREACH(Ptr<GuiResourceFolder>, subFolder, folder->GetFolders())
+	{
+		CollectWorkflowScriptsInFolder(subFolder, scripts);
+	}
+}
+
+void CollectWorkflowScripts(Ptr<GuiResource> resource, CompiledScriptMap& scripts)
+{
+	auto precompiledFolder = resource->GetFolder(L"Precompiled");
+	CollectWorkflowScriptsInFolder(precompiledFolder, scripts);
+}
+
 void GuiMain()
 {
 	Console::WriteLine(L"Vczh GacUI Resource Code Generator for C++");
@@ -402,49 +426,92 @@ void GuiMain()
 	
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath);
 	FilePath logFolderPath = inputPath + L".log";
-	Folder logFolder(logFolderPath);
-	if (logFolder.Exists())
+	FilePath errorFilePath = logFolderPath / L"Errors.txt";
 	{
-		if (!logFolder.Delete(true))
+		Folder logFolder(logFolderPath);
+		if (logFolder.Exists())
 		{
-			PrintSuccessMessage(L"gacgen> Unable to delete log folder : " + logFolderPath.GetFullPath());
+			if (!logFolder.Delete(true))
+			{
+				PrintSuccessMessage(L"gacgen> Unable to delete log folder : " + logFolderPath.GetFullPath());
+			}
+		}
+		if (!logFolder.Create(true))
+		{
+			PrintSuccessMessage(L"gacgen> Unable to create log folder : " + logFolderPath.GetFullPath());
 		}
 	}
-	if (!logFolder.Create(true))
+
+	Ptr<GuiResource> resource;
 	{
-		PrintSuccessMessage(L"gacgen> Unable to create log folder : " + logFolderPath.GetFullPath());
+		PrintSuccessMessage(L"gacgen> Making : " + inputPath);
+		List<WString> errors;
+		resource = GuiResource::LoadFromXml(arguments->Get(0), errors);
+		if (!resource)
+		{
+			PrintErrorMessage(L"error> Failed to load resource.");
+			if (errors.Count() > 0)
+			{
+				SaveErrors(errorFilePath, errors);
+			}
+			return;
+		}
 	}
 
-	FilePath errorFilePath = logFolderPath / L"Errors.txt";
-
-	PrintSuccessMessage(L"gacgen> Making : " + inputPath);
-	List<WString> errors;
-	auto resource = GuiResource::LoadFromXml(arguments->Get(0), errors);
-	if (!resource)
+	Ptr<CodegenConfig> config;
+	Ptr<ResourceMockTypeLoader> typeLoader;
 	{
-		PrintErrorMessage(L"error> Failed to load resource.");
+		config = CodegenConfig::LoadConfig(resource);
+		if (!config)
+		{
+			PrintErrorMessage(L"error> Failed to load config.");
+			return;
+		}
+
+		typeLoader = MakePtr<ResourceMockTypeLoader>(resource, config);
+		GetGlobalTypeManager()->AddTypeLoader(typeLoader);
+		PrintSuccessMessage(L"gacgen> Compiling...");
+		List<WString> errors;
+		resource->Precompile(errors);
 		if (errors.Count() > 0)
 		{
 			SaveErrors(errorFilePath, errors);
+			return;
 		}
-		return;
 	}
 
-	auto config = CodegenConfig::LoadConfig(resource);
-	if (!config)
 	{
-		PrintErrorMessage(L"error> Failed to load config.");
-		return;
-	}
+		PrintSuccessMessage(L"gacgen> Dumping workflow scripts ... : " + inputPath);
+		CompiledScriptMap scripts;
+		CollectWorkflowScripts(resource, scripts);
 
-	auto typeLoader = MakePtr<ResourceMockTypeLoader>(resource, config);
-	GetGlobalTypeManager()->AddTypeLoader(typeLoader);
-	PrintSuccessMessage(L"gacgen> Compiling...");
-	resource->Precompile(errors);
-	if (errors.Count() > 0)
-	{
-		SaveErrors(errorFilePath, errors);
-		return;
+		Group<WString, WString> paths;
+		FOREACH(WString, path, scripts.Keys())
+		{
+			auto pair = INVLOC.FindLast(path, L"/", Locale::None);
+			auto key = path.Right(path.Length() - pair.key - pair.value);
+			paths.Add(key, path);
+		}
+
+		FOREACH_INDEXER(WString, key, keyIndex, paths.Keys())
+		{
+			auto& pathList = paths.GetByIndex(keyIndex);
+			FOREACH_INDEXER(WString, path, pathIndex, pathList)
+			{
+				auto compiled = scripts[path];
+				auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
+
+				WString text = path + L"\r\n";
+				FOREACH_INDEXER(WString, code, codeIndex, codes)
+				{
+					text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
+					text += code + L"\r\n";
+				}
+
+				auto fileName = logFolderPath / (pathList.Count() > 1 ? key + L"[" + itow(pathIndex) + L"].txt" : key + L".txt");
+				File(fileName).WriteAllText(text);
+			}
+		}
 	}
 
 	GetInstanceLoaderManager()->SetResource(L"GACGEN", resource, GuiResourceUsage::DevelopmentTool);

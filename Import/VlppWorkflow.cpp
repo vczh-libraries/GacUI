@@ -12499,10 +12499,10 @@ Print (Declaration)
 				switch (node->kind)
 				{
 				case WfClassKind::Class:
-					writer.WriteString(L"class ");
+					writer.WriteString(indent + L"class ");
 					break;
 				case WfClassKind::Interface:
-					writer.WriteString(L"interface ");
+					writer.WriteString(indent + L"interface ");
 					break;
 				}
 				writer.WriteString(node->name.value);
@@ -12521,7 +12521,7 @@ Print (Declaration)
 				}
 
 				writer.WriteLine(L"");
-				writer.WriteLine(L"{");
+				writer.WriteLine(indent + L"{");
 
 				FOREACH_INDEXER(Ptr<WfClassMember>, member, index, node->members)
 				{
@@ -12543,7 +12543,7 @@ Print (Declaration)
 					writer.WriteLine(L"");
 				}
 
-				writer.WriteString(L"}");
+				writer.WriteLine(indent + L"}");
 				writer.AfterPrint(node);
 			}
 		};

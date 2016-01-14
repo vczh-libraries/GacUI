@@ -43013,7 +43013,7 @@ GuiResourceNodeBase
 			auto current = parent;
 			while (current && current->GetParent())
 			{
-				resourcePath = parent->GetName() + L"/" + resourcePath;
+				resourcePath = current->GetName() + L"/" + resourcePath;
 				current = current->GetParent();
 			}
 			return resourcePath;
