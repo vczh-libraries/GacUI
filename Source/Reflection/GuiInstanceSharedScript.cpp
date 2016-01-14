@@ -40,10 +40,11 @@ GuiInstanceSharedScript
 			if (binaryToLoad)
 			{
 				assembly = new WfAssembly(*binaryToLoad.Obj());
+				context = nullptr;
 				binaryToLoad = nullptr;
 			}
 
-			if (initializeContext)
+			if (initializeContext && !context)
 			{
 				context = new WfRuntimeGlobalContext(assembly);
 				LoadFunction<void()>(context, L"<initialize>")();
