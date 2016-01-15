@@ -367,6 +367,7 @@ Resource
 			void									Precompile(collections::List<WString>& errors);
 
 			/// <summary>Initialize a precompiled resource.</summary>
+			/// <param name="usage">In which role an application is initializing this resource.</param>
 			void									Initialize(GuiResourceUsage usage);
 			
 			/// <summary>Get a contained document model using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>
@@ -536,7 +537,6 @@ Resource Type Resolver
 			/// <summary>Initialize the resource item.</summary>
 			/// <param name="resource">The resource to initializer.</param>
 			/// <param name="context">The context for initializing.</param>
-			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual void										Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context) = 0;
 		};
 

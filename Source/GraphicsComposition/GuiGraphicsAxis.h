@@ -124,7 +124,7 @@ Axis Implementation
 
 			public:
 				/// <summary>Create the transformer with a specified axis direction.</summary>
-				/// <param name="_alignment">The specified axis direction.</param>
+				/// <param name="_axisDirection">The specified axis direction.</param>
 				GuiAxis(AxisDirection _axisDirection);
 				~GuiAxis();
 

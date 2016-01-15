@@ -157,7 +157,6 @@ Layout Engine
 				/// <param name="start">The position of the first character of the specified range.</param>
 				/// <param name="length">The length of the specified range by character.</param>
 				/// <param name="properties">The properties for the inline object.</param>
-				/// <param name="value">The element.</param>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool								SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)=0;
 				/// <summary>Unbind all inline objects to a range of text.</summary>
@@ -236,6 +235,7 @@ Layout Engine
 				/// <summary>Create a paragraph with internal renderer device dependent objects initialized.</summary>
 				/// <param name="text">The text used to fill the paragraph.</param>
 				/// <param name="renderTarget">The render target that the created paragraph will render to.</param>
+				/// <param name="callback">A callback to receive necessary information when the paragraph is being rendered.</param>
 				/// <returns>The created paragraph object.</returns>
 				virtual Ptr<IGuiGraphicsParagraph>			CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback)=0;
 			};

@@ -327,7 +327,7 @@ Basic Construction
 
 				/// <summary>Add a control host as a component. When this control host is disposing, all attached components will be deleted.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="component">The controlHost to add.</param>
+				/// <param name="controlHost">The controlHost to add.</param>
 				bool											AddControlHostComponent(GuiControlHost* controlHost);
 				/// <summary>Remove a component.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>

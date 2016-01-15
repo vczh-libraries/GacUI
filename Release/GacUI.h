@@ -1017,7 +1017,6 @@ Layout Engine
 				/// <param name="start">The position of the first character of the specified range.</param>
 				/// <param name="length">The length of the specified range by character.</param>
 				/// <param name="properties">The properties for the inline object.</param>
-				/// <param name="value">The element.</param>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				virtual bool								SetInlineObject(vint start, vint length, const InlineObjectProperties& properties)=0;
 				/// <summary>Unbind all inline objects to a range of text.</summary>
@@ -1096,6 +1095,7 @@ Layout Engine
 				/// <summary>Create a paragraph with internal renderer device dependent objects initialized.</summary>
 				/// <param name="text">The text used to fill the paragraph.</param>
 				/// <param name="renderTarget">The render target that the created paragraph will render to.</param>
+				/// <param name="callback">A callback to receive necessary information when the paragraph is being rendered.</param>
 				/// <returns>The created paragraph object.</returns>
 				virtual Ptr<IGuiGraphicsParagraph>			CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, IGuiGraphicsParagraphCallback* callback)=0;
 			};
@@ -3549,6 +3549,7 @@ Resource
 			void									Precompile(collections::List<WString>& errors);
 
 			/// <summary>Initialize a precompiled resource.</summary>
+			/// <param name="usage">In which role an application is initializing this resource.</param>
 			void									Initialize(GuiResourceUsage usage);
 			
 			/// <summary>Get a contained document model using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>
@@ -3718,7 +3719,6 @@ Resource Type Resolver
 			/// <summary>Initialize the resource item.</summary>
 			/// <param name="resource">The resource to initializer.</param>
 			/// <param name="context">The context for initializing.</param>
-			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual void										Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context) = 0;
 		};
 
@@ -7075,7 +7075,7 @@ Axis Implementation
 
 			public:
 				/// <summary>Create the transformer with a specified axis direction.</summary>
-				/// <param name="_alignment">The specified axis direction.</param>
+				/// <param name="_axisDirection">The specified axis direction.</param>
 				GuiAxis(AxisDirection _axisDirection);
 				~GuiAxis();
 
@@ -8192,7 +8192,7 @@ Basic Construction
 
 				/// <summary>Add a control host as a component. When this control host is disposing, all attached components will be deleted.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="component">The controlHost to add.</param>
+				/// <param name="controlHost">The controlHost to add.</param>
 				bool											AddControlHostComponent(GuiControlHost* controlHost);
 				/// <summary>Remove a component.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
@@ -10253,7 +10253,7 @@ List Control
 					virtual void								OnItemModified(vint start, vint count, vint newCount)=0;
 				};
 
-				/// <summary>Item arranger callback. Item arrangers use this interface to communicate with the list control. When setting positions for item controls, functions in this callback object is suggested to call because they use the result from the [T:vl.presentation.controls.GuiListControl.IItemCoordinateTransformer].</summary>
+				/// <summary>Item arranger callback. Item arrangers use this interface to communicate with the list control. When setting positions for item controls, functions in this callback object is suggested to call because they use the result from the [T:vl.presentation.controls.compositions.IGuiAxis].</summary>
 				class IItemArrangerCallback : public virtual IDescriptable, public Description<IItemArrangerCallback>
 				{
 				public:
@@ -11608,7 +11608,7 @@ ListView ItemStyleProvider
 					class IListViewItemContentProvider : public virtual IDescriptable, public Description<IListViewItemContentProvider>
 					{
 					public:
-						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemCoordinateTransformer"/> for the related item style provider.</summary>
+						/// <summary>Create a default and preferred <see cref="T:vl.presentation.controls.compositions.IGuiAxis"/> for the related item style provider.</summary>
 						/// <returns>The created item coordinate transformer.</returns>
 						virtual compositions::IGuiAxis*							CreatePreferredAxis()=0;
 						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemArranger"/> for the related item style provider.</summary>

@@ -228,7 +228,7 @@ ListView ItemStyleProvider
 					class IListViewItemContentProvider : public virtual IDescriptable, public Description<IListViewItemContentProvider>
 					{
 					public:
-						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemCoordinateTransformer"/> for the related item style provider.</summary>
+						/// <summary>Create a default and preferred <see cref="T:vl.presentation.controls.compositions.IGuiAxis"/> for the related item style provider.</summary>
 						/// <returns>The created item coordinate transformer.</returns>
 						virtual compositions::IGuiAxis*							CreatePreferredAxis()=0;
 						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemArranger"/> for the related item style provider.</summary>

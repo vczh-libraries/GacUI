@@ -48,7 +48,7 @@ List Control
 					virtual void								OnItemModified(vint start, vint count, vint newCount)=0;
 				};
 
-				/// <summary>Item arranger callback. Item arrangers use this interface to communicate with the list control. When setting positions for item controls, functions in this callback object is suggested to call because they use the result from the [T:vl.presentation.controls.GuiListControl.IItemCoordinateTransformer].</summary>
+				/// <summary>Item arranger callback. Item arrangers use this interface to communicate with the list control. When setting positions for item controls, functions in this callback object is suggested to call because they use the result from the [T:vl.presentation.controls.compositions.IGuiAxis].</summary>
 				class IItemArrangerCallback : public virtual IDescriptable, public Description<IItemArrangerCallback>
 				{
 				public:
