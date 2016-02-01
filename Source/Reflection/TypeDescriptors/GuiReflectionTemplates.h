@@ -93,7 +93,7 @@ Interface Proxy
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::templates::GuiTemplate::IFactory)
 				presentation::templates::GuiTemplate* CreateTemplate(const Value& viewModel)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(CreateTemplate, viewModel);
+					INVOKEGET_INTERFACE_PROXY(CreateTemplate, viewModel);
 				}
 			END_INTERFACE_PROXY(presentation::templates::GuiTemplate::IFactory)
 

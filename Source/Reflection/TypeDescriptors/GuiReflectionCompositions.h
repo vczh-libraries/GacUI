@@ -64,12 +64,12 @@ Interface Proxy
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiGraphicsAnimation)
 				vint GetTotalLength()override
 				{
-					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTotalLength);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTotalLength);
 				}
 
 				vint GetCurrentPosition()override
 				{
-					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrentPosition);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrentPosition);
 				}
 
 				void Play(vint currentPosition, vint totalLength)override
@@ -86,47 +86,47 @@ Interface Proxy
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiAxis)
 				presentation::Size RealSizeToVirtualSize(presentation::Size size)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(RealSizeToVirtualSize, size);
+					INVOKEGET_INTERFACE_PROXY(RealSizeToVirtualSize, size);
 				}
 
 				presentation::Size VirtualSizeToRealSize(presentation::Size size)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(VirtualSizeToRealSize, size);
+					INVOKEGET_INTERFACE_PROXY(VirtualSizeToRealSize, size);
 				}
 
 				presentation::Point RealPointToVirtualPoint(presentation::Size realFullSize, presentation::Point point)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(RealPointToVirtualPoint, realFullSize, point);
+					INVOKEGET_INTERFACE_PROXY(RealPointToVirtualPoint, realFullSize, point);
 				}
 
 				presentation::Point VirtualPointToRealPoint(presentation::Size realFullSize, presentation::Point point)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(VirtualPointToRealPoint, realFullSize, point);
+					INVOKEGET_INTERFACE_PROXY(VirtualPointToRealPoint, realFullSize, point);
 				}
 
 				presentation::Rect RealRectToVirtualRect(presentation::Size realFullSize, presentation::Rect rect)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(RealRectToVirtualRect, realFullSize, rect);
+					INVOKEGET_INTERFACE_PROXY(RealRectToVirtualRect, realFullSize, rect);
 				}
 
 				presentation::Rect VirtualRectToRealRect(presentation::Size realFullSize, presentation::Rect rect)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(VirtualRectToRealRect, realFullSize, rect);
+					INVOKEGET_INTERFACE_PROXY(VirtualRectToRealRect, realFullSize, rect);
 				}
 
 				presentation::Margin RealMarginToVirtualMargin(presentation::Margin margin)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(RealMarginToVirtualMargin, margin);
+					INVOKEGET_INTERFACE_PROXY(RealMarginToVirtualMargin, margin);
 				}
 
 				presentation::Margin VirtualMarginToRealMargin(presentation::Margin margin)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(VirtualMarginToRealMargin, margin);
+					INVOKEGET_INTERFACE_PROXY(VirtualMarginToRealMargin, margin);
 				}
 
 				presentation::compositions::KeyDirection RealKeyDirectionToVirtualKeyDirection(presentation::compositions::KeyDirection key)override
 				{
-					return INVOKEGET_INTERFACE_PROXY(RealKeyDirectionToVirtualKeyDirection, key);
+					INVOKEGET_INTERFACE_PROXY(RealKeyDirectionToVirtualKeyDirection, key);
 				}
 			END_INTERFACE_PROXY(presentation::compositions::IGuiAxis)
 

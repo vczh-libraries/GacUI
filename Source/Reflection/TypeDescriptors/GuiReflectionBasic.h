@@ -154,12 +154,12 @@ Interface Proxy
 			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::GuiControl::IStyleController)
 				presentation::compositions::GuiBoundsComposition* GetBoundsComposition()override
 				{
-					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBoundsComposition);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBoundsComposition);
 				}
 
 				presentation::compositions::GuiGraphicsComposition* GetContainerComposition()override
 				{
-					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetContainerComposition);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetContainerComposition);
 				}
 
 				void SetFocusableComposition(presentation::compositions::GuiGraphicsComposition* value)override
