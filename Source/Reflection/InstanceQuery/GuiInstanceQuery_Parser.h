@@ -136,41 +136,25 @@ namespace vl
 			DECL_TYPE_INFO(vl::presentation::GuiIqSetQuery)
 			DECL_TYPE_INFO(vl::presentation::GuiIqQuery::IVisitor)
 
-			namespace interface_proxy
-			{
-				class GuiIqQuery_IVisitor : public ValueInterfaceRoot, public virtual vl::presentation::GuiIqQuery::IVisitor
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::GuiIqQuery::IVisitor)
+				void Visit(vl::presentation::GuiIqPrimaryQuery* node)override
 				{
-				public:
-					GuiIqQuery_IVisitor(Ptr<IValueInterfaceProxy> proxy)
-						:ValueInterfaceRoot(proxy)
-					{
-					}
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					static Ptr<vl::presentation::GuiIqQuery::IVisitor> Create(Ptr<IValueInterfaceProxy> proxy)
-					{
-						return new GuiIqQuery_IVisitor(proxy);
-					}
+				void Visit(vl::presentation::GuiIqCascadeQuery* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::presentation::GuiIqPrimaryQuery* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::presentation::GuiIqSetQuery* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::presentation::GuiIqCascadeQuery* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+			END_INTERFACE_PROXY(vl::presentation::GuiIqQuery::IVisitor)
 
-					void Visit(vl::presentation::GuiIqSetQuery* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
-
-				};
-
-			}
 #endif
-
 			extern bool GuiIqLoadTypes();
 		}
 	}

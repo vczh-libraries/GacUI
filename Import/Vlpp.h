@@ -8353,19 +8353,12 @@ Attribute
 		///			};
 		///
 		///			If you want this interface implementable by Workflow script, you should first add a proxy like this:
-		///			class IMyInterfaceProxy : public [T:vl.reflection.description.ValueInterfaceRoot], public virtual IMyInterface
-		///			{
-		///			public:
-		///				IMyInterfaceProxy(Ptr<IValueInterfaceProxy> proxy)
-		///					:ValueInterfaceRoot(proxy)
-		///				{
-		///				}
-		///
-		///				static Ptr<IMyInterface> Create(Ptr<IValueInterfaceProxy> proxy)
-		///				{
-		///					return new IMyInterfaceProxy(proxy);
-		///				}
-		///
+		///			#pragma warning(push)
+		///			#pragma warning(disable:4250)
+		///			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(IMyInterface)
+		///			 or BEGIN_INTERFACE_PROXY_RAWPTR(IMyInterface, baseInterfaces...)
+		///			 or BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IMyInterface)
+		///			 or BEGIN_INTERFACE_PROXY_SHAREDPTR(IMyInterface, baseInterfaces...)
 		///				int GetX()override
 		///				{
 		///					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetX)
@@ -8375,12 +8368,15 @@ Attribute
 		///				{
 		///					INVOKE_INTERFACE_PROXY(SetX, value)
 		///				}
-		///			};
+		///			END_INTERFACE_PROXY(IMyInterface)
+		///			#pragma warning(pop)
 		///
-		///			And then use this code to register the constructor:
-		///			CLASS_MEMBER_EXTERNALCTOR(Ptr<IMyInterface>(Ptr<IValueInterfaceProxy>), {L"proxy"}, &IMyInterfaceProxy::Create)
+		///			And then use this code to register the interface:
+		///			BEGIN_INTERFACE_MEMBER(IMyInterface)
+		///				...
+		///			END_INTERFACE_MEMBER(IMyInterface)
 		///
-		///			Everything else is the same as registering classes
+		///			Everything else is the same as registering classes. Use BEGIN_INTERFACE_MEMBER_NOPROXY to register an interface without a proxy, which means you cannot implement it in runtime dynamically.
 		///
 		///		#undef _
 		///
@@ -8874,17 +8870,30 @@ Interface Implementation Proxy (Implement)
 			{
 			protected:
 				Ptr<IValueInterfaceProxy>		proxy;
-			public:
-				ValueInterfaceRoot(Ptr<IValueInterfaceProxy> _proxy)
-					:proxy(_proxy)
-				{
-				}
 
+				void SetProxy(Ptr<IValueInterfaceProxy> value)
+				{
+					proxy = value;
+				}
+			public:
 				Ptr<IValueInterfaceProxy> GetProxy()
 				{
 					return proxy;
 				}
 			};
+
+			template<typename T>
+			class ValueInterfaceProxy
+			{
+			};
+			
+#pragma warning(push)
+#pragma warning(disable:4250)
+			template<typename TInterface, typename ...TBaseInterfaces>
+			class ValueInterfaceImpl : public virtual ValueInterfaceRoot, public virtual TInterface, public ValueInterfaceProxy<TBaseInterfaces>...
+			{
+			};
+#pragma warning(pop)
 
 /***********************************************************************
 Runtime Exception
@@ -13766,6 +13775,42 @@ Class
 			};
 
 /***********************************************************************
+Interface
+***********************************************************************/
+
+#define BEGIN_INTERFACE_MEMBER_NOPROXY(TYPENAME)\
+			template<>\
+			struct CustomTypeDescriptorSelector<TYPENAME>\
+			{\
+			public:\
+				class CustomTypeDescriptorImpl : public TypeDescriptorImpl\
+				{\
+					typedef TYPENAME ClassType;\
+				public:\
+					CustomTypeDescriptorImpl()\
+						:TypeDescriptorImpl(TypeInfo<TYPENAME>::TypeName, TypeInfo<TYPENAME>::CppFullTypeName)\
+					{\
+						Description<TYPENAME>::SetAssociatedTypeDescroptor(this);\
+					}\
+					~CustomTypeDescriptorImpl()\
+					{\
+						Description<TYPENAME>::SetAssociatedTypeDescroptor(0);\
+					}\
+				protected:\
+					void LoadInternal()override\
+					{
+
+#define BEGIN_INTERFACE_MEMBER(TYPENAME)\
+	BEGIN_INTERFACE_MEMBER_NOPROXY(TYPENAME)\
+	CLASS_MEMBER_EXTERNALCTOR(decltype(ValueInterfaceProxy<TYPENAME>::Create(nullptr))(Ptr<IValueInterfaceProxy>), { L"proxy" }, &ValueInterfaceProxy<TYPENAME>::Create)
+
+#define END_INTERFACE_MEMBER(TYPENAME)\
+						if (GetBaseTypeDescriptorCount() == 0) CLASS_MEMBER_BASE(IDescriptable)\
+					}\
+				};\
+			};
+
+/***********************************************************************
 Field
 ***********************************************************************/
 
@@ -13933,6 +13978,57 @@ Property
 #define CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(PROPERTYNAME, EVENTNAME)\
 			CLASS_MEMBER_METHOD(Get##PROPERTYNAME, NO_PARAMETER)\
 			CLASS_MEMBER_PROPERTY_EVENT_READONLY(PROPERTYNAME, Get##PROPERTYNAME, EVENTNAME)\
+
+/***********************************************************************
+InterfaceProxy
+***********************************************************************/
+
+#define INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
+			static INTERFACE* Create(Ptr<IValueInterfaceProxy> proxy)\
+			{\
+				auto obj = new ValueInterfaceProxy<INTERFACE>();\
+				obj->SetProxy(proxy);\
+				return obj;\
+			}\
+
+#define INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
+			static Ptr<INTERFACE> Create(Ptr<IValueInterfaceProxy> proxy)\
+			{\
+				auto obj = new ValueInterfaceProxy<INTERFACE>();\
+				obj->SetProxy(proxy);\
+				return obj;\
+			}\
+
+#define BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
+			template<>\
+			class ValueInterfaceProxy<INTERFACE> : ValueInterfaceImpl<INTERFACE>\
+			{\
+			public:\
+
+#define BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(INTERFACE)\
+			BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
+			INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
+
+#define BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(INTERFACE)\
+			BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
+			INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
+
+#define BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, ...)\
+			template<>\
+			class ValueInterfaceProxy<INTERFACE> : ValueInterfaceImpl<INTERFACE, __VA_ARGS__>\
+			{\
+			public:\
+
+#define BEGIN_INTERFACE_PROXY_RAWPTR(INTERFACE, ...)\
+			BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, __VA_ARGS__)\
+			INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
+
+#define BEGIN_INTERFACE_PROXY_SHAREDPTR(INTERFACE, ...)\
+			BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, __VA_ARGS__)\
+			INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
+
+#define END_INTERFACE_PROXY(INTERFACE)\
+			};
 
 		}
 	}
@@ -15232,54 +15328,38 @@ namespace vl
 			DECL_TYPE_INFO(vl::parsing::json::JsonObject)
 			DECL_TYPE_INFO(vl::parsing::json::JsonNode::IVisitor)
 
-			namespace interface_proxy
-			{
-				class JsonNode_IVisitor : public ValueInterfaceRoot, public virtual vl::parsing::json::JsonNode::IVisitor
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::parsing::json::JsonNode::IVisitor)
+				void Visit(vl::parsing::json::JsonLiteral* node)override
 				{
-				public:
-					JsonNode_IVisitor(Ptr<IValueInterfaceProxy> proxy)
-						:ValueInterfaceRoot(proxy)
-					{
-					}
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					static Ptr<vl::parsing::json::JsonNode::IVisitor> Create(Ptr<IValueInterfaceProxy> proxy)
-					{
-						return new JsonNode_IVisitor(proxy);
-					}
+				void Visit(vl::parsing::json::JsonString* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::json::JsonLiteral* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::parsing::json::JsonNumber* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::json::JsonString* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::parsing::json::JsonArray* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::json::JsonNumber* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::parsing::json::JsonObjectField* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::json::JsonArray* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
-
-					void Visit(vl::parsing::json::JsonObjectField* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
-
-					void Visit(vl::parsing::json::JsonObject* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
-
-				};
-
-			}
+				void Visit(vl::parsing::json::JsonObject* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+				
+			END_INTERFACE_PROXY(vl::parsing::json::JsonNode::IVisitor)
 #endif
 
 			extern bool JsonLoadTypes();
@@ -15462,59 +15542,43 @@ namespace vl
 			DECL_TYPE_INFO(vl::parsing::xml::XmlDocument)
 			DECL_TYPE_INFO(vl::parsing::xml::XmlNode::IVisitor)
 
-			namespace interface_proxy
-			{
-				class XmlNode_IVisitor : public ValueInterfaceRoot, public virtual vl::parsing::xml::XmlNode::IVisitor
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::parsing::xml::XmlNode::IVisitor)
+				void Visit(vl::parsing::xml::XmlText* node)override
 				{
-				public:
-					XmlNode_IVisitor(Ptr<IValueInterfaceProxy> proxy)
-						:ValueInterfaceRoot(proxy)
-					{
-					}
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					static Ptr<vl::parsing::xml::XmlNode::IVisitor> Create(Ptr<IValueInterfaceProxy> proxy)
-					{
-						return new XmlNode_IVisitor(proxy);
-					}
+				void Visit(vl::parsing::xml::XmlCData* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::xml::XmlText* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::parsing::xml::XmlAttribute* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::xml::XmlCData* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::parsing::xml::XmlComment* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::xml::XmlAttribute* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::parsing::xml::XmlElement* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::xml::XmlComment* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::parsing::xml::XmlInstruction* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::xml::XmlElement* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
+				void Visit(vl::parsing::xml::XmlDocument* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
 
-					void Visit(vl::parsing::xml::XmlInstruction* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
-
-					void Visit(vl::parsing::xml::XmlDocument* node)override
-					{
-						INVOKE_INTERFACE_PROXY(Visit, node);
-					}
-
-				};
-
-			}
+			END_INTERFACE_PROXY(vl::parsing::xml::XmlNode::IVisitor)
 #endif
 
 			extern bool XmlLoadTypes();
@@ -17344,6 +17408,194 @@ namespace vl
 				const XmlElementWriter&			CData(const WString& value)const;
 				const XmlElementWriter&			Comment(const WString& value)const;
 			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+REFLECTION\GUITYPEDESCRIPTORINTERFACEPROXIES.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::Reflection
+
+XML Representation for Code Generation:
+***********************************************************************/
+
+#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORINTERFACEPROXIES
+#define VCZH_REFLECTION_GUITYPEDESCRIPTORINTERFACEPROXIES
+
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Interface Implementation Proxy (Implement)
+***********************************************************************/
+
+#pragma warning(push)
+#pragma warning(disable:4250)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueEnumerator)
+				Value GetCurrent()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrent);
+				}
+
+				vint GetIndex()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIndex);
+				}
+
+				bool Next()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(Next);
+				}
+			END_INTERFACE_PROXY(IValueEnumerator)
+				
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueEnumerable)
+				Ptr<IValueEnumerator> CreateEnumerator()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateEnumerator);
+				}
+			END_INTERFACE_PROXY(IValueEnumerable)
+				
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueReadonlyList, IValueEnumerable)
+				vint GetCount()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCount);
+				}
+
+				Value Get(vint index)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(Get, index);
+				}
+
+				bool Contains(const Value& value)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(Contains, value);
+				}
+
+				vint IndexOf(const Value& value)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(IndexOf, value);
+				}
+			END_INTERFACE_PROXY(IValueReadonlyList)
+				
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueList, IValueReadonlyList)
+				void Set(vint index, const Value& value)override
+				{
+					INVOKE_INTERFACE_PROXY(Set, index, value);
+				}
+
+				vint Add(const Value& value)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(Add, value);
+				}
+
+				vint Insert(vint index, const Value& value)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(Insert, index, value);
+				}
+
+				bool Remove(const Value& value)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(Remove, value);
+				}
+
+				bool RemoveAt(vint index)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(RemoveAt, index);
+				}
+
+				void Clear()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Clear);
+				}
+			END_INTERFACE_PROXY(IValueList)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueObservableList, IValueReadonlyList)
+			END_INTERFACE_PROXY(IValueObservableList)
+				
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueReadonlyDictionary)
+				IValueReadonlyList* GetKeys()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetKeys);
+				}
+
+				IValueReadonlyList* GetValues()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValues);
+				}
+
+				vint GetCount()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCount);
+				}
+
+				Value Get(const Value& key)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(Get, key);
+				}
+			END_INTERFACE_PROXY(IValueReadonlyDictionary)
+				
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueDictionary, IValueReadonlyDictionary)
+				void Set(const Value& key, const Value& value)override
+				{
+					INVOKE_INTERFACE_PROXY(Set, key, value);
+				}
+
+				bool Remove(const Value& key)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(Remove, key);
+				}
+
+				void Clear()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Clear);
+				}
+			END_INTERFACE_PROXY(IValueDictionary)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueListener)
+				IValueSubscription* GetSubscription()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSubscription);
+				}
+
+				bool GetStopped()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStopped);
+				}
+
+				bool StopListening()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(StopListening);
+				}
+			END_INTERFACE_PROXY(IValueListener)
+			
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueSubscription)
+				Ptr<IValueListener> Subscribe(const Func<void(Value)>& callback)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(Subscribe, callback);
+				}
+
+				bool Update()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(Update);
+				}
+
+				bool Close()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(Close);
+				}
+			END_INTERFACE_PROXY(IValueSubscription)
+#pragma warning(pop)
 		}
 	}
 }

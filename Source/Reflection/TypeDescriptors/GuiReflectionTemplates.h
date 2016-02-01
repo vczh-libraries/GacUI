@@ -90,33 +90,12 @@ Type List
 Interface Proxy
 ***********************************************************************/
 
-#pragma warning(push)
-#pragma warning(disable:4250)
-			namespace interface_proxy
-			{
-				using namespace presentation;
-				using namespace presentation::templates;
-
-				class GuiTemplate_IFactory : public ValueInterfaceRoot, public virtual GuiTemplate::IFactory
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::templates::GuiTemplate::IFactory)
+				presentation::templates::GuiTemplate* CreateTemplate(const Value& viewModel)override
 				{
-				public:
-					GuiTemplate_IFactory(Ptr<IValueInterfaceProxy> _proxy)
-						:ValueInterfaceRoot(_proxy)
-					{
-					}
-
-					static Ptr<GuiTemplate::IFactory> Create(Ptr<IValueInterfaceProxy> proxy)
-					{
-						return new GuiTemplate_IFactory(proxy);
-					}
-
-					GuiTemplate* CreateTemplate(const Value& viewModel)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(CreateTemplate, viewModel);
-					}
-				};
-			}
-#pragma warning(pop)
+					return INVOKEGET_INTERFACE_PROXY(CreateTemplate, viewModel);
+				}
+			END_INTERFACE_PROXY(presentation::templates::GuiTemplate::IFactory)
 
 /***********************************************************************
 Type Loader

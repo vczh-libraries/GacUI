@@ -52,9 +52,6 @@ Type Declaration
 
 #define _ ,
 
-#define INTERFACE_EXTERNALCTOR(CONTROL, INTERFACE)\
-	CLASS_MEMBER_EXTERNALCTOR(decltype(interface_proxy::CONTROL##_##INTERFACE::Create(0))(Ptr<IValueInterfaceProxy>), {L"proxy"}, &interface_proxy::CONTROL##_##INTERFACE::Create)
-
 #define INTERFACE_IDENTIFIER(INTERFACE)\
 	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), []()->WString{return INTERFACE::Identifier;})
 
@@ -71,10 +68,7 @@ Type Declaration
 				ENUM_CLASS_ITEM(PageRight)
 			END_ENUM_ITEM(KeyDirection)
 
-			BEGIN_CLASS_MEMBER(IGuiAxis)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(compositions, IGuiAxis)
-
+			BEGIN_INTERFACE_MEMBER(IGuiAxis)
 				CLASS_MEMBER_METHOD(RealSizeToVirtualSize, {L"size"})
 				CLASS_MEMBER_METHOD(VirtualSizeToRealSize, {L"size"})
 				CLASS_MEMBER_METHOD(RealPointToVirtualPoint, {L"realFullSize" _ L"point"})
@@ -84,7 +78,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(RealMarginToVirtualMargin, {L"margin"})
 				CLASS_MEMBER_METHOD(VirtualMarginToRealMargin, {L"margin"})
 				CLASS_MEMBER_METHOD(RealKeyDirectionToVirtualKeyDirection, {L"key"})
-			END_CLASS_MEMBER(IGuiAxis)
+			END_INTERFACE_MEMBER(IGuiAxis)
 
 			BEGIN_CLASS_MEMBER(GuiDefaultAxis)
 				CLASS_MEMBER_BASE(IGuiAxis)
@@ -259,16 +253,13 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiSharedSizeRootComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSubComponentMeasurerSource)
 
-			BEGIN_CLASS_MEMBER(IGuiGraphicsAnimation)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(composition, IGuiGraphicsAnimation)
-
+			BEGIN_INTERFACE_MEMBER(IGuiGraphicsAnimation)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TotalLength)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CurrentPosition)
 
 				CLASS_MEMBER_METHOD(Play, {L"currentPosition" _ L"totalLength"})
 				CLASS_MEMBER_METHOD(Stop, NO_PARAMETER)
-			END_CLASS_MEMBER(IGuiGraphicsAnimation)
+			END_INTERFACE_MEMBER(IGuiGraphicsAnimation)
 
 			BEGIN_CLASS_MEMBER(GuiGraphicsAnimationManager)
 				CLASS_MEMBER_METHOD(AddAnimation, {L"animation"})
@@ -276,20 +267,16 @@ Type Declaration
 				CLASS_MEMBER_METHOD(Play, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiGraphicsAnimationManager)
 
-			BEGIN_CLASS_MEMBER(IGuiShortcutKeyItem)
-				CLASS_MEMBER_BASE(IDescriptable)
-				
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyItem)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Manager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
-			END_CLASS_MEMBER(IGuiShortcutKeyItem)
+			END_INTERFACE_MEMBER(IGuiShortcutKeyItem)
 
-			BEGIN_CLASS_MEMBER(IGuiShortcutKeyManager)
-				CLASS_MEMBER_BASE(IDescriptable)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiShortcutKeyManager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemCount)
 
 				CLASS_MEMBER_METHOD(GetItem, {L"index"})
-			END_CLASS_MEMBER(IGuiShortcutKeyManager)
+			END_INTERFACE_MEMBER(IGuiShortcutKeyManager)
 
 			BEGIN_CLASS_MEMBER(GuiShortcutKeyManager)
 				CLASS_MEMBER_BASE(IGuiShortcutKeyManager)
@@ -300,7 +287,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(TryGetShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
 			END_CLASS_MEMBER(GuiShortcutKeyManager)
 
-			BEGIN_CLASS_MEMBER(IGuiAltAction)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltAction)
 				INTERFACE_IDENTIFIER(IGuiAltAction)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alt)
@@ -310,17 +297,17 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetAltComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetActivatingAltHost, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(OnActiveAlt, NO_PARAMETER)
-			END_CLASS_MEMBER(IGuiAltAction)
+			END_INTERFACE_MEMBER(IGuiAltAction)
 
-			BEGIN_CLASS_MEMBER(IGuiAltActionContainer)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionContainer)
 				INTERFACE_IDENTIFIER(IGuiAltActionContainer)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(AltActionCount)
 				
 				CLASS_MEMBER_METHOD(GetAltAction, { L"index" })
-			END_CLASS_MEMBER(IGuiAltActionContainer)
+			END_INTERFACE_MEMBER(IGuiAltActionContainer)
 
-			BEGIN_CLASS_MEMBER(IGuiAltActionHost)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionHost)
 				INTERFACE_IDENTIFIER(IGuiAltActionHost)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreviousAltHost)
@@ -328,7 +315,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnActivatedAltHost, { L"previousHost" })
 				CLASS_MEMBER_METHOD(OnDeactivatedAltHost, NO_PARAMETER)
 				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), &IGuiAltActionHost_CollectAltActions)
-			END_CLASS_MEMBER(IGuiAltActionHost)
+			END_INTERFACE_MEMBER(IGuiAltActionHost)
 
 #undef INTERFACE_EXTERNALCTOR
 #undef _

@@ -174,19 +174,17 @@ Type Declaration
 				STRUCT_MEMBER(verticalAntialias)
 			END_STRUCT_MEMBER(FontProperties)
 
-			BEGIN_CLASS_MEMBER(INativeImageFrame)
-				CLASS_MEMBER_BASE(IDescriptable)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeImageFrame)
 				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetSize, NO_PARAMETER)
-			END_CLASS_MEMBER(INativeImageFrame)
+			END_INTERFACE_MEMBER(INativeImageFrame)
 
-			BEGIN_CLASS_MEMBER(INativeImage)
-				CLASS_MEMBER_BASE(IDescriptable)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeImage)
 				CLASS_MEMBER_METHOD(GetFormat, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFrameCount, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFrame, {L"index"})
 				CLASS_MEMBER_EXTERNALCTOR(Ptr<INativeImage>(const WString&), {L"filePath"}, &INativeImage_Constructor)
-			END_CLASS_MEMBER(INativeImage)
+			END_INTERFACE_MEMBER(INativeImage)
 
 			BEGIN_ENUM_ITEM(INativeImage::FormatType)
 				ENUM_ITEM_NAMESPACE(INativeImage)
@@ -200,13 +198,12 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(Unknown)
 			END_ENUM_ITEM(INativeImage::FormatType)
 
-			BEGIN_CLASS_MEMBER(INativeCursor)
-				CLASS_MEMBER_BASE(IDescriptable)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeCursor)
 				CLASS_MEMBER_METHOD(IsSystemCursor, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetSystemCursorType, NO_PARAMETER)
 				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(), NO_PARAMETER, &INativeCursor_Constructor1)
 				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(INativeCursor::SystemCursorType), NO_PARAMETER, &INativeCursor_Constructor2)
-			END_CLASS_MEMBER(INativeCursor)
+			END_INTERFACE_MEMBER(INativeCursor)
 
 			BEGIN_ENUM_ITEM(INativeCursor::SystemCursorType)
 				ENUM_ITEM_NAMESPACE(INativeCursor)
@@ -224,8 +221,7 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(SizeWE)
 			END_ENUM_ITEM(INativeCursor::SystemCursorType)
 
-			BEGIN_CLASS_MEMBER(INativeWindow)
-				CLASS_MEMBER_BASE(IDescriptable)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeWindow)
 				CLASS_MEMBER_PROPERTY_FAST(Bounds)
 				CLASS_MEMBER_PROPERTY_FAST(ClientSize)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ClientBoundsInScreen)
@@ -270,7 +266,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ReleaseCapture, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsCapturing, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(RedrawContent, NO_PARAMETER)
-			END_CLASS_MEMBER(INativeWindow)
+			END_INTERFACE_MEMBER(INativeWindow)
 
 			BEGIN_ENUM_ITEM(INativeWindow::WindowSizeState)
 				ENUM_ITEM_NAMESPACE(INativeWindow)
@@ -279,13 +275,12 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(Maximized)
 			END_ENUM_ITEM(INativeWindow::WindowSizeState)
 
-			BEGIN_CLASS_MEMBER(INativeDelay)
-				CLASS_MEMBER_BASE(IDescriptable)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeDelay)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Status)
 
 				CLASS_MEMBER_METHOD(Delay, {L"milliseconds"})
 				CLASS_MEMBER_METHOD(Cancel, NO_PARAMETER)
-			END_CLASS_MEMBER(INativeDelay)
+			END_INTERFACE_MEMBER(INativeDelay)
 
 			BEGIN_ENUM_ITEM(INativeDelay::ExecuteStatus)
 				ENUM_ITEM_NAMESPACE(INativeDelay)
@@ -295,67 +290,53 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(Canceled)
 			END_ENUM_ITEM(INativeDelay::ExecuteStatus)
 
-			BEGIN_CLASS_MEMBER(INativeScreen)
-				CLASS_MEMBER_BASE(IDescriptable)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeScreen)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Bounds);
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ClientBounds);
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name);
 
 				CLASS_MEMBER_METHOD(IsPrimary, NO_PARAMETER)
-			END_CLASS_MEMBER(INativeScreen)
+			END_INTERFACE_MEMBER(INativeScreen)
 
-			BEGIN_CLASS_MEMBER(INativeImageService)
-				CLASS_MEMBER_BASE(IDescriptable)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeImageService)
 				CLASS_MEMBER_METHOD(CreateImageFromFile, {L"path"})
-			END_CLASS_MEMBER(INativeImageService)
+			END_INTERFACE_MEMBER(INativeImageService)
 
-			BEGIN_CLASS_MEMBER(INativeResourceService)
-				CLASS_MEMBER_BASE(IDescriptable)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeResourceService)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DefaultSystemCursor)
 				CLASS_MEMBER_PROPERTY_FAST(DefaultFont)
 
 				CLASS_MEMBER_METHOD(GetSystemCursor, {L"type"})
-			END_CLASS_MEMBER(INativeResourceService)
+			END_INTERFACE_MEMBER(INativeResourceService)
 
-			BEGIN_CLASS_MEMBER(INativeAsyncService)
-				CLASS_MEMBER_BASE(IDescriptable)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeAsyncService)
 				CLASS_MEMBER_METHOD(IsInMainThread, {L"type"})
 				CLASS_MEMBER_METHOD(InvokeAsync, {L"proc"})
 				CLASS_MEMBER_METHOD(InvokeInMainThread, {L"proc"})
 				CLASS_MEMBER_METHOD(InvokeInMainThreadAndWait, {L"proc" _ L"milliseconds"})
 				CLASS_MEMBER_METHOD(DelayExecute, {L"proc" _ L"milliseconds"})
 				CLASS_MEMBER_METHOD(DelayExecuteInMainThread, {L"proc" _ L"milliseconds"})
-			END_CLASS_MEMBER(INativeAsyncService)
+			END_INTERFACE_MEMBER(INativeAsyncService)
 
-			BEGIN_CLASS_MEMBER(INativeClipboardService)
-				CLASS_MEMBER_BASE(IDescriptable)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeClipboardService)
 				CLASS_MEMBER_PROPERTY_FAST(Text)
 
 				CLASS_MEMBER_METHOD(ContainsText, NO_PARAMETER)
-			END_CLASS_MEMBER(INativeClipboardService)
+			END_INTERFACE_MEMBER(INativeClipboardService)
 
-			BEGIN_CLASS_MEMBER(INativeScreenService)
-				CLASS_MEMBER_BASE(IDescriptable)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeScreenService)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ScreenCount)
 
 				CLASS_MEMBER_METHOD_OVERLOAD(GetScreen, {L"index"}, INativeScreen*(INativeScreenService::*)(vint))
 				CLASS_MEMBER_METHOD_OVERLOAD(GetScreen, {L"window"}, INativeScreen*(INativeScreenService::*)(INativeWindow*))
-			END_CLASS_MEMBER(INativeScreenService)
+			END_INTERFACE_MEMBER(INativeScreenService)
 
-			BEGIN_CLASS_MEMBER(INativeInputService)
-				CLASS_MEMBER_BASE(IDescriptable)
-
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeInputService)
 				CLASS_MEMBER_METHOD(IsKeyPressing, { L"code" })
 				CLASS_MEMBER_METHOD(IsKeyToggled, { L"code" })
 				CLASS_MEMBER_METHOD(GetKeyName, { L"code" })
 				CLASS_MEMBER_METHOD(GetKey, { L"name" })
-			END_CLASS_MEMBER(INativeInputService)
+			END_INTERFACE_MEMBER(INativeInputService)
 
 			BEGIN_ENUM_ITEM(INativeDialogService::MessageBoxButtonsInput)
 				ENUM_ITEM_NAMESPACE(INativeDialogService)
@@ -432,8 +413,7 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(FileDialogAddToRecent)
 			END_ENUM_ITEM(INativeDialogService::FileDialogOptions)
 
-			BEGIN_CLASS_MEMBER(INativeController)
-				CLASS_MEMBER_BASE(IDescriptable)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeController)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), &GetCurrentController)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(OSVersion)
@@ -445,7 +425,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ImageService, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ScreenService, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(InputService, NO_PARAMETER)
-			END_CLASS_MEMBER(INativeController)
+			END_INTERFACE_MEMBER(INativeController)
 
 			BEGIN_CLASS_MEMBER(GuiImageData)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiImageData>(), NO_PARAMETER)
@@ -757,9 +737,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path"})
 			END_CLASS_MEMBER(GuiResourcePathResolver)
 
-			BEGIN_CLASS_MEMBER(IGuiGraphicsElement)
-				CLASS_MEMBER_BASE(IDescriptable)
-			END_CLASS_MEMBER(IGuiGraphicsElement)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
+			END_INTERFACE_MEMBER(IGuiGraphicsElement)
 
 			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDown)
@@ -900,28 +879,22 @@ Type Declaration
 				CLASS_MEMBER_METHOD_OVERLOAD(QueryService, {L"identifier"}, IDescriptable*(GuiControl::*)(const WString&))
 			END_CLASS_MEMBER(GuiControl)
 
-			BEGIN_CLASS_MEMBER(GuiControl::IStyleController)
-				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_EXTERNALCTOR(GuiControl::IStyleController*(Ptr<IValueInterfaceProxy>), {L"proxy"}, &interface_proxy::GuiControl_IStyleController::Create)
-
+			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleController)
 				CLASS_MEMBER_METHOD(GetBoundsComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetContainerComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
 				CLASS_MEMBER_METHOD(SetText, {L"value"})
 				CLASS_MEMBER_METHOD(SetFont, {L"value"})
 				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
-			END_CLASS_MEMBER(GuiControl::IStyleController)
+			END_INTERFACE_MEMBER(GuiControl::IStyleController)
 
-			BEGIN_CLASS_MEMBER(GuiControl::IStyleProvider)
-				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_EXTERNALCTOR(GuiControl::IStyleProvider*(Ptr<IValueInterfaceProxy>), {L"proxy"}, &interface_proxy::GuiControl_IStyleProvider::Create)
-
+			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleProvider)
 				CLASS_MEMBER_METHOD(AssociateStyleController, {L"controller"})
 				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
 				CLASS_MEMBER_METHOD(SetText, {L"value"})
 				CLASS_MEMBER_METHOD(SetFont, {L"value"})
 				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
-			END_CLASS_MEMBER(GuiControl::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiControl::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiComponent)
 			END_CLASS_MEMBER(GuiComponent)

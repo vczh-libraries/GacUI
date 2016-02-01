@@ -61,107 +61,74 @@ Type List
 Interface Proxy
 ***********************************************************************/
 
-#pragma warning(push)
-#pragma warning(disable:4250)
-			namespace interface_proxy
-			{
-				using namespace presentation;
-				using namespace presentation::compositions;
-
-				class composition_IGuiGraphicsAnimation : public ValueInterfaceRoot, public virtual IGuiGraphicsAnimation
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiGraphicsAnimation)
+				vint GetTotalLength()override
 				{
-				public:
-					composition_IGuiGraphicsAnimation(Ptr<IValueInterfaceProxy> _proxy)
-						:ValueInterfaceRoot(_proxy)
-					{
-					}
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTotalLength);
+				}
 
-					static Ptr<IGuiGraphicsAnimation> Create(Ptr<IValueInterfaceProxy> proxy)
-					{
-						return new composition_IGuiGraphicsAnimation(proxy);
-					}
-
-					vint GetTotalLength()override
-					{
-						return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTotalLength);
-					}
-
-					vint GetCurrentPosition()override
-					{
-						return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrentPosition);
-					}
-
-					void Play(vint currentPosition, vint totalLength)override
-					{
-						INVOKE_INTERFACE_PROXY(Play, currentPosition, totalLength);
-					}
-
-					void Stop()override
-					{
-						INVOKE_INTERFACE_PROXY_NOPARAMS(Stop);
-					}
-				};
-
-				class compositions_IGuiAxis : public ValueInterfaceRoot, public virtual IGuiAxis
+				vint GetCurrentPosition()override
 				{
-				public:
-					compositions_IGuiAxis(Ptr<IValueInterfaceProxy> _proxy)
-						:ValueInterfaceRoot(_proxy)
-					{
-					}
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrentPosition);
+				}
 
-					static Ptr<IGuiAxis> Create(Ptr<IValueInterfaceProxy> proxy)
-					{
-						return new compositions_IGuiAxis(proxy);
-					}
+				void Play(vint currentPosition, vint totalLength)override
+				{
+					INVOKE_INTERFACE_PROXY(Play, currentPosition, totalLength);
+				}
 
-					Size RealSizeToVirtualSize(Size size)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealSizeToVirtualSize, size);
-					}
+				void Stop()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Stop);
+				}
+			END_INTERFACE_PROXY(presentation::compositions::IGuiGraphicsAnimation)
 
-					Size VirtualSizeToRealSize(Size size)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(VirtualSizeToRealSize, size);
-					}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::compositions::IGuiAxis)
+				presentation::Size RealSizeToVirtualSize(presentation::Size size)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(RealSizeToVirtualSize, size);
+				}
 
-					Point RealPointToVirtualPoint(Size realFullSize, Point point)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealPointToVirtualPoint, realFullSize, point);
-					}
+				presentation::Size VirtualSizeToRealSize(presentation::Size size)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(VirtualSizeToRealSize, size);
+				}
 
-					Point VirtualPointToRealPoint(Size realFullSize, Point point)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(VirtualPointToRealPoint, realFullSize, point);
-					}
+				presentation::Point RealPointToVirtualPoint(presentation::Size realFullSize, presentation::Point point)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(RealPointToVirtualPoint, realFullSize, point);
+				}
 
-					Rect RealRectToVirtualRect(Size realFullSize, Rect rect)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealRectToVirtualRect, realFullSize, rect);
-					}
+				presentation::Point VirtualPointToRealPoint(presentation::Size realFullSize, presentation::Point point)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(VirtualPointToRealPoint, realFullSize, point);
+				}
 
-					Rect VirtualRectToRealRect(Size realFullSize, Rect rect)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(VirtualRectToRealRect, realFullSize, rect);
-					}
+				presentation::Rect RealRectToVirtualRect(presentation::Size realFullSize, presentation::Rect rect)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(RealRectToVirtualRect, realFullSize, rect);
+				}
 
-					Margin RealMarginToVirtualMargin(Margin margin)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealMarginToVirtualMargin, margin);
-					}
+				presentation::Rect VirtualRectToRealRect(presentation::Size realFullSize, presentation::Rect rect)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(VirtualRectToRealRect, realFullSize, rect);
+				}
 
-					Margin VirtualMarginToRealMargin(Margin margin)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(VirtualMarginToRealMargin, margin);
-					}
+				presentation::Margin RealMarginToVirtualMargin(presentation::Margin margin)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(RealMarginToVirtualMargin, margin);
+				}
 
-					KeyDirection RealKeyDirectionToVirtualKeyDirection(KeyDirection key)override
-					{
-						return INVOKEGET_INTERFACE_PROXY(RealKeyDirectionToVirtualKeyDirection, key);
-					}
-				};
-			}
-#pragma warning(pop)
+				presentation::Margin VirtualMarginToRealMargin(presentation::Margin margin)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(VirtualMarginToRealMargin, margin);
+				}
+
+				presentation::compositions::KeyDirection RealKeyDirectionToVirtualKeyDirection(presentation::compositions::KeyDirection key)override
+				{
+					return INVOKEGET_INTERFACE_PROXY(RealKeyDirectionToVirtualKeyDirection, key);
+				}
+			END_INTERFACE_PROXY(presentation::compositions::IGuiAxis)
 
 /***********************************************************************
 Type Loader

@@ -60,9 +60,6 @@ Type Declaration
 #define CONTROL_CONSTRUCTOR_PROVIDER(CONTROL)\
 	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(CONTROL::IStyleProvider*), {L"styleProvider"})
 
-#define INTERFACE_EXTERNALCTOR(CONTROL, INTERFACE)\
-	CLASS_MEMBER_EXTERNALCTOR(decltype(interface_proxy::CONTROL##_##INTERFACE::Create(0))(Ptr<IValueInterfaceProxy>), {L"proxy"}, &interface_proxy::CONTROL##_##INTERFACE::Create)
-
 #define INTERFACE_IDENTIFIER(INTERFACE)\
 	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), []()->WString{return INTERFACE::Identifier;})
 
@@ -86,7 +83,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(DelayExecuteInMainThread, {L"proc" _ L"milliseconds"})
 			END_CLASS_MEMBER(GuiApplication)
 
-			BEGIN_CLASS_MEMBER(ITheme)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(ITheme)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentTheme, NO_PARAMETER, ITheme*(*)(), &GetCurrentTheme)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(SetCurrentTheme, {L"theme"}, void(*)(ITheme*), &SetCurrentTheme)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin7Theme, NO_PARAMETER, Ptr<ITheme>(*)(), &CreateWin7Theme)
@@ -138,7 +135,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateTextListItemStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateCheckTextListItemStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateRadioTextListItemStyle, NO_PARAMETER)
-			END_CLASS_MEMBER(ITheme)
+			END_INTERFACE_MEMBER(ITheme)
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
 				CLASS_MEMBER_METHOD(AddSubscription, {L"subscription"})
@@ -235,13 +232,12 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(TextColor)
 			END_CLASS_MEMBER(GuiLabel)
 
-			BEGIN_CLASS_MEMBER(GuiLabel::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiLabel::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiLabel, IStyleController)
 
 				CLASS_MEMBER_METHOD(GetDefaultTextColor, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetTextColor, {L"value"})
-			END_CLASS_MEMBER(GuiLabel::IStyleController)
+			END_INTERFACE_MEMBER(GuiLabel::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiButton)
 				CLASS_MEMBER_BASE(GuiControl)
@@ -259,12 +255,11 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(Pressed)
 			END_ENUM_ITEM(GuiButton::ControlState)
 
-			BEGIN_CLASS_MEMBER(GuiButton::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiButton::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiButton, IStyleController)
 
 				CLASS_MEMBER_METHOD(Transfer, {L"value"})
-			END_CLASS_MEMBER(GuiButton::IStyleController)
+			END_INTERFACE_MEMBER(GuiButton::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableButton)
 				CLASS_MEMBER_BASE(GuiButton)
@@ -275,12 +270,11 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Selected)
 			END_CLASS_MEMBER(GuiSelectableButton)
 
-			BEGIN_CLASS_MEMBER(GuiSelectableButton::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiSelectableButton::IStyleController)
 				CLASS_MEMBER_BASE(GuiButton::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiSelectableButton, IStyleController)
 
 				CLASS_MEMBER_METHOD(SetSelected, {L"value"})
-			END_CLASS_MEMBER(GuiSelectableButton::IStyleController)
+			END_INTERFACE_MEMBER(GuiSelectableButton::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableButton::GroupController)
 				CLASS_MEMBER_BASE(GuiComponent)
@@ -308,7 +302,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxPosition)
 			END_CLASS_MEMBER(GuiScroll)
 
-			BEGIN_CLASS_MEMBER(GuiScroll::ICommandExecutor)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiScroll::ICommandExecutor)
 				CLASS_MEMBER_METHOD(SmallDecrease, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SmallIncrease, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(BigDecrease, NO_PARAMETER)
@@ -316,17 +310,16 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetTotalSize, {L"value"})
 				CLASS_MEMBER_METHOD(SetPageSize, {L"value"})
 				CLASS_MEMBER_METHOD(SetPosition, {L"value"})
-			END_CLASS_MEMBER(GuiScroll::ICommandExecutor)
+			END_INTERFACE_MEMBER(GuiScroll::ICommandExecutor)
 
-			BEGIN_CLASS_MEMBER(GuiScroll::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiScroll::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiScroll, IStyleController)
 
 				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
 				CLASS_MEMBER_METHOD(SetTotalSize, {L"value"})
 				CLASS_MEMBER_METHOD(SetPageSize, {L"value"})
 				CLASS_MEMBER_METHOD(SetPosition, {L"value"})
-			END_CLASS_MEMBER(GuiScroll::IStyleController)
+			END_INTERFACE_MEMBER(GuiScroll::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiTabPage)
 				CLASS_MEMBER_CONSTRUCTOR(GuiTabPage*(), NO_PARAMETER)
@@ -354,14 +347,13 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Pages)
 			END_CLASS_MEMBER(GuiTab)
 
-			BEGIN_CLASS_MEMBER(GuiTab::ICommandExecutor)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiTab::ICommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
 				CLASS_MEMBER_METHOD(ShowTab, {L"index"})
-			END_CLASS_MEMBER(GuiTab::ICommandExecutor)
+			END_INTERFACE_MEMBER(GuiTab::ICommandExecutor)
 
-			BEGIN_CLASS_MEMBER(GuiTab::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiTab::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiTab, IStyleController)
 
 				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
 				CLASS_MEMBER_METHOD(InsertTab, {L"index"})
@@ -371,7 +363,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetSelectedTab, {L"index"})
 				CLASS_MEMBER_METHOD(SetTabAlt, {L"index" _ L"value" _ L"host"})
 				CLASS_MEMBER_METHOD(GetTabAltAction, {L"index"})
-			END_CLASS_MEMBER(GuiTab::IStyleController)
+			END_INTERFACE_MEMBER(GuiTab::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiScrollView)
 				CLASS_MEMBER_BASE(GuiControl)
@@ -386,15 +378,14 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CalculateView, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiScrollView)
 
-			BEGIN_CLASS_MEMBER(GuiScrollView::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiScrollView::IStyleProvider)
 				CLASS_MEMBER_BASE(GuiControl::IStyleProvider)
-				INTERFACE_EXTERNALCTOR(GuiScrollView, IStyleProvider)
 
 				CLASS_MEMBER_METHOD(CreateHorizontalScrollStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateVerticalScrollStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetDefaultScrollSize, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(InstallBackground, {L"boundsComposition"})
-			END_CLASS_MEMBER(GuiScrollView::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiScrollView::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiScrollContainer)
 				CLASS_MEMBER_BASE(GuiScrollView)
@@ -419,9 +410,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(MoveToScreenCenter, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiWindow)
 
-			BEGIN_CLASS_MEMBER(GuiWindow::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiWindow::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiWindow, IStyleController)
 
 				CLASS_MEMBER_METHOD(AttachWindow, {L"window"})
 				CLASS_MEMBER_METHOD(InitializeNativeWindowProperties, NO_PARAMETER)
@@ -436,7 +426,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(CreateTooltipStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateShortcutKeyStyle, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiWindow::IStyleController)
+			END_INTERFACE_MEMBER(GuiWindow::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiPopup)
 				CLASS_MEMBER_BASE(GuiWindow)
@@ -481,15 +471,14 @@ Type Declaration
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 			END_CLASS_MEMBER(GuiListControl)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemProviderCallback)
+			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemProviderCallback)
 
 				CLASS_MEMBER_METHOD(OnAttached, {L"provider"})
 				CLASS_MEMBER_METHOD(OnItemModified, {L"start" _ L"count" _ L"newCount"})
-			END_CLASS_MEMBER(GuiListControl::IItemProviderCallback)
+			END_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemArrangerCallback)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IItemArrangerCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
 				CLASS_MEMBER_METHOD(RequestItem, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(ReleaseItem, {L"style"})
@@ -500,39 +489,35 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetStyleBounds, {L"style" _ L"bounds"})
 				CLASS_MEMBER_METHOD(GetContainerComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(OnTotalSizeChanged, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiListControl::IItemArrangerCallback)
+			END_INTERFACE_MEMBER(GuiListControl::IItemArrangerCallback)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemPrimaryTextView)
+			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemPrimaryTextView)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemPrimaryTextView)
 				INTERFACE_IDENTIFIER(GuiListControl::IItemPrimaryTextView)
 
 				CLASS_MEMBER_METHOD(GetPrimaryTextViewText, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(ContainsPrimaryText, {L"itemIndex"})
-			END_CLASS_MEMBER(GuiListControl::IItemPrimaryTextView)
+			END_INTERFACE_MEMBER(GuiListControl::IItemPrimaryTextView)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemBindingView)
+			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemBindingView)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemBindingView)
 				INTERFACE_IDENTIFIER(GuiListControl::IItemBindingView)
 
 				CLASS_MEMBER_METHOD(GetBindingValue, {L"itemIndex"})
-			END_CLASS_MEMBER(GuiListControl::IItemBindingView)
+			END_INTERFACE_MEMBER(GuiListControl::IItemBindingView)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemProvider)
+			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemProvider)
 
 				CLASS_MEMBER_METHOD(AttachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(DetachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(Count, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(RequestView, {L"identifier"})
 				CLASS_MEMBER_METHOD(ReleaseView, {L"view"})
-			END_CLASS_MEMBER(GuiListControl::IItemProvider)
+			END_INTERFACE_MEMBER(GuiListControl::IItemProvider)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemStyleController)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(StyleProvider)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemStyleId)
@@ -542,11 +527,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(IsInstalled, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(OnInstalled, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(OnUninstalled, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiListControl::IItemStyleController)
+			END_INTERFACE_MEMBER(GuiListControl::IItemStyleController)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemStyleProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemStyleProvider)
 
 				CLASS_MEMBER_METHOD(AttachListControl, {L"value"})
 				CLASS_MEMBER_METHOD(DetachListControl, NO_PARAMETER)
@@ -554,11 +538,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateItemStyle, {L"styleId"})
 				CLASS_MEMBER_METHOD(DestroyItemStyle, {L"style"})
 				CLASS_MEMBER_METHOD(Install, {L"style" _ L"itemIndex"})
-			END_CLASS_MEMBER(GuiListControl::IItemStyleProvider)
+			END_INTERFACE_MEMBER(GuiListControl::IItemStyleProvider)
 
-			BEGIN_CLASS_MEMBER(GuiListControl::IItemArranger)
+			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemArranger)
 				CLASS_MEMBER_BASE(GuiListControl::IItemProviderCallback)
-				INTERFACE_EXTERNALCTOR(GuiListControl, IItemArranger)
 
 				CLASS_MEMBER_PROPERTY_FAST(Callback)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TotalSize)
@@ -570,7 +553,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnViewChanged, {L"bounds"})
 				CLASS_MEMBER_METHOD(FindItem, {L"itemIndex" _ L"key"})
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
-			END_CLASS_MEMBER(GuiListControl::IItemArranger)
+			END_INTERFACE_MEMBER(GuiListControl::IItemArranger)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableListControl)
 				CLASS_MEMBER_BASE(GuiListControl)
@@ -590,12 +573,11 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearSelection, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSelectableListControl)
 
-			BEGIN_CLASS_MEMBER(GuiSelectableListControl::IItemStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiSelectableListControl::IItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiListControl::IItemStyleProvider)
-				INTERFACE_EXTERNALCTOR(GuiSelectableListControl, IItemStyleProvider)
 
 				CLASS_MEMBER_METHOD(SetStyleSelected, {L"style" _ L"value"})
-			END_CLASS_MEMBER(GuiSelectableListControl::IItemStyleProvider)
+			END_INTERFACE_MEMBER(GuiSelectableListControl::IItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(RangedItemArrangerBase)
 				CLASS_MEMBER_BASE(GuiListControl::IItemArranger)
@@ -625,23 +607,20 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextItemStyleProvider>(TextItemStyleProvider::ITextItemStyleProvider*), {L"textItemStyleProvider"})
 			END_CLASS_MEMBER(TextItemStyleProvider)
 
-			BEGIN_CLASS_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
-				INTERFACE_EXTERNALCTOR(TextItemStyleProvider, ITextItemStyleProvider)
-
+			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
 				CLASS_MEMBER_METHOD(CreateBackgroundStyleController, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateBulletStyleController, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
-			END_CLASS_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
+			END_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
 
-			BEGIN_CLASS_MEMBER(TextItemStyleProvider::ITextItemView)
+			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
 				CLASS_MEMBER_BASE(GuiListControl::IItemPrimaryTextView)
-				INTERFACE_EXTERNALCTOR(TextItemStyleProvider, ITextItemView)
 				INTERFACE_IDENTIFIER(TextItemStyleProvider::ITextItemView)
 
 				CLASS_MEMBER_METHOD(GetText, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetChecked, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(SetCheckedSilently, {L"itemIndex" _ L"value"})
-			END_CLASS_MEMBER(TextItemStyleProvider::ITextItemView)
+			END_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
 
 			BEGIN_CLASS_MEMBER(TextItemStyleProvider::TextItemStyleController)
 				CLASS_MEMBER_BASE(ItemStyleControllerBase)
@@ -703,12 +682,11 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(Descending)
 			END_ENUM_ITEM(GuiListViewColumnHeader::ColumnSortingState)
 
-			BEGIN_CLASS_MEMBER(GuiListViewColumnHeader::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiListViewColumnHeader::IStyleController)
 				CLASS_MEMBER_BASE(GuiMenuButton::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiListViewColumnHeader, IStyleController)
 
 				CLASS_MEMBER_METHOD(SetColumnSortingState, {L"value"})
-			END_CLASS_MEMBER(GuiListViewColumnHeader::IStyleController)
+			END_INTERFACE_MEMBER(GuiListViewColumnHeader::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiListViewBase)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
@@ -719,9 +697,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetListViewStyleProvider, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiListViewBase)
 
-			BEGIN_CLASS_MEMBER(GuiListViewBase::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiListViewBase::IStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleProvider)
-				INTERFACE_EXTERNALCTOR(GuiListViewBase, IStyleProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(PrimaryTextColor)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SecondaryTextColor)
@@ -729,7 +706,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateColumnStyle, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiListViewBase::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiListViewBase::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(ListViewItemStyleProvider)
 				CLASS_MEMBER_BASE(ListViewItemStyleProviderBase)
@@ -744,9 +721,8 @@ Type Declaration
 				CLASS_MEMBER_EXTERNALMETHOD(GetItemContent, {L"itemStyleController"}, ListViewItemStyleProvider::IListViewItemContent*(ListViewItemStyleProvider::*)(GuiListControl::IItemStyleController*), &ListViewItemStyleProvider_GetItemContent)
 			END_CLASS_MEMBER(ListViewItemStyleProvider)
 
-			BEGIN_CLASS_MEMBER(ListViewItemStyleProvider::IListViewItemView)
+			BEGIN_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemView)
 				CLASS_MEMBER_BASE(GuiListControl::IItemPrimaryTextView)
-				INTERFACE_EXTERNALCTOR(ListViewItemStyleProvider, IListViewItemView)
 				INTERFACE_IDENTIFIER(ListViewItemStyleProvider::IListViewItemView)
 
 				CLASS_MEMBER_METHOD(GetSmallImage, {L"itemIndex"})
@@ -757,28 +733,26 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetDataColumn, {L"index"})
 				CLASS_MEMBER_METHOD(GetColumnCount, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetColumnText, {L"index"})
-			END_CLASS_MEMBER(ListViewItemStyleProvider::IListViewItemView)
+			END_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemView)
 
-			BEGIN_CLASS_MEMBER(ListViewItemStyleProvider::IListViewItemContent)
+			BEGIN_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemContent)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(ListViewItemStyleProvider, IListViewItemContent)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContentComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BackgroundDecorator)
 				
 				CLASS_MEMBER_METHOD(Install, {L"styleProvider" _ L"view" _ L"itemIndex"})
-			END_CLASS_MEMBER(ListViewItemStyleProvider::IListViewItemContent)
+			END_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemContent)
 
-			BEGIN_CLASS_MEMBER(ListViewItemStyleProvider::IListViewItemContentProvider)
+			BEGIN_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemContentProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(ListViewItemStyleProvider, IListViewItemContentProvider)
 
 				CLASS_MEMBER_METHOD(CreatePreferredAxis, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreatePreferredArranger, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateItemContent, {L"font"})
 				CLASS_MEMBER_METHOD(AttachListControl, {L"value"})
 				CLASS_MEMBER_METHOD(DetachListControl, NO_PARAMETER)
-			END_CLASS_MEMBER(ListViewItemStyleProvider::IListViewItemContentProvider)
+			END_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemContentProvider)
 
 			BEGIN_CLASS_MEMBER(ListViewItemStyleProvider::ListViewContentItemStyleController)
 				CLASS_MEMBER_BASE(ListViewItemStyleProviderBase::ListViewItemStyleController)
@@ -828,9 +802,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnColumnChanged, NO_PARAMETER)
 			END_CLASS_MEMBER(ListViewColumnItemArranger::IColumnItemViewCallback)
 
-			BEGIN_CLASS_MEMBER(ListViewColumnItemArranger::IColumnItemView)
+			BEGIN_INTERFACE_MEMBER(ListViewColumnItemArranger::IColumnItemView)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(ListViewColumnItemArranger, IColumnItemView)
 				INTERFACE_IDENTIFIER(ListViewColumnItemArranger::IColumnItemView)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
@@ -842,7 +815,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetColumnSize, {L"index" _ L"value"})
 				CLASS_MEMBER_METHOD(GetDropdownPopup, {L"index"})
 				CLASS_MEMBER_METHOD(GetSortingState, {L"index"})
-			END_CLASS_MEMBER(ListViewColumnItemArranger::IColumnItemView)
+			END_INTERFACE_MEMBER(ListViewColumnItemArranger::IColumnItemView)
 
 			BEGIN_CLASS_MEMBER(ListViewDetailContentProvider)
 				CLASS_MEMBER_BASE(ListViewItemStyleProvider::IListViewItemContentProvider)
@@ -889,7 +862,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
 			END_CLASS_MEMBER(GuiListView)
 
-			BEGIN_CLASS_MEMBER(IGuiMenuService)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiMenuService)
 				INTERFACE_IDENTIFIER(IGuiMenuService)
 
 				CLASS_MEMBER_METHOD(GetParentMenuService, NO_PARAMETER)
@@ -900,7 +873,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetOpeningMenu, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(MenuOpened, {L"menu"})
 				CLASS_MEMBER_METHOD(MenuClosed, {L"menu"})
-			END_CLASS_MEMBER(IGuiMenuService)
+			END_INTERFACE_MEMBER(IGuiMenuService)
 
 			BEGIN_ENUM_ITEM(IGuiMenuService::Direction)
 				ENUM_ITEM_NAMESPACE(IGuiMenuService)
@@ -938,9 +911,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetSubMenu, {L"value" _ L"owned"})
 			END_CLASS_MEMBER(GuiMenuButton)
 
-			BEGIN_CLASS_MEMBER(GuiMenuButton::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiMenuButton::IStyleController)
 				CLASS_MEMBER_BASE(GuiSelectableButton::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiMenuButton, IStyleController)
 
 				CLASS_MEMBER_METHOD(CreateSubMenuStyleController, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetSubMenuExisting, {L"value"})
@@ -948,9 +920,9 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetSubMenuHost, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetImage, {L"value"})
 				CLASS_MEMBER_METHOD(SetShortcutText, {L"value"})
-			END_CLASS_MEMBER(GuiMenuButton::IStyleController)
+			END_INTERFACE_MEMBER(GuiMenuButton::IStyleController)
 
-			BEGIN_CLASS_MEMBER(INodeProviderCallback)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(INodeProviderCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_METHOD(OnAttached, {L"provider"})
@@ -958,11 +930,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnAfterItemModified, {L"parentNode" _ L"start" _ L"count" _ L"newCount"})
 				CLASS_MEMBER_METHOD(OnItemExpanded, {L"node"})
 				CLASS_MEMBER_METHOD(OnItemCollapsed, {L"node"})
-			END_CLASS_MEMBER(INodeProviderCallback)
+			END_INTERFACE_MEMBER(INodeProviderCallback)
 
-			BEGIN_CLASS_MEMBER(INodeProvider)
+			BEGIN_INTERFACE_MEMBER(INodeProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(tree, INodeProvider)
 
 				CLASS_MEMBER_PROPERTY_FAST(Expanding)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ChildCount)
@@ -972,11 +943,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetChild, {L"index"})
 				CLASS_MEMBER_METHOD(Increase, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Release, NO_PARAMETER)
-			END_CLASS_MEMBER(INodeProvider)
+			END_INTERFACE_MEMBER(INodeProvider)
 
-			BEGIN_CLASS_MEMBER(INodeRootProvider)
+			BEGIN_INTERFACE_MEMBER(INodeRootProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(tree, INodeRootProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(RootNode)
 
@@ -986,44 +956,39 @@ Type Declaration
 				CLASS_MEMBER_METHOD(DetachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(RequestView, {L"identifier"})
 				CLASS_MEMBER_METHOD(ReleaseView, {L"value"})
-			END_CLASS_MEMBER(INodeRootProvider)
+			END_INTERFACE_MEMBER(INodeRootProvider)
 
-			BEGIN_CLASS_MEMBER(INodeItemView)
+			BEGIN_INTERFACE_MEMBER(INodeItemView)
 				CLASS_MEMBER_BASE(GuiListControl::IItemPrimaryTextView)
-				INTERFACE_EXTERNALCTOR(tree, INodeItemView)
 				INTERFACE_IDENTIFIER(INodeItemView)
 
 				CLASS_MEMBER_METHOD(RequestNode, {L"index"})
 				CLASS_MEMBER_METHOD(ReleaseNode, {L"node"})
 				CLASS_MEMBER_METHOD(CalculateNodeVisibilityIndex, {L"node"})
-			END_CLASS_MEMBER(INodeItemView)
+			END_INTERFACE_MEMBER(INodeItemView)
 
-			BEGIN_CLASS_MEMBER(INodeItemPrimaryTextView)
+			BEGIN_INTERFACE_MEMBER(INodeItemPrimaryTextView)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(tree, INodeItemPrimaryTextView)
 				INTERFACE_IDENTIFIER(INodeItemPrimaryTextView)
 
 				CLASS_MEMBER_METHOD(GetPrimaryTextViewText, {L"node"})
-			END_CLASS_MEMBER(INodeItemPrimaryTextView)
+			END_INTERFACE_MEMBER(INodeItemPrimaryTextView)
 
-			BEGIN_CLASS_MEMBER(INodeItemBindingView)
+			BEGIN_INTERFACE_MEMBER(INodeItemBindingView)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(tree, INodeItemBindingView)
 				INTERFACE_IDENTIFIER(INodeItemBindingView)
 
 				CLASS_MEMBER_METHOD(GetBindingValue, {L"node"})
-			END_CLASS_MEMBER(INodeItemBindingView)
+			END_INTERFACE_MEMBER(INodeItemBindingView)
 
-			BEGIN_CLASS_MEMBER(INodeItemStyleController)
+			BEGIN_INTERFACE_MEMBER(INodeItemStyleController)
 				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)
-				INTERFACE_EXTERNALCTOR(tree, INodeItemStyleController)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(NodeStyleProvider)
-			END_CLASS_MEMBER(INodeItemStyleController)
+			END_INTERFACE_MEMBER(INodeItemStyleController)
 
-			BEGIN_CLASS_MEMBER(INodeItemStyleProvider)
+			BEGIN_INTERFACE_MEMBER(INodeItemStyleProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(tree, INodeItemStyleProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BindedItemStyleProvider)
 
@@ -1036,17 +1001,16 @@ Type Declaration
 				CLASS_MEMBER_METHOD(Install, {L"style" _ L"node" _ L"index"})
 				CLASS_MEMBER_METHOD(SetStyleIndex, {L"style" _ L"value"})
 				CLASS_MEMBER_METHOD(SetStyleSelected, {L"style" _ L"value"})
-			END_CLASS_MEMBER(INodeItemStyleProvider)
+			END_INTERFACE_MEMBER(INodeItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(NodeItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<NodeItemStyleProvider>(Ptr<INodeItemStyleProvider>), {L"provider"})
 			END_CLASS_MEMBER(NodeItemStyleProvider)
 
-			BEGIN_CLASS_MEMBER(IMemoryNodeData)
+			BEGIN_INTERFACE_MEMBER(IMemoryNodeData)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(tree, IMemoryNodeData)
-			END_CLASS_MEMBER(IMemoryNodeData)
+			END_INTERFACE_MEMBER(IMemoryNodeData)
 
 			BEGIN_CLASS_MEMBER(MemoryNodeProvider)
 				CLASS_MEMBER_BASE(INodeProvider)
@@ -1098,14 +1062,13 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(NodeStyleProvider)
 			END_CLASS_MEMBER(GuiVirtualTreeListControl)
 
-			BEGIN_CLASS_MEMBER(ITreeViewItemView)
+			BEGIN_INTERFACE_MEMBER(ITreeViewItemView)
 				CLASS_MEMBER_BASE(INodeItemPrimaryTextView)
-				INTERFACE_EXTERNALCTOR(tree, ITreeViewItemView)
 				INTERFACE_IDENTIFIER(ITreeViewItemView)
 
 				CLASS_MEMBER_METHOD(GetNodeImage, {L"node"})
 				CLASS_MEMBER_METHOD(GetNodeText, {L"node"})
-			END_CLASS_MEMBER(ITreeViewItemView)
+			END_INTERFACE_MEMBER(ITreeViewItemView)
 
 			BEGIN_CLASS_MEMBER(TreeViewItem)
 				CLASS_MEMBER_BASE(IMemoryNodeData)
@@ -1133,15 +1096,14 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TreeViewStyleProvider)
 			END_CLASS_MEMBER(GuiVirtualTreeView)
 
-			BEGIN_CLASS_MEMBER(GuiVirtualTreeView::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiVirtualTreeView::IStyleProvider)
 				CLASS_MEMBER_BASE(GuiVirtualTreeListControl::IStyleProvider)
-				INTERFACE_EXTERNALCTOR(GuiVirtualTreeView, IStyleProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
 
 				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateItemExpandingDecorator, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiVirtualTreeView::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiVirtualTreeView::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView)
@@ -1171,13 +1133,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SelectItem, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiComboBoxBase::ICommandExecutor)
 
-			BEGIN_CLASS_MEMBER(GuiComboBoxBase::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiComboBoxBase::IStyleController)
 				CLASS_MEMBER_BASE(GuiMenuButton::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiComboBoxBase, IStyleController)
 				
 				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
 				CLASS_MEMBER_METHOD(OnItemSelected, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiComboBoxBase::IStyleController)
+			END_INTERFACE_MEMBER(GuiComboBoxBase::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiComboBoxListControl)
 				CLASS_MEMBER_BASE(GuiComboBoxBase)
@@ -1304,12 +1265,11 @@ Type Declaration
 				CONTROL_CONSTRUCTOR_PROVIDER(GuiDocumentViewer)
 			END_CLASS_MEMBER(GuiDocumentViewer)
 
-			BEGIN_CLASS_MEMBER(GuiDocumentViewer::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiDocumentViewer::IStyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollContainer::IStyleProvider)
-				INTERFACE_EXTERNALCTOR(GuiDocumentViewer, IStyleProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BaselineDocument)
-			END_CLASS_MEMBER(GuiDocumentViewer::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiDocumentViewer::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentLabel)
 				CLASS_MEMBER_BASE(GuiControl)
@@ -1317,12 +1277,11 @@ Type Declaration
 				CONTROL_CONSTRUCTOR_CONTROLLER(GuiDocumentLabel)
 			END_CLASS_MEMBER(GuiDocumentLabel)
 
-			BEGIN_CLASS_MEMBER(GuiDocumentLabel::IStyleController)
+			BEGIN_INTERFACE_MEMBER(GuiDocumentLabel::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-				INTERFACE_EXTERNALCTOR(GuiDocumentLabel, IStyleController)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BaselineDocument)
-			END_CLASS_MEMBER(GuiDocumentLabel::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiDocumentLabel::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTextBoxCommonInterface)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
@@ -1378,23 +1337,20 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(PasswordChar)
 			END_CLASS_MEMBER(GuiSinglelineTextBox)
 
-			BEGIN_CLASS_MEMBER(GuiSinglelineTextBox::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiSinglelineTextBox::IStyleProvider)
 				CLASS_MEMBER_BASE(GuiControl::IStyleProvider)
-				INTERFACE_EXTERNALCTOR(GuiSinglelineTextBox, IStyleProvider)
 
 				CLASS_MEMBER_METHOD(InstallBackground, {L"background"})
-			END_CLASS_MEMBER(GuiSinglelineTextBox::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiSinglelineTextBox::IStyleProvider)
 
-			BEGIN_CLASS_MEMBER(IDataVisualizerFactory)
+			BEGIN_INTERFACE_MEMBER(IDataVisualizerFactory)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IDataVisualizerFactory)
 
 				CLASS_MEMBER_METHOD(CreateVisualizer, {L"font" _ L"styleProvider"})
-			END_CLASS_MEMBER(IDataVisualizerFactory)
+			END_INTERFACE_MEMBER(IDataVisualizerFactory)
 
-			BEGIN_CLASS_MEMBER(IDataVisualizer)
+			BEGIN_INTERFACE_MEMBER(IDataVisualizer)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IDataVisualizer)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Factory)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
@@ -1402,7 +1358,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(BeforeVisualizeCell, {L"dataProvider" _ L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(SetSelected, {L"value"})
-			END_CLASS_MEMBER(IDataVisualizer)
+			END_INTERFACE_MEMBER(IDataVisualizer)
 
 			BEGIN_CLASS_MEMBER(IDataEditorCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -1410,23 +1366,21 @@ Type Declaration
 				CLASS_MEMBER_METHOD(RequestSaveData, NO_PARAMETER);
 			END_CLASS_MEMBER(IDataEditorCallback)
 
-			BEGIN_CLASS_MEMBER(IDataEditorFactory)
+			BEGIN_INTERFACE_MEMBER(IDataEditorFactory)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IDataEditorFactory)
 
 				CLASS_MEMBER_METHOD(CreateEditor, {L"callback"})
-			END_CLASS_MEMBER(IDataEditorFactory)
+			END_INTERFACE_MEMBER(IDataEditorFactory)
 
-			BEGIN_CLASS_MEMBER(IDataEditor)
+			BEGIN_INTERFACE_MEMBER(IDataEditor)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IDataEditor)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Factory)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
 
 				CLASS_MEMBER_METHOD(BeforeEditCell, {L"dataProvider" _ L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(ReinstallEditor, NO_PARAMETER)
-			END_CLASS_MEMBER(IDataEditor)
+			END_INTERFACE_MEMBER(IDataEditor)
 
 			BEGIN_CLASS_MEMBER(IDataProviderCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -1435,9 +1389,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnDataProviderItemModified, {L"start" _ L"count" _ L"newCount"})
 			END_CLASS_MEMBER(IDataProviderCommandExecutor)
 
-			BEGIN_CLASS_MEMBER(IDataProvider)
+			BEGIN_INTERFACE_MEMBER(IDataProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IDataProvider)
 				INTERFACE_IDENTIFIER(IDataProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
@@ -1461,7 +1414,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetCellDataEditorFactory, {L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(BeforeEditCell, {L"row" _ L"column" _ L"dataEditor"})
 				CLASS_MEMBER_METHOD(SaveCellData, {L"row" _ L"column" _ L"dataEditor"})
-			END_CLASS_MEMBER(IDataProvider)
+			END_INTERFACE_MEMBER(IDataProvider)
 
 			BEGIN_CLASS_MEMBER(IStructuredDataFilterCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -1469,24 +1422,21 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnFilterChanged, NO_PARAMETER)
 			END_CLASS_MEMBER(IStructuredDataFilterCommandExecutor)
 
-			BEGIN_CLASS_MEMBER(IStructuredDataFilter)
+			BEGIN_INTERFACE_MEMBER(IStructuredDataFilter)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IStructuredDataFilter)
 
 				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
 				CLASS_MEMBER_METHOD(Filter, {L"row"})
-			END_CLASS_MEMBER(IStructuredDataFilter)
+			END_INTERFACE_MEMBER(IStructuredDataFilter)
 
-			BEGIN_CLASS_MEMBER(IStructuredDataSorter)
+			BEGIN_INTERFACE_MEMBER(IStructuredDataSorter)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IStructuredDataSorter)
 
 				CLASS_MEMBER_METHOD(Compare, {L"row1" _ L"row2"})
-			END_CLASS_MEMBER(IStructuredDataSorter)
+			END_INTERFACE_MEMBER(IStructuredDataSorter)
 
-			BEGIN_CLASS_MEMBER(IStructuredColumnProvider)
+			BEGIN_INTERFACE_MEMBER(IStructuredColumnProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IStructuredColumnProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Text)
 				CLASS_MEMBER_PROPERTY_FAST(Size)
@@ -1500,11 +1450,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetCellDataEditorFactory, {L"row"})
 				CLASS_MEMBER_METHOD(BeforeEditCell, {L"row" _ L"dataEditor"})
 				CLASS_MEMBER_METHOD(SaveCellData, {L"row" _ L"dataEditor"})
-			END_CLASS_MEMBER(IStructuredColumnProvider)
+			END_INTERFACE_MEMBER(IStructuredColumnProvider)
 
-			BEGIN_CLASS_MEMBER(IStructuredDataProvider)
+			BEGIN_INTERFACE_MEMBER(IStructuredDataProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_EXTERNALCTOR(list, IStructuredDataProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(RowCount)
@@ -1513,7 +1462,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetColumn, {L"column"})
 				CLASS_MEMBER_METHOD(GetRowLargeImage, {L"row"})
 				CLASS_MEMBER_METHOD(GetRowSmallImage, {L"row"})
-			END_CLASS_MEMBER(IStructuredDataProvider)
+			END_INTERFACE_MEMBER(IStructuredDataProvider)
 
 			BEGIN_CLASS_MEMBER(DataGridContentProvider)
 				CLASS_MEMBER_BASE(ListViewItemStyleProvider::IListViewItemContentProvider)
@@ -1706,9 +1655,8 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(DateNavigated);
 			END_CLASS_MEMBER(GuiDatePicker)
 
-			BEGIN_CLASS_MEMBER(GuiDatePicker::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER(GuiDatePicker::IStyleProvider)
 				CLASS_MEMBER_BASE(GuiControl::IStyleProvider)
-				INTERFACE_EXTERNALCTOR(GuiDatePicker, IStyleProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BackgroundColor)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(PrimaryTextColor)
@@ -1717,7 +1665,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateDateButtonStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateTextList, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateComboBoxStyle, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiDatePicker::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiDatePicker::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiDateComboBox)
 				CLASS_MEMBER_BASE(GuiComboBoxBase)

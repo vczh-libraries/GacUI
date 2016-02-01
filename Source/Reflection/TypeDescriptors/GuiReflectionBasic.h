@@ -151,94 +151,64 @@ Type Declaration
 Interface Proxy
 ***********************************************************************/
 
-			namespace interface_proxy
-			{
-				using namespace presentation;
-				using namespace presentation::controls;
-
-				class GuiControl_IStyleController : public ValueInterfaceRoot, public virtual GuiControl::IStyleController
+			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::GuiControl::IStyleController)
+				presentation::compositions::GuiBoundsComposition* GetBoundsComposition()override
 				{
-				public:
-					GuiControl_IStyleController(Ptr<IValueInterfaceProxy> _proxy)
-						:ValueInterfaceRoot(_proxy)
-					{
-					}
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBoundsComposition);
+				}
 
-					static GuiControl::IStyleController* Create(Ptr<IValueInterfaceProxy> _proxy)
-					{
-						return new GuiControl_IStyleController(_proxy);
-					}
+				presentation::compositions::GuiGraphicsComposition* GetContainerComposition()override
+				{
+					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetContainerComposition);
+				}
 
-					compositions::GuiBoundsComposition* GetBoundsComposition()override
-					{
-						return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBoundsComposition);
-					}
+				void SetFocusableComposition(presentation::compositions::GuiGraphicsComposition* value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetFocusableComposition, value);
+				}
 
-					compositions::GuiGraphicsComposition* GetContainerComposition()override
-					{
-						return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetContainerComposition);
-					}
+				void SetText(const WString& value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetText, value);
+				}
 
-					void SetFocusableComposition(compositions::GuiGraphicsComposition* value)override
-					{
-						INVOKE_INTERFACE_PROXY(SetFocusableComposition, value);
-					}
+				void SetFont(const presentation::FontProperties& value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetFont, value);
+				}
 
-					void SetText(const WString& value)override
-					{
-						INVOKE_INTERFACE_PROXY(SetText, value);
-					}
-
-					void SetFont(const FontProperties& value)override
-					{
-						INVOKE_INTERFACE_PROXY(SetFont, value);
-					}
-
-					void SetVisuallyEnabled(bool value)override
-					{
-						INVOKE_INTERFACE_PROXY(SetVisuallyEnabled, value);
-					}
-				};
+				void SetVisuallyEnabled(bool value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetVisuallyEnabled, value);
+				}
+			END_INTERFACE_PROXY(presentation::controls::GuiControl::IStyleController)
 				
-				class GuiControl_IStyleProvider : public ValueInterfaceRoot, public virtual GuiControl::IStyleProvider
+			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::GuiControl::IStyleProvider)
+				void AssociateStyleController(presentation::controls::GuiControl::IStyleController* controller)override
 				{
-				public:
-					GuiControl_IStyleProvider(Ptr<IValueInterfaceProxy> _proxy)
-						:ValueInterfaceRoot(_proxy)
-					{
-					}
+					INVOKE_INTERFACE_PROXY(AssociateStyleController, controller);
+				}
 
-					static GuiControl::IStyleProvider* Create(Ptr<IValueInterfaceProxy> _proxy)
-					{
-						return new GuiControl_IStyleProvider(_proxy);
-					}
+				void SetFocusableComposition(presentation::compositions::GuiGraphicsComposition* value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetFocusableComposition, value);
+				}
 
-					void AssociateStyleController(GuiControl::IStyleController* controller)override
-					{
-						INVOKE_INTERFACE_PROXY(AssociateStyleController, controller);
-					}
+				void SetText(const WString& value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetText, value);
+				}
 
-					void SetFocusableComposition(compositions::GuiGraphicsComposition* value)override
-					{
-						INVOKE_INTERFACE_PROXY(SetFocusableComposition, value);
-					}
+				void SetFont(const presentation::FontProperties& value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetFont, value);
+				}
 
-					void SetText(const WString& value)override
-					{
-						INVOKE_INTERFACE_PROXY(SetText, value);
-					}
-
-					void SetFont(const FontProperties& value)override
-					{
-						INVOKE_INTERFACE_PROXY(SetFont, value);
-					}
-
-					void SetVisuallyEnabled(bool value)override
-					{
-						INVOKE_INTERFACE_PROXY(SetVisuallyEnabled, value);
-					}
-				};
-			}
+				void SetVisuallyEnabled(bool value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetVisuallyEnabled, value);
+				}
+			END_INTERFACE_PROXY(presentation::controls::GuiControl::IStyleProvider)
 
 /***********************************************************************
 Type Loader
