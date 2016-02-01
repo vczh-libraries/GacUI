@@ -456,7 +456,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemProviderCallback)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiListControl::IItemPrimaryTextView
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiListControl::IItemPrimaryTextView,
 				presentation::controls::GuiListControl::IItemProviderCallback
 				)
 
@@ -666,7 +666,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::TextItemStyleProvider::ITextItemView
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::TextItemStyleProvider::ITextItemView,
 				presentation::controls::GuiListControl::IItemPrimaryTextView
 				)
 
@@ -686,7 +686,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemView)
 
-			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiListViewBase::IStyleProvider
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiListViewBase::IStyleProvider,
 				presentation::controls::GuiScrollView::IStyleProvider
 				)
 
@@ -716,7 +716,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListViewBase::IStyleProvider)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView,
 				presentation::controls::GuiListControl::IItemPrimaryTextView
 				)
 
@@ -1017,7 +1017,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemBindingView)
 
-			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::tree::INodeItemStyleController
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::tree::INodeItemStyleController,
 				presentation::controls::GuiListControl::IItemStyleController
 				)
 
@@ -1080,32 +1080,12 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemStyleProvider)
 
-			class tree_IMemoryNodeData : public ValueInterfaceRoot, public virtual tree::IMemoryNodeData
-			{
-			public:
-				tree_IMemoryNodeData(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::IMemoryNodeData)
+			END_INTERFACE_PROXY(presentation::controls::tree::IMemoryNodeData)
 
-				static Ptr<tree::IMemoryNodeData> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_IMemoryNodeData(proxy);
-				}
-			};
-
-			class tree_ITreeViewItemView : public virtual tree_INodeItemPrimaryTextView, public virtual tree::ITreeViewItemView
-			{
-			public:
-				tree_ITreeViewItemView(Ptr<IValueInterfaceProxy> proxy)
-					:tree_INodeItemPrimaryTextView(proxy)
-				{
-				}
-
-				static Ptr<tree::ITreeViewItemView> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_ITreeViewItemView(proxy);
-				}
+			BEGIN_INTERFACE_PROXYT_SHAREDPTR(presentation::controls::tree::ITreeViewItemView,
+				presentation::controls::tree::INodeItemPrimaryTextView
+				)
 
 				Ptr<GuiImageData> GetNodeImage(tree::INodeProvider* node)override
 				{
@@ -1116,21 +1096,11 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY(GetNodeText, node);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::tree::ITreeViewItemView)
 
-			class GuiVirtualTreeView_IStyleProvider : public virtual GuiScrollView_IStyleProvider, public virtual GuiVirtualTreeView::IStyleProvider
-			{
-			public:
-				GuiVirtualTreeView_IStyleProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleProvider(_proxy)
-					,GuiScrollView_IStyleProvider(_proxy)
-				{
-				}
-
-				static GuiVirtualTreeView::IStyleProvider* Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new GuiVirtualTreeView_IStyleProvider(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiVirtualTreeView::IStyleProvider,
+				presentation::controls::GuiScrollView::IStyleProvider
+				)
 
 				GuiSelectableButton::IStyleController* CreateItemBackground()override
 				{
@@ -1146,23 +1116,11 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTextColor);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiVirtualTreeView::IStyleProvider)
 
-			class GuiComboBoxBase_IStyleController : public virtual GuiMenuButton_IStyleController, public virtual GuiComboBoxBase::IStyleController
-			{
-			public:
-				GuiComboBoxBase_IStyleController(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleController(_proxy)
-					,GuiButton_IStyleController(_proxy)
-					,GuiSelectableButton_IStyleController(_proxy)
-					,GuiMenuButton_IStyleController(_proxy)
-				{
-				}
-
-				static GuiComboBoxBase::IStyleController* Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new GuiComboBoxBase_IStyleController(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiComboBoxBase::IStyleController,
+				presentation::controls::GuiMenuButton::IStyleController
+				)
 
 				void SetCommandExecutor(GuiComboBoxBase::ICommandExecutor* value)override
 				{
@@ -1173,58 +1131,27 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(OnItemSelected);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxBase::IStyleController)
 
-			class GuiSinglelineTextBox_IStyleProvider : public virtual GuiControl_IStyleProvider, public virtual GuiSinglelineTextBox::IStyleProvider
-			{
-			public:
-				GuiSinglelineTextBox_IStyleProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleProvider(_proxy)
-				{
-				}
-
-				static GuiSinglelineTextBox::IStyleProvider* Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new GuiSinglelineTextBox_IStyleProvider(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiSinglelineTextBox::IStyleProvider,
+				presentation::controls::GuiControl::IStyleProvider
+				)
 
 				compositions::GuiGraphicsComposition* InstallBackground(compositions::GuiBoundsComposition* background)override
 				{
 					return INVOKEGET_INTERFACE_PROXY(InstallBackground, background);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiSinglelineTextBox::IStyleProvider)
 
-			class list_IDataVisualizerFactory : public ValueInterfaceRoot, public virtual list::IDataVisualizerFactory
-			{
-			public:
-				list_IDataVisualizerFactory(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IDataVisualizerFactory> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IDataVisualizerFactory(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataVisualizerFactory)
 
 				Ptr<list::IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider)override
 				{
 					return INVOKEGET_INTERFACE_PROXY(CreateVisualizer, font, styleProvider);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IDataVisualizerFactory)
 
-			class list_IDataVisualizer : public ValueInterfaceRoot, public virtual list::IDataVisualizer
-			{
-			public:
-				list_IDataVisualizer(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IDataVisualizer> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IDataVisualizer(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataVisualizer)
 
 				list::IDataVisualizerFactory* GetFactory()override
 				{
@@ -1250,39 +1177,17 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY(SetSelected, value);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IDataVisualizer)
 
-			class list_IDataEditorFactory : public ValueInterfaceRoot, public virtual list::IDataEditorFactory
-			{
-			public:
-				list_IDataEditorFactory(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IDataEditorFactory> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IDataEditorFactory(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataEditorFactory)
 
 				Ptr<list::IDataEditor> CreateEditor(list::IDataEditorCallback* callback)
 				{
 					return INVOKEGET_INTERFACE_PROXY(CreateEditor, callback);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IDataEditorFactory)
 
-			class list_IDataEditor : public ValueInterfaceRoot, public virtual list::IDataEditor
-			{
-			public:
-				list_IDataEditor(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IDataEditor> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IDataEditor(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataEditor)
 
 				list::IDataEditorFactory* GetFactory()override
 				{
@@ -1303,20 +1208,9 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(ReinstallEditor);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IDataEditor)
 
-			class list_IDataProvider : public ValueInterfaceRoot, public virtual list::IDataProvider
-			{
-			public:
-				list_IDataProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IDataProvider> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IDataProvider(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataProvider)
 
 				void SetCommandExecutor(list::IDataProviderCommandExecutor* value)override
 				{
@@ -1417,20 +1311,9 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY(SaveCellData, row, column, dataEditor);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IDataProvider)
 
-			class list_IStructuredDataFilter : public ValueInterfaceRoot, public virtual list::IStructuredDataFilter
-			{
-			public:
-				list_IStructuredDataFilter(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IStructuredDataFilter> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IStructuredDataFilter(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IStructuredDataFilter)
 
 				void SetCommandExecutor(list::IStructuredDataFilterCommandExecutor* value)override
 				{
@@ -1441,39 +1324,17 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY(Filter, row);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IStructuredDataFilter)
 
-			class list_IStructuredDataSorter : public ValueInterfaceRoot, public virtual list::IStructuredDataSorter
-			{
-			public:
-				list_IStructuredDataSorter(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IStructuredDataSorter> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IStructuredDataSorter(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IStructuredDataSorter)
 
 				vint Compare(vint row1, vint row2)override
 				{
 					return INVOKEGET_INTERFACE_PROXY(Compare, row1, row2);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IStructuredDataSorter)
 
-			class list_IStructuredColumnProvider : public ValueInterfaceRoot, public virtual list::IStructuredColumnProvider
-			{
-			public:
-				list_IStructuredColumnProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IStructuredColumnProvider> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IStructuredColumnProvider(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IStructuredColumnProvider)
 
 				WString GetText()override
 				{
@@ -1544,20 +1405,9 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY(SaveCellData, row, dataEditor);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IStructuredColumnProvider)
 
-			class list_IStructuredDataProvider : public ValueInterfaceRoot, public virtual list::IStructuredDataProvider
-			{
-			public:
-				list_IStructuredDataProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::IStructuredDataProvider> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new list_IStructuredDataProvider(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IStructuredDataProvider)
 
 				void SetCommandExecutor(list::IDataProviderCommandExecutor* value)
 				{
@@ -1588,20 +1438,11 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY(GetRowSmallImage, row);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::IStructuredDataProvider)
 
-			class GuiDatePicker_IStyleProvider : public GuiControl_IStyleProvider, public virtual GuiDatePicker::IStyleProvider
-			{
-			public:
-				GuiDatePicker_IStyleProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleProvider(_proxy)
-				{
-				}
-
-				static GuiDatePicker::IStyleProvider* Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new GuiDatePicker_IStyleProvider(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiDatePicker::IStyleProvider,
+				presentation::controls::GuiControl::IStyleProvider
+				)
 
 				GuiSelectableButton::IStyleController* CreateDateButtonStyle()override
 				{
@@ -1632,46 +1473,27 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSecondaryTextColor);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiDatePicker::IStyleProvider)
 
-			class GuiDocumentViewer_IStyleProvider : public GuiScrollView_IStyleProvider, public virtual GuiDocumentViewer::IStyleProvider
-			{
-			public:
-				GuiDocumentViewer_IStyleProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleProvider(_proxy)
-					,GuiScrollView_IStyleProvider(_proxy)
-				{
-				}
-
-				static Ptr<GuiDocumentViewer::IStyleProvider> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new GuiDocumentViewer_IStyleProvider(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiDocumentViewer::IStyleProvider,
+				presentation::controls::GuiScrollView::IStyleProvider
+				)
 
 				Ptr<DocumentModel> GetBaselineDocument()override
 				{
 					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBaselineDocument);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiDocumentViewer::IStyleProvider)
 
-			class GuiDocumentLabel_IStyleController : public GuiControl_IStyleController, public virtual GuiDocumentLabel::IStyleController
-			{
-			public:
-				GuiDocumentLabel_IStyleController(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleController(_proxy)
-				{
-				}
-
-				static Ptr<GuiDocumentLabel::IStyleController> Create(Ptr<IValueInterfaceProxy> _proxy)
-				{
-					return new GuiDocumentLabel_IStyleController(_proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiDocumentLabel::IStyleController,
+				presentation::controls::GuiControl::IStyleController
+				)
 
 				Ptr<DocumentModel> GetBaselineDocument()override
 				{
 					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBaselineDocument);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiDocumentLabel::IStyleProvider)
 #pragma warning(pop)
 
 /***********************************************************************
