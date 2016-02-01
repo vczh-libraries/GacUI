@@ -1103,7 +1103,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateItemExpandingDecorator, NO_PARAMETER)
-			BEGIN_INTERFACE_MEMBER(GuiVirtualTreeView::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiVirtualTreeView::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView)
