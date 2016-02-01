@@ -666,18 +666,9 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)
 
-			class TextItemStyleProvider_ITextItemView : public virtual GuiListControl_IItemPrimaryTextView, public virtual list::TextItemStyleProvider::ITextItemView
-			{
-			public:
-				TextItemStyleProvider_ITextItemView(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiListControl_IItemPrimaryTextView(_proxy)
-				{
-				}
-
-				static Ptr<list::TextItemStyleProvider::ITextItemView> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new TextItemStyleProvider_ITextItemView(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::TextItemStyleProvider::ITextItemView
+				presentation::controls::GuiListControl::IItemPrimaryTextView
+				)
 
 				WString GetText(vint itemIndex)override
 				{
@@ -693,21 +684,11 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY(SetCheckedSilently, itemIndex, value);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemView)
 
-			class GuiListViewBase_IStyleProvider : public virtual GuiScrollView_IStyleProvider, public virtual GuiListViewBase::IStyleProvider
-			{
-			public:
-				GuiListViewBase_IStyleProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleProvider(_proxy)
-					,GuiScrollView_IStyleProvider(_proxy)
-				{
-				}
-
-				static GuiListViewBase::IStyleProvider* Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new GuiListViewBase_IStyleProvider(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiListViewBase::IStyleProvider
+				presentation::controls::GuiScrollView::IStyleProvider
+				)
 
 				GuiSelectableButton::IStyleController* CreateItemBackground()override
 				{
@@ -733,20 +714,11 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemSeparatorColor);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiListViewBase::IStyleProvider)
 
-			class ListViewItemStyleProvider_IListViewItemView : public virtual GuiListControl_IItemPrimaryTextView, public virtual list::ListViewItemStyleProvider::IListViewItemView
-			{
-			public:
-				ListViewItemStyleProvider_IListViewItemView(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiListControl_IItemPrimaryTextView(_proxy)
-				{
-				}
-
-				static Ptr<list::ListViewItemStyleProvider::IListViewItemView> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new ListViewItemStyleProvider_IListViewItemView(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView
+				presentation::controls::GuiListControl::IItemPrimaryTextView
+				)
 
 				Ptr<GuiImageData> GetSmallImage(vint itemIndex)override
 				{
@@ -787,20 +759,9 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY(GetColumnText, index);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView)
 
-			class ListViewItemStyleProvider_IListViewItemContent : public ValueInterfaceRoot, public virtual list::ListViewItemStyleProvider::IListViewItemContent
-			{
-			public:
-				ListViewItemStyleProvider_IListViewItemContent(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static list::ListViewItemStyleProvider::IListViewItemContent* Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new ListViewItemStyleProvider_IListViewItemContent(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContent)
 
 				compositions::GuiBoundsComposition* GetContentComposition()override
 				{
@@ -821,20 +782,9 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(Uninstall);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContent)
 
-			class ListViewItemStyleProvider_IListViewItemContentProvider : public ValueInterfaceRoot, public virtual list::ListViewItemStyleProvider::IListViewItemContentProvider
-			{
-			public:
-				ListViewItemStyleProvider_IListViewItemContentProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::ListViewItemStyleProvider::IListViewItemContentProvider> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new ListViewItemStyleProvider_IListViewItemContentProvider(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContentProvider)
 
 				compositions::IGuiAxis* CreatePreferredAxis()override
 				{
@@ -860,20 +810,9 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(DetachListControl);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContentProvider)
 
-			class ListViewColumnItemArranger_IColumnItemView : public ValueInterfaceRoot, public virtual list::ListViewColumnItemArranger::IColumnItemView
-			{
-			public:
-				ListViewColumnItemArranger_IColumnItemView(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<list::ListViewColumnItemArranger::IColumnItemView> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new ListViewColumnItemArranger_IColumnItemView(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::ListViewColumnItemArranger::IColumnItemView)
 
 				bool AttachCallback(list::ListViewColumnItemArranger::IColumnItemViewCallback* value)override
 				{
@@ -914,22 +853,11 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY(GetSortingState, index);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::list::ListViewColumnItemArranger::IColumnItemView)
 
-			class GuiMenuButton_IStyleController : public virtual GuiSelectableButton_IStyleController, public virtual GuiMenuButton::IStyleController
-			{
-			public:
-				GuiMenuButton_IStyleController(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleController(_proxy)
-					,GuiButton_IStyleController(_proxy)
-					,GuiSelectableButton_IStyleController(_proxy)
-				{
-				}
-
-				static GuiMenuButton::IStyleController* Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new GuiMenuButton_IStyleController(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiMenuButton::IStyleController,
+				presentation::controls::GuiSelectableButton::IStyleController
+				)
 
 				GuiMenu::IStyleController* CreateSubMenuStyleController()override
 				{
@@ -960,42 +888,19 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY(SetShortcutText, value);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiMenuButton::IStyleController)
 
-			class GuiListViewColumnHeader_IStyleController : public virtual GuiMenuButton_IStyleController, public virtual GuiListViewColumnHeader::IStyleController
-			{
-			public:
-				GuiListViewColumnHeader_IStyleController(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiControl_IStyleController(_proxy)
-					,GuiButton_IStyleController(_proxy)
-					,GuiSelectableButton_IStyleController(_proxy)
-					,GuiMenuButton_IStyleController(_proxy)
-				{
-				}
-
-				static GuiListViewColumnHeader::IStyleController* Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new GuiListViewColumnHeader_IStyleController(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiListViewColumnHeader::IStyleController,
+				presentation::controls::GuiMenuButton::IStyleController
+				)
 
 				void SetColumnSortingState(GuiListViewColumnHeader::ColumnSortingState value)override
 				{
 					INVOKE_INTERFACE_PROXY(SetColumnSortingState, value);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::GuiListViewColumnHeader::IStyleController)
 
-			class tree_INodeProvider : public ValueInterfaceRoot, public virtual tree::INodeProvider
-			{
-			public:
-				tree_INodeProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<tree::INodeProvider> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_INodeProvider(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeProvider)
 
 				bool GetExpanding()override
 				{
@@ -1036,20 +941,9 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(Release);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::tree::INodeProvider)
 
-			class tree_INodeRootProvider : public ValueInterfaceRoot, public virtual tree::INodeRootProvider
-			{
-			public:
-				tree_INodeRootProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<tree::INodeRootProvider> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_INodeRootProvider(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeRootProvider)
 
 				tree::INodeProvider* GetRootNode()override
 				{
@@ -1085,20 +979,11 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY(ReleaseView, view);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::tree::INodeRootProvider)
 
-			class tree_INodeItemView : public virtual GuiListControl_IItemPrimaryTextView, public virtual tree::INodeItemView
-			{
-			public:
-				tree_INodeItemView(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiListControl_IItemPrimaryTextView(_proxy)
-				{
-				}
-
-				static Ptr<tree::INodeItemView> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_INodeItemView(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::tree::INodeItemView,
+				presentation::controls::GuiListControl::IItemPrimaryTextView
+				)
 
 				tree::INodeProvider* RequestNode(vint index)override
 				{
@@ -1114,77 +999,35 @@ Interface Proxy
 				{
 					return INVOKEGET_INTERFACE_PROXY(CalculateNodeVisibilityIndex, node);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemView)
 
-			class tree_INodeItemPrimaryTextView : public ValueInterfaceRoot, public virtual tree::INodeItemPrimaryTextView
-			{
-			public:
-				tree_INodeItemPrimaryTextView(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<tree::INodeItemPrimaryTextView> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_INodeItemPrimaryTextView(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemPrimaryTextView)
 
 				WString GetPrimaryTextViewText(tree::INodeProvider* node)override
 				{
 					return INVOKEGET_INTERFACE_PROXY(GetPrimaryTextViewText, node);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemPrimaryTextView)
 
-			class tree_INodeItemBindingView: public ValueInterfaceRoot, public virtual tree::INodeItemBindingView
-			{
-			public:
-				tree_INodeItemBindingView(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<tree::INodeItemBindingView> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_INodeItemBindingView(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemBindingView)
 
 				description::Value GetBindingValue(tree::INodeProvider* node)override
 				{
 					return INVOKEGET_INTERFACE_PROXY(GetBindingValue, node);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemBindingView)
 
-			class tree_INodeItemStyleController: public virtual GuiListControl_IItemStyleController, public virtual tree::INodeItemStyleController
-			{
-			public:
-				tree_INodeItemStyleController(Ptr<IValueInterfaceProxy> _proxy)
-					:GuiListControl_IItemStyleController(_proxy)
-				{
-				}
-
-				static tree::INodeItemStyleController* Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_INodeItemStyleController(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::tree::INodeItemStyleController
+				presentation::controls::GuiListControl::IItemStyleController
+				)
 
 				tree::INodeItemStyleProvider* GetNodeStyleProvider()override
 				{
 					return INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetNodeStyleProvider);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemStyleController)
 
-			class tree_INodeItemStyleProvider : public ValueInterfaceRoot, public virtual tree::INodeItemStyleProvider
-			{
-			public:
-				tree_INodeItemStyleProvider(Ptr<IValueInterfaceProxy> _proxy)
-					:ValueInterfaceRoot(_proxy)
-				{
-				}
-
-				static Ptr<tree::INodeItemStyleProvider> Create(Ptr<IValueInterfaceProxy> proxy)
-				{
-					return new tree_INodeItemStyleProvider(proxy);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemStyleProvider)
 
 				void BindItemStyleProvider(GuiListControl::IItemStyleProvider* styleProvider)override
 				{
@@ -1235,7 +1078,7 @@ Interface Proxy
 				{
 					INVOKE_INTERFACE_PROXY(SetStyleSelected, style, value);
 				}
-			};
+			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemStyleProvider)
 
 			class tree_IMemoryNodeData : public ValueInterfaceRoot, public virtual tree::IMemoryNodeData
 			{
