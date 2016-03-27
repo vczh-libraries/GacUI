@@ -207,7 +207,7 @@ Workflow_InstallBindProperty
 				call->arguments.Add(bindExpression);
 
 				auto var = MakePtr<WfVariableDeclaration>();
-				var->name.value = L"<subscription>";
+				var->name.value = L"<created-subscription>";
 				var->expression = call;
 
 				auto stat = MakePtr<WfVariableStatement>();
@@ -312,7 +312,7 @@ Workflow_InstallBindProperty
 				funcExpr->function = callback;
 
 				auto refThis = MakePtr<WfReferenceExpression>();
-				refThis->name.value = L"<subscription>";
+				refThis->name.value = L"<created-subscription>";
 
 				auto member = MakePtr<WfMemberExpression>();
 				member->parent = refThis;
@@ -328,7 +328,7 @@ Workflow_InstallBindProperty
 			}
 			{
 				auto refThis = MakePtr<WfReferenceExpression>();
-				refThis->name.value = L"<subscription>";
+				refThis->name.value = L"<created-subscription>";
 
 				auto member = MakePtr<WfMemberExpression>();
 				member->parent = refThis;
