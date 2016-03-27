@@ -474,6 +474,9 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstancePartialClass.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflowCompiler.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -802,6 +805,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstancePartialClass.h">
       <Filter>GacUI\Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppWorkflowCompiler.h">
+      <Filter>Import</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

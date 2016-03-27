@@ -233,7 +233,7 @@ private:
 
 	public:
 		InstanceTypeDescriptor(ResourceMockTypeLoader* _loader, Ptr<Instance> _instance)
-			:TypeDescriptorImpl(_instance->context->className, _instance->context->className)
+			:TypeDescriptorImpl(TypeDescriptorFlags::Class, _instance->context->className, _instance->context->className)
 			, loader(_loader)
 			, instance(_instance)
 		{
@@ -485,7 +485,7 @@ void GuiMain()
 		}
 	}
 
-	GetInstanceLoaderManager()->SetResource(L"GACGEN", resource, GuiResourceUsage::DevelopmentTool);
+	GetInstanceResourceManager()->SetResource(L"GACGEN", resource, GuiResourceUsage::DevelopmentTool);
 
 	if (config->cppOutput)
 	{

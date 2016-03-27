@@ -1,7 +1,7 @@
 #ifndef VCZH_GACGEN
 #define VCZH_GACGEN
 
-#include "GacUIReflection.h"
+#include "GacUICompiler.h"
 
 using namespace vl::console;
 using namespace vl::collections;

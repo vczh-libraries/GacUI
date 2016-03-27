@@ -6,23 +6,28 @@
   </folders>
   <categories>
     <category name="vlpp" pattern="\Import\Vlpp."/>
-    <category name="workflow" pattern="\Import\VlppWorkflow."/>
+    <category name="wfruntime" pattern="\Import\VlppWorkflow."/>
+    <category name="wfcompiler" pattern="\Import\VlppWorkflowCompiler."/>
     <category name="gacui" pattern="\Source\">
       <except pattern="\Windows\" />
       <except pattern="\WindowsDirect2D\" />
       <except pattern="\WindowsGDI\" />
       <except pattern="\Reflection\" />
+      <except pattern="\Compiler\" />
     </category>
     <category name="windows" pattern="\Source\GraphicsElement\WindowsDirect2D\" />
     <category name="windows" pattern="\Source\GraphicsElement\WindowsGDI\" />
     <category name="windows" pattern="\Source\NativeWindow\Windows\" />
     <category name="reflection" pattern="\Source\Reflection\" />
+    <category name="compiler" pattern="\Source\Compiler\" />
   </categories>
   <output path=".">
     <codepair category="vlpp" filename="Vlpp" generate="false"/>
-    <codepair category="workflow" filename="VlppWorkflow" generate="false"/>
+    <codepair category="wfruntime" filename="VlppWorkflow" generate="false"/>
+    <codepair category="wfcompiler" filename="VlppWorkflowCompiler" generate="false"/>
     <codepair category="gacui" filename="GacUI" generate="true"/>
     <codepair category="windows" filename="GacUIWindows" generate="true"/>
     <codepair category="reflection" filename="GacUIReflection" generate="true"/>
+    <codepair category="compiler" filename="GacUICompiler" generate="true"/>
   </output>
 </codegen>

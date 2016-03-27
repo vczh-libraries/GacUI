@@ -36,6 +36,12 @@
     <ClInclude Include="GacGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Import\VlppWorkflowCompiler.h">
+      <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Release\GacUICompiler.h">
+      <Filter>Import</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Release\GacUI.cpp">
@@ -85,6 +91,12 @@
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Import\VlppWorkflowCompiler.cpp">
+      <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Release\GacUICompiler.cpp">
+      <Filter>Import</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

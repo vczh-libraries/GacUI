@@ -2104,7 +2104,7 @@ ControllerListener
 							}
 						}
 #if _DEBUG
-						CHECK_ERROR(d3d11Device, L"Direct2DWindowsNativeControllerListener::NativeWindowCreated(INativeWindow*)#Failed to create Direct3D 11 Device.");
+						CHECK_ERROR(d3d11Device, L"Direct2DWindowsNativeControllerListener::NativeWindowCreated(INativeWindow*)#Failed to create Direct3D 11 Device. This error will be skipped under Release mode, but you still need to check your Windows SDK Installation.");
 #endif
 					}
 

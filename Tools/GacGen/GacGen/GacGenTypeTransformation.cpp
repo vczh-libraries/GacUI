@@ -133,8 +133,8 @@ Ptr<WfType> ParseWorkflowType(Ptr<CodegenConfig> config, const WString& workflow
 	}
 
 	auto module = config->workflowManager->GetModules()[0];
-	auto scope = config->workflowManager->moduleScopes[module.Obj()];
-	analyzer::ValidateTypeStructure(config->workflowManager.Obj(), type, true);
+	auto scope = config->workflowManager->nodeScopes[module.Obj()];
+	analyzer::ValidateTypeStructure(config->workflowManager.Obj(), type, ValidateTypeStragety::ReturnType);
 	if (config->workflowManager->errors.Count() > 0)
 	{
 		PrintAndClearWorkflowErrors(config, L"Invalid workflow type: \"" + workflowType + L"\".");
@@ -153,7 +153,7 @@ Ptr<ITypeInfo> GetTypeInfoFromWorkflowType(Ptr<CodegenConfig> config, const WStr
 	}
 	
 	auto module = config->workflowManager->GetModules()[0];
-	auto scope = config->workflowManager->moduleScopes[module.Obj()];
+	auto scope = config->workflowManager->nodeScopes[module.Obj()];
 	auto typeInfo = CreateTypeInfoFromType(scope.Obj(), type);
 	if (config->workflowManager->errors.Count() > 0)
 	{

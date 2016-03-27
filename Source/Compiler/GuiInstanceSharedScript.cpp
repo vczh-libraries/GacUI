@@ -5,7 +5,6 @@ namespace vl
 	namespace presentation
 	{
 		using namespace parsing::xml;
-		using namespace workflow::runtime;
 
 /***********************************************************************
 GuiInstanceSharedScript
