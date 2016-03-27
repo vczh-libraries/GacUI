@@ -420,9 +420,6 @@
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceRepresentation.cpp">
       <Filter>GacUI\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.cpp">
-      <Filter>GacUI\Compiler</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Compositions.cpp">
       <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>
@@ -467,6 +464,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp">
       <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.cpp">
+      <Filter>GacUI\Reflection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -776,9 +776,6 @@
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceRepresentation.h">
       <Filter>GacUI\Compiler</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.h">
-      <Filter>GacUI\Compiler</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_TemplateControl.h">
       <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClInclude>
@@ -790,6 +787,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h">
       <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h">
+      <Filter>GacUI\Reflection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

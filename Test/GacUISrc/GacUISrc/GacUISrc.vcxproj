@@ -91,7 +91,6 @@
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceBinders.cpp" />
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedTypeResolvers.cpp" />
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceRepresentation.cpp" />
-    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.cpp" />
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Compositions.cpp" />
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Document.cpp" />
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_List.cpp" />
@@ -190,6 +189,7 @@
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsResourceService.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -220,7 +220,6 @@
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceHelperTypes.h" />
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceLoader.h" />
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceRepresentation.h" />
-    <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.h" />
     <ClInclude Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_TemplateControl.h" />
     <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h" />
     <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.h" />
@@ -313,6 +312,7 @@
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsResourceService.h" />
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.h" />
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.h" />

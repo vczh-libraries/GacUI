@@ -1,6 +1,6 @@
 #include "..\..\..\Source\GacUI.h"
 #include "..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h"
-#include "..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.h"
+#include "..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h"
 #include "..\..\..\Source\Resources\GuiParserManager.h"
 #include <Windows.h>
 #include <msctf.h>

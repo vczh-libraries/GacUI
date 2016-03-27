@@ -9,7 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 
-#include "../GuiInstanceSharedScript.h"
+#include "../../Resources/GuiDocument.h"
+#include "../../Controls/Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -77,21 +78,6 @@ Type List
 			F(presentation::DocumentParagraphRun)\
 			F(presentation::DocumentStyle)\
 			F(presentation::DocumentModel)\
-			F(presentation::GuiInstanceSharedScript)\
-			F(presentation::GuiInstanceStyle)\
-			F(presentation::GuiInstanceStyleContext)\
-			F(presentation::GuiValueRepr)\
-			F(presentation::GuiTextRepr)\
-			F(presentation::GuiAttSetterRepr)\
-			F(presentation::GuiAttSetterRepr::SetterValue)\
-			F(presentation::GuiAttSetterRepr::EventValue)\
-			F(presentation::GuiConstructorRepr)\
-			F(presentation::GuiInstanceNamespace)\
-			F(presentation::GuiInstanceParameter)\
-			F(presentation::GuiInstanceProperty)\
-			F(presentation::GuiInstanceState)\
-			F(presentation::GuiInstanceContext)\
-			F(presentation::GuiInstanceContext::NamespaceInfo)\
 			F(presentation::GuiResourceNodeBase)\
 			F(presentation::GuiResourceItem)\
 			F(presentation::GuiResourceFolder)\
