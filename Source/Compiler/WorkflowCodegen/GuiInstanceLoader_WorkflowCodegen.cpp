@@ -104,22 +104,6 @@ Workflow_PrecompileInstanceContext
 		}
 
 /***********************************************************************
-Workflow_RunPrecompiledScript
-***********************************************************************/
-
-		Ptr<workflow::runtime::WfRuntimeGlobalContext> Workflow_RunPrecompiledScript(Ptr<GuiResource> resource, Ptr<GuiResourceItem> resourceItem, description::Value rootInstance)
-		{
-			auto compiled = resourceItem->GetContent().Cast<GuiInstanceCompiledWorkflow>();
-			auto globalContext = MakePtr<WfRuntimeGlobalContext>(compiled->assembly);
-
-			LoadFunction<void()>(globalContext, L"<initialize>")();
-			auto resolver = MakePtr<GuiResourcePathResolver>(resource, resource->GetWorkingDirectory());
-			LoadFunction<void(Value, Ptr<GuiResourcePathResolver>)>(globalContext, L"<initialize-instance>")(rootInstance, resolver);
-
-			return globalContext;
-		}
-
-/***********************************************************************
 GuiWorkflowSharedManagerPlugin
 ***********************************************************************/
 

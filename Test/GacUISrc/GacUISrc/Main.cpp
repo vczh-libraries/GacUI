@@ -3,7 +3,7 @@
 #include "..\..\..\Source\GacUI.h"
 #include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
 #include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h"
-#include "..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
+#include "..\..\..\Source\Reflection\GuiInstancePartialClass.h"
 #include <Windows.h>
 
 using namespace vl::regex;
@@ -168,7 +168,7 @@ void GuiMain_Resource()
 			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
 			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		}
-		GetInstanceLoaderManager()->SetResource(L"Resource", resource);
+		GetInstanceResourceManager()->SetResource(L"Resource", resource);
 
 		{
 			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceCtor/MainWindowResource");

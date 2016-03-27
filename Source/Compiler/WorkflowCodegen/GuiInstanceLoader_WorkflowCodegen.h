@@ -69,7 +69,6 @@ WorkflowCompiler (Compile)
 
 		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
 		extern Ptr<workflow::runtime::WfAssembly>				Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
-		extern Ptr<workflow::runtime::WfRuntimeGlobalContext>	Workflow_RunPrecompiledScript(Ptr<GuiResource> resource, Ptr<GuiResourceItem> resourceItem, description::Value rootInstance);
 	}
 }
 

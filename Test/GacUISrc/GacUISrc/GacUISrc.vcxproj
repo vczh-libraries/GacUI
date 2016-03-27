@@ -191,6 +191,7 @@
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.cpp" />
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstancePartialClass.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -315,6 +316,7 @@
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.h" />
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h" />
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstancePartialClass.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.h" />
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.h" />

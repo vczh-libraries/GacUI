@@ -6,8 +6,8 @@ GacUI Reflection: Instance Loader
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONINSTANCELOADER
-#define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONINSTANCELOADER
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOADER
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOADER
 
 #include "../Controls/GuiApplication.h"
 #include "../Controls/Styles/GuiThemeStyleFactory.h"
@@ -148,12 +148,6 @@ Instance Binder
 Instance Loader Manager
 ***********************************************************************/
 
-		class GuiInstanceConstructorResult : public Object
-		{
-		public:
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
-		};
-
 		class IGuiInstanceLoaderManager : public IDescriptable, public Description<IGuiInstanceLoaderManager>
 		{
 		public:
@@ -168,9 +162,6 @@ Instance Loader Manager
 			virtual description::ITypeDescriptor*		GetTypeDescriptorForType(GlobalStringKey typeName) = 0;
 			virtual void								GetVirtualTypes(collections::List<GlobalStringKey>& typeNames) = 0;
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
-			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::Application) = 0;
-			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
-			virtual Ptr<GuiInstanceConstructorResult>	RunInstanceConstructor(const WString& classFullName, description::Value instance) = 0;
 		};
 
 		struct InstanceLoadingSource
@@ -206,62 +197,6 @@ Instance Loader Manager
 
 		extern IGuiInstanceLoaderManager*			GetInstanceLoaderManager();
 		extern InstanceLoadingSource				FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
-
-/***********************************************************************
-Instance Scope Wrapper
-***********************************************************************/
-
-		template<typename T>
-		class GuiInstancePartialClass
-		{
-		private:
-			WString											className;
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
-
-		protected:
-			bool InitializeFromResource()
-			{
-				if (!context)
-				{
-					auto value = description::Value::From(dynamic_cast<T*>(this));
-					if (auto result = GetInstanceLoaderManager()->RunInstanceConstructor(className, value))
-					{
-						context = result->context;
-						return true;
-					}
-				}
-				return false;
-			}
-
-			template<typename TControl>
-			void LoadInstanceReference(const WString& name, TControl*& reference)
-			{
-				reference = 0;
-				vint index = context->assembly->variableNames.IndexOf(name);
-				CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Failed to find instance reference.");
-
-				auto value = context->globalVariables->variables[index];
-				auto td = description::GetTypeDescriptor<TControl>();
-				if (!value.GetTypeDescriptor() || !value.GetTypeDescriptor()->CanConvertTo(td))
-				{
-					CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Wrong instance reference type.");
-					return;
-				}
-
-				reference = description::UnboxValue<TControl*>(value);
-			}
-		public:
-			GuiInstancePartialClass(const WString& _className)
-				:className(_className)
-			{
-			}
-
-			virtual ~GuiInstancePartialClass()
-			{
-			}
-		};
-
-#define GUI_INSTANCE_REFERENCE(NAME) LoadInstanceReference(L ## #NAME, this->NAME)
 	}
 }
 

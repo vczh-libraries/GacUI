@@ -635,16 +635,11 @@ GuiInstanceLoaderManager
 			};
 
 			typedef Dictionary<GlobalStringKey, Ptr<VirtualTypeInfo>>		VirtualTypeInfoMap;
-			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
-			typedef Pair<Ptr<GuiResource>, Ptr<GuiResourceItem>>			ResourceItemPair;
-			typedef Dictionary<WString, ResourceItemPair>					ResourceItemMap;
 
 			Ptr<IGuiInstanceLoader>					rootLoader;
 			BinderMap								binders;
 			EventBinderMap							eventBinders;
 			VirtualTypeInfoMap						typeInfos;
-			ResourceMap								resources;
-			ResourceItemMap							instanceCtors;
 
 			bool IsTypeExists(GlobalStringKey name)
 			{
@@ -728,27 +723,6 @@ GuiInstanceLoaderManager
 					return typeInfos.Values()[index]->loader.Obj();
 				}
 			}
-
-			void GetClassesInResource(Ptr<GuiResource> resource, Ptr<GuiResourceFolder> folder)
-			{
-				FOREACH(Ptr<GuiResourceItem>, item, folder->GetItems())
-				{
-					if (auto compiled = item->GetContent().Cast<GuiInstanceCompiledWorkflow>())
-					{
-						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor)
-						{
-							if (!instanceCtors.Keys().Contains(compiled->classFullName))
-							{
-								instanceCtors.Add(compiled->classFullName, ResourceItemPair(resource, item));
-							}
-						}
-					}
-				}
-				FOREACH(Ptr<GuiResourceFolder>, subFolder, folder->GetFolders())
-				{
-					GetClassesInResource(resource, subFolder);
-				}
-			}
 		public:
 			GuiInstanceLoaderManager()
 			{
@@ -768,7 +742,7 @@ GuiInstanceLoaderManager
 
 			void Unload()override
 			{
-				instanceLoaderManager = 0;
+				instanceLoaderManager = nullptr;
 			}
 
 			bool AddInstanceBinder(Ptr<IGuiInstanceBinder> binder)override
@@ -897,35 +871,6 @@ GuiInstanceLoaderManager
 					return typeInfo->parentTypeName;
 				}
 				return GlobalStringKey::Empty;
-			}
-
-			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
-			{
-				vint index = resources.Keys().IndexOf(name);
-				if (index != -1) return false;
-				
-				resource->Initialize(usage);
-				resources.Add(name, resource);
-				GetClassesInResource(resource, resource);
-				return true;
-			}
-
-			Ptr<GuiResource> GetResource(const WString& name)override
-			{
-				vint index = resources.Keys().IndexOf(name);
-				return index == -1 ? nullptr : resources.Values()[index];
-			}
-
-			Ptr<GuiInstanceConstructorResult> RunInstanceConstructor(const WString& classFullName, description::Value instance)override
-			{
-				vint index = instanceCtors.Keys().IndexOf(classFullName);
-				if (index == -1) return nullptr;
-
-				auto pair = instanceCtors.Values()[index];
-				auto context = Workflow_RunPrecompiledScript(pair.key, pair.value, instance);
-				auto result = MakePtr<GuiInstanceConstructorResult>();
-				result->context = context;
-				return result;
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiInstanceLoaderManager)
