@@ -465,7 +465,10 @@
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp">
       <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.cpp">
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.cpp">
+      <Filter>GacUI\Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
   </ItemGroup>
@@ -788,7 +791,10 @@
     <ClInclude Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h">
       <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h">
+    <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.h">
+      <Filter>GacUI\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h">
       <Filter>GacUI\Reflection</Filter>
     </ClInclude>
   </ItemGroup>

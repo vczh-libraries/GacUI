@@ -1,6 +1,6 @@
 #include "../GuiInstanceLoader.h"
 #include "../GuiInstanceHelperTypes.h"
-#include "../TypeDescriptors/GuiReflectionTemplates.h"
+#include "../../Reflection/TypeDescriptors/GuiReflectionTemplates.h"
 
 #ifndef VCZH_PRESENTATION_REFLECTION_INSTANCELOADERS_GUIINSTANCELOADER_TEMPLATECONTROL
 #define VCZH_PRESENTATION_REFLECTION_INSTANCELOADERS_GUIINSTANCELOADER_TEMPLATECONTROL

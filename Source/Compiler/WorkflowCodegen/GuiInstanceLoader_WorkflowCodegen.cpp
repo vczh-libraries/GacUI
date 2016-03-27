@@ -1,5 +1,6 @@
 #include "GuiInstanceLoader_WorkflowCodegen.h"
-#include "../TypeDescriptors/GuiReflectionEvents.h"
+#include "../../Reflection/TypeDescriptors/GuiReflectionEvents.h"
+#include "../../Reflection/GuiInstanceCompiledWorkflow.h"
 #include "../../Resources/GuiParserManager.h"
 
 namespace vl

@@ -3,6 +3,7 @@
 #include "..\..\..\Source\GacUI.h"
 #include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
 #include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h"
+#include "..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
 #include <Windows.h>
 
 using namespace vl::regex;

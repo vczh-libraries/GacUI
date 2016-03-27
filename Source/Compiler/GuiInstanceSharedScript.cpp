@@ -30,25 +30,5 @@ GuiInstanceSharedScript
 
 			return xml;
 		}
-
-/***********************************************************************
-GuiInstanceSharedScript
-***********************************************************************/
-
-		void GuiInstanceCompiledWorkflow::Initialize(bool initializeContext)
-		{
-			if (binaryToLoad)
-			{
-				assembly = new WfAssembly(*binaryToLoad.Obj());
-				context = nullptr;
-				binaryToLoad = nullptr;
-			}
-
-			if (initializeContext && !context)
-			{
-				context = new WfRuntimeGlobalContext(assembly);
-				LoadFunction<void()>(context, L"<initialize>")();
-			}
-		}
 	}
 }

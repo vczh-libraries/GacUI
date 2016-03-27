@@ -1,5 +1,6 @@
 #include "GuiInstanceLoader.h"
-#include "TypeDescriptors/GuiReflectionEvents.h"
+#include "../Reflection/TypeDescriptors/GuiReflectionEvents.h"
+#include "../Reflection/GuiInstanceCompiledWorkflow.h"
 #include "../Resources/GuiParserManager.h"
 #include "InstanceQuery/GuiInstanceQuery.h"
 #include "GuiInstanceSharedScript.h"
@@ -326,115 +327,13 @@ Shared Script Type Resolver (Script)
 		};
 
 /***********************************************************************
-Compiled Workflow Type Resolver (Script)
+Plugin
 ***********************************************************************/
 
-		class GuiResourceCompiledWorkflowTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_Initialize
-			, private IGuiResourceTypeResolver_DirectLoadStream
+		class GuiCompilerTypeResolversPlugin : public Object, public IGuiPlugin
 		{
 		public:
-			WString GetType()override
-			{
-				return L"Workflow";
-			}
-
-			bool XmlSerializable()override
-			{
-				return false;
-			}
-
-			bool StreamSerializable()override
-			{
-				return true;
-			}
-
-			vint GetMaxPassIndex()override
-			{
-				return 2;
-			}
-
-			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context)override
-			{
-				if (auto compiled = resource->GetContent().Cast<GuiInstanceCompiledWorkflow>())
-				{
-					switch (context.passIndex)
-					{
-					case 0:
-						if (compiled->type == GuiInstanceCompiledWorkflow::ViewModel)
-						{
-							if (context.usage == GuiResourceUsage::DevelopmentTool)
-							{
-								compiled->Initialize(false);
-							}
-						}
-						break;
-					case 1:
-						if (compiled->type == GuiInstanceCompiledWorkflow::Shared)
-						{
-							compiled->Initialize(true);
-						}
-						break;
-					case 2:
-						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor && compiled->type != GuiInstanceCompiledWorkflow::InstanceClass)
-						{
-							compiled->Initialize(false);
-						}
-						break;
-					}
-				}
-			}
-
-			IGuiResourceTypeResolver_Initialize* Initialize()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
-			{
-				return this;
-			}
-
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
-			{
-				if (auto obj = resource.Cast<GuiInstanceCompiledWorkflow>())
-				{
-					internal::Writer writer(stream);
-
-					vint type = (vint)obj->type;
-					writer << type << obj->classFullName;
-
-					MemoryStream memoryStream;
-					obj->assembly->Serialize(memoryStream);
-					writer << (IStream&)memoryStream;
-				}
-			}
-
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
-			{
-				internal::Reader reader(stream);
-				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
-
-				vint type;
-				auto memoryStream = MakePtr<MemoryStream>();;
-				reader << type << obj->classFullName << (IStream&)*memoryStream.Obj();
-
-				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
-				obj->binaryToLoad = memoryStream;
-				return obj;
-			}
-		};
-
-/***********************************************************************
-Shared Script Type Resolver
-***********************************************************************/
-
-		class GuiPredefinedTypeResolversPlugin : public Object, public IGuiPlugin
-		{
-		public:
-			GuiPredefinedTypeResolversPlugin()
+			GuiCompilerTypeResolversPlugin()
 			{
 			}
 
@@ -448,13 +347,12 @@ Shared Script Type Resolver
 				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
 				manager->SetTypeResolver(new GuiResourceInstanceStyleResolver);
 				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
-				manager->SetTypeResolver(new GuiResourceCompiledWorkflowTypeResolver);
 			}
 
 			void Unload()override
 			{
 			}
 		};
-		GUI_REGISTER_PLUGIN(GuiPredefinedTypeResolversPlugin)
+		GUI_REGISTER_PLUGIN(GuiCompilerTypeResolversPlugin)
 	}
 }
