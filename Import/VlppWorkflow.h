@@ -87,56 +87,58 @@ namespace vl
 			KEYWORD_OR = 42,
 			KEYWORD_NOT = 43,
 			KEYWORD_NULL = 44,
-			KEYWORD_TRUE = 45,
-			KEYWORD_FALSE = 46,
-			KEYWORD_LET = 47,
-			KEYWORD_IN = 48,
-			KEYWORD_RANGE = 49,
-			KEYWORD_NEW = 50,
-			KEYWORD_OF = 51,
-			KEYWORD_AS = 52,
-			KEYWORD_IS = 53,
-			KEYWORD_CAST = 54,
-			KEYWORD_FUNC = 55,
-			KEYWORD_TYPEOF = 56,
-			KEYWORD_TYPE = 57,
-			KEYWORD_BIND = 58,
-			KEYWORD_OBSERVE = 59,
-			KEYWORD_ON = 60,
-			KEYWORD_ATTACH = 61,
-			KEYWORD_DETACH = 62,
-			KEYWORD_VAR = 63,
-			KEYWORD_BREAK = 64,
-			KEYWORD_CONTINUE = 65,
-			KEYWORD_RETURN = 66,
-			KEYWORD_DELETE = 67,
-			KEYWORD_RAISE = 68,
-			KEYWORD_IF = 69,
-			KEYWORD_ELSE = 70,
-			KEYWORD_SWITCH = 71,
-			KEYWORD_CASE = 72,
-			KEYWORD_DEFAULT = 73,
-			KEYWORD_WHILE = 74,
-			KEYWORD_FOR = 75,
-			KEYWORD_REVERSED = 76,
-			KEYWORD_TRY = 77,
-			KEYWORD_CATCH = 78,
-			KEYWORD_FINALLY = 79,
-			KEYWORD_CLASS = 80,
-			KEYWORD_PROP = 81,
-			KEYWORD_EVENT = 82,
-			KEYWORD_STATIC = 83,
-			KEYWORD_USING = 84,
-			KEYWORD_NAMESPACE = 85,
-			KEYWORD_MODULE = 86,
-			KEYWORD_UNIT = 87,
-			NAME = 88,
-			ORDERED_NAME = 89,
-			FLOAT = 90,
-			INTEGER = 91,
-			STRING = 92,
-			FORMATSTRING = 93,
-			SPACE = 94,
+			KEYWORD_THIS = 45,
+			KEYWORD_TRUE = 46,
+			KEYWORD_FALSE = 47,
+			KEYWORD_LET = 48,
+			KEYWORD_IN = 49,
+			KEYWORD_RANGE = 50,
+			KEYWORD_NEW = 51,
+			KEYWORD_OF = 52,
+			KEYWORD_AS = 53,
+			KEYWORD_IS = 54,
+			KEYWORD_CAST = 55,
+			KEYWORD_FUNC = 56,
+			KEYWORD_TYPEOF = 57,
+			KEYWORD_TYPE = 58,
+			KEYWORD_BIND = 59,
+			KEYWORD_OBSERVE = 60,
+			KEYWORD_ON = 61,
+			KEYWORD_ATTACH = 62,
+			KEYWORD_DETACH = 63,
+			KEYWORD_VAR = 64,
+			KEYWORD_BREAK = 65,
+			KEYWORD_CONTINUE = 66,
+			KEYWORD_RETURN = 67,
+			KEYWORD_DELETE = 68,
+			KEYWORD_RAISE = 69,
+			KEYWORD_IF = 70,
+			KEYWORD_ELSE = 71,
+			KEYWORD_SWITCH = 72,
+			KEYWORD_CASE = 73,
+			KEYWORD_DEFAULT = 74,
+			KEYWORD_WHILE = 75,
+			KEYWORD_FOR = 76,
+			KEYWORD_REVERSED = 77,
+			KEYWORD_TRY = 78,
+			KEYWORD_CATCH = 79,
+			KEYWORD_FINALLY = 80,
+			KEYWORD_CLASS = 81,
+			KEYWORD_PROP = 82,
+			KEYWORD_EVENT = 83,
+			KEYWORD_STATIC = 84,
+			KEYWORD_OVERRIDE = 85,
+			KEYWORD_USING = 86,
+			KEYWORD_NAMESPACE = 87,
+			KEYWORD_MODULE = 88,
+			KEYWORD_UNIT = 89,
+			NAME = 90,
+			ORDERED_NAME = 91,
+			FLOAT = 92,
+			INTEGER = 93,
+			STRING = 94,
+			FORMATSTRING = 95,
+			SPACE = 96,
 		};
 		class WfType;
 		class WfPredefinedType;
@@ -150,6 +152,7 @@ namespace vl
 		class WfFunctionType;
 		class WfChildType;
 		class WfExpression;
+		class WfThisExpression;
 		class WfTopQualifiedExpression;
 		class WfReferenceExpression;
 		class WfOrderedNameExpression;
@@ -201,10 +204,13 @@ namespace vl
 		class WfFunctionExpression;
 		class WfVariableDeclaration;
 		class WfVariableStatement;
-		class WfNewTypeExpression;
-		class WfClassMember;
 		class WfEventDeclaration;
 		class WfPropertyDeclaration;
+		class WfClassMember;
+		class WfNewClassExpression;
+		class WfNewInterfaceExpression;
+		class WfBaseConstructorCall;
+		class WfConstructorDeclaration;
 		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
@@ -365,6 +371,7 @@ namespace vl
 			class IVisitor : public vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 			{
 			public:
+				virtual void Visit(WfThisExpression* node)=0;
 				virtual void Visit(WfTopQualifiedExpression* node)=0;
 				virtual void Visit(WfReferenceExpression* node)=0;
 				virtual void Visit(WfOrderedNameExpression* node)=0;
@@ -394,11 +401,21 @@ namespace vl
 				virtual void Visit(WfObserveExpression* node)=0;
 				virtual void Visit(WfCallExpression* node)=0;
 				virtual void Visit(WfFunctionExpression* node)=0;
-				virtual void Visit(WfNewTypeExpression* node)=0;
+				virtual void Visit(WfNewClassExpression* node)=0;
+				virtual void Visit(WfNewInterfaceExpression* node)=0;
 			};
 
 			virtual void Accept(WfExpression::IVisitor* visitor)=0;
 
+		};
+
+		class WfThisExpression : public WfExpression, vl::reflection::Description<WfThisExpression>
+		{
+		public:
+
+			void Accept(WfExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfThisExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfTopQualifiedExpression : public WfExpression, vl::reflection::Description<WfTopQualifiedExpression>
@@ -978,6 +995,7 @@ namespace vl
 				virtual void Visit(WfVariableDeclaration* node)=0;
 				virtual void Visit(WfEventDeclaration* node)=0;
 				virtual void Visit(WfPropertyDeclaration* node)=0;
+				virtual void Visit(WfConstructorDeclaration* node)=0;
 				virtual void Visit(WfClassDeclaration* node)=0;
 			};
 
@@ -1055,39 +1073,6 @@ namespace vl
 			static vl::Ptr<WfVariableStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
-		class WfNewTypeExpression : public WfExpression, vl::reflection::Description<WfNewTypeExpression>
-		{
-		public:
-			vl::Ptr<WfType> type;
-			vl::collections::List<vl::Ptr<WfExpression>> arguments;
-			vl::collections::List<vl::Ptr<WfFunctionDeclaration>> functions;
-
-			void Accept(WfExpression::IVisitor* visitor)override;
-
-			static vl::Ptr<WfNewTypeExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
-		enum class WfClassMemberKind
-		{
-			Static,
-			Normal,
-		};
-
-		enum class WfClassKind
-		{
-			Class,
-			Interface,
-		};
-
-		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
-		{
-		public:
-			WfClassMemberKind kind;
-			vl::Ptr<WfDeclaration> declaration;
-
-			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
-		};
-
 		class WfEventDeclaration : public WfDeclaration, vl::reflection::Description<WfEventDeclaration>
 		{
 		public:
@@ -1111,10 +1096,84 @@ namespace vl
 			static vl::Ptr<WfPropertyDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
+		enum class WfClassMemberKind
+		{
+			Static,
+			Override,
+			Normal,
+		};
+
+		class WfClassMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfClassMember>
+		{
+		public:
+			WfClassMemberKind kind;
+			vl::Ptr<WfDeclaration> declaration;
+
+			static vl::Ptr<WfClassMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfNewClassExpression : public WfExpression, vl::reflection::Description<WfNewClassExpression>
+		{
+		public:
+			vl::Ptr<WfType> type;
+			vl::collections::List<vl::Ptr<WfExpression>> arguments;
+
+			void Accept(WfExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfNewClassExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfNewInterfaceExpression : public WfExpression, vl::reflection::Description<WfNewInterfaceExpression>
+		{
+		public:
+			vl::Ptr<WfType> type;
+			vl::collections::List<vl::Ptr<WfClassMember>> members;
+
+			void Accept(WfExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfNewInterfaceExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		enum class WfClassKind
+		{
+			Class,
+			Interface,
+		};
+
+		enum class WfConstructorType
+		{
+			Undefined,
+			SharedPtr,
+			RawPtr,
+		};
+
+		class WfBaseConstructorCall : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfBaseConstructorCall>
+		{
+		public:
+			vl::Ptr<WfType> type;
+			vl::collections::List<vl::Ptr<WfExpression>> arguments;
+
+			static vl::Ptr<WfBaseConstructorCall> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfConstructorDeclaration : public WfDeclaration, vl::reflection::Description<WfConstructorDeclaration>
+		{
+		public:
+			WfConstructorType constructorType;
+			vl::collections::List<vl::Ptr<WfBaseConstructorCall>> baseConstructorCalls;
+			vl::collections::List<vl::Ptr<WfFunctionArgument>> arguments;
+			vl::Ptr<WfStatement> statement;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfConstructorDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
 		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
 		{
 		public:
 			WfClassKind kind;
+			WfConstructorType constructorType;
 			vl::collections::List<vl::Ptr<WfType>> baseTypes;
 			vl::collections::List<vl::Ptr<WfClassMember>> members;
 
@@ -1240,6 +1299,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfFunctionType)
 			DECL_TYPE_INFO(vl::workflow::WfChildType)
 			DECL_TYPE_INFO(vl::workflow::WfExpression)
+			DECL_TYPE_INFO(vl::workflow::WfThisExpression)
 			DECL_TYPE_INFO(vl::workflow::WfTopQualifiedExpression)
 			DECL_TYPE_INFO(vl::workflow::WfReferenceExpression)
 			DECL_TYPE_INFO(vl::workflow::WfOrderedNameExpression)
@@ -1301,12 +1361,16 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfFunctionExpression)
 			DECL_TYPE_INFO(vl::workflow::WfVariableDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfVariableStatement)
-			DECL_TYPE_INFO(vl::workflow::WfNewTypeExpression)
-			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
-			DECL_TYPE_INFO(vl::workflow::WfClassKind)
-			DECL_TYPE_INFO(vl::workflow::WfClassMember)
 			DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfClassMemberKind)
+			DECL_TYPE_INFO(vl::workflow::WfClassMember)
+			DECL_TYPE_INFO(vl::workflow::WfNewClassExpression)
+			DECL_TYPE_INFO(vl::workflow::WfNewInterfaceExpression)
+			DECL_TYPE_INFO(vl::workflow::WfClassKind)
+			DECL_TYPE_INFO(vl::workflow::WfConstructorType)
+			DECL_TYPE_INFO(vl::workflow::WfBaseConstructorCall)
+			DECL_TYPE_INFO(vl::workflow::WfConstructorDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
@@ -1375,6 +1439,11 @@ namespace vl
 			END_INTERFACE_PROXY(vl::workflow::WfType::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfExpression::IVisitor)
+				void Visit(vl::workflow::WfThisExpression* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
 				void Visit(vl::workflow::WfTopQualifiedExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
@@ -1520,7 +1589,12 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::workflow::WfNewTypeExpression* node)override
+				void Visit(vl::workflow::WfNewClassExpression* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfNewInterfaceExpression* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -1617,6 +1691,11 @@ namespace vl
 				}
 
 				void Visit(vl::workflow::WfPropertyDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfConstructorDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -1750,85 +1829,100 @@ Instruction
 
 			enum class WfInsCode
 			{
-				// Instruction		// param				: <Stack-Pattern> -> <Stack-Pattern> in the order of <bottom ---- top>
-				Nop,				// 						: () -> ()										;
-				LoadValue,			// value				: () -> Value									;
-				LoadClosure,		// function, count		: Value-1, ..., Value-count -> Value			;
-				LoadException,		// 						: () -> Value									;
-				LoadLocalVar,		// variable				: () -> Value									;
-				LoadCapturedVar,	// variable				: () -> Value									;
-				LoadGlobalVar,		// variable				: () -> Value									;
-				StoreLocalVar,		// variable				: Value -> ()									;
-				StoreGlobalVar,		// variable				: Value -> ()									;
-				Duplicate,			// count				: () -> Value									; copy stack[stack.Count()-1-count]
-				Pop,				//						: Value -> ()									;
-				Return,				// 						: Value -> Value								; (exit function)
-				CreateArray,		// count				: Value-count, ..., Value-1 -> <array>			; {1 2 3} -> <3 2 1>
-				CreateMap,			// count				: Value-count, ..., Value-1 -> <map>			; {1:2 3:4} -> <3 4 1 2>
-				CreateInterface,	// count				: Value-count, ..., Value-1 -> <map>			; {"Get":a "Set":b} -> InterfaceProxy^
-				CreateRange,		// I1248/U1248			: Value-begin, Value-end -> <enumerable>		;
-				ReverseEnumerable,	//						: Value -> Value								;
-				DeleteRawPtr,		//						: Value -> ()									;
-				ConvertToType,		// flag, typeDescriptor	: Value -> Value								;
-				TryConvertToType,	// flag, typeDescriptor	: Value -> Value								;
-				TestType,			// flag, typeDescriptor	: Value -> <bool>								;
-				GetType,			//						: Value -> <ITypeDescriptor*>					;
-				Jump,				// label				: () -> ()										;
-				JumpIf,				// label				: () -> ()										;
-				Invoke,				// function, count		: Value-1, ..., Value-n -> Value				;
-				GetProperty,		// IPropertyInfo*		: Value-this -> Value							;
-				SetProperty,		// IPropertyInfo*		: Value, Value-this -> ()						;
-				InvokeProxy,		// count				: Value-1, ..., Value-n, Value-this -> Value	;
-				InvokeMethod,		// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value	;
-				AttachEvent,		// IEventInfo*			: Value-this, <function> -> <Listener>			;
-				DetachEvent,		// 						: <Listener> -> bool							;
-				InstallTry,			// label				: () -> ()										;
-				UninstallTry,		// count				: () -> ()										;
-				RaiseException,		// 						: Value -> ()									; (trap)
-				TestElementInSet,	//						: Value-element, Value-set -> bool				;
-				CompareLiteral,		// I48/U48/F48/S		: Value, Value -> <int>							;
-				CompareStruct,		// 						: Value, Value -> <bool>						;
-				CompareReference,	// 						: Value, Value -> <bool>						;
-				CompareValue,		// 						: Value, Value -> <bool>						;
-				OpNot,				// B/I1248/U1248		: Value -> Value								;
-				OpPositive,			// I1248/U1248			: Value -> Value								;
-				OpNegative,			// I1248				: Value -> Value								;
-				OpConcat,			// 						: <string>, <string> -> <string>				;
-				OpExp,				// I48/U48/F48			: Value, Value -> Value							;
-				OpAdd,				// I48/U48/F48			: Value, Value -> Value							;
-				OpSub,				// I48/U48/F48			: Value, Value -> Value							;
-				OpMul,				// I48/U48/F48			: Value, Value -> Value							;
-				OpDiv,				// I48/U48/F48			: Value, Value -> Value							;
-				OpMod,				// I48/U48				: Value, Value -> Value							;
-				OpShl,				// I48/U48				: Value, Value -> Value							;
-				OpShr,				// I48/U48				: Value, Value -> Value							;
-				OpXor,				// B/I1248/U1248		: <bool>, <bool> -> <bool>						;
-				OpAnd,				// B/I1248/U1248		: <bool>, <bool> -> <bool>						;
-				OpOr,				// B/I1248/U1248		: <bool>, <bool> -> <bool>						;
-				OpLT,				// 						: <int> -> <bool>								;
-				OpGT,				// 						: <int> -> <bool>								;
-				OpLE,				// 						: <int> -> <bool>								;
-				OpGE,				// 						: <int> -> <bool>								;
-				OpEQ,				// 						: <int> -> <bool>								;
-				OpNE,				// 						: <int> -> <bool>								;
+				// Instruction			// param				: <Stack-Pattern> -> <Stack-Pattern> in the order of <bottom ---- top>
+				Nop,					//						: () -> ()															;
+				LoadValue,				// value				: () -> Value														;
+				LoadFunction,			// function				: () -> Value														; push the function index
+				LoadException,			// 						: () -> Value														;
+				LoadLocalVar,			// variable				: () -> Value														;
+				LoadCapturedVar,		// variable				: () -> Value														;
+				LoadGlobalVar,			// variable				: () -> Value														;
+				LoadMethodInfo,			// IMethodInfo*			: () -> IMethodInfo*												;
+				LoadMethodClosure,		// IMethodInfo*			: Value-this -> <function>											;
+				LoadClosureContext,		//						: () -> <closure-context>											; load the current closure context
+				StoreLocalVar,			// variable				: Value -> ()														;
+				StoreCapturedVar,		// variable				: Value -> ()														;
+				StoreGlobalVar,			// variable				: Value -> ()														;
+				Duplicate,				// count				: () -> Value														; copy stack[stack.Count()-1-count]
+				Pop,					//						: Value -> ()														;
+				Return,					//						: Value -> Value													; (exit function)
+				CreateArray,			// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
+				CreateMap,				// count				: Value-count, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
+				CreateClosureContext,	// count				: Value-1, ..., Value-count -> <closure-context>					;
+				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
+				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
+				CreateRange,			// I1248/U1248			: Value-begin, Value-end -> <enumerable>							;
+				ReverseEnumerable,		//						: Value -> Value													;
+				DeleteRawPtr,			//						: Value -> ()														;
+				ConvertToType,			// flag, typeDescriptor	: Value -> Value													;
+				TryConvertToType,		// flag, typeDescriptor	: Value -> Value													;
+				TestType,				// flag, typeDescriptor	: Value -> <bool>													;
+				GetType,				//						: Value -> <ITypeDescriptor*>										;
+				Jump,					// label				: () -> ()															;
+				JumpIf,					// label				: () -> ()															;
+				Invoke,					// function, count		: Value-1, ..., Value-n -> Value									;
+				InvokeWithContext,		// function, count		: Value-1, ..., Value-n -> Value									;
+				GetProperty,			// IPropertyInfo*		: Value-this -> Value												;
+				SetProperty,			// IPropertyInfo*		: Value, Value-this -> ()											;
+				InvokeProxy,			// count				: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeMethod,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
+				InvokeBaseCtor,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> <null>						;
+				AttachEvent,			// IEventInfo*			: Value-this, <function> -> <Listener>								;
+				DetachEvent,			// 						: <Listener> -> bool												;
+				InstallTry,				// label				: () -> ()															;
+				UninstallTry,			// count				: () -> ()															;
+				RaiseException,			// 						: Value -> ()														; (trap)
+				TestElementInSet,		//						: Value-element, Value-set -> bool									;
+				CompareLiteral,			// I48/U48/F48/S		: Value, Value -> <int>												;
+				CompareStruct,			// 						: Value, Value -> <bool>											;
+				CompareReference,		// 						: Value, Value -> <bool>											;
+				CompareValue,			// 						: Value, Value -> <bool>											;
+				OpNot,					// B/I1248/U1248		: Value -> Value													;
+				OpPositive,				// I1248/U1248			: Value -> Value													;
+				OpNegative,				// I1248				: Value -> Value													;
+				OpConcat,				// 						: <string>, <string> -> <string>									;
+				OpExp,					// I48/U48/F48			: Value, Value -> Value												;
+				OpAdd,					// I48/U48/F48			: Value, Value -> Value												;
+				OpSub,					// I48/U48/F48			: Value, Value -> Value												;
+				OpMul,					// I48/U48/F48			: Value, Value -> Value												;
+				OpDiv,					// I48/U48/F48			: Value, Value -> Value												;
+				OpMod,					// I48/U48				: Value, Value -> Value												;
+				OpShl,					// I48/U48				: Value, Value -> Value												;
+				OpShr,					// I48/U48				: Value, Value -> Value												;
+				OpXor,					// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
+				OpAnd,					// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
+				OpOr,					// B/I1248/U1248		: <bool>, <bool> -> <bool>											;
+				OpLT,					// 						: <int> -> <bool>													;
+				OpGT,					// 						: <int> -> <bool>													;
+				OpLE,					// 						: <int> -> <bool>													;
+				OpGE,					// 						: <int> -> <bool>													;
+				OpEQ,					// 						: <int> -> <bool>													;
+				OpNE,					// 						: <int> -> <bool>													;
 			};
 
-#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_LABEL, APPLY_TYPE)\
+#define INSTRUCTION_CASES(APPLY, APPLY_VALUE, APPLY_FUNCTION, APPLY_FUNCTION_COUNT, APPLY_VARIABLE, APPLY_COUNT, APPLY_FLAG_TYPEDESCRIPTOR, APPLY_PROPERTY, APPLY_METHOD, APPLY_METHOD_COUNT, APPLY_EVENT, APPLY_EVENT_COUNT, APPLY_LABEL, APPLY_TYPE)\
 			APPLY(Nop)\
 			APPLY_VALUE(LoadValue)\
-			APPLY_FUNCTION_COUNT(LoadClosure)\
+			APPLY_FUNCTION(LoadFunction)\
 			APPLY(LoadException)\
 			APPLY_VARIABLE(LoadLocalVar)\
 			APPLY_VARIABLE(LoadCapturedVar)\
 			APPLY_VARIABLE(LoadGlobalVar)\
+			APPLY_METHOD(LoadMethodInfo)\
+			APPLY_METHOD(LoadMethodClosure)\
+			APPLY(LoadClosureContext)\
 			APPLY_VARIABLE(StoreLocalVar)\
+			APPLY_VARIABLE(StoreCapturedVar)\
 			APPLY_VARIABLE(StoreGlobalVar)\
 			APPLY_COUNT(Duplicate)\
 			APPLY(Pop)\
 			APPLY(Return)\
 			APPLY_COUNT(CreateArray)\
 			APPLY_COUNT(CreateMap)\
-			APPLY_COUNT(CreateInterface)\
+			APPLY_COUNT(CreateClosureContext)\
+			APPLY(CreateClosure)\
+			APPLY_METHOD_COUNT(CreateInterface)\
 			APPLY_TYPE(CreateRange)\
 			APPLY(ReverseEnumerable)\
 			APPLY(DeleteRawPtr)\
@@ -1839,10 +1933,13 @@ Instruction
 			APPLY_LABEL(Jump)\
 			APPLY_LABEL(JumpIf)\
 			APPLY_FUNCTION_COUNT(Invoke)\
+			APPLY_FUNCTION_COUNT(InvokeWithContext)\
 			APPLY_PROPERTY(GetProperty)\
 			APPLY_PROPERTY(SetProperty)\
 			APPLY_COUNT(InvokeProxy)\
 			APPLY_METHOD_COUNT(InvokeMethod)\
+			APPLY_EVENT_COUNT(InvokeEvent)\
+			APPLY_METHOD_COUNT(InvokeBaseCtor)\
 			APPLY_EVENT(AttachEvent)\
 			APPLY(DetachEvent)\
 			APPLY_LABEL(InstallTry)\
@@ -1921,8 +2018,10 @@ Instruction
 				#define CTOR_COUNT(NAME)				static WfInstruction NAME(vint count);
 				#define CTOR_FLAG_TYPEDESCRIPTOR(NAME)	static WfInstruction NAME(reflection::description::Value::ValueType flag, reflection::description::ITypeDescriptor* typeDescriptor);
 				#define CTOR_PROPERTY(NAME)				static WfInstruction NAME(reflection::description::IPropertyInfo* propertyInfo);
+				#define CTOR_METHOD(NAME)				static WfInstruction NAME(reflection::description::IMethodInfo* methodInfo);
 				#define CTOR_METHOD_COUNT(NAME)			static WfInstruction NAME(reflection::description::IMethodInfo* methodInfo, vint count);
 				#define CTOR_EVENT(NAME)				static WfInstruction NAME(reflection::description::IEventInfo* eventInfo);
+				#define CTOR_EVENT_COUNT(NAME)			static WfInstruction NAME(reflection::description::IEventInfo* eventInfo, vint count);
 				#define CTOR_LABEL(NAME)				static WfInstruction NAME(vint label);
 				#define CTOR_TYPE(NAME)					static WfInstruction NAME(WfInsType type);
 
@@ -1935,8 +2034,10 @@ Instruction
 					CTOR_COUNT,
 					CTOR_FLAG_TYPEDESCRIPTOR,
 					CTOR_PROPERTY,
+					CTOR_METHOD,
 					CTOR_METHOD_COUNT,
 					CTOR_EVENT,
+					CTOR_EVENT_COUNT,
 					CTOR_LABEL,
 					CTOR_TYPE)
 
@@ -1948,8 +2049,10 @@ Instruction
 				#undef CTOR_COUNT
 				#undef CTOR_FLAG_TYPEDESCRIPTOR
 				#undef CTOR_PROPERTY
+				#undef CTOR_METHOD
 				#undef CTOR_METHOD_COUNT
 				#undef CTOR_EVENT
+				#undef CTOR_EVENT_COUNT
 				#undef CTOR_LABEL
 				#undef CTOR_TYPE
 			};
@@ -1978,6 +2081,46 @@ namespace vl
 {
 	namespace workflow
 	{
+		namespace typeimpl
+		{
+			class WfClassInstance;
+			class WfInterfaceInstance;
+		}
+	}
+
+	namespace reflection
+	{
+		template<>
+		class Description<workflow::typeimpl::WfClassInstance> : public virtual DescriptableObject
+		{
+		private:
+			description::ITypeDescriptor*				associatedTypeDescriptor;
+
+		public:
+			Description(description::ITypeDescriptor* _associatedTypeDescriptor)
+				:associatedTypeDescriptor(_associatedTypeDescriptor)
+			{
+				typeDescriptor = &associatedTypeDescriptor;
+			}
+		};
+
+		template<>
+		class Description<workflow::typeimpl::WfInterfaceInstance> : public virtual DescriptableObject
+		{
+		private:
+			description::ITypeDescriptor*				associatedTypeDescriptor;
+
+		public:
+			Description(description::ITypeDescriptor* _associatedTypeDescriptor)
+				:associatedTypeDescriptor(_associatedTypeDescriptor)
+			{
+				typeDescriptor = &associatedTypeDescriptor;
+			}
+		};
+	}
+
+	namespace workflow
+	{
 		namespace runtime
 		{
 			class WfRuntimeGlobalContext;
@@ -1992,13 +2135,31 @@ namespace vl
 Method
 ***********************************************************************/
 
+			class WfMethodProxy : public Object, public virtual reflection::description::IValueFunctionProxy
+			{
+				typedef reflection::description::IMethodInfo				IMethodInfo;
+				typedef reflection::description::IValueList					IValueList;
+				typedef reflection::description::Value						Value;
+			protected:
+				Value									thisObject;
+				IMethodInfo*							methodInfo;
+
+			public:
+				WfMethodProxy(const Value& _thisObject, IMethodInfo* _methodInfo);
+				~WfMethodProxy();
+				
+				Value									Invoke(Ptr<IValueList> arguments)override;
+			};
+
 			class WfMethodBase : public reflection::description::MethodInfoImpl
 			{
 				friend class WfCustomType;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 			protected:
+				typedef reflection::description::Value						Value;
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
 				
+				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 			public:
 				WfMethodBase(bool isStatic);
@@ -2014,11 +2175,56 @@ Method
 			protected:
 
 				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
-				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
 				vint									functionIndex = -1;
 
 				WfStaticMethod();
+			};
+
+/***********************************************************************
+Class Method
+***********************************************************************/
+
+			class WfClassConstructor : public WfMethodBase
+			{
+				typedef reflection::description::Value						Value;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+			public:
+				vint									functionIndex = -1;
+
+				WfClassConstructor(Ptr<ITypeInfo> type);
+
+				void									InvokeBaseCtor(const Value& thisObject, collections::Array<Value>& arguments);
+			};
+
+			class WfClassMethod : public WfMethodBase
+			{
+				typedef reflection::description::Value						Value;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+			public:
+				vint									functionIndex = -1;
+
+				WfClassMethod();
+			};
+
+/***********************************************************************
+Interface Method
+***********************************************************************/
+
+			class WfInterfaceConstructor : public WfMethodBase
+			{
+				typedef reflection::description::Value						Value;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+			protected:
+
+				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
+			public:
+				WfInterfaceConstructor(Ptr<ITypeInfo> type);
 			};
 
 			class WfInterfaceMethod : public WfMethodBase
@@ -2027,7 +2233,6 @@ Method
 			protected:
 
 				Value									InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override;
-				Value									CreateFunctionProxyInternal(const Value& thisObject)override;
 			public:
 				WfInterfaceMethod();
 			};
@@ -2042,8 +2247,18 @@ Event
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 				typedef reflection::description::IEventHandler				IEventHandler;
 				typedef reflection::description::Value						Value;
+				typedef collections::Group<WfEvent*, IEventHandler*>		EventHandlerGroup;
+
+				class EventRecord : public Object
+				{
+				public:
+					EventHandlerGroup					handlers;
+				};
+
+				static const wchar_t*					EventRecordInternalPropertyName;
 			protected:
 
+				Ptr<EventRecord>						GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist);
 				void									AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
 				void									DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override;
 				void									InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)override;
@@ -2053,6 +2268,36 @@ Event
 				~WfEvent();
 
 				void									SetHandlerType(Ptr<ITypeInfo> typeInfo);
+			};
+
+/***********************************************************************
+Field
+***********************************************************************/
+
+			class WfField : public reflection::description::FieldInfoImpl
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef reflection::description::Value						Value;
+				typedef collections::Dictionary<WfField*, Value>			FieldValueMap;
+
+				class FieldRecord : public Object
+				{
+				public:
+					FieldValueMap						values;
+				};
+
+				static const wchar_t*					FieldRecordInternalPropertyName;
+			protected:
+				
+				Ptr<FieldRecord>						GetFieldRecord(DescriptableObject* thisObject, bool createIfNotExist);
+				Value									GetValueInternal(const Value& thisObject)override;
+				void									SetValueInternal(Value& thisObject, const Value& newValue)override;
+			public:
+				WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
+				~WfField();
+
+				void									SetReturn(Ptr<ITypeInfo> typeInfo);
 			};
 
 /***********************************************************************
@@ -2079,20 +2324,32 @@ Custom Type
 
 			class WfCustomType : public reflection::description::TypeDescriptorImpl
 			{
+			protected:
+				typedef reflection::description::TypeDescriptorFlags		TypeDescriptorFlags;
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef reflection::description::IMethodGroupInfo			IMethodGroupInfo;
+				typedef collections::List<ITypeDescriptor*>					TypeDescriptorList;
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
+				bool									baseTypeExpanded = false;
+				TypeDescriptorList						expandedBaseTypes;
 				
+				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group);
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);
 				void									LoadInternal()override;
 			public:
-				WfCustomType(const WString& typeName);
+				WfCustomType(TypeDescriptorFlags typeDescriptorFlags, const WString& typeName);
 				~WfCustomType();
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
+				const TypeDescriptorList&				GetExpandedBaseTypes();
+
 				void									AddBaseType(ITypeDescriptor* type);
 				void									AddMember(const WString& name, Ptr<WfMethodBase> value);
+				void									AddMember(Ptr<WfClassConstructor> value);
+				void									AddMember(Ptr<WfInterfaceConstructor> value);
+				void									AddMember(Ptr<WfField> value);
 				void									AddMember(Ptr<WfProperty> value);
 				void									AddMember(Ptr<WfEvent> value);
 			};
@@ -2111,6 +2368,39 @@ Custom Type
 			public:
 				WfInterface(const WString& typeName);
 				~WfInterface();
+			};
+
+/***********************************************************************
+Instance
+***********************************************************************/
+
+			class WfClassInstance : public Object, public reflection::Description<WfClassInstance>
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::Value						Value;
+			protected:
+				WfCustomType*							classType = nullptr;
+
+			public:
+				WfClassInstance(ITypeDescriptor* _typeDescriptor);
+				~WfClassInstance();
+
+				void									InstallBaseObject(ITypeDescriptor* td, Value& value);
+			};
+
+			class WfInterfaceInstance : public Object, public reflection::Description<WfInterfaceInstance>
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::IMethodInfo				IMethodInfo;
+				typedef reflection::description::IValueInterfaceProxy		IValueInterfaceProxy;
+			protected:
+				Ptr<IValueInterfaceProxy>				proxy;
+
+			public:
+				WfInterfaceInstance(ITypeDescriptor* _typeDescriptor, Ptr<IValueInterfaceProxy> _proxy, collections::List<IMethodInfo*>& baseCtors);
+				~WfInterfaceInstance();
+
+				Ptr<IValueInterfaceProxy>				GetProxy();
 			};
 
 /***********************************************************************
@@ -2199,9 +2489,6 @@ Assembly
 			/// <summary>Representing a Workflow assembly.</summary>
 			class WfAssembly : public Object, public reflection::Description<WfAssembly>
 			{
-			protected:
-				template<typename TIO>
-				void IO(TIO& io);
 			public:
 				/// <summary>Debug informations using the module code.</summary>
 				Ptr<WfInstructionDebugInfo>							insBeforeCodegen;
@@ -2317,24 +2604,25 @@ ReverseEnumerable
 
 			class WfRuntimeReverseEnumerable : public Object, public reflection::description::IValueEnumerable
 			{
+				typedef reflection::description::IValueReadonlyList		IValueReadonlyList;
 			protected:
-				Ptr<reflection::description::IValueList>		list;
+				Ptr<IValueReadonlyList>					list;
 
 				class Enumerator : public Object, public reflection::description::IValueEnumerator
 				{
 				protected:
-					Ptr<reflection::description::IValueList>	list;
-					vint										index;
+					Ptr<IValueReadonlyList>				list;
+					vint								index;
 
 				public:
-					Enumerator(Ptr<reflection::description::IValueList> _list);
-					reflection::description::Value				GetCurrent();
-					vint										GetIndex();
-					bool										Next();
+					Enumerator(Ptr<IValueReadonlyList> _list);
+					reflection::description::Value						GetCurrent();
+					vint												GetIndex();
+					bool												Next();
 				};
 
 			public:
-				WfRuntimeReverseEnumerable(Ptr<reflection::description::IValueList> _list);
+				WfRuntimeReverseEnumerable(Ptr<IValueReadonlyList> _list);
 
 				Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
 			};
@@ -2345,6 +2633,7 @@ Lambda
 
 			class WfRuntimeLambda : public Object, public reflection::description::IValueFunctionProxy
 			{
+				typedef reflection::description::Value										Value;
 			public:
 				Ptr<WfRuntimeGlobalContext>			globalContext;
 				Ptr<WfRuntimeVariableContext>		capturedVariables;
@@ -2352,7 +2641,8 @@ Lambda
 
 				WfRuntimeLambda(Ptr<WfRuntimeGlobalContext> _globalContext, Ptr<WfRuntimeVariableContext> _capturedVariables, vint _functionIndex);
 
-				reflection::description::Value		Invoke(Ptr<reflection::description::IValueList> arguments)override;
+				Value								Invoke(Ptr<reflection::description::IValueList> arguments)override;
+				static Value						Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueList> arguments);
 			};
 			
 /***********************************************************************
@@ -2361,11 +2651,17 @@ InterfaceInstance
 
 			class WfRuntimeInterfaceInstance : public Object, public reflection::description::IValueInterfaceProxy
 			{
-				typedef collections::Dictionary<WString, Ptr<reflection::description::IValueFunctionProxy>>		FunctionMap;
+				typedef reflection::description::Value										Value;
+				typedef reflection::description::IMethodInfo								IMethodInfo;
+				typedef reflection::description::IValueFunctionProxy						IValueFunctionProxy;
+				typedef reflection::description::IValueList									IValueList;
+				typedef collections::Dictionary<IMethodInfo*, vint>							FunctionMap;
 			public:
+				Ptr<WfRuntimeGlobalContext>			globalContext;
+				Ptr<WfRuntimeVariableContext>		capturedVariables;
 				FunctionMap							functions;
 
-				reflection::description::Value		Invoke(const WString& name, Ptr<reflection::description::IValueList> arguments)override;
+				Value								Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)override;
 			};
 		}
 	}
@@ -2428,6 +2724,7 @@ Debugger
 					SetProperty,	// [thisObject], propertyInfo
 					AttachEvent,	// [thisObject], eventInfo
 					DetachEvent,	// [thisObject], eventInfo
+					InvokeEvent,	// [thisObject], eventInfo
 					InvokeMethod,	// [thisObject], methodInfo
 					CreateObject,	// typeDescriptor
 				};
@@ -2496,6 +2793,12 @@ Debugger
 				/// <param name="eventInfo">The event.</param>
 				static WfBreakPoint								Detach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo);
 				
+				/// <summary>Create an event invoking break point.</summary>
+				/// <returns>The created break point.</returns>
+				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
+				/// <param name="eventInfo">The event.</param>
+				static WfBreakPoint								Invoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo);
+				
 				/// <summary>Create an function invoking break point.</summary>
 				/// <returns>The created break point.</returns>
 				/// <param name="thisObject">The target object. Set to null to apply to every object.</param>
@@ -2520,6 +2823,7 @@ Debugger
 				virtual bool					BreakSet(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo) = 0;
 				virtual bool					BreakAttach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo) = 0;
 				virtual bool					BreakDetach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo) = 0;
+				virtual bool					BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo) = 0;
 				virtual bool					BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo) = 0;
 				virtual bool					BreakCreate(reflection::description::ITypeDescriptor* typeDescriptor) = 0;
 				virtual bool					BreakException(Ptr<WfRuntimeExceptionInfo> info) = 0;
@@ -2598,6 +2902,7 @@ Debugger
 				PropertyBreakPointMap					setPropertyBreakPoints;
 				EventBreakPointMap						attachEventBreakPoints;
 				EventBreakPointMap						detachEventBreakPoints;
+				EventBreakPointMap						invokeEventBreakPoints;
 				MethodBreakPointMap						invokeMethodBreakPoints;
 				TypeBreakPointMap						createObjectBreakPoints;
 
@@ -2622,6 +2927,7 @@ Debugger
 				bool									BreakSet(reflection::DescriptableObject* thisObject, reflection::description::IPropertyInfo* propertyInfo)override;
 				bool									BreakAttach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)override;
 				bool									BreakDetach(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)override;
+				bool									BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IEventInfo* eventInfo)override;
 				bool									BreakInvoke(reflection::DescriptableObject* thisObject, reflection::description::IMethodInfo* methodInfo)override;
 				bool									BreakCreate(reflection::description::ITypeDescriptor* typeDescriptor)override;
 				bool									BreakException(Ptr<WfRuntimeExceptionInfo> info)override;
@@ -2749,7 +3055,7 @@ namespace vl
 RuntimeEnvironment
 ***********************************************************************/
 
-			class WfRuntimeVariableContext : public Object
+			class WfRuntimeVariableContext : public Object, public reflection::Description<WfRuntimeVariableContext>
 			{
 				typedef collections::Array<reflection::description::Value>		VariableArray;
 
@@ -2977,6 +3283,7 @@ RuntimeThreadContext
 				WfRuntimeThreadContextError		LoadGlobalVariable(vint variableIndex, reflection::description::Value& value);
 				WfRuntimeThreadContextError		StoreGlobalVariable(vint variableIndex, const reflection::description::Value& value);
 				WfRuntimeThreadContextError		LoadCapturedVariable(vint variableIndex, reflection::description::Value& value);
+				WfRuntimeThreadContextError		StoreCapturedVariable(vint variableIndex, const reflection::description::Value& value);
 				WfRuntimeThreadContextError		LoadLocalVariable(vint variableIndex, reflection::description::Value& value);
 				WfRuntimeThreadContextError		StoreLocalVariable(vint variableIndex, const reflection::description::Value& value);
 
@@ -3050,10 +3357,8 @@ Scope
 				WString										name;				// name of this symbol
 				Ptr<WfType>									type;				// type of this symbol
 				Ptr<reflection::description::ITypeInfo>		typeInfo;			// reflection type info of this symbol, nullable
-				Ptr<WfDeclaration>							creatorDeclaration;	// nullable
-				Ptr<WfStatement>							creatorStatement;	// nullable
-				Ptr<WfExpression>							creatorExpression;	// nullable
-				Ptr<WfFunctionArgument>						creatorArgument;	// nullable
+				Ptr<WfClassMember>							creatorClassMember;	// nullable
+				Ptr<parsing::ParsingTreeCustomBase>			creatorNode;		// nullable
 				WfLexicalScope*								ownerScope;			// scope that contains this symbol
 
 				WfLexicalSymbol(WfLexicalScope* _ownerScope);
@@ -3062,19 +3367,27 @@ Scope
 				WString										GetFriendlyName();
 			};
 
+			class WfLexicalFunctionConfig : public Object
+			{
+			public:
+				bool										lambda = false;
+				bool										thisAccessable = false;
+				bool										parentThisAccessable = false;
+			};
+
 			class WfLexicalScope : public Object
 			{
 				typedef collections::Group<WString, Ptr<WfLexicalSymbol>>		TypeGroup;
 			public:
-				WfLexicalScopeManager*						ownerManager;		// nullable and inheritable
-				Ptr<WfModule>								ownerModule;		// nullable and inheritable
-				Ptr<WfClassMember>							ownerClassMember;	// nullable and inheritable
-				Ptr<WfDeclaration>							ownerDeclaration;	// nullable and inheritable
-				Ptr<WfStatement>							ownerStatement;		// nullable
-				Ptr<WfExpression>							ownerExpression;	// nullable
+				WfLexicalScopeManager*						ownerManager;				// nullable
+				Ptr<WfClassMember>							ownerClassMember;			// nullable
+				Ptr<parsing::ParsingTreeCustomBase>			ownerNode;					// nullable
 
-				Ptr<WfLexicalScope>							parentScope;		// null means that this is the root scope
-				TypeGroup									symbols;			// all symbols in this scope
+				Ptr<WfLexicalFunctionConfig>				functionConfig;
+				reflection::description::ITypeDescriptor*	typeOfThisExpr = nullptr;	// visible members to this scope
+
+				Ptr<WfLexicalScope>							parentScope;				// null means that this is the root scope
+				TypeGroup									symbols;					// all symbols in this scope
 
 				WfLexicalScope(WfLexicalScopeManager* _ownerManager);
 				WfLexicalScope(Ptr<WfLexicalScope> _parentScope);
@@ -3095,18 +3408,18 @@ Scope Manager
 				typedef collections::Dictionary<WString, Ptr<WfLexicalScopeName>>		NameMap;
 				typedef collections::List<Ptr<WfDeclaration>>							DeclarationList;
 			public:
-				WfLexicalScopeName*							parent;
-				bool										createdByTypeDescriptor;
+				WfLexicalScopeName*							parent = nullptr;
+				bool										imported = true;
 				NameMap										children;
 				WString										name;
-				reflection::description::ITypeDescriptor*	typeDescriptor;		// type that form this name
-				DeclarationList								declarations;		// declarations that form this name
+				reflection::description::ITypeDescriptor*	typeDescriptor = nullptr;	// type that form this name
+				DeclarationList								declarations;				// declarations that form this name
 
-				WfLexicalScopeName(bool _createdByTypeDescriptor);
+				WfLexicalScopeName(bool _imported);
 				~WfLexicalScopeName();
 
-				Ptr<WfLexicalScopeName>						AccessChild(const WString& name, bool createdByTypeDescriptor);
-				void										RemoveNonTypeDescriptorNames();
+				Ptr<WfLexicalScopeName>						AccessChild(const WString& name, bool imported);
+				void										RemoveNonTypeDescriptorNames(WfLexicalScopeManager* manager);
 				WString										GetFriendlyName();
 			};
 
@@ -3114,22 +3427,30 @@ Scope Manager
 			{
 				Ptr<WfLexicalScopeName>						scopeName;
 				Ptr<WfLexicalSymbol>						symbol;
-				reflection::description::IPropertyInfo*		propertyInfo;
-				reflection::description::IMethodInfo*		methodInfo;
-				reflection::description::IEventInfo*		eventInfo;
+				reflection::description::IPropertyInfo*		propertyInfo = nullptr;
+				reflection::description::IMethodInfo*		methodInfo = nullptr;
+				reflection::description::IMethodInfo*		constructorInfo = nullptr;
+				reflection::description::IEventInfo*		eventInfo = nullptr;
 				Ptr<reflection::description::ITypeInfo>		type;
-				Ptr<reflection::description::ITypeInfo>		leftValueType;
+				Ptr<reflection::description::ITypeInfo>		writableType;
 				Ptr<reflection::description::ITypeInfo>		expectedType;
 
-				ResolveExpressionResult();
-				ResolveExpressionResult(Ptr<WfLexicalScopeName> _scopeName);
-				ResolveExpressionResult(Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType = 0);
-				ResolveExpressionResult(Ptr<WfLexicalSymbol> _symbol, Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType = 0);
-				ResolveExpressionResult(reflection::description::IPropertyInfo* _propertyInfo, Ptr<reflection::description::ITypeInfo> _type, Ptr<reflection::description::ITypeInfo> _leftValueType = 0);
-				ResolveExpressionResult(reflection::description::IMethodInfo* _methodInfo, Ptr<reflection::description::ITypeInfo> _type);
-				ResolveExpressionResult(reflection::description::IEventInfo* _eventInfo);
+				WString										GetFriendlyName(bool upperCase = false)const;
 
-				WString										GetFriendlyName()const;
+				static ResolveExpressionResult				ScopeName(Ptr<WfLexicalScopeName> _scopeName);
+				static ResolveExpressionResult				ReadonlySymbol(Ptr<WfLexicalSymbol> _symbol);
+				static ResolveExpressionResult				Symbol(Ptr<WfLexicalSymbol> _symbol);
+				static ResolveExpressionResult				ReadonlyType(Ptr<reflection::description::ITypeInfo> _type);
+				static ResolveExpressionResult				WritableType(Ptr<reflection::description::ITypeInfo> _type);
+				static ResolveExpressionResult				Property(reflection::description::IPropertyInfo* _propertyInfo);
+				static ResolveExpressionResult				Method(reflection::description::IMethodInfo* _methodInfo);
+				static ResolveExpressionResult				Constructor(reflection::description::IMethodInfo* _constructorInfo);
+				static ResolveExpressionResult				Event(reflection::description::IEventInfo* _eventInfo);
+			};
+
+			struct WfLexicalCapture
+			{
+				collections::List<Ptr<WfLexicalSymbol>>		symbols;
 			};
 
 			/// <summary>Workflow compiler.</summary>
@@ -3137,22 +3458,23 @@ Scope Manager
 			{
 				typedef reflection::description::ITypeDescriptor											ITypeDescriptor;
 				typedef reflection::description::IMemberInfo												IMemberInfo;
+				typedef reflection::description::IMethodInfo												IMethodInfo;
 
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
 				typedef collections::List<Ptr<parsing::ParsingError>>										ParsingErrorList;
 				typedef collections::Dictionary<Ptr<WfNamespaceDeclaration>, Ptr<WfLexicalScopeName>>		NamespaceNameMap;
-				typedef collections::SortedList<Ptr<WfLexicalScope>>										ScopeSortedList;
-				typedef collections::Dictionary<Ptr<WfModule>, Ptr<WfLexicalScope>>							ModuleScopeMap;
-				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<WfLexicalScope>>					DeclarationScopeMap;
-				typedef collections::Dictionary<Ptr<WfStatement>, Ptr<WfLexicalScope>>						StatementScopeMap;
-				typedef collections::Dictionary<Ptr<WfExpression>, Ptr<WfLexicalScope>>						ExpressionScopeMap;
+				typedef collections::Dictionary<ITypeDescriptor*, Ptr<WfLexicalScopeName>>					TypeNameMap;
+				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalScope>>		NodeScopeMap;
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
-				typedef collections::Group<WfFunctionDeclaration*, Ptr<WfLexicalSymbol>>					FunctionLambdaCaptureGroup;
-				typedef collections::Group<WfOrderedLambdaExpression*, Ptr<WfLexicalSymbol>>				OrderedLambdaCaptureGroup;
-
-				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
+				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
+				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
+				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<typeimpl::WfCustomType>>			DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
+
+				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
+				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
+				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 
 			protected:
 				ModuleList									modules;
@@ -3165,18 +3487,15 @@ Scope Manager
 
 				Ptr<WfLexicalScopeName>						globalName;
 				NamespaceNameMap							namespaceNames;
-				ScopeSortedList								analyzedScopes;
+				TypeNameMap									typeNames;
 
-				ModuleScopeMap								moduleScopes;				// the nearest scope for the module
-				DeclarationScopeMap							declarationScopes;			// the nearest scope for the declaration
-				StatementScopeMap							statementScopes;			// the nearest scope for the statement
-				ExpressionScopeMap							expressionScopes;			// the nearest scope for the expression
-				ExpressionResolvingMap						expressionResolvings;		// the resolving result for the expression
-				FunctionLambdaCaptureGroup					functionLambdaCaptures;		// all captured symbols in an lambda expression
-				OrderedLambdaCaptureGroup					orderedLambdaCaptures;		// all captured symbols in an lambda expression
-
-				DeclarationTypeMap							declarationTypes;			// type descriptor for type declaration
-				DeclarationMemberInfoMap					declarationMemberInfos;		// member for type description
+				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
+				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
+				LambdaCaptureMap							lambdaCaptures;					// all captured symbols in a lambda AST
+				InterfaceMethodImplementationMap			interfaceMethodImpls;			// the IMethodInfo* that implemented by a function
+				DeclarationTypeMap							declarationTypes;				// ITypeDescriptor* for type declaration
+				DeclarationMemberInfoMap					declarationMemberInfos;			// IMemberInfo* for type description
+				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;	// all base constructor call resolvings
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
@@ -3205,9 +3524,11 @@ Scope Manager
 				/// <summary>Compile.</summary>
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
 				void										Rebuild(bool keepTypeDescriptorNames);
-				void										ResolveSymbol(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalSymbol>>& symbols);
-				void										ResolveScopeName(WfLexicalScope* scope, const WString& symbolName, collections::List<Ptr<WfLexicalScopeName>>& names);
+
+				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results);
+				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
 				Ptr<WfLexicalSymbol>						GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node);
+				void										CreateLambdaCapture(parsing::ParsingTreeCustomBase* node, Ptr<WfLexicalCapture> capture = nullptr);
 			};
 
 /***********************************************************************
@@ -3269,14 +3590,21 @@ Structure Analyzing
 			
 			struct ValidateStructureContext
 			{
-				WfBindExpression*							currentBindExpression;
-				WfObserveExpression*						currentObserveExpression;
-				WfStatement*								currentLoopStatement;
-				WfStatement*								currentCatchStatement;
+				WfBindExpression*							currentBindExpression = nullptr;
+				WfObserveExpression*						currentObserveExpression = nullptr;
+				WfStatement*								currentLoopStatement = nullptr;
+				WfStatement*								currentCatchStatement = nullptr;
 
 				ValidateStructureContext();
 			};
-			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, bool returnType = false);
+
+			enum class ValidateTypeStragety
+			{
+				Value,
+				ReturnType,
+				BaseType,
+			};
+			extern void										ValidateTypeStructure(WfLexicalScopeManager* manager, Ptr<WfType> type, ValidateTypeStragety strategy = ValidateTypeStragety::Value, WfClassDeclaration* classDecl = nullptr);
 			extern void										ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ValidateDeclarationStructure(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration, WfClassDeclaration* classDecl = 0 , parsing::ParsingTreeCustomBase* source = 0);
 			extern void										ValidateStatementStructure(WfLexicalScopeManager* manager, ValidateStructureContext* context, Ptr<WfStatement>& statement);
@@ -3299,11 +3627,12 @@ Scope Analyzing
 			extern void										CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 
 			extern void										BuildScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module);
-			extern void										BuildScopeForClassMember(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassMember> member, parsing::ParsingTreeCustomBase* source = 0);
-			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source = 0);
+			extern void										BuildScopeForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfDeclaration> declaration, parsing::ParsingTreeCustomBase* source, Ptr<WfClassMember> member);
 			extern void										BuildScopeForStatement(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfStatement> statement);
 			extern void										BuildScopeForExpression(WfLexicalScopeManager* manager, Ptr<WfLexicalScope> parentScope, Ptr<WfExpression> expression);
-			extern bool										CheckScopes(WfLexicalScopeManager* manager);
+			extern bool										CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager);
+			extern bool										CheckScopes_SymbolType(WfLexicalScopeManager* manager);
+			extern bool										CheckScopes_BaseType(WfLexicalScopeManager* manager);
 
 /***********************************************************************
 Semantic Analyzing
@@ -3339,11 +3668,12 @@ Semantic Analyzing
 			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
+			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration);
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 
 			extern Ptr<WfLexicalScopeName>					GetExpressionScopeName(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
 			extern reflection::description::IEventInfo*		GetExpressionEventInfo(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
-			extern void										GetExpressionTypes(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results);
+			extern void										GetExpressionTypes(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, bool allowEvent, collections::List<ResolveExpressionResult>& results);
 			extern Ptr<reflection::description::ITypeInfo>	GetExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
 			extern Ptr<reflection::description::ITypeInfo>	GetLeftValueExpressionType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
 			extern Ptr<reflection::description::ITypeInfo>	GetEnumerableExpressionItemType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
@@ -3357,8 +3687,6 @@ Code Generation
 				WfFunctionDeclaration*				functionDeclaration = 0;
 				WfFunctionExpression*				functionExpression = 0;
 				WfOrderedLambdaExpression*			orderedLambdaExpression = 0;
-				WfMemberExpression*					methodReferenceExpression = 0;
-				WfExpression*						staticMethodReferenceExpression = 0;
 			};
 
 			enum class WfCodegenScopeType
@@ -3408,23 +3736,28 @@ Code Generation
 
 			class WfCodegenContext : public Object
 			{
-				typedef collections::Dictionary<WfLexicalSymbol*, vint>											VariableIndexMap;
-				typedef collections::Dictionary<WfLexicalSymbol*, vint>											FunctionIndexMap;
+				typedef collections::Dictionary<WfLexicalSymbol*, vint>											SymbolIndexMap;
+				typedef collections::Dictionary<WfConstructorDeclaration*, vint>								ConstructorIndexMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, parsing::ParsingTextRange>		NodePositionMap;
+				typedef collections::Dictionary<Ptr<WfLexicalFunctionConfig>, vint>								ThisStackCountMap;
 			public:
 				Ptr<runtime::WfAssembly>			assembly;
 				WfLexicalScopeManager*				manager;
-				VariableIndexMap					globalVariables;
-				FunctionIndexMap					globalFunctions;
+				SymbolIndexMap						globalVariables;
+				SymbolIndexMap						globalFunctions;
+				ConstructorIndexMap					constructors;
+				SymbolIndexMap						closureFunctions;
 				Ptr<WfCodegenFunctionContext>		functionContext;
 				NodePositionMap						nodePositionsBeforeCodegen;
 				NodePositionMap						nodePositionsAfterCodegen;
+				ThisStackCountMap					thisStackCounts;
 
 				WfCodegenContext(Ptr<runtime::WfAssembly> _assembly, WfLexicalScopeManager* _manager);
 
 				vint								AddInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins);
 				void								AddExitInstruction(parsing::ParsingTreeCustomBase* node, const runtime::WfInstruction& ins);
 				void								ApplyExitInstructions(Ptr<WfCodegenScopeContext> scopeContext);
+				vint								GetThisStackCount(WfLexicalScope* scope);
 			};
 
 			extern void										GenerateFunctionDeclarationMetadata(WfCodegenContext& context, WfFunctionDeclaration* node, Ptr<runtime::WfAssemblyFunction> meta);
@@ -3475,7 +3808,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			AttachInBind(WfExpression* node);
 				static Ptr<parsing::ParsingError>			DetachInBind(WfExpression* node);
 				static Ptr<parsing::ParsingError>			ConstructorMixMapAndList(WfExpression* node);
-				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfExpression* node);
+				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfNewClassExpression* node);
+				static Ptr<parsing::ParsingError>			ConstructorMixClassAndInterface(WfNewInterfaceExpression* node);
 				static Ptr<parsing::ParsingError>			ScopeNameIsNotExpression(WfExpression* node, Ptr<WfLexicalScopeName> scopeName);
 				static Ptr<parsing::ParsingError>			EventIsNotExpression(WfExpression* node, reflection::description::IEventInfo* eventInfo);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotScopeName(WfExpression* node);
@@ -3498,13 +3832,17 @@ Error Messages
 				static Ptr<parsing::ParsingError>			IndexOperatorOnWrongType(WfBinaryExpression* node, reflection::description::ITypeInfo* containerType);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotCollection(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotFunction(WfExpression* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			FunctionArgumentCountMismatched(WfExpression* node, vint expectedCount, const ResolveExpressionResult& function);
-				static Ptr<parsing::ParsingError>			FunctionArgumentTypeMismatched(WfExpression* node, const ResolveExpressionResult& function, vint index, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
-				static Ptr<parsing::ParsingError>			CannotPickOverloadedFunctions(WfExpression* node, collections::List<ResolveExpressionResult>& results);
+				static Ptr<parsing::ParsingError>			FunctionArgumentCountMismatched(parsing::ParsingTreeCustomBase* node, vint expectedCount, const ResolveExpressionResult& function);
+				static Ptr<parsing::ParsingError>			FunctionArgumentTypeMismatched(parsing::ParsingTreeCustomBase* node, const ResolveExpressionResult& function, vint index, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+				static Ptr<parsing::ParsingError>			CannotPickOverloadedFunctions(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results);
 				static Ptr<parsing::ParsingError>			ClassContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			InterfaceContainsNoConstructor(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			ConstructorReturnTypeMismatched(WfExpression* node, const ResolveExpressionResult& function, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotLeftValue(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			CannotCallMemberOutsideOfClass(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			CannotCallMemberInStaticFunction(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			FieldCannotInitializeUsingEachOther(WfExpression* node, const ResolveExpressionResult& result);
+				static Ptr<parsing::ParsingError>			WrongThisExpression(WfExpression* node);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);
@@ -3524,6 +3862,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			TryMissCatchAndFinally(WfStatement* node);
 				static Ptr<parsing::ParsingError>			ReturnMissExpression(WfStatement* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			DeleteNonRawPointer(WfStatement* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			CannotReturnExpression(WfStatement* node);
 
 				// D: Declaration error
 				static Ptr<parsing::ParsingError>			FunctionShouldHaveName(WfDeclaration* node);
@@ -3534,12 +3873,14 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfFunctionArgument* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfStatement* node, Ptr<WfLexicalSymbol> symbol);
 				static Ptr<parsing::ParsingError>			DuplicatedSymbol(WfExpression* node, Ptr<WfLexicalSymbol> symbol);
-				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewTypeExpression* node, reflection::description::IMethodInfo* method);
+				static Ptr<parsing::ParsingError>			InterfaceMethodNotImplemented(WfNewInterfaceExpression* node, reflection::description::IMethodInfo* method);
 				static Ptr<parsing::ParsingError>			InterfaceMethodNotFound(WfFunctionDeclaration* node, reflection::description::ITypeInfo* interfaceType, reflection::description::ITypeInfo* methodType);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results);
 				static Ptr<parsing::ParsingError>			CannotPickOverloadedImplementMethods(WfFunctionDeclaration* node, reflection::description::ITypeInfo* type);
-				static Ptr<parsing::ParsingError>			WrontDeclaration(WfEventDeclaration* node);
-				static Ptr<parsing::ParsingError>			WrontDeclaration(WfPropertyDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfEventDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);
@@ -3550,13 +3891,10 @@ Error Messages
 				static Ptr<parsing::ParsingError>			MemberNotExists(parsing::ParsingTreeCustomBase* node, reflection::description::ITypeDescriptor* typeDescriptor, const WString& name);
 				static Ptr<parsing::ParsingError>			ReferenceNotExists(parsing::ParsingTreeCustomBase* node, const WString& name);
 				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results, const WString& name);
-				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalSymbol>>& symbols, const WString& name);
-				static Ptr<parsing::ParsingError>			TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<Ptr<WfLexicalScopeName>>& names, const WString& name);
 
 				// G: Class error
-				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassDeclaration* node, const WString& name);
-				static Ptr<parsing::ParsingError>			ClassFeatureNotSupported(WfClassMember* node, const WString& name);
-				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStatic(WfClassMember* node);
+				static Ptr<parsing::ParsingError>			NonFunctionClassMemberCannotBeStaticOrOverride(WfClassMember* node);
+				static Ptr<parsing::ParsingError>			FunctionInNewTypeExpressionCannotBeStatic(WfClassMember* node);
 				static Ptr<parsing::ParsingError>			WrongClassMember(WfNamespaceDeclaration* node);
 				static Ptr<parsing::ParsingError>			PropertyGetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			PropertySetterNotFound(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
@@ -3567,6 +3905,16 @@ Error Messages
 				static Ptr<parsing::ParsingError>			PropertyGetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			PropertySetterTypeMismatched(WfPropertyDeclaration* node, WfClassDeclaration* classDecl);
 				static Ptr<parsing::ParsingError>			WrongBaseType(WfClassDeclaration* node, WfType* type);
+				static Ptr<parsing::ParsingError>			WrongBaseTypeOfClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			WrongBaseTypeOfInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			WrongInterfaceBaseType(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			ClassWithInterfaceConstructor(WfClassDeclaration* node);
+				static Ptr<parsing::ParsingError>			OverrideShouldImplementInterfaceMethod(WfFunctionDeclaration* node);
+				static Ptr<parsing::ParsingError>			MissingFieldType(WfVariableDeclaration* node);
+				static Ptr<parsing::ParsingError>			DuplicatedBaseClass(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 			};
 		}
 	}

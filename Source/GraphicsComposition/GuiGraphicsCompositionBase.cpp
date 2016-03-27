@@ -89,7 +89,7 @@ GuiGraphicsComposition
 				,associatedCursor(0)
 				,associatedHitTestResult(INativeWindowListener::NoDecision)
 			{
-				sharedPtrDestructorProc=&GuiGraphicsComposition::SharedPtrDestructorProc;
+				sharedPtrDestructorProc = &GuiGraphicsComposition::SharedPtrDestructorProc;
 			}
 
 			GuiGraphicsComposition::~GuiGraphicsComposition()

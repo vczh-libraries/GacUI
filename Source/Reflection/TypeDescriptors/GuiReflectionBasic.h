@@ -114,7 +114,7 @@ Type Declaration
 			struct CustomTypeDescriptorSelector<presentation::Color>
 			{
 			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::Color>> CustomTypeDescriptorImpl;
+				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::Color>, TypeDescriptorFlags::Primitive> CustomTypeDescriptorImpl;
 			};
 
 			template<>
@@ -129,7 +129,7 @@ Type Declaration
 			struct CustomTypeDescriptorSelector<presentation::GlobalStringKey>
 			{
 			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::GlobalStringKey>> CustomTypeDescriptorImpl;
+				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::GlobalStringKey>, TypeDescriptorFlags::Primitive> CustomTypeDescriptorImpl;
 			};
 
 /***********************************************************************

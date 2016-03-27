@@ -440,7 +440,7 @@ GuiDefaultInstanceLoader
 
 			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
-				auto create = MakePtr<WfNewTypeExpression>();
+				auto create = MakePtr<WfNewClassExpression>();
 				create->type = GetTypeFromTypeInfo(GetDefaultConstructor(typeInfo.typeDescriptor)->GetReturn());
 
 				auto refValue = MakePtr<WfReferenceExpression>();

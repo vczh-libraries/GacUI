@@ -194,7 +194,7 @@ GuiControl
 				styleController->SetText(text);
 				styleController->SetVisuallyEnabled(isVisuallyEnabled);
 				
-				sharedPtrDestructorProc=&GuiControl::SharedPtrDestructorProc;
+				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
 			}
 
 			GuiControl::~GuiControl()

@@ -105,7 +105,7 @@ Compiled Workflow Type Resolver (Workflow)
 			{
 				if (auto obj = resource.Cast<GuiInstanceCompiledWorkflow>())
 				{
-					internal::Writer writer(stream);
+					internal::ContextFreeWriter writer(stream);
 
 					vint type = (vint)obj->type;
 					writer << type << obj->classFullName;
@@ -118,7 +118,7 @@ Compiled Workflow Type Resolver (Workflow)
 
 			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
-				internal::Reader reader(stream);
+				internal::ContextFreeReader reader(stream);
 				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 
 				vint type;

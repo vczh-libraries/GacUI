@@ -19,7 +19,7 @@ namespace vl
 				if (controlTemplateTds.Count() > 0)
 				{
 					auto refFactory = Helper::CreateTemplateFactory(controlTemplateTds, errors);
-					auto createStyle = MakePtr<WfNewTypeExpression>();
+					auto createStyle = MakePtr<WfNewClassExpression>();
 					createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IItemTemplateStyle>>::CreateTypeInfo().Obj());
 					createStyle->arguments.Add(refFactory);
 
@@ -206,7 +206,7 @@ GuiListViewInstanceLoader
 #undef VIEW_TYPE_CASE
 					}
 
-					auto createStyle = MakePtr<WfNewTypeExpression>();
+					auto createStyle = MakePtr<WfNewClassExpression>();
 					createStyle->type = GetTypeFromTypeInfo(itemStyleType.Obj());
 
 					if (iconSize)
@@ -299,7 +299,7 @@ GuiListViewInstanceLoader
 			protected:
 				GlobalStringKey		_ItemSource;
 
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
 				{
 					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
 					if (indexItemSource != -1)
@@ -359,7 +359,7 @@ GuiTreeViewInstanceLoader
 					{
 						Ptr<ITypeInfo> itemStyleType = TypeInfoRetriver<Ptr<tree::TreeViewNodeItemStyleProvider>>::CreateTypeInfo();
 
-						auto createStyle = MakePtr<WfNewTypeExpression>();
+						auto createStyle = MakePtr<WfNewClassExpression>();
 						createStyle->type = GetTypeFromTypeInfo(itemStyleType.Obj());
 						{
 							auto iconSize = arguments.GetByIndex(indexIconSize)[0].expression;
@@ -485,7 +485,7 @@ GuiTreeViewInstanceLoader
 			protected:
 				GlobalStringKey		_ItemSource;
 
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
 				{
 					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
 					if (indexItemSource != -1)
@@ -533,7 +533,7 @@ GuiBindableTextListInstanceLoader
 			protected:
 				GlobalStringKey					_ItemSource;
 				
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
 				{
 					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
 					if (indexItemSource != -1)
@@ -639,7 +639,7 @@ GuiBindableDataColumnInstanceLoader
 								FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
 								{
 									auto refFactory = Helper::CreateTemplateFactory(controlTemplateTd, errors);
-									auto createStyle = MakePtr<WfNewTypeExpression>();
+									auto createStyle = MakePtr<WfNewClassExpression>();
 									if (index == 0)
 									{
 										createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::Factory>>::CreateTypeInfo().Obj());
@@ -700,7 +700,7 @@ GuiBindableDataColumnInstanceLoader
 							if (controlTemplateTds.Count() > 0)
 							{
 								auto refFactory = Helper::CreateTemplateFactory(controlTemplateTds, errors);
-								auto createStyle = MakePtr<WfNewTypeExpression>();
+								auto createStyle = MakePtr<WfNewClassExpression>();
 								createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataEditor::Factory>>::CreateTypeInfo().Obj());
 								createStyle->arguments.Add(refFactory);
 								{
@@ -749,7 +749,7 @@ GuiBindableDataGridInstanceLoader
 				GlobalStringKey		_ViewModelContext;
 				GlobalStringKey		_Columns;
 				
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
 				{
 					auto indexItemSource = arguments.Keys().IndexOf(_ItemSource);
 					createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
@@ -917,10 +917,10 @@ GuiTreeNodeInstanceLoader
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
-						auto createItem = MakePtr<WfNewTypeExpression>();
+						auto createItem = MakePtr<WfNewClassExpression>();
 						createItem->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
 
-						auto createNode = MakePtr<WfNewTypeExpression>();
+						auto createNode = MakePtr<WfNewClassExpression>();
 						createNode->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo().Obj());
 						createNode->arguments.Add(createItem);
 

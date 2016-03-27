@@ -77,7 +77,7 @@ GuiDocumentItemInstanceLoader
 						if (indexName != -1)
 						{
 							auto type = TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo();
-							auto createExpr = MakePtr<WfNewTypeExpression>();
+							auto createExpr = MakePtr<WfNewClassExpression>();
 							createExpr->type = GetTypeFromTypeInfo(type.Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexName)[0].expression);
 

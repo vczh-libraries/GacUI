@@ -77,7 +77,7 @@ GuiVrtualTypeInstanceLoader
 				{
 				}
 
-				virtual void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)
+				virtual void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)
 				{
 				}
 
@@ -143,7 +143,7 @@ GuiVrtualTypeInstanceLoader
 					auto templateType = TypeInfoRetriver<TTemplate*>::CreateTypeInfo();
 					auto factoryType = TypeInfoRetriver<Ptr<GuiTemplate::IFactory>>::CreateTypeInfo();
 
-					auto refFactory = MakePtr<WfNewTypeExpression>();
+					auto refFactory = MakePtr<WfNewInterfaceExpression>();
 					refFactory->type = GetTypeFromTypeInfo(factoryType.Obj());
 					{
 						auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
@@ -232,7 +232,7 @@ GuiVrtualTypeInstanceLoader
 							}
 
 							{
-								auto createControlTemplate = MakePtr<WfNewTypeExpression>();
+								auto createControlTemplate = MakePtr<WfNewClassExpression>();
 								createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
 								if (viewModelType)
 								{
@@ -260,11 +260,11 @@ GuiVrtualTypeInstanceLoader
 							}
 						}
 
-						if (!stopControlTemplateTd)
-						{
-						}
+						auto member = MakePtr<WfClassMember>();
+						member->kind = WfClassMemberKind::Override;
+						member->declaration = funcCreateTemplate;
 
-						refFactory->functions.Add(funcCreateTemplate);
+						refFactory->members.Add(member);
 					}
 
 					return refFactory;
@@ -398,7 +398,7 @@ GuiVrtualTypeInstanceLoader
 							auto styleType = TypeInfoRetriver<TControlStyle*>::CreateTypeInfo();
 
 							auto refFactory = CreateTemplateFactory(controlTemplateTd, errors);
-							auto createStyle = MakePtr<WfNewTypeExpression>();
+							auto createStyle = MakePtr<WfNewClassExpression>();
 							createStyle->type = GetTypeFromTypeInfo(styleType.Obj());
 							createStyle->arguments.Add(refFactory);
 							createStyleExpr = createStyle;
@@ -423,7 +423,7 @@ GuiVrtualTypeInstanceLoader
 					{
 						auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
 
-						auto createControl = MakePtr<WfNewTypeExpression>();
+						auto createControl = MakePtr<WfNewClassExpression>();
 						createControl->type = GetTypeFromTypeInfo(controlType.Obj());
 						{
 							auto refControlStyle = MakePtr<WfReferenceExpression>();

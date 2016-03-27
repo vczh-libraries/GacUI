@@ -1480,17 +1480,20 @@ Ptr
 			}
 		}
 
-		void Dec()
+		void Dec(bool deleteIfZero = true)
 		{
 			if(counter)
 			{
 				if(DECRC(counter)==0)
 				{
-					originalDestructor(counter, originalReference);
-					counter=0;
-					reference=0;
-					originalReference=0;
-					originalDestructor=0;
+					if (deleteIfZero)
+					{
+						originalDestructor(counter, originalReference);
+					}
+					counter=nullptr;
+					reference=nullptr;
+					originalReference=nullptr;
+					originalDestructor=nullptr;
 				}
 			}
 		}
@@ -1586,6 +1589,15 @@ Ptr
 		~Ptr()
 		{
 			Dec();
+		}
+		
+		/// <summary>Detach the contained object from this smart pointer.</summary>
+		/// <returns>The detached object. Returns null if this smart pointer is empty.</returns>
+		T* Detach()
+		{
+			auto detached = reference;
+			Dec(false);
+			return detached;
 		}
 		
 		/// <summary>Cast a smart pointer.</summary>
@@ -4535,25 +4547,34 @@ Serialization
 
 		namespace internal
 		{
+			template<typename T>
 			struct Reader
 			{
-				stream::IStream& input;
+				stream::IStream&			input;
+				T							context;
 
 				Reader(stream::IStream& _input)
 					:input(_input)
+					, context(nullptr)
 				{
 				}
 			};
 				
+			template<typename T>
 			struct Writer
 			{
-				stream::IStream& output;
+				stream::IStream&			output;
+				T							context;
 
 				Writer(stream::IStream& _output)
 					:output(_output)
+					, context(nullptr)
 				{
 				}
 			};
+
+			using ContextFreeReader = Reader<void*>;
+			using ContextFreeWriter = Writer<void*>;
 
 			template<typename T>
 			struct Serialization
@@ -4562,17 +4583,17 @@ Serialization
 				static void IO(TIO& io, T& value);
 			};
 
-			template<typename T>
-			Reader& operator<<(Reader& reader, T& value)
+			template<typename TValue, typename TContext>
+			Reader<TContext>& operator<<(Reader<TContext>& reader, TValue& value)
 			{
-				Serialization<T>::IO(reader, value);
+				Serialization<TValue>::IO(reader, value);
 				return reader;
 			}
 
-			template<typename T>
-			Writer& operator<<(Writer& writer, T& value)
+			template<typename TValue, typename TContext>
+			Writer<TContext>& operator<<(Writer<TContext>& writer, TValue& value)
 			{
-				Serialization<T>::IO(writer, value);
+				Serialization<TValue>::IO(writer, value);
 				return writer;
 			}
 
@@ -4581,15 +4602,17 @@ Serialization
 			template<>
 			struct Serialization<vint64_t>
 			{
-				static void IO(Reader& reader, vint64_t& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, vint64_t& value)
 				{
 					if (reader.input.Read(&value, sizeof(value)) != sizeof(value))
 					{
 						CHECK_FAIL(L"Deserialization failed.");
 					}
 				}
-					
-				static void IO(Writer& writer, vint64_t& value)
+				
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, vint64_t& value)
 				{
 					if (writer.output.Write(&value, sizeof(value)) != sizeof(value))
 					{
@@ -4601,14 +4624,16 @@ Serialization
 			template<>
 			struct Serialization<vint32_t>
 			{
-				static void IO(Reader& reader, vint32_t& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, vint32_t& value)
 				{
 					vint64_t v = 0;
 					Serialization<vint64_t>::IO(reader, v);
 					value = (vint32_t)v;
 				}
 					
-				static void IO(Writer& writer, vint32_t& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, vint32_t& value)
 				{
 					vint64_t v = (vint64_t)value;
 					Serialization<vint64_t>::IO(writer, v);
@@ -4618,7 +4643,8 @@ Serialization
 			template<>
 			struct Serialization<bool>
 			{
-				static void IO(Reader& reader, bool& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, bool& value)
 				{
 					vint8_t v = 0;
 					if (reader.input.Read(&v, sizeof(v)) != sizeof(v))
@@ -4631,7 +4657,8 @@ Serialization
 					}
 				}
 					
-				static void IO(Writer& writer, bool& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, bool& value)
 				{
 					vint8_t v = value ? -1 : 0;
 					if (writer.output.Write(&v, sizeof(v)) != sizeof(v))
@@ -4644,7 +4671,8 @@ Serialization
 			template<typename T>
 			struct Serialization<Ptr<T>>
 			{
-				static void IO(Reader& reader, Ptr<T>& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, Ptr<T>& value)
 				{
 					bool notNull = false;
 					reader << notNull;
@@ -4659,7 +4687,8 @@ Serialization
 					}
 				}
 					
-				static void IO(Writer& writer, Ptr<T>& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, Ptr<T>& value)
 				{
 					bool notNull = value;
 					writer << notNull;
@@ -4673,7 +4702,8 @@ Serialization
 			template<typename T>
 			struct Serialization<Nullable<T>>
 			{
-				static void IO(Reader& reader, Nullable<T>& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, Nullable<T>& value)
 				{
 					bool notNull = false;
 					reader << notNull;
@@ -4688,8 +4718,9 @@ Serialization
 						value = Nullable<T>();
 					}
 				}
-					
-				static void IO(Writer& writer, Nullable<T>& value)
+				
+				template<typename TContext>	
+				static void IO(Writer<TContext>& writer, Nullable<T>& value)
 				{
 					bool notNull = value;
 					writer << notNull;
@@ -4704,86 +4735,53 @@ Serialization
 			template<>
 			struct Serialization<WString>
 			{
-				static void IO(Reader& reader, WString& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, WString& value)
 				{
-#if defined VCZH_MSVC
-					vint32_t count = -1;
+					vint count = -1;
 					reader << count;
-					collections::Array<wchar_t> buffer(count + 1);
-					if (reader.input.Read((void*)&buffer[0], count*sizeof(wchar_t)) != count*sizeof(wchar_t))
+					if (count > 0)
 					{
-						CHECK_FAIL(L"Deserialization failed.");
-					}
-					buffer[count] = 0;
+						MemoryStream stream;
+						reader << (IStream&)stream;
+						Utf8Decoder decoder;
+						decoder.Setup(&stream);
 
-					value = &buffer[0];
-#elif defined VCZH_GCC
-					vint32_t count = -1;
-					reader << count;
-					if (count == 0)
+						collections::Array<wchar_t> stringBuffer(count + 1);
+						vint stringSize = decoder.Read(&stringBuffer[0], count * sizeof(wchar_t));
+						stringBuffer[stringSize / sizeof(wchar_t)] = 0;
+
+						value = &stringBuffer[0];
+					}
+					else
 					{
 						value = L"";
-						return;
 					}
-
-					vint size = count * 2;
-					collections::Array<char> buffer(size);
-					if (reader.input.Read((void*)&buffer[0],size) != size)
-					{
-						CHECK_FAIL(L"Deserialization failed.");
-					}
-
-					MemoryWrapperStream stream(&buffer[0], size + 1);
-					Utf16Decoder decoder;
-					decoder.Setup(&stream);
-
-					collections::Array<wchar_t> stringBuffer(count + 1);
-					vint stringSize = decoder.Read(&stringBuffer[0], count*sizeof(wchar_t));
-					stringBuffer[stringSize/sizeof(wchar_t)] = 0;
-
-					value = &stringBuffer[0];
-#endif
 				}
 					
-				static void IO(Writer& writer, WString& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, WString& value)
 				{
-#if defined VCZH_MSVC
-					vint32_t count = (vint32_t)value.Length();
+					vint count = value.Length();
 					writer << count;
-					if (writer.output.Write((void*)value.Buffer(), count*sizeof(wchar_t)) != count*sizeof(wchar_t))
+					if (count > 0)
 					{
-						CHECK_FAIL(L"Serialization failed.");
+						MemoryStream stream;
+						{
+							Utf8Encoder encoder;
+							encoder.Setup(&stream);
+							encoder.Write((void*)value.Buffer(), count * sizeof(wchar_t));
+						}
+						writer << (IStream&)stream;
 					}
-#elif defined VCZH_GCC
-					if (value == L"")
-					{
-						vint32_t count = 0;
-						writer << count;
-						return;
-					}
-
-					MemoryStream stream;
-					{
-						Utf16Encoder encoder;
-						encoder.Setup(&stream);
-						encoder.Write((void*)value.Buffer(), value.Length() * sizeof(wchar_t));
-					}
-					
-					vint size = (vint)stream.Size();
-					vint32_t count = (vint32_t)size / 2;
-					writer << count;
-					if (writer.output.Write(stream.GetInternalBuffer(), size) != size)
-					{
-						CHECK_FAIL(L"Serialization failed.");
-					}
-#endif
 				}
 			};
 
 			template<typename T>
 			struct Serialization<collections::List<T>>
 			{
-				static void IO(Reader& reader, collections::List<T>& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, collections::List<T>& value)
 				{
 					vint32_t count = -1;
 					reader << count;
@@ -4796,7 +4794,8 @@ Serialization
 					}
 				}
 					
-				static void IO(Writer& writer, collections::List<T>& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, collections::List<T>& value)
 				{
 					vint32_t count = (vint32_t)value.Count();
 					writer << count;
@@ -4810,7 +4809,8 @@ Serialization
 			template<typename T>
 			struct Serialization<collections::Array<T>>
 			{
-				static void IO(Reader& reader, collections::Array<T>& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, collections::Array<T>& value)
 				{
 					vint32_t count = -1;
 					reader << count;
@@ -4821,7 +4821,8 @@ Serialization
 					}
 				}
 					
-				static void IO(Writer& writer, collections::Array<T>& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, collections::Array<T>& value)
 				{
 					vint32_t count = (vint32_t)value.Count();
 					writer << count;
@@ -4835,7 +4836,8 @@ Serialization
 			template<typename K, typename V>
 			struct Serialization<collections::Dictionary<K, V>>
 			{
-				static void IO(Reader& reader, collections::Dictionary<K, V>& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, collections::Dictionary<K, V>& value)
 				{
 					vint32_t count = -1;
 					reader << count;
@@ -4849,7 +4851,8 @@ Serialization
 					}
 				}
 					
-				static void IO(Writer& writer, collections::Dictionary<K, V>& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, collections::Dictionary<K, V>& value)
 				{
 					vint32_t count = (vint32_t)value.Count();
 					writer << count;
@@ -4865,7 +4868,8 @@ Serialization
 			template<typename K, typename V>
 			struct Serialization<collections::Group<K, V>>
 			{
-				static void IO(Reader& reader, collections::Group<K, V>& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, collections::Group<K, V>& value)
 				{
 					vint32_t count = -1;
 					reader << count;
@@ -4882,7 +4886,8 @@ Serialization
 					}
 				}
 					
-				static void IO(Writer& writer, collections::Group<K, V>& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, collections::Group<K, V>& value)
 				{
 					vint32_t count = (vint32_t)value.Count();
 					writer << count;
@@ -4898,7 +4903,8 @@ Serialization
 			template<>
 			struct Serialization<stream::IStream>
 			{
-				static void IO(Reader& reader, stream::IStream& value)
+				template<typename TContext>
+				static void IO(Reader<TContext>& reader, stream::IStream& value)
 				{
 					vint32_t count = 0;
 					reader.input.Read(&count, sizeof(count));
@@ -4922,7 +4928,8 @@ Serialization
 					}
 				}
 					
-				static void IO(Writer& writer, stream::IStream& value)
+				template<typename TContext>
+				static void IO(Writer<TContext>& writer, stream::IStream& value)
 				{
 					vint32_t count = (vint32_t)value.Size();
 					writer.output.Write(&count, sizeof(count));
@@ -4970,13 +4977,15 @@ Serialization
 			template<>\
 			struct Serialization<TYPE>\
 			{\
-				static void IO(Reader& reader, TYPE& value)\
+				template<typename TContext>\
+				static void IO(Reader<TContext>& reader, TYPE& value)\
 				{\
 					vint32_t v = 0;\
 					Serialization<vint32_t>::IO(reader, v);\
 					value = (TYPE)v;\
 				}\
-				static void IO(Writer& writer, TYPE& value)\
+				template<typename TContext>\
+				static void IO(Writer<TContext>& writer, TYPE& value)\
 				{\
 					vint32_t v = (vint32_t)value;\
 					Serialization<vint32_t>::IO(writer, v);\
@@ -8136,17 +8145,54 @@ Attribute
 			friend struct vl::ReferenceCounterOperator;
 			template<typename T>
 			friend class Description;
-			friend class DescriptableValue;
 
 			typedef collections::Dictionary<WString, Ptr<Object>>		InternalPropertyMap;
 			typedef bool(*DestructorProc)(DescriptableObject* obj, bool forceDisposing);
-		protected:
+		private:
 			volatile vint							referenceCounter;
-			DestructorProc							sharedPtrDestructorProc;
 
 			size_t									objectSize;
 			description::ITypeDescriptor**			typeDescriptor;
 			Ptr<InternalPropertyMap>				internalProperties;
+
+			bool									destructing;
+			DescriptableObject**					aggregationInfo;
+			vint									aggregationSize;
+
+		protected:
+			DestructorProc							sharedPtrDestructorProc;
+
+		protected:
+
+			bool									IsAggregated();
+			vint									GetAggregationSize();
+			DescriptableObject*						GetAggregationRoot();
+			void									SetAggregationRoot(DescriptableObject* value);
+			DescriptableObject*						GetAggregationParent(vint index);
+			void									SetAggregationParent(vint index, DescriptableObject* value);
+			void									SetAggregationParent(vint index, Ptr<DescriptableObject>& value);
+			void									InitializeAggregation(vint size);
+
+			template<typename T>
+			void SafeAggregationCast(T*& result)
+			{
+				auto expected = dynamic_cast<T*>(this);
+				if (expected)
+				{
+					CHECK_ERROR(result == nullptr, L"vl::reflection::DescriptableObject::SafeAggregationCast<T>()#Found multiple ways to do aggregation cast.");
+					result = expected;
+				}
+				if (IsAggregated())
+				{
+					for (vint i = 0; i < aggregationSize; i++)
+					{
+						if (auto parent = GetAggregationParent(i))
+						{
+							parent->SafeAggregationCast<T>(result);
+						}
+					}
+				}
+			}
 		public:
 			DescriptableObject();
 			virtual ~DescriptableObject();
@@ -8166,6 +8212,18 @@ Attribute
 			/// <returns>Returns true if this operation succeeded. Returns false if the object refuces to be dispose.</returns>
 			/// <param name="forceDisposing">Set to true to force disposing this object. If the reference counter is not 0 if you force disposing it, it will raise a [T:vl.reflection.description.ValueNotDisposableException].</param>
 			bool									Dispose(bool forceDisposing);
+			/// <summary>Get the aggregation root object.</summary>
+			/// <returns>The aggregation root object. If this object is not aggregated, or it is the root object of others, than this function return itself.</returns>
+			DescriptableObject*						SafeGetAggregationRoot();
+			/// <summary>Cast the object to another type, considered aggregation.</summary>
+			/// <typeparam name="T">The expected type to cast.</typeparam>
+			template<typename T>
+			T* SafeAggregationCast()
+			{
+				T* result = nullptr;
+				SafeGetAggregationRoot()->SafeAggregationCast<T>(result);
+				return result;
+			}
 		};
 		
 		/// <summary><![CDATA[
@@ -8449,6 +8507,13 @@ ReferenceCounterOperator
 		static __forceinline volatile vint* CreateCounter(T* reference)
 		{
 			reflection::DescriptableObject* obj=reference;
+			if (obj->IsAggregated())
+			{
+				if (auto root = obj->GetAggregationRoot())
+				{
+					return &root->referenceCounter;
+				}
+			}
 			return &obj->referenceCounter;
 		}
 
@@ -8693,31 +8758,62 @@ ITypeDescriptor (method)
 ITypeDescriptor
 ***********************************************************************/
 
+			enum class TypeDescriptorFlags : vint
+			{
+				Undefined			= 0,
+				Object				= 1<<0,
+				IDescriptable		= 1<<1,
+				Class				= 1<<2,
+				Interface			= 1<<3,
+				Primitive			= 1<<4,
+				Struct				= 1<<5,
+				FlagEnum			= 1<<6,
+				NormalEnum			= 1<<7,
+
+				ClassType			= Object | Class,
+				InterfaceType		= IDescriptable | Interface,
+				ReferenceType		= ClassType | InterfaceType,
+				EnumType			= FlagEnum | NormalEnum,
+				StructType			= Primitive | Struct,
+				SerializableType	= StructType | EnumType,
+			};
+
+			inline TypeDescriptorFlags operator&(TypeDescriptorFlags a, TypeDescriptorFlags b)
+			{
+				return (TypeDescriptorFlags)((vint)a & (vint)b);
+			}
+
+			inline TypeDescriptorFlags operator|(TypeDescriptorFlags a, TypeDescriptorFlags b)
+			{
+				return (TypeDescriptorFlags)((vint)a | (vint)b);
+			}
+
 			class ITypeDescriptor : public virtual IDescriptable, public Description<ITypeDescriptor>
 			{
 			public:
-				virtual const WString&			GetTypeName()=0;
-				virtual const WString&			GetCppFullTypeName()=0;
-				virtual IValueSerializer*		GetValueSerializer()=0;
-				virtual vint					GetBaseTypeDescriptorCount()=0;
-				virtual ITypeDescriptor*		GetBaseTypeDescriptor(vint index)=0;
-				virtual bool					CanConvertTo(ITypeDescriptor* targetType)=0;
+				virtual TypeDescriptorFlags		GetTypeDescriptorFlags() = 0;
+				virtual const WString&			GetTypeName() = 0;
+				virtual const WString&			GetCppFullTypeName() = 0;
+				virtual IValueSerializer*		GetValueSerializer() = 0;
+				virtual vint					GetBaseTypeDescriptorCount() = 0;
+				virtual ITypeDescriptor*		GetBaseTypeDescriptor(vint index) = 0;
+				virtual bool					CanConvertTo(ITypeDescriptor* targetType) = 0;
 
-				virtual vint					GetPropertyCount()=0;
-				virtual IPropertyInfo*			GetProperty(vint index)=0;
-				virtual bool					IsPropertyExists(const WString& name, bool inheritable)=0;
-				virtual IPropertyInfo*			GetPropertyByName(const WString& name, bool inheritable)=0;
+				virtual vint					GetPropertyCount() = 0;
+				virtual IPropertyInfo*			GetProperty(vint index) = 0;
+				virtual bool					IsPropertyExists(const WString& name, bool inheritable) = 0;
+				virtual IPropertyInfo*			GetPropertyByName(const WString& name, bool inheritable) = 0;
 
-				virtual vint					GetEventCount()=0;
-				virtual IEventInfo*				GetEvent(vint index)=0;
-				virtual bool					IsEventExists(const WString& name, bool inheritable)=0;
-				virtual IEventInfo*				GetEventByName(const WString& name, bool inheritable)=0;
+				virtual vint					GetEventCount() = 0;
+				virtual IEventInfo*				GetEvent(vint index) = 0;
+				virtual bool					IsEventExists(const WString& name, bool inheritable) = 0;
+				virtual IEventInfo*				GetEventByName(const WString& name, bool inheritable) = 0;
 
-				virtual vint					GetMethodGroupCount()=0;
-				virtual IMethodGroupInfo*		GetMethodGroup(vint index)=0;
-				virtual bool					IsMethodGroupExists(const WString& name, bool inheritable)=0;
-				virtual IMethodGroupInfo*		GetMethodGroupByName(const WString& name, bool inheritable)=0;
-				virtual IMethodGroupInfo*		GetConstructorGroup()=0;
+				virtual vint					GetMethodGroupCount() = 0;
+				virtual IMethodGroupInfo*		GetMethodGroup(vint index) = 0;
+				virtual bool					IsMethodGroupExists(const WString& name, bool inheritable) = 0;
+				virtual IMethodGroupInfo*		GetMethodGroupByName(const WString& name, bool inheritable) = 0;
+				virtual IMethodGroupInfo*		GetConstructorGroup() = 0;
 			};
 
 /***********************************************************************
@@ -8837,7 +8933,7 @@ Interface Implementation Proxy
 			class IValueInterfaceProxy : public virtual IDescriptable, public Description<IValueInterfaceProxy>
 			{
 			public:
-				virtual Value					Invoke(const WString& methodName, Ptr<IValueList> arguments)=0;
+				virtual Value					Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)=0;
 			};
 
 			class IValueFunctionProxy : public virtual IDescriptable, public Description<IValueFunctionProxy>
@@ -10744,15 +10840,15 @@ EnumValueSerializer
 				static bool Serialize(collections::Dictionary<WString, T>& candidates, const T& input, WString& output)
 				{
 					WString result;
-					for(vint i=0;i<candidates.Count();i++)
+					for (vint i = 0; i < candidates.Count(); i++)
 					{
-						if(candidates.Values().Get(i)&input)
+						if (static_cast<vuint64_t>(candidates.Values().Get(i)) & static_cast<vuint64_t>(input))
 						{
-							if(result!=L"") result+=L"|";
-							result+=candidates.Keys()[i];
+							if (result != L"") result += L"|";
+							result += candidates.Keys()[i];
 						}
 					}
-					output=result;
+					output = result;
 					return true;
 				}
 
@@ -10857,13 +10953,15 @@ SerializableTypeDescriptor
 			class SerializableTypeDescriptorBase : public Object, public ITypeDescriptor
 			{
 			protected:
+				TypeDescriptorFlags							typeDescriptorFlags;
 				Ptr<IValueSerializer>						serializer;
 				WString										typeName;
 				WString										cppFullTypeName;
 			public:
-				SerializableTypeDescriptorBase(const WString& _typeName, const WString& _cppFullTypeName, Ptr<IValueSerializer> _serializer);
+				SerializableTypeDescriptorBase(TypeDescriptorFlags _typeDescriptorFlags, const WString& _typeName, const WString& _cppFullTypeName, Ptr<IValueSerializer> _serializer);
 				~SerializableTypeDescriptorBase();
 
+				TypeDescriptorFlags							GetTypeDescriptorFlags()override;
 				const WString&								GetTypeName()override;
 				const WString&								GetCppFullTypeName()override;
 				IValueSerializer*							GetValueSerializer()override;
@@ -10885,12 +10983,12 @@ SerializableTypeDescriptor
 				IMethodGroupInfo*							GetConstructorGroup()override;
 			};
 
-			template<typename TSerializer>
+			template<typename TSerializer, TypeDescriptorFlags TDFlags>
 			class SerializableTypeDescriptor : public SerializableTypeDescriptorBase
 			{
 			public:
 				SerializableTypeDescriptor()
-					:SerializableTypeDescriptorBase(TypeInfo<typename TSerializer::ValueType>::TypeName, TypeInfo<typename TSerializer::ValueType>::CppFullTypeName, 0)
+					:SerializableTypeDescriptorBase(TDFlags, TypeInfo<typename TSerializer::ValueType>::TypeName, TypeInfo<typename TSerializer::ValueType>::CppFullTypeName, 0)
 				{
 					serializer=new TSerializer(this);
 				}
@@ -11011,6 +11109,7 @@ Predefined Types
 			DECL_TYPE_INFO(IParameterInfo)
 			DECL_TYPE_INFO(IMethodInfo)
 			DECL_TYPE_INFO(IMethodGroupInfo)
+			DECL_TYPE_INFO(TypeDescriptorFlags)
 			DECL_TYPE_INFO(ITypeDescriptor)
 
 			template<>
@@ -11380,6 +11479,7 @@ TypeDescriptorImpl
 			{
 			private:
 				bool														loaded;
+				TypeDescriptorFlags											typeDescriptorFlags;
 				WString														typeName;
 				WString														cppFullTypeName;
 				Ptr<IValueSerializer>										valueSerializer;
@@ -11401,9 +11501,10 @@ TypeDescriptorImpl
 				virtual void				LoadInternal()=0;
 				void						Load();
 			public:
-				TypeDescriptorImpl(const WString& _typeName, const WString& _cppFullTypeName);
+				TypeDescriptorImpl(TypeDescriptorFlags _typeDescriptorFlags, const WString& _typeName, const WString& _cppFullTypeName);
 				~TypeDescriptorImpl();
 
+				TypeDescriptorFlags			GetTypeDescriptorFlags()override;
 				const WString&				GetTypeName()override;
 				const WString&				GetCppFullTypeName()override;
 				IValueSerializer*			GetValueSerializer()override;
@@ -11997,8 +12098,8 @@ StructValueSerializer
 				}
 			};
 
-			template<typename TSerializer>
-			class StructTypeDescriptor : public SerializableTypeDescriptor<TSerializer>
+			template<typename TSerializer, TypeDescriptorFlags TDFlags>
+			class StructTypeDescriptor : public SerializableTypeDescriptor<TSerializer, TDFlags>
 			{
 			protected:
 				Ptr<TSerializer>				typedSerializer;
@@ -12006,7 +12107,7 @@ StructValueSerializer
 			public:
 				StructTypeDescriptor()
 				{
-					auto serializer = SerializableTypeDescriptor<TSerializer>::serializer;
+					auto serializer = SerializableTypeDescriptor<TSerializer, TDFlags>::serializer;
 					typedSerializer = serializer.template Cast<TSerializer>();
 				}
 
@@ -12226,8 +12327,12 @@ ParameterAccessor<TStruct>
 
 				static T* UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor, const WString& valueName)
 				{
-					if(value.IsNull()) return 0;
-					T* result=dynamic_cast<T*>(value.GetRawPtr());
+					if(value.IsNull()) return nullptr;
+					T* result = nullptr;
+					if (value.GetRawPtr())
+					{
+						result = value.GetRawPtr()->SafeAggregationCast<T>();
+					}
 					if(!result)
 					{
 						if(!typeDescriptor)
@@ -12250,15 +12355,11 @@ ParameterAccessor<TStruct>
 
 				static Ptr<T> UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor, const WString& valueName)
 				{
-					if(value.IsNull()) return 0;
+					if (value.IsNull()) return nullptr;
 					Ptr<T> result;
-					if(value.GetValueType()==Value::SharedPtr)
+					if(value.GetValueType()==Value::RawPtr || value.GetValueType()==Value::SharedPtr)
 					{
-						result=value.GetSharedPtr().Cast<T>();
-					}
-					else if(value.GetValueType()==Value::RawPtr)
-					{
-						result=dynamic_cast<T*>(value.GetRawPtr());
+						result = value.GetRawPtr()->SafeAggregationCast<T>();
 					}
 					if(!result)
 					{
@@ -13653,6 +13754,93 @@ namespace vl
 			template<typename T>
 			struct CustomTypeDescriptorSelector{};
 
+			struct MethodPointerBinaryData
+			{
+				typedef collections::Dictionary<MethodPointerBinaryData, IMethodInfo*>		MethodMap;
+
+				class IIndexer : public virtual IDescriptable
+				{
+				public:
+					virtual void IndexMethodInfo(const MethodPointerBinaryData& data, IMethodInfo* methodInfo) = 0;
+					virtual IMethodInfo* GetIndexedMethodInfo(const MethodPointerBinaryData& data) = 0;
+				};
+
+				vint data[4];
+
+				static inline vint Compare(const MethodPointerBinaryData& a, const MethodPointerBinaryData& b)
+				{
+					{
+						auto result = a.data[0] - b.data[0];
+						if (result != 0) return result;
+					}
+					{
+						auto result = a.data[1] - b.data[1];
+						if (result != 0) return result;
+					}
+					{
+						auto result = a.data[2] - b.data[2];
+						if (result != 0) return result;
+					}
+					{
+						auto result = a.data[3] - b.data[3];
+						if (result != 0) return result;
+					}
+					return 0;
+				}
+
+#define COMPARE(OPERATOR)\
+				inline bool operator OPERATOR(const MethodPointerBinaryData& d)const\
+				{\
+					return Compare(*this, d) OPERATOR 0;\
+				}
+
+				COMPARE(<)
+				COMPARE(<=)
+				COMPARE(>)
+				COMPARE(>=)
+				COMPARE(==)
+				COMPARE(!=)
+#undef COMPARE
+			};
+
+			template<typename T>
+			union MethodPointerBinaryDataRetriver
+			{
+				T methodPointer;
+				MethodPointerBinaryData binaryData;
+
+				MethodPointerBinaryDataRetriver(T _methodPointer)
+				{
+					memset(&binaryData, 0, sizeof(binaryData));
+					methodPointer = _methodPointer;
+				}
+
+				const MethodPointerBinaryData& GetBinaryData()
+				{
+					static_assert(sizeof(T) <= sizeof(MethodPointerBinaryData), "Your C++ compiler is bad!");
+					return binaryData;
+				}
+			};
+
+			template<typename T, TypeDescriptorFlags TDFlags>
+			struct MethodPointerBinaryDataRecorder
+			{
+				static void RecordMethod(const MethodPointerBinaryData& data, ITypeDescriptor* td, IMethodInfo* methodInfo)
+				{
+				}
+			};
+
+			template<typename T>
+			struct MethodPointerBinaryDataRecorder<T, TypeDescriptorFlags::Interface>
+			{
+				static void RecordMethod(const MethodPointerBinaryData& data, ITypeDescriptor* td, IMethodInfo* methodInfo)
+				{
+					auto impl = dynamic_cast<MethodPointerBinaryData::IIndexer*>(td);
+					CHECK_ERROR(impl != nullptr, L"Internal error: RecordMethod can only be called when registering methods.");
+					impl->IndexMethodInfo(data, methodInfo);
+				}
+			};
+
 /***********************************************************************
 Type
 ***********************************************************************/
@@ -13665,6 +13853,63 @@ Type
 				manager->SetTypeDescriptor(TypeInfo<TYPENAME>::TypeName, type);\
 			}
 
+/***********************************************************************
+InterfaceProxy
+***********************************************************************/
+
+#define INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
+			static INTERFACE* Create(Ptr<IValueInterfaceProxy> proxy)\
+			{\
+				auto obj = new ValueInterfaceProxy<INTERFACE>();\
+				obj->SetProxy(proxy);\
+				return obj;\
+			}\
+
+#define INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
+			static Ptr<INTERFACE> Create(Ptr<IValueInterfaceProxy> proxy)\
+			{\
+				auto obj = new ValueInterfaceProxy<INTERFACE>();\
+				obj->SetProxy(proxy);\
+				return obj;\
+			}\
+
+#define BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
+			template<>\
+			class ValueInterfaceProxy<INTERFACE> : ValueInterfaceImpl<INTERFACE>\
+			{\
+				typedef INTERFACE _interface_proxy_InterfaceType;\
+			public:\
+
+#define BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(INTERFACE)\
+			BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
+			INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
+
+#define BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(INTERFACE)\
+			BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
+			INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
+
+#define BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, ...)\
+			template<>\
+			class ValueInterfaceProxy<INTERFACE> : ValueInterfaceImpl<INTERFACE, __VA_ARGS__>\
+			{\
+				typedef INTERFACE _interface_proxy_InterfaceType;\
+			public:\
+
+#define BEGIN_INTERFACE_PROXY_RAWPTR(INTERFACE, ...)\
+			BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, __VA_ARGS__)\
+			INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
+
+#define BEGIN_INTERFACE_PROXY_SHAREDPTR(INTERFACE, ...)\
+			BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, __VA_ARGS__)\
+			INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
+
+#define END_INTERFACE_PROXY(INTERFACE)\
+			};
+
+/***********************************************************************
+InterfaceProxy::Invoke
+***********************************************************************/
+
 			template<typename TClass, typename TReturn, typename ...TArgument>
 			auto MethodTypeTrait(TArgument...)->TReturn(TClass::*)(TArgument...)
 			{
@@ -13672,37 +13917,46 @@ Type
 			}
 
 #define PREPARE_INVOKE_INTERFACE_PROXY(METHODNAME, ...)\
-			using _interface_proxy_InterfaceType = RemoveReference<decltype(*this)>::Type;\
-			static ITypeDescriptor* const _interface_proxy_typedescriptor = nullptr;\
-			static IMethodInfo* const _interface_proxy_methodInfo = nullptr;\
-			static auto const _interface_proxy_method\
-				= (decltype(MethodTypeTrait<_interface_proxy_InterfaceType, decltype(METHODNAME(__VA_ARGS__))>(__VA_ARGS__)))\
-				&_interface_proxy_InterfaceType::METHODNAME;
+			static ITypeDescriptor* _interface_proxy_typeDescriptor = nullptr;\
+			static IMethodInfo* _interface_proxy_methodInfo = nullptr;\
+			if (_interface_proxy_typeDescriptor != static_cast<DescriptableObject*>(this)->GetTypeDescriptor())\
+			{\
+				_interface_proxy_typeDescriptor = static_cast<DescriptableObject*>(this)->GetTypeDescriptor();\
+				CHECK_ERROR(_interface_proxy_typeDescriptor != nullptr, L"Internal error: The type of this interface has not been registered.");\
+				auto impl = dynamic_cast<MethodPointerBinaryData::IIndexer*>(_interface_proxy_typeDescriptor);\
+				CHECK_ERROR(impl != nullptr, L"Internal error: BEGIN_INTERFACE_PROXY is the only correct way to register an interface with a proxy.");\
+				auto _interface_proxy_method\
+					= (decltype(MethodTypeTrait<_interface_proxy_InterfaceType, decltype(METHODNAME(__VA_ARGS__))>(__VA_ARGS__)))\
+					&_interface_proxy_InterfaceType::METHODNAME;\
+				MethodPointerBinaryDataRetriver<decltype(_interface_proxy_method)> binaryData(_interface_proxy_method);\
+				_interface_proxy_methodInfo = impl->GetIndexedMethodInfo(binaryData.GetBinaryData());\
+			}\
 
 #define INVOKE_INTERFACE_PROXY(METHODNAME, ...)\
 			PREPARE_INVOKE_INTERFACE_PROXY(METHODNAME, __VA_ARGS__)\
-			proxy->Invoke(L ## #METHODNAME, IValueList::Create(collections::From((collections::Array<Value>&)(Value_xs(), __VA_ARGS__))))
+			proxy->Invoke(_interface_proxy_methodInfo, IValueList::Create(collections::From((collections::Array<Value>&)(Value_xs(), __VA_ARGS__))))
 
 #define INVOKE_INTERFACE_PROXY_NOPARAMS(METHODNAME)\
 			PREPARE_INVOKE_INTERFACE_PROXY(METHODNAME)\
-			proxy->Invoke(L ## #METHODNAME, IValueList::Create())
+			proxy->Invoke(_interface_proxy_methodInfo, IValueList::Create())
 
 #define INVOKEGET_INTERFACE_PROXY(METHODNAME, ...)\
 			PREPARE_INVOKE_INTERFACE_PROXY(METHODNAME, __VA_ARGS__)\
-			return UnboxValue<decltype(METHODNAME(__VA_ARGS__))>(proxy->Invoke(L ## #METHODNAME, IValueList::Create(collections::From((collections::Array<Value>&)(Value_xs(), __VA_ARGS__)))))
+			return UnboxValue<decltype(METHODNAME(__VA_ARGS__))>(proxy->Invoke(_interface_proxy_methodInfo, IValueList::Create(collections::From((collections::Array<Value>&)(Value_xs(), __VA_ARGS__)))))
 
 #define INVOKEGET_INTERFACE_PROXY_NOPARAMS(METHODNAME)\
 			PREPARE_INVOKE_INTERFACE_PROXY(METHODNAME)\
-			return UnboxValue<decltype(METHODNAME())>(proxy->Invoke(L ## #METHODNAME, IValueList::Create()))
+			return UnboxValue<decltype(METHODNAME())>(proxy->Invoke(_interface_proxy_methodInfo, IValueList::Create()))
 
 /***********************************************************************
 Enum
 ***********************************************************************/
 
-#define BEGIN_ENUM_ITEM_FLAG(TYPENAME, DEFAULTVALUE, FLAG)\
+#define BEGIN_ENUM_ITEM_FLAG(TYPENAME, DEFAULTVALUE, FLAG, TDFLAGS)\
 			template<>\
 			struct CustomTypeDescriptorSelector<TYPENAME>\
 			{\
+				static const TypeDescriptorFlags TDFlags = TDFLAGS;\
 			public:\
 				class CustomEnumValueSerializer : public EnumValueSerializer<TYPENAME, FLAG>\
 				{\
@@ -13712,14 +13966,14 @@ Enum
 						:EnumValueSerializer(_ownerTypeDescriptor, DEFAULTVALUE)\
 					{
 
-#define BEGIN_ENUM_ITEM_DEFAULT_VALUE(TYPENAME, DEFAULTVALUE) BEGIN_ENUM_ITEM_FLAG(TYPENAME, TYPENAME::DEFAULTVALUE, false)
-#define BEGIN_ENUM_ITEM(TYPENAME) BEGIN_ENUM_ITEM_FLAG(TYPENAME, (TYPENAME)0, false)
-#define BEGIN_ENUM_ITEM_MERGABLE(TYPENAME) BEGIN_ENUM_ITEM_FLAG(TYPENAME, (TYPENAME)0, true)
+#define BEGIN_ENUM_ITEM_DEFAULT_VALUE(TYPENAME, DEFAULTVALUE) BEGIN_ENUM_ITEM_FLAG(TYPENAME, TYPENAME::DEFAULTVALUE, false, TypeDescriptorFlags::NormalEnum)
+#define BEGIN_ENUM_ITEM(TYPENAME) BEGIN_ENUM_ITEM_FLAG(TYPENAME, (TYPENAME)0, false, TypeDescriptorFlags::NormalEnum)
+#define BEGIN_ENUM_ITEM_MERGABLE(TYPENAME) BEGIN_ENUM_ITEM_FLAG(TYPENAME, (TYPENAME)0, true, TypeDescriptorFlags::FlagEnum)
 
 #define END_ENUM_ITEM(TYPENAME)\
 					}\
 				};\
-				typedef SerializableTypeDescriptor<CustomEnumValueSerializer> CustomTypeDescriptorImpl;\
+				typedef SerializableTypeDescriptor<CustomEnumValueSerializer, TDFlags> CustomTypeDescriptorImpl;\
 			};
 
 #define ENUM_ITEM_NAMESPACE(TYPENAME) typedef TYPENAME EnumItemNamespace;
@@ -13748,11 +14002,14 @@ Struct
 					void LoadInternal()override\
 					{
 
-#define END_STRUCT_MEMBER(TYPENAME)\
+#define END_STRUCT_MEMBER_FLAG(TYPENAME, TDFLAGS)\
 					}\
 				};\
-				typedef StructTypeDescriptor<CustomStructValueSerializer> CustomTypeDescriptorImpl;\
+				typedef StructTypeDescriptor<CustomStructValueSerializer, TDFLAGS> CustomTypeDescriptorImpl;\
 			};
+
+#define END_STRUCT_MEMBER(TYPENAME)\
+			END_STRUCT_MEMBER_FLAG(TYPENAME, TypeDescriptorFlags::Struct)
 
 #define STRUCT_MEMBER(FIELDNAME)\
 	fieldSerializers.Add(L ## #FIELDNAME, new FieldSerializer<decltype(((StructType*)0)->FIELDNAME)>(GetOwnerTypeDescriptor(), &StructType::FIELDNAME, L ## #FIELDNAME));
@@ -13769,9 +14026,10 @@ Class
 				class CustomTypeDescriptorImpl : public TypeDescriptorImpl\
 				{\
 					typedef TYPENAME ClassType;\
+					static const TypeDescriptorFlags		TDFlags = TypeDescriptorFlags::Class;\
 				public:\
 					CustomTypeDescriptorImpl()\
-						:TypeDescriptorImpl(TypeInfo<TYPENAME>::TypeName, TypeInfo<TYPENAME>::CppFullTypeName)\
+						:TypeDescriptorImpl(TDFlags, TypeInfo<TYPENAME>::TypeName, TypeInfo<TYPENAME>::CppFullTypeName)\
 					{\
 						Description<TYPENAME>::SetAssociatedTypeDescroptor(this);\
 					}\
@@ -13796,17 +14054,19 @@ Class
 Interface
 ***********************************************************************/
 
-#define BEGIN_INTERFACE_MEMBER_NOPROXY(TYPENAME)\
+#define BEGIN_INTERFACE_MEMBER_NOPROXY_FLAG(TYPENAME, TDFLAGS)\
 			template<>\
 			struct CustomTypeDescriptorSelector<TYPENAME>\
 			{\
 			public:\
-				class CustomTypeDescriptorImpl : public TypeDescriptorImpl\
+				class CustomTypeDescriptorImpl : public TypeDescriptorImpl, public MethodPointerBinaryData::IIndexer\
 				{\
-					typedef TYPENAME ClassType;\
+					typedef TYPENAME						ClassType;\
+					static const TypeDescriptorFlags		TDFlags = TDFLAGS;\
+					MethodPointerBinaryData::MethodMap		methodsForProxy;\
 				public:\
 					CustomTypeDescriptorImpl()\
-						:TypeDescriptorImpl(TypeInfo<TYPENAME>::TypeName, TypeInfo<TYPENAME>::CppFullTypeName)\
+						:TypeDescriptorImpl(TDFLAGS, TypeInfo<TYPENAME>::TypeName, TypeInfo<TYPENAME>::CppFullTypeName)\
 					{\
 						Description<TYPENAME>::SetAssociatedTypeDescroptor(this);\
 					}\
@@ -13814,16 +14074,28 @@ Interface
 					{\
 						Description<TYPENAME>::SetAssociatedTypeDescroptor(0);\
 					}\
+					void IndexMethodInfo(const MethodPointerBinaryData& data, IMethodInfo* methodInfo)override\
+					{\
+						methodsForProxy.Add(data, methodInfo);\
+					}\
+					IMethodInfo* GetIndexedMethodInfo(const MethodPointerBinaryData& data)override\
+					{\
+						Load();\
+						return methodsForProxy[data];\
+					}\
 				protected:\
 					void LoadInternal()override\
 					{
+
+#define BEGIN_INTERFACE_MEMBER_NOPROXY(TYPENAME)\
+			BEGIN_INTERFACE_MEMBER_NOPROXY_FLAG(TYPENAME, TypeDescriptorFlags::Interface)
 
 #define BEGIN_INTERFACE_MEMBER(TYPENAME)\
 	BEGIN_INTERFACE_MEMBER_NOPROXY(TYPENAME)\
 	CLASS_MEMBER_EXTERNALCTOR(decltype(ValueInterfaceProxy<TYPENAME>::Create(nullptr))(Ptr<IValueInterfaceProxy>), { L"proxy" }, &ValueInterfaceProxy<TYPENAME>::Create)
 
 #define END_INTERFACE_MEMBER(TYPENAME)\
-						if (GetBaseTypeDescriptorCount() == 0) CLASS_MEMBER_BASE(IDescriptable)\
+						if (GetBaseTypeDescriptorCount() == 0 && TDFlags == TypeDescriptorFlags::Interface) CLASS_MEMBER_BASE(IDescriptable)\
 					}\
 				};\
 			};
@@ -13880,13 +14152,17 @@ Method
 #define CLASS_MEMBER_METHOD_OVERLOAD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
-				AddMethod(\
-					L ## #EXPECTEDNAME,\
-					new CustomMethodInfoImpl<\
+				auto methodInfo = new CustomMethodInfoImpl<\
 						ClassType,\
 						vl::function_lambda::LambdaRetriveType<FUNCTIONTYPE>::FunctionType\
-						>(parameterNames, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME)\
+						>\
+					(parameterNames, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME);\
+				AddMethod(\
+					L ## #EXPECTEDNAME,\
+					methodInfo\
 					);\
+				MethodPointerBinaryDataRetriver<FUNCTIONTYPE> binaryDataRetriver(&ClassType::FUNCTIONNAME);\
+				MethodPointerBinaryDataRecorder<ClassType, TDFlags>::RecordMethod(binaryDataRetriver.GetBinaryData(), this, methodInfo);\
 			}
 
 #define CLASS_MEMBER_METHOD_OVERLOAD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
@@ -13996,57 +14272,6 @@ Property
 #define CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(PROPERTYNAME, EVENTNAME)\
 			CLASS_MEMBER_METHOD(Get##PROPERTYNAME, NO_PARAMETER)\
 			CLASS_MEMBER_PROPERTY_EVENT_READONLY(PROPERTYNAME, Get##PROPERTYNAME, EVENTNAME)\
-
-/***********************************************************************
-InterfaceProxy
-***********************************************************************/
-
-#define INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
-			static INTERFACE* Create(Ptr<IValueInterfaceProxy> proxy)\
-			{\
-				auto obj = new ValueInterfaceProxy<INTERFACE>();\
-				obj->SetProxy(proxy);\
-				return obj;\
-			}\
-
-#define INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
-			static Ptr<INTERFACE> Create(Ptr<IValueInterfaceProxy> proxy)\
-			{\
-				auto obj = new ValueInterfaceProxy<INTERFACE>();\
-				obj->SetProxy(proxy);\
-				return obj;\
-			}\
-
-#define BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
-			template<>\
-			class ValueInterfaceProxy<INTERFACE> : ValueInterfaceImpl<INTERFACE>\
-			{\
-			public:\
-
-#define BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(INTERFACE)\
-			BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
-			INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
-
-#define BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(INTERFACE)\
-			BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
-			INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
-
-#define BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, ...)\
-			template<>\
-			class ValueInterfaceProxy<INTERFACE> : ValueInterfaceImpl<INTERFACE, __VA_ARGS__>\
-			{\
-			public:\
-
-#define BEGIN_INTERFACE_PROXY_RAWPTR(INTERFACE, ...)\
-			BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, __VA_ARGS__)\
-			INTERFACE_PROXY_CTOR_RAWPTR(INTERFACE)\
-
-#define BEGIN_INTERFACE_PROXY_SHAREDPTR(INTERFACE, ...)\
-			BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, __VA_ARGS__)\
-			INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
-
-#define END_INTERFACE_PROXY(INTERFACE)\
-			};
 
 		}
 	}
@@ -15376,10 +15601,10 @@ namespace vl
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
-				
-			END_INTERFACE_PROXY(vl::parsing::json::JsonNode::IVisitor)
-#endif
 
+			END_INTERFACE_PROXY(vl::parsing::json::JsonNode::IVisitor)
+
+#endif
 			extern bool JsonLoadTypes();
 		}
 	}
@@ -15597,8 +15822,8 @@ namespace vl
 				}
 
 			END_INTERFACE_PROXY(vl::parsing::xml::XmlNode::IVisitor)
-#endif
 
+#endif
 			extern bool XmlLoadTypes();
 		}
 	}

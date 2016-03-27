@@ -72,7 +72,7 @@ Image Type Resolver (Image)
 			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
 			{
 				auto obj = resource.Cast<GuiImageData>();
-				stream::internal::Writer writer(stream);
+				stream::internal::ContextFreeWriter writer(stream);
 				FileStream fileStream(obj->GetFilePath(), FileStream::ReadOnly);
 				writer << (stream::IStream&)fileStream;
 			}
@@ -110,7 +110,7 @@ Image Type Resolver (Image)
 
 			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
-				stream::internal::Reader reader(stream);
+				stream::internal::ContextFreeReader reader(stream);
 				MemoryStream memoryStream;
 				reader << (stream::IStream&)memoryStream;
 
@@ -182,7 +182,7 @@ Text Type Resolver (Text)
 			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
 			{
 				auto obj = resource.Cast<GuiTextData>();
-				stream::internal::Writer writer(stream);
+				stream::internal::ContextFreeWriter writer(stream);
 				WString text = obj->GetText();
 				writer << text;
 			}
@@ -208,7 +208,7 @@ Text Type Resolver (Text)
 
 			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
-				stream::internal::Reader reader(stream);
+				stream::internal::ContextFreeReader reader(stream);
 				WString text;
 				reader << text;
 				return new GuiTextData(text);
@@ -276,7 +276,7 @@ Xml Type Resolver (Xml)
 					StreamReader reader(buffer);
 					WString text = reader.ReadToEnd();
 
-					stream::internal::Writer writer(stream);
+					stream::internal::ContextFreeWriter writer(stream);
 					writer << text;
 				}
 			}
@@ -312,7 +312,7 @@ Xml Type Resolver (Xml)
 
 			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
-				stream::internal::Reader reader(stream);
+				stream::internal::ContextFreeReader reader(stream);
 				WString text;
 				reader << text;
 

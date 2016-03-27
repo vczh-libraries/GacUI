@@ -155,7 +155,7 @@ GuiComboBoxInstanceLoader
 			protected:
 				GlobalStringKey						_ListControl;
 
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewTypeExpression> createControl)override
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
 				{
 					vint indexListControl = arguments.Keys().IndexOf(_ListControl);
 					if (indexListControl != -1)
@@ -206,7 +206,7 @@ GuiPredefinedInstanceLoadersPlugin
 				using TTemplate = GuiDatePickerTemplate;
 
 				auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
-				auto createControl = MakePtr<WfNewTypeExpression>();
+				auto createControl = MakePtr<WfNewClassExpression>();
 				createControl->type = GetTypeFromTypeInfo(controlType.Obj());
 				createControl->arguments.Add(GuiTemplateControlInstanceLoader<TControl, TControlStyle, TTemplate>::CreateIThemeCall(L"CreateDatePickerStyle"));
 

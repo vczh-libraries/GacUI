@@ -63,7 +63,7 @@ GuiAxisInstanceLoader
 						vint indexAxisDirection = arguments.Keys().IndexOf(_AxisDirection);
 						if (indexAxisDirection)
 						{
-							auto createExpr = MakePtr<WfNewTypeExpression>();
+							auto createExpr = MakePtr<WfNewClassExpression>();
 							createExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiAxis>>::CreateTypeInfo().Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexAxisDirection)[0].expression);
 
