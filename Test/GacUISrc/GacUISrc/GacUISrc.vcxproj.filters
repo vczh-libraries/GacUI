@@ -82,17 +82,20 @@
     <Filter Include="GacUI\Reflection">
       <UniqueIdentifier>{52ecafd7-8ba1-474e-acae-ebf995a53344}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GacUI\Reflection\InstanceQuery">
-      <UniqueIdentifier>{77d49703-4ac7-4e67-a00b-2d1eec4a63cc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GacUI\Reflection\TypeDescriptors">
       <UniqueIdentifier>{7c80b45c-b016-4b4e-98ef-9cc02785d4b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GacUI\Reflection\InstanceLoaders">
-      <UniqueIdentifier>{4a36159b-3df7-4c48-b8a0-c3eb090ca16b}</UniqueIdentifier>
+    <Filter Include="GacUI\Compiler">
+      <UniqueIdentifier>{8066e5a5-5370-43c0-8981-012dabe79732}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GacUI\Reflection\WorkflowCodegen">
-      <UniqueIdentifier>{35b30104-1e7e-4b53-9429-54b69e2c30bd}</UniqueIdentifier>
+    <Filter Include="GacUI\Compiler\InstanceLoaders">
+      <UniqueIdentifier>{4a587e0c-dbc7-4e72-8121-6c99c6395cf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GacUI\Compiler\InstanceQuery">
+      <UniqueIdentifier>{a63fd1ed-dd67-44d9-836b-801f37c28538}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GacUI\Compiler\WorkflowCodegen">
+      <UniqueIdentifier>{9ffc101d-a378-4c70-853b-3b9a05cace80}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -366,24 +369,6 @@
     <ClCompile Include="..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp">
       <Filter>GacUI\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceHelperTypes.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedInstanceBinders.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.cpp">
-      <Filter>GacUI\Reflection\InstanceQuery</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.cpp">
-      <Filter>GacUI\Reflection\InstanceQuery</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.cpp">
       <Filter>GacUI\Reflection\TypeDescriptors</Filter>
     </ClCompile>
@@ -414,56 +399,74 @@
     <ClCompile Include="TsfTestWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceLoader_PredefinedTypeResolvers.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.cpp">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Plugin.cpp">
-      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceHelperTypes.cpp">
+      <Filter>GacUI\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Tab.cpp">
-      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader.cpp">
+      <Filter>GacUI\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Toolstrip.cpp">
-      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceBinders.cpp">
+      <Filter>GacUI\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_List.cpp">
-      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedTypeResolvers.cpp">
+      <Filter>GacUI\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Document.cpp">
-      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceRepresentation.cpp">
+      <Filter>GacUI\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_Compositions.cpp">
-      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.cpp">
+      <Filter>GacUI\Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.cpp">
-      <Filter>GacUI\Reflection\WorkflowCodegen</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Compositions.cpp">
+      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowCollectReferences.cpp">
-      <Filter>GacUI\Reflection\WorkflowCodegen</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Document.cpp">
+      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateBindings.cpp">
-      <Filter>GacUI\Reflection\WorkflowCodegen</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_List.cpp">
+      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp">
-      <Filter>GacUI\Reflection\WorkflowCodegen</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Plugin.cpp">
+      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowInstallBindings.cpp">
-      <Filter>GacUI\Reflection\WorkflowCodegen</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Tab.cpp">
+      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowModule.cpp">
-      <Filter>GacUI\Reflection\WorkflowCodegen</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Toolstrip.cpp">
+      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateCreating.cpp">
-      <Filter>GacUI\Reflection\WorkflowCodegen</Filter>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.cpp">
+      <Filter>GacUI\Compiler\InstanceQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.cpp">
+      <Filter>GacUI\Compiler\InstanceQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.cpp">
+      <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCollectReferences.cpp">
+      <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateBindings.cpp">
+      <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateCreating.cpp">
+      <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowInstallBindings.cpp">
+      <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowModule.cpp">
+      <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp">
+      <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -740,21 +743,6 @@
     <ClInclude Include="..\..\..\Source\Resources\GuiResource.h">
       <Filter>GacUI\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceHelperTypes.h">
-      <Filter>GacUI\Reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceLoader.h">
-      <Filter>GacUI\Reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceRepresentation.h">
-      <Filter>GacUI\Reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery.h">
-      <Filter>GacUI\Reflection\InstanceQuery</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.h">
-      <Filter>GacUI\Reflection\InstanceQuery</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h">
       <Filter>GacUI\Reflection\TypeDescriptors</Filter>
     </ClInclude>
@@ -773,38 +761,53 @@
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.h">
       <Filter>GacUI\Reflection\TypeDescriptors</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h">
-      <Filter>GacUI\Reflection</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.h">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.h">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\InstanceLoaders\GuiInstanceLoader_TemplateControl.h">
-      <Filter>GacUI\Reflection\InstanceLoaders</Filter>
+    <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceHelperTypes.h">
+      <Filter>GacUI\Compiler</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h">
-      <Filter>GacUI\Reflection\WorkflowCodegen</Filter>
+    <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceLoader.h">
+      <Filter>GacUI\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceRepresentation.h">
+      <Filter>GacUI\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.h">
+      <Filter>GacUI\Compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_TemplateControl.h">
+      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.h">
+      <Filter>GacUI\Compiler\InstanceQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h">
+      <Filter>GacUI\Compiler\InstanceQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h">
+      <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Source\Reflection\InstanceQuery\Codegen.bat">
-      <Filter>GacUI\Reflection\InstanceQuery</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\..\Source\Reflection\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
-      <Filter>GacUI\Reflection\InstanceQuery</Filter>
-    </Text>
     <Text Include="UI.xml">
       <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
+      <Filter>GacUI\Compiler\InstanceQuery</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Gaclib.png">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Source\Compiler\InstanceQuery\Codegen.bat">
+      <Filter>GacUI\Compiler\InstanceQuery</Filter>
+    </None>
   </ItemGroup>
 </Project>
