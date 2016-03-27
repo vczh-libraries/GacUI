@@ -479,9 +479,6 @@
     <ClInclude Include="..\..\..\Source\GacUI.h">
       <Filter>GacUI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\GacVlppReferences.h">
-      <Filter>GacUI</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\GuiApplication.h">
       <Filter>GacUI\Controls</Filter>
     </ClInclude>
@@ -775,9 +772,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.h">
       <Filter>GacUI\Reflection\TypeDescriptors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\GacWorkflowReferences.h">
-      <Filter>GacUI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceSharedScript.h">
       <Filter>GacUI\Reflection</Filter>

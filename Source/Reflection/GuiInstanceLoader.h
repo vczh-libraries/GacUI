@@ -11,7 +11,7 @@ Interfaces:
 
 #include "../Controls/GuiApplication.h"
 #include "../Controls/Styles/GuiThemeStyleFactory.h"
-#include "../GacWorkflowReferences.h"
+#include "../../Import/VlppWorkflow.h"
 #include "GuiInstanceRepresentation.h"
 
 namespace vl

@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESHAREDSCRIPT
 
 #include "../Resources/GuiResource.h"
-#include "../GacWorkflowReferences.h"
+#include "../../Import/VlppWorkflow.h"
 
 namespace vl
 {

@@ -11,7 +11,6 @@ Interfaces:
 
 #include "../Resources/GuiResource.h"
 #include "InstanceQuery/GuiInstanceQuery_Parser.h"
-#include "../GacWorkflowReferences.h"
 
 namespace vl
 {
