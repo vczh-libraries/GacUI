@@ -25,7 +25,7 @@ Resource
 		class GuiInstanceConstructorResult : public Object
 		{
 		public:
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
+			reflection::description::Value				ctorInstance;
 		};
 
 		class IGuiInstanceResourceManager : public IDescriptable, public Description<IGuiInstanceResourceManager>
@@ -33,7 +33,7 @@ Resource
 		public:
 			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::Application) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
-			virtual Ptr<GuiInstanceConstructorResult>	RunInstanceConstructor(const WString& classFullName, description::Value instance) = 0;
+			virtual Ptr<GuiInstanceConstructorResult>	RunInstanceConstructor(const WString& classFullName, description::Value rootInstance) = 0;
 		};
 
 		extern IGuiInstanceResourceManager*			GetInstanceResourceManager();
@@ -47,17 +47,17 @@ PartialClass
 		{
 		private:
 			WString											className;
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
+			reflection::description::Value					ctorInstance;
 
 		protected:
 			bool InitializeFromResource()
 			{
-				if (!context)
+				if (ctorInstance.IsNull())
 				{
 					auto value = description::Value::From(dynamic_cast<T*>(this));
 					if (auto result = GetInstanceResourceManager()->RunInstanceConstructor(className, value))
 					{
-						context = result->context;
+						ctorInstance = result->ctorInstance;
 						return true;
 					}
 				}
@@ -67,19 +67,7 @@ PartialClass
 			template<typename TControl>
 			void LoadInstanceReference(const WString& name, TControl*& reference)
 			{
-				reference = 0;
-				vint index = context->assembly->variableNames.IndexOf(name);
-				CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Failed to find instance reference.");
-
-				auto value = context->globalVariables->variables[index];
-				auto td = description::GetTypeDescriptor<TControl>();
-				if (!value.GetTypeDescriptor() || !value.GetTypeDescriptor()->CanConvertTo(td))
-				{
-					CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Wrong instance reference type.");
-					return;
-				}
-
-				reference = description::UnboxValue<TControl*>(value);
+				reference = ctorInstance.GetProperty(name).GetRawPtr()->SafeAggregationCast<TControl>();
 			}
 		public:
 			GuiInstancePartialClass(const WString& _className)

@@ -65,10 +65,14 @@ namespace demo
 	class MainWindow_ : public GuiWindow, public GuiInstancePartialClass<GuiWindow>, public Description<TImpl>
 	{
 	protected:
+		GuiSinglelineTextBox* textBoxA = nullptr;
+		GuiSinglelineTextBox* textBoxB = nullptr;
 
 		void InitializeComponents()
 		{
 			InitializeFromResource();
+			GUI_INSTANCE_REFERENCE(textBoxA);
+			GUI_INSTANCE_REFERENCE(textBoxB);
 		}
 	public:
 		MainWindow_()
@@ -149,7 +153,7 @@ void GuiMain_Resource()
 
 		{
 			FileStream fileStream(L"UI.error.txt", FileStream::WriteOnly);
-			Utf16Encoder encoder;
+			BomEncoder encoder(BomEncoder::Utf16);
 			EncoderStream encoderStream(fileStream, encoder);
 			StreamWriter writer(encoderStream);
 
@@ -171,7 +175,7 @@ void GuiMain_Resource()
 		GetInstanceResourceManager()->SetResource(L"Resource", resource);
 
 		{
-			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceCtor/MainWindowResource");
+			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceCtor");
 			auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
 			auto code = compiled->assembly->insAfterCodegen->moduleCodes[0];
 			File(L"UI.txt").WriteAllText(code);

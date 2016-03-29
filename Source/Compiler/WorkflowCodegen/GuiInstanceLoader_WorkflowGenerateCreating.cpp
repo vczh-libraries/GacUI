@@ -308,7 +308,7 @@ WorkflowGenerateCreatingVisitor
 					}
 					else if (errorCount == errors.Count())
 					{
-						errors.Add(L"Precompile: Something is wrong when creating an isntance of type \"" + typeInfo.typeName.ToString() + L"\".");
+						errors.Add(L"Precompile: Something is wrong when creating an instance of type \"" + typeInfo.typeName.ToString() + L"\".");
 					}
 				}
 				Visit((GuiAttSetterRepr*)repr);

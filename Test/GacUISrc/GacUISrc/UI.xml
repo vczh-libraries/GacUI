@@ -1,27 +1,49 @@
 <Resource>
   <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow" xmlns:x="presentation::controls::GuiSelectableButton::*">
+    <Instance ref.Class="demo::MainWindow">
       <Window Text="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
 
-        <ToolstripCommand ref.Name="commandNewText" Text="Text File" ShortcutBuilder="Ctrl+Shift+T"/>
-        <ToolstripCommand ref.Name="commandNewXml" Text="Xml File" ShortcutBuilder="Ctrl+Shift+X"/>
-        <ToolstripCommand ref.Name="commandOpen" Text="Open" ShortcutBuilder="Ctrl+O"/>
-        <ToolstripCommand ref.Name="commandSave" Text="Save" ShortcutBuilder="Ctrl+S"/>
+        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:200</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
 
-        <MenuBarButton Text="File">
-          <att.SubMenu-set>
-            <MenuItemButton Text="New">
-              <att.SubMenu-set>
-                <MenuItemButton Command-ref="commandNewText"/>
-                <MenuItemButton Command-ref="commandNewXml"/>
-              </att.SubMenu-set>
-            </MenuItemButton>
-            <MenuItemButton Command-ref="commandOpen"/>
-            <MenuItemButton Command-ref="commandSave"/>
-            <MenuItemButton Text="Exit"/>
-          </att.SubMenu-set>
-        </MenuBarButton>
+          <Cell Site="row:0 column:0">
+            <Label Text="A ="/>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <SinglelineTextBox ref.Name="textBoxA" Text="1">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:24"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <Label Text="B ="/>
+          </Cell>
+          <Cell Site="row:1 column:1">
+            <SinglelineTextBox ref.Name="textBoxB" Text="2">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:24"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:2 column:0">
+            <Label Text="A + B ="/>
+          </Cell>
+          <Cell Site="row:2 column:1">
+            <SinglelineTextBox Text-bind="(cast int textBoxA.Text) + (cast int textBoxB.Text) ?? 'ERROR'">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:24"/>
+            </SinglelineTextBox>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>

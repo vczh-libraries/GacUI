@@ -25,7 +25,11 @@ Workflow_ValidateStatement
 		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
 			bool failed = false;
-			auto module = Workflow_CreateModuleWithInitFunction(context, resolvingResult, rootTypeDescriptor, statement);
+			auto module = Workflow_CreateModuleWithUsings(context);
+			{
+				auto block = Workflow_InstallCtorClass(context, resolvingResult, rootTypeDescriptor, module);
+				block->statements.Add(statement);
+			}
 
 			Workflow_GetSharedManager()->Clear(true, true);
 			Workflow_GetSharedManager()->AddModule(module);
@@ -55,7 +59,7 @@ Workflow_PrecompileInstanceContext (Passes)
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 
-		Ptr<workflow::runtime::WfAssembly> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
+		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
 		{
 			vint previousErrorCount = errors.Count();
 			ITypeDescriptor* rootTypeDescriptor = 0;
@@ -75,29 +79,13 @@ Workflow_PrecompileInstanceContext
 
 			if (errors.Count() == previousErrorCount)
 			{
-				auto statements = MakePtr<WfBlockStatement>();
-				Workflow_GenerateCreating(context, resolvingResult, rootTypeDescriptor, statements, errors);
-				Workflow_GenerateBindings(context, resolvingResult, rootTypeDescriptor, statements, errors);
-				auto module = Workflow_CreateModuleWithInitFunction(context, resolvingResult, rootTypeDescriptor, statements);
-
-				Workflow_GetSharedManager()->Clear(true, true);
-				Workflow_GetSharedManager()->AddModule(module);
-				Workflow_GetSharedManager()->Rebuild(true);
-
-				if (Workflow_GetSharedManager()->errors.Count() == 0)
+				auto module = Workflow_CreateModuleWithUsings(context);
 				{
-					return GenerateAssembly(Workflow_GetSharedManager());
+					auto block = Workflow_InstallCtorClass(context, resolvingResult, rootTypeDescriptor, module);
+					Workflow_GenerateCreating(context, resolvingResult, rootTypeDescriptor, block, errors);
+					Workflow_GenerateBindings(context, resolvingResult, rootTypeDescriptor, block, errors);
 				}
-				else
-				{
-					errors.Add(ERROR_CODE_PREFIX L"Unexpected errors are encountered when initializing data binding.");
-					FOREACH(Ptr<parsing::ParsingError>, error, Workflow_GetSharedManager()->errors)
-					{
-						errors.Add(error->errorMessage);
-					}
-					errors.Add(ERROR_CODE_PREFIX L"Print code for reference:");
-					errors.Add(Workflow_ModuleToString(module));
-				}
+				return module;
 			}
 
 			return nullptr;

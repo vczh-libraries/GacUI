@@ -12,6 +12,7 @@ namespace vl
 	{
 		using namespace parsing;
 		using namespace parsing::xml;
+		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace workflow::runtime;
 		using namespace reflection::description;
@@ -21,6 +22,59 @@ namespace vl
 		using namespace controls;
 
 #define ERROR_CODE_PREFIX L"================================================================"
+
+		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, collections::List<WString>& errors)
+		{
+			auto manager = Workflow_GetSharedManager();
+			manager->Clear(true, true);
+
+			if (compiled->modules.Count() > 0)
+			{
+				FOREACH(Ptr<WfModule>, module, compiled->modules)
+				{
+					manager->AddModule(module);
+				}
+			}
+			else
+			{
+				FOREACH(WString, code, compiled->codes)
+				{
+					manager->AddModule(code);
+				}
+			}
+
+			if (manager->errors.Count() == 0)
+			{
+				manager->Rebuild(true);
+			}
+
+			if (manager->errors.Count() == 0)
+			{
+				compiled->assembly = GenerateAssembly(manager);
+				compiled->Initialize(true);
+			}
+			else
+			{
+				errors.Add(ERROR_CODE_PREFIX L"Failed to compile workflow scripts");
+				FOREACH(Ptr<ParsingError>, error, manager->errors)
+				{
+					if (compiled->modules.Count() > 0)
+					{
+						errors.Add(error->errorMessage);
+					}
+					else
+					{
+						errors.Add(
+							L"Row: " + itow(error->codeRange.start.row + 1) +
+							L", Column: " + itow(error->codeRange.start.column + 1) +
+							L", Message: " + error->errorMessage);
+					}
+				}
+			}
+					
+			compiled->codes.Clear();
+			compiled->modules.Clear();
+		}
 
 /***********************************************************************
 Instance Type Resolver (Instance)
@@ -60,7 +114,7 @@ Instance Type Resolver (Instance)
 
 			vint GetMaxPassIndex()override
 			{
-				return 3;
+				return 5;
 			}
 
 			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
@@ -70,14 +124,46 @@ Instance Type Resolver (Instance)
 					if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 					{
 						obj->ApplyStyles(context.resolver, errors);
-						if (auto assembly = Workflow_PrecompileInstanceContext(obj, errors))
+						if (auto module = Workflow_PrecompileInstanceContext(obj, errors))
 						{
-							auto compiled = MakePtr<GuiInstanceCompiledWorkflow>();
-							compiled->type = GuiInstanceCompiledWorkflow::InstanceCtor;
-							compiled->classFullName = obj->className;
-							compiled->assembly = assembly;
-							context.targetFolder->CreateValueByPath(L"Workflow/InstanceCtor/" + resource->GetResourcePath(), L"Workflow", compiled);
+							WString path = L"Workflow/InstanceCtor";
+							auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+							if (!compiled)
+							{
+								compiled = new GuiInstanceCompiledWorkflow;
+								compiled->type = GuiInstanceCompiledWorkflow::InstanceCtor;
+								context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
+							}
+
+							compiled->containedClassNames.Add(obj->className);
+							compiled->modules.Add(module);
 						}
+					}
+				}
+				else if (context.passIndex == 4 || context.passIndex == 5)
+				{
+					Ptr<GuiInstanceCompiledWorkflow> compiled;
+					switch(context.passIndex)
+					{
+					case 4:
+						{
+							WString path = L"Workflow/InstanceCtor";
+							compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+						}
+						break;
+					case 5:
+						{
+							WString path = L"Workflow/InstanceClass";
+							compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+						}
+						break;
+					default:
+						return;
+					}
+
+					if (compiled)
+					{
+						Workflow_GenerateAssembly(compiled, errors);
 					}
 				}
 			}
@@ -272,26 +358,7 @@ Shared Script Type Resolver (Script)
 
 				if (compiled)
 				{
-					auto table = GetParserManager()->GetParsingTable(L"WORKFLOW");
-					List<Ptr<ParsingError>> scriptErrors;
-					compiled->assembly = Compile(table, compiled->codes, scriptErrors);
-					compiled->codes.Clear();
-
-					if (scriptErrors.Count() > 0)
-					{
-						errors.Add(ERROR_CODE_PREFIX L"Failed to parse the shared workflow script");
-						FOREACH(Ptr<ParsingError>, error, scriptErrors)
-						{
-							errors.Add(
-								L"Row: " + itow(error->codeRange.start.row + 1) +
-								L", Column: " + itow(error->codeRange.start.column + 1) +
-								L", Message: " + error->errorMessage);
-						}
-					}
-					else
-					{
-						compiled->Initialize(true);
-					}
+					Workflow_GenerateAssembly(compiled, errors);
 				}
 			}
 

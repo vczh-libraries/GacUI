@@ -12,10 +12,10 @@ namespace vl
 		using namespace collections;
 
 /***********************************************************************
-Workflow_CreateEmptyModule
+Workflow_CreateModuleWithUsings
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_CreateEmptyModule(Ptr<GuiInstanceContext> context)
+		Ptr<workflow::WfModule> Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context)
 		{
 			auto module = MakePtr<WfModule>();
 			vint index = context->namespaces.Keys().IndexOf(GlobalStringKey());
@@ -82,11 +82,41 @@ Workflow_CreateEmptyModule
 			}
 			return module;
 		}
+
+/***********************************************************************
+Workflow_InstallCtorClass
+***********************************************************************/
 		
-		Ptr<workflow::WfModule> Workflow_CreateModuleWithInitFunction(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfStatement> functionBody)
+		Ptr<workflow::WfBlockStatement> Workflow_InstallCtorClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfModule> module)
 		{
-			auto module = Workflow_CreateEmptyModule(context);
-			Workflow_CreateVariablesForReferenceValues(module, resolvingResult);
+			Ptr<WfClassDeclaration> ctorClass;
+			{
+				auto decls = &module->declarations;
+				auto reading = context->className.Buffer();
+				while (true)
+				{
+					auto delimiter = wcsstr(reading, L"::");
+					if (delimiter)
+					{
+						auto ns = MakePtr<WfNamespaceDeclaration>();
+						ns->name.value = WString(reading, delimiter - reading);
+						decls->Add(ns);
+						decls = &ns->declarations;
+					}
+					else
+					{
+						ctorClass = MakePtr<WfClassDeclaration>();
+						ctorClass->kind = WfClassKind::Class;
+						ctorClass->constructorType = WfConstructorType::Undefined;
+						ctorClass->name.value = WString(reading) + L"<Ctor>";
+						decls->Add(ctorClass);
+						break;
+					}
+					reading = delimiter + 2;
+				}
+			}
+
+			Workflow_CreateVariablesForReferenceValues(ctorClass, resolvingResult);
 
 			auto thisParam = MakePtr<WfFunctionArgument>();
 			thisParam->name.value = L"<this>";
@@ -112,23 +142,29 @@ Workflow_CreateEmptyModule
 				resolverParam->type = GetTypeFromTypeInfo(pointerType.Obj());
 			}
 
+			auto block = MakePtr<WfBlockStatement>();
+
 			auto func = MakePtr<WfFunctionDeclaration>();
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = L"<initialize-instance>";
 			func->arguments.Add(thisParam);
 			func->arguments.Add(resolverParam);
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
-			func->statement = functionBody;
-			module->declarations.Add(func);
+			func->statement = block;
 
-			return module;
+			auto member = MakePtr<WfClassMember>();
+			member->kind = WfClassMemberKind::Normal;
+			member->declaration = func;
+			ctorClass->members.Add(member);
+
+			return block;
 		}
 
 /***********************************************************************
 Variable
 ***********************************************************************/
 
-		void Workflow_CreatePointerVariable(Ptr<workflow::WfModule> module, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride)
+		void Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride)
 		{
 			auto var = MakePtr<WfVariableDeclaration>();
 			var->name.value = name.ToString();
@@ -165,10 +201,14 @@ Variable
 			literal->value = WfLiteralValue::Null;
 			var->expression = literal;
 
-			module->declarations.Add(var);
+			auto member = MakePtr<WfClassMember>();
+			member->kind = WfClassMemberKind::Normal;
+			member->declaration = var;
+
+			ctorClass->members.Add(member);
 		}
 		
-		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::ResolvingResult& resolvingResult)
+		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult)
 		{
 			const auto& typeInfos = resolvingResult.typeInfos;
 			for (vint i = 0; i < typeInfos.Count(); i++)
@@ -182,7 +222,7 @@ Variable
 				{
 					typeOverride = resolvingResult.typeOverrides.Values()[index].Obj();
 				}
-				Workflow_CreatePointerVariable(module, key, value, typeOverride);
+				Workflow_CreatePointerVariable(ctorClass, key, value, typeOverride);
 			}
 		}
 	}

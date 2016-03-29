@@ -57,7 +57,7 @@ Compiled Workflow Type Resolver (Workflow)
 
 			vint GetMaxPassIndex()override
 			{
-				return 2;
+				return 3;
 			}
 
 			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context)override
@@ -82,9 +82,19 @@ Compiled Workflow Type Resolver (Workflow)
 						}
 						break;
 					case 2:
-						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor && compiled->type != GuiInstanceCompiledWorkflow::InstanceClass)
+						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor)
 						{
-							compiled->Initialize(false);
+							if (context.usage == GuiResourceUsage::Application)
+							{
+								compiled->Initialize(true);
+							}
+						}
+						else if (compiled->type == GuiInstanceCompiledWorkflow::InstanceClass)
+						{
+							if (context.usage == GuiResourceUsage::DevelopmentTool)
+							{
+								compiled->Initialize(true);
+							}
 						}
 						break;
 					}
@@ -108,7 +118,7 @@ Compiled Workflow Type Resolver (Workflow)
 					internal::ContextFreeWriter writer(stream);
 
 					vint type = (vint)obj->type;
-					writer << type << obj->classFullName;
+					writer << type << obj->containedClassNames;
 
 					MemoryStream memoryStream;
 					obj->assembly->Serialize(memoryStream);
@@ -123,7 +133,7 @@ Compiled Workflow Type Resolver (Workflow)
 
 				vint type;
 				auto memoryStream = MakePtr<MemoryStream>();;
-				reader << type << obj->classFullName << (IStream&)*memoryStream.Obj();
+				reader << type << obj->containedClassNames << (IStream&)*memoryStream.Obj();
 
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
 				obj->binaryToLoad = memoryStream;

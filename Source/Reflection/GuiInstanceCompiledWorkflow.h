@@ -14,6 +14,11 @@ Interfaces:
 
 namespace vl
 {
+	namespace workflow
+	{
+		class WfModule;
+	}
+
 	namespace presentation
 	{
 		class GuiInstanceCompiledWorkflow : public Object, public Description<GuiInstanceCompiledWorkflow>
@@ -24,14 +29,15 @@ namespace vl
 				ViewModel,
 				Shared,
 				InstanceCtor,
-				InstanceClass,
+				InstanceClass ,
 			};
 			
 			collections::List<WString>						codes;
+			collections::List<Ptr<workflow::WfModule>>		modules;
 			Ptr<stream::MemoryStream>						binaryToLoad;
 
 			AssemblyType									type = AssemblyType::Shared;
-			WString											classFullName;
+			collections::List<WString>						containedClassNames;
 			Ptr<workflow::runtime::WfAssembly>				assembly;
 			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
 

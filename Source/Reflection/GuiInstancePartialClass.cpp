@@ -11,22 +11,6 @@ namespace vl
 		using namespace controls;
 
 /***********************************************************************
-Workflow_RunPrecompiledScript
-***********************************************************************/
-
-		Ptr<workflow::runtime::WfRuntimeGlobalContext> Workflow_RunPrecompiledScript(Ptr<GuiResource> resource, Ptr<GuiResourceItem> resourceItem, description::Value rootInstance)
-		{
-			auto compiled = resourceItem->GetContent().Cast<GuiInstanceCompiledWorkflow>();
-			auto globalContext = MakePtr<WfRuntimeGlobalContext>(compiled->assembly);
-
-			LoadFunction<void()>(globalContext, L"<initialize>")();
-			auto resolver = MakePtr<GuiResourcePathResolver>(resource, resource->GetWorkingDirectory());
-			LoadFunction<void(Value, Ptr<GuiResourcePathResolver>)>(globalContext, L"<initialize-instance>")(rootInstance, resolver);
-
-			return globalContext;
-		}
-
-/***********************************************************************
 IGuiInstanceResourceManager
 ***********************************************************************/
 
@@ -41,11 +25,9 @@ IGuiInstanceResourceManager
 		{
 		protected:
 			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
-			typedef Pair<Ptr<GuiResource>, Ptr<GuiResourceItem>>			ResourceItemPair;
-			typedef Dictionary<WString, ResourceItemPair>					ResourceItemMap;
 
 			ResourceMap								resources;
-			ResourceItemMap							instanceCtors;
+			ResourceMap								instanceResources;
 
 			void GetClassesInResource(Ptr<GuiResource> resource, Ptr<GuiResourceFolder> folder)
 			{
@@ -55,9 +37,9 @@ IGuiInstanceResourceManager
 					{
 						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor)
 						{
-							if (!instanceCtors.Keys().Contains(compiled->classFullName))
+							FOREACH(WString, name, compiled->containedClassNames)
 							{
-								instanceCtors.Add(compiled->classFullName, ResourceItemPair(resource, item));
+								instanceResources.Add(name, resource);
 							}
 						}
 					}
@@ -103,15 +85,31 @@ IGuiInstanceResourceManager
 				return index == -1 ? nullptr : resources.Values()[index];
 			}
 
-			Ptr<GuiInstanceConstructorResult> RunInstanceConstructor(const WString& classFullName, description::Value instance)override
+			Ptr<GuiInstanceConstructorResult> RunInstanceConstructor(const WString& classFullName, description::Value rootInstance)override
 			{
-				vint index = instanceCtors.Keys().IndexOf(classFullName);
+				vint index = instanceResources.Keys().IndexOf(classFullName);
 				if (index == -1) return nullptr;
 
-				auto pair = instanceCtors.Values()[index];
-				auto context = Workflow_RunPrecompiledScript(pair.key, pair.value, instance);
+				auto resource = instanceResources.Values()[index];
+				auto ctorFullName = classFullName + L"<Ctor>";
+				auto td = description::GetTypeDescriptor(ctorFullName);
+				if (!td) return nullptr;
+
+				auto ctor = td->GetConstructorGroup()->GetMethod(0);
+				Array<Value> arguments;
+				auto ctorInstance = ctor->Invoke(Value(), arguments);
+					
+				auto initialize = td->GetMethodGroupByName(L"<initialize-instance>", false)->GetMethod(0);
+				{
+					arguments.Resize(2);
+					auto resolver = MakePtr<GuiResourcePathResolver>(resource, resource->GetWorkingDirectory());
+					arguments[0] = rootInstance;
+					arguments[1] = Value::From(resolver.Obj());
+					initialize->Invoke(ctorInstance, arguments);
+				}
+
 				auto result = MakePtr<GuiInstanceConstructorResult>();
-				result->context = context;
+				result->ctorInstance = ctorInstance;
 				return result;
 			}
 		};
