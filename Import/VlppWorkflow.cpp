@@ -3405,15 +3405,14 @@ WfRuntimeThreadContext
 						if (OPERATOR_OpConvertToType(result, converted, ins))
 						{
 							PushValue(converted);
-							return WfRuntimeExecutionAction::ExecuteInstruction;
 						}
 						else
 						{
 							WString from = result.IsNull() ? L"<null>" : L"<" + result.GetText() + L"> of " + result.GetTypeDescriptor()->GetTypeName();
 							WString to = ins.typeDescriptorParameter->GetTypeName();
 							RaiseException(L"Failed to convert from \"" + from + L"\" to \"" + to + L"\".", false);
-							return WfRuntimeExecutionAction::Nop;
 						}
+						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::TryConvertToType:
 					{

@@ -792,39 +792,46 @@ WfCodegenContext
 			vint WfCodegenContext::GetThisStackCount(WfLexicalScope* scope)
 			{
 				vint count = 0;
-				Ptr<WfLexicalFunctionConfig> config;
+				Ptr<WfLexicalFunctionConfig> firstConfig, lastConfig;
 				while (scope)
 				{
+					if (scope->typeOfThisExpr)
+					{
+						if (lastConfig)
+						{
+							if (lastConfig->thisAccessable)
+							{
+								count++;
+							}
+							if (!lastConfig->parentThisAccessable)
+							{
+								break;
+							}
+						}
+					}
+
 					if (scope->functionConfig)
 					{
-						if (!config)
+						if (!firstConfig)
 						{
 							vint index = thisStackCounts.Keys().IndexOf(scope->functionConfig.Obj());
 							if (index == -1)
 							{
-								config = scope->functionConfig;
+								firstConfig = scope->functionConfig;
 							}
 							else
 							{
 								return thisStackCounts.Values()[index];
 							}
 						}
-
-						if (scope->functionConfig->thisAccessable)
-						{
-							count++;
-						}
-						if (!scope->functionConfig->parentThisAccessable)
-						{
-							break;
-						}
+						lastConfig = scope->functionConfig;
 					}
 					scope = scope->parentScope.Obj();
 				}
 
-				if (config)
+				if (firstConfig)
 				{
-					thisStackCounts.Add(config, count);
+					thisStackCounts.Add(firstConfig, count);
 				}
 				return count;
 			}
@@ -5635,18 +5642,22 @@ GenerateInstructions(Expression)
 					{
 						if (scope->functionConfig)
 						{
+							vint parentThisCount = context.GetThisStackCount(scope);
 							if (scope->functionConfig->lambda)
 							{
-								vint parentThisCount = context.GetThisStackCount(scope);
 								auto capture = context.manager->lambdaCaptures[scope->ownerNode.Obj()];
 								vint captureCount = capture->symbols.Count();
 								for (vint i = 0; i < parentThisCount; i++)
 								{
 									INSTRUCTION(Ins::LoadCapturedVar(captureCount + i));
 								}
-								return parentThisCount;
 							}
-							break;
+							else if (parentThisCount > 0)
+							{
+								CHECK_ERROR(parentThisCount == 1, L"GenerateExpressionInstructionsVisitor::PushCapturedThisValues(WfCodegenContext&, WfLexicalScope*, ParsingTreeCustomBase*)#Internal error, wrong parentThisCount value.");
+								INSTRUCTION(Ins::LoadCapturedVar(0));
+							}
+							return parentThisCount;
 						}
 						scope = scope->parentScope.Obj();
 					}
