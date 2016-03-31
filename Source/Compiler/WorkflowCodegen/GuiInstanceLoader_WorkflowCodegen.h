@@ -31,6 +31,9 @@ namespace vl
 
 			struct ResolvingResult
 			{
+				Ptr<workflow::WfModule>							moduleForValidate;
+				Ptr<workflow::WfBlockStatement>					moduleContent;
+
 				VariableTypeInfoMap								typeInfos;
 				TypeOverrideMap									typeOverrides;
 				PropertyResolvingMap							propertyResolvings;

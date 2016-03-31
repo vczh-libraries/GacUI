@@ -25,14 +25,16 @@ Workflow_ValidateStatement
 		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
 			bool failed = false;
-			auto module = Workflow_CreateModuleWithUsings(context);
+
+			if (!resolvingResult.moduleForValidate)
 			{
-				auto block = Workflow_InstallCtorClass(context, resolvingResult, rootTypeDescriptor, module);
-				block->statements.Add(statement);
+				resolvingResult.moduleForValidate = Workflow_CreateModuleWithUsings(context);
+				resolvingResult.moduleContent = Workflow_InstallCtorClass(context, resolvingResult, rootTypeDescriptor, resolvingResult.moduleForValidate);
 			}
+			resolvingResult.moduleContent->statements.Add(statement);
 
 			Workflow_GetSharedManager()->Clear(true, true);
-			Workflow_GetSharedManager()->AddModule(module);
+			Workflow_GetSharedManager()->AddModule(resolvingResult.moduleForValidate);
 			Workflow_GetSharedManager()->Rebuild(true);
 			if (Workflow_GetSharedManager()->errors.Count() > 0)
 			{

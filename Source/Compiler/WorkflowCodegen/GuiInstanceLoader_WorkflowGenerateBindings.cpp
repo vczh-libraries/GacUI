@@ -55,7 +55,7 @@ WorkflowGenerateBindingVisitor
 								auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
 								if (propertyResolving.info->scope == GuiInstancePropertyInfo::Constructor)
 								{
-									errors.Add(L"Precompile: Binding to constructor arguments will be implemented in the future.");
+									errors.Add(L"Precompile: <BINDING-ON-CTOR-PROP-NOT-SUPPORTED-YET>");
 								}
 								else
 								{
