@@ -23,107 +23,110 @@ namespace vl
 
 		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, const WString& path, collections::List<WString>& errors)
 		{
-			auto manager = Workflow_GetSharedManager();
-			manager->Clear(false, true);
-
-			if (compiled->modules.Count() > 0)
+			if (!compiled->assembly)
 			{
-				FOREACH(Ptr<WfModule>, module, compiled->modules)
+				auto manager = Workflow_GetSharedManager();
+				manager->Clear(false, true);
+
+				if (compiled->modules.Count() > 0)
 				{
-					manager->AddModule(module);
-				}
-			}
-			else
-			{
-				FOREACH(WString, code, compiled->codes)
-				{
-					manager->AddModule(code);
-				}
-			}
-
-			if (manager->errors.Count() == 0)
-			{
-				manager->Rebuild(true);
-			}
-
-			if (manager->errors.Count() == 0)
-			{
-				compiled->assembly = GenerateAssembly(manager);
-				compiled->Initialize(true);
-			}
-			else
-			{
-				errors.Add(L"Failed to compile workflow scripts in: " + path);
-
-				using ErrorGroup = Pair<int, LazyList<Ptr<ParsingError>>>;
-				List<ErrorGroup> errorGroups;
-				CopyFrom(
-					errorGroups,
-					From(manager->errors)
-						.GroupBy([](Ptr<ParsingError> error){ return error->codeRange.codeIndex; })
-						.OrderBy([](ErrorGroup g1, ErrorGroup g2){ return g1.key - g2.key; })
-					);
-
-				FOREACH(ErrorGroup, errorGroup, errorGroups)
-				{
-					if (errorGroup.key == -1)
+					FOREACH(Ptr<WfModule>, module, compiled->modules)
 					{
-						FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+						manager->AddModule(module);
+					}
+				}
+				else
+				{
+					FOREACH(WString, code, compiled->codes)
+					{
+						manager->AddModule(code);
+					}
+				}
+
+				if (manager->errors.Count() == 0)
+				{
+					manager->Rebuild(true);
+				}
+
+				if (manager->errors.Count() == 0)
+				{
+					compiled->assembly = GenerateAssembly(manager);
+					compiled->Initialize(true);
+				}
+				else
+				{
+					errors.Add(L"Failed to compile workflow scripts in: " + path);
+
+					using ErrorGroup = Pair<int, LazyList<Ptr<ParsingError>>>;
+					List<ErrorGroup> errorGroups;
+					CopyFrom(
+						errorGroups,
+						From(manager->errors)
+							.GroupBy([](Ptr<ParsingError> error){ return error->codeRange.codeIndex; })
+							.OrderBy([](ErrorGroup g1, ErrorGroup g2){ return g1.key - g2.key; })
+						);
+
+					FOREACH(ErrorGroup, errorGroup, errorGroups)
+					{
+						if (errorGroup.key == -1)
 						{
-							errors.Add(L"    " + error->errorMessage);
+							FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+							{
+								errors.Add(L"    " + error->errorMessage);
+							}
+						}
+						else if (compiled->modules.Count() > 0)
+						{
+							FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+							{
+								errors.Add(L"    " + error->errorMessage);
+							}
+							errors.Add(L"Workflow script for reference:");
+							MemoryStream stream;
+							{
+								StreamWriter writer(stream);
+								WfPrint(compiled->modules[errorGroup.key], L"    ", writer);
+							}
+							stream.SeekFromBegin(0);
+							{
+								StreamReader reader(stream);
+								errors.Add(reader.ReadToEnd());
+							}
+						}
+						else
+						{
+							FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+							{
+								errors.Add(
+									L"    "
+									L"Row: " + itow(error->codeRange.start.row + 1) +
+									L", Column: " + itow(error->codeRange.start.column + 1) +
+									L", Message: " + error->errorMessage);
+							}
+							errors.Add(L"Workflow script for reference:");
+							errors.Add(compiled->codes[errorGroup.key]);
 						}
 					}
-					else if (compiled->modules.Count() > 0)
+					errors.Add(L"<END>");
+					FOREACH(Ptr<ParsingError>, error, manager->errors)
 					{
-						FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+						if (compiled->modules.Count() > 0)
 						{
-							errors.Add(L"    " + error->errorMessage);
+							errors.Add(error->errorMessage);
 						}
-						errors.Add(L"Workflow script for reference:");
-						MemoryStream stream;
-						{
-							StreamWriter writer(stream);
-							WfPrint(compiled->modules[errorGroup.key], L"    ", writer);
-						}
-						stream.SeekFromBegin(0);
-						{
-							StreamReader reader(stream);
-							errors.Add(reader.ReadToEnd());
-						}
-					}
-					else
-					{
-						FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+						else
 						{
 							errors.Add(
-								L"    "
 								L"Row: " + itow(error->codeRange.start.row + 1) +
 								L", Column: " + itow(error->codeRange.start.column + 1) +
 								L", Message: " + error->errorMessage);
 						}
-						errors.Add(L"Workflow script for reference:");
-						errors.Add(compiled->codes[errorGroup.key]);
 					}
 				}
-				errors.Add(L"<END>");
-				FOREACH(Ptr<ParsingError>, error, manager->errors)
-				{
-					if (compiled->modules.Count() > 0)
-					{
-						errors.Add(error->errorMessage);
-					}
-					else
-					{
-						errors.Add(
-							L"Row: " + itow(error->codeRange.start.row + 1) +
-							L", Column: " + itow(error->codeRange.start.column + 1) +
-							L", Message: " + error->errorMessage);
-					}
-				}
-			}
 					
-			compiled->codes.Clear();
-			compiled->modules.Clear();
+				compiled->codes.Clear();
+				compiled->modules.Clear();
+			}
 		}
 
 /***********************************************************************

@@ -90,7 +90,7 @@ void GuiMain_Resource()
 		GetInstanceResourceManager()->SetResource(L"Resource", resource);
 
 		{
-			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceCtor");
+			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");
 			auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
 			auto code = compiled->assembly->insAfterCodegen->moduleCodes[0];
 			File(L"UI.txt").WriteAllText(code);
