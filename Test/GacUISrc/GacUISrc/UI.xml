@@ -1,7 +1,58 @@
 <Resource>
+  <Script name="ViewModelScript">
+    <Workflow-ViewModel>
+      <![CDATA[
+        module script;
+      
+        interface IViewModel
+        {
+          func GetX() : int;
+          func SetX(value : int) : void;
+          prop X : int {GetX, SetX}
+          
+          func GetY() : int;
+          func SetY(value : int) : void;
+          prop Y : int {GetY, SetY}
+          
+          func GetZ() : int;
+          event ZChanged();
+          prop Z : int {GetZ}
+        }
+      ]]>
+    </Workflow-ViewModel>  
+  </Script>
+
+  <Script name="SharedScript">
+    <Workflow>
+      <![CDATA[
+        module script;
+        
+        class ViewModelBuilder
+        {
+          func Build() : IViewModel^
+          {
+            return new IViewModel^
+            {
+              var x = 0;
+              var y = 0;
+              
+              override func GetX() : int { return x; }
+              override func SetX(value : int) : void { if (x != value) { x = value; ZChanged(); } }
+              override func GetY() : int { return y; }
+              override func SetY(value : int) : void { if (y != value) { y = value; ZChanged(); } }
+              override func GetZ() : int { return x + y; }
+            };
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+  
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow">
+      <ref.Parameter Name="ViewModel" ClassName="IViewModel"/>
       <Window Text="MainWindow" ClientSize="x:480 y:320">
+        <att.ViewModel-set X-bind="(cast int textBoxA.Text) ?? 0" Y-bind="(cast int textBoxB.Text) ?? 0"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
 
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
@@ -39,7 +90,7 @@
             <Label Text="A + B ="/>
           </Cell>
           <Cell Site="row:2 column:1">
-            <SinglelineTextBox Text-bind="(cast int textBoxA.Text) + (cast int textBoxB.Text) ?? 'ERROR'">
+            <SinglelineTextBox Text-bind="ViewModel.Z">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:24"/>
             </SinglelineTextBox>
           </Cell>

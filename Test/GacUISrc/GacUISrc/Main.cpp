@@ -59,91 +59,6 @@ void GuiMain_GrammarIntellisense()
 	GetApplication()->Run(&window);
 }
 
-namespace demo
-{
-	template<typename TImpl>
-	class MainWindow_ : public GuiWindow, public GuiInstancePartialClass<GuiWindow>, public Description<TImpl>
-	{
-	protected:
-		GuiSinglelineTextBox* textBoxA = nullptr;
-		GuiSinglelineTextBox* textBoxB = nullptr;
-
-		void InitializeComponents()
-		{
-			InitializeFromResource();
-			GUI_INSTANCE_REFERENCE(textBoxA);
-			GUI_INSTANCE_REFERENCE(textBoxB);
-		}
-	public:
-		MainWindow_()
-			:GuiInstancePartialClass<GuiWindow>(L"demo::MainWindow")
-			, GuiWindow(theme::GetCurrentTheme()->CreateWindowStyle())
-		{
-		}
-	};
-
-	class MainWindow : public MainWindow_<MainWindow>
-	{
-	public:
-		MainWindow()
-		{
-			InitializeComponents();
-		}
-	};
-}
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-#define _ ,
-			DECL_TYPE_INFO(demo::MainWindow)
-
-			IMPL_CPP_TYPE_INFO(demo::MainWindow)
-
-			BEGIN_CLASS_MEMBER(demo::MainWindow)
-				CLASS_MEMBER_BASE(GuiWindow)
-				CLASS_MEMBER_CONSTRUCTOR(demo::MainWindow*(), NO_PARAMETER)
-			END_CLASS_MEMBER(demo::MainWindow)
-
-			class ResourceLoader : public Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)override
-				{
-					ADD_TYPE_INFO(demo::MainWindow)
-				}
-
-				void Unload(ITypeManager* manager)override
-				{
-				}
-			};
-
-			class ResourcePlugin : public Object, public IGuiPlugin
-			{
-			public:
-				void Load()override
-				{
-					GetGlobalTypeManager()->AddTypeLoader(new ResourceLoader);
-				}
-
-				void AfterLoad()override
-				{
-				}
-
-				void Unload()override
-				{
-				}
-			};
-			GUI_REGISTER_PLUGIN(ResourcePlugin)
-		}
-	}
-}
-
-using namespace demo;
-
 void GuiMain_Resource()
 {
 	{
@@ -181,10 +96,14 @@ void GuiMain_Resource()
 			File(L"UI.txt").WriteAllText(code);
 		}
 	}
-	MainWindow window;
-	window.ForceCalculateSizeImmediately();
-	window.MoveToScreenCenter();
-	GetApplication()->Run(&window);
+
+	auto viewModelBuilder = Value::Create(L"ViewModelBuilder");
+	auto viewModel = viewModelBuilder.Invoke(L"Build");
+	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
+	window->ForceCalculateSizeImmediately();
+	window->MoveToScreenCenter();
+	GetApplication()->Run(window);
+	delete window;
 }
 
 void GuiMain()

@@ -21,9 +21,7 @@ namespace vl
 
 		using namespace controls;
 
-#define ERROR_CODE_PREFIX L"================================================================"
-
-		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, collections::List<WString>& errors)
+		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, const WString& path, collections::List<WString>& errors)
 		{
 			auto manager = Workflow_GetSharedManager();
 			manager->Clear(true, true);
@@ -55,7 +53,59 @@ namespace vl
 			}
 			else
 			{
-				errors.Add(ERROR_CODE_PREFIX L"Failed to compile workflow scripts");
+				errors.Add(L"Failed to compile workflow scripts in: " + path);
+
+				using ErrorGroup = Pair<int, LazyList<Ptr<ParsingError>>>;
+				List<ErrorGroup> errorGroups;
+				CopyFrom(
+					errorGroups,
+					From(manager->errors)
+						.GroupBy([](Ptr<ParsingError> error){ return error->codeRange.codeIndex; })
+						.OrderBy([](ErrorGroup g1, ErrorGroup g2){ return g1.key - g2.key; })
+					);
+
+				FOREACH(ErrorGroup, errorGroup, errorGroups)
+				{
+					if (errorGroup.key == -1)
+					{
+						FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+						{
+							errors.Add(L"    " + error->errorMessage);
+						}
+					}
+					else if (compiled->modules.Count() > 0)
+					{
+						FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+						{
+							errors.Add(L"    " + error->errorMessage);
+						}
+						errors.Add(L"Workflow script for reference:");
+						MemoryStream stream;
+						{
+							StreamWriter writer(stream);
+							WfPrint(compiled->modules[errorGroup.key], L"    ", writer);
+						}
+						stream.SeekFromBegin(0);
+						{
+							StreamReader reader(stream);
+							errors.Add(reader.ReadToEnd());
+						}
+					}
+					else
+					{
+						FOREACH(Ptr<ParsingError>, error, errorGroup.value)
+						{
+							errors.Add(
+								L"    "
+								L"Row: " + itow(error->codeRange.start.row + 1) +
+								L", Column: " + itow(error->codeRange.start.column + 1) +
+								L", Message: " + error->errorMessage);
+						}
+						errors.Add(L"Workflow script for reference:");
+						errors.Add(compiled->codes[errorGroup.key]);
+					}
+				}
+				errors.Add(L"<END>");
 				FOREACH(Ptr<ParsingError>, error, manager->errors)
 				{
 					if (compiled->modules.Count() > 0)
@@ -140,30 +190,25 @@ Instance Type Resolver (Instance)
 						}
 					}
 				}
-				else if (context.passIndex == 4 || context.passIndex == 5)
+				else
 				{
-					Ptr<GuiInstanceCompiledWorkflow> compiled;
-					switch(context.passIndex)
+					WString path;
+					if (context.passIndex == 4)
 					{
-					case 4:
-						{
-							WString path = L"Workflow/InstanceCtor";
-							compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-						}
-						break;
-					case 5:
-						{
-							WString path = L"Workflow/InstanceClass";
-							compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-						}
-						break;
-					default:
+						path = L"Workflow/InstanceCtor";
+					}
+					else if (context.passIndex == 5)
+					{
+						path = L"Workflow/InstanceClass";
+					}
+					else
+					{
 						return;
 					}
 
-					if (compiled)
+					if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
 					{
-						Workflow_GenerateAssembly(compiled, errors);
+						Workflow_GenerateAssembly(compiled, path, errors);
 					}
 				}
 			}
@@ -303,62 +348,53 @@ Shared Script Type Resolver (Script)
 
 			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
-				Ptr<GuiInstanceCompiledWorkflow> compiled;
-				switch (context.passIndex)
+				if (context.passIndex == 0)
 				{
-				case 0:
+					if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
 					{
-						if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
+						WString path;
+						GuiInstanceCompiledWorkflow::AssemblyType type = GuiInstanceCompiledWorkflow::Shared;
+						if (obj->language == L"Workflow-ViewModel")
 						{
-							WString path;
-							GuiInstanceCompiledWorkflow::AssemblyType type = GuiInstanceCompiledWorkflow::Shared;
-							if (obj->language == L"Workflow-ViewModel")
-							{
-								path = L"Workflow/ViewModel";
-								type = GuiInstanceCompiledWorkflow::ViewModel;
-							}
-							else if (obj->language == L"Workflow")
-							{
-								path = L"Workflow/Shared";
-							}
-							
-							if (path != L"")
-							{
-								compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-								if (!compiled)
-								{
-									compiled = new GuiInstanceCompiledWorkflow;
-									compiled->type = type;
-									context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
-								}
-							}
-
-							if (compiled)
-							{
-								compiled->codes.Add(obj->code);
-							}
+							path = L"Workflow/ViewModel";
+							type = GuiInstanceCompiledWorkflow::ViewModel;
 						}
-					}
-					return;
-				case 1:
-					{
-						WString path = L"Workflow/ViewModel";
-						compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-					}
-					break;
-				case 2:
-					{
-						WString path = L"Workflow/Shared";
-						compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-					}
-					break;
-				default:
-					return;
-				}
+						else if (obj->language == L"Workflow")
+						{
+							path = L"Workflow/Shared";
+						}
+						
+						auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+						if (!compiled)
+						{
+							compiled = new GuiInstanceCompiledWorkflow;
+							compiled->type = type;
+							context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
+						}
 
-				if (compiled)
+						compiled->codes.Add(obj->code);
+					}
+				}
+				else
 				{
-					Workflow_GenerateAssembly(compiled, errors);
+					WString path;
+					if (context.passIndex == 1)
+					{
+						path = L"Workflow/ViewModel";
+					}
+					else if (context.passIndex == 2)
+					{
+						path = L"Workflow/Shared";
+					}
+					else
+					{
+						return;
+					}
+
+					if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
+					{
+						Workflow_GenerateAssembly(compiled, path, errors);
+					}
 				}
 			}
 

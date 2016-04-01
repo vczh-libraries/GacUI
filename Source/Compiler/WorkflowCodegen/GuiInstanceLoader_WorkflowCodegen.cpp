@@ -16,8 +16,6 @@ namespace vl
 		using namespace controls;
 		using namespace compositions;
 
-#define ERROR_CODE_PREFIX L"================================================================"
-
 /***********************************************************************
 Workflow_ValidateStatement
 ***********************************************************************/
@@ -38,10 +36,10 @@ Workflow_ValidateStatement
 			Workflow_GetSharedManager()->Rebuild(true);
 			if (Workflow_GetSharedManager()->errors.Count() > 0)
 			{
-				errors.Add(ERROR_CODE_PREFIX L"Failed to analyze the workflow code \"" + code + L"\".");
+				errors.Add(L"Failed to analyze the workflow code \"" + code + L"\".");
 				FOREACH(Ptr<parsing::ParsingError>, error, Workflow_GetSharedManager()->errors)
 				{
-					errors.Add(error->errorMessage);
+					errors.Add(L"    " + error->errorMessage);
 				}
 				failed = true;
 			}
