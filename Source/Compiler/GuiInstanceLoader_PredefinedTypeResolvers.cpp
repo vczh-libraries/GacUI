@@ -24,7 +24,7 @@ namespace vl
 		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, const WString& path, collections::List<WString>& errors)
 		{
 			auto manager = Workflow_GetSharedManager();
-			manager->Clear(true, true);
+			manager->Clear(false, true);
 
 			if (compiled->modules.Count() > 0)
 			{

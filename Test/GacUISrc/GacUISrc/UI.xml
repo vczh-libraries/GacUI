@@ -19,7 +19,7 @@
           prop Z : int {GetZ}
         }
       ]]>
-    </Workflow-ViewModel>  
+    </Workflow-ViewModel>
   </Script>
 
   <Script name="SharedScript">
