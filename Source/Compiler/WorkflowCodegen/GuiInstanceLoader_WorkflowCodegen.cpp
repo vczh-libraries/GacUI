@@ -92,6 +92,188 @@ Workflow_PrecompileInstanceContext
 		}
 
 /***********************************************************************
+Workflow_GenerateInstanceClass
+***********************************************************************/
+
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ErrorList& errors, bool beforePrecompile)
+		{
+			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
+			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+			if (!baseTd)
+			{
+				errors.Add(
+					L"Precompile: Failed to find type \"" +
+					(context->instance->typeNamespace == GlobalStringKey::Empty
+						? context->instance->typeName.ToString()
+						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
+						) +
+					L"\".");
+				return nullptr;
+			}
+
+			auto module = Workflow_CreateModuleWithUsings(context);
+			auto instanceClass = Workflow_InstallClass(context->className, module);
+			{
+				auto typeInfo = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
+				typeInfo->SetTypeDescriptor(baseTd);
+				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
+				instanceClass->baseTypes.Add(baseType);
+			}
+
+			auto typeParser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
+			auto parseType = [typeParser, &errors](const WString& code, const WString& name)->Ptr<WfType>
+			{
+				List<WString> parserErrors;
+				if (auto type = typeParser->TypedParse(code, parserErrors))
+				{
+					return type;
+				}
+				else
+				{
+					errors.Add(L"Precompile: Failed to parse " + name + L": " + code);
+					return nullptr;
+				}
+			};
+			auto addDecl = [instanceClass](Ptr<WfDeclaration> decl)
+			{
+				auto member = MakePtr<WfClassMember>();
+				member->kind = WfClassMemberKind::Normal;
+				member->declaration = decl;
+				instanceClass->members.Add(member);
+			};
+			auto notImplemented = [](Ptr<WfFunctionDeclaration> decl)
+			{
+				auto block = MakePtr<WfBlockStatement>();
+				decl->statement = block;
+
+				auto stringExpr = MakePtr<WfStringExpression>();
+				stringExpr->value.value = L"Not Implemented";
+
+				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+				raiseStat->expression = stringExpr;
+				block->statements.Add(raiseStat);
+			};
+
+			FOREACH(Ptr<GuiInstanceState>, state, context->states)
+			{
+				if (auto type = parseType(state->typeName, L"state \"" + state->name.ToString() + L" of instance \"" + context->className + L"\""))
+				{
+					auto decl = MakePtr<WfVariableDeclaration>();
+					addDecl(decl);
+
+					decl->name.value = state->name.ToString();
+					decl->type = type;
+					if (state->value == L"")
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						decl->expression = nullExpr;
+					}
+					else
+					{
+						auto stringExpr = MakePtr<WfStringExpression>();
+						stringExpr->value.value = state->value;
+
+						auto castExpr = MakePtr<WfTypeCastingExpression>();
+						castExpr->strategy = WfTypeCastingStrategy::Strong;
+						castExpr->type = CopyType(type);
+						castExpr->expression = stringExpr;
+
+						decl->expression = castExpr;
+					}
+				}
+			}
+
+			FOREACH(Ptr<GuiInstanceProperty>, prop, context->properties)
+			{
+				if (auto type = parseType(prop->typeName, L"property \"" + prop->name.ToString() + L" of instance \"" + context->className + L"\""))
+				{
+					{
+						auto decl = MakePtr<WfFunctionDeclaration>();
+						addDecl(decl);
+
+						decl->anonymity = WfFunctionAnonymity::Named;
+						decl->name.value = L"Get" + prop->name.ToString();
+						decl->returnType = CopyType(type);
+						notImplemented(decl);
+					}
+					if (!prop->readonly)
+					{
+						auto decl = MakePtr<WfFunctionDeclaration>();
+						addDecl(decl);
+
+						decl->anonymity = WfFunctionAnonymity::Named;
+						decl->name.value = L"Set" + prop->name.ToString();
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"value";
+							argument->type = CopyType(type);
+						}
+						{
+							auto voidType = MakePtr<WfPredefinedType>();
+							voidType->name = WfPredefinedTypeName::Void;
+							decl->returnType = voidType;
+						}
+						notImplemented(decl);
+					}
+					{
+						auto decl = MakePtr<WfEventDeclaration>();
+						addDecl(decl);
+
+						decl->name.value = prop->name.ToString() + L"Changed";
+					}
+					{
+						auto decl = MakePtr<WfPropertyDeclaration>();
+						addDecl(decl);
+
+						decl->type = type;
+						decl->getter.value = L"Get" + prop->name.ToString();
+						if (!prop->readonly)
+						{
+							decl->setter.value = L"Set" + prop->name.ToString();
+						}
+						decl->valueChangedEvent.value = prop->name.ToString() + L"Changed";
+					}
+				}
+			}
+
+			auto ctor = MakePtr<WfConstructorDeclaration>();
+			ctor->constructorType = WfConstructorType::RawPtr;
+			ctor->statement = MakePtr<WfBlockStatement>();
+			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
+			{
+				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\""))
+				{
+					{
+						auto decl = MakePtr<WfFunctionDeclaration>();
+						addDecl(decl);
+
+						decl->anonymity = WfFunctionAnonymity::Named;
+						decl->name.value = L"Get" + param->name.ToString();
+						decl->returnType = CopyType(type);
+						notImplemented(decl);
+					}
+					{
+						auto decl = MakePtr<WfPropertyDeclaration>();
+						addDecl(decl);
+
+						decl->type = type;
+						decl->getter.value = L"Get" + param->name.ToString();
+					}
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						argument->name.value = L"<param>" + param->name.ToString();
+						argument->type = CopyType(type);
+						ctor->arguments.Add(argument);
+					}
+				}
+			}
+			addDecl(ctor);
+
+			return module;
+		}
+
+/***********************************************************************
 GuiWorkflowSharedManagerPlugin
 ***********************************************************************/
 

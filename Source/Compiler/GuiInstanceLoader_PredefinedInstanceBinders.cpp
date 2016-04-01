@@ -221,6 +221,7 @@ GuiPredefinedInstanceBindersPlugin
 				{
 					IGuiParserManager* manager = GetParserManager();
 					manager->SetParsingTable(L"WORKFLOW", &WfLoadTable);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-TYPE", &WfParseType);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-EXPRESSION", &WfParseExpression);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-STATEMENT", &WfParseStatement);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-MODULE", &WfParseModule);
