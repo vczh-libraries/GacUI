@@ -84,38 +84,43 @@ Workflow_CreateModuleWithUsings
 		}
 
 /***********************************************************************
+Workflow_InstallClass
+***********************************************************************/
+
+		Ptr<workflow::WfClassDeclaration> Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module)
+		{
+			auto decls = &module->declarations;
+			auto reading = className.Buffer();
+			while (true)
+			{
+				auto delimiter = wcsstr(reading, L"::");
+				if (delimiter)
+				{
+					auto ns = MakePtr<WfNamespaceDeclaration>();
+					ns->name.value = WString(reading, delimiter - reading);
+					decls->Add(ns);
+					decls = &ns->declarations;
+				}
+				else
+				{
+					auto ctorClass = MakePtr<WfClassDeclaration>();
+					ctorClass->kind = WfClassKind::Class;
+					ctorClass->constructorType = WfConstructorType::Undefined;
+					ctorClass->name.value = WString(reading) + L"<Ctor>";
+					decls->Add(ctorClass);
+					return ctorClass;
+				}
+				reading = delimiter + 2;
+			}
+		}
+
+/***********************************************************************
 Workflow_InstallCtorClass
 ***********************************************************************/
 		
 		Ptr<workflow::WfBlockStatement> Workflow_InstallCtorClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfModule> module)
 		{
-			Ptr<WfClassDeclaration> ctorClass;
-			{
-				auto decls = &module->declarations;
-				auto reading = context->className.Buffer();
-				while (true)
-				{
-					auto delimiter = wcsstr(reading, L"::");
-					if (delimiter)
-					{
-						auto ns = MakePtr<WfNamespaceDeclaration>();
-						ns->name.value = WString(reading, delimiter - reading);
-						decls->Add(ns);
-						decls = &ns->declarations;
-					}
-					else
-					{
-						ctorClass = MakePtr<WfClassDeclaration>();
-						ctorClass->kind = WfClassKind::Class;
-						ctorClass->constructorType = WfConstructorType::Undefined;
-						ctorClass->name.value = WString(reading) + L"<Ctor>";
-						decls->Add(ctorClass);
-						break;
-					}
-					reading = delimiter + 2;
-				}
-			}
-
+			auto ctorClass = Workflow_InstallClass(context->className, module);
 			Workflow_CreateVariablesForReferenceValues(ctorClass, resolvingResult);
 
 			auto thisParam = MakePtr<WfFunctionArgument>();

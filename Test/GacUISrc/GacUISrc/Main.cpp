@@ -97,8 +97,7 @@ void GuiMain_Resource()
 		}
 	}
 
-	auto viewModelBuilder = Value::Create(L"ViewModelBuilder");
-	auto viewModel = viewModelBuilder.Invoke(L"Build");
+	auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
 	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
 	window->ForceCalculateSizeImmediately();
 	window->MoveToScreenCenter();
