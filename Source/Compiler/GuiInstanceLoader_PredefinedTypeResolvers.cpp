@@ -25,13 +25,41 @@ namespace vl
 		{
 			if (!compiled->assembly)
 			{
+				List<WString> codes;
 				auto manager = Workflow_GetSharedManager();
 				manager->Clear(false, true);
 
 				if (compiled->modules.Count() > 0)
 				{
-					FOREACH(Ptr<WfModule>, module, compiled->modules)
+					FOREACH_INDEXER(Ptr<WfModule>, module, index, compiled->modules)
 					{
+						{
+							MemoryStream stream;
+							{
+								StreamWriter writer(stream);
+								Dictionary<ParsingTreeCustomBase*, ParsingTextRange> ranges;
+								Ptr<ParsingGeneratedLocationRecorder> recorder = new ParsingGeneratedLocationRecorder(ranges);
+								ParsingWriter parsingWriter(writer, recorder, index);
+								WfPrint(module, L"", parsingWriter);
+							}
+							stream.SeekFromBegin(0);
+							{
+								StreamReader reader(stream);
+
+								vint row = 0;
+								WString code;
+								while (!reader.IsEnd())
+								{
+									auto rowHeader = itow(++row);
+									while (rowHeader.Length() < 6)
+									{
+										rowHeader = L" " + rowHeader;
+									}
+									code += rowHeader + L" : " + reader.ReadLine() + L"\r\n";
+								}
+								codes.Add(code);
+							}
+						}
 						manager->AddModule(module);
 					}
 				}
@@ -39,6 +67,7 @@ namespace vl
 				{
 					FOREACH(WString, code, compiled->codes)
 					{
+						codes.Add(code);
 						manager->AddModule(code);
 					}
 				}
@@ -75,24 +104,6 @@ namespace vl
 								errors.Add(L"    " + error->errorMessage);
 							}
 						}
-						else if (compiled->modules.Count() > 0)
-						{
-							FOREACH(Ptr<ParsingError>, error, errorGroup.value)
-							{
-								errors.Add(L"    " + error->errorMessage);
-							}
-							errors.Add(L"Workflow script for reference:");
-							MemoryStream stream;
-							{
-								StreamWriter writer(stream);
-								WfPrint(compiled->modules[errorGroup.key], L"    ", writer);
-							}
-							stream.SeekFromBegin(0);
-							{
-								StreamReader reader(stream);
-								errors.Add(reader.ReadToEnd());
-							}
-						}
 						else
 						{
 							FOREACH(Ptr<ParsingError>, error, errorGroup.value)
@@ -104,24 +115,10 @@ namespace vl
 									L", Message: " + error->errorMessage);
 							}
 							errors.Add(L"Workflow script for reference:");
-							errors.Add(compiled->codes[errorGroup.key]);
+							errors.Add(codes[errorGroup.key]);
 						}
 					}
 					errors.Add(L"<END>");
-					FOREACH(Ptr<ParsingError>, error, manager->errors)
-					{
-						if (compiled->modules.Count() > 0)
-						{
-							errors.Add(error->errorMessage);
-						}
-						else
-						{
-							errors.Add(
-								L"Row: " + itow(error->codeRange.start.row + 1) +
-								L", Column: " + itow(error->codeRange.start.column + 1) +
-								L", Message: " + error->errorMessage);
-						}
-					}
 				}
 					
 				compiled->codes.Clear();

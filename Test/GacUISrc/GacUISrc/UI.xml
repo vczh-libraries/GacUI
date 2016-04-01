@@ -50,7 +50,7 @@
   
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow">
-      <ref.Parameter Name="ViewModel" ClassName="IViewModel2"/>
+      <ref.Parameter Name="ViewModel" Class="IViewModel2"/>
       <Window Text="MainWindow" ClientSize="x:480 y:320">
         <att.ViewModel-set X-bind="(cast int textBoxA.Text) ?? 0" Y-bind="(cast int textBoxB.Text) ?? 0"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
