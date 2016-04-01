@@ -71,7 +71,7 @@ Compiled Workflow Type Resolver (Workflow)
 						{
 							if (context.usage == GuiResourceUsage::DevelopmentTool)
 							{
-								compiled->Initialize(false);
+								compiled->Initialize(true);
 							}
 						}
 						break;
@@ -118,25 +118,34 @@ Compiled Workflow Type Resolver (Workflow)
 					internal::ContextFreeWriter writer(stream);
 
 					vint type = (vint)obj->type;
-					writer << type << obj->containedClassNames;
+					writer << type;
 
-					MemoryStream memoryStream;
-					obj->assembly->Serialize(memoryStream);
-					writer << (IStream&)memoryStream;
+					if (obj->type != GuiInstanceCompiledWorkflow::TemporaryClass)
+					{
+						writer << obj->containedClassNames;
+
+						MemoryStream memoryStream;
+						obj->assembly->Serialize(memoryStream);
+						writer << (IStream&)memoryStream;
+					}
 				}
 			}
 
 			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
 			{
 				internal::ContextFreeReader reader(stream);
-				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 
 				vint type;
-				auto memoryStream = MakePtr<MemoryStream>();;
-				reader << type << obj->containedClassNames << (IStream&)*memoryStream.Obj();
-
+				reader << type;
+				
+				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
-				obj->binaryToLoad = memoryStream;
+				if (obj->type != GuiInstanceCompiledWorkflow::TemporaryClass)
+				{
+					auto memoryStream = MakePtr<MemoryStream>();
+					reader << obj->containedClassNames << (IStream&)*memoryStream.Obj();
+					obj->binaryToLoad = memoryStream;
+				}
 				return obj;
 			}
 		};

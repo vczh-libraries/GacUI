@@ -13635,7 +13635,7 @@ ParsingMultiplePrintNodeRecorder
 		}
 
 /***********************************************************************
-ParsingEmptyPrintNodeRecorder
+ParsingOriginalLocationRecorder
 ***********************************************************************/
 
 		ParsingOriginalLocationRecorder::ParsingOriginalLocationRecorder(Ptr<IParsingPrintNodeRecorder> _recorder)
@@ -13655,7 +13655,7 @@ ParsingEmptyPrintNodeRecorder
 		}
 
 /***********************************************************************
-ParsingEmptyPrintNodeRecorder
+ParsingGeneratedLocationRecorder
 ***********************************************************************/
 
 		ParsingGeneratedLocationRecorder::ParsingGeneratedLocationRecorder(RangeMap& _rangeMap)
@@ -13670,6 +13670,23 @@ ParsingEmptyPrintNodeRecorder
 		void ParsingGeneratedLocationRecorder::Record(ParsingTreeCustomBase* node, const ParsingTextRange& range)
 		{
 			rangeMap.Add(node, range);
+		}
+
+/***********************************************************************
+ParsingUpdateLocationRecorder
+***********************************************************************/
+
+		ParsingUpdateLocationRecorder::ParsingUpdateLocationRecorder()
+		{
+		}
+
+		ParsingUpdateLocationRecorder::~ParsingUpdateLocationRecorder()
+		{
+		}
+
+		void ParsingUpdateLocationRecorder::Record(ParsingTreeCustomBase* node, const ParsingTextRange& range)
+		{
+			node->codeRange = range;
 		}
 
 /***********************************************************************

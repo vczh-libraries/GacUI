@@ -134,24 +134,25 @@ Workflow_GenerateInstanceClass
 					return nullptr;
 				}
 			};
-			auto addDecl = [instanceClass](Ptr<WfDeclaration> decl)
+			auto addDecl = [=](Ptr<WfDeclaration> decl)
 			{
 				auto member = MakePtr<WfClassMember>();
 				member->kind = WfClassMemberKind::Normal;
 				member->declaration = decl;
 				instanceClass->members.Add(member);
 			};
-			auto notImplemented = [](Ptr<WfFunctionDeclaration> decl)
+			auto notImplemented = []()
 			{
 				auto block = MakePtr<WfBlockStatement>();
-				decl->statement = block;
 
 				auto stringExpr = MakePtr<WfStringExpression>();
 				stringExpr->value.value = L"Not Implemented";
 
 				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
 				raiseStat->expression = stringExpr;
+
 				block->statements.Add(raiseStat);
+				return block;
 			};
 
 			FOREACH(Ptr<GuiInstanceState>, state, context->states)
@@ -195,7 +196,7 @@ Workflow_GenerateInstanceClass
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"Get" + prop->name.ToString();
 						decl->returnType = CopyType(type);
-						notImplemented(decl);
+						decl->statement = notImplemented();
 					}
 					if (!prop->readonly)
 					{
@@ -214,7 +215,7 @@ Workflow_GenerateInstanceClass
 							voidType->name = WfPredefinedTypeName::Void;
 							decl->returnType = voidType;
 						}
-						notImplemented(decl);
+						decl->statement = notImplemented();
 					}
 					{
 						auto decl = MakePtr<WfEventDeclaration>();
@@ -226,6 +227,7 @@ Workflow_GenerateInstanceClass
 						auto decl = MakePtr<WfPropertyDeclaration>();
 						addDecl(decl);
 
+						decl->name.value = prop->name.ToString();
 						decl->type = type;
 						decl->getter.value = L"Get" + prop->name.ToString();
 						if (!prop->readonly)
@@ -239,7 +241,25 @@ Workflow_GenerateInstanceClass
 
 			auto ctor = MakePtr<WfConstructorDeclaration>();
 			ctor->constructorType = WfConstructorType::RawPtr;
-			ctor->statement = MakePtr<WfBlockStatement>();
+			ctor->statement = notImplemented();
+			if (auto group = baseTd->GetConstructorGroup())
+			{
+				vint count = group->GetMethod(0)->GetParameterCount();
+				if (count > 0)
+				{
+					auto call = MakePtr<WfBaseConstructorCall>();
+					ctor->baseConstructorCalls.Add(call);
+
+					call->type = CopyType(instanceClass->baseTypes[0]);
+					for (vint i = 0; i < count; i++)
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						call->arguments.Add(nullExpr);
+					}
+				}
+			}
+
 			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
 			{
 				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\""))
@@ -251,12 +271,13 @@ Workflow_GenerateInstanceClass
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"Get" + param->name.ToString();
 						decl->returnType = CopyType(type);
-						notImplemented(decl);
+						decl->statement = notImplemented();
 					}
 					{
 						auto decl = MakePtr<WfPropertyDeclaration>();
 						addDecl(decl);
 
+						decl->name.value = param->name.ToString();
 						decl->type = type;
 						decl->getter.value = L"Get" + param->name.ToString();
 					}

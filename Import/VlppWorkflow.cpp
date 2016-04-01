@@ -4458,37 +4458,40 @@ WfInterfaceConstructor
 					for (vint i = 0; i < baseTypes.Count(); i++)
 					{
 						auto td = baseTypes[i];
-						if (auto group = td->GetConstructorGroup())
+						if (td != description::GetTypeDescriptor<IDescriptable>())
 						{
-							vint count = group->GetMethodCount();
-							IMethodInfo* selectedCtor = nullptr;
-
-							for (vint j = 0; j < count; j++)
+							if (auto group = td->GetConstructorGroup())
 							{
-								auto ctor = group->GetMethod(j);
-								if (ctor->GetParameterCount() == 1)
+								vint count = group->GetMethodCount();
+								IMethodInfo* selectedCtor = nullptr;
+
+								for (vint j = 0; j < count; j++)
 								{
-									auto type = ctor->GetParameter(0)->GetType();
-									if (type->GetDecorator() == ITypeInfo::SharedPtr && type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueInterfaceProxy>())
+									auto ctor = group->GetMethod(j);
+									if (ctor->GetParameterCount() == 1)
 									{
-										selectedCtor = ctor;
-										break;
+										auto type = ctor->GetParameter(0)->GetType();
+										if (type->GetDecorator() == ITypeInfo::SharedPtr && type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueInterfaceProxy>())
+										{
+											selectedCtor = ctor;
+											break;
+										}
 									}
 								}
-							}
 
-							if (selectedCtor)
-							{
-								baseCtors.Add(selectedCtor);
+								if (selectedCtor)
+								{
+									baseCtors.Add(selectedCtor);
+								}
+								else
+								{
+									throw ArgumentCountMismtatchException(group);
+								}
 							}
 							else
 							{
-								throw ArgumentCountMismtatchException(group);
+								throw ConstructorNotExistsException(td);
 							}
-						}
-						else
-						{
-							throw ConstructorNotExistsException(td);
 						}
 					}
 				}

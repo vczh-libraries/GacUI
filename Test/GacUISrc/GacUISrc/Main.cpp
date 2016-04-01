@@ -87,13 +87,20 @@ void GuiMain_Resource()
 			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
 			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		}
-		GetInstanceResourceManager()->SetResource(L"Resource", resource);
+		GetInstanceResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DevelopmentTool);
 
 		{
 			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");
 			auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
-			auto code = compiled->assembly->insAfterCodegen->moduleCodes[0];
-			File(L"UI.txt").WriteAllText(code);
+
+			WString text;
+			auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
+			FOREACH_INDEXER(WString, code, codeIndex, compiled->assembly->insAfterCodegen->moduleCodes)
+			{
+				text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
+				text += code + L"\r\n";
+			}
+			File(L"UI.txt").WriteAllText(text);
 		}
 	}
 

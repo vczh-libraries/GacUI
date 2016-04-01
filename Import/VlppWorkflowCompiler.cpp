@@ -2189,15 +2189,26 @@ CompleteScopeForDeclaration
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node];
 
-					FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+					if (node->baseTypes.Count() > 0)
 					{
-						if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
+						FOREACH(Ptr<WfType>, baseType, node->baseTypes)
 						{
-							if (scopeName->typeDescriptor)
+							if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
 							{
-								td->AddBaseType(scopeName->typeDescriptor);
+								if (scopeName->typeDescriptor)
+								{
+									td->AddBaseType(scopeName->typeDescriptor);
+								}
 							}
 						}
+					}
+					else if (node->kind == WfClassKind::Class)
+					{
+						td->AddBaseType(description::GetTypeDescriptor<DescriptableObject>());
+					}
+					else if (node->kind == WfClassKind::Interface)
+					{
+						td->AddBaseType(description::GetTypeDescriptor<IDescriptable>());
 					}
 
 					if (node->kind == WfClassKind::Interface)
@@ -2302,7 +2313,7 @@ CheckBaseClass
 						for (vint j = 0; j < count; j++)
 						{
 							auto baseTd = currentTd->GetBaseTypeDescriptor(j);
-							if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class)
+							if (baseTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Class && baseTd != description::GetTypeDescriptor<DescriptableObject>())
 							{
 								if (baseTypes.Contains(baseTd))
 								{
@@ -5363,6 +5374,7 @@ GenerateInstructions(Declaration)
 						}
 					}
 
+					if (classDecl->baseTypes.Count() > 0)
 					{
 						auto td = scope->parentScope->typeOfThisExpr;
 						vint count = td->GetBaseTypeDescriptorCount();

@@ -29,7 +29,8 @@ namespace vl
 				ViewModel,
 				Shared,
 				InstanceCtor,
-				InstanceClass ,
+				InstanceClass,
+				TemporaryClass,
 			};
 			
 			collections::List<WString>						codes;

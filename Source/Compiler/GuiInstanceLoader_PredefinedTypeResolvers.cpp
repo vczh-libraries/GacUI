@@ -37,8 +37,7 @@ namespace vl
 							MemoryStream stream;
 							{
 								StreamWriter writer(stream);
-								Dictionary<ParsingTreeCustomBase*, ParsingTextRange> ranges;
-								Ptr<ParsingGeneratedLocationRecorder> recorder = new ParsingGeneratedLocationRecorder(ranges);
+								auto recorder = MakePtr<ParsingUpdateLocationRecorder>();
 								ParsingWriter parsingWriter(writer, recorder, index);
 								WfPrint(module, L"", parsingWriter);
 							}
@@ -123,6 +122,7 @@ namespace vl
 					
 				compiled->codes.Clear();
 				compiled->modules.Clear();
+				manager->Clear(false, true);
 			}
 		}
 
@@ -167,13 +167,13 @@ Instance Type Resolver (Instance)
 				return 8;
 			}
 
-			Ptr<GuiInstanceCompiledWorkflow> AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module)
+			Ptr<GuiInstanceCompiledWorkflow> AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
 			{
 				auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
 				if (!compiled)
 				{
 					compiled = new GuiInstanceCompiledWorkflow;
-					compiled->type = GuiInstanceCompiledWorkflow::InstanceCtor;
+					compiled->type = assemblyType;
 					context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
 				}
 
@@ -192,7 +192,7 @@ Instance Type Resolver (Instance)
 							obj->ApplyStyles(context.resolver, errors);
 							if (auto module = Workflow_GenerateInstanceClass(obj, errors, true))
 							{
-								AddModule(context, L"Workflow/TemporaryClass", module);
+								AddModule(context, L"Workflow/TemporaryClass", module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
 						}
 					}
@@ -208,11 +208,10 @@ Instance Type Resolver (Instance)
 						}
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
-							obj->ApplyStyles(context.resolver, errors);
 							if (auto module = Workflow_PrecompileInstanceContext(obj, errors))
 							{
-								AddModule(context, L"Workflow/InstanceCtor", module);
-								AddModule(context, L"Workflow/InstanceClass", module);
+								AddModule(context, L"Workflow/InstanceCtor", module, GuiInstanceCompiledWorkflow::InstanceCtor);
+								AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
 							}
 						}
 					}
@@ -233,14 +232,13 @@ Instance Type Resolver (Instance)
 							{
 								break;
 							}
-							context.targetFolder->GetFolder(L"Workflow")->RemoveItem(L"TemporaryClass");
+							compiled->context = nullptr;
 						}
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
-							obj->ApplyStyles(context.resolver, errors);
-							if (auto module = Workflow_GenerateInstanceClass(obj, errors, true))
+							if (auto module = Workflow_GenerateInstanceClass(obj, errors, false))
 							{
-								auto compiled = AddModule(context, L"Workflow/InstanceClass", module);
+								auto compiled = AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
 								compiled->containedClassNames.Add(obj->className);
 							}
 						}
@@ -274,48 +272,6 @@ Instance Type Resolver (Instance)
 						}
 					}
 					break;
-				}
-				if (context.passIndex == 3)
-				{
-					if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
-					{
-						obj->ApplyStyles(context.resolver, errors);
-						if (auto module = Workflow_PrecompileInstanceContext(obj, errors))
-						{
-							WString path = L"Workflow/InstanceCtor";
-							auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-							if (!compiled)
-							{
-								compiled = new GuiInstanceCompiledWorkflow;
-								compiled->type = GuiInstanceCompiledWorkflow::InstanceCtor;
-								context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
-							}
-
-							compiled->containedClassNames.Add(obj->className);
-							compiled->modules.Add(module);
-						}
-					}
-				}
-				else
-				{
-					WString path;
-					if (context.passIndex == 4)
-					{
-						path = L"Workflow/InstanceCtor";
-					}
-					else if (context.passIndex == 5)
-					{
-						path = L"Workflow/InstanceClass";
-					}
-					else
-					{
-						return;
-					}
-
-					if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
-					{
-						Workflow_GenerateAssembly(compiled, path, errors);
-					}
 				}
 			}
 
