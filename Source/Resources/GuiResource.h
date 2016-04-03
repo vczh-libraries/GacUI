@@ -484,6 +484,8 @@ Resource Type Resolver
 		/// <summary>Provide a context for resource precompiling</summary>
 		struct GuiResourcePrecompileContext
 		{
+			typedef collections::Dictionary<Ptr<DescriptableObject>, Ptr<DescriptableObject>>	PropertyMap;
+
 			/// <summary>The folder to contain compiled objects.</summary>
 			Ptr<GuiResourceFolder>								targetFolder;
 			/// <summary>The root resource object.</summary>
@@ -492,6 +494,8 @@ Resource Type Resolver
 			vint												passIndex;
 			/// <summary>The path resolver. This is only for delay load resource.</summary>
 			Ptr<GuiResourcePathResolver>						resolver;
+			/// <summary>Additional properties for resource item contents</summary>
+			PropertyMap											additionalProperties;
 		};
 
 		/// <summary>

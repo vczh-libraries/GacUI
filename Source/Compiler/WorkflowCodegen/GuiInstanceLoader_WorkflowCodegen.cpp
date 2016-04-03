@@ -59,7 +59,7 @@ Workflow_PrecompileInstanceContext (Passes)
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors)
+		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
 			vint previousErrorCount = errors.Count();
 			ITypeDescriptor* rootTypeDescriptor = 0;
@@ -74,7 +74,6 @@ Workflow_PrecompileInstanceContext
 					L"\" should have the class name specified in the ref.Class attribute.");
 			}
 
-			types::ResolvingResult resolvingResult;
 			rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
 
 			if (errors.Count() == previousErrorCount)
@@ -95,7 +94,7 @@ Workflow_PrecompileInstanceContext
 Workflow_GenerateInstanceClass
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ErrorList& errors, bool beforePrecompile)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile)
 		{
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
 			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);

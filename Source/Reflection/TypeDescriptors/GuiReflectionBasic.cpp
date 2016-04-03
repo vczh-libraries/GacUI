@@ -614,6 +614,18 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path"})
 			END_CLASS_MEMBER(GuiResourcePathResolver)
 
+			BEGIN_ENUM_ITEM(GuiResourceUsage)
+				ENUM_CLASS_ITEM(DevelopmentTool)
+				ENUM_CLASS_ITEM(Application)
+			END_ENUM_ITEM(GuiResourceUsage)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiResourceManager)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetResourceManager, NO_PARAMETER, IGuiResourceManager*(*)(), &GetResourceManager)
+				CLASS_MEMBER_METHOD(SetResource, { L"name" _ L"resource" _ L"usage" })
+				CLASS_MEMBER_METHOD(GetResource, { L"name" })
+				CLASS_MEMBER_METHOD(GetResourceFromClassName, { L"name" })
+			END_INTERFACE_MEMBER(IGuiResourceManager)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
 			END_INTERFACE_MEMBER(IGuiGraphicsElement)
 

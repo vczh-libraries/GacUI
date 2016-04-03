@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 
 #include "../../Resources/GuiDocument.h"
+#include "../../Resources/GuiResourceManager.h"
 #include "../../Controls/Styles/GuiThemeStyleFactory.h"
 
 namespace vl
@@ -83,6 +84,8 @@ Type List
 			F(presentation::GuiResourceFolder)\
 			F(presentation::GuiResource)\
 			F(presentation::GuiResourcePathResolver)\
+			F(presentation::GuiResourceUsage)\
+			F(presentation::IGuiResourceManager)\
 			F(presentation::elements::IGuiGraphicsElement)\
 			F(presentation::compositions::GuiGraphicsComposition)\
 			F(presentation::compositions::GuiGraphicsComposition::MinSizeLimitation)\

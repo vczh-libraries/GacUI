@@ -190,7 +190,7 @@ Instance Type Resolver (Instance)
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							obj->ApplyStyles(context.resolver, errors);
-							if (auto module = Workflow_GenerateInstanceClass(obj, errors, true))
+							if (auto module = Workflow_GenerateInstanceClass(obj, *(types::ResolvingResult*)nullptr, errors, true))
 							{
 								AddModule(context, L"Workflow/TemporaryClass", module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
@@ -216,8 +216,10 @@ Instance Type Resolver (Instance)
 						}
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
-							if (auto module = Workflow_PrecompileInstanceContext(obj, errors))
+							auto resolvingResult = MakePtr<types::ResolvingResult>();
+							if (auto module = Workflow_PrecompileInstanceContext(obj, *resolvingResult.Obj(), errors))
 							{
+								context.additionalProperties.Add(obj, resolvingResult);
 								AddModule(context, L"Workflow/InstanceCtor", module, GuiInstanceCompiledWorkflow::InstanceCtor);
 								AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
 							}
@@ -244,7 +246,8 @@ Instance Type Resolver (Instance)
 						}
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
-							if (auto module = Workflow_GenerateInstanceClass(obj, errors, false))
+							auto resolvingResult = context.additionalProperties[obj.Obj()].Cast<types::ResolvingResult>();
+							if (auto module = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, false))
 							{
 								AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
 							}

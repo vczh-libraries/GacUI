@@ -29,7 +29,7 @@ namespace vl
 			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
 
-			struct ResolvingResult
+			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
 				Ptr<workflow::WfModule>							moduleForValidate;
 				Ptr<workflow::WfBlockStatement>					moduleContent;
@@ -72,8 +72,8 @@ WorkflowCompiler (Compile)
 		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult);
 
 		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
-		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
-		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ErrorList& errors, bool beforePrecompile);
+		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile);
 	}
 }
 
