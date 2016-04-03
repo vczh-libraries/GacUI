@@ -87,7 +87,7 @@ void GuiMain_Resource()
 			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
 			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 		}
-		GetInstanceResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DevelopmentTool);
+		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DevelopmentTool);
 
 		{
 			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");

@@ -122,8 +122,6 @@ Compiled Workflow Type Resolver (Workflow)
 
 					if (obj->type != GuiInstanceCompiledWorkflow::TemporaryClass)
 					{
-						writer << obj->containedClassNames;
-
 						MemoryStream memoryStream;
 						obj->assembly->Serialize(memoryStream);
 						writer << (IStream&)memoryStream;
@@ -143,7 +141,7 @@ Compiled Workflow Type Resolver (Workflow)
 				if (obj->type != GuiInstanceCompiledWorkflow::TemporaryClass)
 				{
 					auto memoryStream = MakePtr<MemoryStream>();
-					reader << obj->containedClassNames << (IStream&)*memoryStream.Obj();
+					reader << (IStream&)*memoryStream.Obj();
 					obj->binaryToLoad = memoryStream;
 				}
 				return obj;

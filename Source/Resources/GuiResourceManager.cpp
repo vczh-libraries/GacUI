@@ -1,0 +1,132 @@
+#include "GuiResourceManager.h"
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace stream;
+		using namespace reflection::description;
+		using namespace controls;
+
+/***********************************************************************
+Class Name Record (ClassNameRecord)
+***********************************************************************/
+
+		class GuiResourceClassNameRecordTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_DirectLoadStream
+		{
+		public:
+			WString GetType()override
+			{
+				return L"ClassNameRecord";
+			}
+
+			bool XmlSerializable()override
+			{
+				return false;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
+			{
+				return this;
+			}
+
+			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			{
+				if (auto obj = resource.Cast<GuiResourceClassNameRecord>())
+				{
+					internal::ContextFreeWriter writer(stream);
+					writer << obj->classNames;
+				}
+			}
+
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			{
+				internal::ContextFreeReader reader(stream);
+
+				auto obj = MakePtr<GuiResourceClassNameRecord>();
+				reader << obj->classNames;
+				return obj;
+			}
+		};
+
+/***********************************************************************
+IGuiInstanceResourceManager
+***********************************************************************/
+
+		IGuiResourceManager* resourceManager = 0;
+
+		IGuiResourceManager* GetResourceManager()
+		{
+			return resourceManager;
+		}
+
+		class GuiResourceManager : public Object, public IGuiResourceManager, public IGuiPlugin
+		{
+		protected:
+			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
+
+			ResourceMap								resources;
+			ResourceMap								instanceResources;
+
+		public:
+			GuiResourceManager()
+			{
+			}
+
+			void Load()override
+			{
+				resourceManager = this;
+			}
+
+			void AfterLoad()override
+			{
+				IGuiResourceResolverManager* manager = GetResourceResolverManager();
+				manager->SetTypeResolver(new GuiResourceClassNameRecordTypeResolver);
+			}
+
+			void Unload()override
+			{
+				resourceManager = nullptr;
+			}
+
+			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
+			{
+				vint index = resources.Keys().IndexOf(name);
+				if (index != -1) return false;
+				
+				resource->Initialize(usage);
+				resources.Add(name, resource);
+				
+				auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+				FOREACH(WString, className, record->classNames)
+				{
+					instanceResources.Add(className, resource);
+				}
+				return true;
+			}
+
+			Ptr<GuiResource> GetResource(const WString& name)override
+			{
+				vint index = resources.Keys().IndexOf(name);
+				return index == -1 ? nullptr : resources.Values()[index];
+			}
+
+			Ptr<GuiResource> GetResourceFromClassName(const WString& classFullName)override
+			{
+				vint index = instanceResources.Keys().IndexOf(classFullName);
+				if (index == -1) return nullptr;
+				return instanceResources.Values()[index];
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiResourceManager)
+	}
+}

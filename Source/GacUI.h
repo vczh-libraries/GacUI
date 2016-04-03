@@ -29,6 +29,7 @@ Global Objects:
 #include "Controls/Styles/GuiWin7Styles.h"
 #include "Controls/Styles/GuiWin8Styles.h"
 #include "Controls/Templates/GuiControlTemplateStyles.h"
+#include "Resources/GuiResourceManager.h"
 
 #if !defined(__APPLE__) && !defined(__APPLE_CC__) && !defined(GAC_HEADER_USE_NAMESPACE)
 

@@ -195,7 +195,6 @@
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\ServicesImpl\WindowsScreenService.cpp" />
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.cpp" />
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstancePartialClass.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -215,6 +214,7 @@
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Save.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiParserManager.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiResource.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiResourceManager.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp" />
     <ClCompile Include="AutoComplete_Grammar.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -331,6 +331,7 @@
     <ClInclude Include="..\..\..\Source\Resources\GuiDocument.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiParserManager.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiResource.h" />
+    <ClInclude Include="..\..\..\Source\Resources\GuiResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt" />

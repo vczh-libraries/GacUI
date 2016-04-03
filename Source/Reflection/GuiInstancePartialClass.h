@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEPARTIALCLASS
 
 #include "../Controls/GuiApplication.h"
+#include "../Resources/GuiResourceManager.h"
 #include "GuiInstanceCompiledWorkflow.h"
 
 namespace vl
@@ -17,26 +18,6 @@ namespace vl
 	namespace presentation
 	{
 		using namespace reflection;
-
-/***********************************************************************
-Resource
-***********************************************************************/
-
-		class GuiInstanceConstructorResult : public Object
-		{
-		public:
-			reflection::description::Value				ctorInstance;
-		};
-
-		class IGuiInstanceResourceManager : public IDescriptable, public Description<IGuiInstanceResourceManager>
-		{
-		public:
-			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::Application) = 0;
-			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
-			virtual Ptr<GuiInstanceConstructorResult>	RunInstanceConstructor(const WString& classFullName, description::Value rootInstance) = 0;
-		};
-
-		extern IGuiInstanceResourceManager*			GetInstanceResourceManager();
 
 /***********************************************************************
 PartialClass
@@ -54,11 +35,23 @@ PartialClass
 			{
 				if (ctorInstance.IsNull())
 				{
-					auto value = description::Value::From(dynamic_cast<T*>(this));
-					if (auto result = GetInstanceResourceManager()->RunInstanceConstructor(className, value))
+					auto rootInstance = description::Value::From(dynamic_cast<T*>(this));
+					auto resource = GetResourceManager()->GetResourceFromClassName(className);
+					auto ctorFullName = className + L"<Ctor>";
+					auto td = description::GetTypeDescriptor(ctorFullName);
+					if (!td) return nullptr;
+
+					auto ctor = td->GetConstructorGroup()->GetMethod(0);
+					Array<Value> arguments;
+					ctorInstance = ctor->Invoke(Value(), arguments);
+					
+					auto initialize = td->GetMethodGroupByName(L"<initialize-instance>", false)->GetMethod(0);
 					{
-						ctorInstance = result->ctorInstance;
-						return true;
+						arguments.Resize(2);
+						auto resolver = MakePtr<GuiResourcePathResolver>(resource, resource->GetWorkingDirectory());
+						arguments[0] = rootInstance;
+						arguments[1] = Value::From(resolver.Obj());
+						initialize->Invoke(ctorInstance, arguments);
 					}
 				}
 				return false;

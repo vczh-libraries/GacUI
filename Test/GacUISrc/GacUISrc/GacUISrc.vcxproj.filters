@@ -471,11 +471,11 @@
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.cpp">
       <Filter>GacUI\Reflection</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Reflection\GuiInstancePartialClass.cpp">
-      <Filter>GacUI\Reflection</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Import\VlppWorkflowCompiler.cpp">
       <Filter>Import</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiResourceManager.cpp">
+      <Filter>GacUI\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -808,6 +808,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Import\VlppWorkflowCompiler.h">
       <Filter>Import</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Resources\GuiResourceManager.h">
+      <Filter>GacUI\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 #include "../Reflection/TypeDescriptors/GuiReflectionEvents.h"
 #include "../Reflection/GuiInstanceCompiledWorkflow.h"
 #include "../Resources/GuiParserManager.h"
+#include "../Resources/GuiResourceManager.h"
 #include "InstanceQuery/GuiInstanceQuery.h"
 #include "GuiInstanceSharedScript.h"
 #include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
@@ -167,7 +168,7 @@ Instance Type Resolver (Instance)
 				return 8;
 			}
 
-			Ptr<GuiInstanceCompiledWorkflow> AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
+			void AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
 			{
 				auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
 				if (!compiled)
@@ -178,7 +179,6 @@ Instance Type Resolver (Instance)
 				}
 
 				compiled->modules.Add(module);
-				return compiled;
 			}
 
 			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
@@ -194,6 +194,14 @@ Instance Type Resolver (Instance)
 							{
 								AddModule(context, L"Workflow/TemporaryClass", module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
+
+							auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+							if (!record)
+							{
+								record = MakePtr<GuiResourceClassNameRecord>();
+								context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
+							}
+							record->classNames.Add(obj->className);
 						}
 					}
 					break;
@@ -238,8 +246,7 @@ Instance Type Resolver (Instance)
 						{
 							if (auto module = Workflow_GenerateInstanceClass(obj, errors, false))
 							{
-								auto compiled = AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
-								compiled->containedClassNames.Add(obj->className);
+								AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
 							}
 						}
 					}

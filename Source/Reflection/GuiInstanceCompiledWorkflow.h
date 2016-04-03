@@ -38,7 +38,6 @@ namespace vl
 			Ptr<stream::MemoryStream>						binaryToLoad;
 
 			AssemblyType									type = AssemblyType::Shared;
-			collections::List<WString>						containedClassNames;
 			Ptr<workflow::runtime::WfAssembly>				assembly;
 			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
 

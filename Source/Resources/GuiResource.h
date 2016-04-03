@@ -500,7 +500,7 @@ Resource Type Resolver
 		///			Pass 0: Collect workflow scripts
 		///			Pass 1: Compile ViewModel scripts
 		///			Pass 2: Compile Shared scripts
-		///			Pass 3: Generate TemporaryClass scripts
+		///			Pass 3: Generate TemporaryClass scripts, ClassNameRecord
 		///			Pass 4: Compile TemporaryClass scripts
 		///			Pass 5: Generate InstanceCtor scripts
 		///			Pass 6: Compile InstanceCtor scripts
