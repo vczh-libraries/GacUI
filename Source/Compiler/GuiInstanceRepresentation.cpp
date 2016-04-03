@@ -549,12 +549,17 @@ GuiInstanceContext
 					{
 						auto attName = XmlGetAttribute(element, L"Name");
 						auto attType = XmlGetAttribute(element, L"Type");
+						auto attValue = XmlGetAttribute(element, L"Value");
 						auto attReadonly = XmlGetAttribute(element, L"Readonly");
 						if (attName && attType)
 						{
 							auto prop = MakePtr<GuiInstanceProperty>();
 							prop->name = GlobalStringKey::Get(attName->value.value);
 							prop->typeName = attType->value.value;
+							if (attValue)
+							{
+								prop->value = attValue->value.value;
+							}
 							if (attReadonly)
 							{
 								prop->readonly = attReadonly->value.value == L"true";
@@ -662,6 +667,14 @@ GuiInstanceContext
 				attType->name.value = L"Type";
 				attType->value.value = prop->typeName;
 				xmlProperty->attributes.Add(attType);
+
+				if (prop->value != L"")
+				{
+					auto attValue = MakePtr<XmlAttribute>();
+					attValue->name.value = L"Value";
+					attValue->value.value = prop->value;
+					xmlProperty->attributes.Add(attType);
+				}
 
 				auto attReadonly = MakePtr<XmlAttribute>();
 				attReadonly->name.value = L"Readonly";
