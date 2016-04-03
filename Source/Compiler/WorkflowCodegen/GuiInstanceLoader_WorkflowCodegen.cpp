@@ -300,7 +300,22 @@ Workflow_GenerateInstanceClass
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"Get" + prop->name.ToString();
 						decl->returnType = CopyType(type);
-						decl->statement = notImplemented();
+						if (!beforePrecompile)
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							decl->statement = block;
+
+							auto ref = MakePtr<WfReferenceExpression>();
+							ref->name.value = L"<property>" + prop->name.ToString();
+
+							auto returnStat = MakePtr<WfReturnStatement>();
+							returnStat->expression = ref;
+							block->statements.Add(returnStat);
+						}
+						else
+						{
+							decl->statement = notImplemented();
+						}
 					}
 					if (!prop->readonly)
 					{
@@ -311,7 +326,7 @@ Workflow_GenerateInstanceClass
 						decl->name.value = L"Set" + prop->name.ToString();
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"value";
+							argument->name.value = L"<value>";
 							argument->type = CopyType(type);
 							decl->arguments.Add(argument);
 						}
@@ -320,7 +335,64 @@ Workflow_GenerateInstanceClass
 							voidType->name = WfPredefinedTypeName::Void;
 							decl->returnType = voidType;
 						}
-						decl->statement = notImplemented();
+						if (!beforePrecompile)
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							decl->statement = block;
+
+							auto ifStat = MakePtr<WfIfStatement>();
+							block->statements.Add(ifStat);
+							{
+								auto refProp = MakePtr<WfReferenceExpression>();
+								refProp->name.value = L"<property>" + prop->name.ToString();
+
+								auto refValue = MakePtr<WfReferenceExpression>();
+								refValue->name.value = L"<value>";
+
+								auto compExpr = MakePtr<WfBinaryExpression>();
+								compExpr->op = WfBinaryOperator::NE;
+								compExpr->first = refProp;
+								compExpr->second = refValue;
+
+								ifStat->expression = compExpr;
+							}
+
+							auto trueBlock = MakePtr<WfBlockStatement>();
+							ifStat->trueBranch = trueBlock;
+							{
+								auto refProp = MakePtr<WfReferenceExpression>();
+								refProp->name.value = L"<property>" + prop->name.ToString();
+
+								auto refValue = MakePtr<WfReferenceExpression>();
+								refValue->name.value = L"<value>";
+
+								auto assignExpr = MakePtr<WfBinaryExpression>();
+								assignExpr->op = WfBinaryOperator::Assign;
+								assignExpr->first = refProp;
+								assignExpr->second = refValue;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = assignExpr;
+
+								trueBlock->statements.Add(stat);
+							}
+							{
+								auto refEvent = MakePtr<WfReferenceExpression>();
+								refEvent->name.value = prop->name.ToString() + L"Changed";
+
+								auto call = MakePtr<WfCallExpression>();
+								call->function = refEvent;
+
+								auto stat = MakePtr<WfExpressionStatement>();
+								stat->expression = call;
+
+								trueBlock->statements.Add(stat);
+							}
+						}
+						else
+						{
+							decl->statement = notImplemented();
+						}
 					}
 					{
 						auto decl = MakePtr<WfEventDeclaration>();
