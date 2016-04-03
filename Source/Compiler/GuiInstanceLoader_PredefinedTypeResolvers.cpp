@@ -234,7 +234,6 @@ Instance Type Resolver (Instance)
 							{
 								break;
 							}
-							compiled->context = nullptr;
 						}
 						if (auto compiled = context.targetFolder->GetValueByPath(L"Workflow/TemporaryClass").Cast<GuiInstanceCompiledWorkflow>())
 						{
@@ -242,7 +241,6 @@ Instance Type Resolver (Instance)
 							{
 								break;
 							}
-							compiled->context = nullptr;
 						}
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
@@ -269,6 +267,14 @@ Instance Type Resolver (Instance)
 						}
 						else if (context.passIndex == 8)
 						{
+							if (auto compiled = context.targetFolder->GetValueByPath(L"Workflow/InstanceCtor").Cast<GuiInstanceCompiledWorkflow>())
+							{
+								compiled->context = nullptr;
+							}
+							if (auto compiled = context.targetFolder->GetValueByPath(L"Workflow/TemporaryClass").Cast<GuiInstanceCompiledWorkflow>())
+							{
+								compiled->context = nullptr;
+							}
 							path = L"Workflow/InstanceClass";
 						}
 						else

@@ -34,6 +34,7 @@ namespace vl
 				Ptr<workflow::WfModule>							moduleForValidate;
 				Ptr<workflow::WfBlockStatement>					moduleContent;
 
+				collections::List<GlobalStringKey>				referenceNames;
 				VariableTypeInfoMap								typeInfos;
 				TypeOverrideMap									typeOverrides;
 				PropertyResolvingMap							propertyResolvings;

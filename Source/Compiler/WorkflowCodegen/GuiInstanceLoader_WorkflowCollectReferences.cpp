@@ -109,6 +109,7 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
+					resolvingResult.referenceNames.Add(repr->instanceName);
 					resolvingResult.typeInfos.Add(repr->instanceName, resolvedTypeInfo);
 				}
 			
