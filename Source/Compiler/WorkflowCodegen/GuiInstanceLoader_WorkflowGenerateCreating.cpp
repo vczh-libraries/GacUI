@@ -247,22 +247,33 @@ WorkflowGenerateCreatingVisitor
 
 			void Visit(GuiConstructorRepr* repr)override
 			{
-				auto typeInfo = resolvingResult.typeInfos[repr->instanceName];
-				auto loader = GetInstanceLoaderManager()->GetLoader(typeInfo.typeName);
-				while (loader)
+				IGuiInstanceLoader::TypeInfo ctorTypeInfo;
+				if (context->instance.Obj() == repr)
 				{
-					if (loader->CanCreate(typeInfo))
+					auto source = FindInstanceLoadingSource(context, repr);
+					ctorTypeInfo.typeName = source.typeName;
+					ctorTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+				}
+				else
+				{
+					ctorTypeInfo = resolvingResult.typeInfos[repr->instanceName];
+				}
+
+				auto ctorLoader = GetInstanceLoaderManager()->GetLoader(ctorTypeInfo.typeName);
+				while (ctorLoader)
+				{
+					if (ctorLoader->CanCreate(ctorTypeInfo))
 					{
 						break;
 					}
-					loader = GetInstanceLoaderManager()->GetParentLoader(loader);
+					ctorLoader = GetInstanceLoaderManager()->GetParentLoader(ctorLoader);
 				}
 
 				if (context->instance.Obj() == repr)
 				{
-					resolvingResult.rootLoader = loader;
-					resolvingResult.rootTypeInfo = typeInfo;
-					FillCtorArguments(repr, loader, typeInfo, resolvingResult.rootCtorArguments);
+					resolvingResult.rootLoader = ctorLoader;
+					resolvingResult.rootTypeInfo = ctorTypeInfo;
+					FillCtorArguments(repr, ctorLoader, ctorTypeInfo, resolvingResult.rootCtorArguments);
 
 					{
 						auto refInstance = MakePtr<WfReferenceExpression>();
@@ -307,16 +318,16 @@ WorkflowGenerateCreatingVisitor
 				else
 				{
 					IGuiInstanceLoader::ArgumentMap arguments;
-					FillCtorArguments(repr, loader, typeInfo, arguments);
+					FillCtorArguments(repr, ctorLoader, ctorTypeInfo, arguments);
 
 					vint errorCount = errors.Count();
-					if (auto ctorStats = loader->CreateInstance(typeInfo, repr->instanceName, arguments, errors))
+					if (auto ctorStats = ctorLoader->CreateInstance(ctorTypeInfo, repr->instanceName, arguments, errors))
 					{
 						statements->statements.Add(ctorStats);
 					}
 					else if (errorCount == errors.Count())
 					{
-						errors.Add(L"Precompile: Something is wrong when creating an instance of type \"" + typeInfo.typeName.ToString() + L"\".");
+						errors.Add(L"Precompile: Something is wrong when creating an instance of type \"" + ctorTypeInfo.typeName.ToString() + L"\".");
 					}
 				}
 				Visit((GuiAttSetterRepr*)repr);

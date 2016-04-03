@@ -467,14 +467,8 @@ Workflow_GenerateInstanceClass
 					wdRef->parent = resRef2;
 					wdRef->name.value = L"WorkingDirectory";
 
-					auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-					elementType->SetTypeDescriptor(description::GetTypeDescriptor<GuiResourcePathResolver>());
-
-					auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
-					pointerType->SetElementType(elementType);
-
 					auto newClassExpr = MakePtr<WfNewClassExpression>();
-					newClassExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+					newClassExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiResourcePathResolver>>::CreateTypeInfo().Obj());
 					newClassExpr->arguments.Add(resRef);
 					newClassExpr->arguments.Add(wdRef);
 
@@ -517,15 +511,9 @@ Workflow_GenerateInstanceClass
 					auto resolverRef = MakePtr<WfReferenceExpression>();
 					resolverRef->name.value = L"<resolver>";
 
-					auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-					elementType->SetTypeDescriptor(description::GetTypeDescriptor<GuiResourcePathResolver>());
-
-					auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
-					pointerType->SetElementType(elementType);
-
 					auto castExpr = MakePtr<WfTypeCastingExpression>();
 					castExpr->strategy = WfTypeCastingStrategy::Strong;
-					castExpr->type = GetTypeFromTypeInfo(pointerType.Obj());
+					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<GuiResourcePathResolver*>::CreateTypeInfo().Obj());
 					castExpr->expression = resolverRef;
 
 					auto callExpr = MakePtr<WfCallExpression>();

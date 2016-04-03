@@ -409,12 +409,19 @@ GuiVrtualTypeInstanceLoader
 
 				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors)
 				{
-					auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
+					auto controlType = TypeInfoRetriver<TControl>::CreateTypeInfo();
 
-					auto createControl = MakePtr<WfBaseConstructorCall>();
-					createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-					createControl->arguments.Add(CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors));
-					return createControl;
+					if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors))
+					{
+						auto createControl = MakePtr<WfBaseConstructorCall>();
+						createControl->type = GetTypeFromTypeInfo(controlType.Obj());
+						createControl->arguments.Add(createStyleExpr);
+						return createControl;
+					}
+					else
+					{
+						return nullptr;
+					}
 				}
 
 				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
