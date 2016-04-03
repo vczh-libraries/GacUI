@@ -189,6 +189,14 @@ Workflow_GenerateInstanceClass
 			{
 				if (auto type = parseType(prop->typeName, L"property \"" + prop->name.ToString() + L" of instance \"" + context->className + L"\""))
 				{
+					if (!beforePrecompile)
+					{
+						auto decl = MakePtr<WfVariableDeclaration>();
+						addDecl(decl);
+
+						decl->name.value = L"<property>" + prop->name.ToString();
+						decl->type = CopyType(type);
+					}
 					{
 						auto decl = MakePtr<WfFunctionDeclaration>();
 						addDecl(decl);
@@ -241,7 +249,9 @@ Workflow_GenerateInstanceClass
 
 			auto ctor = MakePtr<WfConstructorDeclaration>();
 			ctor->constructorType = WfConstructorType::RawPtr;
-			ctor->statement = notImplemented();
+			auto ctorBlock = (beforePrecompile ? notImplemented() : MakePtr<WfBlockStatement>());
+			ctor->statement = ctorBlock;
+
 			if (auto group = baseTd->GetConstructorGroup())
 			{
 				vint count = group->GetMethod(0)->GetParameterCount();
@@ -264,6 +274,18 @@ Workflow_GenerateInstanceClass
 			{
 				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\""))
 				{
+					if (!beforePrecompile)
+					{
+						auto decl = MakePtr<WfVariableDeclaration>();
+						addDecl(decl);
+
+						decl->name.value = L"<parameter>" + param->name.ToString();
+						decl->type = CopyType(type);
+						
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						decl->expression = nullExpr;
+					}
 					{
 						auto decl = MakePtr<WfFunctionDeclaration>();
 						addDecl(decl);
@@ -271,7 +293,22 @@ Workflow_GenerateInstanceClass
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"Get" + param->name.ToString();
 						decl->returnType = CopyType(type);
-						decl->statement = notImplemented();
+						if (!beforePrecompile)
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							decl->statement = block;
+
+							auto ref = MakePtr<WfReferenceExpression>();
+							ref->name.value = L"<parameter>" + param->name.ToString();
+
+							auto returnStat = MakePtr<WfReturnStatement>();
+							returnStat->expression = ref;
+							block->statements.Add(returnStat);
+						}
+						else
+						{
+							decl->statement = notImplemented();
+						}
 					}
 					{
 						auto decl = MakePtr<WfPropertyDeclaration>();
@@ -283,9 +320,27 @@ Workflow_GenerateInstanceClass
 					}
 					{
 						auto argument = MakePtr<WfFunctionArgument>();
-						argument->name.value = L"<param>" + param->name.ToString();
+						argument->name.value = L"<ctor-parameter>" + param->name.ToString();
 						argument->type = CopyType(type);
 						ctor->arguments.Add(argument);
+					}
+					if (!beforePrecompile)
+					{
+						auto refLeft = MakePtr<WfReferenceExpression>();
+						refLeft->name.value = L"<parameter>" + param->name.ToString();
+
+						auto refRight = MakePtr<WfReferenceExpression>();
+						refRight->name.value = L"<ctor-parameter>" + param->name.ToString();
+
+						auto assignExpr = MakePtr<WfBinaryExpression>();
+						assignExpr->op = WfBinaryOperator::Assign;
+						assignExpr->first = refLeft;
+						assignExpr->second = refRight;
+
+						auto exprStat = MakePtr<WfExpressionStatement>();
+						exprStat->expression = assignExpr;
+
+						ctorBlock->statements.Add(exprStat);
 					}
 				}
 			}
