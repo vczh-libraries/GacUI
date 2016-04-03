@@ -216,10 +216,54 @@ WorkflowGenerateCreatingVisitor
 				}
 			}
 
+			void FillCtorArguments(GuiConstructorRepr* repr, IGuiInstanceLoader* loader, const IGuiInstanceLoader::TypeInfo& typeInfo, IGuiInstanceLoader::ArgumentMap& arguments)
+			{
+				List<GlobalStringKey> ctorProps;
+				loader->GetConstructorParameters(typeInfo, ctorProps);
+				FOREACH(GlobalStringKey, prop, ctorProps)
+				{
+					auto index = repr->setters.Keys().IndexOf(prop);
+					if (index != -1)
+					{
+						auto setter = repr->setters.Values()[index];
+						if (setter->binding == GlobalStringKey::Empty)
+						{
+							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							{
+								auto argument = GetArgumentInfo(value.Obj());
+								if (argument.type && argument.expression)
+								{
+									arguments.Add(prop, argument);
+								}
+							}
+						}
+						else
+						{
+							errors.Add(L"Precompile: <BINDING-ON-CTOR-PROP-NOT-SUPPORTED-YET>");
+						}
+					}
+				}
+			}
+
 			void Visit(GuiConstructorRepr* repr)override
 			{
+				auto typeInfo = resolvingResult.typeInfos[repr->instanceName];
+				auto loader = GetInstanceLoaderManager()->GetLoader(typeInfo.typeName);
+				while (loader)
+				{
+					if (loader->CanCreate(typeInfo))
+					{
+						break;
+					}
+					loader = GetInstanceLoaderManager()->GetParentLoader(loader);
+				}
+
 				if (context->instance.Obj() == repr)
 				{
+					resolvingResult.rootLoader = loader;
+					resolvingResult.rootTypeInfo = typeInfo;
+					FillCtorArguments(repr, loader, typeInfo, resolvingResult.rootCtorArguments);
+
 					{
 						auto refInstance = MakePtr<WfReferenceExpression>();
 						refInstance->name.value = repr->instanceName.ToString();
@@ -262,44 +306,8 @@ WorkflowGenerateCreatingVisitor
 				}
 				else
 				{
-					auto typeInfo = resolvingResult.typeInfos[repr->instanceName];
-					auto loader = GetInstanceLoaderManager()->GetLoader(typeInfo.typeName);
-					while (loader)
-					{
-						if (loader->CanCreate(typeInfo))
-						{
-							break;
-						}
-						loader = GetInstanceLoaderManager()->GetParentLoader(loader);
-					}
-
-					List<GlobalStringKey> ctorProps;
-					loader->GetConstructorParameters(typeInfo, ctorProps);
-
 					IGuiInstanceLoader::ArgumentMap arguments;
-					FOREACH(GlobalStringKey, prop, ctorProps)
-					{
-						auto index = repr->setters.Keys().IndexOf(prop);
-						if (index != -1)
-						{
-							auto setter = repr->setters.Values()[index];
-							if (setter->binding == GlobalStringKey::Empty)
-							{
-								FOREACH(Ptr<GuiValueRepr>, value, setter->values)
-								{
-									auto argument = GetArgumentInfo(value.Obj());
-									if (argument.type && argument.expression)
-									{
-										arguments.Add(prop, argument);
-									}
-								}
-							}
-							else
-							{
-								errors.Add(L"Precompile: <BINDING-ON-CTOR-PROP-NOT-SUPPORTED-YET>");
-							}
-						}
-					}
+					FillCtorArguments(repr, loader, typeInfo, arguments);
 
 					vint errorCount = errors.Count();
 					if (auto ctorStats = loader->CreateInstance(typeInfo, repr->instanceName, arguments, errors))

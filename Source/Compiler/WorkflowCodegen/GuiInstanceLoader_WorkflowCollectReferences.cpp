@@ -455,7 +455,26 @@ WorkflowReferenceNamesVisitor
 								}
 								loader = GetInstanceLoaderManager()->GetParentLoader(loader);
 							}
-							if (!loader)
+							if (loader)
+							{
+								if (repr == context->instance.Obj())
+								{
+									List<GlobalStringKey> propertyNames;
+									loader->GetConstructorParameters(resolvedTypeInfo, propertyNames);
+									if (propertyNames.Count() == 1)
+									{
+										if (propertyNames[0] != GlobalStringKey::_ControlTemplate)
+										{
+											errors.Add(L"Precompile: Type \"" + resolvedTypeInfo.typeName.ToString() + L"\" cannot be used to create a root instance, because its only constructor parameter is not for a the control template.");
+										}
+									}
+									else if (propertyNames.Count() > 1)
+									{
+										errors.Add(L"Precompile: Type \"" + resolvedTypeInfo.typeName.ToString() + L"\" cannot be used to create a root instance, because it has more than one constructor parameters. A root instance type can only have one constructor parameter, which is for the control template.");
+									}
+								}
+							}
+							else
 							{
 								errors.Add(L"Precompile: Type \"" + resolvedTypeInfo.typeName.ToString() + L"\" cannot be used to create an instance.");
 							}

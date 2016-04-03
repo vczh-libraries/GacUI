@@ -35,6 +35,10 @@ namespace vl
 				Ptr<workflow::WfBlockStatement>					moduleContent;
 
 				collections::List<GlobalStringKey>				referenceNames;
+				IGuiInstanceLoader::ArgumentMap					rootCtorArguments;
+				IGuiInstanceLoader*								rootLoader = nullptr;
+				IGuiInstanceLoader::TypeInfo					rootTypeInfo;
+
 				VariableTypeInfoMap								typeInfos;
 				TypeOverrideMap									typeOverrides;
 				PropertyResolvingMap							propertyResolvings;
