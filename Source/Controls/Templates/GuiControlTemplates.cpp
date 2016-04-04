@@ -90,7 +90,7 @@ GuiTemplate
 
 			GuiTemplate::~GuiTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -108,7 +108,7 @@ GuiControlTemplate
 
 			GuiControlTemplate::~GuiControlTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -124,7 +124,7 @@ GuiLabelTemplate
 
 			GuiLabelTemplate::~GuiLabelTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -140,7 +140,7 @@ GuiSinglelineTextBoxTemplate
 
 			GuiSinglelineTextBoxTemplate::~GuiSinglelineTextBoxTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -156,7 +156,7 @@ GuiDocumentLabelTemplate
 
 			GuiDocumentLabelTemplate::~GuiDocumentLabelTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -169,7 +169,7 @@ GuiMenuTemplate
 
 			GuiMenuTemplate::~GuiMenuTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -199,7 +199,7 @@ GuiWindowTemplate
 
 			GuiWindowTemplate::~GuiWindowTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -216,7 +216,7 @@ GuiButtonTemplate
 
 			GuiButtonTemplate::~GuiButtonTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -233,7 +233,7 @@ GuiSelectableButtonTemplate
 
 			GuiSelectableButtonTemplate::~GuiSelectableButtonTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -252,7 +252,7 @@ GuiToolstripButtonTemplate
 
 			GuiToolstripButtonTemplate::~GuiToolstripButtonTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -269,7 +269,7 @@ GuiListViewColumnHeaderTemplate
 
 			GuiListViewColumnHeaderTemplate::~GuiListViewColumnHeaderTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -286,7 +286,7 @@ GuiComboBoxTemplate
 
 			GuiComboBoxTemplate::~GuiComboBoxTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -302,7 +302,7 @@ GuiDatePickerTemplate
 
 			GuiDatePickerTemplate::~GuiDatePickerTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -318,7 +318,7 @@ GuiDateComboBoxTemplate
 
 			GuiDateComboBoxTemplate::~GuiDateComboBoxTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -338,7 +338,7 @@ GuiScrollTemplate
 
 			GuiScrollTemplate::~GuiScrollTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -355,7 +355,7 @@ GuiScrollViewTemplate
 
 			GuiScrollViewTemplate::~GuiScrollViewTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -371,7 +371,7 @@ GuiMultilineTextBoxTemplate
 
 			GuiMultilineTextBoxTemplate::~GuiMultilineTextBoxTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -387,7 +387,7 @@ GuiTextListTemplate
 
 			GuiTextListTemplate::~GuiTextListTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -403,7 +403,7 @@ GuiDocumentViewerTemplate
 
 			GuiDocumentViewerTemplate::~GuiDocumentViewerTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -419,7 +419,7 @@ GuiListViewTemplate
 
 			GuiListViewTemplate::~GuiListViewTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -435,7 +435,7 @@ GuiTreeViewTemplate
 
 			GuiTreeViewTemplate::~GuiTreeViewTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -453,7 +453,7 @@ GuiTabTemplate
 
 			GuiTabTemplate::~GuiTabTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -471,7 +471,7 @@ GuiListItemTemplate
 
 			GuiListItemTemplate::~GuiListItemTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -488,7 +488,7 @@ GuiTreeItemTemplate
 
 			GuiTreeItemTemplate::~GuiTreeItemTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -504,7 +504,7 @@ GuiGridVisualizerTemplate
 
 			GuiGridVisualizerTemplate::~GuiGridVisualizerTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 
 /***********************************************************************
@@ -520,7 +520,7 @@ GuiGridEditorTemplate
 
 			GuiGridEditorTemplate::~GuiGridEditorTemplate()
 			{
-				FinalizeInstance();
+				ClearSubscriptions();
 			}
 		}
 	}
