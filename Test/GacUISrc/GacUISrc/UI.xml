@@ -57,7 +57,7 @@
       <ref.Property Name="BoolProp" Type="bool" Value="false"/>
       <ref.Property Name="ObjectProp" Type="IViewModel^" Readonly="true"/>
       <ref.Parameter Name="ViewModel" Class="IViewModel"/>
-      <Window Text="MainWindow" ClientSize="x:480 y:320">
+      <Window Text="MainWindow" ClientSize="x:480 y:320" ControlTemplate="darkskin::WindowTemplate">
         <att.ViewModel-set X-bind="(cast int textBoxA.Text) ?? 0" Y-bind="(cast int textBoxB.Text) ?? 0"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
 
@@ -104,4 +104,137 @@
       </Window>
     </Instance>
   </Instance>
+
+  <Folder name="DarkSkin">
+    <InstanceStyle name="Style">
+      <Styles>
+        <Style ref.Path="(//Bounds + //Table)" MinSizeLimitation="LimitToElementAndChildren"/>
+        <Style ref.Path="(//SideAligned + //PartialView)/*">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </Style>
+        <Style ref.Path="//*.buttonBackground">
+          <att.Color-bind>
+            <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#252526" :
+              state == "Active" ? "#54545C" :
+              state == "Pressed" ? "#007ACC" :
+              "#3F3F46"
+            )
+          ]]>
+          </att.Color-bind>
+        </Style>
+        <Style ref.Path="//*.buttonBorder">
+          <att.Color-bind>
+            <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#434346" :
+              state == "Active" ? "#6A6A75" :
+              state == "Pressed" ? "#1C97EA" :
+              "#54545C"
+            )
+          ]]>
+          </att.Color-bind>
+        </Style>
+        <Style ref.Path="//*.buttonText">
+          <att.Color-bind>
+            <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#6D6D6D" :
+              state == "Active" ? "#F1F1F1" :
+              state == "Pressed" ? "#FFFFFF" :
+              "#F1F1F1"
+            )
+          ]]>
+          </att.Color-bind>
+        </Style>
+      </Styles>
+    </InstanceStyle>
+
+    <Instance name="ButtonTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::ButtonTemplate" ref.Styles="res://DarkSkin/Style">
+        <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <SolidBackground ref.Style="buttonBackground"/>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <SolidBorder ref.Style="buttonBorder"/>
+          </Bounds>
+          <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
+            <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Bounds>
+        </ButtonTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="WindowTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::WindowTemplate" ref.Styles="res://DarkSkin/Style">
+        <WindowTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <att.MaximizedBoxOption>AlwaysTrue</att.MaximizedBoxOption>
+          <att.MinimizedBoxOption>AlwaysTrue</att.MinimizedBoxOption>
+          <att.BorderOption>AlwaysTrue</att.BorderOption>
+          <att.SizeBoxOption>AlwaysTrue</att.SizeBoxOption>
+          <att.IconVisibleOption>AlwaysTrue</att.IconVisibleOption>
+          <att.TitleBarOption>AlwaysTrue</att.TitleBarOption>
+          <att.CustomizedBorder>true</att.CustomizedBorder>
+          <att.TooltipTemplate>darkskin::TooltipTemplate</att.TooltipTemplate>
+
+          <SolidBackground Color="#2D2D30"/>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <SolidBorder Color="#017ACC"/>
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <att.Rows>
+                <CellOption>composeType:Absolute absolute:8</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                <CellOption>composeType:Absolute absolute:8</CellOption>
+              </att.Rows>
+              <att.Columns>
+                <CellOption>composeType:Absolute absolute:8</CellOption>
+                <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:MinSize</CellOption>
+                <CellOption>composeType:Absolute absolute:8</CellOption>
+              </att.Columns>
+
+              <Cell Site="row:0 column:0" AssociatedHitTestResult="BorderLeftTop"/>
+              <Cell Site="row:0 column:5" AssociatedHitTestResult="BorderRightTop"/>
+              <Cell Site="row:3 column:0" AssociatedHitTestResult="BorderLeftBottom"/>
+              <Cell Site="row:3 column:5" AssociatedHitTestResult="BorderRightBottom"/>
+
+              <Cell Site="row:1 column:0 rowSpan:2 columnSpan:1" AssociatedHitTestResult="BorderLeft"/>
+              <Cell Site="row:1 column:5 rowSpan:2 columnSpan:1" AssociatedHitTestResult="BorderRight"/>
+              <Cell Site="row:0 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="BorderTop"/>
+              <Cell Site="row:3 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="BorderBottom"/>
+
+              <Cell Site="row:1 column:2" AssociatedHitTestResult="ButtonMinimum">
+                <Button Text=" 0 " Font="fontFamily:Webdings size:16" ControlTemplate="darkskin::ButtonTemplate">
+                  <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                </Button>
+              </Cell>
+              <Cell Site="row:1 column:3" AssociatedHitTestResult="ButtonMaximum">
+                <Button Text-bind="self.Maximized ? ' 1 ' : ' 2 '" Font="fontFamily:Webdings size:16" ControlTemplate="darkskin::ButtonTemplate">
+                  <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                </Button>
+              </Cell>
+              <Cell Site="row:1 column:4" AssociatedHitTestResult="ButtonClose">
+                <Button Text=" r " Font="fontFamily:Webdings size:16" ControlTemplate="darkskin::ButtonTemplate">
+                  <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                </Button>
+              </Cell>
+
+              <Cell Site="row:1 column:1" AssociatedHitTestResult="Title">
+                <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
+                  <SolidLabel Color="#999999" Text-bind="self.Text" Font="fontFamily:{Segoe WP SemiLight} size:14 antialias:true"/>
+                </Bounds>
+              </Cell>
+              <Cell Site="row:2 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="Client">
+                <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </Cell>
+            </Table>
+          </Bounds>
+        </WindowTemplate>
+      </Instance>
+    </Instance>
+  </Folder>
+
 </Resource>

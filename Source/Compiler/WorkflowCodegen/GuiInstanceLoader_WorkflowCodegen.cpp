@@ -445,25 +445,25 @@ Workflow_GenerateInstanceClass
 
 			if (auto group = baseTd->GetConstructorGroup())
 			{
-				if (!beforePrecompile)
+				vint count = group->GetMethod(0)->GetParameterCount();
+				if (count > 0)
 				{
-					Ptr<WfExpression> controlTemplate;
+					if (!beforePrecompile)
 					{
-						vint index = resolvingResult.rootCtorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-						if (index != -1)
+						Ptr<WfExpression> controlTemplate;
 						{
-							controlTemplate = resolvingResult.rootCtorArguments.GetByIndex(index)[0].expression;
+							vint index = resolvingResult.rootCtorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+							if (index != -1)
+							{
+								controlTemplate = resolvingResult.rootCtorArguments.GetByIndex(index)[0].expression;
+							}
+						}
+						if (auto call = resolvingResult.rootLoader->CreateRootInstance(resolvingResult.rootTypeInfo, controlTemplate, errors))
+						{
+							ctor->baseConstructorCalls.Add(call);
 						}
 					}
-					if (auto call = resolvingResult.rootLoader->CreateRootInstance(resolvingResult.rootTypeInfo, controlTemplate, errors))
-					{
-						ctor->baseConstructorCalls.Add(call);
-					}
-				}
-				else
-				{
-					vint count = group->GetMethod(0)->GetParameterCount();
-					if (count > 0)
+					else
 					{
 						auto call = MakePtr<WfBaseConstructorCall>();
 						ctor->baseConstructorCalls.Add(call);
