@@ -181,6 +181,25 @@ Instance Type Resolver (Instance)
 				compiled->modules.Add(module);
 			}
 
+#define ENSURE_ASSEMBLY_EXISTS(PATH)\
+			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			{\
+				if (!compiled->assembly)\
+				{\
+					break;\
+				}\
+			}\
+			else\
+			{\
+				break;\
+			}\
+
+#define UNLOAD_ASSEMBLY(PATH)\
+			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			{\
+				compiled->context = nullptr;\
+			}\
+
 			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
 				switch (context.passIndex)
@@ -207,13 +226,7 @@ Instance Type Resolver (Instance)
 					break;
 				case 5:
 					{
-						if (auto compiled = context.targetFolder->GetValueByPath(L"Workflow/TemporaryClass").Cast<GuiInstanceCompiledWorkflow>())
-						{
-							if (!compiled->assembly)
-							{
-								break;
-							}
-						}
+						ENSURE_ASSEMBLY_EXISTS(L"Workflow/TemporaryClass")
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							auto resolvingResult = MakePtr<types::ResolvingResult>();
@@ -228,26 +241,18 @@ Instance Type Resolver (Instance)
 					break;
 				case 7:
 					{
-						if (auto compiled = context.targetFolder->GetValueByPath(L"Workflow/InstanceCtor").Cast<GuiInstanceCompiledWorkflow>())
-						{
-							if (!compiled->assembly)
-							{
-								break;
-							}
-						}
-						if (auto compiled = context.targetFolder->GetValueByPath(L"Workflow/TemporaryClass").Cast<GuiInstanceCompiledWorkflow>())
-						{
-							if (!compiled->assembly)
-							{
-								break;
-							}
-						}
+						ENSURE_ASSEMBLY_EXISTS(L"Workflow/InstanceCtor")
+						ENSURE_ASSEMBLY_EXISTS(L"Workflow/TemporaryClass")
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
-							auto resolvingResult = context.additionalProperties[obj.Obj()].Cast<types::ResolvingResult>();
-							if (auto module = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, false))
+							vint index = context.additionalProperties.Keys().IndexOf(obj.Obj());
+							if (index != -1)
 							{
-								AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
+								auto resolvingResult = context.additionalProperties.Values()[index].Cast<types::ResolvingResult>();
+								if (auto module = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, false))
+								{
+									AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
+								}
 							}
 						}
 					}
@@ -267,14 +272,8 @@ Instance Type Resolver (Instance)
 						}
 						else if (context.passIndex == 8)
 						{
-							if (auto compiled = context.targetFolder->GetValueByPath(L"Workflow/InstanceCtor").Cast<GuiInstanceCompiledWorkflow>())
-							{
-								compiled->context = nullptr;
-							}
-							if (auto compiled = context.targetFolder->GetValueByPath(L"Workflow/TemporaryClass").Cast<GuiInstanceCompiledWorkflow>())
-							{
-								compiled->context = nullptr;
-							}
+							UNLOAD_ASSEMBLY(L"Workflow/InstanceCtor")
+							UNLOAD_ASSEMBLY(L"Workflow/TemporaryClass")
 							path = L"Workflow/InstanceClass";
 						}
 						else
@@ -290,6 +289,9 @@ Instance Type Resolver (Instance)
 					break;
 				}
 			}
+
+#undef UNLOAD_ASSEMBLY
+#undef ENSURE_ASSEMBLY_EXISTS
 
 			IGuiResourceTypeResolver_Precompile* Precompile()override
 			{

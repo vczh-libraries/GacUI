@@ -106,6 +106,8 @@ Workflow_GenerateInstanceClass
 						? context->instance->typeName.ToString()
 						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
 						) +
+					L" for instance type \"" +
+					context->className +
 					L"\".");
 				return nullptr;
 			}
@@ -127,11 +129,21 @@ Workflow_GenerateInstanceClass
 				else
 				{
 					errors.Add(
-						L"Precompile: Builder class for type \"" +
-						(context->instance->typeNamespace == GlobalStringKey::Empty
-							? context->instance->typeName.ToString()
-							: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
-							) +
+						L"Precompile: Builder type \"" +
+						context->className +
+						L"<Ctor>\" does not exist.");
+					return nullptr;
+				}
+			}
+
+			ITypeDescriptor* contextTd = nullptr;
+			if (!beforePrecompile)
+			{
+				if (!(contextTd = description::GetTypeDescriptor(context->className)))
+				{
+					errors.Add(
+						L"Precompile: Instance type \"" +
+						context->className +
 						L"\" does not exist.");
 					return nullptr;
 				}
@@ -180,6 +192,50 @@ Workflow_GenerateInstanceClass
 				block->statements.Add(raiseStat);
 				return block;
 			};
+			auto getPropValue = [=, &errors](const WString& name, Ptr<WfType> type, const WString& value)->Ptr<WfExpression>
+			{
+				auto propInfo = contextTd->GetPropertyByName(name, false);
+				if (propInfo)
+				{
+					auto propTd = propInfo->GetReturn()->GetTypeDescriptor();
+					auto flag = propTd->GetTypeDescriptorFlags();
+					if ((flag & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
+					{
+						auto defaultValue =
+							value == L""
+							? propTd->GetValueSerializer()->GetDefaultText()
+							: value
+							;
+						
+						auto stringExpr = MakePtr<WfStringExpression>();
+						stringExpr->value.value = defaultValue;
+
+						auto castExpr = MakePtr<WfTypeCastingExpression>();
+						castExpr->strategy = WfTypeCastingStrategy::Strong;
+						castExpr->type = CopyType(type);
+						castExpr->expression = stringExpr;
+
+						return castExpr;
+					}
+					else
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+
+						return nullExpr;
+					}
+				}
+				else
+				{
+					errors.Add(
+						L"Precompile: Cannot find property \"" +
+						name +
+						L"Precompile: in instance type \"" +
+						context->className +
+						L"\" does not exist.");
+					return nullptr;
+				}
+			};
 
 			if (!beforePrecompile)
 			{
@@ -221,24 +277,7 @@ Workflow_GenerateInstanceClass
 
 						decl->name.value = state->name.ToString();
 						decl->type = type;
-						if (state->value == L"")
-						{
-							auto nullExpr = MakePtr<WfLiteralExpression>();
-							nullExpr->value = WfLiteralValue::Null;
-							decl->expression = nullExpr;
-						}
-						else
-						{
-							auto stringExpr = MakePtr<WfStringExpression>();
-							stringExpr->value.value = state->value;
-
-							auto castExpr = MakePtr<WfTypeCastingExpression>();
-							castExpr->strategy = WfTypeCastingStrategy::Strong;
-							castExpr->type = CopyType(type);
-							castExpr->expression = stringExpr;
-
-							decl->expression = castExpr;
-						}
+						decl->expression = getPropValue(state->name.ToString(), type, state->value);
 					}
 					else
 					{
@@ -274,24 +313,7 @@ Workflow_GenerateInstanceClass
 
 						decl->name.value = L"<property>" + prop->name.ToString();
 						decl->type = CopyType(type);
-						if (prop->value == L"")
-						{
-							auto nullExpr = MakePtr<WfLiteralExpression>();
-							nullExpr->value = WfLiteralValue::Null;
-							decl->expression = nullExpr;
-						}
-						else
-						{
-							auto stringExpr = MakePtr<WfStringExpression>();
-							stringExpr->value.value = prop->value;
-
-							auto castExpr = MakePtr<WfTypeCastingExpression>();
-							castExpr->strategy = WfTypeCastingStrategy::Strong;
-							castExpr->type = CopyType(type);
-							castExpr->expression = stringExpr;
-
-							decl->expression = castExpr;
-						}
+						decl->expression = getPropValue(prop->name.ToString(), type, prop->value);
 					}
 					{
 						auto decl = MakePtr<WfFunctionDeclaration>();
