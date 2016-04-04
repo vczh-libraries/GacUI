@@ -202,7 +202,7 @@ Window
 			/// <summary>
 			/// Represents a normal window.
 			/// </summary>
-			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public Description<GuiWindow>
+			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public AggregatableDescription<GuiWindow>
 			{
 				friend class GuiApplication;
 			public:

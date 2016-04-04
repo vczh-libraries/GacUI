@@ -342,7 +342,7 @@ Basic Construction
 			};
 
 			/// <summary>Represnets a user customizable control.</summary>
-			class GuiCustomControl : public GuiControl, public GuiInstanceRootObject, public Description<GuiCustomControl>
+			class GuiCustomControl : public GuiControl, public GuiInstanceRootObject, public AggregatableDescription<GuiCustomControl>
 			{
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>

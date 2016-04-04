@@ -778,7 +778,7 @@ GuiWindow
 
 			GuiWindow::~GuiWindow()
 			{
-				ClearSubscriptions();
+				FinalizeAggregation();
 				GetApplication()->UnregisterWindow(this);
 				INativeWindow* window=host->GetNativeWindow();
 				if(window)

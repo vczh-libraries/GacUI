@@ -15599,6 +15599,7 @@ DescriptableObject
 				InitializeAggregation(0);
 			}
 			aggregationInfo[aggregationSize] = value;
+			aggregationInfo[aggregationSize + 1] = value;
 			for (vint i = 0; i < aggregationSize; i++)
 			{
 				if (aggregationInfo[i])
@@ -15646,8 +15647,32 @@ DescriptableObject
 			CHECK_ERROR(!IsAggregated(), L"vl::reflection::DescriptableObject::InitializeAggregation(vint)#This function should not be called on aggregated objects.");
 			CHECK_ERROR(size >= 0, L"vl::reflection::DescriptableObject::InitializeAggregation(vint)#Size shout not be negative.");
 			aggregationSize = size;
-			aggregationInfo = new DescriptableObject*[size + 1];
-			memset(aggregationInfo, 0, sizeof(*aggregationInfo) * (size + 1));
+			aggregationInfo = new DescriptableObject*[size + 2];
+			memset(aggregationInfo, 0, sizeof(*aggregationInfo) * (size + 2));
+		}
+
+		void DescriptableObject::FinalizeAggregation()
+		{
+			if (IsAggregated())
+			{
+				if (auto root = GetAggregationRoot())
+				{
+					if (aggregationInfo[aggregationSize + 1] == nullptr)
+					{
+						return;
+					}
+					else
+					{
+						aggregationInfo[aggregationSize + 1] = nullptr;
+					}
+
+					if (!root->destructing)
+					{
+						destructing = true;
+						delete root;
+					}
+				}
+			}
 		}
 
 		DescriptableObject::DescriptableObject()
@@ -15668,9 +15693,9 @@ DescriptableObject
 			{
 				if (auto root = GetAggregationRoot())
 				{
-					if (!root->destructing)
+					if (aggregationInfo[aggregationSize + 1] != nullptr)
 					{
-						delete root;
+						CHECK_ERROR(!IsAggregated(), L"vl::reflection::DescriptableObject::~DescriptableObject0()#FinalizeAggregation function should be called.");
 					}
 				}
 				for (vint i = 0; i < aggregationSize; i++)
@@ -17451,6 +17476,11 @@ TypeDescriptorImpl
 				return typeDescriptorFlags;
 			}
 
+			bool TypeDescriptorImpl::IsAggregatable()
+			{
+				return false;
+			}
+
 			const WString& TypeDescriptorImpl::GetTypeName()
 			{
 				return typeName;
@@ -17751,6 +17781,11 @@ SerializableTypeDescriptorBase
 			TypeDescriptorFlags SerializableTypeDescriptorBase::GetTypeDescriptorFlags()
 			{
 				return typeDescriptorFlags;
+			}
+
+			bool SerializableTypeDescriptorBase::IsAggregatable()
+			{
+				return false;
 			}
 
 			const WString& SerializableTypeDescriptorBase::GetTypeName()

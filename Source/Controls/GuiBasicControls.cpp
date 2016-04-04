@@ -583,6 +583,7 @@ GuiCustomControl
 
 			GuiCustomControl::~GuiCustomControl()
 			{
+				FinalizeAggregation();
 				FinalizeInstance();
 			}
 

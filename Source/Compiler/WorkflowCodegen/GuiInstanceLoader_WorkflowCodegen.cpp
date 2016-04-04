@@ -686,7 +686,7 @@ Workflow_GenerateInstanceClass
 				}
 			}
 
-			/*{
+			{
 				auto dtor = MakePtr<WfDestructorDeclaration>();
 				addDecl(dtor);
 
@@ -702,7 +702,7 @@ Workflow_GenerateInstanceClass
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = call;
 				block->statements.Add(stat);
-			}*/
+			}
 
 			return module;
 		}
