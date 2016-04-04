@@ -90,7 +90,7 @@ GuiTemplate
 
 			GuiTemplate::~GuiTemplate()
 			{
-				ClearSubscriptions();
+				FinalizeInstance();
 			}
 
 /***********************************************************************

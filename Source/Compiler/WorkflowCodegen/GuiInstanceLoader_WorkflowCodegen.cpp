@@ -686,6 +686,24 @@ Workflow_GenerateInstanceClass
 				}
 			}
 
+			/*{
+				auto dtor = MakePtr<WfDestructorDeclaration>();
+				addDecl(dtor);
+
+				auto block = MakePtr<WfBlockStatement>();
+				dtor->statement = block;
+
+				auto ref = MakePtr<WfReferenceExpression>();
+				ref->name.value = L"ClearSubscriptions";
+
+				auto call = MakePtr<WfCallExpression>();
+				call->function = ref;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = call;
+				block->statements.Add(stat);
+			}*/
+
 			return module;
 		}
 
