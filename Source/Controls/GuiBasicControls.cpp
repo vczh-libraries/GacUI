@@ -476,28 +476,6 @@ GuiComponent
 GuiInstanceRootObject
 ***********************************************************************/
 
-			void GuiInstanceRootObject::ClearSubscriptions()
-			{
-				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
-				{
-					subscription->Close();
-				}
-				subscriptions.Clear();
-			}
-
-			void GuiInstanceRootObject::ClearComponents()
-			{
-				for(vint i=0;i<components.Count();i++)
-				{
-					components[i]->Detach(this);
-				}
-				for(vint i=0;i<components.Count();i++)
-				{
-					delete components[i];
-				}
-				components.Clear();
-			}
-
 			void GuiInstanceRootObject::FinalizeInstance()
 			{
 				ClearSubscriptions();
@@ -535,6 +513,15 @@ GuiInstanceRootObject
 				return subscriptions.Contains(subscription.Obj());
 			}
 
+			void GuiInstanceRootObject::ClearSubscriptions()
+			{
+				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+				{
+					subscription->Close();
+				}
+				subscriptions.Clear();
+			}
+
 			bool GuiInstanceRootObject::AddComponent(GuiComponent* component)
 			{
 				if(components.Contains(component))
@@ -570,6 +557,19 @@ GuiInstanceRootObject
 			bool GuiInstanceRootObject::ContainsComponent(GuiComponent* component)
 			{
 				return components.Contains(component);
+			}
+
+			void GuiInstanceRootObject::ClearComponents()
+			{
+				for(vint i=0;i<components.Count();i++)
+				{
+					components[i]->Detach(this);
+				}
+				for(vint i=0;i<components.Count();i++)
+				{
+					delete components[i];
+				}
+				components.Clear();
 			}
 
 /***********************************************************************

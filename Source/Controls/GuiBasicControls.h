@@ -300,8 +300,6 @@ Basic Construction
 				collections::SortedList<GuiComponent*>			components;
 				SubscriptionList								subscriptions;
 
-				void											ClearSubscriptions();
-				void											ClearComponents();
 				void											FinalizeInstance();
 			public:
 				GuiInstanceRootObject();
@@ -319,6 +317,8 @@ Basic Construction
 				/// <returns>Returns true if the window contains the subscription.</returns>
 				/// <param name="subscription">The subscription to test.</param>
 				bool											ContainsSubscription(Ptr<description::IValueSubscription> subscription);
+				/// <summary>Clear all subscriptions.</summary>
+				void											ClearSubscriptions();
 
 				/// <summary>Add a component. When this control host is disposing, all attached components will be deleted.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
@@ -337,6 +337,8 @@ Basic Construction
 				/// <returns>Returns true if the window contains the component.</returns>
 				/// <param name="component">The component to test.</param>
 				bool											ContainsComponent(GuiComponent* component);
+				/// <summary>Clear all components.</summary>
+				void											ClearComponents();
 			};
 
 			/// <summary>Represnets a user customizable control.</summary>

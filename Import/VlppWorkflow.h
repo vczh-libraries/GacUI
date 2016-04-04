@@ -561,6 +561,8 @@ Custom Type
 			{
 				friend class WfTypeImpl;
 			public:
+				vint									destructorFunctionIndex = -1;
+
 				WfClass(const WString& typeName);
 				~WfClass();
 			};
@@ -582,7 +584,7 @@ Instance
 				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
 				typedef reflection::description::Value						Value;
 			protected:
-				WfCustomType*							classType = nullptr;
+				WfClass*								classType = nullptr;
 
 			public:
 				WfClassInstance(ITypeDescriptor* _typeDescriptor);

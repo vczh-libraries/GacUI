@@ -195,6 +195,7 @@ namespace vl
 		class WfNewInterfaceExpression;
 		class WfBaseConstructorCall;
 		class WfConstructorDeclaration;
+		class WfDestructorDeclaration;
 		class WfClassDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
@@ -980,6 +981,7 @@ namespace vl
 				virtual void Visit(WfEventDeclaration* node)=0;
 				virtual void Visit(WfPropertyDeclaration* node)=0;
 				virtual void Visit(WfConstructorDeclaration* node)=0;
+				virtual void Visit(WfDestructorDeclaration* node)=0;
 				virtual void Visit(WfClassDeclaration* node)=0;
 			};
 
@@ -1151,6 +1153,16 @@ namespace vl
 			void Accept(WfDeclaration::IVisitor* visitor)override;
 
 			static vl::Ptr<WfConstructorDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfDestructorDeclaration : public WfDeclaration, vl::reflection::Description<WfDestructorDeclaration>
+		{
+		public:
+			vl::Ptr<WfStatement> statement;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfDestructorDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfClassDeclaration : public WfDeclaration, vl::reflection::Description<WfClassDeclaration>
@@ -1355,6 +1367,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfConstructorType)
 			DECL_TYPE_INFO(vl::workflow::WfBaseConstructorCall)
 			DECL_TYPE_INFO(vl::workflow::WfConstructorDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfDestructorDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
@@ -1680,6 +1693,11 @@ namespace vl
 				}
 
 				void Visit(vl::workflow::WfConstructorDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfDestructorDeclaration* node)override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -2202,6 +2220,7 @@ Code Generation
 			{
 				typedef collections::Dictionary<WfLexicalSymbol*, vint>											SymbolIndexMap;
 				typedef collections::Dictionary<WfConstructorDeclaration*, vint>								ConstructorIndexMap;
+				typedef collections::Dictionary<WfDestructorDeclaration*, vint>									DestructorIndexMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, parsing::ParsingTextRange>		NodePositionMap;
 				typedef collections::Dictionary<Ptr<WfLexicalFunctionConfig>, vint>								ThisStackCountMap;
 			public:
@@ -2210,6 +2229,7 @@ Code Generation
 				SymbolIndexMap						globalVariables;
 				SymbolIndexMap						globalFunctions;
 				ConstructorIndexMap					constructors;
+				DestructorIndexMap					destructors;
 				SymbolIndexMap						closureFunctions;
 				Ptr<WfCodegenFunctionContext>		functionContext;
 				NodePositionMap						nodePositionsBeforeCodegen;
@@ -2344,6 +2364,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfEventDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfPropertyDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
+				static Ptr<parsing::ParsingError>			WrongDeclaration(WfDestructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 
 				// E: Module error
@@ -2379,6 +2400,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			DuplicatedBaseInterface(WfClassDeclaration* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			WrongBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
 				static Ptr<parsing::ParsingError>			DuplicatedBaseConstructorCall(WfBaseConstructorCall* node, reflection::description::ITypeDescriptor* type);
+				static Ptr<parsing::ParsingError>			TooManyDestructor(WfDestructorDeclaration* node, WfClassDeclaration* classDecl);
 			};
 		}
 	}
