@@ -149,7 +149,7 @@ Macros
 					this,\
 					L ## #EVENTNAME,\
 					[](DescriptableObject* thisObject, bool addEventHandler){\
-						return &dynamic_cast<ClassType*>(thisObject)->EVENTNAME;\
+						return &thisObject->SafeAggregationCast<ClassType>()->EVENTNAME;\
 					}\
 				)\
 			);\
@@ -160,7 +160,7 @@ Macros
 					this,\
 					L ## #EVENTNAME,\
 					[](DescriptableObject* thisObject, bool addEventHandler){\
-						GuiGraphicsComposition* composition=dynamic_cast<GuiGraphicsComposition*>(thisObject);\
+						GuiGraphicsComposition* composition=thisObject->SafeAggregationCast<GuiGraphicsComposition>();\
 						if(!addEventHandler && !composition->HasEventReceiver())\
 						{\
 							return (GuiGraphicsEvent<GuiEventArgumentTypeRetriver<decltype(&GuiGraphicsEventReceiver::EVENTNAME)>::Type>*)0;\
