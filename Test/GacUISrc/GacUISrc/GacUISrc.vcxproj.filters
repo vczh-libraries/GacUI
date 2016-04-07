@@ -831,4 +831,9 @@
       <Filter>GacUI\Compiler\InstanceQuery</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="UI2.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>

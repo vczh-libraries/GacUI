@@ -237,9 +237,22 @@ WorkflowGenerateCreatingVisitor
 								}
 							}
 						}
+						else if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
+						{
+							auto propInfo = IGuiInstanceLoader::PropertyInfo(typeInfo, prop);
+							auto resolvedPropInfo = loader->GetPropertyType(propInfo);
+							auto value = setter->values[0].Cast<GuiTextRepr>();
+							if (auto expression = binder->GenerateConstructorArgument(loader, propInfo, resolvedPropInfo, value->text, errors))
+							{
+								IGuiInstanceLoader::ArgumentInfo argument;
+								argument.expression = expression;
+								argument.type = resolvedPropInfo->acceptableTypes[0];
+								arguments.Add(prop, argument);
+							}
+						}
 						else
 						{
-							errors.Add(L"Precompile: <BINDING-ON-CTOR-PROP-NOT-SUPPORTED-YET>");
+							errors.Add(L"Precompile: The appropriate IGuiInstanceBinder of binding \"-" + setter->binding.ToString() + L"\" cannot be found.");
 						}
 					}
 				}

@@ -104,8 +104,15 @@ void GuiMain_Resource()
 		}
 	}
 
+	// UI1.xml
+	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+
+	/*
+	// UI2.xml
 	auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
 	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
+	*/
+
 	window->ForceCalculateSizeImmediately();
 	window->MoveToScreenCenter();
 	GetApplication()->Run(window);

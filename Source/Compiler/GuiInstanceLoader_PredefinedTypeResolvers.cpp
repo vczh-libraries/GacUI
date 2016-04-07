@@ -30,6 +30,22 @@ namespace vl
 				auto manager = Workflow_GetSharedManager();
 				manager->Clear(false, true);
 
+				auto addCode = [&codes](TextReader& reader)
+				{
+					vint row = 0;
+					WString code;
+					while (!reader.IsEnd())
+					{
+						auto rowHeader = itow(++row);
+						while (rowHeader.Length() < 6)
+						{
+							rowHeader = L" " + rowHeader;
+						}
+						code += rowHeader + L" : " + reader.ReadLine() + L"\r\n";
+					}
+					codes.Add(code);
+				};
+
 				if (compiled->modules.Count() > 0)
 				{
 					FOREACH_INDEXER(Ptr<WfModule>, module, index, compiled->modules)
@@ -45,19 +61,7 @@ namespace vl
 							stream.SeekFromBegin(0);
 							{
 								StreamReader reader(stream);
-
-								vint row = 0;
-								WString code;
-								while (!reader.IsEnd())
-								{
-									auto rowHeader = itow(++row);
-									while (rowHeader.Length() < 6)
-									{
-										rowHeader = L" " + rowHeader;
-									}
-									code += rowHeader + L" : " + reader.ReadLine() + L"\r\n";
-								}
-								codes.Add(code);
+								addCode(reader);
 							}
 						}
 						manager->AddModule(module);
@@ -67,7 +71,10 @@ namespace vl
 				{
 					FOREACH(WString, code, compiled->codes)
 					{
-						codes.Add(code);
+						{
+							StringReader reader(code);
+							addCode(reader);
+						}
 						manager->AddModule(code);
 					}
 				}

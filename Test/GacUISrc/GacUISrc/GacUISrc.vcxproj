@@ -343,6 +343,9 @@
   <ItemGroup>
     <None Include="..\..\..\Source\Compiler\InstanceQuery\Codegen.bat" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="UI2.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -35,6 +35,11 @@ GuiResourceInstanceBinder (uri)
 			{
 				return false;
 			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				CHECK_FAIL(L"GuiResourceInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
+			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
@@ -42,7 +47,7 @@ GuiResourceInstanceBinder (uri)
 				if (!IsResourceUrl(code, protocol, path))
 				{
 					errors.Add(L"Precompile: \"" + code + L"\" is not a valid resource uri.");
-					return 0;
+					return nullptr;
 				}
 				else
 				{
@@ -71,6 +76,11 @@ GuiReferenceInstanceBinder (ref)
 			bool RequirePropertyExist()override
 			{
 				return false;
+			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				CHECK_FAIL(L"GuiReferenceInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
 			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
@@ -102,6 +112,15 @@ GuiEvalInstanceBinder (eval)
 			{
 				return false;
 			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				if (auto expression = Workflow_ParseExpression(code, errors))
+				{
+					return expression;
+				}
+				return nullptr;
+			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
@@ -109,7 +128,7 @@ GuiEvalInstanceBinder (eval)
 				{
 					return Workflow_InstallEvalProperty(variableName, loader, prop, propInfo, expression, errors);
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 
@@ -134,6 +153,11 @@ GuiBindInstanceBinder (bind)
 			{
 				return true;
 			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				CHECK_FAIL(L"GuiBindInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
+			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
@@ -141,7 +165,7 @@ GuiBindInstanceBinder (bind)
 				{
 					return Workflow_InstallBindProperty(variableName, propertyInfo, expression);
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 
@@ -166,6 +190,11 @@ GuiFormatInstanceBinder (format)
 			{
 				return true;
 			}
+
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
+			{
+				CHECK_FAIL(L"GuiFormatInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
+			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
@@ -173,7 +202,7 @@ GuiFormatInstanceBinder (format)
 				{
 					return Workflow_InstallBindProperty(variableName, propertyInfo, expression);
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 

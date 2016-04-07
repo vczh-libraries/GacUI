@@ -135,6 +135,7 @@ Instance Binder
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							ApplicableToConstructorArgument() = 0;
 			virtual bool							RequirePropertyExist() = 0;
+			virtual Ptr<workflow::WfExpression>		GenerateConstructorArgument(IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors) = 0;
 			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors) = 0;
 		};
 

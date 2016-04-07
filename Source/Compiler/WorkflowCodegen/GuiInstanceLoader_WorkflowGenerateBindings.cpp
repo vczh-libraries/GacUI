@@ -53,11 +53,7 @@ WorkflowGenerateBindingVisitor
 							if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
 							{
 								auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
-								if (propertyResolving.info->scope == GuiInstancePropertyInfo::Constructor)
-								{
-									errors.Add(L"Precompile: <BINDING-ON-CTOR-PROP-NOT-SUPPORTED-YET>");
-								}
-								else
+								if (propertyResolving.info->scope != GuiInstancePropertyInfo::Constructor)
 								{
 									WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
 									auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
