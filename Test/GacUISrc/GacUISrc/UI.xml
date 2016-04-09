@@ -1,51 +1,33 @@
 <Resource>
-  <Script name="SharedScript">
-    <Workflow>
-      <![CDATA[
-        module script;
-      
-        class Item
-        {
-          var Name : string = "";
-          var Author : string = "";
-          var URL : string = "";
-          
-          new(name : string, author : string, url : string)
-          {
-            Name = name;
-            Author = author;
-            URL = url;
-          }
-          
-          static func CreateItemSource() : Item^[]
-          {
-            return {
-              new Item^("GacUI", "vczh", "https://github.com/vczh-libraries/GacUI")
-              new Item^("Workflow", "vczh", "https://github.com/vczh-libraries/Workflow")
-              new Item^("Vlpp", "vczh", "https://github.com/vczh-libraries/Vlpp")
-              new Item^("XGac", "milizhang", "https://github.com/vczh-libraries/XGac")
-              new Item^("iGac", "darkfall", "https://github.com/vczh-libraries/iGac")
-            };
-          }
-        }
-      ]]>
-    </Workflow>
-  </Script>
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow">
-      <Window Text="MainWindow" ClientSize="x:480 y:320">
+      <Window Text="MainWindow" ClientSize="x:480 y:320" xmlns:x="demo::*">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-
-        <BindableDataGrid ItemSource-eval="Item::CreateItemSource()" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
-          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-
-          <att.Columns>
-            <BindableDataColumn Size="120" Text="Name" ValueProperty="Name"/>
-            <BindableDataColumn Size="120" Text="Author" ValueProperty="Author"/>
-            <BindableDataColumn Size="200" Text="URL" ValueProperty="URL"/>
-          </att.Columns>
-        </BindableDataGrid>
+        <Stack Padding="10" Direction="Vertical" ExtraMargin="left:20 top:20 right:20 bottom:20" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <x:MyButton Text="A">
+              <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
+            </x:MyButton>
+          </StackItem>
+          <StackItem>
+            <x:MyButton Text="B">
+              <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
+            </x:MyButton>
+          </StackItem>
+        </Stack>
       </Window>
+    </Instance>
+  </Instance>
+
+  <Instance name="MyButtonResource">
+    <Instance ref.Class="demo::MyButton">
+      <ref.Property Name="ActionText" Type="string" Value="MyAction"/>
+      <CustomControl ref.Name="self">
+        <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
+        <Button Text-format="Action: $(self.ActionText)" Clicked="button_Clicked">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </Button>
+      </CustomControl>
     </Instance>
   </Instance>
 

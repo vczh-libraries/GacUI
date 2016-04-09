@@ -104,7 +104,7 @@ void GuiMain_Resource()
 		}
 	}
 
-	// UI1.xml
+	// UI1.xml / UI3.xml
 	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
 	/*

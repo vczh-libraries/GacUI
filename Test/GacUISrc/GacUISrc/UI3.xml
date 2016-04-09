@@ -1,0 +1,52 @@
+<Resource>
+  <Script name="SharedScript">
+    <Workflow>
+      <![CDATA[
+        module script;
+      
+        class Item
+        {
+          var Name : string = "";
+          var Author : string = "";
+          var URL : string = "";
+          
+          new(name : string, author : string, url : string)
+          {
+            Name = name;
+            Author = author;
+            URL = url;
+          }
+          
+          static func CreateItemSource() : Item^[]
+          {
+            return {
+              new Item^("GacUI", "vczh", "https://github.com/vczh-libraries/GacUI")
+              new Item^("Workflow", "vczh", "https://github.com/vczh-libraries/Workflow")
+              new Item^("Vlpp", "vczh", "https://github.com/vczh-libraries/Vlpp")
+              new Item^("XGac", "milizhang", "https://github.com/vczh-libraries/XGac")
+              new Item^("iGac", "darkfall", "https://github.com/vczh-libraries/iGac")
+            };
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="demo::MainWindow">
+      <Window Text="MainWindow" ClientSize="x:480 y:320">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+
+        <BindableDataGrid ItemSource-eval="Item::CreateItemSource()" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+
+          <att.Columns>
+            <BindableDataColumn Size="120" Text="Name" ValueProperty="Name"/>
+            <BindableDataColumn Size="120" Text="Author" ValueProperty="Author"/>
+            <BindableDataColumn Size="200" Text="URL" ValueProperty="URL"/>
+          </att.Columns>
+        </BindableDataGrid>
+      </Window>
+    </Instance>
+  </Instance>
+
+</Resource>
