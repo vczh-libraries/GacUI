@@ -1,7 +1,7 @@
 <Resource>
   <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow">
-      <Window Text="MainWindow" ClientSize="x:480 y:320" xmlns:x="demo::*">
+    <Instance ref.Class="demo::MainWindow" xmlns:x="demo::*">
+      <Window Text="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <Stack Padding="10" Direction="Vertical" ExtraMargin="left:20 top:20 right:20 bottom:20" MinSizeLimitation="LimitToElementAndChildren">
           <StackItem>
@@ -24,7 +24,7 @@
       <ref.Property Name="ActionText" Type="string" Value="MyAction"/>
       <CustomControl ref.Name="self">
         <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
-        <Button Text-format="Action: $(self.ActionText)" Clicked="button_Clicked">
+        <Button Text-format="Action: $(self.ActionText)" ev.Clicked="button_Clicked">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </Button>
       </CustomControl>

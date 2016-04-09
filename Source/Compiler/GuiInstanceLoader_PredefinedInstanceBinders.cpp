@@ -224,7 +224,7 @@ GuiEvalInstanceEventBinder (eval)
 				{
 					return Workflow_InstallEvalEvent(variableName, eventInfo, statement);
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 

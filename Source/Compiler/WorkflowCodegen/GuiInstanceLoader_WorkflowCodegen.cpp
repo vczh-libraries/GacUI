@@ -90,6 +90,177 @@ Workflow_PrecompileInstanceContext
 			return nullptr;
 		}
 
+
+
+/***********************************************************************
+WorkflowEventNamesVisitor
+***********************************************************************/
+
+		class WorkflowEventNamesVisitor : public Object, public GuiValueRepr::IVisitor
+		{
+		public:
+			Ptr<GuiInstanceContext>				context;
+			Ptr<WfClassDeclaration>				instanceClass;
+			types::ErrorList&					errors;
+			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
+
+			WorkflowEventNamesVisitor(Ptr<GuiInstanceContext> _context, Ptr<WfClassDeclaration> _instanceClass, types::ErrorList& _errors)
+				:context(_context)
+				, instanceClass(_instanceClass)
+				, errors(_errors)
+			{
+			}
+
+			void Visit(GuiTextRepr* repr)override
+			{
+			}
+
+			void Visit(GuiAttSetterRepr* repr)override
+			{
+				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+				{
+					if (setter->binding == GlobalStringKey::_Set)
+					{
+						auto prop = repr->setters.Keys()[index];
+						IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
+						auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
+
+						auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
+						auto currentLoader = loader;
+						IGuiInstanceLoader::TypeInfo propTypeInfo;
+
+						while (currentLoader)
+						{
+							if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
+							{
+								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
+								{
+									errors.Add(errorPrefix + L" is not supported.");
+									goto SKIP_SET;
+								}
+								else
+								{
+									if (propertyTypeInfo->support == GuiInstancePropertyInfo::SupportSet)
+									{
+										propTypeInfo.typeDescriptor = propertyTypeInfo->acceptableTypes[0];
+										propTypeInfo.typeName = GlobalStringKey::Get(propTypeInfo.typeDescriptor->GetTypeName());
+									}
+									else
+									{
+										errors.Add(errorPrefix + L" does not support the \"-set\" binding.");
+										goto SKIP_SET;
+									}
+								}
+
+								if (!propertyTypeInfo->tryParent)
+								{
+									break;
+								}
+							}
+							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
+						}
+
+						if (propTypeInfo.typeDescriptor)
+						{
+							auto oldTypeInfo = resolvedTypeInfo;
+							resolvedTypeInfo = propTypeInfo;
+							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							{
+								value->Accept(this);
+							}
+							resolvedTypeInfo = oldTypeInfo;
+						}
+						else
+						{
+							errors.Add(errorPrefix + L" does not exist.");
+						}
+					SKIP_SET:;
+					}
+					else
+					{
+						FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+						{
+							value->Accept(this);
+						}
+					}
+				}
+
+				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
+				{
+					if (handler->binding == GlobalStringKey::Empty)
+					{
+						auto propertyName = repr->eventHandlers.Keys()[index];
+						if (auto eventInfo = resolvedTypeInfo.typeDescriptor->GetEventByName(propertyName.ToString(), true))
+						{
+							auto decl = Workflow_GenerateEventHandler(eventInfo);
+							decl->anonymity = WfFunctionAnonymity::Named;
+							decl->name.value = handler->value;
+
+							{
+								auto block = MakePtr<WfBlockStatement>();
+								decl->statement = block;
+								
+								auto stringExpr = MakePtr<WfStringExpression>();
+								stringExpr->value.value = L"Not Implemented: " + handler->value;
+
+								auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+								raiseStat->expression = stringExpr;
+							}
+
+							auto member = MakePtr<WfClassMember>();
+							member->kind = WfClassMemberKind::Normal;
+							member->declaration = decl;
+							instanceClass->members.Add(member);
+						}
+						else
+						{
+							errors.Add(L"Precompile: Event \"" + propertyName.ToString() + L"\" cannot be found in type \"" + resolvedTypeInfo.typeName.ToString() + L"\".");
+						}
+					}
+				}
+			}
+
+			void Visit(GuiConstructorRepr* repr)override
+			{
+				IGuiInstanceLoader::TypeInfo reprTypeInfo;
+
+				if (repr == context->instance.Obj())
+				{
+					auto fullName = GlobalStringKey::Get(context->className);
+					if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
+					{
+						reprTypeInfo.typeName = fullName;
+						reprTypeInfo.typeDescriptor = reprTd;
+					}
+				}
+
+				if (!reprTypeInfo.typeDescriptor)
+				{
+					auto source = FindInstanceLoadingSource(context, repr);
+					reprTypeInfo.typeName = source.typeName;
+					reprTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+				}
+
+				if (reprTypeInfo.typeDescriptor)
+				{
+					auto oldTypeInfo = resolvedTypeInfo;
+					resolvedTypeInfo = reprTypeInfo;
+					Visit((GuiAttSetterRepr*)repr);
+					resolvedTypeInfo = oldTypeInfo;
+				}
+				else
+				{
+					errors.Add(
+						L"Precompile: Failed to find type \"" +
+						(repr->typeNamespace == GlobalStringKey::Empty
+							? repr->typeName.ToString()
+							: repr->typeNamespace.ToString() + L":" + repr->typeName.ToString()
+							) +
+						L"\".");
+				}
+			}
+		};
+
 /***********************************************************************
 Workflow_GenerateInstanceClass
 ***********************************************************************/
@@ -552,6 +723,11 @@ Workflow_GenerateInstanceClass
 						ctorBlock->statements.Add(exprStat);
 					}
 				}
+			}
+
+			{
+				WorkflowEventNamesVisitor visitor(context, instanceClass, errors);
+				context->instance->Accept(&visitor);
 			}
 			addDecl(ctor);
 

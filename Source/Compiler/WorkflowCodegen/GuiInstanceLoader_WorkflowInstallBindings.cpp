@@ -411,10 +411,10 @@ Workflow_InstallEvent
 		}
 
 /***********************************************************************
-Workflow_InstallEvalEvent
+Workflow_GenerateEventHandler
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement)
+		Ptr<workflow::WfFunctionDeclaration> Workflow_GenerateEventHandler(description::IEventInfo* eventInfo)
 		{
 			auto func = MakePtr<WfFunctionDeclaration>();
 			func->anonymity = WfFunctionAnonymity::Anonymous;
@@ -478,6 +478,17 @@ Workflow_InstallEvalEvent
 					func->arguments.Add(arg);
 				}
 			}
+
+			return func;
+		}
+
+/***********************************************************************
+Workflow_InstallEvalEvent
+***********************************************************************/
+
+		Ptr<workflow::WfStatement> Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement)
+		{
+			auto func = Workflow_GenerateEventHandler(eventInfo);
 						
 			auto funcBlock = MakePtr<WfBlockStatement>();
 			funcBlock->statements.Add(evalStatement);
