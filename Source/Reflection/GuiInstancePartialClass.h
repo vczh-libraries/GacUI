@@ -26,23 +26,24 @@ PartialClass
 		template<typename T>
 		class GuiInstancePartialClass
 		{
+			typedef reflection::description::Value			Value;
 		private:
 			WString											className;
-			reflection::description::Value					ctorInstance;
+			Value											ctorInstance;
 
 		protected:
 			bool InitializeFromResource()
 			{
 				if (ctorInstance.IsNull())
 				{
-					auto rootInstance = description::Value::From(dynamic_cast<T*>(this));
+					auto rootInstance = Value::From(dynamic_cast<T*>(this));
 					auto resource = GetResourceManager()->GetResourceFromClassName(className);
 					auto ctorFullName = className + L"<Ctor>";
 					auto td = description::GetTypeDescriptor(ctorFullName);
-					if (!td) return nullptr;
+					if (!td) return false;
 
 					auto ctor = td->GetConstructorGroup()->GetMethod(0);
-					Array<Value> arguments;
+					collections::Array<Value> arguments;
 					ctorInstance = ctor->Invoke(Value(), arguments);
 					
 					auto initialize = td->GetMethodGroupByName(L"<initialize-instance>", false)->GetMethod(0);
