@@ -29,6 +29,13 @@ namespace vl
 			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
 
+			struct InstanceBaseRecord : public Object, public Description<InstanceBaseRecord>
+			{
+				typedef GlobalStringKey															Key;
+				typedef IGuiInstanceLoader::TypeInfo											Value;
+				collections::Dictionary<Key, Value>				instanceBases;
+			};
+
 			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
 				Ptr<workflow::WfModule>							moduleForValidate;
@@ -76,10 +83,42 @@ WorkflowCompiler (Compile)
 
 		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride);
 		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult);
+		
+		struct InstanceLoadingSource
+		{
+			IGuiInstanceLoader*						loader;
+			GlobalStringKey							typeName;
+			Ptr<GuiResourceItem>					item;
+			Ptr<GuiInstanceContext>					context;
 
+			InstanceLoadingSource()
+				:loader(0)
+			{
+			}
+
+			InstanceLoadingSource(IGuiInstanceLoader* _loader, GlobalStringKey _typeName)
+				:loader(_loader)
+				, typeName(_typeName)
+			{
+			}
+
+			InstanceLoadingSource(Ptr<GuiResourceItem> _item)
+				:loader(0)
+				, item(_item)
+				, context(item->GetContent().Cast<GuiInstanceContext>())
+			{
+			}
+
+			operator bool()const
+			{
+				return loader != 0 || context;
+			}
+		};
+
+		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor, Ptr<types::InstanceBaseRecord> ibRecord = nullptr);
 		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
 		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
-		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, Ptr<types::InstanceBaseRecord> ibRecord, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile);
 	}
 }
 

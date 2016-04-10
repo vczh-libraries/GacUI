@@ -144,6 +144,9 @@ Instance Type Resolver (Instance)
 			, private IGuiResourceTypeResolver_Precompile
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
+			const wchar_t* Path_TemporaryClass = L"Workflow/TemporaryClass";
+			const wchar_t* Path_InstanceCtor = L"Workflow/InstanceCtor";
+			const wchar_t* Path_InstanceClass = L"Workflow/InstanceClass";
 		public:
 			WString GetType()override
 			{
@@ -172,7 +175,26 @@ Instance Type Resolver (Instance)
 
 			vint GetMaxPassIndex()override
 			{
-				return 8;
+				return Instance_Max;
+			}
+
+			PassSupport GetPassSupport(vint passIndex)override
+			{
+				switch (passIndex)
+				{
+				case Instance_CollectInstanceTypes:
+				case Instance_GenerateTemporaryClass:
+				case Instance_GenerateInstanceCtor:
+				case Instance_GenerateInstanceClass:
+					return PerResource;
+				case Instance_ValidateDependency:
+				case Instance_CompileTemporaryClass:
+				case Instance_CompileInstanceCtor:
+				case Instance_CompileInstanceClass:
+					return PerPass;
+				default:
+					return NotSupported;
+				}
 			}
 
 			void AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
@@ -207,18 +229,60 @@ Instance Type Resolver (Instance)
 				compiled->context = nullptr;\
 			}\
 
-			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
 				switch (context.passIndex)
 				{
-				case 3:
+				case Instance_CollectInstanceTypes:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
+						{
+							Ptr<types::InstanceBaseRecord> ibRecord;
+
+							vint index = context.additionalProperties.Keys().IndexOf(this);
+							if (index == -1)
+							{
+								ibRecord = new types::InstanceBaseRecord;
+								context.additionalProperties.Add(this, ibRecord);
+							}
+							else
+							{
+								ibRecord = context.additionalProperties.Values()[index].Cast<types::InstanceBaseRecord>();
+							}
+
+							if (auto source = FindInstanceLoadingSource(obj, obj->instance.Obj()))
+							{
+								if (auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName))
+								{
+									IGuiInstanceLoader::TypeInfo typeInfo;
+									typeInfo.typeName = source.typeName;
+									typeInfo.typeDescriptor = td;
+									
+									auto key = GlobalStringKey::Get(obj->className);
+									index = ibRecord->instanceBases.Keys().IndexOf(key);
+									if (index == -1)
+									{
+										ibRecord->instanceBases.Add(key, typeInfo);
+									}
+									else
+									{
+										errors.Add(L"Precompile: Found multiple definition for \"" + obj->className + L"\".");
+									}
+								}
+							}
+						}
+					}
+					break;
+				case Instance_GenerateTemporaryClass:
 					{
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							obj->ApplyStyles(context.resolver, errors);
-							if (auto module = Workflow_GenerateInstanceClass(obj, *(types::ResolvingResult*)nullptr, errors, true))
+
+							auto ibRecord = context.additionalProperties[this].Cast<types::InstanceBaseRecord>();
+							if (auto module = Workflow_GenerateInstanceClass(obj, ibRecord, *(types::ResolvingResult*)nullptr, errors, true))
 							{
-								AddModule(context, L"Workflow/TemporaryClass", module, GuiInstanceCompiledWorkflow::TemporaryClass);
+								AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
 
 							auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
@@ -231,57 +295,66 @@ Instance Type Resolver (Instance)
 						}
 					}
 					break;
-				case 5:
+				case Instance_GenerateInstanceCtor:
 					{
-						ENSURE_ASSEMBLY_EXISTS(L"Workflow/TemporaryClass")
+						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							auto resolvingResult = MakePtr<types::ResolvingResult>();
 							if (auto module = Workflow_PrecompileInstanceContext(obj, *resolvingResult.Obj(), errors))
 							{
 								context.additionalProperties.Add(obj, resolvingResult);
-								AddModule(context, L"Workflow/InstanceCtor", module, GuiInstanceCompiledWorkflow::InstanceCtor);
-								AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
+								AddModule(context, Path_InstanceCtor, module, GuiInstanceCompiledWorkflow::InstanceCtor);
+								AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass);
 							}
 						}
 					}
 					break;
-				case 7:
+				case Instance_GenerateInstanceClass:
 					{
-						ENSURE_ASSEMBLY_EXISTS(L"Workflow/InstanceCtor")
-						ENSURE_ASSEMBLY_EXISTS(L"Workflow/TemporaryClass")
+						ENSURE_ASSEMBLY_EXISTS(Path_InstanceCtor)
+						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							vint index = context.additionalProperties.Keys().IndexOf(obj.Obj());
 							if (index != -1)
 							{
 								auto resolvingResult = context.additionalProperties.Values()[index].Cast<types::ResolvingResult>();
-								if (auto module = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, false))
+								if (auto module = Workflow_GenerateInstanceClass(obj, nullptr, *resolvingResult.Obj(), errors, false))
 								{
-									AddModule(context, L"Workflow/InstanceClass", module, GuiInstanceCompiledWorkflow::InstanceClass);
+									AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass);
 								}
 							}
 						}
 					}
 					break;
-				case 4:
-				case 6:
-				case 8:
+				}
+			}
+
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Instance_ValidateDependency:
+					break;
+				case Instance_CompileTemporaryClass:
+				case Instance_CompileInstanceCtor:
+				case Instance_CompileInstanceClass:
 					{
 						WString path;
-						if (context.passIndex == 4)
+						if (context.passIndex == Instance_CompileTemporaryClass)
 						{
-							path = L"Workflow/TemporaryClass";
+							path = Path_TemporaryClass;
 						}
-						else if (context.passIndex == 6)
+						else if (context.passIndex == Instance_CompileInstanceCtor)
 						{
-							path = L"Workflow/InstanceCtor";
+							path = Path_InstanceCtor;
 						}
-						else if (context.passIndex == 8)
+						else if (context.passIndex == Instance_CompileInstanceClass)
 						{
-							UNLOAD_ASSEMBLY(L"Workflow/InstanceCtor")
-							UNLOAD_ASSEMBLY(L"Workflow/TemporaryClass")
-							path = L"Workflow/InstanceClass";
+							UNLOAD_ASSEMBLY(Path_InstanceCtor)
+							UNLOAD_ASSEMBLY(Path_TemporaryClass)
+							path = Path_InstanceClass;
 						}
 						else
 						{
@@ -402,6 +475,8 @@ Shared Script Type Resolver (Script)
 			, private IGuiResourceTypeResolver_Precompile
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
+			const wchar_t* Path_ViewModel = L"Workflow/ViewModel";
+			const wchar_t* Path_Shared = L"Workflow/Shared";
 		public:
 			WString GetType()override
 			{
@@ -430,14 +505,28 @@ Shared Script Type Resolver (Script)
 
 			vint GetMaxPassIndex()override
 			{
-				return 2;
+				return Workflow_Max;
 			}
 
-			void Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			PassSupport GetPassSupport(vint passIndex)override
+			{
+				switch (passIndex)
+				{
+				case Workflow_Collect:
+					return PerResource;
+				case Workflow_CompileViewModel:
+				case Workflow_CompileShared:
+					return PerPass;
+				default:
+					return NotSupported;
+				}
+			}
+
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
 				switch (context.passIndex)
 				{
-					case 0:
+				case Workflow_Collect:
 					{
 						if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
 						{
@@ -445,12 +534,12 @@ Shared Script Type Resolver (Script)
 							GuiInstanceCompiledWorkflow::AssemblyType type = GuiInstanceCompiledWorkflow::Shared;
 							if (obj->language == L"Workflow-ViewModel")
 							{
-								path = L"Workflow/ViewModel";
+								path = Path_ViewModel;
 								type = GuiInstanceCompiledWorkflow::ViewModel;
 							}
 							else if (obj->language == L"Workflow")
 							{
-								path = L"Workflow/Shared";
+								path = Path_Shared;
 							}
 						
 							auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
@@ -465,17 +554,24 @@ Shared Script Type Resolver (Script)
 						}
 					}
 					break;
-				case 1:
-				case 2:
+				}
+			}
+
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Workflow_CompileViewModel:
+				case Workflow_CompileShared:
 					{
 						WString path;
-						if (context.passIndex == 1)
+						if (context.passIndex == Workflow_CompileViewModel)
 						{
-							path = L"Workflow/ViewModel";
+							path = Path_ViewModel;
 						}
-						else if (context.passIndex == 2)
+						else if (context.passIndex == Workflow_CompileShared)
 						{
-							path = L"Workflow/Shared";
+							path = Path_Shared;
 						}
 						else
 						{

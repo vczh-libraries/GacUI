@@ -501,27 +501,64 @@ Resource Type Resolver
 		/// <summary>
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
-		///			Pass 0: Collect workflow scripts
-		///			Pass 1: Compile ViewModel scripts
-		///			Pass 2: Compile Shared scripts
-		///			Pass 3: Generate TemporaryClass scripts, ClassNameRecord
-		///			Pass 4: Compile TemporaryClass scripts
-		///			Pass 5: Generate InstanceCtor scripts
-		///			Pass 6: Compile InstanceCtor scripts
-		///			Pass 7: Unload InstanceCtor, Delete TemporaryClass, Generate InstanceClass scripts
-		///			Pass 8: Compile InstanceClass scripts
+		///		<Workflow>
+		///			Pass  0: Collect workflow scripts
+		///			Pass  1: Compile ViewModel scripts
+		///			Pass  2: Compile Shared scripts
+		///		<Instance>
+		///			Pass  3: Collect instance types
+		///			Pass  4: Validate instance dependency
+		///			Pass  5: Generate TemporaryClass scripts, ClassNameRecord
+		///			Pass  6: Compile TemporaryClass scripts
+		///			Pass  7: Generate InstanceCtor scripts
+		///			Pass  8: Compile InstanceCtor scripts
+		///			Pass  9: Unload InstanceCtor, Delete TemporaryClass, Generate InstanceClass scripts
+		///			Pass 10: Compile InstanceClass scripts
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
 		{
 		public:
+			enum PassNames
+			{
+				Workflow_Collect					= 0,
+				Workflow_CompileViewModel			= 1,
+				Workflow_CompileShared				= 2,
+				Workflow_Max						= Workflow_CompileShared,
+
+				Instance_CollectInstanceTypes		= 3,
+				Instance_ValidateDependency			= 4,
+				Instance_GenerateTemporaryClass		= 5,
+				Instance_CompileTemporaryClass		= 6,
+				Instance_GenerateInstanceCtor		= 7,
+				Instance_CompileInstanceCtor		= 8,
+				Instance_GenerateInstanceClass		= 9,
+				Instance_CompileInstanceClass		= 10,
+				Instance_Max						= Instance_CompileInstanceClass,
+			};
+
+			enum PassSupport
+			{
+				NotSupported,
+				PerResource,
+				PerPass,
+			};
+
 			/// <summary>Get the maximum pass index that the precompiler needs.</summary>
 			/// <returns>Returns the maximum pass index. The precompiler doesn't not need to response to every pass.</returns>
 			virtual vint										GetMaxPassIndex() = 0;
+			/// <summary>Get how this resolver supports precompiling.</summary>
+			/// <param name="passIndex">The pass index.</param>
+			/// <returns>Returns how this resolver supports precompiling.</returns>
+			virtual PassSupport									GetPassSupport(vint passIndex) = 0;
 			/// <summary>Precompile the resource item.</summary>
 			/// <param name="resource">The resource to precompile.</param>
 			/// <param name="context">The context for precompiling.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual void										Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+			virtual void										PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+			/// <summary>Precompile for a pass.</summary>
+			/// <param name="context">The context for precompiling.</param>
+			/// <param name="errors">All collected errors during loading a resource.</param>
+			virtual void										PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
 		};
 
 		/// <summary>Provide a context for resource initializing</summary>
@@ -641,6 +678,14 @@ Resource Resolver Manager
 			/// <summary>Get the maximum initializing pass index.</summary>
 			/// <returns>The maximum initializing pass index.</returns>
 			virtual vint										GetMaxInitializePassIndex() = 0;
+			/// <summary>Get names of all per resource resolvers for a pass.</summary>
+			/// <param name="passIndex">The pass index.</param>
+			/// <param name="resolvers">Names of resolvers</param>
+			virtual void										GetPerResourceResolverNames(vint passIndex, collections::List<WString>& names) = 0;
+			/// <summary>Get names of all per pass resolvers for a pass.</summary>
+			/// <param name="passIndex">The pass index.</param>
+			/// <param name="resolvers">Names of resolvers</param>
+			virtual void										GetPerPassResolverNames(vint passIndex, collections::List<WString>& names) = 0;
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();

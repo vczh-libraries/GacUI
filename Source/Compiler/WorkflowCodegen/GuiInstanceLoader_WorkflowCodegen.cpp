@@ -17,6 +17,40 @@ namespace vl
 		using namespace compositions;
 
 /***********************************************************************
+FindInstanceLoadingSource
+***********************************************************************/
+
+		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor, Ptr<types::InstanceBaseRecord> ibRecord)
+		{
+			vint index = context->namespaces.Keys().IndexOf(ctor->typeNamespace);
+			if (index != -1)
+			{
+				Ptr<GuiInstanceContext::NamespaceInfo> namespaceInfo = context->namespaces.Values()[index];
+				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
+				{
+					auto fullName = GlobalStringKey::Get(ns->prefix + ctor->typeName.ToString() + ns->postfix);
+					if(auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
+					{
+						return InstanceLoadingSource(loader, fullName);
+					}
+					else if (ibRecord)
+					{
+						index = ibRecord->instanceBases.Keys().IndexOf(fullName);
+						if (index != -1)
+						{
+							auto baseFullName = ibRecord->instanceBases.Values()[index];
+							if (auto baseLoader = GetInstanceLoaderManager()->GetLoader(baseFullName.typeName))
+							{
+								return InstanceLoadingSource(baseLoader, baseFullName.typeName);
+							}
+						}
+					}
+				}
+			}
+			return InstanceLoadingSource();
+		}
+
+/***********************************************************************
 Workflow_ValidateStatement
 ***********************************************************************/
 
@@ -90,8 +124,6 @@ Workflow_PrecompileInstanceContext
 			return nullptr;
 		}
 
-
-
 /***********************************************************************
 WorkflowEventNamesVisitor
 ***********************************************************************/
@@ -101,12 +133,14 @@ WorkflowEventNamesVisitor
 		public:
 			Ptr<GuiInstanceContext>				context;
 			Ptr<WfClassDeclaration>				instanceClass;
+			Ptr<types::InstanceBaseRecord>		ibRecord;
 			types::ErrorList&					errors;
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 
-			WorkflowEventNamesVisitor(Ptr<GuiInstanceContext> _context, Ptr<WfClassDeclaration> _instanceClass, types::ErrorList& _errors)
+			WorkflowEventNamesVisitor(Ptr<GuiInstanceContext> _context, Ptr<WfClassDeclaration> _instanceClass, Ptr<types::InstanceBaseRecord> _ibRecord, types::ErrorList& _errors)
 				:context(_context)
 				, instanceClass(_instanceClass)
+				, ibRecord(_ibRecord)
 				, errors(_errors)
 			{
 			}
@@ -236,7 +270,7 @@ WorkflowEventNamesVisitor
 
 				if (!reprTypeInfo.typeDescriptor)
 				{
-					auto source = FindInstanceLoadingSource(context, repr);
+					auto source = FindInstanceLoadingSource(context, repr, ibRecord);
 					reprTypeInfo.typeName = source.typeName;
 					reprTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 				}
@@ -265,7 +299,7 @@ WorkflowEventNamesVisitor
 Workflow_GenerateInstanceClass
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, Ptr<types::InstanceBaseRecord> ibRecord, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile)
 		{
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
 			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
@@ -726,7 +760,7 @@ Workflow_GenerateInstanceClass
 			}
 
 			{
-				WorkflowEventNamesVisitor visitor(context, instanceClass, errors);
+				WorkflowEventNamesVisitor visitor(context, instanceClass, ibRecord, errors);
 				context->instance->Accept(&visitor);
 			}
 			addDecl(ctor);

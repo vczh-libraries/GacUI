@@ -763,7 +763,10 @@ GuiResourceFolder
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto precompile = typeResolver->Precompile())
 				{
-					precompile->Precompile(item, context, errors);
+					if (precompile->GetPassSupport(context.passIndex) == IGuiResourceTypeResolver_Precompile::PerResource)
+					{
+						precompile->PerResourcePrecompile(item, context, errors);
+					}
 				}
 			}
 
@@ -1071,11 +1074,27 @@ GuiResource
 			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
 			context.targetFolder = new GuiResourceFolder;
 			
-			vint maxPass = GetResourceResolverManager()->GetMaxPrecompilePassIndex();
+			auto manager = GetResourceResolverManager();
+			vint maxPass = manager->GetMaxPrecompilePassIndex();
+			List<WString> resolvers;
 			for (vint i = 0; i <= maxPass; i++)
 			{
 				context.passIndex = i;
-				PrecompileResourceFolder(context, errors);
+				{
+					manager->GetPerResourceResolverNames(i, resolvers);
+					if (resolvers.Count() > 0)
+					{
+						PrecompileResourceFolder(context, errors);
+					}
+				}
+				{
+					manager->GetPerPassResolverNames(i, resolvers);
+					FOREACH(WString, name, resolvers)
+					{
+						auto resolver = manager->GetTypeResolver(name);
+						resolver->Precompile()->PerPassPrecompile(context, errors);
+					}
+				}
 			}
 			if (errors.Count() == 0)
 			{
@@ -1280,9 +1299,12 @@ IGuiResourceResolverManager
 		{
 			typedef Dictionary<WString, Ptr<IGuiResourcePathResolverFactory>>			PathFactoryMap;
 			typedef Dictionary<WString, Ptr<IGuiResourceTypeResolver>>					TypeResolverMap;
+			typedef Group<vint, WString>												ResolverGroup;
 		protected:
 			PathFactoryMap				pathFactories;
 			TypeResolverMap				typeResolvers;
+			ResolverGroup				perResourceResolvers;
+			ResolverGroup				perPassResolvers;
 
 		public:
 			GuiResourceResolverManager()
@@ -1337,6 +1359,24 @@ IGuiResourceResolverManager
 			{
 				if(typeResolvers.Keys().Contains(resolver->GetType())) return false;
 				typeResolvers.Add(resolver->GetType(), resolver);
+
+				if (auto precompile = resolver->Precompile())
+				{
+					vint maxPassIndex = precompile->GetMaxPassIndex();
+					for (vint i = 0; i <= maxPassIndex; i++)
+					{
+						switch (precompile->GetPassSupport(i))
+						{
+						case IGuiResourceTypeResolver_Precompile::PerResource:
+							perResourceResolvers.Add(i, resolver->GetType());
+							break;
+						case IGuiResourceTypeResolver_Precompile::PerPass:
+							perPassResolvers.Add(i, resolver->GetType());
+							break;
+						}
+					}
+				}
+
 				return true;
 			}
 
@@ -1372,6 +1412,26 @@ IGuiResourceResolverManager
 					}
 				}
 				return maxPass;
+			}
+
+			void GetPerResourceResolverNames(vint passIndex, collections::List<WString>& names)override
+			{
+				names.Clear();
+				vint index = perResourceResolvers.Keys().IndexOf(passIndex);
+				if (index != -1)
+				{
+					CopyFrom(names, perResourceResolvers.GetByIndex(index));
+				}
+			}
+
+			void GetPerPassResolverNames(vint passIndex, collections::List<WString>& names)override
+			{
+				names.Clear();
+				vint index = perPassResolvers.Keys().IndexOf(passIndex);
+				if (index != -1)
+				{
+					CopyFrom(names, perPassResolvers.GetByIndex(index));
+				}
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiResourceResolverManager)

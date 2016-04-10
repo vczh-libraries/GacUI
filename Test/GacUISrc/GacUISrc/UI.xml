@@ -1,16 +1,51 @@
 <Resource>
+  <Script name="ViewModelScript">
+    <Workflow-ViewModel>
+      <![CDATA[
+        module script;
+      
+        interface IViewModel
+        {
+          func GetPrefix() : string;
+        }
+      ]]>
+    </Workflow-ViewModel>
+  </Script>
+
+  <Script name="SharedScript">
+    <Workflow>
+      <![CDATA[
+        module script;
+        
+        class ViewModelBuilder
+        {
+          static func Build() : IViewModel^
+          {
+            return new IViewModel^
+            {
+              override func GetPrefix() : string
+              {
+                return "Action";
+              }
+            };
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+  
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:x="demo::*">
       <Window Text="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <Stack Padding="10" Direction="Vertical" ExtraMargin="left:20 top:20 right:20 bottom:20" MinSizeLimitation="LimitToElementAndChildren">
           <StackItem>
-            <x:MyButton Text="A">
+            <x:MyButton ActionText="A" ViewModel-eval="ViewModelBuilder::Build()">
               <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
             </x:MyButton>
           </StackItem>
           <StackItem>
-            <x:MyButton Text="B">
+            <x:MyButton ActionText="B" ViewModel-eval="ViewModelBuilder::Build()">
               <att.BoundsComposition-set PreferredMinSize="x:100 y:30"/>
             </x:MyButton>
           </StackItem>
@@ -21,10 +56,11 @@
 
   <Instance name="MyButtonResource">
     <Instance ref.Class="demo::MyButton">
+      <ref.Parameter Name="ViewModel" Class="IViewModel"/>
       <ref.Property Name="ActionText" Type="string" Value="MyAction"/>
       <CustomControl ref.Name="self">
         <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
-        <Button Text-format="Action: $(self.ActionText)" ev.Clicked="button_Clicked">
+        <Button Text-format="$(ViewModel.GetPrefix()): $(self.ActionText)" ev.Clicked="button_Clicked">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </Button>
       </CustomControl>

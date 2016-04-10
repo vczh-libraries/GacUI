@@ -166,39 +166,7 @@ Instance Loader Manager
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
 		};
 
-		struct InstanceLoadingSource
-		{
-			IGuiInstanceLoader*						loader;
-			GlobalStringKey							typeName;
-			Ptr<GuiResourceItem>					item;
-			Ptr<GuiInstanceContext>					context;
-
-			InstanceLoadingSource()
-				:loader(0)
-			{
-			}
-
-			InstanceLoadingSource(IGuiInstanceLoader* _loader, GlobalStringKey _typeName)
-				:loader(_loader)
-				, typeName(_typeName)
-			{
-			}
-
-			InstanceLoadingSource(Ptr<GuiResourceItem> _item)
-				:loader(0)
-				, item(_item)
-				, context(item->GetContent().Cast<GuiInstanceContext>())
-			{
-			}
-
-			operator bool()const
-			{
-				return loader != 0 || context;
-			}
-		};
-
 		extern IGuiInstanceLoaderManager*			GetInstanceLoaderManager();
-		extern InstanceLoadingSource				FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
 	}
 }
 
