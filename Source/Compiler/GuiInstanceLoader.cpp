@@ -20,6 +20,7 @@ namespace vl
 		using namespace stream;
 		using namespace workflow;
 		using namespace workflow::analyzer;
+		using namespace workflow::typeimpl;
 
 /***********************************************************************
 GuiInstancePropertyInfo
@@ -170,6 +171,12 @@ GuiInstanceContext::ElementName Parser
 GuiDefaultInstanceLoader
 ***********************************************************************/
 
+#define CTOR_PARAM_PREFIX\
+		static const wchar_t Prefix[] = L"<ctor-parameter>";\
+		static const vint PrefixLength = (vint)sizeof(Prefix) / sizeof(*Prefix) - 1;\
+
+#define CTOR_PARAM_NAME(NAME) (NAME).Right((NAME).Length() - PrefixLength)
+
 		class GuiDefaultInstanceLoader : public Object, public IGuiInstanceLoader
 		{
 		protected:
@@ -177,23 +184,78 @@ GuiDefaultInstanceLoader
 			typedef Tuple<Ptr<GuiInstancePropertyInfo>, IPropertyInfo*>		PropertyType;
 
 			Dictionary<FieldKey, PropertyType>								propertyTypes;
-
+			Dictionary<ITypeDescriptor*, IMethodInfo*>						defaultConstructors;
+			Dictionary<ITypeDescriptor*, IMethodInfo*>						instanceConstructors;
 		public:
-			static IMethodInfo* GetDefaultConstructor(ITypeDescriptor* typeDescriptor)
+			IMethodInfo* GetDefaultConstructor(ITypeDescriptor* typeDescriptor)
 			{
-				if (auto ctors = typeDescriptor->GetConstructorGroup())
+				IMethodInfo* ctor = nullptr;
+				vint index = defaultConstructors.Keys().IndexOf(typeDescriptor);
+				if (index == -1)
 				{
-					vint count = ctors->GetMethodCount();
-					for (vint i = 0; i < count; i++)
+					if (auto ctors = typeDescriptor->GetConstructorGroup())
 					{
-						IMethodInfo* method = ctors->GetMethod(i);
-						if (method->GetParameterCount() == 0)
+						vint count = ctors->GetMethodCount();
+						for (vint i = 0; i < count; i++)
 						{
-							return method;
+							IMethodInfo* method = ctors->GetMethod(i);
+							if (method->GetParameterCount() == 0)
+							{
+								ctor = method;
+								break;
+							}
 						}
 					}
+					defaultConstructors.Add(typeDescriptor, ctor);
 				}
-				return 0;
+				else
+				{
+					ctor = defaultConstructors.Values()[index];
+				}
+				return ctor;
+			}
+
+			IMethodInfo* GetInstanceConstructor(ITypeDescriptor* typeDescriptor)
+			{
+				CTOR_PARAM_PREFIX
+					
+				IMethodInfo* ctor = nullptr;
+				vint index = instanceConstructors.Keys().IndexOf(typeDescriptor);
+				if (index == -1)
+				{
+					if (dynamic_cast<WfClass*>(typeDescriptor))
+					{
+						if (auto group = typeDescriptor->GetConstructorGroup())
+						{
+							if (group->GetMethodCount() == 1)
+							{
+								auto method = group->GetMethod(0);
+								vint count = method->GetParameterCount();
+								for (vint i = 0; i < count; i++)
+								{
+									const auto& name = method->GetParameter(i)->GetName();
+									if (name.Length() <= PrefixLength || name.Left(PrefixLength) != Prefix)
+									{
+										goto FINISHED;
+									}
+
+									if (!typeDescriptor->GetPropertyByName(CTOR_PARAM_NAME(name), false))
+									{
+										goto FINISHED;
+									}
+								}
+								ctor = method;
+							}
+						}
+					}
+				FINISHED:
+					instanceConstructors.Add(typeDescriptor, ctor);
+				}
+				else
+				{
+					ctor = instanceConstructors.Values()[index];
+				}
+				return ctor;
 			}
 
 			GlobalStringKey GetTypeName()override
@@ -346,27 +408,6 @@ GuiDefaultInstanceLoader
 				}
 			}
 
-			bool ContainsViewModels(const TypeInfo& typeInfo)
-			{
-				if (auto ctors = typeInfo.typeDescriptor->GetConstructorGroup())
-				{
-					if (ctors->GetMethodCount() == 1)
-					{
-						IMethodInfo* method = ctors->GetMethod(0);
-						vint count = method->GetParameterCount();
-						for (vint i = 0; i < count; i++)
-						{
-							auto parameter = method->GetParameter(i);
-							auto prop = typeInfo.typeDescriptor->GetPropertyByName(parameter->GetName(), false);
-							if (!prop || !prop->GetGetter() || prop->GetSetter() || prop->GetValueChangedEvent()) return false;
-							if (parameter->GetType()->GetTypeFriendlyName() != prop->GetReturn()->GetTypeFriendlyName()) return false;
-						}
-						return true;
-					}
-				}
-				return false;
-			}
-
 			//***********************************************************************************
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
@@ -376,19 +417,23 @@ GuiDefaultInstanceLoader
 
 			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
-				if (ContainsViewModels(typeInfo))
+				CTOR_PARAM_PREFIX
+
+				if (auto ctor = GetInstanceConstructor(typeInfo.typeDescriptor))
 				{
-					IMethodInfo* method = typeInfo.typeDescriptor->GetConstructorGroup()->GetMethod(0);
-					vint count = method->GetParameterCount();
+					vint count = ctor->GetParameterCount();
 					for (vint i = 0; i < count; i++)
 					{
-						propertyNames.Add(GlobalStringKey::Get(method->GetParameter(i)->GetName()));
+						const auto& name = ctor->GetParameter(i)->GetName();
+						propertyNames.Add(GlobalStringKey::Get(CTOR_PARAM_NAME(name)));
 					}
 				}
 			}
 
 			PropertyType GetPropertyTypeCached(const PropertyInfo& propertyInfo)
 			{
+				CTOR_PARAM_PREFIX
+
 				FieldKey key(propertyInfo.typeInfo.typeDescriptor, propertyInfo.propertyName);
 				vint index = propertyTypes.Keys().IndexOf(key);
 				if (index == -1)
@@ -399,13 +444,13 @@ GuiDefaultInstanceLoader
 						Ptr<GuiInstancePropertyInfo> result = new GuiInstancePropertyInfo;
 						result->support = support;
 
-						if (ContainsViewModels(propertyInfo.typeInfo))
+						if (auto ctor = GetInstanceConstructor(propertyInfo.typeInfo.typeDescriptor))
 						{
-							IMethodInfo* method = propertyInfo.typeInfo.typeDescriptor->GetConstructorGroup()->GetMethod(0);
-							vint count = method->GetParameterCount();
+							vint count = ctor->GetParameterCount();
 							for (vint i = 0; i < count; i++)
 							{
-								if (method->GetParameter(i)->GetName() == propertyInfo.propertyName.ToString())
+								const auto& name = ctor->GetParameter(i)->GetName();
+								if (CTOR_PARAM_NAME(name) == propertyInfo.propertyName.ToString())
 								{
 									result->scope = GuiInstancePropertyInfo::ViewModel;
 								}
@@ -440,13 +485,43 @@ GuiDefaultInstanceLoader
 
 			bool CanCreate(const TypeInfo& typeInfo)override
 			{
-				return GetDefaultConstructor(typeInfo.typeDescriptor) != 0;
+				return
+					GetDefaultConstructor(typeInfo.typeDescriptor) != nullptr ||
+					GetInstanceConstructor(typeInfo.typeDescriptor) != nullptr;
 			}
 
 			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
+				CTOR_PARAM_PREFIX
+				auto defaultCtor = GetDefaultConstructor(typeInfo.typeDescriptor);
+				auto instanceCtor = GetInstanceConstructor(typeInfo.typeDescriptor);
+
 				auto create = MakePtr<WfNewClassExpression>();
-				create->type = GetTypeFromTypeInfo(GetDefaultConstructor(typeInfo.typeDescriptor)->GetReturn());
+				if (defaultCtor)
+				{
+					create->type = GetTypeFromTypeInfo(defaultCtor->GetReturn());
+				}
+				else
+				{
+					create->type = GetTypeFromTypeInfo(instanceCtor->GetReturn());
+
+					vint count = instanceCtor->GetParameterCount();
+					for (vint i = 0; i < count; i++)
+					{
+						const auto& name = instanceCtor->GetParameter(i)->GetName();
+						auto key = GlobalStringKey::Get(CTOR_PARAM_NAME(name));
+
+						vint index = arguments.Keys().IndexOf(key);
+						if (index == -1)
+						{
+							return nullptr;
+						}
+						else
+						{
+							create->arguments.Add(arguments.GetByIndex(index)[0].expression);
+						}
+					}
+				}
 
 				auto refValue = MakePtr<WfReferenceExpression>();
 				refValue->name.value = variableName.ToString();
@@ -584,6 +659,8 @@ GuiDefaultInstanceLoader
 				return refProp;
 			}
 		};
+#undef CTOR_PARAM_NAME
+#undef CTOR_PARAM_PREFIX
 
 /***********************************************************************
 GuiInstanceLoaderManager
