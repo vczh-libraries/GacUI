@@ -322,7 +322,7 @@ Workflow_GenerateInstanceClass
 			Ptr<ITypeInfo> ctorType;
 			if (!beforePrecompile)
 			{
-				if (ctorTd = description::GetTypeDescriptor(context->className + L"<Ctor>"))
+				if ((ctorTd = description::GetTypeDescriptor(context->className + L"<Ctor>")))
 				{
 					auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
 					elementType->SetTypeDescriptor(ctorTd);

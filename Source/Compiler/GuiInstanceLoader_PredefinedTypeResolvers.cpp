@@ -93,7 +93,7 @@ namespace vl
 				{
 					errors.Add(L"Failed to compile workflow scripts in: " + path);
 
-					using ErrorGroup = Pair<int, LazyList<Ptr<ParsingError>>>;
+					using ErrorGroup = Pair<vint, LazyList<Ptr<ParsingError>>>;
 					List<ErrorGroup> errorGroups;
 					CopyFrom(
 						errorGroups,

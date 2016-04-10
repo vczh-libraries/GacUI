@@ -6,8 +6,8 @@ folder GACUI_IMPORT = ../../Import
 	cpp = *.cpp
 
 folder GACUI_RELEASE = ../../Release
-	h = GacUI.h GacUIReflection.h
-	cpp = GacUI.cpp GacUIReflection.cpp
+	h = GacUI.h GacUIReflection.h GacUICompiler.h
+	cpp = GacUI.cpp GacUIReflection.cpp GacUICompiler.cpp
 
 dependency
 	GACUI_RELEASE:h < GACUI_IMPORT:h
