@@ -306,6 +306,7 @@ Instance Namespace
 		public:
 			GlobalStringKey							name;
 			WString									typeName;
+			WString									value;
 			bool									readonly = false;
 		};
 		
@@ -519,17 +520,18 @@ Instance Loader
 
 			typedef collections::Group<GlobalStringKey, ArgumentInfo>	ArgumentMap;
 
-			virtual GlobalStringKey					GetTypeName() = 0;
+			virtual GlobalStringKey							GetTypeName() = 0;
 
-			virtual void							GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual void							GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual void							GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual Ptr<GuiInstancePropertyInfo>	GetPropertyType(const PropertyInfo& propertyInfo);
+			virtual void									GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual void									GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual void									GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
 
-			virtual bool							CanCreate(const TypeInfo& typeInfo);
-			virtual Ptr<workflow::WfStatement>		CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
-			virtual Ptr<workflow::WfStatement>		AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
-			virtual Ptr<workflow::WfExpression>		GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors);
+			virtual bool									CanCreate(const TypeInfo& typeInfo);
+			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfStatement>				CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfStatement>				AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfExpression>				GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors);
 		};
 
 /***********************************************************************
@@ -542,6 +544,7 @@ Instance Binder
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							ApplicableToConstructorArgument() = 0;
 			virtual bool							RequirePropertyExist() = 0;
+			virtual Ptr<workflow::WfExpression>		GenerateConstructorArgument(IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors) = 0;
 			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors) = 0;
 		};
 
@@ -572,39 +575,7 @@ Instance Loader Manager
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
 		};
 
-		struct InstanceLoadingSource
-		{
-			IGuiInstanceLoader*						loader;
-			GlobalStringKey							typeName;
-			Ptr<GuiResourceItem>					item;
-			Ptr<GuiInstanceContext>					context;
-
-			InstanceLoadingSource()
-				:loader(0)
-			{
-			}
-
-			InstanceLoadingSource(IGuiInstanceLoader* _loader, GlobalStringKey _typeName)
-				:loader(_loader)
-				, typeName(_typeName)
-			{
-			}
-
-			InstanceLoadingSource(Ptr<GuiResourceItem> _item)
-				:loader(0)
-				, item(_item)
-				, context(item->GetContent().Cast<GuiInstanceContext>())
-			{
-			}
-
-			operator bool()const
-			{
-				return loader != 0 || context;
-			}
-		};
-
 		extern IGuiInstanceLoaderManager*			GetInstanceLoaderManager();
-		extern InstanceLoadingSource				FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
 	}
 }
 
@@ -788,8 +759,23 @@ namespace vl
 			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
 
-			struct ResolvingResult
+			struct InstanceBaseRecord : public Object, public Description<InstanceBaseRecord>
 			{
+				typedef GlobalStringKey															Key;
+				typedef IGuiInstanceLoader::TypeInfo											Value;
+				collections::Dictionary<Key, Value>				instanceBases;
+			};
+
+			struct ResolvingResult : public Object, public Description<ResolvingResult>
+			{
+				Ptr<workflow::WfModule>							moduleForValidate;
+				Ptr<workflow::WfBlockStatement>					moduleContent;
+
+				collections::List<GlobalStringKey>				referenceNames;
+				IGuiInstanceLoader::ArgumentMap					rootCtorArguments;
+				IGuiInstanceLoader*								rootLoader = nullptr;
+				IGuiInstanceLoader::TypeInfo					rootTypeInfo;
+
 				VariableTypeInfoMap								typeInfos;
 				TypeOverrideMap									typeOverrides;
 				PropertyResolvingMap							propertyResolvings;
@@ -814,20 +800,55 @@ WorkflowCompiler (Installation)
 		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, collections::List<WString>& errors);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
+		extern Ptr<workflow::WfFunctionDeclaration>				Workflow_GenerateEventHandler(description::IEventInfo* eventInfo);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
 
 /***********************************************************************
 WorkflowCompiler (Compile)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfModule>							Workflow_CreateEmptyModule(Ptr<GuiInstanceContext> context);
-		extern Ptr<workflow::WfModule>							Workflow_CreateModuleWithInitFunction(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfStatement> functionBody);
+		extern Ptr<workflow::WfModule>							Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context);
+		extern Ptr<workflow::WfClassDeclaration>				Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module);
+		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfModule> module);
 
-		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfModule> module, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride);
-		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfModule> module, types::ResolvingResult& resolvingResult);
+		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride);
+		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult);
+		
+		struct InstanceLoadingSource
+		{
+			IGuiInstanceLoader*						loader;
+			GlobalStringKey							typeName;
+			Ptr<GuiResourceItem>					item;
+			Ptr<GuiInstanceContext>					context;
 
+			InstanceLoadingSource()
+				:loader(0)
+			{
+			}
+
+			InstanceLoadingSource(IGuiInstanceLoader* _loader, GlobalStringKey _typeName)
+				:loader(_loader)
+				, typeName(_typeName)
+			{
+			}
+
+			InstanceLoadingSource(Ptr<GuiResourceItem> _item)
+				:loader(0)
+				, item(_item)
+				, context(item->GetContent().Cast<GuiInstanceContext>())
+			{
+			}
+
+			operator bool()const
+			{
+				return loader != 0 || context;
+			}
+		};
+
+		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor, Ptr<types::InstanceBaseRecord> ibRecord = nullptr);
 		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
-		extern Ptr<workflow::runtime::WfAssembly>				Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ErrorList& errors);
+		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, Ptr<types::InstanceBaseRecord> ibRecord, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile);
 	}
 }
 
@@ -1216,19 +1237,11 @@ GuiVrtualTypeInstanceLoader
 					return typeName == typeInfo.typeName;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors)
 				{
-					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
-					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-
-					Ptr<WfExpression> createStyleExpr;
-					if (indexControlTemplate == -1)
+					if (controlTemplate)
 					{
-						createStyleExpr = CreateIThemeCall(styleMethod);
-					}
-					else
-					{
-						if (auto controlTemplateTd = GetControlTemplateType(arguments.GetByIndex(indexControlTemplate)[0].expression, typeInfo, errors))
+						if (auto controlTemplateTd = GetControlTemplateType(controlTemplate, typeInfo, errors))
 						{
 							auto styleType = TypeInfoRetriver<TControlStyle*>::CreateTypeInfo();
 
@@ -1236,9 +1249,50 @@ GuiVrtualTypeInstanceLoader
 							auto createStyle = MakePtr<WfNewClassExpression>();
 							createStyle->type = GetTypeFromTypeInfo(styleType.Obj());
 							createStyle->arguments.Add(refFactory);
-							createStyleExpr = createStyle;
+							
+							return createStyle;
 						}
 						else
+						{
+							return nullptr;
+						}
+					}
+					else
+					{
+						return CreateIThemeCall(styleMethod);
+					}
+				}
+
+				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors)
+				{
+					auto controlType = TypeInfoRetriver<TControl>::CreateTypeInfo();
+
+					if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors))
+					{
+						auto createControl = MakePtr<WfBaseConstructorCall>();
+						createControl->type = GetTypeFromTypeInfo(controlType.Obj());
+						createControl->arguments.Add(createStyleExpr);
+						return createControl;
+					}
+					else
+					{
+						return nullptr;
+					}
+				}
+
+				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				{
+					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
+					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+
+					Ptr<WfExpression> createStyleExpr;
+					{
+						Ptr<WfExpression> controlTemplate;
+						if (indexControlTemplate != -1)
+						{
+							controlTemplate = arguments.GetByIndex(indexControlTemplate)[0].expression;
+						}
+						if (!(createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors)))
 						{
 							return nullptr;
 						}

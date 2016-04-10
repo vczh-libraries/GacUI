@@ -927,28 +927,6 @@ GuiComponent
 GuiInstanceRootObject
 ***********************************************************************/
 
-			void GuiInstanceRootObject::ClearSubscriptions()
-			{
-				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
-				{
-					subscription->Close();
-				}
-				subscriptions.Clear();
-			}
-
-			void GuiInstanceRootObject::ClearComponents()
-			{
-				for(vint i=0;i<components.Count();i++)
-				{
-					components[i]->Detach(this);
-				}
-				for(vint i=0;i<components.Count();i++)
-				{
-					delete components[i];
-				}
-				components.Clear();
-			}
-
 			void GuiInstanceRootObject::FinalizeInstance()
 			{
 				ClearSubscriptions();
@@ -984,6 +962,15 @@ GuiInstanceRootObject
 			bool GuiInstanceRootObject::ContainsSubscription(Ptr<description::IValueSubscription> subscription)
 			{
 				return subscriptions.Contains(subscription.Obj());
+			}
+
+			void GuiInstanceRootObject::ClearSubscriptions()
+			{
+				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+				{
+					subscription->Close();
+				}
+				subscriptions.Clear();
 			}
 
 			bool GuiInstanceRootObject::AddComponent(GuiComponent* component)
@@ -1023,6 +1010,19 @@ GuiInstanceRootObject
 				return components.Contains(component);
 			}
 
+			void GuiInstanceRootObject::ClearComponents()
+			{
+				for(vint i=0;i<components.Count();i++)
+				{
+					components[i]->Detach(this);
+				}
+				for(vint i=0;i<components.Count();i++)
+				{
+					delete components[i];
+				}
+				components.Clear();
+			}
+
 /***********************************************************************
 GuiCustomControl
 ***********************************************************************/
@@ -1034,6 +1034,7 @@ GuiCustomControl
 
 			GuiCustomControl::~GuiCustomControl()
 			{
+				FinalizeAggregation();
 				FinalizeInstance();
 			}
 
@@ -4098,6 +4099,7 @@ GuiWindow
 
 			GuiWindow::~GuiWindow()
 			{
+				FinalizeAggregation();
 				GetApplication()->UnregisterWindow(this);
 				INativeWindow* window=host->GetNativeWindow();
 				if(window)
@@ -23464,6 +23466,7 @@ GuiTemplate
 
 			GuiTemplate::~GuiTemplate()
 			{
+				FinalizeInstance();
 			}
 
 /***********************************************************************
@@ -23481,6 +23484,7 @@ GuiControlTemplate
 
 			GuiControlTemplate::~GuiControlTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23496,6 +23500,7 @@ GuiLabelTemplate
 
 			GuiLabelTemplate::~GuiLabelTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23511,6 +23516,7 @@ GuiSinglelineTextBoxTemplate
 
 			GuiSinglelineTextBoxTemplate::~GuiSinglelineTextBoxTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23526,6 +23532,7 @@ GuiDocumentLabelTemplate
 
 			GuiDocumentLabelTemplate::~GuiDocumentLabelTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23538,6 +23545,7 @@ GuiMenuTemplate
 
 			GuiMenuTemplate::~GuiMenuTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23567,6 +23575,7 @@ GuiWindowTemplate
 
 			GuiWindowTemplate::~GuiWindowTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23583,6 +23592,7 @@ GuiButtonTemplate
 
 			GuiButtonTemplate::~GuiButtonTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23599,6 +23609,7 @@ GuiSelectableButtonTemplate
 
 			GuiSelectableButtonTemplate::~GuiSelectableButtonTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23617,6 +23628,7 @@ GuiToolstripButtonTemplate
 
 			GuiToolstripButtonTemplate::~GuiToolstripButtonTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23633,6 +23645,7 @@ GuiListViewColumnHeaderTemplate
 
 			GuiListViewColumnHeaderTemplate::~GuiListViewColumnHeaderTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23649,6 +23662,7 @@ GuiComboBoxTemplate
 
 			GuiComboBoxTemplate::~GuiComboBoxTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23664,6 +23678,7 @@ GuiDatePickerTemplate
 
 			GuiDatePickerTemplate::~GuiDatePickerTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23679,6 +23694,7 @@ GuiDateComboBoxTemplate
 
 			GuiDateComboBoxTemplate::~GuiDateComboBoxTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23698,6 +23714,7 @@ GuiScrollTemplate
 
 			GuiScrollTemplate::~GuiScrollTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23714,6 +23731,7 @@ GuiScrollViewTemplate
 
 			GuiScrollViewTemplate::~GuiScrollViewTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23729,6 +23747,7 @@ GuiMultilineTextBoxTemplate
 
 			GuiMultilineTextBoxTemplate::~GuiMultilineTextBoxTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23744,6 +23763,7 @@ GuiTextListTemplate
 
 			GuiTextListTemplate::~GuiTextListTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23759,6 +23779,7 @@ GuiDocumentViewerTemplate
 
 			GuiDocumentViewerTemplate::~GuiDocumentViewerTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23774,6 +23795,7 @@ GuiListViewTemplate
 
 			GuiListViewTemplate::~GuiListViewTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23789,6 +23811,7 @@ GuiTreeViewTemplate
 
 			GuiTreeViewTemplate::~GuiTreeViewTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23806,6 +23829,7 @@ GuiTabTemplate
 
 			GuiTabTemplate::~GuiTabTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23823,6 +23847,7 @@ GuiListItemTemplate
 
 			GuiListItemTemplate::~GuiListItemTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23839,6 +23864,7 @@ GuiTreeItemTemplate
 
 			GuiTreeItemTemplate::~GuiTreeItemTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23854,6 +23880,7 @@ GuiGridVisualizerTemplate
 
 			GuiGridVisualizerTemplate::~GuiGridVisualizerTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -23869,6 +23896,7 @@ GuiGridEditorTemplate
 
 			GuiGridEditorTemplate::~GuiGridEditorTemplate()
 			{
+				FinalizeAggregation();
 			}
 		}
 	}
@@ -43516,7 +43544,10 @@ GuiResourceFolder
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto precompile = typeResolver->Precompile())
 				{
-					precompile->Precompile(item, context, errors);
+					if (precompile->GetPassSupport(context.passIndex) == IGuiResourceTypeResolver_Precompile::PerResource)
+					{
+						precompile->PerResourcePrecompile(item, context, errors);
+					}
 				}
 			}
 
@@ -43824,11 +43855,27 @@ GuiResource
 			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
 			context.targetFolder = new GuiResourceFolder;
 			
-			vint maxPass = GetResourceResolverManager()->GetMaxPrecompilePassIndex();
+			auto manager = GetResourceResolverManager();
+			vint maxPass = manager->GetMaxPrecompilePassIndex();
+			List<WString> resolvers;
 			for (vint i = 0; i <= maxPass; i++)
 			{
 				context.passIndex = i;
-				PrecompileResourceFolder(context, errors);
+				{
+					manager->GetPerResourceResolverNames(i, resolvers);
+					if (resolvers.Count() > 0)
+					{
+						PrecompileResourceFolder(context, errors);
+					}
+				}
+				{
+					manager->GetPerPassResolverNames(i, resolvers);
+					FOREACH(WString, name, resolvers)
+					{
+						auto resolver = manager->GetTypeResolver(name);
+						resolver->Precompile()->PerPassPrecompile(context, errors);
+					}
+				}
 			}
 			if (errors.Count() == 0)
 			{
@@ -44033,9 +44080,12 @@ IGuiResourceResolverManager
 		{
 			typedef Dictionary<WString, Ptr<IGuiResourcePathResolverFactory>>			PathFactoryMap;
 			typedef Dictionary<WString, Ptr<IGuiResourceTypeResolver>>					TypeResolverMap;
+			typedef Group<vint, WString>												ResolverGroup;
 		protected:
 			PathFactoryMap				pathFactories;
 			TypeResolverMap				typeResolvers;
+			ResolverGroup				perResourceResolvers;
+			ResolverGroup				perPassResolvers;
 
 		public:
 			GuiResourceResolverManager()
@@ -44090,6 +44140,24 @@ IGuiResourceResolverManager
 			{
 				if(typeResolvers.Keys().Contains(resolver->GetType())) return false;
 				typeResolvers.Add(resolver->GetType(), resolver);
+
+				if (auto precompile = resolver->Precompile())
+				{
+					vint maxPassIndex = precompile->GetMaxPassIndex();
+					for (vint i = 0; i <= maxPassIndex; i++)
+					{
+						switch (precompile->GetPassSupport(i))
+						{
+						case IGuiResourceTypeResolver_Precompile::PerResource:
+							perResourceResolvers.Add(i, resolver->GetType());
+							break;
+						case IGuiResourceTypeResolver_Precompile::PerPass:
+							perPassResolvers.Add(i, resolver->GetType());
+							break;
+						}
+					}
+				}
+
 				return true;
 			}
 
@@ -44126,8 +44194,163 @@ IGuiResourceResolverManager
 				}
 				return maxPass;
 			}
+
+			void GetPerResourceResolverNames(vint passIndex, collections::List<WString>& names)override
+			{
+				names.Clear();
+				vint index = perResourceResolvers.Keys().IndexOf(passIndex);
+				if (index != -1)
+				{
+					CopyFrom(names, perResourceResolvers.GetByIndex(index));
+				}
+			}
+
+			void GetPerPassResolverNames(vint passIndex, collections::List<WString>& names)override
+			{
+				names.Clear();
+				vint index = perPassResolvers.Keys().IndexOf(passIndex);
+				if (index != -1)
+				{
+					CopyFrom(names, perPassResolvers.GetByIndex(index));
+				}
+			}
 		};
 		GUI_REGISTER_PLUGIN(GuiResourceResolverManager)
+	}
+}
+
+/***********************************************************************
+RESOURCES\GUIRESOURCEMANAGER.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace stream;
+		using namespace reflection::description;
+		using namespace controls;
+
+/***********************************************************************
+Class Name Record (ClassNameRecord)
+***********************************************************************/
+
+		class GuiResourceClassNameRecordTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_DirectLoadStream
+		{
+		public:
+			WString GetType()override
+			{
+				return L"ClassNameRecord";
+			}
+
+			bool XmlSerializable()override
+			{
+				return false;
+			}
+
+			bool StreamSerializable()override
+			{
+				return true;
+			}
+
+			IGuiResourceTypeResolver_DirectLoadStream* DirectLoadStream()override
+			{
+				return this;
+			}
+
+			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			{
+				if (auto obj = resource.Cast<GuiResourceClassNameRecord>())
+				{
+					internal::ContextFreeWriter writer(stream);
+					writer << obj->classNames;
+				}
+			}
+
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			{
+				internal::ContextFreeReader reader(stream);
+
+				auto obj = MakePtr<GuiResourceClassNameRecord>();
+				reader << obj->classNames;
+				return obj;
+			}
+		};
+
+/***********************************************************************
+IGuiInstanceResourceManager
+***********************************************************************/
+
+		IGuiResourceManager* resourceManager = 0;
+
+		IGuiResourceManager* GetResourceManager()
+		{
+			return resourceManager;
+		}
+
+		class GuiResourceManager : public Object, public IGuiResourceManager, public IGuiPlugin
+		{
+		protected:
+			typedef Dictionary<WString, Ptr<GuiResource>>					ResourceMap;
+
+			ResourceMap								resources;
+			ResourceMap								instanceResources;
+
+		public:
+			GuiResourceManager()
+			{
+			}
+
+			void Load()override
+			{
+				resourceManager = this;
+			}
+
+			void AfterLoad()override
+			{
+				IGuiResourceResolverManager* manager = GetResourceResolverManager();
+				manager->SetTypeResolver(new GuiResourceClassNameRecordTypeResolver);
+			}
+
+			void Unload()override
+			{
+				resourceManager = nullptr;
+			}
+
+			bool SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage)override
+			{
+				vint index = resources.Keys().IndexOf(name);
+				if (index != -1) return false;
+				
+				resource->Initialize(usage);
+				resources.Add(name, resource);
+				
+				auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+				FOREACH(WString, className, record->classNames)
+				{
+					instanceResources.Add(className, resource);
+				}
+				return true;
+			}
+
+			Ptr<GuiResource> GetResource(const WString& name)override
+			{
+				vint index = resources.Keys().IndexOf(name);
+				return index == -1 ? nullptr : resources.Values()[index];
+			}
+
+			Ptr<GuiResource> GetResourceFromClassName(const WString& classFullName)override
+			{
+				vint index = instanceResources.Keys().IndexOf(classFullName);
+				if (index == -1) return nullptr;
+				return instanceResources.Values()[index];
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiResourceManager)
 	}
 }
 

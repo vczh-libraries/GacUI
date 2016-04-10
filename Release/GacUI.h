@@ -3649,6 +3649,8 @@ Resource Type Resolver
 		/// <summary>Provide a context for resource precompiling</summary>
 		struct GuiResourcePrecompileContext
 		{
+			typedef collections::Dictionary<Ptr<DescriptableObject>, Ptr<DescriptableObject>>	PropertyMap;
+
 			/// <summary>The folder to contain compiled objects.</summary>
 			Ptr<GuiResourceFolder>								targetFolder;
 			/// <summary>The root resource object.</summary>
@@ -3657,27 +3659,71 @@ Resource Type Resolver
 			vint												passIndex;
 			/// <summary>The path resolver. This is only for delay load resource.</summary>
 			Ptr<GuiResourcePathResolver>						resolver;
+			/// <summary>Additional properties for resource item contents</summary>
+			PropertyMap											additionalProperties;
 		};
 
 		/// <summary>
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
-		///			Pass 0: Script		(collect workflow scripts)
-		///			Pass 1: Script		(compile view model scripts)
-		///			Pass 2: Script		(compile shared scripts)
-		///			Pass 3: Instance
+		///		<Workflow>
+		///			Pass  0: Collect workflow scripts
+		///			Pass  1: Compile ViewModel scripts
+		///			Pass  2: Compile Shared scripts
+		///		<Instance>
+		///			Pass  3: Collect instance types
+		///			Pass  4: Validate instance dependency
+		///			Pass  5: Generate TemporaryClass scripts, ClassNameRecord
+		///			Pass  6: Compile TemporaryClass scripts
+		///			Pass  7: Generate InstanceCtor scripts
+		///			Pass  8: Compile InstanceCtor scripts
+		///			Pass  9: Unload InstanceCtor, Delete TemporaryClass, Generate InstanceClass scripts
+		///			Pass 10: Compile InstanceClass scripts
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
 		{
 		public:
+			enum PassNames
+			{
+				Workflow_Collect					= 0,
+				Workflow_CompileViewModel			= 1,
+				Workflow_CompileShared				= 2,
+				Workflow_Max						= Workflow_CompileShared,
+
+				Instance_CollectInstanceTypes		= 3,
+				Instance_ValidateDependency			= 4,
+				Instance_GenerateTemporaryClass		= 5,
+				Instance_CompileTemporaryClass		= 6,
+				Instance_GenerateInstanceCtor		= 7,
+				Instance_CompileInstanceCtor		= 8,
+				Instance_GenerateInstanceClass		= 9,
+				Instance_CompileInstanceClass		= 10,
+				Instance_Max						= Instance_CompileInstanceClass,
+			};
+
+			enum PassSupport
+			{
+				NotSupported,
+				PerResource,
+				PerPass,
+			};
+
 			/// <summary>Get the maximum pass index that the precompiler needs.</summary>
 			/// <returns>Returns the maximum pass index. The precompiler doesn't not need to response to every pass.</returns>
 			virtual vint										GetMaxPassIndex() = 0;
+			/// <summary>Get how this resolver supports precompiling.</summary>
+			/// <param name="passIndex">The pass index.</param>
+			/// <returns>Returns how this resolver supports precompiling.</returns>
+			virtual PassSupport									GetPassSupport(vint passIndex) = 0;
 			/// <summary>Precompile the resource item.</summary>
 			/// <param name="resource">The resource to precompile.</param>
 			/// <param name="context">The context for precompiling.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual void										Precompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+			virtual void										PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+			/// <summary>Precompile for a pass.</summary>
+			/// <param name="context">The context for precompiling.</param>
+			/// <param name="errors">All collected errors during loading a resource.</param>
+			virtual void										PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
 		};
 
 		/// <summary>Provide a context for resource initializing</summary>
@@ -3691,7 +3737,7 @@ Resource Type Resolver
 		///		Current resources that needs precompiling:
 		///			Pass 0: Script		(initialize view model scripts)
 		///			Pass 1: Script		(initialize shared scripts)
-		///			Pass 3: Script		(initialize instance scripts)
+		///			Pass 2: Script		(initialize instance scripts)
 		/// </summary>
 		class IGuiResourceTypeResolver_Initialize : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
 		{
@@ -3797,6 +3843,14 @@ Resource Resolver Manager
 			/// <summary>Get the maximum initializing pass index.</summary>
 			/// <returns>The maximum initializing pass index.</returns>
 			virtual vint										GetMaxInitializePassIndex() = 0;
+			/// <summary>Get names of all per resource resolvers for a pass.</summary>
+			/// <param name="passIndex">The pass index.</param>
+			/// <param name="resolvers">Names of resolvers</param>
+			virtual void										GetPerResourceResolverNames(vint passIndex, collections::List<WString>& names) = 0;
+			/// <summary>Get names of all per pass resolvers for a pass.</summary>
+			/// <param name="passIndex">The pass index.</param>
+			/// <param name="resolvers">Names of resolvers</param>
+			virtual void										GetPerPassResolverNames(vint passIndex, collections::List<WString>& names) = 0;
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();
@@ -8148,8 +8202,6 @@ Basic Construction
 				collections::SortedList<GuiComponent*>			components;
 				SubscriptionList								subscriptions;
 
-				void											ClearSubscriptions();
-				void											ClearComponents();
 				void											FinalizeInstance();
 			public:
 				GuiInstanceRootObject();
@@ -8167,6 +8219,8 @@ Basic Construction
 				/// <returns>Returns true if the window contains the subscription.</returns>
 				/// <param name="subscription">The subscription to test.</param>
 				bool											ContainsSubscription(Ptr<description::IValueSubscription> subscription);
+				/// <summary>Clear all subscriptions.</summary>
+				void											ClearSubscriptions();
 
 				/// <summary>Add a component. When this control host is disposing, all attached components will be deleted.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
@@ -8185,10 +8239,12 @@ Basic Construction
 				/// <returns>Returns true if the window contains the component.</returns>
 				/// <param name="component">The component to test.</param>
 				bool											ContainsComponent(GuiComponent* component);
+				/// <summary>Clear all components.</summary>
+				void											ClearComponents();
 			};
 
 			/// <summary>Represnets a user customizable control.</summary>
-			class GuiCustomControl : public GuiControl, public GuiInstanceRootObject, public Description<GuiCustomControl>
+			class GuiCustomControl : public GuiControl, public GuiInstanceRootObject, public AggregatableDescription<GuiCustomControl>
 			{
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
@@ -9278,7 +9334,7 @@ Window
 			/// <summary>
 			/// Represents a normal window.
 			/// </summary>
-			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public Description<GuiWindow>
+			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public AggregatableDescription<GuiWindow>
 			{
 				friend class GuiApplication;
 			public:
@@ -17772,7 +17828,7 @@ namespace vl
 Control Template
 ***********************************************************************/
 
-			class GuiControlTemplate : public GuiTemplate, public Description<GuiControlTemplate>
+			class GuiControlTemplate : public GuiTemplate, public AggregatableDescription<GuiControlTemplate>
 			{
 			public:
 				GuiControlTemplate();
@@ -17786,7 +17842,7 @@ Control Template
 				GuiControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiLabelTemplate :public GuiControlTemplate, public Description<GuiLabelTemplate>
+			class GuiLabelTemplate :public GuiControlTemplate, public AggregatableDescription<GuiLabelTemplate>
 			{
 			public:
 				GuiLabelTemplate();
@@ -17799,7 +17855,7 @@ Control Template
 				GuiLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiSinglelineTextBoxTemplate : public GuiControlTemplate, public Description<GuiSinglelineTextBoxTemplate>
+			class GuiSinglelineTextBoxTemplate : public GuiControlTemplate, public AggregatableDescription<GuiSinglelineTextBoxTemplate>
 			{
 			public:
 				GuiSinglelineTextBoxTemplate();
@@ -17812,7 +17868,7 @@ Control Template
 				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiDocumentLabelTemplate : public GuiControlTemplate, public Description<GuiDocumentLabelTemplate>
+			class GuiDocumentLabelTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDocumentLabelTemplate>
 			{
 			public:
 				GuiDocumentLabelTemplate();
@@ -17824,7 +17880,7 @@ Control Template
 				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiMenuTemplate : public GuiControlTemplate, public Description<GuiMenuTemplate>
+			class GuiMenuTemplate : public GuiControlTemplate, public AggregatableDescription<GuiMenuTemplate>
 			{
 			public:
 				GuiMenuTemplate();
@@ -17838,7 +17894,7 @@ Control Template
 				Customizable,
 			};
 
-			class GuiWindowTemplate : public GuiControlTemplate, public Description<GuiWindowTemplate>
+			class GuiWindowTemplate : public GuiControlTemplate, public AggregatableDescription<GuiWindowTemplate>
 			{
 			public:
 				GuiWindowTemplate();
@@ -17865,7 +17921,7 @@ Control Template
 				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiButtonTemplate : public GuiControlTemplate, public Description<GuiButtonTemplate>
+			class GuiButtonTemplate : public GuiControlTemplate, public AggregatableDescription<GuiButtonTemplate>
 			{
 			public:
 				GuiButtonTemplate();
@@ -17877,7 +17933,7 @@ Control Template
 				GuiButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiSelectableButtonTemplate : public GuiButtonTemplate, public Description<GuiSelectableButtonTemplate>
+			class GuiSelectableButtonTemplate : public GuiButtonTemplate, public AggregatableDescription<GuiSelectableButtonTemplate>
 			{
 			public:
 				GuiSelectableButtonTemplate();
@@ -17889,7 +17945,7 @@ Control Template
 				GuiSelectableButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiToolstripButtonTemplate : public GuiSelectableButtonTemplate, public Description<GuiToolstripButtonTemplate>
+			class GuiToolstripButtonTemplate : public GuiSelectableButtonTemplate, public AggregatableDescription<GuiToolstripButtonTemplate>
 			{
 			public:
 				GuiToolstripButtonTemplate();
@@ -17906,7 +17962,7 @@ Control Template
 				GuiToolstripButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiListViewColumnHeaderTemplate :public GuiToolstripButtonTemplate, public Description<GuiListViewColumnHeaderTemplate>
+			class GuiListViewColumnHeaderTemplate :public GuiToolstripButtonTemplate, public AggregatableDescription<GuiListViewColumnHeaderTemplate>
 			{
 			public:
 				GuiListViewColumnHeaderTemplate();
@@ -17918,7 +17974,7 @@ Control Template
 				GuiListViewColumnHeaderTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiComboBoxTemplate : public GuiToolstripButtonTemplate, public Description<GuiComboBoxTemplate>
+			class GuiComboBoxTemplate : public GuiToolstripButtonTemplate, public AggregatableDescription<GuiComboBoxTemplate>
 			{
 			public:
 				GuiComboBoxTemplate();
@@ -17930,7 +17986,7 @@ Control Template
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiDatePickerTemplate : public GuiControlTemplate, public Description<GuiDatePickerTemplate>
+			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
 			{
 			public:
 				GuiDatePickerTemplate();
@@ -17947,7 +18003,7 @@ Control Template
 				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public Description<GuiDateComboBoxTemplate>
+			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>
 			{
 			public:
 				GuiDateComboBoxTemplate();
@@ -17959,7 +18015,7 @@ Control Template
 				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiScrollTemplate : public GuiControlTemplate, public Description<GuiScrollTemplate>
+			class GuiScrollTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollTemplate>
 			{
 			public:
 				GuiScrollTemplate();
@@ -17974,7 +18030,7 @@ Control Template
 				GuiScrollTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiScrollViewTemplate : public GuiControlTemplate, public Description<GuiScrollViewTemplate>
+			class GuiScrollViewTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollViewTemplate>
 			{
 			public:
 				GuiScrollViewTemplate();
@@ -17988,7 +18044,7 @@ Control Template
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public Description<GuiMultilineTextBoxTemplate>
+			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiMultilineTextBoxTemplate>
 			{
 			public:
 				GuiMultilineTextBoxTemplate();
@@ -18001,7 +18057,7 @@ Control Template
 				GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiDocumentViewerTemplate : public GuiScrollViewTemplate, public Description<GuiDocumentViewerTemplate>
+			class GuiDocumentViewerTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiDocumentViewerTemplate>
 			{
 			public:
 				GuiDocumentViewerTemplate();
@@ -18013,7 +18069,7 @@ Control Template
 				GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTextListTemplate : public GuiScrollViewTemplate, public Description<GuiTextListTemplate>
+			class GuiTextListTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiTextListTemplate>
 			{
 			public:
 				GuiTextListTemplate();
@@ -18027,7 +18083,7 @@ Control Template
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiListViewTemplate : public GuiScrollViewTemplate, public Description<GuiListViewTemplate>
+			class GuiListViewTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiListViewTemplate>
 			{
 			public:
 				GuiListViewTemplate();
@@ -18043,7 +18099,7 @@ Control Template
 				GuiListViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTreeViewTemplate : public GuiScrollViewTemplate, public Description<GuiTreeViewTemplate>
+			class GuiTreeViewTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiTreeViewTemplate>
 			{
 			public:
 				GuiTreeViewTemplate();
@@ -18057,7 +18113,7 @@ Control Template
 				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTabTemplate : public GuiControlTemplate, public Description<GuiTabTemplate>
+			class GuiTabTemplate : public GuiControlTemplate, public AggregatableDescription<GuiTabTemplate>
 			{
 			public:
 				GuiTabTemplate();
@@ -18078,7 +18134,7 @@ Control Template
 Item Template
 ***********************************************************************/
 
-			class GuiListItemTemplate : public GuiTemplate, public Description<GuiListItemTemplate>
+			class GuiListItemTemplate : public GuiTemplate, public AggregatableDescription<GuiListItemTemplate>
 			{
 			public:
 				GuiListItemTemplate();
@@ -18091,7 +18147,7 @@ Item Template
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTreeItemTemplate : public GuiListItemTemplate, public Description<GuiTreeItemTemplate>
+			class GuiTreeItemTemplate : public GuiListItemTemplate, public AggregatableDescription<GuiTreeItemTemplate>
 			{
 			public:
 				GuiTreeItemTemplate();
@@ -18103,7 +18159,7 @@ Item Template
 				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiGridVisualizerTemplate : public GuiControlTemplate , public Description<GuiGridVisualizerTemplate>
+			class GuiGridVisualizerTemplate : public GuiControlTemplate , public AggregatableDescription<GuiGridVisualizerTemplate>
 			{
 			public:
 				GuiGridVisualizerTemplate();
@@ -18117,7 +18173,7 @@ Item Template
 				GuiGridVisualizerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiGridEditorTemplate : public GuiControlTemplate , public Description<GuiGridEditorTemplate>
+			class GuiGridEditorTemplate : public GuiControlTemplate , public AggregatableDescription<GuiGridEditorTemplate>
 			{
 			public:
 				GuiGridEditorTemplate();
@@ -18796,6 +18852,51 @@ Helper Functions
 
 #pragma warning(pop)
 		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+RESOURCES\GUIRESOURCEMANAGER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Instance Loader
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIRESOURCEMANAGER
+#define VCZH_PRESENTATION_REFLECTION_GUIRESOURCEMANAGER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace reflection;
+
+/***********************************************************************
+IGuiResourceManager
+***********************************************************************/
+
+		class GuiResourceClassNameRecord : public Object, public Description<GuiResourceClassNameRecord>
+		{
+		public:
+			collections::List<WString>					classNames;
+		};
+
+		class IGuiResourceManager : public IDescriptable, public Description<IGuiResourceManager>
+		{
+		public:
+			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::Application) = 0;
+			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
+			virtual Ptr<GuiResource>					GetResourceFromClassName(const WString& classFullName) = 0;
+		};
+
+		extern IGuiResourceManager*						GetResourceManager();
 	}
 }
 

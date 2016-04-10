@@ -92,6 +92,8 @@ Type List
 			F(presentation::GuiResourceFolder)\
 			F(presentation::GuiResource)\
 			F(presentation::GuiResourcePathResolver)\
+			F(presentation::GuiResourceUsage)\
+			F(presentation::IGuiResourceManager)\
 			F(presentation::elements::IGuiGraphicsElement)\
 			F(presentation::compositions::GuiGraphicsComposition)\
 			F(presentation::compositions::GuiGraphicsComposition::MinSizeLimitation)\
@@ -2063,6 +2065,11 @@ Interfaces:
 
 namespace vl
 {
+	namespace workflow
+	{
+		class WfModule;
+	}
+
 	namespace presentation
 	{
 		class GuiInstanceCompiledWorkflow : public Object, public Description<GuiInstanceCompiledWorkflow>
@@ -2074,13 +2081,14 @@ namespace vl
 				Shared,
 				InstanceCtor,
 				InstanceClass,
+				TemporaryClass,
 			};
 			
 			collections::List<WString>						codes;
+			collections::List<Ptr<workflow::WfModule>>		modules;
 			Ptr<stream::MemoryStream>						binaryToLoad;
 
 			AssemblyType									type = AssemblyType::Shared;
-			WString											classFullName;
 			Ptr<workflow::runtime::WfAssembly>				assembly;
 			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
 
@@ -2244,7 +2252,7 @@ Macros
 					this,\
 					L ## #EVENTNAME,\
 					[](DescriptableObject* thisObject, bool addEventHandler){\
-						return &dynamic_cast<ClassType*>(thisObject)->EVENTNAME;\
+						return &thisObject->SafeAggregationCast<ClassType>()->EVENTNAME;\
 					}\
 				)\
 			);\
@@ -2255,7 +2263,7 @@ Macros
 					this,\
 					L ## #EVENTNAME,\
 					[](DescriptableObject* thisObject, bool addEventHandler){\
-						GuiGraphicsComposition* composition=dynamic_cast<GuiGraphicsComposition*>(thisObject);\
+						GuiGraphicsComposition* composition=thisObject->SafeAggregationCast<GuiGraphicsComposition>();\
 						if(!addEventHandler && !composition->HasEventReceiver())\
 						{\
 							return (GuiGraphicsEvent<GuiEventArgumentTypeRetriver<decltype(&GuiGraphicsEventReceiver::EVENTNAME)>::Type>*)0;\
@@ -2320,26 +2328,6 @@ namespace vl
 		using namespace reflection;
 
 /***********************************************************************
-Resource
-***********************************************************************/
-
-		class GuiInstanceConstructorResult : public Object
-		{
-		public:
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
-		};
-
-		class IGuiInstanceResourceManager : public IDescriptable, public Description<IGuiInstanceResourceManager>
-		{
-		public:
-			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::Application) = 0;
-			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
-			virtual Ptr<GuiInstanceConstructorResult>	RunInstanceConstructor(const WString& classFullName, description::Value instance) = 0;
-		};
-
-		extern IGuiInstanceResourceManager*			GetInstanceResourceManager();
-
-/***********************************************************************
 PartialClass
 ***********************************************************************/
 
@@ -2348,18 +2336,30 @@ PartialClass
 		{
 		private:
 			WString											className;
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
+			reflection::description::Value					ctorInstance;
 
 		protected:
 			bool InitializeFromResource()
 			{
-				if (!context)
+				if (ctorInstance.IsNull())
 				{
-					auto value = description::Value::From(dynamic_cast<T*>(this));
-					if (auto result = GetInstanceResourceManager()->RunInstanceConstructor(className, value))
+					auto rootInstance = description::Value::From(dynamic_cast<T*>(this));
+					auto resource = GetResourceManager()->GetResourceFromClassName(className);
+					auto ctorFullName = className + L"<Ctor>";
+					auto td = description::GetTypeDescriptor(ctorFullName);
+					if (!td) return nullptr;
+
+					auto ctor = td->GetConstructorGroup()->GetMethod(0);
+					Array<Value> arguments;
+					ctorInstance = ctor->Invoke(Value(), arguments);
+					
+					auto initialize = td->GetMethodGroupByName(L"<initialize-instance>", false)->GetMethod(0);
 					{
-						context = result->context;
-						return true;
+						arguments.Resize(2);
+						auto resolver = MakePtr<GuiResourcePathResolver>(resource, resource->GetWorkingDirectory());
+						arguments[0] = rootInstance;
+						arguments[1] = Value::From(resolver.Obj());
+						initialize->Invoke(ctorInstance, arguments);
 					}
 				}
 				return false;
@@ -2368,19 +2368,7 @@ PartialClass
 			template<typename TControl>
 			void LoadInstanceReference(const WString& name, TControl*& reference)
 			{
-				reference = 0;
-				vint index = context->assembly->variableNames.IndexOf(name);
-				CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Failed to find instance reference.");
-
-				auto value = context->globalVariables->variables[index];
-				auto td = description::GetTypeDescriptor<TControl>();
-				if (!value.GetTypeDescriptor() || !value.GetTypeDescriptor()->CanConvertTo(td))
-				{
-					CHECK_ERROR(index != -1, L"GuiInstancePartialClass<T>::LoadInstanceReference<TControl>(const WString&, TControl*&)#Wrong instance reference type.");
-					return;
-				}
-
-				reference = description::UnboxValue<TControl*>(value);
+				reference = ctorInstance.GetProperty(name).GetRawPtr()->SafeAggregationCast<TControl>();
 			}
 		public:
 			GuiInstancePartialClass(const WString& _className)
