@@ -13909,7 +13909,7 @@ InterfaceProxy
 
 #define BEGIN_INTERFACE_PROXY_NOPARENT_HEADER(INTERFACE)\
 			template<>\
-			class ValueInterfaceProxy<INTERFACE> : ValueInterfaceImpl<INTERFACE>\
+			class ValueInterfaceProxy<INTERFACE> : public ValueInterfaceImpl<INTERFACE>\
 			{\
 				typedef INTERFACE _interface_proxy_InterfaceType;\
 			public:\
@@ -13924,7 +13924,7 @@ InterfaceProxy
 
 #define BEGIN_INTERFACE_PROXY_HEADER(INTERFACE, ...)\
 			template<>\
-			class ValueInterfaceProxy<INTERFACE> : ValueInterfaceImpl<INTERFACE, __VA_ARGS__>\
+			class ValueInterfaceProxy<INTERFACE> : public ValueInterfaceImpl<INTERFACE, __VA_ARGS__>\
 			{\
 				typedef INTERFACE _interface_proxy_InterfaceType;\
 			public:\
