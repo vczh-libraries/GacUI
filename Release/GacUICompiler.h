@@ -1263,7 +1263,7 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
-				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors)
+				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors)override
 				{
 					auto controlType = TypeInfoRetriver<TControl>::CreateTypeInfo();
 

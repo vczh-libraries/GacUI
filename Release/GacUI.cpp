@@ -44154,6 +44154,7 @@ IGuiResourceResolverManager
 						case IGuiResourceTypeResolver_Precompile::PerPass:
 							perPassResolvers.Add(i, resolver->GetType());
 							break;
+						default:;
 						}
 					}
 				}

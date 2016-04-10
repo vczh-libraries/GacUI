@@ -1405,7 +1405,7 @@ namespace vl
 				{
 					errors.Add(L"Failed to compile workflow scripts in: " + path);
 
-					using ErrorGroup = Pair<int, LazyList<Ptr<ParsingError>>>;
+					using ErrorGroup = Pair<vint, LazyList<Ptr<ParsingError>>>;
 					List<ErrorGroup> errorGroups;
 					CopyFrom(
 						errorGroups,
@@ -6674,7 +6674,7 @@ Workflow_GenerateInstanceClass
 			Ptr<ITypeInfo> ctorType;
 			if (!beforePrecompile)
 			{
-				if (ctorTd = description::GetTypeDescriptor(context->className + L"<Ctor>"))
+				if ((ctorTd = description::GetTypeDescriptor(context->className + L"<Ctor>")))
 				{
 					auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
 					elementType->SetTypeDescriptor(ctorTd);
