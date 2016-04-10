@@ -155,60 +155,74 @@ WorkflowEventNamesVisitor
 				{
 					if (setter->binding == GlobalStringKey::_Set)
 					{
-						auto prop = repr->setters.Keys()[index];
-						IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
-						auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
-
-						auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
-						auto currentLoader = loader;
-						IGuiInstanceLoader::TypeInfo propTypeInfo;
-
-						while (currentLoader)
+						auto valueRepr = setter->values[0].Cast<GuiAttSetterRepr>();
+						if (valueRepr && valueRepr->eventHandlers.Count() > 0)
 						{
-							if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
+							auto prop = repr->setters.Keys()[index];
+							IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
+							auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
+
+							auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
+							auto currentLoader = loader;
+							IGuiInstanceLoader::TypeInfo propTypeInfo;
+
+							while (currentLoader)
 							{
-								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
+								if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
 								{
-									errors.Add(errorPrefix + L" is not supported.");
-									goto SKIP_SET;
-								}
-								else
-								{
-									if (propertyTypeInfo->support == GuiInstancePropertyInfo::SupportSet)
+									if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
 									{
-										propTypeInfo.typeDescriptor = propertyTypeInfo->acceptableTypes[0];
-										propTypeInfo.typeName = GlobalStringKey::Get(propTypeInfo.typeDescriptor->GetTypeName());
+										errors.Add(errorPrefix + L" is not supported.");
+										goto SKIP_SET;
 									}
 									else
 									{
-										errors.Add(errorPrefix + L" does not support the \"-set\" binding.");
-										goto SKIP_SET;
+										if (propertyTypeInfo->support == GuiInstancePropertyInfo::SupportSet)
+										{
+											propTypeInfo.typeDescriptor = propertyTypeInfo->acceptableTypes[0];
+											propTypeInfo.typeName = GlobalStringKey::Get(propTypeInfo.typeDescriptor->GetTypeName());
+										}
+										else
+										{
+											errors.Add(errorPrefix + L" does not support the \"-set\" binding.");
+											goto SKIP_SET;
+										}
+									}
+
+									if (!propertyTypeInfo->tryParent)
+									{
+										break;
 									}
 								}
-
-								if (!propertyTypeInfo->tryParent)
-								{
-									break;
-								}
+								currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
 							}
-							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
-						}
 
-						if (propTypeInfo.typeDescriptor)
+							if (propTypeInfo.typeDescriptor)
+							{
+								auto oldTypeInfo = resolvedTypeInfo;
+								resolvedTypeInfo = propTypeInfo;
+								FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+								{
+									value->Accept(this);
+								}
+								resolvedTypeInfo = oldTypeInfo;
+							}
+							else
+							{
+								errors.Add(errorPrefix + L" does not exist.");
+							}
+						SKIP_SET:;
+						}
+						else
 						{
 							auto oldTypeInfo = resolvedTypeInfo;
-							resolvedTypeInfo = propTypeInfo;
+							resolvedTypeInfo = IGuiInstanceLoader::TypeInfo();
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
 								value->Accept(this);
 							}
 							resolvedTypeInfo = oldTypeInfo;
 						}
-						else
-						{
-							errors.Add(errorPrefix + L" does not exist.");
-						}
-					SKIP_SET:;
 					}
 					else
 					{
@@ -257,41 +271,51 @@ WorkflowEventNamesVisitor
 
 			void Visit(GuiConstructorRepr* repr)override
 			{
-				IGuiInstanceLoader::TypeInfo reprTypeInfo;
-
-				if (repr == context->instance.Obj())
+				if (repr->eventHandlers.Count() > 0)
 				{
-					auto fullName = GlobalStringKey::Get(context->className);
-					if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
+					IGuiInstanceLoader::TypeInfo reprTypeInfo;
+
+					if (repr == context->instance.Obj())
 					{
-						reprTypeInfo.typeName = fullName;
-						reprTypeInfo.typeDescriptor = reprTd;
+						auto fullName = GlobalStringKey::Get(context->className);
+						if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
+						{
+							reprTypeInfo.typeName = fullName;
+							reprTypeInfo.typeDescriptor = reprTd;
+						}
 					}
-				}
 
-				if (!reprTypeInfo.typeDescriptor)
-				{
-					auto source = FindInstanceLoadingSource(context, repr, ibRecord);
-					reprTypeInfo.typeName = source.typeName;
-					reprTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
-				}
+					if (!reprTypeInfo.typeDescriptor)
+					{
+						auto source = FindInstanceLoadingSource(context, repr, ibRecord);
+						reprTypeInfo.typeName = source.typeName;
+						reprTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+					}
 
-				if (reprTypeInfo.typeDescriptor)
-				{
-					auto oldTypeInfo = resolvedTypeInfo;
-					resolvedTypeInfo = reprTypeInfo;
-					Visit((GuiAttSetterRepr*)repr);
-					resolvedTypeInfo = oldTypeInfo;
+					if (reprTypeInfo.typeDescriptor)
+					{
+						auto oldTypeInfo = resolvedTypeInfo;
+						resolvedTypeInfo = reprTypeInfo;
+						Visit((GuiAttSetterRepr*)repr);
+						resolvedTypeInfo = oldTypeInfo;
+					}
+					else
+					{
+						errors.Add(
+							L"Precompile: Failed to find type \"" +
+							(repr->typeNamespace == GlobalStringKey::Empty
+								? repr->typeName.ToString()
+								: repr->typeNamespace.ToString() + L":" + repr->typeName.ToString()
+								) +
+							L"\".");
+					}
 				}
 				else
 				{
-					errors.Add(
-						L"Precompile: Failed to find type \"" +
-						(repr->typeNamespace == GlobalStringKey::Empty
-							? repr->typeName.ToString()
-							: repr->typeNamespace.ToString() + L":" + repr->typeName.ToString()
-							) +
-						L"\".");
+					auto oldTypeInfo = resolvedTypeInfo;
+					resolvedTypeInfo = IGuiInstanceLoader::TypeInfo();
+					Visit((GuiAttSetterRepr*)repr);
+					resolvedTypeInfo = oldTypeInfo;
 				}
 			}
 		};

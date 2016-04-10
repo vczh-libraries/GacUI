@@ -118,7 +118,7 @@ Ptr<WfType> ParseWorkflowType(Ptr<CodegenConfig> config, const WString& workflow
 			}
 		}
 
-		auto module = Workflow_CreateEmptyModule(context);
+		auto module = Workflow_CreateModuleWithUsings(context);
 
 		config->workflowManager = new WfLexicalScopeManager(config->workflowTable);
 		config->workflowManager->AddModule(module);
