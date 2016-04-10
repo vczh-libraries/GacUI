@@ -239,6 +239,7 @@ WorkflowEventNamesVisitor
 
 								auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
 								raiseStat->expression = stringExpr;
+								block->statements.Add(raiseStat);
 							}
 
 							auto member = MakePtr<WfClassMember>();
