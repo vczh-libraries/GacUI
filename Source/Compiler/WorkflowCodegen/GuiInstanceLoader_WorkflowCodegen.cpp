@@ -500,34 +500,30 @@ Workflow_GenerateInstanceClass
 			{
 				if (auto type = parseType(state->typeName, L"state \"" + state->name.ToString() + L" of instance \"" + context->className + L"\""))
 				{
+					auto decl = MakePtr<WfVariableDeclaration>();
+					addDecl(decl);
+
+					decl->name.value = state->name.ToString();
+					decl->type = type;
 					if (!beforePrecompile)
 					{
-						auto decl = MakePtr<WfVariableDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = state->name.ToString();
-						decl->type = type;
 						decl->expression = getPropValue(state->name.ToString(), type, state->value);
 					}
 					else
 					{
-						{
-							auto decl = MakePtr<WfFunctionDeclaration>();
-							addDecl(decl);
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
 
-							decl->anonymity = WfFunctionAnonymity::Named;
-							decl->name.value = L"<get>" + state->name.ToString();
-							decl->returnType = CopyType(type);
-							decl->statement = notImplemented();
-						}
-						{
-							auto decl = MakePtr<WfPropertyDeclaration>();
-							addDecl(decl);
+						auto castObject = MakePtr<WfInferExpression>();
+						castObject->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
+						castObject->expression = nullExpr;
 
-							decl->name.value = state->name.ToString();
-							decl->type = type;
-							decl->getter.value = L"<get>" + state->name.ToString();
-						}
+						auto castType = MakePtr<WfTypeCastingExpression>();
+						castType->strategy = WfTypeCastingStrategy::Strong;
+						castType->type = CopyType(type);
+						castType->expression = castObject;
+
+						decl->expression = castType;
 					}
 				}
 			}

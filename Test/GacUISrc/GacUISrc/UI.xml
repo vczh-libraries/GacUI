@@ -36,6 +36,7 @@
   
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:x="demo::*">
+      <ref.State Name="flag" Type="bool"/>
       <Window Text="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <Stack Padding="10" Direction="Vertical" ExtraMargin="left:20 top:20 right:20 bottom:20" MinSizeLimitation="LimitToElementAndChildren">

@@ -54,6 +54,7 @@ PartialClass
 						arguments[1] = Value::From(resolver.Obj());
 						initialize->Invoke(ctorInstance, arguments);
 					}
+					return true;
 				}
 				return false;
 			}
