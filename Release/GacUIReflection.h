@@ -2369,7 +2369,7 @@ PartialClass
 			template<typename TControl>
 			void LoadInstanceReference(const WString& name, TControl*& reference)
 			{
-				reference = ctorInstance.GetProperty(name).GetRawPtr()->SafeAggregationCast<TControl>();
+				reference = ctorInstance.GetProperty(name).GetRawPtr()->template SafeAggregationCast<TControl>();
 			}
 		public:
 			GuiInstancePartialClass(const WString& _className)
