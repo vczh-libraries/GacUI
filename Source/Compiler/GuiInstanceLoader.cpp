@@ -80,6 +80,10 @@ GuiInstancePropertyInfo
 IGuiInstanceLoader
 ***********************************************************************/
 
+		void IGuiInstanceLoader::ClearReflectionCache()
+		{
+		}
+
 		void IGuiInstanceLoader::GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
 		{
 		}
@@ -261,6 +265,13 @@ GuiDefaultInstanceLoader
 			GlobalStringKey GetTypeName()override
 			{
 				return GlobalStringKey::Empty;
+			}
+
+			void ClearReflectionCache()
+			{
+				propertyTypes.Clear();
+				defaultConstructors.Clear();
+				instanceConstructors.Clear();
 			}
 
 			//***********************************************************************************
@@ -928,6 +939,15 @@ GuiInstanceLoaderManager
 					return typeInfo->parentTypeName;
 				}
 				return GlobalStringKey::Empty;
+			}
+
+			void ClearReflectionCache()
+			{
+				rootLoader->ClearReflectionCache();
+				FOREACH(Ptr<VirtualTypeInfo>, info, typeInfos.Values())
+				{
+					info->loader->ClearReflectionCache();
+				}
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiInstanceLoaderManager)

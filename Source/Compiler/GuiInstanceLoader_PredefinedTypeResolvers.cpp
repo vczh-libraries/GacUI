@@ -330,6 +330,7 @@ Instance Type Resolver (Instance)
 				{
 					Workflow_GenerateAssembly(compiled, path, errors);
 				}
+				GetInstanceLoaderManager()->ClearReflectionCache();
 			}
 
 #undef DELETE_ASSEMBLY

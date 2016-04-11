@@ -521,6 +521,7 @@ Instance Loader
 			typedef collections::Group<GlobalStringKey, ArgumentInfo>	ArgumentMap;
 
 			virtual GlobalStringKey							GetTypeName() = 0;
+			virtual void									ClearReflectionCache();
 
 			virtual void									GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual void									GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
@@ -573,6 +574,7 @@ Instance Loader Manager
 			virtual description::ITypeDescriptor*		GetTypeDescriptorForType(GlobalStringKey typeName) = 0;
 			virtual void								GetVirtualTypes(collections::List<GlobalStringKey>& typeNames) = 0;
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
+			virtual void								ClearReflectionCache() = 0;
 		};
 
 		extern IGuiInstanceLoaderManager*			GetInstanceLoaderManager();
