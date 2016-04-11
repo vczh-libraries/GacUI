@@ -229,69 +229,40 @@ Instance Type Resolver (Instance)
 				compiled->context = nullptr;\
 			}\
 
+#define DELETE_ASSEMBLY(PATH)\
+			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			{\
+				compiled->context = nullptr;\
+				compiled->assembly = nullptr;\
+			}\
+
 			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
 				switch (context.passIndex)
 				{
-				case Instance_CollectInstanceTypes:
-					{
-						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
-						{
-							Ptr<types::InstanceBaseRecord> ibRecord;
-
-							vint index = context.additionalProperties.Keys().IndexOf(this);
-							if (index == -1)
-							{
-								ibRecord = new types::InstanceBaseRecord;
-								context.additionalProperties.Add(this, ibRecord);
-							}
-							else
-							{
-								ibRecord = context.additionalProperties.Values()[index].Cast<types::InstanceBaseRecord>();
-							}
-
-							if (auto source = FindInstanceLoadingSource(obj, obj->instance.Obj()))
-							{
-								if (auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName))
-								{
-									IGuiInstanceLoader::TypeInfo typeInfo;
-									typeInfo.typeName = source.typeName;
-									typeInfo.typeDescriptor = td;
-									
-									auto key = GlobalStringKey::Get(obj->className);
-									index = ibRecord->instanceBases.Keys().IndexOf(key);
-									if (index == -1)
-									{
-										ibRecord->instanceBases.Add(key, typeInfo);
-									}
-									else
-									{
-										errors.Add(L"Precompile: Found multiple definition for \"" + obj->className + L"\".");
-									}
-								}
-							}
-						}
-					}
-					break;
 				case Instance_GenerateTemporaryClass:
+					ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
+				case Instance_CollectInstanceTypes:
 					{
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							obj->ApplyStyles(context.resolver, errors);
 
-							auto ibRecord = context.additionalProperties[this].Cast<types::InstanceBaseRecord>();
-							if (auto module = Workflow_GenerateInstanceClass(obj, ibRecord, *(types::ResolvingResult*)nullptr, errors, true))
+							if (auto module = Workflow_GenerateInstanceClass(obj, *(types::ResolvingResult*)nullptr, errors, context.passIndex))
 							{
 								AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
 
-							auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
-							if (!record)
+							if (context.passIndex == Instance_CollectInstanceTypes)
 							{
-								record = MakePtr<GuiResourceClassNameRecord>();
-								context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
+								auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+								if (!record)
+								{
+									record = MakePtr<GuiResourceClassNameRecord>();
+									context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
+								}
+								record->classNames.Add(obj->className);
 							}
-							record->classNames.Add(obj->className);
 						}
 					}
 					break;
@@ -320,7 +291,7 @@ Instance Type Resolver (Instance)
 							if (index != -1)
 							{
 								auto resolvingResult = context.additionalProperties.Values()[index].Cast<types::ResolvingResult>();
-								if (auto module = Workflow_GenerateInstanceClass(obj, nullptr, *resolvingResult.Obj(), errors, false))
+								if (auto module = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, context.passIndex))
 								{
 									AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass);
 								}
@@ -333,43 +304,35 @@ Instance Type Resolver (Instance)
 
 			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
+				WString path;
 				switch (context.passIndex)
 				{
 				case Instance_ValidateDependency:
+					path = Path_TemporaryClass;
 					break;
 				case Instance_CompileTemporaryClass:
-				case Instance_CompileInstanceCtor:
-				case Instance_CompileInstanceClass:
-					{
-						WString path;
-						if (context.passIndex == Instance_CompileTemporaryClass)
-						{
-							path = Path_TemporaryClass;
-						}
-						else if (context.passIndex == Instance_CompileInstanceCtor)
-						{
-							path = Path_InstanceCtor;
-						}
-						else if (context.passIndex == Instance_CompileInstanceClass)
-						{
-							UNLOAD_ASSEMBLY(Path_InstanceCtor)
-							UNLOAD_ASSEMBLY(Path_TemporaryClass)
-							path = Path_InstanceClass;
-						}
-						else
-						{
-							return;
-						}
-
-						if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
-						{
-							Workflow_GenerateAssembly(compiled, path, errors);
-						}
-					}
+					DELETE_ASSEMBLY(Path_TemporaryClass)
+					path = Path_TemporaryClass;
 					break;
+				case Instance_CompileInstanceCtor:
+					path = Path_InstanceCtor;
+					break;
+				case Instance_CompileInstanceClass:
+					UNLOAD_ASSEMBLY(Path_InstanceCtor)
+					UNLOAD_ASSEMBLY(Path_TemporaryClass)
+					path = Path_InstanceClass;
+					break;
+				default:
+					return;
+				}
+
+				if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
+				{
+					Workflow_GenerateAssembly(compiled, path, errors);
 				}
 			}
 
+#undef DELETE_ASSEMBLY
 #undef UNLOAD_ASSEMBLY
 #undef ENSURE_ASSEMBLY_EXISTS
 

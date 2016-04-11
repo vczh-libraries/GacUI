@@ -635,7 +635,8 @@ GuiDefaultInstanceLoader
 								block->statements.Add(stat);
 							}
 							break;
-						default:;
+						default:
+							errors.Add(L"Precompile: Property \"" + prop.ToString() + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" is not assignable.");
 						}
 					}
 				}

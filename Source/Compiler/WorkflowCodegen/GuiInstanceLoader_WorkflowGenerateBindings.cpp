@@ -48,12 +48,16 @@ WorkflowGenerateBindingVisitor
 					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 					{
 						auto propertyName = repr->setters.Keys()[index];
+						if (propertyName.ToString() == L"EmbeddedButton")
+						{
+							int a = 0;
+						}
 						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 						{
 							if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
 							{
 								auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
-								if (propertyResolving.info->scope != GuiInstancePropertyInfo::Constructor)
+								if (propertyResolving.info->scope == GuiInstancePropertyInfo::Property)
 								{
 									WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
 									auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);

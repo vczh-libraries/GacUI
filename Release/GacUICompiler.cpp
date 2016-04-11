@@ -739,7 +739,8 @@ GuiDefaultInstanceLoader
 								block->statements.Add(stat);
 							}
 							break;
-						default:;
+						default:
+							errors.Add(L"Precompile: Property \"" + prop.ToString() + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" is not assignable.");
 						}
 					}
 				}
@@ -1541,69 +1542,40 @@ Instance Type Resolver (Instance)
 				compiled->context = nullptr;\
 			}\
 
+#define DELETE_ASSEMBLY(PATH)\
+			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			{\
+				compiled->context = nullptr;\
+				compiled->assembly = nullptr;\
+			}\
+
 			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
 				switch (context.passIndex)
 				{
-				case Instance_CollectInstanceTypes:
-					{
-						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
-						{
-							Ptr<types::InstanceBaseRecord> ibRecord;
-
-							vint index = context.additionalProperties.Keys().IndexOf(this);
-							if (index == -1)
-							{
-								ibRecord = new types::InstanceBaseRecord;
-								context.additionalProperties.Add(this, ibRecord);
-							}
-							else
-							{
-								ibRecord = context.additionalProperties.Values()[index].Cast<types::InstanceBaseRecord>();
-							}
-
-							if (auto source = FindInstanceLoadingSource(obj, obj->instance.Obj()))
-							{
-								if (auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName))
-								{
-									IGuiInstanceLoader::TypeInfo typeInfo;
-									typeInfo.typeName = source.typeName;
-									typeInfo.typeDescriptor = td;
-									
-									auto key = GlobalStringKey::Get(obj->className);
-									index = ibRecord->instanceBases.Keys().IndexOf(key);
-									if (index == -1)
-									{
-										ibRecord->instanceBases.Add(key, typeInfo);
-									}
-									else
-									{
-										errors.Add(L"Precompile: Found multiple definition for \"" + obj->className + L"\".");
-									}
-								}
-							}
-						}
-					}
-					break;
 				case Instance_GenerateTemporaryClass:
+					ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
+				case Instance_CollectInstanceTypes:
 					{
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							obj->ApplyStyles(context.resolver, errors);
 
-							auto ibRecord = context.additionalProperties[this].Cast<types::InstanceBaseRecord>();
-							if (auto module = Workflow_GenerateInstanceClass(obj, ibRecord, *(types::ResolvingResult*)nullptr, errors, true))
+							if (auto module = Workflow_GenerateInstanceClass(obj, *(types::ResolvingResult*)nullptr, errors, context.passIndex))
 							{
 								AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
 
-							auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
-							if (!record)
+							if (context.passIndex == Instance_CollectInstanceTypes)
 							{
-								record = MakePtr<GuiResourceClassNameRecord>();
-								context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
+								auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
+								if (!record)
+								{
+									record = MakePtr<GuiResourceClassNameRecord>();
+									context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
+								}
+								record->classNames.Add(obj->className);
 							}
-							record->classNames.Add(obj->className);
 						}
 					}
 					break;
@@ -1632,7 +1604,7 @@ Instance Type Resolver (Instance)
 							if (index != -1)
 							{
 								auto resolvingResult = context.additionalProperties.Values()[index].Cast<types::ResolvingResult>();
-								if (auto module = Workflow_GenerateInstanceClass(obj, nullptr, *resolvingResult.Obj(), errors, false))
+								if (auto module = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, context.passIndex))
 								{
 									AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass);
 								}
@@ -1645,43 +1617,35 @@ Instance Type Resolver (Instance)
 
 			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
 			{
+				WString path;
 				switch (context.passIndex)
 				{
 				case Instance_ValidateDependency:
+					path = Path_TemporaryClass;
 					break;
 				case Instance_CompileTemporaryClass:
-				case Instance_CompileInstanceCtor:
-				case Instance_CompileInstanceClass:
-					{
-						WString path;
-						if (context.passIndex == Instance_CompileTemporaryClass)
-						{
-							path = Path_TemporaryClass;
-						}
-						else if (context.passIndex == Instance_CompileInstanceCtor)
-						{
-							path = Path_InstanceCtor;
-						}
-						else if (context.passIndex == Instance_CompileInstanceClass)
-						{
-							UNLOAD_ASSEMBLY(Path_InstanceCtor)
-							UNLOAD_ASSEMBLY(Path_TemporaryClass)
-							path = Path_InstanceClass;
-						}
-						else
-						{
-							return;
-						}
-
-						if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
-						{
-							Workflow_GenerateAssembly(compiled, path, errors);
-						}
-					}
+					DELETE_ASSEMBLY(Path_TemporaryClass)
+					path = Path_TemporaryClass;
 					break;
+				case Instance_CompileInstanceCtor:
+					path = Path_InstanceCtor;
+					break;
+				case Instance_CompileInstanceClass:
+					UNLOAD_ASSEMBLY(Path_InstanceCtor)
+					UNLOAD_ASSEMBLY(Path_TemporaryClass)
+					path = Path_InstanceClass;
+					break;
+				default:
+					return;
+				}
+
+				if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
+				{
+					Workflow_GenerateAssembly(compiled, path, errors);
 				}
 			}
 
+#undef DELETE_ASSEMBLY
 #undef UNLOAD_ASSEMBLY
 #undef ENSURE_ASSEMBLY_EXISTS
 
@@ -6372,7 +6336,7 @@ namespace vl
 FindInstanceLoadingSource
 ***********************************************************************/
 
-		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor, Ptr<types::InstanceBaseRecord> ibRecord)
+		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
 		{
 			vint index = context->namespaces.Keys().IndexOf(ctor->typeNamespace);
 			if (index != -1)
@@ -6384,18 +6348,6 @@ FindInstanceLoadingSource
 					if(auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
 					{
 						return InstanceLoadingSource(loader, fullName);
-					}
-					else if (ibRecord)
-					{
-						index = ibRecord->instanceBases.Keys().IndexOf(fullName);
-						if (index != -1)
-						{
-							auto baseFullName = ibRecord->instanceBases.Values()[index];
-							if (auto baseLoader = GetInstanceLoaderManager()->GetLoader(baseFullName.typeName))
-							{
-								return InstanceLoadingSource(baseLoader, baseFullName.typeName);
-							}
-						}
 					}
 				}
 			}
@@ -6485,14 +6437,12 @@ WorkflowEventNamesVisitor
 		public:
 			Ptr<GuiInstanceContext>				context;
 			Ptr<WfClassDeclaration>				instanceClass;
-			Ptr<types::InstanceBaseRecord>		ibRecord;
 			types::ErrorList&					errors;
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 
-			WorkflowEventNamesVisitor(Ptr<GuiInstanceContext> _context, Ptr<WfClassDeclaration> _instanceClass, Ptr<types::InstanceBaseRecord> _ibRecord, types::ErrorList& _errors)
+			WorkflowEventNamesVisitor(Ptr<GuiInstanceContext> _context, Ptr<WfClassDeclaration> _instanceClass, types::ErrorList& _errors)
 				:context(_context)
 				, instanceClass(_instanceClass)
-				, ibRecord(_ibRecord)
 				, errors(_errors)
 			{
 			}
@@ -6507,74 +6457,60 @@ WorkflowEventNamesVisitor
 				{
 					if (setter->binding == GlobalStringKey::_Set)
 					{
-						auto valueRepr = setter->values[0].Cast<GuiAttSetterRepr>();
-						if (valueRepr && valueRepr->eventHandlers.Count() > 0)
+						auto prop = repr->setters.Keys()[index];
+						IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
+						auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
+
+						auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
+						auto currentLoader = loader;
+						IGuiInstanceLoader::TypeInfo propTypeInfo;
+
+						while (currentLoader)
 						{
-							auto prop = repr->setters.Keys()[index];
-							IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
-							auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
-
-							auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
-							auto currentLoader = loader;
-							IGuiInstanceLoader::TypeInfo propTypeInfo;
-
-							while (currentLoader)
+							if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
 							{
-								if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
+								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
 								{
-									if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
+									errors.Add(errorPrefix + L" is not supported.");
+									goto SKIP_SET;
+								}
+								else
+								{
+									if (propertyTypeInfo->support == GuiInstancePropertyInfo::SupportSet)
 									{
-										errors.Add(errorPrefix + L" is not supported.");
-										goto SKIP_SET;
+										propTypeInfo.typeDescriptor = propertyTypeInfo->acceptableTypes[0];
+										propTypeInfo.typeName = GlobalStringKey::Get(propTypeInfo.typeDescriptor->GetTypeName());
 									}
 									else
 									{
-										if (propertyTypeInfo->support == GuiInstancePropertyInfo::SupportSet)
-										{
-											propTypeInfo.typeDescriptor = propertyTypeInfo->acceptableTypes[0];
-											propTypeInfo.typeName = GlobalStringKey::Get(propTypeInfo.typeDescriptor->GetTypeName());
-										}
-										else
-										{
-											errors.Add(errorPrefix + L" does not support the \"-set\" binding.");
-											goto SKIP_SET;
-										}
-									}
-
-									if (!propertyTypeInfo->tryParent)
-									{
-										break;
+										errors.Add(errorPrefix + L" does not support the \"-set\" binding.");
+										goto SKIP_SET;
 									}
 								}
-								currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
-							}
 
-							if (propTypeInfo.typeDescriptor)
-							{
-								auto oldTypeInfo = resolvedTypeInfo;
-								resolvedTypeInfo = propTypeInfo;
-								FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+								if (!propertyTypeInfo->tryParent)
 								{
-									value->Accept(this);
+									break;
 								}
-								resolvedTypeInfo = oldTypeInfo;
 							}
-							else
-							{
-								errors.Add(errorPrefix + L" does not exist.");
-							}
-						SKIP_SET:;
+							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
 						}
-						else
+
+						if (propTypeInfo.typeDescriptor)
 						{
 							auto oldTypeInfo = resolvedTypeInfo;
-							resolvedTypeInfo = IGuiInstanceLoader::TypeInfo();
+							resolvedTypeInfo = propTypeInfo;
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
 								value->Accept(this);
 							}
 							resolvedTypeInfo = oldTypeInfo;
 						}
+						else
+						{
+							errors.Add(errorPrefix + L" does not exist.");
+						}
+					SKIP_SET:;
 					}
 					else
 					{
@@ -6623,51 +6559,41 @@ WorkflowEventNamesVisitor
 
 			void Visit(GuiConstructorRepr* repr)override
 			{
-				if (repr->eventHandlers.Count() > 0)
+				IGuiInstanceLoader::TypeInfo reprTypeInfo;
+
+				if (repr == context->instance.Obj())
 				{
-					IGuiInstanceLoader::TypeInfo reprTypeInfo;
+					auto fullName = GlobalStringKey::Get(context->className);
+					if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
+					{
+						reprTypeInfo.typeName = fullName;
+						reprTypeInfo.typeDescriptor = reprTd;
+					}
+				}
 
-					if (repr == context->instance.Obj())
-					{
-						auto fullName = GlobalStringKey::Get(context->className);
-						if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
-						{
-							reprTypeInfo.typeName = fullName;
-							reprTypeInfo.typeDescriptor = reprTd;
-						}
-					}
+				if (!reprTypeInfo.typeDescriptor)
+				{
+					auto source = FindInstanceLoadingSource(context, repr);
+					reprTypeInfo.typeName = source.typeName;
+					reprTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+				}
 
-					if (!reprTypeInfo.typeDescriptor)
-					{
-						auto source = FindInstanceLoadingSource(context, repr, ibRecord);
-						reprTypeInfo.typeName = source.typeName;
-						reprTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
-					}
-
-					if (reprTypeInfo.typeDescriptor)
-					{
-						auto oldTypeInfo = resolvedTypeInfo;
-						resolvedTypeInfo = reprTypeInfo;
-						Visit((GuiAttSetterRepr*)repr);
-						resolvedTypeInfo = oldTypeInfo;
-					}
-					else
-					{
-						errors.Add(
-							L"Precompile: Failed to find type \"" +
-							(repr->typeNamespace == GlobalStringKey::Empty
-								? repr->typeName.ToString()
-								: repr->typeNamespace.ToString() + L":" + repr->typeName.ToString()
-								) +
-							L"\".");
-					}
+				if (reprTypeInfo.typeDescriptor)
+				{
+					auto oldTypeInfo = resolvedTypeInfo;
+					resolvedTypeInfo = reprTypeInfo;
+					Visit((GuiAttSetterRepr*)repr);
+					resolvedTypeInfo = oldTypeInfo;
 				}
 				else
 				{
-					auto oldTypeInfo = resolvedTypeInfo;
-					resolvedTypeInfo = IGuiInstanceLoader::TypeInfo();
-					Visit((GuiAttSetterRepr*)repr);
-					resolvedTypeInfo = oldTypeInfo;
+					errors.Add(
+						L"Precompile: Failed to find type \"" +
+						(repr->typeNamespace == GlobalStringKey::Empty
+							? repr->typeName.ToString()
+							: repr->typeNamespace.ToString() + L":" + repr->typeName.ToString()
+							) +
+						L"\".");
 				}
 			}
 		};
@@ -6676,8 +6602,26 @@ WorkflowEventNamesVisitor
 Workflow_GenerateInstanceClass
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, Ptr<types::InstanceBaseRecord> ibRecord, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex)
 		{
+			bool beforePrecompile = false;
+			bool needEventHandler = false;
+			switch (passIndex)
+			{
+			case IGuiResourceTypeResolver_Precompile::Instance_CollectInstanceTypes:
+				beforePrecompile = true;
+				needEventHandler = false;
+				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_GenerateTemporaryClass:
+				beforePrecompile = true;
+				needEventHandler = true;
+				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceClass:
+				beforePrecompile = false;
+				needEventHandler = true;
+				break;
+			}
+
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
 			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 			if (!baseTd)
@@ -7132,8 +7076,9 @@ Workflow_GenerateInstanceClass
 				}
 			}
 
+			if (needEventHandler)
 			{
-				WorkflowEventNamesVisitor visitor(context, instanceClass, ibRecord, errors);
+				WorkflowEventNamesVisitor visitor(context, instanceClass, errors);
 				context->instance->Accept(&visitor);
 			}
 			addDecl(ctor);
@@ -7930,12 +7875,16 @@ WorkflowGenerateBindingVisitor
 					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 					{
 						auto propertyName = repr->setters.Keys()[index];
+						if (propertyName.ToString() == L"EmbeddedButton")
+						{
+							int a = 0;
+						}
 						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 						{
 							if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
 							{
 								auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
-								if (propertyResolving.info->scope != GuiInstancePropertyInfo::Constructor)
+								if (propertyResolving.info->scope == GuiInstancePropertyInfo::Property)
 								{
 									WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
 									auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);

@@ -759,13 +759,6 @@ namespace vl
 			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
 
-			struct InstanceBaseRecord : public Object, public Description<InstanceBaseRecord>
-			{
-				typedef GlobalStringKey															Key;
-				typedef IGuiInstanceLoader::TypeInfo											Value;
-				collections::Dictionary<Key, Value>				instanceBases;
-			};
-
 			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
 				Ptr<workflow::WfModule>							moduleForValidate;
@@ -845,10 +838,10 @@ WorkflowCompiler (Compile)
 			}
 		};
 
-		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor, Ptr<types::InstanceBaseRecord> ibRecord = nullptr);
+		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
 		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
 		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
-		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, Ptr<types::InstanceBaseRecord> ibRecord, types::ResolvingResult& resolvingResult, types::ErrorList& errors, bool beforePrecompile);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex);
 	}
 }
 

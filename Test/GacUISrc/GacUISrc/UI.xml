@@ -59,9 +59,10 @@
     <Instance ref.Class="demo::MyButton">
       <ref.Parameter Name="ViewModel" Class="IViewModel"/>
       <ref.Property Name="ActionText" Type="string" Value="MyAction"/>
-      <CustomControl ref.Name="self">
+      <ref.Property Name="EmbeddedButton" Type="Button*"/>
+      <CustomControl ref.Name="self" EmbeddedButton-eval="button">
         <att.ContainerComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
-        <Button Text-format="$(ViewModel.GetPrefix()): $(self.ActionText)" ev.Clicked="button_Clicked">
+        <Button ref.Name="button" Text-format="$(ViewModel.GetPrefix()): $(self.ActionText)" ev.Clicked="button_Clicked">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </Button>
       </CustomControl>
