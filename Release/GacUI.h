@@ -3666,11 +3666,11 @@ Resource Type Resolver
 		/// <summary>
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
-		///		<Workflow>
+		///		Workflow:
 		///			Pass  0: Collect workflow scripts
 		///			Pass  1: Compile ViewModel scripts
 		///			Pass  2: Compile Shared scripts
-		///		<Instance>
+		///		Instance:
 		///			Pass  3: Collect instance types
 		///			Pass  4: Validate instance dependency
 		///			Pass  5: Generate TemporaryClass scripts, ClassNameRecord
