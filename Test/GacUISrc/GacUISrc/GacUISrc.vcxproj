@@ -346,6 +346,7 @@
   <ItemGroup>
     <Xml Include="UI2.xml" />
     <Xml Include="UI3.xml" />
+    <Xml Include="UI4.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
