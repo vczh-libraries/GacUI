@@ -710,7 +710,7 @@ GuiColorizedTextElement
 					line.contextFinalState = -1;
 					for (vint j = 0; j < line.dataLength; j++)
 					{
-						line.att[j].colorIndex = index;
+						line.att[j].colorIndex = (vuint32_t)index;
 					}
 				}
 			}

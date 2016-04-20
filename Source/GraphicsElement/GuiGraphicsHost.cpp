@@ -717,7 +717,7 @@ GuiGraphicsHost
 					}
 					else if (VKEY_NUMPAD0 <= info.code && info.code <= VKEY_NUMPAD9)
 					{
-						if (EnterAltKey('0' + (info.code - VKEY_NUMPAD0)))
+						if (EnterAltKey((wchar_t)(L'0' + (info.code - VKEY_NUMPAD0))))
 						{
 							supressAltKey = info.code;
 							return;
