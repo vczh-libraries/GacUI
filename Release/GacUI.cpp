@@ -37821,7 +37821,7 @@ GuiGraphicsHost
 					}
 					else if (VKEY_NUMPAD0 <= info.code && info.code <= VKEY_NUMPAD9)
 					{
-						if (EnterAltKey('0' + (info.code - VKEY_NUMPAD0)))
+						if (EnterAltKey((wchar_t)(L'0' + (info.code - VKEY_NUMPAD0))))
 						{
 							supressAltKey = info.code;
 							return;
@@ -39054,7 +39054,7 @@ GuiColorizedTextElement
 					line.contextFinalState = -1;
 					for (vint j = 0; j < line.dataLength; j++)
 					{
-						line.att[j].colorIndex = index;
+						line.att[j].colorIndex = (vuint32_t)index;
 					}
 				}
 			}

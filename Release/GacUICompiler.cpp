@@ -7705,7 +7705,7 @@ WorkflowReferenceNamesVisitor
 							+ L"\" of type \""
 							+ propertyInfo.typeInfo.typeName.ToString()
 							+ L"\" does not accept a value of type \""
-							+ resolvedTypeInfo.typeName.ToKey()
+							+ resolvedTypeInfo.typeName.ToString()
 							+ L"\" because it only accepts value of the following types: ";
 						
 						for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)

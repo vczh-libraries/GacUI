@@ -81,56 +81,56 @@ WindowsForm
 			{
 			protected:
 				
-				DWORD InternalGetExStyle()
+				LONG_PTR InternalGetExStyle()
 				{
-					return (DWORD)GetWindowLongPtr(handle,GWL_EXSTYLE);
+					return GetWindowLongPtr(handle, GWL_EXSTYLE);
 				}
 
-				void InternalSetExStyle(DWORD exStyle)
+				void InternalSetExStyle(LONG_PTR exStyle)
 				{
-					LONG_PTR result=SetWindowLongPtr(handle,GWL_EXSTYLE,exStyle);
-					SetWindowPos(handle,0,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+					LONG_PTR result = SetWindowLongPtr(handle, GWL_EXSTYLE, exStyle);
+					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
 				}
 
-				bool GetExStyle(DWORD exStyle)
+				bool GetExStyle(LONG_PTR exStyle)
 				{
 					LONG_PTR Long=InternalGetExStyle();
 					return (Long & exStyle) != 0;
 				}
 
-				void SetExStyle(DWORD exStyle, bool available)
+				void SetExStyle(LONG_PTR exStyle, bool available)
 				{
-					DWORD Long=InternalGetExStyle();
+					LONG_PTR Long = InternalGetExStyle();
 					if(available)
 					{
-						Long|=exStyle;
+						Long |= exStyle;
 					}
 					else
 					{
-						Long&=~exStyle;
+						Long &= ~exStyle;
 					}
-					InternalSetExStyle((DWORD)Long);
+					InternalSetExStyle(Long);
 				}
 
-				bool GetStyle(DWORD style)
+				bool GetStyle(LONG_PTR style)
 				{
-					LONG_PTR Long=GetWindowLongPtr(handle,GWL_STYLE);
+					LONG_PTR Long = GetWindowLongPtr(handle, GWL_STYLE);
 					return (Long & style) != 0;
 				}
 
-				void SetStyle(DWORD style, bool available)
+				void SetStyle(LONG_PTR style, bool available)
 				{
-					LONG_PTR Long=GetWindowLongPtr(handle,GWL_STYLE);
+					LONG_PTR Long = GetWindowLongPtr(handle, GWL_STYLE);
 					if(available)
 					{
-						Long|=style;
+						Long |= style;
 					}
 					else
 					{
-						Long&=~style;
+						Long &= ~style;
 					}
-					SetWindowLongPtr(handle,GWL_STYLE,Long);
-					SetWindowPos(handle,0,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+					SetWindowLongPtr(handle, GWL_STYLE, Long);
+					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
 				}
 
 				NativeWindowMouseInfo ConvertMouse(WPARAM wParam, LPARAM lParam, bool wheelMessage, bool nonClient)
@@ -816,8 +816,8 @@ WindowsForm
 					,customFrameMode(false)
 					,supressingAlt(false)
 				{
-					DWORD exStyle=WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
-					DWORD style=WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
+					DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
+					DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
 					handle=CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
 				}
 
