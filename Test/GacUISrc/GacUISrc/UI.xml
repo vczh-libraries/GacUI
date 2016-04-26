@@ -1,7 +1,7 @@
 <Resource>
-  <InstanceStyle name="MyStyle">
-    <Replaces>
-      <Replace ref.Name="Center">
+  <InstanceTemplate name="MyTemplate">
+    <Templates xmlns:t="self">
+      <Template ref.Name="Center">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:Percentage percentage:0.5</CellOption>
@@ -17,17 +17,57 @@
             <ref.Content/>
           </Cell>
         </Table>
-      </Replace>
-    </Replaces>
-  </InstanceStyle>
+      </Template>
+
+      <Template ref.Name="ApplyOnComposition">
+        <ref.ContentSwitch Default="Discard">
+          <ref.Case BaseType="Control">
+            <ref.ApplyAttributes>
+              <att.BoundsComposition-set/>
+            </ref.ApplyAttributes>
+          </ref.Case>
+          <ref.Case BaseType="Composition">
+            <ref.ApplyAttributes>
+              <ref.Content/>
+            </ref.ApplyAttributes>
+          </ref.Case>
+        </ref.ContentSwitch>
+      </Template>
+
+      <Template ref.Name="Stretch">
+        <ref.Parameter Name="Distance" Value="0"/>
+        <t:ApplyOnComposition AlignmentToParent="left:{$Distance} top:{$Distance} right:{$Distance} bottom:{$Distance}">
+          <ref.Content/>
+        </t:ApplyOnComposition>
+      </Template>
+
+      <Template ref.Name="Vertical">
+        <Stack Direction="Vertical" MinSizeLimitation="LimitToElementAndChildren">
+          <ref.ContentsSwitch Default="Error">
+            <ref.Case BaseType="Control;Composition">
+              <StackItem>
+                <t:Stretch>
+                  <ref.Content/>
+                </t:Stretch>
+              </StackItem>
+            </ref.Case>
+          </ref.ContentsSwitch>
+        </Stack>
+      </Template>
+    </Templates>
+  </InstanceTemplate>
 
   <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow" xmlns:style="res://MyStyle">
+    <Instance ref.Class="demo::MainWindow" xmlns:t="res://MyTemplate">
       <Window Text="CustomTag" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <style:Center>
-          <Button Text="I am a centered button!"/>
-        </style:Center>
+        <t:Center>
+          <t:Vertical>
+            <Button Text="I am a centered button! (1)"/>
+            <Button Text="I am a centered button! (2)"/>
+            <Button Text="I am a centered button! (3)"/>
+          </t:Vertical>
+        </t:Center>
       </Window>
     </Instance>
   </Instance>
