@@ -382,6 +382,22 @@ Workflow_GenerateInstanceClass
 					return nullptr;
 				}
 			};
+
+			auto expressionParser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
+			auto parseExpression = [expressionParser, &errors](const WString& code, const WString& name)->Ptr<WfExpression>
+			{
+				List<WString> parserErrors;
+				if (auto type = expressionParser->TypedParse(code, parserErrors))
+				{
+					return type;
+				}
+				else
+				{
+					errors.Add(L"Precompile: Failed to parse " + name + L": " + code);
+					return nullptr;
+				}
+			};
+
 			auto addDecl = [=](Ptr<WfDeclaration> decl)
 			{
 				auto member = MakePtr<WfClassMember>();
@@ -545,7 +561,6 @@ Workflow_GenerateInstanceClass
 							decl->statement = notImplemented();
 						}
 					}
-					if (!prop->readonly)
 					{
 						auto decl = MakePtr<WfFunctionDeclaration>();
 						addDecl(decl);
@@ -635,11 +650,47 @@ Workflow_GenerateInstanceClass
 						decl->name.value = prop->name.ToString();
 						decl->type = type;
 						decl->getter.value = L"Get" + prop->name.ToString();
-						if (!prop->readonly)
-						{
-							decl->setter.value = L"Set" + prop->name.ToString();
-						}
+						decl->setter.value = L"Set" + prop->name.ToString();
 						decl->valueChangedEvent.value = prop->name.ToString() + L"Changed";
+					}
+				}
+			}
+
+			FOREACH(Ptr<GuiInstanceComponent>, component, context->components)
+			{
+				auto type = parseType(component->typeName, L"component \"" + component->name.ToString() + L" of instance \"" + context->className + L"\"");
+				auto expression = parseExpression(component->expression, L"component \"" + component->name.ToString() + L" of instance \"" + context->className + L"\"");
+
+				if (type && expression)
+				{
+					{
+						auto decl = MakePtr<WfFunctionDeclaration>();
+						addDecl(decl);
+
+						decl->anonymity = WfFunctionAnonymity::Named;
+						decl->name.value = L"Get" + component->name.ToString();
+						decl->returnType = CopyType(type);
+						if (!beforePrecompile)
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							decl->statement = block;
+
+							auto returnStat = MakePtr<WfReturnStatement>();
+							returnStat->expression = expression;
+							block->statements.Add(returnStat);
+						}
+						else
+						{
+							decl->statement = notImplemented();
+						}
+					}
+					{
+						auto decl = MakePtr<WfPropertyDeclaration>();
+						addDecl(decl);
+
+						decl->name.value = component->name.ToString();
+						decl->type = type;
+						decl->getter.value = L"Get" + component->name.ToString();
 					}
 				}
 			}
@@ -680,6 +731,63 @@ Workflow_GenerateInstanceClass
 							auto nullExpr = MakePtr<WfLiteralExpression>();
 							nullExpr->value = WfLiteralValue::Null;
 							call->arguments.Add(nullExpr);
+						}
+					}
+				}
+			}
+
+			FOREACH(Ptr<GuiInstanceEvent>, ev, context->events)
+			{
+				if (ev->eventArgsClass == L"")
+				{
+					auto decl = MakePtr<WfEventDeclaration>();
+					addDecl(decl);
+					decl->name.value = ev->name.ToString();
+				}
+				else if (auto type = parseType(ev->eventArgsClass + L"*", L"event \"" + ev->name.ToString() + L" of instance \"" + context->className + L"\""))
+				{
+					{
+						auto decl = MakePtr<WfEventDeclaration>();
+						addDecl(decl);
+						decl->name.value = ev->name.ToString();
+						decl->arguments.Add(GetTypeFromTypeInfo(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo().Obj()));
+						decl->arguments.Add(type);
+					}
+					if (beforePrecompile)
+					{
+						auto sharedType = MakePtr<WfSharedPointerType>();
+						sharedType->element = CopyType(type.Cast<WfRawPointerType>()->element);
+						{
+							auto newExpr = MakePtr<WfNewClassExpression>();
+							newExpr->type = sharedType;
+
+							auto inferExpr = MakePtr<WfInferExpression>();
+							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiEventArgs>>::CreateTypeInfo().Obj());
+							inferExpr->expression = newExpr;
+
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = inferExpr;
+							ctorBlock->statements.Add(stat);
+						}
+						{
+							auto nullExpr = MakePtr<WfLiteralExpression>();
+							nullExpr->value = WfLiteralValue::Null;
+
+							auto argument = MakePtr<WfInferExpression>();
+							argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo().Obj());
+							argument->expression = nullExpr;
+
+							auto newExpr = MakePtr<WfNewClassExpression>();
+							newExpr->type = CopyType(sharedType);
+							newExpr->arguments.Add(argument);
+
+							auto inferExpr = MakePtr<WfInferExpression>();
+							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiEventArgs>>::CreateTypeInfo().Obj());
+							inferExpr->expression = newExpr;
+
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = inferExpr;
+							ctorBlock->statements.Add(stat);
 						}
 					}
 				}

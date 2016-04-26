@@ -61,9 +61,16 @@ void GuiMain_GrammarIntellisense()
 
 void GuiMain_Resource()
 {
+	//{
+	//	FileStream fileStream(L"Reflection.txt", FileStream::WriteOnly);
+	//	BomEncoder encoder(BomEncoder::Utf16);
+	//	EncoderStream encoderStream(fileStream, encoder);
+	//	StreamWriter writer(encoderStream);
+	//	LogTypeManager(writer);
+	//}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(L"UI.xml", errors);
+		auto resource = GuiResource::LoadFromXml(L"UI2.xml", errors);
 		resource->Precompile(errors);
 
 		{
@@ -105,13 +112,11 @@ void GuiMain_Resource()
 	}
 
 	// UI1.xml / UI3.xml / UI4.xml
-	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
-	/*
 	// UI2.xml
 	auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
 	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
-	*/
 
 	window->ForceCalculateSizeImmediately();
 	window->MoveToScreenCenter();

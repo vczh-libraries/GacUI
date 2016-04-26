@@ -204,7 +204,7 @@ Predefined Events
 ***********************************************************************/
 
 			/// <summary>Notify event arguments.</summary>
-			struct GuiEventArgs : public Object, public Description<GuiEventArgs>
+			struct GuiEventArgs : public Object, public AggregatableDescription<GuiEventArgs>
 			{
 				/// <summary>The event raiser composition.</summary>
 				GuiGraphicsComposition*		compositionSource;
@@ -228,6 +228,11 @@ Predefined Events
 					,eventSource(composition)
 					,handled(false)
 				{
+				}
+
+				~GuiEventArgs()
+				{
+					FinalizeAggregation();
 				}
 			};
 			

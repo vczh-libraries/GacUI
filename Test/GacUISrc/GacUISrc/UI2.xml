@@ -3,6 +3,8 @@
     <Workflow-ViewModel>
       <![CDATA[
         module script;
+        
+        using presentation::compositions::Gui*;
       
         interface IViewModel
         {
@@ -17,6 +19,19 @@
           func GetZ() : int;
           event ZChanged();
           prop Z : int {GetZ}
+        }
+        
+        class MyEventArgs : EventArgs
+        {
+          new()
+          {
+          }
+          
+          new(composition : GraphicsComposition*)
+          {
+            compositionSource = composition;
+            eventSource = composition;
+          }
         }
       ]]>
     </Workflow-ViewModel>
@@ -55,8 +70,14 @@
       <ref.State Name="objectState" Type="IViewModel^"/>
       <ref.Property Name="IntProp" Type="int"/>
       <ref.Property Name="BoolProp" Type="bool" Value="false"/>
-      <ref.Property Name="ObjectProp" Type="IViewModel^" Readonly="true"/>
+      <ref.Property Name="ObjectProp" Type="IViewModel^"/>
+      <ref.Component Name="IntComp" Type="int" Expression="1"/>
+      <ref.Component Name="BoolComp" Type="bool" Expression="true"/>
+      <ref.Component Name="ObjectComp" Type="IViewModel^" Expression="ViewModel"/>
       <ref.Parameter Name="ViewModel" Class="IViewModel"/>
+      <ref.Event Name="EventA"/>
+      <ref.Event Name="EventB" EventArgsClass="EventArgs"/>
+      <ref.Event Name="EventC" EventArgsClass="MyEventArgs"/>
       <Window Text="MainWindow" ClientSize="x:480 y:320" ControlTemplate="darkskin::WindowTemplate">
         <att.ViewModel-set X-bind="(cast int textBoxA.Text) ?? 0" Y-bind="(cast int textBoxB.Text) ?? 0"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
