@@ -43537,7 +43537,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, collections::List<WString>& errors)
+		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
@@ -43546,6 +43546,10 @@ GuiResourceFolder
 				{
 					if (precompile->GetPassSupport(context.passIndex) == IGuiResourceTypeResolver_Precompile::PerResource)
 					{
+						if (callback)
+						{
+							callback->OnPerResource(context.passIndex, item);
+						}
 						precompile->PerResourcePrecompile(item, context, errors);
 					}
 				}
@@ -43553,7 +43557,7 @@ GuiResourceFolder
 
 			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
 			{
-				folder->PrecompileResourceFolder(context, errors);
+				folder->PrecompileResourceFolder(context, callback, errors);
 			}
 		}
 
@@ -43842,7 +43846,7 @@ GuiResource
 			SaveResourceFolderToBinary(writer, typeNames);
 		}
 
-		void GuiResource::Precompile(collections::List<WString>& errors)
+		void GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors)
 		{
 			if (GetFolder(L"Precompiled"))
 			{
@@ -43865,15 +43869,22 @@ GuiResource
 					manager->GetPerResourceResolverNames(i, resolvers);
 					if (resolvers.Count() > 0)
 					{
-						PrecompileResourceFolder(context, errors);
+						PrecompileResourceFolder(context, callback, errors);
 					}
 				}
 				{
 					manager->GetPerPassResolverNames(i, resolvers);
-					FOREACH(WString, name, resolvers)
+					if (resolvers.Count() > 0)
 					{
-						auto resolver = manager->GetTypeResolver(name);
-						resolver->Precompile()->PerPassPrecompile(context, errors);
+						if (callback)
+						{
+							callback->OnPerPass(i);
+						}
+						FOREACH(WString, name, resolvers)
+						{
+							auto resolver = manager->GetTypeResolver(name);
+							resolver->Precompile()->PerPassPrecompile(context, errors);
+						}
 					}
 				}
 			}

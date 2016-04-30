@@ -190,9 +190,71 @@ void GuiMain()
 	}
 
 	{
+		class Callback : public Object, public IGuiResourcePrecompileCallback
+		{
+		public:
+			vint lastPass = -1;
+
+			void PrintPass(vint passIndex)
+			{
+				if (lastPass != passIndex)
+				{
+					lastPass = passIndex;
+					switch (passIndex)
+					{
+					case IGuiResourceTypeResolver_Precompile::Workflow_Collect:
+						PrintInformationMessage(L"Pass: (1/11) Collect workflow scripts");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Workflow_CompileViewModel:
+						PrintInformationMessage(L"Pass: (2/11) Compile view model scripts");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Workflow_CompileShared:
+						PrintInformationMessage(L"Pass: (3/11) Compile shared scripts");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Instance_CollectInstanceTypes:
+						PrintInformationMessage(L"Pass: (4/11) Collect instances");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Instance_ValidateDependency:
+						PrintInformationMessage(L"Pass: (5/11) Validate instances");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Instance_GenerateTemporaryClass:
+						PrintInformationMessage(L"Pass: (6/11) Generate instance type stubs");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Instance_CompileTemporaryClass:
+						PrintInformationMessage(L"Pass: (7/11) Compile instance type stubs");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceCtor:
+						PrintInformationMessage(L"Pass: (8/11) Generate instance constructor types");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Instance_CompileInstanceCtor:
+						PrintInformationMessage(L"Pass: (9/11) Compile instance constructor types");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceClass:
+						PrintInformationMessage(L"Pass: (10/11) Generate instance types");
+						break;
+					case IGuiResourceTypeResolver_Precompile::Instance_CompileInstanceClass:
+						PrintInformationMessage(L"Pass: (11/11) Compile instance types");
+						break;
+					}
+				}
+			}
+
+			void OnPerPass(vint passIndex)override
+			{
+				PrintPass(passIndex);
+			}
+
+			void OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource)override
+			{
+				PrintPass(passIndex);
+				PrintInformationMessage(L"    " + resource->GetResourcePath());
+			}
+		};
+
 		PrintSuccessMessage(L"gacgen> Compiling...");
 		List<WString> errors;
-		resource->Precompile(errors);
+		Callback callback;
+		resource->Precompile(&callback, errors);
 		if (errors.Count() > 0)
 		{
 			SaveErrors(errorFilePath, errors);

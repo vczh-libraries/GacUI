@@ -71,7 +71,7 @@ void GuiMain_Resource()
 	{
 		List<WString> errors;
 		auto resource = GuiResource::LoadFromXml(L"UI2.xml", errors);
-		resource->Precompile(errors);
+		resource->Precompile(nullptr, errors);
 
 		{
 			FileStream fileStream(L"UI.error.txt", FileStream::WriteOnly);

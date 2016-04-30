@@ -182,6 +182,7 @@ Resource Structure
 		class GuiResourcePathResolver;
 		struct GuiResourcePrecompileContext;
 		struct GuiResourceInitializeContext;
+		class IGuiResourcePrecompileCallback;
 		
 		/// <summary>Resource item.</summary>
 		class GuiResourceItem : public GuiResourceNodeBase, public Description<GuiResourceItem>
@@ -248,7 +249,7 @@ Resource Structure
 			void									CollectTypeNames(collections::List<WString>& typeNames);
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
 			void									SaveResourceFolderToBinary(stream::internal::ContextFreeWriter& writer, collections::List<WString>& typeNames);
-			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, collections::List<WString>& errors);
+			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors);
 			void									InitializeResourceFolder(GuiResourceInitializeContext& context);
 		public:
 			/// <summary>Create a resource folder.</summary>
@@ -364,7 +365,7 @@ Resource
 
 			/// <summary>Precompile this resource to improve performance.</summary>
 			/// <param name="errors">All collected errors during precompiling a resource.</param>
-			void									Precompile(collections::List<WString>& errors);
+			void									Precompile(IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors);
 
 			/// <summary>Initialize a precompiled resource.</summary>
 			/// <param name="usage">In which role an application is initializing this resource.</param>
@@ -559,6 +560,13 @@ Resource Type Resolver
 			/// <param name="context">The context for precompiling.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			virtual void										PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+		};
+
+		class IGuiResourcePrecompileCallback : public virtual IDescriptable, public Description<IGuiResourcePrecompileCallback>
+		{
+		public:
+			virtual void										OnPerPass(vint passIndex) = 0;
+			virtual void										OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource) = 0;
 		};
 
 		/// <summary>Provide a context for resource initializing</summary>
