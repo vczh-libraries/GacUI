@@ -88,8 +88,7 @@ void WriteControlClassHeaderFile(Ptr<CodegenConfig> config, Ptr<Instance> instan
 void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 {
 	Regex regexCtor(L"^(<prefix>/s*)" + instance->typeName + L"::" + instance->typeName + L"/([^)]*/)");
-	Regex regexInit(L"^(<prefix>/s*)InitializeComponents/([^)]*/);");
-	Regex regexOnCreate(L"^(<prefix>/s*)OnCreate/(/);");
+	Regex regexDtor(L"^(<prefix>/s*)" + instance->typeName + L"::~" + instance->typeName + L"/(/)");
 
 	WString fileName = config->cppOutput->output + config->cppOutput->GetControlClassCppFileName(instance);
 	List<WString> lines;
@@ -202,15 +201,25 @@ void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 			{
 				auto prefix = match->Groups()[L"prefix"][0].Value();
 				WriteControlClassCppCtor(config, instance, prefix, writer);
+				while (++i < lines.Count())
+				{
+					if (lines[i] == prefix + L"}")
+					{
+						break;
+					}
+				}
 			}
-			else if (auto match = regexInit.MatchHead(lines[i]))
+			else if (auto match = regexDtor.MatchHead(lines[i]))
 			{
 				auto prefix = match->Groups()[L"prefix"][0].Value();
-				WriteControlClassCppInit(config, instance, prefix, writer);
-			}
-			else if (auto match = regexOnCreate.MatchHead(lines[i]))
-			{
-				writer.WriteLine(prefix + L"OnCreate();");
+				WriteControlClassCppDtor(config, instance, prefix, writer);
+				while (++i < lines.Count())
+				{
+					if (lines[i] == prefix + L"}")
+					{
+						break;
+					}
+				}
 			}
 			else
 			{
