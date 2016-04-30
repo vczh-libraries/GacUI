@@ -290,7 +290,7 @@ Instance Namespace
 		};
 
 		// Workflow:	<name>
-		// C++:			<instance>->Get<name>
+		// C++:			<instance>->Get<name>()
 		class GuiInstanceParameter : public Object, public Description<GuiInstanceParameter>
 		{
 		public:
@@ -299,25 +299,43 @@ Instance Namespace
 		};
 
 		// Workflow:	<instance>.<name>
-		// C++:			<instance>->Get<name>
-		//				<instance>->Set<name>
+		// C++:			<instance>->Get<name>()
+		//				<instance>->Set<name>()
 		class GuiInstanceProperty : public Object, public Description<GuiInstanceProperty>
 		{
 		public:
 			GlobalStringKey							name;
 			WString									typeName;
-			WString									value;
-			bool									readonly = false;
+			WString									value;\
 		};
 		
 		// Workflow:	<instance>.<name>
-		// C++:			<instance>-><name>
+		// C++:			<instance>-><name>()
 		class GuiInstanceState : public Object, public Description<GuiInstanceState>
 		{
 		public:
 			GlobalStringKey							name;
 			WString									typeName;
 			WString									value;
+		};
+		
+		// Workflow:	<instance>.<name>
+		// C++:			<instance>->Get<name>()
+		class GuiInstanceComponent : public Object, public Description<GuiInstanceComponent>
+		{
+		public:
+			GlobalStringKey							name;
+			WString									typeName;
+			WString									expression;
+		};
+		
+		// Workflow:	<instance>.<name>
+		// C++:			<instance>-><name>
+		class GuiInstanceEvent : public Object, public Description<GuiInstanceComponent>
+		{
+		public:
+			GlobalStringKey							name;
+			WString									eventArgsClass;
 		};
 
 /***********************************************************************
@@ -340,6 +358,8 @@ Instance Context
 			typedef collections::List<Ptr<GuiInstanceParameter>>						ParameterList;
 			typedef collections::List<Ptr<GuiInstanceProperty>>							PropertyList;
 			typedef collections::List<Ptr<GuiInstanceState>>							StateList;
+			typedef collections::List<Ptr<GuiInstanceComponent>>						ComponentList;
+			typedef collections::List<Ptr<GuiInstanceEvent>>							EventList;
 			typedef collections::List<Ptr<GuiInstanceStyleContext>>						StyleContextList;
 
 			class ElementName : public Object
@@ -362,10 +382,13 @@ Instance Context
 			NamespaceMap							namespaces;
 			bool									codeBehind = true;
 			WString									className;
+			collections::List<WString>				stylePaths;
+
 			ParameterList							parameters;
 			PropertyList							properties;
 			StateList								states;
-			collections::List<WString>				stylePaths;
+			ComponentList							components;
+			EventList								events;
 
 			bool									appliedStyles = false;
 			StyleContextList						styles;

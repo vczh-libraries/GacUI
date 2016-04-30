@@ -42,6 +42,7 @@ void WriteControlClassCppDtor(Ptr<CodegenConfig> config, Ptr<Instance> instance,
 {
 	writer.WriteLine(prefix + instance->typeName + L"::~" + instance->typeName + L"()");
 	writer.WriteLine(prefix + L"{");
+	writer.WriteLine(prefix + L"\tOnDestroy();");
 	writer.WriteLine(prefix + L"\tClearSubscriptions();");
 	writer.WriteLine(prefix + L"}");
 }
@@ -97,6 +98,7 @@ void WriteControlClassCppFileContent(Ptr<CodegenConfig> config, Ptr<Instance> in
 	WriteControlClassCppCtor(config, instance, prefix, writer);
 	writer.WriteLine(prefix + L"{");
 	WriteControlClassCppInit(config, instance, prefix + L"\t", writer);
+	writer.WriteLine(prefix + L"\tOnCreate();");
 	writer.WriteLine(prefix + L"}");
 	writer.WriteLine(L"");
 	WriteControlClassCppDtor(config, instance, prefix, writer);

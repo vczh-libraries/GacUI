@@ -247,7 +247,17 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 			{
 				if (typeInfo->GetDecorator() == ITypeInfo::RawPtr)
 				{
-					writer.WriteLine(prefix + L"\t\t," + state->name.ToString() + L"(0)");
+					writer.WriteLine(prefix + L"\t\t," + state->name.ToString() + L"(nullptr)");
+				}
+			}
+		}
+		FOREACH(Ptr<GuiInstanceProperty>, prop, instance->context->properties)
+		{
+			if (auto typeInfo = GetTypeInfoFromWorkflowType(config, prop->typeName))
+			{
+				if (typeInfo->GetDecorator() == ITypeInfo::RawPtr)
+				{
+					writer.WriteLine(prefix + L"\t\t," + prop->name.ToString() + L"(nullptr)");
 				}
 			}
 		}
@@ -260,6 +270,17 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 				{
 					auto cppType = GetCppTypeFromTypeInfo(typeInfo.Obj());
 					writer.WriteLine(prefix + L"\t\tthis->" + state->name.ToString() + L" = vl::reflection::description::UnboxValue<" + cppType + L">(vl::reflection::description::Value::From(L\"" + state->value + L"\", reflection::description::GetTypeDescriptor<" + cppType + L">()));");
+				}
+			}
+		}
+		FOREACH(Ptr<GuiInstanceProperty>, prop, instance->context->properties)
+		{
+			if (auto typeInfo = GetTypeInfoFromWorkflowType(config, prop->typeName))
+			{
+				if (typeInfo->GetTypeDescriptor()->GetValueSerializer())
+				{
+					auto cppType = GetCppTypeFromTypeInfo(typeInfo.Obj());
+					writer.WriteLine(prefix + L"\t\tthis->" + prop->name.ToString() + L"_ = vl::reflection::description::UnboxValue<" + cppType + L">(vl::reflection::description::Value::From(L\"" + prop->value + L"\", reflection::description::GetTypeDescriptor<" + cppType + L">()));");
 				}
 			}
 		}
@@ -297,7 +318,6 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 				writer.WriteLine(prefix + L"\t\treturn " + prop->name.ToString() + L"_;");
 				writer.WriteLine(prefix + L"\t}");
 			}
-			if (!prop->readonly)
 			{
 				writer.WriteLine(L"");
 				writer.WriteString(prefix + L"\tvoid Set");
@@ -537,22 +557,11 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 				writer.WriteString(prefix + L"\tCLASS_MEMBER_EVENT(");
 				writer.WriteString(prop->name.ToString());
 				writer.WriteLine(L"Changed)");
-				if (prop->readonly)
-				{
-					writer.WriteString(prefix + L"\tCLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(");
-					writer.WriteString(prop->name.ToString());
-					writer.WriteString(L", ");
-					writer.WriteString(prop->name.ToString());
-					writer.WriteLine(L"Changed)");
-				}
-				else
-				{
-					writer.WriteString(prefix + L"\tCLASS_MEMBER_PROPERTY_EVENT_FAST(");
-					writer.WriteString(prop->name.ToString());
-					writer.WriteString(L", ");
-					writer.WriteString(prop->name.ToString());
-					writer.WriteLine(L"Changed)");
-				}
+				writer.WriteString(prefix + L"\tCLASS_MEMBER_PROPERTY_EVENT_FAST(");
+				writer.WriteString(prop->name.ToString());
+				writer.WriteString(L", ");
+				writer.WriteString(prop->name.ToString());
+				writer.WriteLine(L"Changed)");
 			}
 			FOREACH(Ptr<GuiInstanceState>, state, instance->context->states)
 			{

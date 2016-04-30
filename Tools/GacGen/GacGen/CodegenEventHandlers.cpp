@@ -26,7 +26,26 @@ void WriteControlClassHeaderFileEventHandlers(Ptr<CodegenConfig> config, Ptr<Ins
 	{
 		writer.WriteLine(GetEventHandlerHeader(prefix + L"\t", instance, name, false));
 	}
+	writer.WriteLine(prefix + L"\tvoid OnCreate();");
+	writer.WriteLine(prefix + L"\tvoid OnDestroy();");
 	writer.WriteLine(GetEventHandlerCommentEnd(prefix + L"\t"));
+}
+
+void WriteControlClassCppFileEventHandler(const WString& name, const WString& prefix, Group<WString, WString>& existingEventHandlers, StreamWriter& writer)
+{
+	vint index = existingEventHandlers.Keys().IndexOf(name);
+	if (index == -1)
+	{
+		writer.WriteLine(prefix + L"{");
+		writer.WriteLine(prefix + L"}");
+	}
+	else
+	{
+		FOREACH(WString, line, existingEventHandlers.GetByIndex(index))
+		{
+			writer.WriteLine(line);
+		}
+	}
 }
 
 void WriteControlClassCppFileEventHandlers(Ptr<CodegenConfig> config, Ptr<Instance> instance, const WString& prefix, Group<WString, WString>& existingEventHandlers, List<WString>& additionalLines, StreamWriter& writer)
@@ -36,21 +55,17 @@ void WriteControlClassCppFileEventHandlers(Ptr<CodegenConfig> config, Ptr<Instan
 	FOREACH(WString, name, instance->eventHandlers.Keys())
 	{
 		writer.WriteLine(GetEventHandlerHeader(prefix, instance, name, true));
-		vint index = existingEventHandlers.Keys().IndexOf(name);
-		if (index == -1)
-		{
-			writer.WriteLine(prefix + L"{");
-			writer.WriteLine(prefix + L"}");
-		}
-		else
-		{
-			FOREACH(WString, line, existingEventHandlers.GetByIndex(index))
-			{
-				writer.WriteLine(line);
-			}
-		}
+		WriteControlClassCppFileEventHandler(name, prefix, existingEventHandlers, writer);
 		writer.WriteLine(L"");
 	}
+
+	writer.WriteLine(prefix + L"void " + instance->typeName + L"::OnCreate()");
+	WriteControlClassCppFileEventHandler(L"void OnCreate()", prefix, existingEventHandlers, writer);
+	writer.WriteLine(L"");
+
+	writer.WriteLine(prefix + L"void " + instance->typeName + L"::OnDestroy()");
+	WriteControlClassCppFileEventHandler(L"void OnDestroy()", prefix, existingEventHandlers, writer);
+	writer.WriteLine(L"");
 	FOREACH(WString, line, additionalLines)
 	{
 		writer.WriteLine(line);

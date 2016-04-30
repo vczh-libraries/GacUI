@@ -89,6 +89,7 @@ void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 {
 	Regex regexCtor(L"^(<prefix>/s*)" + instance->typeName + L"::" + instance->typeName + L"/([^)]*/)");
 	Regex regexInit(L"^(<prefix>/s*)InitializeComponents/([^)]*/);");
+	Regex regexOnCreate(L"^(<prefix>/s*)OnCreate/(/);");
 
 	WString fileName = config->cppOutput->output + config->cppOutput->GetControlClassCppFileName(instance);
 	List<WString> lines;
@@ -136,7 +137,15 @@ void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 
 					if (!allSpaces)
 					{
-						FOREACH(WString, name, instance->eventHandlers.Keys())
+						if (line == prefix + L"void " + instance->typeName + L"::OnCreate()")
+						{
+							eventHandlerName = L"void OnCreate()";
+						}
+						else if (line == prefix + L"void " + instance->typeName + L"::OnDestroy()")
+						{
+							eventHandlerName = L"void OnDestroy()";
+						}
+						else FOREACH(WString, name, instance->eventHandlers.Keys())
 						{
 							if (line == GetEventHandlerHeader(prefix, instance, name, true))
 							{
@@ -198,6 +207,10 @@ void WriteControlClassCppFile(Ptr<CodegenConfig> config, Ptr<Instance> instance)
 			{
 				auto prefix = match->Groups()[L"prefix"][0].Value();
 				WriteControlClassCppInit(config, instance, prefix, writer);
+			}
+			else if (auto match = regexOnCreate.MatchHead(lines[i]))
+			{
+				writer.WriteLine(prefix + L"OnCreate();");
 			}
 			else
 			{
