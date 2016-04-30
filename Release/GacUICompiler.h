@@ -306,7 +306,7 @@ Instance Namespace
 		public:
 			GlobalStringKey							name;
 			WString									typeName;
-			WString									value;\
+			WString									value;
 		};
 		
 		// Workflow:	<instance>.<name>
