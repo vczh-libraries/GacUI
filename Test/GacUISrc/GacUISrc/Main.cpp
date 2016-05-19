@@ -70,7 +70,7 @@ void GuiMain_Resource()
 	//}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(L"UI2.xml", errors);
+		auto resource = GuiResource::LoadFromXml(L"UI5.xml", errors);
 		resource->Precompile(nullptr, errors);
 
 		{
@@ -111,12 +111,12 @@ void GuiMain_Resource()
 		}
 	}
 
-	// UI1.xml / UI3.xml / UI4.xml
-	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+	// UI1.xml / UI3.xml / UI4.xml / UI5.xml
+	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
 	// UI2.xml
-	auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
-	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
+	// auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
+	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
 
 	window->ForceCalculateSizeImmediately();
 	window->MoveToScreenCenter();

@@ -548,6 +548,7 @@ Win7TextBoxBackground
 				{
 					GuiBoundsComposition* containerComposition=new GuiBoundsComposition;
 					boundsComposition->AddChild(containerComposition);
+					containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					containerComposition->SetAlignmentToParent(Margin(2, 2, 2, 2));
 					return containerComposition;
 				}

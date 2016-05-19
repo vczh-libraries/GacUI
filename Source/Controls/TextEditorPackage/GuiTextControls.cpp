@@ -234,12 +234,14 @@ GuiSinglelineTextBox::StyleController
 				,textComposition(0)
 			{
 				boundsComposition=new GuiBoundsComposition;
+				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition=styleProvider->InstallBackground(boundsComposition);
 
 				textElement=GuiColorizedTextElement::Create();
 				textElement->SetViewPosition(Point(-TextMargin, -TextMargin));
 
 				textCompositionTable=new GuiTableComposition;
+				textCompositionTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				textCompositionTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				textCompositionTable->SetRowsAndColumns(3, 1);
 				textCompositionTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
@@ -314,6 +316,7 @@ GuiSinglelineTextBox::StyleController
 			{
 				textElement->SetFont(value);
 				styleProvider->SetFont(value);
+				textComposition->SetPreferredMinSize(Size(0, textElement->GetLines().GetRowHeight()));
 			}
 
 			void GuiSinglelineTextBox::StyleController::SetVisuallyEnabled(bool value)

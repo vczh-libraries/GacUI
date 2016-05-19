@@ -422,6 +422,9 @@
     <Xml Include="UI2.xml" />
     <Xml Include="UI3.xml" />
     <Xml Include="UI4.xml" />
+    <Xml Include="UI5.xml">
+      <SubType>Designer</SubType>
+    </Xml>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -841,5 +841,8 @@
     <Xml Include="UI4.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="UI5.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
