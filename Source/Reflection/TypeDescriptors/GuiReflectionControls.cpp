@@ -1220,8 +1220,8 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretBegin)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretEnd)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ActiveHyperlinkReference)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SelectionText)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SelectionModel)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionModel, SelectionChanged)
 
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
