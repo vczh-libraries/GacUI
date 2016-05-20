@@ -483,7 +483,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							paragraphHeights[i]=defaultHeight;
 							if(!updatedText && i<index+oldCount)
 							{
-								Ptr<ParagraphCache> cache=oldCaches[i];
+								auto cache=oldCaches[i];
 								if(cache)
 								{
 									cache->graphicsParagraph=0;
@@ -504,13 +504,15 @@ GuiDocumentElement::GuiDocumentElementRenderer
 						vint count = oldCount < newCount ? oldCount : newCount;
 						for (vint i = 0; i < count; i++)
 						{
-							auto cache = oldCaches[index + i];
-							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+							if (auto cache = oldCaches[index + i])
 							{
-								auto id = cache->embeddedObjects.Keys()[j];
-								auto name = cache->embeddedObjects.Values()[j]->name;
-								nameCallbackIdMap.Remove(name);
-								freeCallbackIds.Add(id);
+								for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+								{
+									auto id = cache->embeddedObjects.Keys()[j];
+									auto name = cache->embeddedObjects.Values()[j]->name;
+									nameCallbackIdMap.Remove(name);
+									freeCallbackIds.Add(id);
+								}
 							}
 						}
 					}

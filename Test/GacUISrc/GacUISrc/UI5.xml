@@ -6,7 +6,6 @@
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
-            <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
             <CellOption>composeType:MinSize</CellOption>
           </att.Rows>
@@ -17,27 +16,87 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0 columnSpan:3">
-            <SinglelineTextBox ref.Name="textBoxS" Text="Archer">
+            <Tab>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </SinglelineTextBox>
-          </Cell>
 
-          <Cell Site="row:1 column:0 columnSpan:3">
-            <MultilineTextBox ref.Name="textBoxM">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <att.Text>
-                <![CDATA[I am the bone of my sword 
+              <TabPage Text="TextBox">
+                <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                  <att.Rows>
+                    <CellOption>composeType:MinSize</CellOption>
+                    <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                  </att.Rows>
+                  <att.Columns>
+                    <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                  </att.Columns>
+
+                  <Cell Site="row:0 column:0">
+                    <SinglelineTextBox ref.Name="textBoxS" Text="Archer">
+                      <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    </SinglelineTextBox>
+                  </Cell>
+
+                  <Cell Site="row:1 column:0">
+                    <MultilineTextBox ref.Name="textBoxM">
+                      <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                      <att.Text>
+                        <![CDATA[I am the bone of my sword 
 Steel is my body and fire is my blood 
 I have created over a thousand blades 
 Unknown to Death, Nor known to Life 
 Have withstood pain to create many weapons 
 Yet, those hands will never hold anything 
 So as I pray, unlimited blade works.]]>
-              </att.Text>
-            </MultilineTextBox>
+                      </att.Text>
+                    </MultilineTextBox>
+                  </Cell>
+                </Table>
+              </TabPage>
+
+              <TabPage Text="Document">
+                <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                  <att.Rows>
+                    <CellOption>composeType:MinSize</CellOption>
+                    <CellOption>composeType:Percentage percentage:1.0</CellOption>
+                  </att.Rows>
+                  <att.Columns>
+                    <CellOption>composeType:Percentage percentage:0.5</CellOption>
+                    <CellOption>composeType:Percentage percentage:0.5</CellOption>
+                  </att.Columns>
+
+                  <Cell Site="row:1 column:0">
+                    <DocumentViewer ref.Name="documentViewer" EditMode="Editable">
+                      <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                      <att.Text>
+                        <![CDATA[I am the bone of my sword 
+Steel is my body and fire is my blood 
+I have created over a thousand blades 
+Unknown to Death, Nor known to Life 
+Have withstood pain to create many weapons 
+Yet, those hands will never hold anything 
+So as I pray, unlimited blade works.]]>
+                      </att.Text>
+                    </DocumentViewer>
+                  </Cell>
+                  <Cell Site="row:1 column:1">
+                    <DocumentLabel ref.Name="documentLabel" EditMode="Editable">
+                      <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                      <att.Text>
+                        <![CDATA[I am the bone of my sword 
+Steel is my body and fire is my blood 
+I have created over a thousand blades 
+Unknown to Death, Nor known to Life 
+Have withstood pain to create many weapons 
+Yet, those hands will never hold anything 
+So as I pray, unlimited blade works.]]>
+                      </att.Text>
+                    </DocumentLabel>
+                  </Cell>
+                </Table>
+              </TabPage>
+            </Tab>
           </Cell>
 
-          <Cell Site="row:2 column:0">
+          <Cell Site="row:1 column:0">
             <Button Text="Make Font Larger">
               <ev.Clicked-eval>
                 <![CDATA[
@@ -46,12 +105,14 @@ So as I pray, unlimited blade works.]]>
                     var newFont = cast FontProperties $"fontFamily:{$(oldFont.fontFamily)} size:$(oldFont.size + 5) antialias:true";
                     textBoxS.Font = newFont;
                     textBoxM.Font = newFont;
+                    documentViewer.Font = newFont;
+                    documentLabel.Font = newFont;
                   }
                 ]]>
               </ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:2 column:1">
+          <Cell Site="row:1 column:1">
             <Button Text="Make Font Smaller" Enabled-bind="textBoxS.Font.size &gt; 5">
               <ev.Clicked-eval>
                 <![CDATA[
@@ -60,6 +121,8 @@ So as I pray, unlimited blade works.]]>
                     var newFont = cast FontProperties $"fontFamily:{$(oldFont.fontFamily)} size:$(oldFont.size - 5) antialias:true";
                     textBoxS.Font = newFont;
                     textBoxM.Font = newFont;
+                    documentViewer.Font = newFont;
+                    documentLabel.Font = newFont;
                   }
                 ]]>
               </ev.Clicked-eval>
