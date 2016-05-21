@@ -217,13 +217,35 @@ TextBox
 			};
 
 			/// <summary>Document label style (Windows 7).</summary>
-			class Win7DocumentlabelStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win7DocumentlabelStyle>
+			class Win7DocumentLabelStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win7DocumentLabelStyle>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win7DocumentlabelStyle();
-				~Win7DocumentlabelStyle();
+				Win7DocumentLabelStyle();
+				~Win7DocumentLabelStyle();
 
+				Ptr<DocumentModel>							GetBaselineDocument()override;
+			};
+
+			/// <summary>Document label style (Windows 7).</summary>
+			class Win7DocumentTextBoxStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win7DocumentTextBoxStyle>
+			{
+			protected:
+				Win7TextBoxBackground						background;
+				compositions::GuiBoundsComposition*			boundsComposition;
+				compositions::GuiGraphicsComposition*		containerComposition;
+
+			public:
+				/// <summary>Create the style.</summary>
+				Win7DocumentTextBoxStyle();
+				~Win7DocumentTextBoxStyle();
+
+				compositions::GuiBoundsComposition*			GetBoundsComposition()override;
+				compositions::GuiGraphicsComposition*		GetContainerComposition()override;
+				void										SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
+				void										SetText(const WString& value)override;
+				void										SetFont(const FontProperties& value)override;
+				void										SetVisuallyEnabled(bool value)override;
 				Ptr<DocumentModel>							GetBaselineDocument()override;
 			};
 #pragma warning(pop)

@@ -418,32 +418,37 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::OnElementStateChanged()
 			{
-				if(element->document && element->document->paragraphs.Count()>0)
+				if (element->document && element->document->paragraphs.Count() > 0)
 				{
-					vint defaultSize=GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					paragraphDistance=defaultSize;
-					vint defaultHeight=defaultSize;
+					vint defaultSize = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+					paragraphDistance = defaultSize;
+					vint defaultHeight = defaultSize;
 
 					paragraphCaches.Resize(element->document->paragraphs.Count());
 					paragraphHeights.Resize(element->document->paragraphs.Count());
 					
-					for(vint i=0;i<paragraphCaches.Count();i++)
+					for (vint i = 0; i < paragraphCaches.Count(); i++)
 					{
-						paragraphCaches[i]=0;
+						paragraphCaches[i] = 0;
 					}
-					for(vint i=0;i<paragraphHeights.Count();i++)
+					for (vint i = 0; i < paragraphHeights.Count(); i++)
 					{
-						paragraphHeights[i]=defaultHeight;
+						paragraphHeights[i] = defaultHeight;
 					}
-					cachedTotalHeight=paragraphHeights.Count()*(defaultHeight+paragraphDistance);
-					minSize=Size(0, cachedTotalHeight);
+
+					cachedTotalHeight = paragraphHeights.Count() * (defaultHeight + paragraphDistance);
+					if (paragraphHeights.Count()>0)
+					{
+						cachedTotalHeight -= paragraphDistance;
+					}
+					minSize = Size(0, cachedTotalHeight);
 				}
 				else
 				{
 					paragraphCaches.Resize(0);
 					paragraphHeights.Resize(0);
-					cachedTotalHeight=0;
-					minSize=Size(0, 0);
+					cachedTotalHeight = 0;
+					minSize = Size(0, 0);
 				}
 
 				nameCallbackIdMap.Clear();
@@ -453,11 +458,11 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				if(0<=index && index<paragraphCaches.Count() && 0<=oldCount && index+oldCount<=paragraphCaches.Count() && 0<=newCount)
+				if (0 <= index && index < paragraphCaches.Count() && 0 <= oldCount && index + oldCount <= paragraphCaches.Count() && 0 <= newCount)
 				{
-					vint paragraphCount=element->document->paragraphs.Count();
-					CHECK_ERROR(updatedText || oldCount==newCount, L"GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
-					CHECK_ERROR(paragraphCount-paragraphCaches.Count()==newCount-oldCount, L"GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
+					vint paragraphCount = element->document->paragraphs.Count();
+					CHECK_ERROR(updatedText || oldCount == newCount, L"GuiDocumentlement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
+					CHECK_ERROR(paragraphCount - paragraphCaches.Count() == newCount - oldCount, L"GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
 
 					ParagraphCacheArray oldCaches;
 					CopyFrom(oldCaches, paragraphCaches);
@@ -467,36 +472,40 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					CopyFrom(oldHeights, paragraphHeights);
 					paragraphHeights.Resize(paragraphCount);
 
-					vint defaultHeight=GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					cachedTotalHeight=0;
+					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+					cachedTotalHeight = 0;
 
-					for(vint i=0;i<paragraphCount;i++)
+					for (vint i = 0; i < paragraphCount; i++)
 					{
-						if(i<index)
+						if (i < index)
 						{
-							paragraphCaches[i]=oldCaches[i];
-							paragraphHeights[i]=oldHeights[i];
+							paragraphCaches[i] = oldCaches[i];
+							paragraphHeights[i] = oldHeights[i];
 						}
-						else if(i<index+newCount)
+						else if (i < index + newCount)
 						{
-							paragraphCaches[i]=0;
-							paragraphHeights[i]=defaultHeight;
-							if(!updatedText && i<index+oldCount)
+							paragraphCaches[i] = 0;
+							paragraphHeights[i] = defaultHeight;
+							if (!updatedText && i < index + oldCount)
 							{
-								auto cache=oldCaches[i];
+								auto cache = oldCaches[i];
 								if(cache)
 								{
-									cache->graphicsParagraph=0;
+									cache->graphicsParagraph = 0;
 								}
-								paragraphCaches[i]=cache;
+								paragraphCaches[i] = cache;
 							}
 						}
 						else
 						{
-							paragraphCaches[i]=oldCaches[i-(newCount-oldCount)];
-							paragraphHeights[i]=oldHeights[i-(newCount-oldCount)];
+							paragraphCaches[i] = oldCaches[i - (newCount - oldCount)];
+							paragraphHeights[i] = oldHeights[i - (newCount - oldCount)];
 						}
-						cachedTotalHeight+=paragraphHeights[i]+paragraphDistance;
+						cachedTotalHeight += paragraphHeights[i] + paragraphDistance;
+					}
+					if (paragraphCount > 0)
+					{
+						cachedTotalHeight -= paragraphDistance;
 					}
 
 					if (updatedText)

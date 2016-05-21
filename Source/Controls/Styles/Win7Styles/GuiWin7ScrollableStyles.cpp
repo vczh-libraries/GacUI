@@ -671,15 +671,64 @@ Win7DocumentViewerStyle
 Win7DocumentlabelStyle
 ***********************************************************************/
 
-			Win7DocumentlabelStyle::Win7DocumentlabelStyle()
+			Win7DocumentLabelStyle::Win7DocumentLabelStyle()
 			{
 			}
 
-			Win7DocumentlabelStyle::~Win7DocumentlabelStyle()
+			Win7DocumentLabelStyle::~Win7DocumentLabelStyle()
 			{
 			}
 
-			Ptr<DocumentModel> Win7DocumentlabelStyle::GetBaselineDocument()
+			Ptr<DocumentModel> Win7DocumentLabelStyle::GetBaselineDocument()
+			{
+				return nullptr;
+			}
+
+/***********************************************************************
+Win7DocumentTextBoxStyle
+***********************************************************************/
+
+			Win7DocumentTextBoxStyle::Win7DocumentTextBoxStyle()
+			{
+				boundsComposition = new GuiBoundsComposition;
+				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition = background.InstallBackground(boundsComposition);
+				background.AssociateStyleController(this);
+			}
+
+			Win7DocumentTextBoxStyle::~Win7DocumentTextBoxStyle()
+			{
+			}
+
+			compositions::GuiBoundsComposition* Win7DocumentTextBoxStyle::GetBoundsComposition()
+			{
+				return boundsComposition;
+			}
+
+			compositions::GuiGraphicsComposition* Win7DocumentTextBoxStyle::GetContainerComposition()
+			{
+				return containerComposition;
+			}
+
+			void Win7DocumentTextBoxStyle::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
+			{
+				background.SetFocusableComposition(value);
+			}
+
+			void Win7DocumentTextBoxStyle::SetText(const WString& value)
+			{
+			}
+
+			void Win7DocumentTextBoxStyle::SetFont(const FontProperties& value)
+			{
+			}
+
+			void Win7DocumentTextBoxStyle::SetVisuallyEnabled(bool value)
+			{
+				background.SetVisuallyEnabled(value);
+			}
+
+			Ptr<DocumentModel> Win7DocumentTextBoxStyle::GetBaselineDocument()
 			{
 				return nullptr;
 			}

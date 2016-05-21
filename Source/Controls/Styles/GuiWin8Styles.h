@@ -45,6 +45,7 @@ Theme
 				elements::text::ColorEntry											GetDefaultTextBoxColorEntry()override;
 				controls::GuiDocumentViewer::IStyleProvider*						CreateDocumentViewerStyle()override;
 				controls::GuiDocumentLabel::IStyleController*						CreateDocumentLabelStyle()override;
+				controls::GuiDocumentLabel::IStyleController*						CreateDocumentTextBoxStyle()override;
 				controls::GuiListView::IStyleProvider*								CreateListViewStyle()override;
 				controls::GuiTreeView::IStyleProvider*								CreateTreeViewStyle()override;
 				controls::GuiSelectableButton::IStyleController*					CreateListItemBackgroundStyle()override;

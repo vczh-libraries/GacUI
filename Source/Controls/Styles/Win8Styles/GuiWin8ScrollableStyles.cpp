@@ -642,15 +642,64 @@ Win8DocumentViewerStyle
 Win8DocumentlabelStyle
 ***********************************************************************/
 
-			Win8DocumentlabelStyle::Win8DocumentlabelStyle()
+			Win8DocumentLabelStyle::Win8DocumentLabelStyle()
 			{
 			}
 
-			Win8DocumentlabelStyle::~Win8DocumentlabelStyle()
+			Win8DocumentLabelStyle::~Win8DocumentLabelStyle()
 			{
 			}
 
-			Ptr<DocumentModel> Win8DocumentlabelStyle::GetBaselineDocument()
+			Ptr<DocumentModel> Win8DocumentLabelStyle::GetBaselineDocument()
+			{
+				return nullptr;
+			}
+
+/***********************************************************************
+Win8DocumentTextBoxStyle
+***********************************************************************/
+
+			Win8DocumentTextBoxStyle::Win8DocumentTextBoxStyle()
+			{
+				boundsComposition = new GuiBoundsComposition;
+				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition = background.InstallBackground(boundsComposition);
+				background.AssociateStyleController(this);
+			}
+
+			Win8DocumentTextBoxStyle::~Win8DocumentTextBoxStyle()
+			{
+			}
+
+			compositions::GuiBoundsComposition* Win8DocumentTextBoxStyle::GetBoundsComposition()
+			{
+				return boundsComposition;
+			}
+
+			compositions::GuiGraphicsComposition* Win8DocumentTextBoxStyle::GetContainerComposition()
+			{
+				return containerComposition;
+			}
+
+			void Win8DocumentTextBoxStyle::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
+			{
+				background.SetFocusableComposition(value);
+			}
+
+			void Win8DocumentTextBoxStyle::SetText(const WString& value)
+			{
+			}
+
+			void Win8DocumentTextBoxStyle::SetFont(const FontProperties& value)
+			{
+			}
+
+			void Win8DocumentTextBoxStyle::SetVisuallyEnabled(bool value)
+			{
+				background.SetVisuallyEnabled(value);
+			}
+
+			Ptr<DocumentModel> Win8DocumentTextBoxStyle::GetBaselineDocument()
 			{
 				return nullptr;
 			}

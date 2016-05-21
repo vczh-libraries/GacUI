@@ -99,7 +99,12 @@ Win8Theme
 
 			controls::GuiDocumentLabel::IStyleController* Win8Theme::CreateDocumentLabelStyle()
 			{
-				return new Win8DocumentlabelStyle;
+				return new Win8DocumentLabelStyle;
+			}
+
+			controls::GuiDocumentLabel::IStyleController* Win8Theme::CreateDocumentTextBoxStyle()
+			{
+				return new Win8DocumentTextBoxStyle;
 			}
 
 			controls::GuiListView::IStyleProvider* Win8Theme::CreateListViewStyle()

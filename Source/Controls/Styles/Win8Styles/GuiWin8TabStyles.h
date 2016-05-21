@@ -25,7 +25,7 @@ namespace vl
 Tab
 ***********************************************************************/
 
-			/// <summary>Tab page header style (Windows 7).</summary>
+			/// <summary>Tab page header style (Windows 8).</summary>
 			class Win8TabPageHeaderStyle : public Win8ButtonStyleBase, public Description<Win8TabPageHeaderStyle>
 			{
 			protected:

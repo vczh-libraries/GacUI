@@ -126,6 +126,8 @@ void GuiMain_Resource()
 
 void GuiMain()
 {
+	// win7::Win7Theme theme;
+	// SetCurrentTheme(&theme);
 	UnitTestInGuiMain();
 	GuiMain_Resource();
 }

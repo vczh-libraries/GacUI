@@ -80,6 +80,9 @@ namespace vl
 				/// <summary>Create a style for document label.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiDocumentLabel::IStyleController*						CreateDocumentLabelStyle()=0;
+				/// <summary>Create a style for document text box.</summary>
+				/// <returns>The created style.</returns>
+				virtual controls::GuiDocumentLabel::IStyleController*						CreateDocumentTextBoxStyle()=0;
 				/// <summary>Create a style for list view.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiListView::IStyleProvider*								CreateListViewStyle()=0;
@@ -174,8 +177,8 @@ namespace vl
 			/// <returns>The current theme style factory object.</returns>
 			extern ITheme*						GetCurrentTheme();
 			/// <summary>Set the current theme style factory object.</summary>
-			/// <param name="theam">The current theme style factory object.</param>
-			extern void							SetCurrentTheme(ITheme* theam);
+			/// <param name="theme">The current theme style factory object.</param>
+			extern void							SetCurrentTheme(ITheme* theme);
 
 			namespace g
 			{

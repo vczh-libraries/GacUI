@@ -100,7 +100,12 @@ Win7Theme
 
 			controls::GuiDocumentLabel::IStyleController* Win7Theme::CreateDocumentLabelStyle()
 			{
-				return new Win7DocumentlabelStyle;
+				return new Win7DocumentLabelStyle;
+			}
+
+			controls::GuiDocumentLabel::IStyleController* Win7Theme::CreateDocumentTextBoxStyle()
+			{
+				return new Win7DocumentTextBoxStyle;
 			}
 
 			controls::GuiListView::IStyleProvider* Win7Theme::CreateListViewStyle()

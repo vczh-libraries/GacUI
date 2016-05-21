@@ -103,6 +103,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetDefaultTextBoxColorEntry, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateDocumentViewerStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateDocumentLabelStyle, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreateDocumentTextBoxStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateListViewStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateTreeViewStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateListItemBackgroundStyle, NO_PARAMETER)

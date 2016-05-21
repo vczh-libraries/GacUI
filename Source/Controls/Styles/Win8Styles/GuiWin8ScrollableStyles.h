@@ -215,7 +215,7 @@ TextBox
 			
 #pragma warning(push)
 #pragma warning(disable:4250)
-			/// <summary>Document viewer style (Windows 7).</summary>
+			/// <summary>Document viewer style (Windows 8).</summary>
 			class Win8DocumentViewerStyle : public Win8MultilineTextBoxProvider, public virtual controls::GuiDocumentViewer::IStyleProvider, public Description<Win8DocumentViewerStyle>
 			{
 			public:
@@ -226,14 +226,36 @@ TextBox
 				Ptr<DocumentModel>							GetBaselineDocument()override;
 			};
 
-			/// <summary>Document label style (Windows 7).</summary>
-			class Win8DocumentlabelStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win8DocumentlabelStyle>
+			/// <summary>Document label style (Windows 8).</summary>
+			class Win8DocumentLabelStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win8DocumentLabelStyle>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win8DocumentlabelStyle();
-				~Win8DocumentlabelStyle();
+				Win8DocumentLabelStyle();
+				~Win8DocumentLabelStyle();
 
+				Ptr<DocumentModel>							GetBaselineDocument()override;
+			};
+
+			/// <summary>Document label style (Windows 8).</summary>
+			class Win8DocumentTextBoxStyle : public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win8DocumentTextBoxStyle>
+			{
+			protected:
+				Win8TextBoxBackground						background;
+				compositions::GuiBoundsComposition*			boundsComposition;
+				compositions::GuiGraphicsComposition*		containerComposition;
+
+			public:
+				/// <summary>Create the style.</summary>
+				Win8DocumentTextBoxStyle();
+				~Win8DocumentTextBoxStyle();
+
+				compositions::GuiBoundsComposition*			GetBoundsComposition()override;
+				compositions::GuiGraphicsComposition*		GetContainerComposition()override;
+				void										SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
+				void										SetText(const WString& value)override;
+				void										SetFont(const FontProperties& value)override;
+				void										SetVisuallyEnabled(bool value)override;
 				Ptr<DocumentModel>							GetBaselineDocument()override;
 			};
 #pragma warning(pop)
