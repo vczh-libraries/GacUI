@@ -196,18 +196,11 @@ DocumentModel
 			if(!style->verticalAntialias	&& parent->verticalAntialias)	style->verticalAntialias	=parent->verticalAntialias;
 		}
 
-		void DocumentModel::MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName)
+		void DocumentModel::MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName)
 		{
-			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName);
-			if (indexSrc == -1)
-			{
-				return;
-			}
-
 			auto indexDst = styles.Keys().IndexOf(styleName);
-			auto csp = baselineDocument->styles.Values()[indexSrc]->styles;
 			Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
-			MergeStyle(sp, csp);
+			MergeStyle(sp, style);
 			if (indexDst != -1)
 			{
 				MergeStyle(sp, styles.Values()[indexDst]->styles);
@@ -230,6 +223,18 @@ DocumentModel
 			}
 		}
 
+		void DocumentModel::MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName)
+		{
+			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName);
+			if (indexSrc == -1)
+			{
+				return;
+			}
+
+			auto csp = baselineDocument->styles.Values()[indexSrc]->styles;
+			MergeBaselineStyle(csp, styleName);
+		}
+
 		void DocumentModel::MergeBaselineStyles(Ptr<DocumentModel> baselineDocument)
 		{
 			MergeBaselineStyle(baselineDocument, DefaultStyleName);
@@ -237,6 +242,22 @@ DocumentModel
 			MergeBaselineStyle(baselineDocument, ContextStyleName);
 			MergeBaselineStyle(baselineDocument, NormalLinkStyleName);
 			MergeBaselineStyle(baselineDocument, ActiveLinkStyleName);
+		}
+
+		void DocumentModel::MergeDefaultFont(const FontProperties& defaultFont)
+		{
+			Ptr<DocumentStyleProperties> style = new DocumentStyleProperties;
+
+			style->face					=defaultFont.fontFamily;
+			style->size					=defaultFont.size;
+			style->bold					=defaultFont.bold;
+			style->italic				=defaultFont.italic;
+			style->underline			=defaultFont.underline;
+			style->strikeline			=defaultFont.strikeline;
+			style->antialias			=defaultFont.antialias;
+			style->verticalAntialias	=defaultFont.verticalAntialias;
+
+			MergeBaselineStyle(style, DefaultStyleName);
 		}
 
 		DocumentModel::ResolvedStyle DocumentModel::GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context)

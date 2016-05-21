@@ -211,6 +211,7 @@ GuiDocumentCommonInterface
 				documentComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 				documentComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
 
+				_sender->FontChanged.AttachMethod(this, &GuiDocumentCommonInterface::OnFontChanged);
 				_sender->GetFocusableComposition()->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
 				_sender->GetFocusableComposition()->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
 				_sender->GetFocusableComposition()->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnLostFocus);
@@ -330,6 +331,22 @@ GuiDocumentCommonInterface
 					arguments.inputModel=inputModel;
 					undoRedoProcessor->OnReplaceModel(arguments);
 				}
+			}
+
+			void GuiDocumentCommonInterface::MergeBaselineAndDefaultFont(Ptr<DocumentModel> document)
+			{
+				document->MergeDefaultFont(documentControl->GetFont());
+				if (baselineDocument)
+				{
+					document->MergeBaselineStyles(baselineDocument);
+				}
+			}
+
+			void GuiDocumentCommonInterface::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto document = documentElement->GetDocument();
+				MergeBaselineAndDefaultFont(document);
+				documentElement->SetDocument(document);
 			}
 
 			void GuiDocumentCommonInterface::OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -585,10 +602,7 @@ GuiDocumentCommonInterface
 					value->paragraphs.Add(new DocumentParagraphRun);
 				}
 
-				if (baselineDocument)
-				{
-					value->MergeBaselineStyles(baselineDocument);
-				}
+				MergeBaselineAndDefaultFont(value);
 				documentElement->SetDocument(value);
 			}
 

@@ -300,8 +300,10 @@ Rich Content Document (model)
 			DocumentModel();
 
 			static void						MergeStyle(Ptr<DocumentStyleProperties> style, Ptr<DocumentStyleProperties> parent);
+			void							MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName);
 			void							MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName);
 			void							MergeBaselineStyles(Ptr<DocumentModel> baselineDocument);
+			void							MergeDefaultFont(const FontProperties& defaultFont);
 			ResolvedStyle					GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context);
 			ResolvedStyle					GetStyle(const WString& styleName, const ResolvedStyle& context);
 
