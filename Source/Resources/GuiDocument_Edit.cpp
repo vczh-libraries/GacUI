@@ -1365,39 +1365,64 @@ document_operation_visitors::SummerizeStyleVisitor
 					return resolvedStyles[resolvedStyles.Count()-1];
 				}
 
-				template<typename T>
-				void OverrideStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T FontProperties::* srcField)
-				{
-					const DocumentModel::ResolvedStyle& src=GetCurrentResolvedStyle();
-					style.Obj()->*dstField=src.style.*srcField;
-				}
-
-				template<typename T>
-				void OverrideStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T DocumentModel::ResolvedStyle::* srcField)
-				{
-					const DocumentModel::ResolvedStyle& src=GetCurrentResolvedStyle();
-					style.Obj()->*dstField=src.*srcField;
-				}
+				// ---------------------------------------------------------
 
 				template<typename T>
 				void SetStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T FontProperties::* srcField)
 				{
-					const DocumentModel::ResolvedStyle& src=GetCurrentResolvedStyle();
-					if(style.Obj()->*dstField && (style.Obj()->*dstField).Value()!=src.style.*srcField)
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					if (style.Obj()->*dstField && (style.Obj()->*dstField).Value() != src.style.*srcField)
 					{
-						style.Obj()->*dstField=Nullable<T>();
+						style.Obj()->*dstField = Nullable<T>();
 					}
 				}
 
 				template<typename T>
 				void SetStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T DocumentModel::ResolvedStyle::* srcField)
 				{
-					const DocumentModel::ResolvedStyle& src=GetCurrentResolvedStyle();
-					if(style.Obj()->*dstField && (style.Obj()->*dstField).Value()!=src.*srcField)
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					if (style.Obj()->*dstField && (style.Obj()->*dstField).Value() != src.*srcField)
 					{
-						style.Obj()->*dstField=Nullable<T>();
+						style.Obj()->*dstField = Nullable<T>();
 					}
 				}
+
+				void SetStyleItem(Nullable<DocumentFontSize> DocumentStyleProperties::* dstField, vint FontProperties::* srcField)
+				{
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					if (style.Obj()->*dstField)
+					{
+						auto dfs = (style.Obj()->*dstField).Value();
+						if (dfs.relative || dfs.size != src.style.*srcField)
+						{
+							style.Obj()->*dstField = Nullable<DocumentFontSize>();
+						}
+					}
+				}
+
+				// ---------------------------------------------------------
+
+				template<typename T>
+				void OverrideStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T FontProperties::* srcField)
+				{
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					style.Obj()->*dstField = src.style.*srcField;
+				}
+
+				template<typename T>
+				void OverrideStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T DocumentModel::ResolvedStyle::* srcField)
+				{
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					style.Obj()->*dstField = src.*srcField;
+				}
+
+				void OverrideStyleItem(Nullable<DocumentFontSize> DocumentStyleProperties::* dstField, vint FontProperties::* srcField)
+				{
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					style.Obj()->*dstField = DocumentFontSize(src.style.*srcField, false);
+				}
+
+				// ---------------------------------------------------------
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
@@ -1415,7 +1440,7 @@ document_operation_visitors::SummerizeStyleVisitor
 				void Visit(DocumentTextRun* run)override
 				{
 					const DocumentModel::ResolvedStyle& currentResolvedStyle=GetCurrentResolvedStyle();
-					if(style)
+					if (style)
 					{
 						SetStyleItem(&DocumentStyleProperties::face,					&FontProperties::fontFamily);
 						SetStyleItem(&DocumentStyleProperties::size,					&FontProperties::size);

@@ -29,6 +29,35 @@ namespace vl
 Rich Content Document (style)
 ***********************************************************************/
 
+		struct DocumentFontSize
+		{
+			double							size = 0;
+			bool							relative = false;
+
+			DocumentFontSize()
+			{
+			}
+
+			DocumentFontSize(double _size, bool _relative)
+				:size(_size)
+				, relative(_relative)
+			{
+			}
+
+			static DocumentFontSize			Parse(const WString& value);
+			WString							ToString()const;
+
+			bool operator==(const DocumentFontSize& value)const
+			{
+				return size == value.size && relative == value.relative;
+			}
+
+			bool operator!=(const DocumentFontSize& value)const
+			{
+				return size != value.size || relative != value.relative;
+			}
+		};
+
 		/// <summary>Represents a text style.</summary>
 		class DocumentStyleProperties : public Object, public Description<DocumentStyleProperties>
 		{
@@ -36,7 +65,7 @@ Rich Content Document (style)
 			/// <summary>Font face.</summary>
 			Nullable<WString>				face;
 			/// <summary>Font size.</summary>
-			Nullable<vint>					size;
+			Nullable<DocumentFontSize>		size;
 			/// <summary>Font color.</summary>
 			Nullable<Color>					color;
 			/// <summary>Font color.</summary>

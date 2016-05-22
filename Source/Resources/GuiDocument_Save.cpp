@@ -52,7 +52,7 @@ document_operation_visitors::SerializeRunVisitor
 				{
 					if(run->text!=L"")
 					{
-						XmlElementWriter writer(parent);
+						auto writer = XmlElementWriter(parent).Element(L"nop");
 						auto begin = run->text.Buffer();
 						auto reading = begin;
 						auto last = reading;
@@ -116,7 +116,7 @@ document_operation_visitors::SerializeRunVisitor
 						}
 						if(sp->size)
 						{
-							writer.Attribute(L"size", itow(sp->size.Value()));
+							writer.Attribute(L"size", sp->size.Value().ToString());
 						}
 						if(sp->color)
 						{
@@ -307,7 +307,7 @@ DocumentModel
 					}
 
 					if(sp->face)				XmlElementWriter(styleElement).Element(L"face").Text(		sp->face.Value()						);
-					if(sp->size)				XmlElementWriter(styleElement).Element(L"size").Text(itow(	sp->size.Value()						));
+					if(sp->size)				XmlElementWriter(styleElement).Element(L"size").Text(		sp->size.Value().ToString()				);
 					if(sp->color)				XmlElementWriter(styleElement).Element(L"color").Text(		sp->color.Value().ToString()			);
 					if(sp->backgroundColor)		XmlElementWriter(styleElement).Element(L"bkcolor").Text(	sp->color.Value().ToString()			);
 					if(sp->bold)				XmlElementWriter(styleElement).Element(L"b").Text(			sp->bold.Value()?L"true":L"false"		);

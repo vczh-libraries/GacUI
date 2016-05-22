@@ -1,4 +1,50 @@
 <Resource>
+  <Text name="Text">I am the bone of my sword
+Steel is my body and fire is my blood
+I have created over a thousand blades
+Unknown to Death, Nor known to Life
+Have withstood pain to create many weapons
+Yet, those hands will never hold anything
+So as I pray, unlimited blade works.</Text>
+
+  <Doc name="DocFixed">
+    <Doc>
+      <Content>
+        <p>
+          <font size="24">Fixed Size Title</font>
+        </p>
+        <p>
+          <nop>I am the bone of my sword</nop><br/>
+          <nop>Steel is my body and fire is my blood</nop><br/>
+          <nop>I have created over a thousand blades</nop><br/>
+          <nop>Unknown to Death, Nor known to Life</nop><br/>
+          <nop>Have withstood pain to create many weapons</nop><br/>
+          <nop>Yet, those hands will never hold anything</nop><br/>
+          <nop>So as I pray, unlimited blade works.</nop><br/>
+        </p>
+      </Content>
+    </Doc>
+  </Doc>
+
+  <Doc name="DocRelative">
+    <Doc>
+      <Content>
+        <p>
+          <font size="2x">Relative Size Title</font>
+        </p>
+        <p>
+          <nop>I am the bone of my sword</nop><br/>
+          <nop>Steel is my body and fire is my blood</nop><br/>
+          <nop>I have created over a thousand blades</nop><br/>
+          <nop>Unknown to Death, Nor known to Life</nop><br/>
+          <nop>Have withstood pain to create many weapons</nop><br/>
+          <nop>Yet, those hands will never hold anything</nop><br/>
+          <nop>So as I pray, unlimited blade works.</nop><br/>
+        </p>
+      </Content>
+    </Doc>
+  </Doc>
+
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:x="demo::*">
       <ref.State Name="flag" Type="bool"/>
@@ -36,17 +82,8 @@
                   </Cell>
 
                   <Cell Site="row:1 column:0">
-                    <MultilineTextBox ref.Name="textBoxM">
+                    <MultilineTextBox ref.Name="textBoxM" Text-uri="res://Text">
                       <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      <att.Text>
-                        <![CDATA[I am the bone of my sword 
-Steel is my body and fire is my blood 
-I have created over a thousand blades 
-Unknown to Death, Nor known to Life 
-Have withstood pain to create many weapons 
-Yet, those hands will never hold anything 
-So as I pray, unlimited blade works.]]>
-                      </att.Text>
                     </MultilineTextBox>
                   </Cell>
                 </Table>
@@ -70,31 +107,13 @@ So as I pray, unlimited blade works.]]>
                   </Cell>
 
                   <Cell Site="row:1 column:0">
-                    <DocumentViewer ref.Name="documentViewer" EditMode="Editable">
+                    <DocumentViewer ref.Name="documentViewer" EditMode="Editable" Document-uri="res://DocFixed">
                       <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      <att.Text>
-                        <![CDATA[I am the bone of my sword 
-Steel is my body and fire is my blood 
-I have created over a thousand blades 
-Unknown to Death, Nor known to Life 
-Have withstood pain to create many weapons 
-Yet, those hands will never hold anything 
-So as I pray, unlimited blade works.]]>
-                      </att.Text>
                     </DocumentViewer>
                   </Cell>
                   <Cell Site="row:1 column:1">
-                    <DocumentLabel ref.Name="documentLabel" EditMode="Editable">
+                    <DocumentLabel ref.Name="documentLabel" EditMode="Editable" Document-uri="res://DocRelative">
                       <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                      <att.Text>
-                        <![CDATA[I am the bone of my sword 
-Steel is my body and fire is my blood 
-I have created over a thousand blades 
-Unknown to Death, Nor known to Life 
-Have withstood pain to create many weapons 
-Yet, those hands will never hold anything 
-So as I pray, unlimited blade works.]]>
-                      </att.Text>
                     </DocumentLabel>
                   </Cell>
                 </Table>

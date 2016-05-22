@@ -26,7 +26,7 @@ namespace vl
 			}
 
 /***********************************************************************
-Color Serialization
+Serialization (Color)
 ***********************************************************************/
 
 			Color TypedValueSerializerProvider<Color>::GetDefaultValue()
@@ -47,7 +47,28 @@ Color Serialization
 			}
 
 /***********************************************************************
-GlobalStringKey Serialization
+Serialization (DocumentFontSize)
+***********************************************************************/
+
+			DocumentFontSize TypedValueSerializerProvider<DocumentFontSize>::GetDefaultValue()
+			{
+				return DocumentFontSize();
+			}
+
+			bool TypedValueSerializerProvider<DocumentFontSize>::Serialize(const DocumentFontSize& input, WString& output)
+			{
+				output=input.ToString();
+				return true;
+			}
+
+			bool TypedValueSerializerProvider<DocumentFontSize>::Deserialize(const WString& input, DocumentFontSize& output)
+			{
+				output=DocumentFontSize::Parse(input);
+				return true;
+			}
+
+/***********************************************************************
+Serialization (GlobalStringKey)
 ***********************************************************************/
 
 			GlobalStringKey TypedValueSerializerProvider<GlobalStringKey>::GetDefaultValue()

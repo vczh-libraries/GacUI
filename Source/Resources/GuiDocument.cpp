@@ -10,6 +10,27 @@ namespace vl
 		using namespace regex;
 
 /***********************************************************************
+DocumentFontSize
+***********************************************************************/
+
+		DocumentFontSize DocumentFontSize::Parse(const WString& value)
+		{
+			if (value.Length() > 0 && value[value.Length() - 1] == L'x')
+			{
+				return DocumentFontSize(wtof(value.Left(value.Length() - 1)), true);
+			}
+			else
+			{
+				return DocumentFontSize(wtof(value), false);
+			}
+		}
+
+		WString DocumentFontSize::ToString()const
+		{
+			return ftow(size) + (relative ? L"x" : L"");
+		}
+
+/***********************************************************************
 DocumentImageRun
 ***********************************************************************/
 
@@ -130,7 +151,7 @@ DocumentModel
 				FontProperties font=GetCurrentController()->ResourceService()->GetDefaultFont();
 				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
 				sp->face=font.fontFamily;
-				sp->size=font.size;
+				sp->size=DocumentFontSize(font.size, false);
 				sp->color=Color();
 				sp->backgroundColor=Color(0, 0, 0, 0);
 				sp->bold=font.bold;
@@ -249,7 +270,7 @@ DocumentModel
 			Ptr<DocumentStyleProperties> style = new DocumentStyleProperties;
 
 			style->face					=defaultFont.fontFamily;
-			style->size					=defaultFont.size;
+			style->size					=DocumentFontSize(defaultFont.size, false);
 			style->bold					=defaultFont.bold;
 			style->italic				=defaultFont.italic;
 			style->underline			=defaultFont.underline;
@@ -264,7 +285,6 @@ DocumentModel
 		{
 			FontProperties font;
 			font.fontFamily			=sp->face				?sp->face.Value()				:context.style.fontFamily;
-			font.size				=sp->size				?sp->size.Value()				:context.style.size;
 			font.bold				=sp->bold				?sp->bold.Value()				:context.style.bold;
 			font.italic				=sp->italic				?sp->italic.Value()				:context.style.italic;
 			font.underline			=sp->underline			?sp->underline.Value()			:context.style.underline;
@@ -273,6 +293,15 @@ DocumentModel
 			font.verticalAntialias	=sp->verticalAntialias	?sp->verticalAntialias.Value()	:context.style.verticalAntialias;
 			Color color				=sp->color				?sp->color.Value()				:context.color;
 			Color backgroundColor	=sp->backgroundColor	?sp->backgroundColor.Value()	:context.backgroundColor;
+
+			if (sp->size)
+			{
+				font.size = (vint)(sp->size.Value().relative ? context.style.size * sp->size.Value().size : sp->size.Value().size);
+			}
+			else
+			{
+				font.size = context.style.size;
+			}
 			return ResolvedStyle(font, color, backgroundColor);
 		}
 

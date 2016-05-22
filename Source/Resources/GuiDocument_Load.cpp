@@ -158,7 +158,7 @@ document_operation_visitors::DeserializeNodeVisitor
 							}
 							else if(att->name.value==L"size")
 							{
-								sp->size=wtoi(att->value.value);
+								sp->size=DocumentFontSize::Parse(att->value.value);
 							}
 							else if(att->name.value==L"color")
 							{
@@ -332,7 +332,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if(att->name.value==L"size")
 					{
-						sp->size=wtoi(XmlGetValue(att));
+						sp->size=DocumentFontSize::Parse(XmlGetValue(att));
 					}
 					else if(att->name.value==L"color")
 					{
