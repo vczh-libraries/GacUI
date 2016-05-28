@@ -385,7 +385,12 @@ ControllerListener
 							}
 						}
 #if _DEBUG
-						CHECK_ERROR(d3d11Device, L"Direct2DWindowsNativeControllerListener::NativeWindowCreated(INativeWindow*)#Failed to create Direct3D 11 Device. This error will be skipped under Release mode, but you still need to check your Windows SDK Installation.");
+						CHECK_ERROR(d3d11Device,
+							L"Direct2DWindowsNativeControllerListener::NativeWindowCreated(INativeWindow*)#"
+							L"Failed to create Direct3D 11 Device. "
+							L"If you are running in Debug mode on Windows 10, please ensure the optional feature [Graphics Tools] is correctly installed. "
+							L"This error will be skipped in Release mode and GacUI will fallback to use Direct2D 1.0, but you still need to check your Windows SDK Installation."
+							);
 #endif
 					}
 
