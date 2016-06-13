@@ -371,13 +371,13 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
 				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiListItemTemplate_ItemStyleController>(GuiListItemTemplate_ItemStyleProvider*), { L"itemStyleProvider" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate_ItemStyleController*(GuiListItemTemplate_ItemStyleProvider*), { L"itemStyleProvider" })
 			END_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate_ItemStyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiListItemTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
 			END_CLASS_MEMBER(GuiListItemTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate_ItemStyleProvider)

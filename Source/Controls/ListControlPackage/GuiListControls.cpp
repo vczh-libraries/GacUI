@@ -1004,7 +1004,11 @@ FixedHeightItemArranger
 									if(newRowHeight<styleHeight)
 									{
 										newRowHeight=styleHeight;
-										newEndIndex=(newBounds.Bottom()-1)/newRowHeight;
+										newEndIndex = newStartIndex + (newBounds.Height() - 1) / newRowHeight + 1;
+										if (newEndIndex < i)
+										{
+											newEndIndex = i;
+										}
 									}
 								}
 							}

@@ -59,6 +59,34 @@ void GuiMain_GrammarIntellisense()
 	GetApplication()->Run(&window);
 }
 
+int CALLBACK EnumFontFamExProc(const LOGFONT *lpelfe, const TEXTMETRIC *lpntme, DWORD FontType, LPARAM lParam)
+{
+	auto fontFamilies = (SortedList<WString>*)lParam;
+	if (lpelfe->lfFaceName[0] != L'@'&&!fontFamilies->Contains(lpelfe->lfFaceName))
+	{
+		fontFamilies->Add(lpelfe->lfFaceName);
+	}
+	return -1;
+}
+
+void EnumerateFontFamilies(const Func<void(const WString&)>& callback)
+{
+	HDC dc = GetDC(NULL);
+	LOGFONT logFont;
+	ZeroMemory(&logFont, sizeof(logFont));
+	logFont.lfCharSet = DEFAULT_CHARSET;
+	logFont.lfFaceName[0] = L'\0';
+
+	SortedList<WString> fontFamilies;
+	EnumFontFamiliesEx(dc, &logFont, &EnumFontFamExProc, (LPARAM)&fontFamilies, 0);
+
+	FOREACH(WString, fontFamily, fontFamilies)
+	{
+		callback(fontFamily);
+	}
+	ReleaseDC(NULL, dc);
+}
+
 void GuiMain_Resource()
 {
 	//{
@@ -70,7 +98,7 @@ void GuiMain_Resource()
 	//}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(L"UI5.xml", errors);
+		auto resource = GuiResource::LoadFromXml(L"UI6_FontList.xml", errors);
 		resource->Precompile(nullptr, errors);
 
 		{
@@ -111,12 +139,20 @@ void GuiMain_Resource()
 		}
 	}
 
-	// UI1.xml / UI3.xml / UI4.xml / UI5.xml
-	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+	// UI1 / UI3 / UI4 / UI5
+	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
-	// UI2.xml
+	// UI2
 	// auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
 	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
+
+	// UI6
+	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+	auto fontList = UnboxValue<GuiTextList*>(Value::From(window).GetProperty(L"fontList"));
+	EnumerateFontFamilies([fontList](const WString& fontFamily)
+	{
+		fontList->GetItems().Add(new list::TextItem(fontFamily));
+	});
 
 	window->ForceCalculateSizeImmediately();
 	window->MoveToScreenCenter();

@@ -118,7 +118,7 @@ GuiVrtualTypeInstanceLoader
 				static Ptr<WfExpression> CreateStyleMethodArgument(const WString& method, ArgumentMap& arguments)
 				{
 					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (indexControlTemplate == -1)
+					if (indexControlTemplate != -1)
 					{
 						auto refControlStyle = MakePtr<WfReferenceExpression>();
 						refControlStyle->name.value = L"<controlStyle>";
@@ -221,6 +221,7 @@ GuiVrtualTypeInstanceLoader
 								condition->type = GetTypeFromTypeInfo(viewModelType);
 
 								auto ifStat = MakePtr<WfIfStatement>();
+								subBlock->statements.Add(ifStat);
 								ifStat->expression = condition;
 
 								returnStatBlock = MakePtr<WfBlockStatement>();
@@ -238,7 +239,12 @@ GuiVrtualTypeInstanceLoader
 								{
 									auto refViewModel = MakePtr<WfReferenceExpression>();
 									refViewModel->name.value = L"<viewModel>";
-									createControlTemplate->arguments.Add(refViewModel);
+
+									auto cast = MakePtr<WfTypeCastingExpression>();
+									cast->strategy = WfTypeCastingStrategy::Strong;
+									cast->expression = refViewModel;
+									cast->type = GetTypeFromTypeInfo(viewModelType);
+									createControlTemplate->arguments.Add(cast);
 								}
 
 								auto varTemplate = MakePtr<WfVariableDeclaration>();

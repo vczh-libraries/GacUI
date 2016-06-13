@@ -410,7 +410,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt" />
-    <Text Include="UI.xml" />
+    <Text Include="UI1_StyleTemplate.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Gaclib.png" />
@@ -419,12 +419,13 @@
     <None Include="..\..\..\Source\Compiler\InstanceQuery\Codegen.bat" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="UI2.xml" />
-    <Xml Include="UI3.xml" />
-    <Xml Include="UI4.xml" />
-    <Xml Include="UI5.xml">
+    <Xml Include="UI2_Properties.xml" />
+    <Xml Include="UI3_DataGrid.xml" />
+    <Xml Include="UI4_UserControl.xml" />
+    <Xml Include="UI5_DocumentTextBox.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="UI6_FontList.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

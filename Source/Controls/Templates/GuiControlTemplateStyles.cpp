@@ -1129,6 +1129,7 @@ GuiListItemTemplate_ItemStyleProvider
 					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
 					if (auto listItemTemplate = dynamic_cast<GuiListItemTemplate*>(itemTemplate))
 					{
+						listItemTemplate->SetFont(listControl->GetFont());
 						listItemTemplate->SetIndex(itemIndex);
 						controller->SetTemplate(listItemTemplate);
 					}
@@ -1344,6 +1345,7 @@ GuiTreeItemTemplate_ItemStyleProvider
 					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
 					if (auto treeItemTemplate = dynamic_cast<GuiTreeItemTemplate*>(itemTemplate))
 					{
+						treeItemTemplate->SetFont(treeListControl->GetFont());
 						treeItemTemplate->SetIndex(itemIndex);
 						controller->SetTemplate(treeItemTemplate);
 					}
