@@ -73,6 +73,7 @@ Type List
 			F(presentation::INativeController)\
 			F(presentation::GuiImageData)\
 			F(presentation::GuiTextData)\
+			F(presentation::DocumentFontSize)\
 			F(presentation::DocumentStyleProperties)\
 			F(presentation::DocumentRun)\
 			F(presentation::DocumentContainerRun)\
@@ -110,7 +111,7 @@ Type List
 			GUIREFLECTIONBASIC_TYPELIST(DECL_TYPE_INFO)
 
 /***********************************************************************
-Type Declaration
+Serialization (Color)
 ***********************************************************************/
 
 			template<>
@@ -127,6 +128,29 @@ Type Declaration
 			public:
 				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::Color>, TypeDescriptorFlags::Primitive> CustomTypeDescriptorImpl;
 			};
+
+/***********************************************************************
+Serialization (DocumentFontSize)
+***********************************************************************/
+
+			template<>
+			struct TypedValueSerializerProvider<presentation::DocumentFontSize>
+			{
+				static presentation::DocumentFontSize GetDefaultValue();
+				static bool Serialize(const presentation::DocumentFontSize& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::DocumentFontSize& output);
+			};
+
+			template<>
+			struct CustomTypeDescriptorSelector<presentation::DocumentFontSize>
+			{
+			public:
+				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::DocumentFontSize>, TypeDescriptorFlags::Primitive> CustomTypeDescriptorImpl;
+			};
+
+/***********************************************************************
+Serialization (GlobalStringKey)
+***********************************************************************/
 
 			template<>
 			struct TypedValueSerializerProvider<presentation::GlobalStringKey>

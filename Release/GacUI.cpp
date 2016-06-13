@@ -9343,7 +9343,11 @@ FixedHeightItemArranger
 									if(newRowHeight<styleHeight)
 									{
 										newRowHeight=styleHeight;
-										newEndIndex=(newBounds.Bottom()-1)/newRowHeight;
+										newEndIndex = newStartIndex + (newBounds.Height() - 1) / newRowHeight + 1;
+										if (newEndIndex < i)
+										{
+											newEndIndex = i;
+										}
 									}
 								}
 							}
@@ -14788,7 +14792,12 @@ Win7Theme
 
 			controls::GuiDocumentLabel::IStyleController* Win7Theme::CreateDocumentLabelStyle()
 			{
-				return new Win7DocumentlabelStyle;
+				return new Win7DocumentLabelStyle;
+			}
+
+			controls::GuiDocumentLabel::IStyleController* Win7Theme::CreateDocumentTextBoxStyle()
+			{
+				return new Win7DocumentTextBoxStyle;
 			}
 
 			controls::GuiListView::IStyleProvider* Win7Theme::CreateListViewStyle()
@@ -15028,7 +15037,12 @@ Win8Theme
 
 			controls::GuiDocumentLabel::IStyleController* Win8Theme::CreateDocumentLabelStyle()
 			{
-				return new Win8DocumentlabelStyle;
+				return new Win8DocumentLabelStyle;
+			}
+
+			controls::GuiDocumentLabel::IStyleController* Win8Theme::CreateDocumentTextBoxStyle()
+			{
+				return new Win8DocumentTextBoxStyle;
 			}
 
 			controls::GuiListView::IStyleProvider* Win8Theme::CreateListViewStyle()
@@ -17709,6 +17723,7 @@ Win7TextBoxBackground
 				{
 					GuiBoundsComposition* containerComposition=new GuiBoundsComposition;
 					boundsComposition->AddChild(containerComposition);
+					containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					containerComposition->SetAlignmentToParent(Margin(2, 2, 2, 2));
 					return containerComposition;
 				}
@@ -17831,15 +17846,64 @@ Win7DocumentViewerStyle
 Win7DocumentlabelStyle
 ***********************************************************************/
 
-			Win7DocumentlabelStyle::Win7DocumentlabelStyle()
+			Win7DocumentLabelStyle::Win7DocumentLabelStyle()
 			{
 			}
 
-			Win7DocumentlabelStyle::~Win7DocumentlabelStyle()
+			Win7DocumentLabelStyle::~Win7DocumentLabelStyle()
 			{
 			}
 
-			Ptr<DocumentModel> Win7DocumentlabelStyle::GetBaselineDocument()
+			Ptr<DocumentModel> Win7DocumentLabelStyle::GetBaselineDocument()
+			{
+				return nullptr;
+			}
+
+/***********************************************************************
+Win7DocumentTextBoxStyle
+***********************************************************************/
+
+			Win7DocumentTextBoxStyle::Win7DocumentTextBoxStyle()
+			{
+				boundsComposition = new GuiBoundsComposition;
+				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition = background.InstallBackground(boundsComposition);
+				background.AssociateStyleController(this);
+			}
+
+			Win7DocumentTextBoxStyle::~Win7DocumentTextBoxStyle()
+			{
+			}
+
+			compositions::GuiBoundsComposition* Win7DocumentTextBoxStyle::GetBoundsComposition()
+			{
+				return boundsComposition;
+			}
+
+			compositions::GuiGraphicsComposition* Win7DocumentTextBoxStyle::GetContainerComposition()
+			{
+				return containerComposition;
+			}
+
+			void Win7DocumentTextBoxStyle::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
+			{
+				background.SetFocusableComposition(value);
+			}
+
+			void Win7DocumentTextBoxStyle::SetText(const WString& value)
+			{
+			}
+
+			void Win7DocumentTextBoxStyle::SetFont(const FontProperties& value)
+			{
+			}
+
+			void Win7DocumentTextBoxStyle::SetVisuallyEnabled(bool value)
+			{
+				background.SetVisuallyEnabled(value);
+			}
+
+			Ptr<DocumentModel> Win7DocumentTextBoxStyle::GetBaselineDocument()
 			{
 				return nullptr;
 			}
@@ -21730,6 +21794,7 @@ Win8TextBoxBackground
 				{
 					GuiBoundsComposition* containerComposition=new GuiBoundsComposition;
 					boundsComposition->AddChild(containerComposition);
+					containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					containerComposition->SetAlignmentToParent(Margin(2, 2, 2, 2));
 					return containerComposition;
 				}
@@ -21852,15 +21917,64 @@ Win8DocumentViewerStyle
 Win8DocumentlabelStyle
 ***********************************************************************/
 
-			Win8DocumentlabelStyle::Win8DocumentlabelStyle()
+			Win8DocumentLabelStyle::Win8DocumentLabelStyle()
 			{
 			}
 
-			Win8DocumentlabelStyle::~Win8DocumentlabelStyle()
+			Win8DocumentLabelStyle::~Win8DocumentLabelStyle()
 			{
 			}
 
-			Ptr<DocumentModel> Win8DocumentlabelStyle::GetBaselineDocument()
+			Ptr<DocumentModel> Win8DocumentLabelStyle::GetBaselineDocument()
+			{
+				return nullptr;
+			}
+
+/***********************************************************************
+Win8DocumentTextBoxStyle
+***********************************************************************/
+
+			Win8DocumentTextBoxStyle::Win8DocumentTextBoxStyle()
+			{
+				boundsComposition = new GuiBoundsComposition;
+				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition = background.InstallBackground(boundsComposition);
+				background.AssociateStyleController(this);
+			}
+
+			Win8DocumentTextBoxStyle::~Win8DocumentTextBoxStyle()
+			{
+			}
+
+			compositions::GuiBoundsComposition* Win8DocumentTextBoxStyle::GetBoundsComposition()
+			{
+				return boundsComposition;
+			}
+
+			compositions::GuiGraphicsComposition* Win8DocumentTextBoxStyle::GetContainerComposition()
+			{
+				return containerComposition;
+			}
+
+			void Win8DocumentTextBoxStyle::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
+			{
+				background.SetFocusableComposition(value);
+			}
+
+			void Win8DocumentTextBoxStyle::SetText(const WString& value)
+			{
+			}
+
+			void Win8DocumentTextBoxStyle::SetFont(const FontProperties& value)
+			{
+			}
+
+			void Win8DocumentTextBoxStyle::SetVisuallyEnabled(bool value)
+			{
+				background.SetVisuallyEnabled(value);
+			}
+
+			Ptr<DocumentModel> Win8DocumentTextBoxStyle::GetBaselineDocument()
 			{
 				return nullptr;
 			}
@@ -25035,6 +25149,7 @@ GuiListItemTemplate_ItemStyleProvider
 					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
 					if (auto listItemTemplate = dynamic_cast<GuiListItemTemplate*>(itemTemplate))
 					{
+						listItemTemplate->SetFont(listControl->GetFont());
 						listItemTemplate->SetIndex(itemIndex);
 						controller->SetTemplate(listItemTemplate);
 					}
@@ -25250,6 +25365,7 @@ GuiTreeItemTemplate_ItemStyleProvider
 					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
 					if (auto treeItemTemplate = dynamic_cast<GuiTreeItemTemplate*>(itemTemplate))
 					{
+						treeItemTemplate->SetFont(treeListControl->GetFont());
 						treeItemTemplate->SetIndex(itemIndex);
 						controller->SetTemplate(treeItemTemplate);
 					}
@@ -25776,6 +25892,7 @@ GuiDocumentCommonInterface
 				documentComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseUp);
 				documentComposition->GetEventReceiver()->mouseLeave.AttachMethod(this, &GuiDocumentCommonInterface::OnMouseLeave);
 
+				_sender->FontChanged.AttachMethod(this, &GuiDocumentCommonInterface::OnFontChanged);
 				_sender->GetFocusableComposition()->GetEventReceiver()->caretNotify.AttachMethod(this, &GuiDocumentCommonInterface::OnCaretNotify);
 				_sender->GetFocusableComposition()->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnGotFocus);
 				_sender->GetFocusableComposition()->GetEventReceiver()->lostFocus.AttachMethod(this, &GuiDocumentCommonInterface::OnLostFocus);
@@ -25895,6 +26012,22 @@ GuiDocumentCommonInterface
 					arguments.inputModel=inputModel;
 					undoRedoProcessor->OnReplaceModel(arguments);
 				}
+			}
+
+			void GuiDocumentCommonInterface::MergeBaselineAndDefaultFont(Ptr<DocumentModel> document)
+			{
+				document->MergeDefaultFont(documentControl->GetFont());
+				if (baselineDocument)
+				{
+					document->MergeBaselineStyles(baselineDocument);
+				}
+			}
+
+			void GuiDocumentCommonInterface::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				auto document = documentElement->GetDocument();
+				MergeBaselineAndDefaultFont(document);
+				documentElement->SetDocument(document);
 			}
 
 			void GuiDocumentCommonInterface::OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -26150,10 +26283,7 @@ GuiDocumentCommonInterface
 					value->paragraphs.Add(new DocumentParagraphRun);
 				}
 
-				if (baselineDocument)
-				{
-					value->MergeBaselineStyles(baselineDocument);
-				}
+				MergeBaselineAndDefaultFont(value);
 				documentElement->SetDocument(value);
 			}
 
@@ -27843,12 +27973,14 @@ GuiSinglelineTextBox::StyleController
 				,textComposition(0)
 			{
 				boundsComposition=new GuiBoundsComposition;
+				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition=styleProvider->InstallBackground(boundsComposition);
 
 				textElement=GuiColorizedTextElement::Create();
 				textElement->SetViewPosition(Point(-TextMargin, -TextMargin));
 
 				textCompositionTable=new GuiTableComposition;
+				textCompositionTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				textCompositionTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				textCompositionTable->SetRowsAndColumns(3, 1);
 				textCompositionTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
@@ -27923,6 +28055,7 @@ GuiSinglelineTextBox::StyleController
 			{
 				textElement->SetFont(value);
 				styleProvider->SetFont(value);
+				textComposition->SetPreferredMinSize(Size(0, textElement->GetLines().GetRowHeight()));
 			}
 
 			void GuiSinglelineTextBox::StyleController::SetVisuallyEnabled(bool value)
@@ -35642,32 +35775,37 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::OnElementStateChanged()
 			{
-				if(element->document && element->document->paragraphs.Count()>0)
+				if (element->document && element->document->paragraphs.Count() > 0)
 				{
-					vint defaultSize=GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					paragraphDistance=defaultSize;
-					vint defaultHeight=defaultSize;
+					vint defaultSize = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+					paragraphDistance = defaultSize;
+					vint defaultHeight = defaultSize;
 
 					paragraphCaches.Resize(element->document->paragraphs.Count());
 					paragraphHeights.Resize(element->document->paragraphs.Count());
 					
-					for(vint i=0;i<paragraphCaches.Count();i++)
+					for (vint i = 0; i < paragraphCaches.Count(); i++)
 					{
-						paragraphCaches[i]=0;
+						paragraphCaches[i] = 0;
 					}
-					for(vint i=0;i<paragraphHeights.Count();i++)
+					for (vint i = 0; i < paragraphHeights.Count(); i++)
 					{
-						paragraphHeights[i]=defaultHeight;
+						paragraphHeights[i] = defaultHeight;
 					}
-					cachedTotalHeight=paragraphHeights.Count()*(defaultHeight+paragraphDistance);
-					minSize=Size(0, cachedTotalHeight);
+
+					cachedTotalHeight = paragraphHeights.Count() * (defaultHeight + paragraphDistance);
+					if (paragraphHeights.Count()>0)
+					{
+						cachedTotalHeight -= paragraphDistance;
+					}
+					minSize = Size(0, cachedTotalHeight);
 				}
 				else
 				{
 					paragraphCaches.Resize(0);
 					paragraphHeights.Resize(0);
-					cachedTotalHeight=0;
-					minSize=Size(0, 0);
+					cachedTotalHeight = 0;
+					minSize = Size(0, 0);
 				}
 
 				nameCallbackIdMap.Clear();
@@ -35677,11 +35815,11 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText)
 			{
-				if(0<=index && index<paragraphCaches.Count() && 0<=oldCount && index+oldCount<=paragraphCaches.Count() && 0<=newCount)
+				if (0 <= index && index < paragraphCaches.Count() && 0 <= oldCount && index + oldCount <= paragraphCaches.Count() && 0 <= newCount)
 				{
-					vint paragraphCount=element->document->paragraphs.Count();
-					CHECK_ERROR(updatedText || oldCount==newCount, L"GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
-					CHECK_ERROR(paragraphCount-paragraphCaches.Count()==newCount-oldCount, L"GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
+					vint paragraphCount = element->document->paragraphs.Count();
+					CHECK_ERROR(updatedText || oldCount == newCount, L"GuiDocumentlement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
+					CHECK_ERROR(paragraphCount - paragraphCaches.Count() == newCount - oldCount, L"GuiDocumentElement::GuiDocumentElementRenderer::NotifyParagraphUpdated(vint, vint, vint, bool)#Illegal values of oldCount and newCount.");
 
 					ParagraphCacheArray oldCaches;
 					CopyFrom(oldCaches, paragraphCaches);
@@ -35691,36 +35829,40 @@ GuiDocumentElement::GuiDocumentElementRenderer
 					CopyFrom(oldHeights, paragraphHeights);
 					paragraphHeights.Resize(paragraphCount);
 
-					vint defaultHeight=GetCurrentController()->ResourceService()->GetDefaultFont().size;
-					cachedTotalHeight=0;
+					vint defaultHeight = GetCurrentController()->ResourceService()->GetDefaultFont().size;
+					cachedTotalHeight = 0;
 
-					for(vint i=0;i<paragraphCount;i++)
+					for (vint i = 0; i < paragraphCount; i++)
 					{
-						if(i<index)
+						if (i < index)
 						{
-							paragraphCaches[i]=oldCaches[i];
-							paragraphHeights[i]=oldHeights[i];
+							paragraphCaches[i] = oldCaches[i];
+							paragraphHeights[i] = oldHeights[i];
 						}
-						else if(i<index+newCount)
+						else if (i < index + newCount)
 						{
-							paragraphCaches[i]=0;
-							paragraphHeights[i]=defaultHeight;
-							if(!updatedText && i<index+oldCount)
+							paragraphCaches[i] = 0;
+							paragraphHeights[i] = defaultHeight;
+							if (!updatedText && i < index + oldCount)
 							{
-								Ptr<ParagraphCache> cache=oldCaches[i];
+								auto cache = oldCaches[i];
 								if(cache)
 								{
-									cache->graphicsParagraph=0;
+									cache->graphicsParagraph = 0;
 								}
-								paragraphCaches[i]=cache;
+								paragraphCaches[i] = cache;
 							}
 						}
 						else
 						{
-							paragraphCaches[i]=oldCaches[i-(newCount-oldCount)];
-							paragraphHeights[i]=oldHeights[i-(newCount-oldCount)];
+							paragraphCaches[i] = oldCaches[i - (newCount - oldCount)];
+							paragraphHeights[i] = oldHeights[i - (newCount - oldCount)];
 						}
-						cachedTotalHeight+=paragraphHeights[i]+paragraphDistance;
+						cachedTotalHeight += paragraphHeights[i] + paragraphDistance;
+					}
+					if (paragraphCount > 0)
+					{
+						cachedTotalHeight -= paragraphDistance;
 					}
 
 					if (updatedText)
@@ -35728,13 +35870,15 @@ GuiDocumentElement::GuiDocumentElementRenderer
 						vint count = oldCount < newCount ? oldCount : newCount;
 						for (vint i = 0; i < count; i++)
 						{
-							auto cache = oldCaches[index + i];
-							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+							if (auto cache = oldCaches[index + i])
 							{
-								auto id = cache->embeddedObjects.Keys()[j];
-								auto name = cache->embeddedObjects.Values()[j]->name;
-								nameCallbackIdMap.Remove(name);
-								freeCallbackIds.Add(id);
+								for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
+								{
+									auto id = cache->embeddedObjects.Keys()[j];
+									auto name = cache->embeddedObjects.Values()[j]->name;
+									nameCallbackIdMap.Remove(name);
+									freeCallbackIds.Add(id);
+								}
 							}
 						}
 					}
@@ -39420,6 +39564,27 @@ namespace vl
 		using namespace regex;
 
 /***********************************************************************
+DocumentFontSize
+***********************************************************************/
+
+		DocumentFontSize DocumentFontSize::Parse(const WString& value)
+		{
+			if (value.Length() > 0 && value[value.Length() - 1] == L'x')
+			{
+				return DocumentFontSize(wtof(value.Left(value.Length() - 1)), true);
+			}
+			else
+			{
+				return DocumentFontSize(wtof(value), false);
+			}
+		}
+
+		WString DocumentFontSize::ToString()const
+		{
+			return ftow(size) + (relative ? L"x" : L"");
+		}
+
+/***********************************************************************
 DocumentImageRun
 ***********************************************************************/
 
@@ -39540,7 +39705,7 @@ DocumentModel
 				FontProperties font=GetCurrentController()->ResourceService()->GetDefaultFont();
 				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
 				sp->face=font.fontFamily;
-				sp->size=font.size;
+				sp->size=DocumentFontSize(font.size, false);
 				sp->color=Color();
 				sp->backgroundColor=Color(0, 0, 0, 0);
 				sp->bold=font.bold;
@@ -39606,18 +39771,11 @@ DocumentModel
 			if(!style->verticalAntialias	&& parent->verticalAntialias)	style->verticalAntialias	=parent->verticalAntialias;
 		}
 
-		void DocumentModel::MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName)
+		void DocumentModel::MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName)
 		{
-			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName);
-			if (indexSrc == -1)
-			{
-				return;
-			}
-
 			auto indexDst = styles.Keys().IndexOf(styleName);
-			auto csp = baselineDocument->styles.Values()[indexSrc]->styles;
 			Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
-			MergeStyle(sp, csp);
+			MergeStyle(sp, style);
 			if (indexDst != -1)
 			{
 				MergeStyle(sp, styles.Values()[indexDst]->styles);
@@ -39640,6 +39798,18 @@ DocumentModel
 			}
 		}
 
+		void DocumentModel::MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName)
+		{
+			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName);
+			if (indexSrc == -1)
+			{
+				return;
+			}
+
+			auto csp = baselineDocument->styles.Values()[indexSrc]->styles;
+			MergeBaselineStyle(csp, styleName);
+		}
+
 		void DocumentModel::MergeBaselineStyles(Ptr<DocumentModel> baselineDocument)
 		{
 			MergeBaselineStyle(baselineDocument, DefaultStyleName);
@@ -39649,11 +39819,26 @@ DocumentModel
 			MergeBaselineStyle(baselineDocument, ActiveLinkStyleName);
 		}
 
+		void DocumentModel::MergeDefaultFont(const FontProperties& defaultFont)
+		{
+			Ptr<DocumentStyleProperties> style = new DocumentStyleProperties;
+
+			style->face					=defaultFont.fontFamily;
+			style->size					=DocumentFontSize(defaultFont.size, false);
+			style->bold					=defaultFont.bold;
+			style->italic				=defaultFont.italic;
+			style->underline			=defaultFont.underline;
+			style->strikeline			=defaultFont.strikeline;
+			style->antialias			=defaultFont.antialias;
+			style->verticalAntialias	=defaultFont.verticalAntialias;
+
+			MergeBaselineStyle(style, DefaultStyleName);
+		}
+
 		DocumentModel::ResolvedStyle DocumentModel::GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context)
 		{
 			FontProperties font;
 			font.fontFamily			=sp->face				?sp->face.Value()				:context.style.fontFamily;
-			font.size				=sp->size				?sp->size.Value()				:context.style.size;
 			font.bold				=sp->bold				?sp->bold.Value()				:context.style.bold;
 			font.italic				=sp->italic				?sp->italic.Value()				:context.style.italic;
 			font.underline			=sp->underline			?sp->underline.Value()			:context.style.underline;
@@ -39662,6 +39847,15 @@ DocumentModel
 			font.verticalAntialias	=sp->verticalAntialias	?sp->verticalAntialias.Value()	:context.style.verticalAntialias;
 			Color color				=sp->color				?sp->color.Value()				:context.color;
 			Color backgroundColor	=sp->backgroundColor	?sp->backgroundColor.Value()	:context.backgroundColor;
+
+			if (sp->size)
+			{
+				font.size = (vint)(sp->size.Value().relative ? context.style.size * sp->size.Value().size : sp->size.Value().size);
+			}
+			else
+			{
+				font.size = context.style.size;
+			}
 			return ResolvedStyle(font, color, backgroundColor);
 		}
 
@@ -41098,39 +41292,64 @@ document_operation_visitors::SummerizeStyleVisitor
 					return resolvedStyles[resolvedStyles.Count()-1];
 				}
 
-				template<typename T>
-				void OverrideStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T FontProperties::* srcField)
-				{
-					const DocumentModel::ResolvedStyle& src=GetCurrentResolvedStyle();
-					style.Obj()->*dstField=src.style.*srcField;
-				}
-
-				template<typename T>
-				void OverrideStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T DocumentModel::ResolvedStyle::* srcField)
-				{
-					const DocumentModel::ResolvedStyle& src=GetCurrentResolvedStyle();
-					style.Obj()->*dstField=src.*srcField;
-				}
+				// ---------------------------------------------------------
 
 				template<typename T>
 				void SetStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T FontProperties::* srcField)
 				{
-					const DocumentModel::ResolvedStyle& src=GetCurrentResolvedStyle();
-					if(style.Obj()->*dstField && (style.Obj()->*dstField).Value()!=src.style.*srcField)
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					if (style.Obj()->*dstField && (style.Obj()->*dstField).Value() != src.style.*srcField)
 					{
-						style.Obj()->*dstField=Nullable<T>();
+						style.Obj()->*dstField = Nullable<T>();
 					}
 				}
 
 				template<typename T>
 				void SetStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T DocumentModel::ResolvedStyle::* srcField)
 				{
-					const DocumentModel::ResolvedStyle& src=GetCurrentResolvedStyle();
-					if(style.Obj()->*dstField && (style.Obj()->*dstField).Value()!=src.*srcField)
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					if (style.Obj()->*dstField && (style.Obj()->*dstField).Value() != src.*srcField)
 					{
-						style.Obj()->*dstField=Nullable<T>();
+						style.Obj()->*dstField = Nullable<T>();
 					}
 				}
+
+				void SetStyleItem(Nullable<DocumentFontSize> DocumentStyleProperties::* dstField, vint FontProperties::* srcField)
+				{
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					if (style.Obj()->*dstField)
+					{
+						auto dfs = (style.Obj()->*dstField).Value();
+						if (dfs.relative || dfs.size != src.style.*srcField)
+						{
+							style.Obj()->*dstField = Nullable<DocumentFontSize>();
+						}
+					}
+				}
+
+				// ---------------------------------------------------------
+
+				template<typename T>
+				void OverrideStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T FontProperties::* srcField)
+				{
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					style.Obj()->*dstField = src.style.*srcField;
+				}
+
+				template<typename T>
+				void OverrideStyleItem(Nullable<T> DocumentStyleProperties::* dstField, T DocumentModel::ResolvedStyle::* srcField)
+				{
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					style.Obj()->*dstField = src.*srcField;
+				}
+
+				void OverrideStyleItem(Nullable<DocumentFontSize> DocumentStyleProperties::* dstField, vint FontProperties::* srcField)
+				{
+					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
+					style.Obj()->*dstField = DocumentFontSize(src.style.*srcField, false);
+				}
+
+				// ---------------------------------------------------------
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
@@ -41148,7 +41367,7 @@ document_operation_visitors::SummerizeStyleVisitor
 				void Visit(DocumentTextRun* run)override
 				{
 					const DocumentModel::ResolvedStyle& currentResolvedStyle=GetCurrentResolvedStyle();
-					if(style)
+					if (style)
 					{
 						SetStyleItem(&DocumentStyleProperties::face,					&FontProperties::fontFamily);
 						SetStyleItem(&DocumentStyleProperties::size,					&FontProperties::size);
@@ -41989,7 +42208,7 @@ document_operation_visitors::DeserializeNodeVisitor
 							}
 							else if(att->name.value==L"size")
 							{
-								sp->size=wtoi(att->value.value);
+								sp->size=DocumentFontSize::Parse(att->value.value);
 							}
 							else if(att->name.value==L"color")
 							{
@@ -42163,7 +42382,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if(att->name.value==L"size")
 					{
-						sp->size=wtoi(XmlGetValue(att));
+						sp->size=DocumentFontSize::Parse(XmlGetValue(att));
 					}
 					else if(att->name.value==L"color")
 					{
@@ -42372,7 +42591,7 @@ document_operation_visitors::SerializeRunVisitor
 				{
 					if(run->text!=L"")
 					{
-						XmlElementWriter writer(parent);
+						auto writer = XmlElementWriter(parent).Element(L"nop");
 						auto begin = run->text.Buffer();
 						auto reading = begin;
 						auto last = reading;
@@ -42436,7 +42655,7 @@ document_operation_visitors::SerializeRunVisitor
 						}
 						if(sp->size)
 						{
-							writer.Attribute(L"size", itow(sp->size.Value()));
+							writer.Attribute(L"size", sp->size.Value().ToString());
 						}
 						if(sp->color)
 						{
@@ -42627,7 +42846,7 @@ DocumentModel
 					}
 
 					if(sp->face)				XmlElementWriter(styleElement).Element(L"face").Text(		sp->face.Value()						);
-					if(sp->size)				XmlElementWriter(styleElement).Element(L"size").Text(itow(	sp->size.Value()						));
+					if(sp->size)				XmlElementWriter(styleElement).Element(L"size").Text(		sp->size.Value().ToString()				);
 					if(sp->color)				XmlElementWriter(styleElement).Element(L"color").Text(		sp->color.Value().ToString()			);
 					if(sp->backgroundColor)		XmlElementWriter(styleElement).Element(L"bkcolor").Text(	sp->color.Value().ToString()			);
 					if(sp->bold)				XmlElementWriter(styleElement).Element(L"b").Text(			sp->bold.Value()?L"true":L"false"		);

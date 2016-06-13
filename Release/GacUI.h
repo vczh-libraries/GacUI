@@ -3900,6 +3900,35 @@ namespace vl
 Rich Content Document (style)
 ***********************************************************************/
 
+		struct DocumentFontSize
+		{
+			double							size = 0;
+			bool							relative = false;
+
+			DocumentFontSize()
+			{
+			}
+
+			DocumentFontSize(double _size, bool _relative)
+				:size(_size)
+				, relative(_relative)
+			{
+			}
+
+			static DocumentFontSize			Parse(const WString& value);
+			WString							ToString()const;
+
+			bool operator==(const DocumentFontSize& value)const
+			{
+				return size == value.size && relative == value.relative;
+			}
+
+			bool operator!=(const DocumentFontSize& value)const
+			{
+				return size != value.size || relative != value.relative;
+			}
+		};
+
 		/// <summary>Represents a text style.</summary>
 		class DocumentStyleProperties : public Object, public Description<DocumentStyleProperties>
 		{
@@ -3907,7 +3936,7 @@ Rich Content Document (style)
 			/// <summary>Font face.</summary>
 			Nullable<WString>				face;
 			/// <summary>Font size.</summary>
-			Nullable<vint>					size;
+			Nullable<DocumentFontSize>		size;
 			/// <summary>Font color.</summary>
 			Nullable<Color>					color;
 			/// <summary>Font color.</summary>
@@ -4171,8 +4200,10 @@ Rich Content Document (model)
 			DocumentModel();
 
 			static void						MergeStyle(Ptr<DocumentStyleProperties> style, Ptr<DocumentStyleProperties> parent);
+			void							MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName);
 			void							MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName);
 			void							MergeBaselineStyles(Ptr<DocumentModel> baselineDocument);
+			void							MergeDefaultFont(const FontProperties& defaultFont);
 			ResolvedStyle					GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context);
 			ResolvedStyle					GetStyle(const WString& styleName, const ResolvedStyle& context);
 
@@ -14548,7 +14579,9 @@ GuiDocumentCommonInterface
 				void										AddShortcutCommand(vint key, const Func<void()>& eventHandler);
 				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor);
 				void										EditStyleInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos)>& editor);
-
+				
+				void										MergeBaselineAndDefaultFont(Ptr<DocumentModel> document);
+				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnCaretNotify(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -17351,6 +17384,9 @@ namespace vl
 				/// <summary>Create a style for document label.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiDocumentLabel::IStyleController*						CreateDocumentLabelStyle()=0;
+				/// <summary>Create a style for document text box.</summary>
+				/// <returns>The created style.</returns>
+				virtual controls::GuiDocumentLabel::IStyleController*						CreateDocumentTextBoxStyle()=0;
 				/// <summary>Create a style for list view.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiListView::IStyleProvider*								CreateListViewStyle()=0;
@@ -17445,8 +17481,8 @@ namespace vl
 			/// <returns>The current theme style factory object.</returns>
 			extern ITheme*						GetCurrentTheme();
 			/// <summary>Set the current theme style factory object.</summary>
-			/// <param name="theam">The current theme style factory object.</param>
-			extern void							SetCurrentTheme(ITheme* theam);
+			/// <param name="theme">The current theme style factory object.</param>
+			extern void							SetCurrentTheme(ITheme* theme);
 
 			namespace g
 			{
@@ -17637,6 +17673,7 @@ Theme
 				elements::text::ColorEntry											GetDefaultTextBoxColorEntry()override;
 				controls::GuiDocumentViewer::IStyleProvider*						CreateDocumentViewerStyle()override;
 				controls::GuiDocumentLabel::IStyleController*						CreateDocumentLabelStyle()override;
+				controls::GuiDocumentLabel::IStyleController*						CreateDocumentTextBoxStyle()override;
 				controls::GuiListView::IStyleProvider*								CreateListViewStyle()override;
 				controls::GuiTreeView::IStyleProvider*								CreateTreeViewStyle()override;
 				controls::GuiSelectableButton::IStyleController*					CreateListItemBackgroundStyle()override;
@@ -17724,6 +17761,7 @@ Theme
 				elements::text::ColorEntry											GetDefaultTextBoxColorEntry()override;
 				controls::GuiDocumentViewer::IStyleProvider*						CreateDocumentViewerStyle()override;
 				controls::GuiDocumentLabel::IStyleController*						CreateDocumentLabelStyle()override;
+				controls::GuiDocumentLabel::IStyleController*						CreateDocumentTextBoxStyle()override;
 				controls::GuiListView::IStyleProvider*								CreateListViewStyle()override;
 				controls::GuiTreeView::IStyleProvider*								CreateTreeViewStyle()override;
 				controls::GuiSelectableButton::IStyleController*					CreateListItemBackgroundStyle()override;
@@ -20339,13 +20377,35 @@ TextBox
 			};
 
 			/// <summary>Document label style (Windows 7).</summary>
-			class Win7DocumentlabelStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win7DocumentlabelStyle>
+			class Win7DocumentLabelStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win7DocumentLabelStyle>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win7DocumentlabelStyle();
-				~Win7DocumentlabelStyle();
+				Win7DocumentLabelStyle();
+				~Win7DocumentLabelStyle();
 
+				Ptr<DocumentModel>							GetBaselineDocument()override;
+			};
+
+			/// <summary>Document label style (Windows 7).</summary>
+			class Win7DocumentTextBoxStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win7DocumentTextBoxStyle>
+			{
+			protected:
+				Win7TextBoxBackground						background;
+				compositions::GuiBoundsComposition*			boundsComposition;
+				compositions::GuiGraphicsComposition*		containerComposition;
+
+			public:
+				/// <summary>Create the style.</summary>
+				Win7DocumentTextBoxStyle();
+				~Win7DocumentTextBoxStyle();
+
+				compositions::GuiBoundsComposition*			GetBoundsComposition()override;
+				compositions::GuiGraphicsComposition*		GetContainerComposition()override;
+				void										SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
+				void										SetText(const WString& value)override;
+				void										SetFont(const FontProperties& value)override;
+				void										SetVisuallyEnabled(bool value)override;
 				Ptr<DocumentModel>							GetBaselineDocument()override;
 			};
 #pragma warning(pop)
@@ -21214,7 +21274,7 @@ TextBox
 			
 #pragma warning(push)
 #pragma warning(disable:4250)
-			/// <summary>Document viewer style (Windows 7).</summary>
+			/// <summary>Document viewer style (Windows 8).</summary>
 			class Win8DocumentViewerStyle : public Win8MultilineTextBoxProvider, public virtual controls::GuiDocumentViewer::IStyleProvider, public Description<Win8DocumentViewerStyle>
 			{
 			public:
@@ -21225,14 +21285,36 @@ TextBox
 				Ptr<DocumentModel>							GetBaselineDocument()override;
 			};
 
-			/// <summary>Document label style (Windows 7).</summary>
-			class Win8DocumentlabelStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win8DocumentlabelStyle>
+			/// <summary>Document label style (Windows 8).</summary>
+			class Win8DocumentLabelStyle : public controls::GuiControl::EmptyStyleController, public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win8DocumentLabelStyle>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win8DocumentlabelStyle();
-				~Win8DocumentlabelStyle();
+				Win8DocumentLabelStyle();
+				~Win8DocumentLabelStyle();
 
+				Ptr<DocumentModel>							GetBaselineDocument()override;
+			};
+
+			/// <summary>Document label style (Windows 8).</summary>
+			class Win8DocumentTextBoxStyle : public virtual controls::GuiDocumentLabel::IStyleController, public Description<Win8DocumentTextBoxStyle>
+			{
+			protected:
+				Win8TextBoxBackground						background;
+				compositions::GuiBoundsComposition*			boundsComposition;
+				compositions::GuiGraphicsComposition*		containerComposition;
+
+			public:
+				/// <summary>Create the style.</summary>
+				Win8DocumentTextBoxStyle();
+				~Win8DocumentTextBoxStyle();
+
+				compositions::GuiBoundsComposition*			GetBoundsComposition()override;
+				compositions::GuiGraphicsComposition*		GetContainerComposition()override;
+				void										SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
+				void										SetText(const WString& value)override;
+				void										SetFont(const FontProperties& value)override;
+				void										SetVisuallyEnabled(bool value)override;
 				Ptr<DocumentModel>							GetBaselineDocument()override;
 			};
 #pragma warning(pop)
@@ -22238,7 +22320,7 @@ namespace vl
 Tab
 ***********************************************************************/
 
-			/// <summary>Tab page header style (Windows 7).</summary>
+			/// <summary>Tab page header style (Windows 8).</summary>
 			class Win8TabPageHeaderStyle : public Win8ButtonStyleBase, public Description<Win8TabPageHeaderStyle>
 			{
 			protected:

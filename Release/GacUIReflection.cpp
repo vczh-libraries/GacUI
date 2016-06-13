@@ -214,7 +214,7 @@ namespace vl
 			}
 
 /***********************************************************************
-Color Serialization
+Serialization (Color)
 ***********************************************************************/
 
 			Color TypedValueSerializerProvider<Color>::GetDefaultValue()
@@ -235,7 +235,28 @@ Color Serialization
 			}
 
 /***********************************************************************
-GlobalStringKey Serialization
+Serialization (DocumentFontSize)
+***********************************************************************/
+
+			DocumentFontSize TypedValueSerializerProvider<DocumentFontSize>::GetDefaultValue()
+			{
+				return DocumentFontSize();
+			}
+
+			bool TypedValueSerializerProvider<DocumentFontSize>::Serialize(const DocumentFontSize& input, WString& output)
+			{
+				output=input.ToString();
+				return true;
+			}
+
+			bool TypedValueSerializerProvider<DocumentFontSize>::Deserialize(const WString& input, DocumentFontSize& output)
+			{
+				output=DocumentFontSize::Parse(input);
+				return true;
+			}
+
+/***********************************************************************
+Serialization (GlobalStringKey)
 ***********************************************************************/
 
 			GlobalStringKey TypedValueSerializerProvider<GlobalStringKey>::GetDefaultValue()
@@ -1515,6 +1536,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetDefaultTextBoxColorEntry, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateDocumentViewerStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateDocumentLabelStyle, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreateDocumentTextBoxStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateListViewStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateTreeViewStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateListItemBackgroundStyle, NO_PARAMETER)
@@ -2632,8 +2654,8 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretBegin)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretEnd)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ActiveHyperlinkReference)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SelectionText)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SelectionModel)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionModel, SelectionChanged)
 
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
@@ -4065,13 +4087,13 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
 				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiListItemTemplate_ItemStyleController>(GuiListItemTemplate_ItemStyleProvider*), { L"itemStyleProvider" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate_ItemStyleController*(GuiListItemTemplate_ItemStyleProvider*), { L"itemStyleProvider" })
 			END_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate_ItemStyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiListItemTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
 			END_CLASS_MEMBER(GuiListItemTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate_ItemStyleProvider)
