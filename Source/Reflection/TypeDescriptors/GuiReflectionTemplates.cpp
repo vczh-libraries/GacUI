@@ -324,6 +324,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiComboBoxTemplate_StyleProvider)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBoxTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_METHOD(CreateArgument, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiDateComboBoxTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiScrollTemplate_StyleProvider)
@@ -345,6 +346,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiScrollView::IStyleProvider)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_METHOD(CreateArgument, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiTextListTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiListViewTemplate_StyleProvider)
