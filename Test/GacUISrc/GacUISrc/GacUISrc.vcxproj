@@ -426,6 +426,7 @@
       <SubType>Designer</SubType>
     </Xml>
     <Xml Include="UI6_FontList.xml" />
+    <Xml Include="UI7_ColorComboBox.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

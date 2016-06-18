@@ -572,6 +572,7 @@ GuiBindableTextListInstanceLoader
 						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<IValueEnumerable>());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
+						info->bindable = true;
 						return info;
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);

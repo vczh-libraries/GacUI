@@ -1,0 +1,168 @@
+<Resource>
+  <Script>
+    <Workflow-ViewModel>
+      <![CDATA[
+        module viewmodel;
+        
+        using presentation::*;
+        
+        namespace demo
+        {
+          class ColorItem
+          {
+            var name : string = "";
+            var color : Color = (cast Color "#000000");
+            
+            new(_name : string, _color : string)
+            {
+              name = _name;
+              color = cast Color _color;
+            }
+            
+            static func GetFewItems() : ColorItem^{}
+            {
+              return {
+                new ColorItem^("Black",   "#000000")
+                new ColorItem^("Red",     "#FF0000")
+                new ColorItem^("Lime",    "#00FF00")
+                new ColorItem^("Blue",    "#0000FF")
+                new ColorItem^("White",   "#FFFFFF")
+              };
+            }
+            
+            static func GetManyItems() : ColorItem^{}
+            {
+              return {
+                new ColorItem^("Black",   "#000000")
+                new ColorItem^("Maroon",  "#800000")
+                new ColorItem^("Green",   "#008000")
+                new ColorItem^("Olive",   "#808000")
+                new ColorItem^("Navy",    "#000080")
+                new ColorItem^("Purble",  "#800080")
+                new ColorItem^("Teal",    "#008080")
+                new ColorItem^("Silver",  "#C0C0C0")
+                new ColorItem^("Gray",    "#808080")
+                new ColorItem^("Red",     "#FF0000")
+                new ColorItem^("Lime",    "#00FF00")
+                new ColorItem^("Yellow",  "#FFFF00")
+                new ColorItem^("Blue",    "#0000FF")
+                new ColorItem^("Fuchsia", "#FF00FF")
+                new ColorItem^("Aqua",    "#00FFFF")
+                new ColorItem^("White",   "#FFFFFF")
+              };
+            }
+          }
+        }
+      ]]>
+    </Workflow-ViewModel>
+  </Script>
+  
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="demo::MainWindow">
+      <Window Text="MainWindow" ClientSize="x:480 y:320">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+        <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <ComboBox SelectedIndex="0">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ListControl>
+                <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.TextProperty>name</att.TextProperty>
+                  <att.ItemSource-eval>demo::ColorItem::GetFewItems()</att.ItemSource-eval>
+                  <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
+                </BindableTextList>
+              </att.ListControl>
+            </ComboBox>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <ComboBox SelectedIndex="0">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ListControl>
+                <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.TextProperty>name</att.TextProperty>
+                  <att.ItemSource-eval>demo::ColorItem::GetManyItems()</att.ItemSource-eval>
+                  <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
+                </BindableTextList>
+              </att.ListControl>
+            </ComboBox>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.ItemSource-eval>demo::ColorItem::GetFewItems()</att.ItemSource-eval>
+              <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </BindableTextList>
+          </Cell>
+          <Cell Site="row:1 column:1">
+            <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.ItemSource-eval>demo::ColorItem::GetManyItems()</att.ItemSource-eval>
+              <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </BindableTextList>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+
+  <Instance name="ColorListItemTemplateResource">
+    <Instance ref.Class="demo::ColorListItemTemplate">
+      <ref.Parameter Name="Source" Class="demo::ColorItem"/>
+      <ListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <CheckBox Selected-bind="self.Selected" AutoSelection="false">
+          <att.ControlTemplate>demo::ColorListItemBackgroundTemplate</att.ControlTemplate>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+              <CellOption>composeType:Absolute absolute:16</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Absolute absolute:16</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:1 column:0">
+              <SolidBackground Color-eval="Source.color"/>
+            </Cell>
+
+            <Cell Site="row:0 column:1 rowSpan:3">
+              <SolidLabel Font-bind="self.Font" Text-eval="Source.name" VerticalAlignment="Center">
+                <att.Color-bind>cast Color (self.Selected ? "#FFFFFF" : "#000000")</att.Color-bind>
+              </SolidLabel>
+            </Cell>
+          </Table>
+        </CheckBox>
+      </ListItemTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ColorListItemBackgroundTemplateResource">
+    <Instance ref.Class="demo::ColorListItemBackgroundTemplate">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground>
+          <att.Color-bind>
+            <![CDATA[
+              cast Color (
+                self.Selected ? "#000000" :
+                self.State != "Normal" ? "#C0C0C0" :
+                "#00000000"
+              )
+            ]]>
+          </att.Color-bind>
+        </SolidBackground>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+</Resource>

@@ -98,7 +98,7 @@ void GuiMain_Resource()
 	//}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(L"UI6_FontList.xml", errors);
+		auto resource = GuiResource::LoadFromXml(L"UI7_ColorComboBox.xml", errors);
 		resource->Precompile(nullptr, errors);
 
 		{
@@ -139,20 +139,20 @@ void GuiMain_Resource()
 		}
 	}
 
-	// UI1 / UI3 / UI4 / UI5
-	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+	// UI1 / UI3 / UI4 / UI5 / UI7
+	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
 	// UI2
 	// auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
 	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
 
 	// UI6
-	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
-	auto fontList = UnboxValue<GuiTextList*>(Value::From(window).GetProperty(L"fontList"));
-	EnumerateFontFamilies([fontList](const WString& fontFamily)
-	{
-		fontList->GetItems().Add(new list::TextItem(fontFamily));
-	});
+	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+	// auto fontList = UnboxValue<GuiTextList*>(Value::From(window).GetProperty(L"fontList"));
+	// EnumerateFontFamilies([fontList](const WString& fontFamily)
+	// {
+	// 	fontList->GetItems().Add(new list::TextItem(fontFamily));
+	// });
 
 	window->ForceCalculateSizeImmediately();
 	window->MoveToScreenCenter();
