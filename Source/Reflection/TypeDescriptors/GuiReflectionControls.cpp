@@ -453,6 +453,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiScrollView)
 				CLASS_MEMBER_CONSTRUCTOR(GuiListControl*(GuiListControl::IStyleProvider* _ GuiListControl::IItemProvider* _ bool), {L"styleProvider" _ L"itemProvider" _ L"acceptFocus"})
 
+				CLASS_MEMBER_GUIEVENT(AdoptedSizeInvalidated)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonDown)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonUp)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonDoubleClick)
@@ -472,6 +473,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Axis)
 
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
+				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})
 			END_CLASS_MEMBER(GuiListControl)
 
 			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
@@ -556,6 +558,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnViewChanged, {L"bounds"})
 				CLASS_MEMBER_METHOD(FindItem, {L"itemIndex" _ L"key"})
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
+				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})
 			END_INTERFACE_MEMBER(GuiListControl::IItemArranger)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableListControl)

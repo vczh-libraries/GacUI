@@ -90,6 +90,21 @@ GuiComboBoxListControl
 				}
 			}
 
+			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				Size expectedSize(0, GetFont().size * 20);
+				Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
+
+				Size clientSize = GetPreferredMenuClientSize();
+				clientSize.y = adoptedSize.y + GetSubMenu()->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
+				SetPreferredMenuClientSize(clientSize);
+
+				if (GetSubMenuOpening())
+				{
+					GetSubMenu()->SetClientSize(clientSize);
+				}
+			}
+
 			void GuiComboBoxListControl::OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				DisplaySelectedContent(GetSelectedIndex());
@@ -102,6 +117,7 @@ GuiComboBoxListControl
 				,containedListControl(_containedListControl)
 			{
 				containedListControl->SetMultiSelect(false);
+				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
 				primaryTextView=dynamic_cast<GuiListControl::IItemPrimaryTextView*>(containedListControl->GetItemProvider()->RequestView(GuiListControl::IItemPrimaryTextView::Identifier));
 
@@ -123,9 +139,7 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::SetFont(const FontProperties& value)
 			{
 				GuiComboBoxBase::SetFont(value);
-				Size size=GetPreferredMenuClientSize();
-				size.y=20*value.size;
-				SetPreferredMenuClientSize(size);
+				OnListControlAdoptedSizeInvalidated(nullptr, GetNotifyEventArguments());
 			}
 
 			GuiSelectableListControl* GuiComboBoxListControl::GetContainedListControl()

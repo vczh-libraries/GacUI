@@ -240,6 +240,10 @@ List Control
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="itemIndex">The item index of the item to be made visible.</param>
 					virtual bool								EnsureItemVisible(vint itemIndex)=0;
+					/// <summary>Get the adopted size for the view bounds.</summary>
+					/// <returns>The adopted size, making the vids bounds just enough to display several items.</returns>
+					/// <param name="expectedSize">The expected size, to provide a guidance.</param>
+					virtual Size								GetAdoptedSize(Size expectedSize)=0;
 				};
 
 			protected:
@@ -341,6 +345,8 @@ List Control
 				compositions::GuiNotifyEvent					ArrangerChanged;
 				/// <summary>Coordinate transformer changed event.</summary>
 				compositions::GuiNotifyEvent					AxisChanged;
+				/// <summary>Adopted size invalidated.</summary>
+				compositions::GuiNotifyEvent					AdoptedSizeInvalidated;
 
 				/// <summary>Item left mouse button down event.</summary>
 				compositions::GuiItemMouseEvent					ItemLeftButtonDown;
@@ -395,6 +401,10 @@ List Control
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="itemIndex">The item index of the item to be made visible.</param>
 				virtual bool									EnsureItemVisible(vint itemIndex);
+				/// <summary>Get the adopted size for the list control.</summary>
+				/// <returns>The adopted size, making the list control just enough to display several items.</returns>
+				/// <param name="expectedSize">The expected size, to provide a guidance.</param>
+				virtual Size									GetAdoptedSize(Size expectedSize);
 			};
 
 /***********************************************************************
@@ -505,6 +515,9 @@ Predefined ItemArranger
 					vint										startIndex;
 					StyleList									visibleStyles;
 
+					void										InvalidateAdoptedSize();
+					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
+
 					virtual void								ClearStyles();
 					virtual void								OnStylesCleared()=0;
 					virtual Size								OnCalculateTotalSize()=0;
@@ -546,6 +559,7 @@ Predefined ItemArranger
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 
 				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple lines with the same size. The width is the maximum width of all minimum widths of displayed items. The same to height.</summary>
@@ -567,6 +581,7 @@ Predefined ItemArranger
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 				
 				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple columns with the same height. The height is the maximum width of all minimum height of displayed items. Each item will displayed using its minimum width.</summary>
@@ -588,6 +603,7 @@ Predefined ItemArranger
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 			}
 

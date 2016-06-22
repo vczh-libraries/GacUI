@@ -632,6 +632,11 @@ Interface Proxy
 				{
 					INVOKEGET_INTERFACE_PROXY(EnsureItemVisible, itemIndex);
 				}
+
+				presentation::Size GetAdoptedSize(presentation::Size expectedSize)override
+				{
+					INVOKEGET_INTERFACE_PROXY(GetAdoptedSize, expectedSize);
+				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemArranger)
 			
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiSelectableListControl::IItemStyleProvider,

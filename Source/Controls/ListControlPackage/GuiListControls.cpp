@@ -428,6 +428,30 @@ GuiListControl
 				return itemArranger?itemArranger->EnsureItemVisible(itemIndex):false;
 			}
 
+			Size GuiListControl::GetAdoptedSize(Size expectedSize)
+			{
+				if (itemArranger)
+				{
+					Size controlSize = GetBoundsComposition()->GetBounds().GetSize();
+					Size viewSize = GetContainerComposition()->GetBounds().GetSize();
+					vint x = controlSize.x - viewSize.x;
+					vint y = controlSize.y - viewSize.y;
+
+					Size expectedViewSize(expectedSize.x - x, expectedSize.y - y);
+					if (axis)
+					{
+						expectedViewSize = axis->RealSizeToVirtualSize(expectedViewSize);
+					}
+					Size adoptedViewSize = itemArranger->GetAdoptedSize(expectedViewSize);
+					if (axis)
+					{
+						adoptedViewSize = axis->VirtualSizeToRealSize(adoptedViewSize);
+					}
+					return Size(adoptedViewSize.x + x, adoptedViewSize.y + y);
+				}
+				return expectedSize;
+			}
+
 /***********************************************************************
 GuiSelectableListControl
 ***********************************************************************/
@@ -758,6 +782,33 @@ GuiSelectableListControl
 RangedItemArrangerBase
 ***********************************************************************/
 
+				void RangedItemArrangerBase::InvalidateAdoptedSize()
+				{
+					if (listControl)
+					{
+						listControl->AdoptedSizeInvalidated.Execute(listControl->GetNotifyEventArguments());
+					}
+				}
+
+				vint RangedItemArrangerBase::CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize)
+				{
+					vint visibleCount = expectedSize / itemSize;
+					if (count < visibleCount)
+					{
+						visibleCount = count;
+					}
+					else if (count > visibleCount)
+					{
+						vint deltaA = expectedSize - count * itemSize;
+						vint deltaB = itemSize - deltaA;
+						if (deltaB < deltaA)
+						{
+							visibleCount++;
+						}
+					}
+					return visibleCount * itemSize;
+				}
+
 				void RangedItemArrangerBase::ClearStyles()
 				{
 					startIndex=0;
@@ -859,12 +910,14 @@ RangedItemArrangerBase
 
 						callback->OnTotalSizeChanged();
 						callback->SetViewLocation(viewBounds.LeftTop());
+						InvalidateAdoptedSize();
 					}
 				}
 
 				void RangedItemArrangerBase::AttachListControl(GuiListControl* value)
 				{
 					listControl = value;
+					InvalidateAdoptedSize();
 				}
 
 				void RangedItemArrangerBase::DetachListControl()
@@ -958,6 +1011,7 @@ FixedHeightItemArranger
 				void FixedHeightItemArranger::OnStylesCleared()
 				{
 					rowHeight=1;
+					InvalidateAdoptedSize();
 				}
 
 				Size FixedHeightItemArranger::OnCalculateTotalSize()
@@ -1032,6 +1086,7 @@ FixedHeightItemArranger
 								callback->OnTotalSizeChanged();
 								callback->SetViewLocation(Point(0, rowHeight*newStartIndex+offset));
 								suppressOnViewChanged=false;
+								InvalidateAdoptedSize();
 							}
 							startIndex=newStartIndex;
 							RearrangeItemBounds();
@@ -1126,6 +1181,18 @@ FixedHeightItemArranger
 					return false;
 				}
 
+				Size FixedHeightItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					if (itemProvider)
+					{
+						vint offset = GetYOffset();
+						vint y = expectedSize.y - offset;
+						vint itemCount = itemProvider->Count();
+						return Size(expectedSize.x, offset + CalculateAdoptedSize(y, itemCount, rowHeight));
+					}
+					return expectedSize;
+				}
+
 /***********************************************************************
 FixedSizeMultiColumnItemArranger
 ***********************************************************************/
@@ -1161,6 +1228,7 @@ FixedSizeMultiColumnItemArranger
 				void FixedSizeMultiColumnItemArranger::OnStylesCleared()
 				{
 					itemSize=Size(1, 1);
+					InvalidateAdoptedSize();
 				}
 
 				Size FixedSizeMultiColumnItemArranger::OnCalculateTotalSize()
@@ -1258,6 +1326,7 @@ FixedSizeMultiColumnItemArranger
 								suppressOnViewChanged=true;
 								callback->OnTotalSizeChanged();
 								suppressOnViewChanged=false;
+								InvalidateAdoptedSize();
 							}
 							startIndex=newStartIndex;
 							RearrangeItemBounds();
@@ -1370,6 +1439,21 @@ FixedSizeMultiColumnItemArranger
 					return false;
 				}
 
+				Size FixedSizeMultiColumnItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					if (itemProvider)
+					{
+						vint count = itemProvider->Count();
+						vint columnCount = viewBounds.Width() / itemSize.x;
+						vint rowCount = viewBounds.Height() / itemSize.y;
+						return Size(
+							CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
+							CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
+							);
+					}
+					return expectedSize;
+				}
+
 /***********************************************************************
 FixedHeightMultiColumnItemArranger
 ***********************************************************************/
@@ -1406,6 +1490,7 @@ FixedHeightMultiColumnItemArranger
 				void FixedHeightMultiColumnItemArranger::OnStylesCleared()
 				{
 					itemHeight=1;
+					InvalidateAdoptedSize();
 				}
 
 				Size FixedHeightMultiColumnItemArranger::OnCalculateTotalSize()
@@ -1516,6 +1601,7 @@ FixedHeightMultiColumnItemArranger
 								suppressOnViewChanged=true;
 								callback->OnTotalSizeChanged();
 								suppressOnViewChanged=false;
+								InvalidateAdoptedSize();
 							}
 							startIndex=newStartIndex;
 							RearrangeItemBounds();
@@ -1627,6 +1713,16 @@ FixedHeightMultiColumnItemArranger
 						return true;
 					}
 					return false;
+				}
+
+				Size FixedHeightMultiColumnItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					if (itemProvider)
+					{
+						vint count = itemProvider->Count();
+						return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, count, itemHeight));
+					}
+					return expectedSize;
 				}
 
 /***********************************************************************
