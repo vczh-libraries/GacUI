@@ -457,6 +457,11 @@ GuiComboBoxTemplate_StyleProvider
 			{
 			}
 
+			void GuiComboBoxTemplate_StyleProvider::SetTextVisible(bool value)
+			{
+				controlTemplate->SetTextVisible(value);
+			}
+
 /***********************************************************************
 GuiDatePickerTemplate_StyleProvider
 ***********************************************************************/

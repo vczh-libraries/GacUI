@@ -72,7 +72,7 @@ Win8Theme
 				return new Win8TabStyle;
 			}
 
-			controls::GuiComboBoxBase::IStyleController* Win8Theme::CreateComboBoxStyle()
+			controls::GuiComboBoxListControl::IStyleController* Win8Theme::CreateComboBoxStyle()
 			{
 				return new Win8DropDownComboBoxStyle;
 			}

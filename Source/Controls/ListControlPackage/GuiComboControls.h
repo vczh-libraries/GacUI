@@ -85,6 +85,16 @@ ComboBox with GuiListControl
 			/// <summary>Combo box list control. This control is a combo box with a list control in its popup.</summary>
 			class GuiComboBoxListControl : public GuiComboBoxBase, public Description<GuiComboBoxListControl>
 			{
+			public:
+				/// <summary>Style controller interface for <see cref="GuiComboBoxListControl"/>.</summary>
+				class IStyleController : public virtual GuiComboBoxBase::IStyleController, public Description<IStyleController>
+				{
+				public:
+					/// <summary>Indicate that if the combo box need to display text.</summary>
+					/// <param name="value">Set to true to display text.</param>
+					virtual void							SetTextVisible(bool value) = 0;
+				};
+
 			protected:
 				GuiSelectableListControl*					containedListControl;
 				GuiListControl::IItemPrimaryTextView*		primaryTextView;
@@ -113,6 +123,9 @@ ComboBox with GuiListControl
 				/// <summary>Set the selected index.</summary>
 				/// <param name="value">The selected index.</param>
 				void										SetSelectedIndex(vint value);
+
+				/// <summary>Get the selected item.</summary>
+				description::Value							GetSelectedItem();
 				/// <summary>Get the item provider in the list control.</summary>
 				/// <returns>The item provider in the list control.</returns>
 				GuiListControl::IItemProvider*				GetItemProvider();

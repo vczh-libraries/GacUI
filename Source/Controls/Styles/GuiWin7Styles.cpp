@@ -73,7 +73,7 @@ Win7Theme
 				return new Win7TabStyle;
 			}
 
-			controls::GuiComboBoxBase::IStyleController* Win7Theme::CreateComboBoxStyle()
+			controls::GuiComboBoxListControl::IStyleController* Win7Theme::CreateComboBoxStyle()
 			{
 				return new Win7DropDownComboBoxStyle;
 			}

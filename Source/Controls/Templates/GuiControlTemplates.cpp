@@ -280,6 +280,7 @@ GuiComboBoxTemplate
 
 			GuiComboBoxTemplate::GuiComboBoxTemplate()
 				:Commands_(0)
+				, TextVisible_(true)
 			{
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}

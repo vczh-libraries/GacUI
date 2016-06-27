@@ -206,7 +206,7 @@ Control Template
 
 			class GuiComboBoxTemplate_StyleProvider
 				: public GuiToolstripButtonTemplate_StyleProvider
-				, public virtual controls::GuiComboBoxBase::IStyleController
+				, public virtual controls::GuiComboBoxListControl::IStyleController
 				, public Description<GuiComboBoxTemplate_StyleProvider>
 			{
 			protected:
@@ -218,6 +218,7 @@ Control Template
 				
 				void															SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
 				void															OnItemSelected()override;
+				void															SetTextVisible(bool value)override;
 			};
 
 			class GuiTextListTemplate_StyleProvider;

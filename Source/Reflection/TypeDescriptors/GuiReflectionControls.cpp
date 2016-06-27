@@ -1153,8 +1153,15 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Font)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainedListControl)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedIndex)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectedIndexChanged)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 			END_CLASS_MEMBER(GuiComboBoxListControl)
+
+			BEGIN_INTERFACE_MEMBER(GuiComboBoxListControl::IStyleController)
+				CLASS_MEMBER_BASE(GuiComboBoxBase::IStyleController)
+				
+				CLASS_MEMBER_METHOD(SetTextVisible, {L"value"})
+			END_INTERFACE_MEMBER(GuiComboBoxListControl::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiToolstripCommand)
 				CLASS_MEMBER_BASE(GuiComponent)

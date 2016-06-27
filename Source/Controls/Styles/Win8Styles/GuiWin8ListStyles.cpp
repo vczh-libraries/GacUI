@@ -92,6 +92,7 @@ Win8DropDownComboBoxStyle
 
 			Win8DropDownComboBoxStyle::Win8DropDownComboBoxStyle()
 				:commandExecutor(0)
+				, textVisible(true)
 			{
 				table=new GuiTableComposition;
 				table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -168,6 +169,30 @@ Win8DropDownComboBoxStyle
 
 			void Win8DropDownComboBoxStyle::OnItemSelected()
 			{
+			}
+
+			void Win8DropDownComboBoxStyle::SetText(const WString& value)
+			{
+				text = value;
+				if (textVisible)
+				{
+					Win8ButtonStyle::SetText(text);
+				}
+			}
+
+			void Win8DropDownComboBoxStyle::SetTextVisible(bool value)
+			{
+				if (textVisible != value)
+				{
+					if ((textVisible = value))
+					{
+						Win8ButtonStyle::SetText(text);
+					}
+					else
+					{
+						Win8ButtonStyle::SetText(L"");
+					}
+				}
 			}
 
 /***********************************************************************

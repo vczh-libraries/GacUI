@@ -116,6 +116,7 @@ GuiComboBoxListControl
 				:GuiComboBoxBase(_styleController)
 				,containedListControl(_containedListControl)
 			{
+				_styleController->SetTextVisible(true);
 				containedListControl->SetMultiSelect(false);
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
@@ -162,6 +163,20 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::SetSelectedIndex(vint value)
 			{
 				containedListControl->SetSelected(value, true);
+			}
+
+			description::Value GuiComboBoxListControl::GetSelectedItem()
+			{
+				auto selectedIndex = GetSelectedIndex();
+				if (selectedIndex != -1)
+				{
+					auto view = containedListControl->GetItemProvider()->RequestView(GuiListControl::IItemBindingView::Identifier);
+					if (auto bindingView = dynamic_cast<GuiListControl::IItemBindingView*>(view))
+					{
+						return bindingView->GetBindingValue(selectedIndex);
+					}
+				}
+				return description::Value();
 			}
 
 			GuiListControl::IItemProvider* GuiComboBoxListControl::GetItemProvider()

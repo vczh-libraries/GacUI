@@ -44,7 +44,7 @@ ComboBox
 #pragma warning(push)
 #pragma warning(disable:4250)
 			/// <summary>Drop down combo box style (Windows 8).</summary>
-			class Win8DropDownComboBoxStyle : public Win8ButtonStyle, public virtual controls::GuiComboBoxBase::IStyleController, public Description<Win8DropDownComboBoxStyle>
+			class Win8DropDownComboBoxStyle : public Win8ButtonStyle, public virtual controls::GuiComboBoxListControl::IStyleController, public Description<Win8DropDownComboBoxStyle>
 			{
 			protected:
 				controls::GuiComboBoxBase::ICommandExecutor*	commandExecutor;
@@ -52,6 +52,8 @@ ComboBox
 				compositions::GuiCellComposition*				textComposition;
 				compositions::GuiCellComposition*				dropDownComposition;
 				elements::GuiPolygonElement*					dropDownElement;
+				WString											text;
+				bool											textVisible;
 
 				void											TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
 				void											AfterApplyColors(const Win8ButtonColors& colors)override;
@@ -70,6 +72,8 @@ ComboBox
 				void														SetShortcutText(const WString& value)override;
 				void														SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
 				void														OnItemSelected()override;
+				void														SetText(const WString& value)override;
+				void														SetTextVisible(bool value)override;
 			};
 #pragma warning(pop)
 

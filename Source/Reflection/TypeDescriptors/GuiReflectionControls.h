@@ -142,6 +142,7 @@ Type List
 			F(presentation::controls::GuiComboBoxBase::ICommandExecutor)\
 			F(presentation::controls::GuiComboBoxBase::IStyleController)\
 			F(presentation::controls::GuiComboBoxListControl)\
+			F(presentation::controls::GuiComboBoxListControl::IStyleController)\
 			F(presentation::controls::GuiToolstripCommand)\
 			F(presentation::controls::GuiToolstripMenu)\
 			F(presentation::controls::GuiToolstripMenuBar)\
@@ -1133,6 +1134,16 @@ Interface Proxy
 					INVOKE_INTERFACE_PROXY_NOPARAMS(OnItemSelected);
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxBase::IStyleController)
+
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiComboBoxListControl::IStyleController,
+				presentation::controls::GuiComboBoxBase::IStyleController
+				)
+
+				void SetTextVisible(bool value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetTextVisible, value);
+				}
+			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxListControl::IStyleController)
 
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiSinglelineTextBox::IStyleProvider,
 				presentation::controls::GuiControl::IStyleProvider

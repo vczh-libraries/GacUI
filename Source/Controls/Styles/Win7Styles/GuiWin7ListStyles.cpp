@@ -545,7 +545,8 @@ Win7DropDownComboBoxStyle
 
 			Win7DropDownComboBoxStyle::Win7DropDownComboBoxStyle()
 				:Win7ButtonStyle(true)
-				,commandExecutor(0)
+				, commandExecutor(0)
+				, textVisible(true)
 			{
 				table=new GuiTableComposition;
 				table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -622,6 +623,30 @@ Win7DropDownComboBoxStyle
 
 			void Win7DropDownComboBoxStyle::OnItemSelected()
 			{
+			}
+
+			void Win7DropDownComboBoxStyle::SetText(const WString& value)
+			{
+				text = value;
+				if (textVisible)
+				{
+					Win7ButtonStyle::SetText(text);
+				}
+			}
+
+			void Win7DropDownComboBoxStyle::SetTextVisible(bool value)
+			{
+				if (textVisible != value)
+				{
+					if ((textVisible = value))
+					{
+						Win7ButtonStyle::SetText(text);
+					}
+					else
+					{
+						Win7ButtonStyle::SetText(L"");
+					}
+				}
 			}
 
 /***********************************************************************

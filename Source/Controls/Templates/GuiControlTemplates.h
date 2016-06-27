@@ -228,6 +228,7 @@ Control Template
 
 #define GuiComboBoxTemplate_PROPERTIES(F)\
 				F(GuiComboBoxTemplate, controls::GuiComboBoxBase::ICommandExecutor*, Commands)\
+				F(GuiComboBoxTemplate, bool, TextVisible)\
 
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
