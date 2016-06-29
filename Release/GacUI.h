@@ -10528,6 +10528,10 @@ List Control
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="itemIndex">The item index of the item to be made visible.</param>
 					virtual bool								EnsureItemVisible(vint itemIndex)=0;
+					/// <summary>Get the adopted size for the view bounds.</summary>
+					/// <returns>The adopted size, making the vids bounds just enough to display several items.</returns>
+					/// <param name="expectedSize">The expected size, to provide a guidance.</param>
+					virtual Size								GetAdoptedSize(Size expectedSize)=0;
 				};
 
 			protected:
@@ -10629,6 +10633,8 @@ List Control
 				compositions::GuiNotifyEvent					ArrangerChanged;
 				/// <summary>Coordinate transformer changed event.</summary>
 				compositions::GuiNotifyEvent					AxisChanged;
+				/// <summary>Adopted size invalidated.</summary>
+				compositions::GuiNotifyEvent					AdoptedSizeInvalidated;
 
 				/// <summary>Item left mouse button down event.</summary>
 				compositions::GuiItemMouseEvent					ItemLeftButtonDown;
@@ -10683,6 +10689,10 @@ List Control
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="itemIndex">The item index of the item to be made visible.</param>
 				virtual bool									EnsureItemVisible(vint itemIndex);
+				/// <summary>Get the adopted size for the list control.</summary>
+				/// <returns>The adopted size, making the list control just enough to display several items.</returns>
+				/// <param name="expectedSize">The expected size, to provide a guidance.</param>
+				virtual Size									GetAdoptedSize(Size expectedSize);
 			};
 
 /***********************************************************************
@@ -10793,6 +10803,9 @@ Predefined ItemArranger
 					vint										startIndex;
 					StyleList									visibleStyles;
 
+					void										InvalidateAdoptedSize();
+					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
+
 					virtual void								ClearStyles();
 					virtual void								OnStylesCleared()=0;
 					virtual Size								OnCalculateTotalSize()=0;
@@ -10834,6 +10847,7 @@ Predefined ItemArranger
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 
 				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple lines with the same size. The width is the maximum width of all minimum widths of displayed items. The same to height.</summary>
@@ -10855,6 +10869,7 @@ Predefined ItemArranger
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 				
 				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple columns with the same height. The height is the maximum width of all minimum height of displayed items. Each item will displayed using its minimum width.</summary>
@@ -10876,6 +10891,7 @@ Predefined ItemArranger
 
 					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
 				};
 			}
 
@@ -13195,11 +13211,46 @@ ComboBox with GuiListControl
 			/// <summary>Combo box list control. This control is a combo box with a list control in its popup.</summary>
 			class GuiComboBoxListControl : public GuiComboBoxBase, public Description<GuiComboBoxListControl>
 			{
+			public:
+				/// <summary>Style controller interface for <see cref="GuiComboBoxListControl"/>.</summary>
+				class IStyleController : public virtual GuiComboBoxBase::IStyleController, public Description<IStyleController>
+				{
+				public:
+					/// <summary>Indicate that if the combo box need to display text.</summary>
+					/// <param name="value">Set to true to display text.</param>
+					virtual void							SetTextVisible(bool value) = 0;
+				};
+				
+				/// <summary>Item style provider for a <see cref="GuiComboBoxListControl"/>.</summary>
+				class IItemStyleProvider : public virtual IDescriptable, public Description<IItemStyleProvider>
+				{
+				public:
+					/// <summary>Called when an item style provider in installed to a <see cref="GuiListControl"/>.</summary>
+					/// <param name="value">The list control.</param>
+					virtual void							AttachComboBox(GuiComboBoxListControl* value)=0;
+					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
+					virtual void							DetachComboBox()=0;
+					/// <summary>Create an item style controller from an item.</summary>
+					/// <returns>The created item style controller.</returns>
+					/// <param name="item">The item.</param>
+					virtual GuiControl::IStyleController*	CreateItemStyle(description::Value item)=0;
+				};
+
 			protected:
+				IStyleController*							styleController;
 				GuiSelectableListControl*					containedListControl;
 				GuiListControl::IItemPrimaryTextView*		primaryTextView;
+				GuiListControl::IItemBindingView*			itemBindingView;
+				Ptr<IItemStyleProvider>						itemStyleProvider;
+				Ptr<GuiControl::IStyleController>			itemStyleController;
 
+				void										RemoveStyleController();
+				void										InstallStyleController(vint itemIndex);
 				virtual void								DisplaySelectedContent(vint itemIndex);
+				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller and a list control that will be put in the popup control to show all items.</summary>
@@ -13207,14 +13258,23 @@ ComboBox with GuiListControl
 				/// <param name="_containedListControl">The list controller.</param>
 				GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl);
 				~GuiComboBoxListControl();
-
+				
+				/// <summary>Style provider changed event.</summary>
+				compositions::GuiNotifyEvent				StyleProviderChanged;
 				/// <summary>Selected index changed event.</summary>
 				compositions::GuiNotifyEvent				SelectedIndexChanged;
 				
-				void										SetFont(const FontProperties& value)override;
 				/// <summary>Get the list control.</summary>
 				/// <returns>The list control.</returns>
 				GuiSelectableListControl*					GetContainedListControl();
+				
+				/// <summary>Get the item style provider.</summary>
+				/// <returns>The item style provider.</returns>
+				IItemStyleProvider*							GetStyleProvider();
+				/// <summary>Set the item style provider</summary>
+				/// <returns>The old item style provider</returns>
+				/// <param name="value">The new item style provider</param>
+				Ptr<IItemStyleProvider>						SetStyleProvider(Ptr<IItemStyleProvider> value);
 				
 				/// <summary>Get the selected index.</summary>
 				/// <returns>The selected index.</returns>
@@ -13222,6 +13282,9 @@ ComboBox with GuiListControl
 				/// <summary>Set the selected index.</summary>
 				/// <param name="value">The selected index.</param>
 				void										SetSelectedIndex(vint value);
+
+				/// <summary>Get the selected item.</summary>
+				description::Value							GetSelectedItem();
 				/// <summary>Get the item provider in the list control.</summary>
 				/// <returns>The item provider in the list control.</returns>
 				GuiListControl::IItemProvider*				GetItemProvider();
@@ -17368,7 +17431,7 @@ namespace vl
 				virtual controls::GuiTab::IStyleController*									CreateTabStyle()=0;
 				/// <summary>Create a style for combo box.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiComboBoxBase::IStyleController*						CreateComboBoxStyle()=0;
+				virtual controls::GuiComboBoxListControl::IStyleController*					CreateComboBoxStyle()=0;
 				/// <summary>Create a style for multiline text box.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiScrollView::IStyleProvider*							CreateMultilineTextBoxStyle()=0;
@@ -17667,7 +17730,7 @@ Theme
 				controls::GuiScrollContainer::IStyleProvider*						CreateScrollContainerStyle()override;
 				controls::GuiControl::IStyleController*								CreateGroupBoxStyle()override;
 				controls::GuiTab::IStyleController*									CreateTabStyle()override;
-				controls::GuiComboBoxBase::IStyleController*						CreateComboBoxStyle()override;
+				controls::GuiComboBoxListControl::IStyleController*					CreateComboBoxStyle()override;
 				controls::GuiScrollView::IStyleProvider*							CreateMultilineTextBoxStyle()override;
 				controls::GuiSinglelineTextBox::IStyleProvider*						CreateTextBoxStyle()override;
 				elements::text::ColorEntry											GetDefaultTextBoxColorEntry()override;
@@ -17755,7 +17818,7 @@ Theme
 				controls::GuiScrollContainer::IStyleProvider*						CreateScrollContainerStyle()override;
 				controls::GuiControl::IStyleController*								CreateGroupBoxStyle()override;
 				controls::GuiTab::IStyleController*									CreateTabStyle()override;
-				controls::GuiComboBoxBase::IStyleController*						CreateComboBoxStyle()override;
+				controls::GuiComboBoxListControl::IStyleController*					CreateComboBoxStyle()override;
 				controls::GuiScrollView::IStyleProvider*							CreateMultilineTextBoxStyle()override;
 				controls::GuiSinglelineTextBox::IStyleProvider*						CreateTextBoxStyle()override;
 				elements::text::ColorEntry											GetDefaultTextBoxColorEntry()override;
@@ -18033,6 +18096,7 @@ Control Template
 
 #define GuiComboBoxTemplate_PROPERTIES(F)\
 				F(GuiComboBoxTemplate, controls::GuiComboBoxBase::ICommandExecutor*, Commands)\
+				F(GuiComboBoxTemplate, bool, TextVisible)\
 
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -18281,7 +18345,7 @@ Control Template
 				GuiControlTemplate*												controlTemplate;
 
 			public:
-				GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory, description::Value viewModel = description::Value());
 				~GuiControlTemplate_StyleProvider();
 
 				compositions::GuiBoundsComposition*								GetBoundsComposition()override;
@@ -18452,7 +18516,7 @@ Control Template
 
 			class GuiComboBoxTemplate_StyleProvider
 				: public GuiToolstripButtonTemplate_StyleProvider
-				, public virtual controls::GuiComboBoxBase::IStyleController
+				, public virtual controls::GuiComboBoxListControl::IStyleController
 				, public Description<GuiComboBoxTemplate_StyleProvider>
 			{
 			protected:
@@ -18464,6 +18528,7 @@ Control Template
 				
 				void															SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
 				void															OnItemSelected()override;
+				void															SetTextVisible(bool value)override;
 			};
 
 			class GuiTextListTemplate_StyleProvider;
@@ -18699,6 +18764,27 @@ Control Template
 				void															SetSelectedTab(vint index)override;
 				void															SetTabAlt(vint index, const WString& value, compositions::IGuiAltActionHost* host)override;
 				compositions::IGuiAltAction*									GetTabAltAction(vint index)override;
+			};
+
+/***********************************************************************
+Item Template (GuiControlTemplate)
+***********************************************************************/
+
+			class GuiControlTemplate_ItemStyleProvider
+				: public Object
+				, public virtual controls::GuiComboBoxListControl::IItemStyleProvider
+				, public Description<GuiControlTemplate_ItemStyleProvider>
+			{
+			protected:
+				Ptr<GuiTemplate::IFactory>							factory;
+
+			public:
+				GuiControlTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				~GuiControlTemplate_ItemStyleProvider();
+
+				void												AttachComboBox(controls::GuiComboBoxListControl* value)override;
+				void												DetachComboBox()override;
+				controls::GuiControl::IStyleController*				CreateItemStyle(description::Value item)override;
 			};
 
 /***********************************************************************
@@ -22190,7 +22276,7 @@ ComboBox
 #pragma warning(push)
 #pragma warning(disable:4250)
 			/// <summary>Drop down combo box style (Windows 7).</summary>
-			class Win7DropDownComboBoxStyle : public Win7ButtonStyle, public virtual controls::GuiComboBoxBase::IStyleController, public Description<Win7DropDownComboBoxStyle>
+			class Win7DropDownComboBoxStyle : public Win7ButtonStyle, public virtual controls::GuiComboBoxListControl::IStyleController, public Description<Win7DropDownComboBoxStyle>
 			{
 			protected:
 				controls::GuiComboBoxBase::ICommandExecutor*	commandExecutor;
@@ -22198,6 +22284,8 @@ ComboBox
 				compositions::GuiCellComposition*				textComposition;
 				compositions::GuiCellComposition*				dropDownComposition;
 				elements::GuiPolygonElement*					dropDownElement;
+				WString											text;
+				bool											textVisible;
 
 				void											TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
 				void											AfterApplyColors(const Win7ButtonColors& colors)override;
@@ -22216,6 +22304,8 @@ ComboBox
 				void														SetShortcutText(const WString& value)override;
 				void														SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
 				void														OnItemSelected()override;
+				void														SetText(const WString& value)override;
+				void														SetTextVisible(bool value)override;
 			};
 #pragma warning(pop)
 
@@ -22543,7 +22633,7 @@ ComboBox
 #pragma warning(push)
 #pragma warning(disable:4250)
 			/// <summary>Drop down combo box style (Windows 8).</summary>
-			class Win8DropDownComboBoxStyle : public Win8ButtonStyle, public virtual controls::GuiComboBoxBase::IStyleController, public Description<Win8DropDownComboBoxStyle>
+			class Win8DropDownComboBoxStyle : public Win8ButtonStyle, public virtual controls::GuiComboBoxListControl::IStyleController, public Description<Win8DropDownComboBoxStyle>
 			{
 			protected:
 				controls::GuiComboBoxBase::ICommandExecutor*	commandExecutor;
@@ -22551,6 +22641,8 @@ ComboBox
 				compositions::GuiCellComposition*				textComposition;
 				compositions::GuiCellComposition*				dropDownComposition;
 				elements::GuiPolygonElement*					dropDownElement;
+				WString											text;
+				bool											textVisible;
 
 				void											TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
 				void											AfterApplyColors(const Win8ButtonColors& colors)override;
@@ -22569,6 +22661,8 @@ ComboBox
 				void														SetShortcutText(const WString& value)override;
 				void														SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
 				void														OnItemSelected()override;
+				void														SetText(const WString& value)override;
+				void														SetTextVisible(bool value)override;
 			};
 #pragma warning(pop)
 

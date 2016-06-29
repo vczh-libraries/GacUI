@@ -1886,6 +1886,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiScrollView)
 				CLASS_MEMBER_CONSTRUCTOR(GuiListControl*(GuiListControl::IStyleProvider* _ GuiListControl::IItemProvider* _ bool), {L"styleProvider" _ L"itemProvider" _ L"acceptFocus"})
 
+				CLASS_MEMBER_GUIEVENT(AdoptedSizeInvalidated)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonDown)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonUp)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonDoubleClick)
@@ -1905,6 +1906,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Axis)
 
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
+				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})
 			END_CLASS_MEMBER(GuiListControl)
 
 			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
@@ -1989,6 +1991,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnViewChanged, {L"bounds"})
 				CLASS_MEMBER_METHOD(FindItem, {L"itemIndex" _ L"key"})
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
+				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})
 			END_INTERFACE_MEMBER(GuiListControl::IItemArranger)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableListControl)
@@ -2582,9 +2585,23 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_FAST(Font)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainedListControl)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(StyleProvider)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedIndex)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectedIndexChanged)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 			END_CLASS_MEMBER(GuiComboBoxListControl)
+
+			BEGIN_INTERFACE_MEMBER(GuiComboBoxListControl::IStyleController)
+				CLASS_MEMBER_BASE(GuiComboBoxBase::IStyleController)
+				
+				CLASS_MEMBER_METHOD(SetTextVisible, {L"value"})
+			END_INTERFACE_MEMBER(GuiComboBoxListControl::IStyleController)
+
+			BEGIN_INTERFACE_MEMBER(GuiComboBoxListControl::IItemStyleProvider)
+				CLASS_MEMBER_METHOD(AttachComboBox, {L"value"})
+				CLASS_MEMBER_METHOD(DetachComboBox, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreateItemStyle, {L"item"})
+			END_INTERFACE_MEMBER(GuiComboBoxListControl::IItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiToolstripCommand)
 				CLASS_MEMBER_BASE(GuiComponent)
@@ -4024,7 +4041,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiComboBoxTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiToolstripButtonTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiComboBoxBase::IStyleController)
+				CLASS_MEMBER_BASE(GuiComboBoxListControl::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiComboBoxTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
 			END_CLASS_MEMBER(GuiComboBoxTemplate_StyleProvider)
@@ -4085,6 +4102,12 @@ Type Declaration
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiTabTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
 			END_CLASS_MEMBER(GuiTabTemplate_StyleProvider)
+
+			BEGIN_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
+				CLASS_MEMBER_BASE(GuiComboBoxListControl::IItemStyleProvider)
+
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiControlTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
+			END_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
 				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)

@@ -596,6 +596,8 @@ Type List
 			F(presentation::controls::GuiComboBoxBase::ICommandExecutor)\
 			F(presentation::controls::GuiComboBoxBase::IStyleController)\
 			F(presentation::controls::GuiComboBoxListControl)\
+			F(presentation::controls::GuiComboBoxListControl::IStyleController)\
+			F(presentation::controls::GuiComboBoxListControl::IItemStyleProvider)\
 			F(presentation::controls::GuiToolstripCommand)\
 			F(presentation::controls::GuiToolstripMenu)\
 			F(presentation::controls::GuiToolstripMenuBar)\
@@ -1085,6 +1087,11 @@ Interface Proxy
 				bool EnsureItemVisible(vint itemIndex)override
 				{
 					INVOKEGET_INTERFACE_PROXY(EnsureItemVisible, itemIndex);
+				}
+
+				presentation::Size GetAdoptedSize(presentation::Size expectedSize)override
+				{
+					INVOKEGET_INTERFACE_PROXY(GetAdoptedSize, expectedSize);
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemArranger)
 			
@@ -1583,6 +1590,34 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxBase::IStyleController)
 
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiComboBoxListControl::IStyleController,
+				presentation::controls::GuiComboBoxBase::IStyleController
+				)
+
+				void SetTextVisible(bool value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetTextVisible, value);
+				}
+			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxListControl::IStyleController)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiComboBoxListControl::IItemStyleProvider)
+				
+				void AttachComboBox(presentation::controls::GuiComboBoxListControl* value)override
+				{
+					INVOKE_INTERFACE_PROXY(AttachComboBox, value);
+				}
+
+				void DetachComboBox()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(DetachComboBox);
+				}
+
+				presentation::controls::GuiControl::IStyleController* CreateItemStyle(description::Value item)override
+				{
+					INVOKEGET_INTERFACE_PROXY(CreateItemStyle, item);
+				}
+			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxListControl::IItemStyleProvider)
+
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiSinglelineTextBox::IStyleProvider,
 				presentation::controls::GuiControl::IStyleProvider
 				)
@@ -2037,6 +2072,7 @@ Type List
 			F(presentation::templates::GuiListViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTreeViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTabTemplate_StyleProvider)\
+			F(presentation::templates::GuiControlTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiListItemTemplate_ItemStyleController)\
 			F(presentation::templates::GuiListItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiTreeItemTemplate_ItemStyleProvider)\

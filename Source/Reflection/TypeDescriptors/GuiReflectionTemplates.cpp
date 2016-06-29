@@ -308,7 +308,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiComboBoxTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiToolstripButtonTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiComboBoxBase::IStyleController)
+				CLASS_MEMBER_BASE(GuiComboBoxListControl::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiComboBoxTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
 			END_CLASS_MEMBER(GuiComboBoxTemplate_StyleProvider)

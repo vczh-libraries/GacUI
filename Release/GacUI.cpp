@@ -5764,6 +5764,40 @@ GuiComboBoxBase
 GuiComboBoxListControl
 ***********************************************************************/
 
+			void GuiComboBoxListControl::RemoveStyleController()
+			{
+				if (itemStyleController)
+				{
+					SafeDeleteComposition(itemStyleController->GetBoundsComposition());
+					itemStyleController = nullptr;
+				}
+			}
+
+			void GuiComboBoxListControl::InstallStyleController(vint itemIndex)
+			{
+				if (itemBindingView != nullptr && itemStyleProvider)
+				{
+					if (itemIndex != -1)
+					{
+						auto item = itemBindingView->GetBindingValue(itemIndex);
+						if (!item.IsNull())
+						{
+							itemStyleController = itemStyleProvider->CreateItemStyle(item);
+							if (itemStyleController)
+							{
+								itemStyleController->SetText(GetText());
+								itemStyleController->SetFont(GetFont());
+								itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());
+
+								auto composition = itemStyleController->GetBoundsComposition();
+								composition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+								GetContainerComposition()->AddChild(composition);
+							}
+						}
+					}
+				}
+			}
+
 			void GuiComboBoxListControl::DisplaySelectedContent(vint itemIndex)
 			{
 				if(primaryTextView)
@@ -5779,6 +5813,49 @@ GuiComboBoxListControl
 						GetSubMenu()->Hide();
 					}
 				}
+
+				RemoveStyleController();
+				InstallStyleController(itemIndex);
+			}
+
+			void GuiComboBoxListControl::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (itemStyleController)
+				{
+					itemStyleController->SetText(GetText());
+				}
+			}
+
+			void GuiComboBoxListControl::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (itemStyleController)
+				{
+					itemStyleController->SetFont(GetFont());
+				}
+				OnListControlAdoptedSizeInvalidated(nullptr, GetNotifyEventArguments());
+			}
+
+			void GuiComboBoxListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				if (itemStyleController)
+				{
+					itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());
+				}
+			}
+
+			void GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				Size expectedSize(0, GetFont().size * 20);
+				Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
+
+				Size clientSize = GetPreferredMenuClientSize();
+				clientSize.y = adoptedSize.y + GetSubMenu()->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
+				SetPreferredMenuClientSize(clientSize);
+
+				if (GetSubMenuOpening())
+				{
+					GetSubMenu()->SetClientSize(clientSize);
+				}
 			}
 
 			void GuiComboBoxListControl::OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -5790,11 +5867,21 @@ GuiComboBoxListControl
 
 			GuiComboBoxListControl::GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl)
 				:GuiComboBoxBase(_styleController)
-				,containedListControl(_containedListControl)
+				, styleController(_styleController)
+				, containedListControl(_containedListControl)
 			{
+				styleController->SetTextVisible(true);
+				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
+				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
+				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
+
 				containedListControl->SetMultiSelect(false);
+				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
-				primaryTextView=dynamic_cast<GuiListControl::IItemPrimaryTextView*>(containedListControl->GetItemProvider()->RequestView(GuiListControl::IItemPrimaryTextView::Identifier));
+
+				auto itemProvider = containedListControl->GetItemProvider();
+				primaryTextView = dynamic_cast<GuiListControl::IItemPrimaryTextView*>(itemProvider->RequestView(GuiListControl::IItemPrimaryTextView::Identifier));
+				itemBindingView = dynamic_cast<GuiListControl::IItemBindingView*>(itemProvider->RequestView(GuiListControl::IItemBindingView::Identifier));
 
 				SelectedIndexChanged.SetAssociatedComposition(GetBoundsComposition());
 
@@ -5811,17 +5898,40 @@ GuiComboBoxListControl
 				}
 			}
 
-			void GuiComboBoxListControl::SetFont(const FontProperties& value)
-			{
-				GuiComboBoxBase::SetFont(value);
-				Size size=GetPreferredMenuClientSize();
-				size.y=20*value.size;
-				SetPreferredMenuClientSize(size);
-			}
-
 			GuiSelectableListControl* GuiComboBoxListControl::GetContainedListControl()
 			{
 				return containedListControl;
+			}
+			
+			GuiComboBoxListControl::IItemStyleProvider* GuiComboBoxListControl::GetStyleProvider()
+			{
+				return itemStyleProvider.Obj();
+			}
+
+			Ptr<GuiComboBoxListControl::IItemStyleProvider> GuiComboBoxListControl::SetStyleProvider(Ptr<IItemStyleProvider> value)
+			{
+				RemoveStyleController();
+				auto old = itemStyleProvider;
+				if (itemStyleProvider)
+				{
+					itemStyleProvider->DetachComboBox();
+				}
+
+				itemStyleProvider = value;
+
+				if (itemStyleProvider)
+				{
+					itemStyleProvider->AttachComboBox(this);
+					styleController->SetTextVisible(false);
+					InstallStyleController(GetSelectedIndex());
+				}
+				else
+				{
+					styleController->SetTextVisible(true);
+				}
+
+				StyleProviderChanged.Execute(GetNotifyEventArguments());
+				return old;
 			}
 
 			vint GuiComboBoxListControl::GetSelectedIndex()
@@ -5839,6 +5949,19 @@ GuiComboBoxListControl
 			void GuiComboBoxListControl::SetSelectedIndex(vint value)
 			{
 				containedListControl->SetSelected(value, true);
+			}
+
+			description::Value GuiComboBoxListControl::GetSelectedItem()
+			{
+				auto selectedIndex = GetSelectedIndex();
+				if (selectedIndex != -1)
+				{
+					if (itemBindingView)
+					{
+						return itemBindingView->GetBindingValue(selectedIndex);
+					}
+				}
+				return description::Value();
 			}
 
 			GuiListControl::IItemProvider* GuiComboBoxListControl::GetItemProvider()
@@ -8767,6 +8890,30 @@ GuiListControl
 				return itemArranger?itemArranger->EnsureItemVisible(itemIndex):false;
 			}
 
+			Size GuiListControl::GetAdoptedSize(Size expectedSize)
+			{
+				if (itemArranger)
+				{
+					Size controlSize = GetBoundsComposition()->GetBounds().GetSize();
+					Size viewSize = GetContainerComposition()->GetBounds().GetSize();
+					vint x = controlSize.x - viewSize.x;
+					vint y = controlSize.y - viewSize.y;
+
+					Size expectedViewSize(expectedSize.x - x, expectedSize.y - y);
+					if (axis)
+					{
+						expectedViewSize = axis->RealSizeToVirtualSize(expectedViewSize);
+					}
+					Size adoptedViewSize = itemArranger->GetAdoptedSize(expectedViewSize);
+					if (axis)
+					{
+						adoptedViewSize = axis->VirtualSizeToRealSize(adoptedViewSize);
+					}
+					return Size(adoptedViewSize.x + x, adoptedViewSize.y + y);
+				}
+				return expectedSize;
+			}
+
 /***********************************************************************
 GuiSelectableListControl
 ***********************************************************************/
@@ -9097,6 +9244,33 @@ GuiSelectableListControl
 RangedItemArrangerBase
 ***********************************************************************/
 
+				void RangedItemArrangerBase::InvalidateAdoptedSize()
+				{
+					if (listControl)
+					{
+						listControl->AdoptedSizeInvalidated.Execute(listControl->GetNotifyEventArguments());
+					}
+				}
+
+				vint RangedItemArrangerBase::CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize)
+				{
+					vint visibleCount = expectedSize / itemSize;
+					if (count < visibleCount)
+					{
+						visibleCount = count;
+					}
+					else if (count > visibleCount)
+					{
+						vint deltaA = expectedSize - count * itemSize;
+						vint deltaB = itemSize - deltaA;
+						if (deltaB < deltaA)
+						{
+							visibleCount++;
+						}
+					}
+					return visibleCount * itemSize;
+				}
+
 				void RangedItemArrangerBase::ClearStyles()
 				{
 					startIndex=0;
@@ -9198,12 +9372,14 @@ RangedItemArrangerBase
 
 						callback->OnTotalSizeChanged();
 						callback->SetViewLocation(viewBounds.LeftTop());
+						InvalidateAdoptedSize();
 					}
 				}
 
 				void RangedItemArrangerBase::AttachListControl(GuiListControl* value)
 				{
 					listControl = value;
+					InvalidateAdoptedSize();
 				}
 
 				void RangedItemArrangerBase::DetachListControl()
@@ -9297,6 +9473,7 @@ FixedHeightItemArranger
 				void FixedHeightItemArranger::OnStylesCleared()
 				{
 					rowHeight=1;
+					InvalidateAdoptedSize();
 				}
 
 				Size FixedHeightItemArranger::OnCalculateTotalSize()
@@ -9371,6 +9548,7 @@ FixedHeightItemArranger
 								callback->OnTotalSizeChanged();
 								callback->SetViewLocation(Point(0, rowHeight*newStartIndex+offset));
 								suppressOnViewChanged=false;
+								InvalidateAdoptedSize();
 							}
 							startIndex=newStartIndex;
 							RearrangeItemBounds();
@@ -9465,6 +9643,18 @@ FixedHeightItemArranger
 					return false;
 				}
 
+				Size FixedHeightItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					if (itemProvider)
+					{
+						vint offset = GetYOffset();
+						vint y = expectedSize.y - offset;
+						vint itemCount = itemProvider->Count();
+						return Size(expectedSize.x, offset + CalculateAdoptedSize(y, itemCount, rowHeight));
+					}
+					return expectedSize;
+				}
+
 /***********************************************************************
 FixedSizeMultiColumnItemArranger
 ***********************************************************************/
@@ -9500,6 +9690,7 @@ FixedSizeMultiColumnItemArranger
 				void FixedSizeMultiColumnItemArranger::OnStylesCleared()
 				{
 					itemSize=Size(1, 1);
+					InvalidateAdoptedSize();
 				}
 
 				Size FixedSizeMultiColumnItemArranger::OnCalculateTotalSize()
@@ -9597,6 +9788,7 @@ FixedSizeMultiColumnItemArranger
 								suppressOnViewChanged=true;
 								callback->OnTotalSizeChanged();
 								suppressOnViewChanged=false;
+								InvalidateAdoptedSize();
 							}
 							startIndex=newStartIndex;
 							RearrangeItemBounds();
@@ -9709,6 +9901,21 @@ FixedSizeMultiColumnItemArranger
 					return false;
 				}
 
+				Size FixedSizeMultiColumnItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					if (itemProvider)
+					{
+						vint count = itemProvider->Count();
+						vint columnCount = viewBounds.Width() / itemSize.x;
+						vint rowCount = viewBounds.Height() / itemSize.y;
+						return Size(
+							CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
+							CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
+							);
+					}
+					return expectedSize;
+				}
+
 /***********************************************************************
 FixedHeightMultiColumnItemArranger
 ***********************************************************************/
@@ -9745,6 +9952,7 @@ FixedHeightMultiColumnItemArranger
 				void FixedHeightMultiColumnItemArranger::OnStylesCleared()
 				{
 					itemHeight=1;
+					InvalidateAdoptedSize();
 				}
 
 				Size FixedHeightMultiColumnItemArranger::OnCalculateTotalSize()
@@ -9855,6 +10063,7 @@ FixedHeightMultiColumnItemArranger
 								suppressOnViewChanged=true;
 								callback->OnTotalSizeChanged();
 								suppressOnViewChanged=false;
+								InvalidateAdoptedSize();
 							}
 							startIndex=newStartIndex;
 							RearrangeItemBounds();
@@ -9966,6 +10175,16 @@ FixedHeightMultiColumnItemArranger
 						return true;
 					}
 					return false;
+				}
+
+				Size FixedHeightMultiColumnItemArranger::GetAdoptedSize(Size expectedSize)
+				{
+					if (itemProvider)
+					{
+						vint count = itemProvider->Count();
+						return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, count, itemHeight));
+					}
+					return expectedSize;
 				}
 
 /***********************************************************************
@@ -14765,7 +14984,7 @@ Win7Theme
 				return new Win7TabStyle;
 			}
 
-			controls::GuiComboBoxBase::IStyleController* Win7Theme::CreateComboBoxStyle()
+			controls::GuiComboBoxListControl::IStyleController* Win7Theme::CreateComboBoxStyle()
 			{
 				return new Win7DropDownComboBoxStyle;
 			}
@@ -15010,7 +15229,7 @@ Win8Theme
 				return new Win8TabStyle;
 			}
 
-			controls::GuiComboBoxBase::IStyleController* Win8Theme::CreateComboBoxStyle()
+			controls::GuiComboBoxListControl::IStyleController* Win8Theme::CreateComboBoxStyle()
 			{
 				return new Win8DropDownComboBoxStyle;
 			}
@@ -16452,7 +16671,8 @@ Win7DropDownComboBoxStyle
 
 			Win7DropDownComboBoxStyle::Win7DropDownComboBoxStyle()
 				:Win7ButtonStyle(true)
-				,commandExecutor(0)
+				, commandExecutor(0)
+				, textVisible(true)
 			{
 				table=new GuiTableComposition;
 				table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -16529,6 +16749,30 @@ Win7DropDownComboBoxStyle
 
 			void Win7DropDownComboBoxStyle::OnItemSelected()
 			{
+			}
+
+			void Win7DropDownComboBoxStyle::SetText(const WString& value)
+			{
+				text = value;
+				if (textVisible)
+				{
+					Win7ButtonStyle::SetText(text);
+				}
+			}
+
+			void Win7DropDownComboBoxStyle::SetTextVisible(bool value)
+			{
+				if (textVisible != value)
+				{
+					if ((textVisible = value))
+					{
+						Win7ButtonStyle::SetText(text);
+					}
+					else
+					{
+						Win7ButtonStyle::SetText(L"");
+					}
+				}
 			}
 
 /***********************************************************************
@@ -20576,6 +20820,7 @@ Win8DropDownComboBoxStyle
 
 			Win8DropDownComboBoxStyle::Win8DropDownComboBoxStyle()
 				:commandExecutor(0)
+				, textVisible(true)
 			{
 				table=new GuiTableComposition;
 				table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -20652,6 +20897,30 @@ Win8DropDownComboBoxStyle
 
 			void Win8DropDownComboBoxStyle::OnItemSelected()
 			{
+			}
+
+			void Win8DropDownComboBoxStyle::SetText(const WString& value)
+			{
+				text = value;
+				if (textVisible)
+				{
+					Win8ButtonStyle::SetText(text);
+				}
+			}
+
+			void Win8DropDownComboBoxStyle::SetTextVisible(bool value)
+			{
+				if (textVisible != value)
+				{
+					if ((textVisible = value))
+					{
+						Win8ButtonStyle::SetText(text);
+					}
+					else
+					{
+						Win8ButtonStyle::SetText(L"");
+					}
+				}
 			}
 
 /***********************************************************************
@@ -23770,6 +24039,7 @@ GuiComboBoxTemplate
 
 			GuiComboBoxTemplate::GuiComboBoxTemplate()
 				:Commands_(0)
+				, TextVisible_(true)
 			{
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
@@ -24057,11 +24327,11 @@ namespace vl
 GuiControlTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory, description::Value viewModel)
 				:associatedStyleController(0)
 				, controlTemplate(0)
 			{
-				GuiTemplate* itemTemplate = factory->CreateTemplate(Value());
+				GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
 				if (!(controlTemplate = dynamic_cast<GuiControlTemplate*>(itemTemplate)))
 				{
 					delete itemTemplate;
@@ -24475,6 +24745,11 @@ GuiComboBoxTemplate_StyleProvider
 
 			void GuiComboBoxTemplate_StyleProvider::OnItemSelected()
 			{
+			}
+
+			void GuiComboBoxTemplate_StyleProvider::SetTextVisible(bool value)
+			{
+				controlTemplate->SetTextVisible(value);
 			}
 
 /***********************************************************************
@@ -25088,6 +25363,32 @@ GuiTabTemplate_StyleProvider
 			compositions::IGuiAltAction* GuiTabTemplate_StyleProvider::GetTabAltAction(vint index)
 			{
 				return headerButtons[index]->QueryTypedService<IGuiAltAction>();
+			}
+
+/***********************************************************************
+GuiControlTemplate_ItemStyleProvider
+***********************************************************************/
+
+			GuiControlTemplate_ItemStyleProvider::GuiControlTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
+				:factory(_factory)
+			{
+			}
+
+			GuiControlTemplate_ItemStyleProvider::~GuiControlTemplate_ItemStyleProvider()
+			{
+			}
+
+			void GuiControlTemplate_ItemStyleProvider::AttachComboBox(controls::GuiComboBoxListControl* value)
+			{
+			}
+
+			void GuiControlTemplate_ItemStyleProvider::DetachComboBox()
+			{
+			}
+
+			controls::GuiControl::IStyleController* GuiControlTemplate_ItemStyleProvider::CreateItemStyle(description::Value item)
+			{
+				return new GuiControlTemplate_StyleProvider(factory, item);
 			}
 
 /***********************************************************************
