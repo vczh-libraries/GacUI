@@ -111,11 +111,19 @@ ComboBox with GuiListControl
 				};
 
 			protected:
+				IStyleController*							styleController;
 				GuiSelectableListControl*					containedListControl;
 				GuiListControl::IItemPrimaryTextView*		primaryTextView;
+				GuiListControl::IItemBindingView*			itemBindingView;
 				Ptr<IItemStyleProvider>						itemStyleProvider;
+				Ptr<GuiControl::IStyleController>			itemStyleController;
 
+				void										RemoveStyleController();
+				void										InstallStyleController(vint itemIndex);
 				virtual void								DisplaySelectedContent(vint itemIndex);
+				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
@@ -130,7 +138,6 @@ ComboBox with GuiListControl
 				/// <summary>Selected index changed event.</summary>
 				compositions::GuiNotifyEvent				SelectedIndexChanged;
 				
-				void										SetFont(const FontProperties& value)override;
 				/// <summary>Get the list control.</summary>
 				/// <returns>The list control.</returns>
 				GuiSelectableListControl*					GetContainedListControl();

@@ -121,7 +121,7 @@
     <Instance ref.Class="demo::ColorBomboItemTemplate">
       <ref.Parameter Name="Source" Class="demo::ColorItem"/>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
             <CellOption>composeType:Absolute absolute:16</CellOption>
@@ -129,6 +129,7 @@
           </att.Rows>
           <att.Columns>
             <CellOption>composeType:Absolute absolute:16</CellOption>
+            <CellOption>composeType:Absolute absolute:3</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
           </att.Columns>
 
@@ -136,8 +137,8 @@
             <SolidBackground Color-eval="Source.color"/>
           </Cell>
 
-          <Cell Site="row:0 column:1 rowSpan:3">
-            <SolidLabel Font-bind="self.Font" Text-eval="Source.name" VerticalAlignment="Center"/>
+          <Cell Site="row:0 column:2 rowSpan:3">
+            <SolidLabel Font-bind="self.Font" Text-eval="Source.name" Ellipse="true" VerticalAlignment="Center"/>
           </Cell>
         </Table>
       </ControlTemplate>
@@ -167,7 +168,7 @@
             </Cell>
 
             <Cell Site="row:0 column:1 rowSpan:3">
-              <SolidLabel Font-bind="self.Font" Text-eval="Source.name" VerticalAlignment="Center">
+              <SolidLabel Font-bind="self.Font" Text-eval="Source.name" Ellipse="true" VerticalAlignment="Center">
                 <att.Color-bind>cast Color (self.Selected ? "#FFFFFF" : "#000000")</att.Color-bind>
               </SolidLabel>
             </Cell>
