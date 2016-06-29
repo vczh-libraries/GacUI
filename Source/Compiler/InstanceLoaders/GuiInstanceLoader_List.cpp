@@ -162,6 +162,83 @@ GuiVirtualTreeViewInstanceLoader
 			};
 
 /***********************************************************************
+GuiComboBoxInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboBoxListControl, GuiComboBoxTemplate_StyleProvider, GuiComboBoxTemplate>
+			class GuiComboBoxInstanceLoader : public BASE_TYPE
+			{
+			protected:
+				GlobalStringKey						_ListControl;
+
+				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					vint indexListControl = arguments.Keys().IndexOf(_ListControl);
+					if (indexListControl != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexListControl)[0].expression);
+					}
+				}
+			public:
+				GuiComboBoxInstanceLoader()
+					:BASE_TYPE(L"presentation::controls::GuiComboBox", L"CreateComboBoxStyle")
+				{
+					_ListControl = GlobalStringKey::Get(L"ListControl");
+				}
+
+				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (typeInfo.typeName == GetTypeName())
+					{
+						propertyNames.Add(_ListControl);
+					propertyNames.Add(GlobalStringKey::_ItemTemplate);
+					}
+					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _ListControl)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<GuiSelectableListControl>());
+						info->scope = GuiInstancePropertyInfo::Constructor;
+						info->required = true;
+						return info;
+					}
+					else if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						return info;
+					}
+					return BASE_TYPE::GetPropertyType(propertyInfo);
+				}
+
+				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				{
+					auto block = MakePtr<WfBlockStatement>();
+
+					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					{
+						const auto& values = arguments.GetByIndex(index);
+						if (prop == GlobalStringKey::_ItemTemplate)
+						{
+							if (auto stat = CreateSetControlTemplateStyle<GuiControlTemplate_ItemStyleProvider, GuiControlTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", errors))
+							{
+								block->statements.Add(stat);
+							}
+						}
+					}
+
+					if (block->statements.Count() > 0)
+					{
+						return block;
+					}
+					return nullptr;
+				}
+			};
+#undef BASE_TYPE
+
+/***********************************************************************
 GuiListViewInstanceLoader
 ***********************************************************************/
 
@@ -1040,6 +1117,11 @@ Initialization
 
 			void LoadListControls(IGuiInstanceLoaderManager* manager)
 			{
+				manager->CreateVirtualType(
+					GlobalStringKey::Get(description::TypeInfo<GuiComboBoxListControl>::TypeName),
+					new GuiComboBoxInstanceLoader
+					);
+
 				manager->SetLoader(new GuiSelectableListControlInstanceLoader);
 				manager->SetLoader(new GuiVirtualTreeViewInstanceLoader);
 

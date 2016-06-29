@@ -1076,27 +1076,27 @@ GuiTabTemplate_StyleProvider
 			}
 
 /***********************************************************************
-GuiControlItemTemplate_ItemStyleProvider
+GuiControlTemplate_ItemStyleProvider
 ***********************************************************************/
 
-			GuiControlItemTemplate_ItemStyleProvider::GuiControlItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
+			GuiControlTemplate_ItemStyleProvider::GuiControlTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
 				:factory(_factory)
 			{
 			}
 
-			GuiControlItemTemplate_ItemStyleProvider::~GuiControlItemTemplate_ItemStyleProvider()
+			GuiControlTemplate_ItemStyleProvider::~GuiControlTemplate_ItemStyleProvider()
 			{
 			}
 
-			void GuiControlItemTemplate_ItemStyleProvider::AttachComboBox(controls::GuiComboBoxListControl* value)
+			void GuiControlTemplate_ItemStyleProvider::AttachComboBox(controls::GuiComboBoxListControl* value)
 			{
 			}
 
-			void GuiControlItemTemplate_ItemStyleProvider::DetachComboBox()
+			void GuiControlTemplate_ItemStyleProvider::DetachComboBox()
 			{
 			}
 
-			controls::GuiControl::IStyleController* GuiControlItemTemplate_ItemStyleProvider::CreateItemStyle(description::Value item)
+			controls::GuiControl::IStyleController* GuiControlTemplate_ItemStyleProvider::CreateItemStyle(description::Value item)
 			{
 				return new GuiControlTemplate_StyleProvider(factory, item);
 			}

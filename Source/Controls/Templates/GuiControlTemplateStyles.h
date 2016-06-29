@@ -460,17 +460,17 @@ Control Template
 Item Template (GuiControlTemplate)
 ***********************************************************************/
 
-			class GuiControlItemTemplate_ItemStyleProvider
+			class GuiControlTemplate_ItemStyleProvider
 				: public Object
 				, public virtual controls::GuiComboBoxListControl::IItemStyleProvider
-				, public Description<GuiControlItemTemplate_ItemStyleProvider>
+				, public Description<GuiControlTemplate_ItemStyleProvider>
 			{
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
 
 			public:
-				GuiControlItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
-				~GuiControlItemTemplate_ItemStyleProvider();
+				GuiControlTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				~GuiControlTemplate_ItemStyleProvider();
 
 				void												AttachComboBox(controls::GuiComboBoxListControl* value)override;
 				void												DetachComboBox()override;
