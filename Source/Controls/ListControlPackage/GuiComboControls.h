@@ -94,10 +94,26 @@ ComboBox with GuiListControl
 					/// <param name="value">Set to true to display text.</param>
 					virtual void							SetTextVisible(bool value) = 0;
 				};
+				
+				/// <summary>Item style provider for a <see cref="GuiComboBoxListControl"/>.</summary>
+				class IItemStyleProvider : public virtual IDescriptable, public Description<IItemStyleProvider>
+				{
+				public:
+					/// <summary>Called when an item style provider in installed to a <see cref="GuiListControl"/>.</summary>
+					/// <param name="value">The list control.</param>
+					virtual void							AttachComboBox(GuiComboBoxListControl* value)=0;
+					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
+					virtual void							DetachComboBox()=0;
+					/// <summary>Create an item style controller from an item.</summary>
+					/// <returns>The created item style controller.</returns>
+					/// <param name="item">The item.</param>
+					virtual GuiControl::IStyleController*	CreateItemStyle(description::Value item)=0;
+				};
 
 			protected:
 				GuiSelectableListControl*					containedListControl;
 				GuiListControl::IItemPrimaryTextView*		primaryTextView;
+				Ptr<IItemStyleProvider>						itemStyleProvider;
 
 				virtual void								DisplaySelectedContent(vint itemIndex);
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -108,7 +124,9 @@ ComboBox with GuiListControl
 				/// <param name="_containedListControl">The list controller.</param>
 				GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl);
 				~GuiComboBoxListControl();
-
+				
+				/// <summary>Style provider changed event.</summary>
+				compositions::GuiNotifyEvent				StyleProviderChanged;
 				/// <summary>Selected index changed event.</summary>
 				compositions::GuiNotifyEvent				SelectedIndexChanged;
 				
@@ -116,6 +134,14 @@ ComboBox with GuiListControl
 				/// <summary>Get the list control.</summary>
 				/// <returns>The list control.</returns>
 				GuiSelectableListControl*					GetContainedListControl();
+				
+				/// <summary>Get the item style provider.</summary>
+				/// <returns>The item style provider.</returns>
+				IItemStyleProvider*							GetStyleProvider();
+				/// <summary>Set the item style provider</summary>
+				/// <returns>The old item style provider</returns>
+				/// <param name="value">The new item style provider</param>
+				Ptr<IItemStyleProvider>						SetStyleProvider(Ptr<IItemStyleProvider> value);
 				
 				/// <summary>Get the selected index.</summary>
 				/// <returns>The selected index.</returns>

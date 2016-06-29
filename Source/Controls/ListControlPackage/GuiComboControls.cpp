@@ -147,6 +147,27 @@ GuiComboBoxListControl
 			{
 				return containedListControl;
 			}
+			
+			GuiComboBoxListControl::IItemStyleProvider* GuiComboBoxListControl::GetStyleProvider()
+			{
+				return itemStyleProvider.Obj();
+			}
+
+			Ptr<GuiComboBoxListControl::IItemStyleProvider> GuiComboBoxListControl::SetStyleProvider(Ptr<IItemStyleProvider> value)
+			{
+				auto old = itemStyleProvider;
+				if (itemStyleProvider)
+				{
+					itemStyleProvider->DetachComboBox();
+				}
+				itemStyleProvider = value;
+				if (itemStyleProvider)
+				{
+					itemStyleProvider->AttachComboBox(this);
+				}
+				StyleProviderChanged.Execute(GetNotifyEventArguments());
+				return old;
+			}
 
 			vint GuiComboBoxListControl::GetSelectedIndex()
 			{

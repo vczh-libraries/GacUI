@@ -75,6 +75,7 @@ Type List
 			F(presentation::templates::GuiListViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTreeViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTabTemplate_StyleProvider)\
+			F(presentation::templates::GuiControlItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiListItemTemplate_ItemStyleController)\
 			F(presentation::templates::GuiListItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiTreeItemTemplate_ItemStyleProvider)\

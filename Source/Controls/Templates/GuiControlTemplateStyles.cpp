@@ -37,11 +37,11 @@ namespace vl
 GuiControlTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory, description::Value viewModel)
 				:associatedStyleController(0)
 				, controlTemplate(0)
 			{
-				GuiTemplate* itemTemplate = factory->CreateTemplate(Value());
+				GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
 				if (!(controlTemplate = dynamic_cast<GuiControlTemplate*>(itemTemplate)))
 				{
 					delete itemTemplate;
@@ -1073,6 +1073,32 @@ GuiTabTemplate_StyleProvider
 			compositions::IGuiAltAction* GuiTabTemplate_StyleProvider::GetTabAltAction(vint index)
 			{
 				return headerButtons[index]->QueryTypedService<IGuiAltAction>();
+			}
+
+/***********************************************************************
+GuiControlItemTemplate_ItemStyleProvider
+***********************************************************************/
+
+			GuiControlItemTemplate_ItemStyleProvider::GuiControlItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
+				:factory(_factory)
+			{
+			}
+
+			GuiControlItemTemplate_ItemStyleProvider::~GuiControlItemTemplate_ItemStyleProvider()
+			{
+			}
+
+			void GuiControlItemTemplate_ItemStyleProvider::AttachComboBox(controls::GuiComboBoxListControl* value)
+			{
+			}
+
+			void GuiControlItemTemplate_ItemStyleProvider::DetachComboBox()
+			{
+			}
+
+			controls::GuiControl::IStyleController* GuiControlItemTemplate_ItemStyleProvider::CreateItemStyle(description::Value item)
+			{
+				return new GuiControlTemplate_StyleProvider(factory, item);
 			}
 
 /***********************************************************************

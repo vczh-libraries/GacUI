@@ -35,7 +35,7 @@ Control Template
 				GuiControlTemplate*												controlTemplate;
 
 			public:
-				GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory, description::Value viewModel = description::Value());
 				~GuiControlTemplate_StyleProvider();
 
 				compositions::GuiBoundsComposition*								GetBoundsComposition()override;
@@ -454,6 +454,27 @@ Control Template
 				void															SetSelectedTab(vint index)override;
 				void															SetTabAlt(vint index, const WString& value, compositions::IGuiAltActionHost* host)override;
 				compositions::IGuiAltAction*									GetTabAltAction(vint index)override;
+			};
+
+/***********************************************************************
+Item Template (GuiControlTemplate)
+***********************************************************************/
+
+			class GuiControlItemTemplate_ItemStyleProvider
+				: public Object
+				, public virtual controls::GuiComboBoxListControl::IItemStyleProvider
+				, public Description<GuiControlItemTemplate_ItemStyleProvider>
+			{
+			protected:
+				Ptr<GuiTemplate::IFactory>							factory;
+
+			public:
+				GuiControlItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				~GuiControlItemTemplate_ItemStyleProvider();
+
+				void												AttachComboBox(controls::GuiComboBoxListControl* value)override;
+				void												DetachComboBox()override;
+				controls::GuiControl::IStyleController*				CreateItemStyle(description::Value item)override;
 			};
 
 /***********************************************************************
