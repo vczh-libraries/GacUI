@@ -73,6 +73,7 @@
 
           <Cell Site="row:0 column:0">
             <ComboBox SelectedIndex="0">
+              <att.ItemTemplate>demo::ColorBomboItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
                 <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
@@ -85,6 +86,7 @@
           </Cell>
           <Cell Site="row:0 column:1">
             <ComboBox SelectedIndex="0">
+              <att.ItemTemplate>demo::ColorBomboItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
                 <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
@@ -112,6 +114,33 @@
           </Cell>
         </Table>
       </Window>
+    </Instance>
+  </Instance>
+
+  <Instance name="ColorBomboItemTemplateResource">
+    <Instance ref.Class="demo::ColorBomboItemTemplate">
+      <ref.Parameter Name="Source" Class="demo::ColorItem"/>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:Absolute absolute:16</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Absolute absolute:16</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:0">
+            <SolidBackground Color-eval="Source.color"/>
+          </Cell>
+
+          <Cell Site="row:0 column:1 rowSpan:3">
+            <SolidLabel Font-bind="self.Font" Text-eval="Source.name" VerticalAlignment="Center"/>
+          </Cell>
+        </Table>
+      </ControlTemplate>
     </Instance>
   </Instance>
 

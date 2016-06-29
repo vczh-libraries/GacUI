@@ -373,7 +373,7 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiComboBoxListControl::IItemStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiControlTemplate_ItemStyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiControlTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
 			END_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
