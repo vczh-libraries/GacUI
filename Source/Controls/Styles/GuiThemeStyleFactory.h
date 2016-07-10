@@ -161,7 +161,7 @@ namespace vl
 				
 				/// <summary>Create a style for text list.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiScrollView::IStyleProvider*							CreateTextListStyle()=0;
+				virtual controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()=0;
 				/// <summary>Create a style for text list item.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateTextListItemStyle()=0;

@@ -85,6 +85,7 @@ Type List
 			F(presentation::controls::list::TextItemStyleProvider::TextItemStyleController)\
 			F(presentation::controls::list::TextItem)\
 			F(presentation::controls::GuiVirtualTextList)\
+			F(presentation::controls::GuiVirtualTextList::IStyleProvider)\
 			F(presentation::controls::GuiTextList)\
 			F(presentation::controls::list::ListViewItemStyleProviderBase)\
 			F(presentation::controls::list::ListViewItemStyleProviderBase::ListViewItemStyleController)\
@@ -653,19 +654,9 @@ Interface Proxy
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)
 
-				presentation::controls::GuiSelectableButton::IStyleController* CreateBackgroundStyleController()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateBackgroundStyleController);
-				}
-
 				presentation::controls::GuiSelectableButton::IStyleController* CreateBulletStyleController()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateBulletStyleController);
-				}
-
-				presentation::Color GetTextColor()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTextColor);
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)
 
@@ -688,6 +679,21 @@ Interface Proxy
 					INVOKE_INTERFACE_PROXY(SetCheckedSilently, itemIndex, value);
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemView)
+
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiVirtualTextList::IStyleProvider,
+				presentation::controls::GuiSelectableListControl::IStyleProvider
+				)
+
+				presentation::controls::GuiSelectableButton::IStyleController* CreateItemBackground()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateItemBackground);
+				}
+
+				presentation::Color GetTextColor()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTextColor);
+				}
+			END_INTERFACE_PROXY(presentation::controls::GuiVirtualTreeView::IStyleProvider)
 
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiListViewBase::IStyleProvider,
 				presentation::controls::GuiScrollView::IStyleProvider

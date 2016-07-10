@@ -196,9 +196,60 @@ Win8DropDownComboBoxStyle
 			}
 
 /***********************************************************************
-Win8TextListProvider
+Win8TextListItemProvider
 ***********************************************************************/
 			
+			Win8TextListItemProvider::Win8TextListItemProvider()
+			{
+			}
+
+			Win8TextListItemProvider::~Win8TextListItemProvider()
+			{
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win8TextListItemProvider::CreateBulletStyleController()
+			{
+				return 0;
+			}
+
+/***********************************************************************
+Win8CheckTextListItemProvider
+***********************************************************************/
+
+			Win8CheckTextListItemProvider::Win8CheckTextListItemProvider()
+			{
+			}
+
+			Win8CheckTextListItemProvider::~Win8CheckTextListItemProvider()
+			{
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win8CheckTextListItemProvider::CreateBulletStyleController()
+			{
+				return new Win8CheckBoxStyle(Win8CheckBoxStyle::CheckBox, false);
+			}
+
+/***********************************************************************
+Win8RadioTextListItemProvider
+***********************************************************************/
+
+			Win8RadioTextListItemProvider::Win8RadioTextListItemProvider()
+			{
+			}
+
+			Win8RadioTextListItemProvider::~Win8RadioTextListItemProvider()
+			{
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win8RadioTextListItemProvider::CreateBulletStyleController()
+			{
+				return new Win8CheckBoxStyle(Win8CheckBoxStyle::RadioButton, false);
+			}
+
+/***********************************************************************
+Win8TextListProvider
+***********************************************************************/
+
 			Win8TextListProvider::Win8TextListProvider()
 			{
 			}
@@ -207,53 +258,14 @@ Win8TextListProvider
 			{
 			}
 
-			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateBackgroundStyleController()
+			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateItemBackground()
 			{
 				return new Win8SelectableItemStyle;
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateBulletStyleController()
-			{
-				return 0;
 			}
 
 			Color Win8TextListProvider::GetTextColor()
 			{
 				return Win8GetSystemTextColor(true);
-			}
-
-/***********************************************************************
-Win8CheckTextListProvider
-***********************************************************************/
-
-			Win8CheckTextListProvider::Win8CheckTextListProvider()
-			{
-			}
-
-			Win8CheckTextListProvider::~Win8CheckTextListProvider()
-			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win8CheckTextListProvider::CreateBulletStyleController()
-			{
-				return new Win8CheckBoxStyle(Win8CheckBoxStyle::CheckBox, false);
-			}
-
-/***********************************************************************
-Win8RadioTextListProvider
-***********************************************************************/
-
-			Win8RadioTextListProvider::Win8RadioTextListProvider()
-			{
-			}
-
-			Win8RadioTextListProvider::~Win8RadioTextListProvider()
-			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win8RadioTextListProvider::CreateBulletStyleController()
-			{
-				return new Win8CheckBoxStyle(Win8CheckBoxStyle::RadioButton, false);
 			}
 
 /***********************************************************************

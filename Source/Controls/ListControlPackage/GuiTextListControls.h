@@ -35,15 +35,9 @@ TextList Style Provider
 					class ITextItemStyleProvider : public virtual IDescriptable, public Description<ITextItemStyleProvider>
 					{
 					public:
-						/// <summary>Create the background style controller for an text item. The button selection state represents the text item selection state.</summary>
-						/// <returns>The created background style controller.</returns>
-						virtual GuiSelectableButton::IStyleController*		CreateBackgroundStyleController()=0;
 						/// <summary>Create the bullet style controller for an text item. The button selection state represents the text item check state.</summary>
 						/// <returns>The created bullet style controller.</returns>
 						virtual GuiSelectableButton::IStyleController*		CreateBulletStyleController()=0;
-						/// <summary>Get the text color.</summary>
-						/// <returns>The text color.</returns>
-						virtual Color										GetTextColor()=0;
 					};
 
 					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="TextItemStyleProvider"/>.</summary>
@@ -205,6 +199,20 @@ TextList Control
 			class GuiVirtualTextList : public GuiSelectableListControl, public Description<GuiVirtualTextList>
 			{
 			public:
+				/// <summary>Style provider interface for <see cref="GuiVirtualTreeView"/>.</summary>
+				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
+				{
+				public:
+					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of a node.</summary>
+					/// <returns>The created style controller for an item background.</returns>
+					virtual GuiSelectableButton::IStyleController*		CreateItemBackground()=0;
+					/// <summary>Get the text color.</summary>
+					/// <returns>The text color.</returns>
+					virtual Color										GetTextColor()=0;
+				};
+			protected:
+				IStyleProvider*											styleProvider;
+			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
@@ -213,19 +221,22 @@ TextList Control
 				~GuiVirtualTextList();
 
 				/// <summary>Item checked changed event.</summary>
-				compositions::GuiItemNotifyEvent				ItemChecked;
+				compositions::GuiItemNotifyEvent						ItemChecked;
 				
+				/// <summary>Get the style provider for this control.</summary>
+				/// <returns>The style provider for this control.</returns>
+				IStyleProvider*											GetTextListStyleProvider();
 				/// <summary>Set the item style provider.</summary>
 				/// <returns>The old item style provider.</returns>
 				/// <param name="itemStyleProvider">The new item style provider.</param>
-				Ptr<GuiListControl::IItemStyleProvider>			ChangeItemStyle(list::TextItemStyleProvider::ITextItemStyleProvider* itemStyleProvider);
+				Ptr<GuiListControl::IItemStyleProvider>					ChangeItemStyle(list::TextItemStyleProvider::ITextItemStyleProvider* itemStyleProvider);
 			};
 			
 			/// <summary>Text list control.</summary>
 			class GuiTextList : public GuiVirtualTextList, public Description<GuiTextList>
 			{
 			protected:
-				list::TextItemProvider*							items;
+				list::TextItemProvider*									items;
 			public:
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
@@ -235,11 +246,11 @@ TextList Control
 
 				/// <summary>Get all text items.</summary>
 				/// <returns>All text items.</returns>
-				list::TextItemProvider&							GetItems();
+				list::TextItemProvider&									GetItems();
 
 				/// <summary>Get the selected item.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
-				Ptr<list::TextItem>								GetSelectedItem();
+				Ptr<list::TextItem>										GetSelectedItem();
 			};
 		}
 	}

@@ -650,9 +650,60 @@ Win7DropDownComboBoxStyle
 			}
 
 /***********************************************************************
-Win7TextListProvider
+Win7TextListItemProvider
 ***********************************************************************/
 			
+			Win7TextListItemProvider::Win7TextListItemProvider()
+			{
+			}
+
+			Win7TextListItemProvider::~Win7TextListItemProvider()
+			{
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win7TextListItemProvider::CreateBulletStyleController()
+			{
+				return 0;
+			}
+
+/***********************************************************************
+Win7CheckTextListItemProvider
+***********************************************************************/
+
+			Win7CheckTextListItemProvider::Win7CheckTextListItemProvider()
+			{
+			}
+
+			Win7CheckTextListItemProvider::~Win7CheckTextListItemProvider()
+			{
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win7CheckTextListItemProvider::CreateBulletStyleController()
+			{
+				return new Win7CheckBoxStyle(Win7CheckBoxStyle::CheckBox, false);
+			}
+
+/***********************************************************************
+Win7RadioTextListItemProvider
+***********************************************************************/
+
+			Win7RadioTextListItemProvider::Win7RadioTextListItemProvider()
+			{
+			}
+
+			Win7RadioTextListItemProvider::~Win7RadioTextListItemProvider()
+			{
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win7RadioTextListItemProvider::CreateBulletStyleController()
+			{
+				return new Win7CheckBoxStyle(Win7CheckBoxStyle::RadioButton, false);
+			}
+
+/***********************************************************************
+Win7TextListProvider
+***********************************************************************/
+
 			Win7TextListProvider::Win7TextListProvider()
 			{
 			}
@@ -661,53 +712,14 @@ Win7TextListProvider
 			{
 			}
 
-			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateBackgroundStyleController()
+			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateItemBackground()
 			{
 				return new Win7SelectableItemStyle;
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateBulletStyleController()
-			{
-				return 0;
 			}
 
 			Color Win7TextListProvider::GetTextColor()
 			{
 				return Win7GetSystemTextColor(true);
-			}
-
-/***********************************************************************
-Win7CheckTextListProvider
-***********************************************************************/
-
-			Win7CheckTextListProvider::Win7CheckTextListProvider()
-			{
-			}
-
-			Win7CheckTextListProvider::~Win7CheckTextListProvider()
-			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win7CheckTextListProvider::CreateBulletStyleController()
-			{
-				return new Win7CheckBoxStyle(Win7CheckBoxStyle::CheckBox, false);
-			}
-
-/***********************************************************************
-Win7RadioTextListProvider
-***********************************************************************/
-
-			Win7RadioTextListProvider::Win7RadioTextListProvider()
-			{
-			}
-
-			Win7RadioTextListProvider::~Win7RadioTextListProvider()
-			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win7RadioTextListProvider::CreateBulletStyleController()
-			{
-				return new Win7CheckBoxStyle(Win7CheckBoxStyle::RadioButton, false);
 			}
 
 /***********************************************************************

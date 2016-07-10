@@ -82,42 +82,53 @@ List
 ***********************************************************************/
 			
 			/// <summary>Text list style (Windows 8).</summary>
-			class Win8TextListProvider : public Object, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider, public Description<Win8TextListProvider>
+			class Win8TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider, public Description<Win8TextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win8TextListProvider();
-				~Win8TextListProvider();
+				Win8TextListItemProvider();
+				~Win8TextListItemProvider();
 
-				controls::GuiSelectableButton::IStyleController*		CreateBackgroundStyleController()override;
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-				Color													GetTextColor()override;
 			};
 			
 			/// <summary>Check box text list style (Windows 8).</summary>
-			class Win8CheckTextListProvider : public Win8TextListProvider, public Description<Win8CheckTextListProvider>
+			class Win8CheckTextListItemProvider : public Win8TextListItemProvider, public Description<Win8CheckTextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win8CheckTextListProvider();
-				~Win8CheckTextListProvider();
+				Win8CheckTextListItemProvider();
+				~Win8CheckTextListItemProvider();
 
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
 			};
 			
 			/// <summary>Radio button text list style (Windows 8).</summary>
-			class Win8RadioTextListProvider : public Win8TextListProvider, public Description<Win8RadioTextListProvider>
+			class Win8RadioTextListItemProvider : public Win8TextListItemProvider, public Description<Win8RadioTextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win8RadioTextListProvider();
-				~Win8RadioTextListProvider();
+				Win8RadioTextListItemProvider();
+				~Win8RadioTextListItemProvider();
 
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
 			};
 
 #pragma warning(push)
 #pragma warning(disable:4250)
+			
+			/// <summary>Multiline text box style (Windows 7).</summary>
+			class Win8TextListProvider : public Win8MultilineTextBoxProvider, public virtual controls::GuiVirtualTextList::IStyleProvider, public Description<Win8TextListProvider>
+			{
+			public:
+				/// <summary>Create the style.</summary>
+				Win8TextListProvider();
+				~Win8TextListProvider();
+
+				virtual controls::GuiSelectableButton::IStyleController*	CreateItemBackground()override;
+				virtual Color												GetTextColor()override;
+			};
+
 			/// <summary>List view style (Windows 8).</summary>
 			class Win8ListViewProvider : public Win8MultilineTextBoxProvider, public virtual controls::GuiListView::IStyleProvider, public Description<Win8ListViewProvider>
 			{

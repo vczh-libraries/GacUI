@@ -74,7 +74,7 @@ Theme
 				vint																GetScrollDefaultSize()override;
 				vint																GetTrackerDefaultSize()override;
 
-				controls::GuiScrollView::IStyleProvider*							CreateTextListStyle()override;
+				controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()override;
 				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateTextListItemStyle()override;
 				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateCheckTextListItemStyle()override;
 				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateRadioTextListItemStyle()override;

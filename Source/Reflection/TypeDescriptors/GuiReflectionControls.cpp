@@ -614,9 +614,7 @@ Type Declaration
 			END_CLASS_MEMBER(TextItemStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
-				CLASS_MEMBER_METHOD(CreateBackgroundStyleController, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateBulletStyleController, NO_PARAMETER)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
 			END_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
@@ -648,16 +646,24 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTextList)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiSelectableListControl::IStyleProvider* _ TextItemStyleProvider::ITextItemStyleProvider* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"itemStyleProvider" _ L"itemProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiVirtualTextList::IStyleProvider* _ TextItemStyleProvider::ITextItemStyleProvider* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"itemStyleProvider" _ L"itemProvider"})
 
 				CLASS_MEMBER_GUIEVENT(ItemChecked)
-
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextListStyleProvider)
 				CLASS_MEMBER_METHOD(ChangeItemStyle, {L"itemStyleProvider"})
 			END_CLASS_MEMBER(GuiVirtualTextList)
 
+			BEGIN_INTERFACE_MEMBER(GuiVirtualTextList::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleProvider)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
+
+				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
+			END_INTERFACE_MEMBER(GuiVirtualTextList::IStyleProvider)
+
 			BEGIN_CLASS_MEMBER(GuiTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiSelectableListControl::IStyleProvider* _ TextItemStyleProvider::ITextItemStyleProvider*), {L"styleProvider" _ L"itemStyleProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::IStyleProvider* _ TextItemStyleProvider::ITextItemStyleProvider*), {L"styleProvider" _ L"itemStyleProvider"})
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)

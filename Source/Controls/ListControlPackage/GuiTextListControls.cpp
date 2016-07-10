@@ -30,13 +30,15 @@ TextItemStyleProvider::TextItemStyleController
 					,textElement(0)
 					,textItemStyleProvider(provider)
 				{
-					backgroundButton=new GuiSelectableButton(textItemStyleProvider->textItemStyleProvider->CreateBackgroundStyleController());
+					auto styleProvider = textItemStyleProvider->listControl->GetTextListStyleProvider();
+
+					backgroundButton=new GuiSelectableButton(styleProvider->CreateItemBackground());
 					backgroundButton->SetAutoSelection(false);
 					
 					textElement=GuiSolidLabelElement::Create();
 					textElement->SetAlignments(Alignment::Left, Alignment::Center);
 					textElement->SetFont(backgroundButton->GetFont());
-					textElement->SetColor(textItemStyleProvider->textItemStyleProvider->GetTextColor());
+					textElement->SetColor(styleProvider->GetTextColor());
 
 					GuiBoundsComposition* textComposition=new GuiBoundsComposition;
 					textComposition->SetOwnedElement(textElement);
@@ -342,12 +344,18 @@ GuiTextList
 			{
 				ItemChecked.SetAssociatedComposition(boundsComposition);
 
+				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
 				ChangeItemStyle(_itemStyleProvider);
 				SetArranger(new list::FixedHeightItemArranger);
 			}
 
 			GuiVirtualTextList::~GuiVirtualTextList()
 			{
+			}
+
+			GuiVirtualTextList::IStyleProvider* GuiVirtualTextList::GetTextListStyleProvider()
+			{
+				return styleProvider;
 			}
 
 			Ptr<GuiListControl::IItemStyleProvider> GuiVirtualTextList::ChangeItemStyle(list::TextItemStyleProvider::ITextItemStyleProvider* itemStyleProvider)

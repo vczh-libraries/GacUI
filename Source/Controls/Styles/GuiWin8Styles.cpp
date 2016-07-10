@@ -227,24 +227,24 @@ Win8Theme
 				return Win8TrackStyle::HandleLong;
 			}
 
-			controls::GuiScrollView::IStyleProvider* Win8Theme::CreateTextListStyle()
-			{
-				return new Win8MultilineTextBoxProvider;
-			}
-
-			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win8Theme::CreateTextListItemStyle()
+			controls::GuiVirtualTextList::IStyleProvider* Win8Theme::CreateTextListStyle()
 			{
 				return new Win8TextListProvider;
 			}
 
+			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win8Theme::CreateTextListItemStyle()
+			{
+				return new Win8TextListItemProvider;
+			}
+
 			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win8Theme::CreateCheckTextListItemStyle()
 			{
-				return new Win8CheckTextListProvider;
+				return new Win8CheckTextListItemProvider;
 			}
 
 			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win8Theme::CreateRadioTextListItemStyle()
 			{
-				return new Win8RadioTextListProvider;
+				return new Win8RadioTextListItemProvider;
 			}
 		}
 	}

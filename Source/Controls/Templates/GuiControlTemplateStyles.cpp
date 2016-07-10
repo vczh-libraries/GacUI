@@ -690,19 +690,9 @@ GuiTextListTemplate_StyleProvider::ItemStyleProvider
 			{
 			}
 
-			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::ItemStyleProvider::CreateBackgroundStyleController()
-			{
-				return styleProvider->CreateBackgroundStyle();
-			}
-
 			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::ItemStyleProvider::CreateBulletStyleController()
 			{
 				return styleProvider->CreateBulletStyle();
-			}
-
-			Color GuiTextListTemplate_StyleProvider::ItemStyleProvider::GetTextColor()
-			{
-				return styleProvider->controlTemplate->GetTextColor();
 			}
 
 /***********************************************************************
@@ -724,14 +714,19 @@ GuiTextListTemplate_StyleProvider
 			{
 			}
 
+			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateItemBackground()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, backgroundTemplateFactory, BackgroundTemplate);
+			}
+
+			Color GuiTextListTemplate_StyleProvider::GetTextColor()
+			{
+				return controlTemplate->GetTextColor();
+			}
+
 			controls::list::TextItemStyleProvider::ITextItemStyleProvider* GuiTextListTemplate_StyleProvider::CreateArgument()
 			{
 				return new ItemStyleProvider(this);
-			}
-
-			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateBackgroundStyle()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, backgroundTemplateFactory, BackgroundTemplate);
 			}
 
 			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateBulletStyle()

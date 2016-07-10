@@ -192,42 +192,53 @@ List
 ***********************************************************************/
 			
 			/// <summary>Text list style (Windows 7).</summary>
-			class Win7TextListProvider : public Object, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider, public Description<Win7TextListProvider>
+			class Win7TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider, public Description<Win7TextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win7TextListProvider();
-				~Win7TextListProvider();
+				Win7TextListItemProvider();
+				~Win7TextListItemProvider();
 
-				controls::GuiSelectableButton::IStyleController*		CreateBackgroundStyleController()override;
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-				Color													GetTextColor()override;
 			};
 			
 			/// <summary>Check box text list style (Windows 7).</summary>
-			class Win7CheckTextListProvider : public Win7TextListProvider, public Description<Win7CheckTextListProvider>
+			class Win7CheckTextListItemProvider : public Win7TextListItemProvider, public Description<Win7CheckTextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win7CheckTextListProvider();
-				~Win7CheckTextListProvider();
+				Win7CheckTextListItemProvider();
+				~Win7CheckTextListItemProvider();
 
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
 			};
 			
 			/// <summary>Radio button text list style (Windows 7).</summary>
-			class Win7RadioTextListProvider : public Win7TextListProvider, public Description<Win7RadioTextListProvider>
+			class Win7RadioTextListItemProvider : public Win7TextListItemProvider, public Description<Win7RadioTextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win7RadioTextListProvider();
-				~Win7RadioTextListProvider();
+				Win7RadioTextListItemProvider();
+				~Win7RadioTextListItemProvider();
 
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
 			};
 
 #pragma warning(push)
 #pragma warning(disable:4250)
+			
+			/// <summary>Multiline text box style (Windows 7).</summary>
+			class Win7TextListProvider : public Win7MultilineTextBoxProvider, public virtual controls::GuiVirtualTextList::IStyleProvider, public Description<Win7TextListProvider>
+			{
+			public:
+				/// <summary>Create the style.</summary>
+				Win7TextListProvider();
+				~Win7TextListProvider();
+
+				virtual controls::GuiSelectableButton::IStyleController*	CreateItemBackground()override;
+				virtual Color												GetTextColor()override;
+			};
+
 			/// <summary>List view style (Windows 7).</summary>
 			class Win7ListViewProvider : public Win7MultilineTextBoxProvider, public virtual controls::GuiListView::IStyleProvider, public Description<Win7ListViewProvider>
 			{

@@ -332,7 +332,7 @@ Control Template
 
 			class GuiTextListTemplate_StyleProvider
 				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiScrollView::IStyleProvider
+				, public virtual controls::GuiVirtualTextList::IStyleProvider
 				, public Description<GuiTextListTemplate_StyleProvider>
 			{
 			protected:
@@ -351,16 +351,16 @@ Control Template
 					ItemStyleProvider(GuiTextListTemplate_StyleProvider* _styleProvider);
 					~ItemStyleProvider();
 
-					controls::GuiSelectableButton::IStyleController*			CreateBackgroundStyleController()override;
 					controls::GuiSelectableButton::IStyleController*			CreateBulletStyleController()override;
-					Color														GetTextColor()override;
 				};
 			public:
 				GuiTextListTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
 				~GuiTextListTemplate_StyleProvider();
 				
+				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
+				Color															GetTextColor()override;
+				
 				controls::list::TextItemStyleProvider::ITextItemStyleProvider*	CreateArgument();
-				controls::GuiSelectableButton::IStyleController*				CreateBackgroundStyle();
 				controls::GuiSelectableButton::IStyleController*				CreateBulletStyle();
 			};
 

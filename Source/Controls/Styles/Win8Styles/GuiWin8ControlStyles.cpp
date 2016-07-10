@@ -388,7 +388,7 @@ Win8DatePickerStyle
 
 			controls::GuiTextList* Win8DatePickerStyle::CreateTextList()
 			{
-				return new GuiTextList(new Win8MultilineTextBoxProvider, new Win8TextListProvider);
+				return new GuiTextList(new Win8TextListProvider, new Win8TextListItemProvider);
 			}
 
 			controls::GuiComboBoxListControl::IStyleController* Win8DatePickerStyle::CreateComboBoxStyle()

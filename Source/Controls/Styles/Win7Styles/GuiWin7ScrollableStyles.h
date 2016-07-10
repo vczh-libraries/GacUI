@@ -205,6 +205,7 @@ TextBox
 			
 #pragma warning(push)
 #pragma warning(disable:4250)
+
 			/// <summary>Document viewer style (Windows 7).</summary>
 			class Win7DocumentViewerStyle : public Win7MultilineTextBoxProvider, public virtual controls::GuiDocumentViewer::IStyleProvider, public Description<Win7DocumentViewerStyle>
 			{
