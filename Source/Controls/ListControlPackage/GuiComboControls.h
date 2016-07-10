@@ -99,10 +99,10 @@ ComboBox with GuiListControl
 				class IItemStyleProvider : public virtual IDescriptable, public Description<IItemStyleProvider>
 				{
 				public:
-					/// <summary>Called when an item style provider in installed to a <see cref="GuiListControl"/>.</summary>
+					/// <summary>Called when an item style provider in installed to a <see cref="GuiComboBoxListControl"/>.</summary>
 					/// <param name="value">The list control.</param>
 					virtual void							AttachComboBox(GuiComboBoxListControl* value)=0;
-					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
+					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiComboBoxListControl"/>.</summary>
 					virtual void							DetachComboBox()=0;
 					/// <summary>Create an item style controller from an item.</summary>
 					/// <returns>The created item style controller.</returns>
