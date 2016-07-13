@@ -152,7 +152,7 @@
     <Instance ref.Class="demo::ColorListItemTemplate" xmlns:x="demo::*">
       <ref.Parameter Name="Source" Class="demo::ColorItem"/>
       <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <x:ColorBomboItemTemplate Source-eval="Source" Font-bind="self.Font" TextColor-bind="self.TextColor" AlignmentToParent="left:3 top:3 right:3 bottom:3"/>
+        <x:ColorBomboItemTemplate Source-eval="Source" Font-bind="self.Font" TextColor-bind="self.TextColor" AlignmentToParent="left:6 top:6 right:6 bottom:6"/>
       </TextListItemTemplate>
     </Instance>
   </Instance>

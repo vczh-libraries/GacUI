@@ -1201,6 +1201,7 @@ GuiTextListItemTemplate_ItemStyleController
 				, backgroundButton(0)
 			{
 				backgroundButton = new GuiSelectableButton(itemStyleProvider->listControl->GetTextListStyleProvider()->CreateItemBackground());
+				backgroundButton->SetAutoSelection(false);
 			}
 
 			GuiTextListItemTemplate_ItemStyleController::~GuiTextListItemTemplate_ItemStyleController()
