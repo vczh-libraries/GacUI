@@ -164,13 +164,13 @@ namespace vl
 				virtual controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()=0;
 				/// <summary>Create a style for text list item.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateTextListItemStyle()=0;
+				virtual controls::list::TextItemStyleProvider::IBulletFactory*				CreateTextListItemStyle()=0;
 				/// <summary>Create a style for check text list item.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateCheckTextListItemStyle()=0;
+				virtual controls::list::TextItemStyleProvider::IBulletFactory*				CreateCheckTextListItemStyle()=0;
 				/// <summary>Create a style for radio text list item.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateRadioTextListItemStyle()=0;
+				virtual controls::list::TextItemStyleProvider::IBulletFactory*				CreateRadioTextListItemStyle()=0;
 			};
 
 			/// <summary>Get the current theme style factory object. The default theme is [T:vl.presentation.win7.Win7Theme]. Call [M:vl.presentation.theme.SetCurrentTheme] to change the default theme.</summary>

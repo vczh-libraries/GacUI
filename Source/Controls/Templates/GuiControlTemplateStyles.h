@@ -342,7 +342,7 @@ Control Template
 				
 				class ItemStyleProvider
 					: public Object
-					, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider
+					, public virtual controls::list::TextItemStyleProvider::IBulletFactory
 				{
 				protected:
 					GuiTextListTemplate_StyleProvider*							styleProvider;
@@ -360,7 +360,7 @@ Control Template
 				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
 				Color															GetTextColor()override;
 				
-				controls::list::TextItemStyleProvider::ITextItemStyleProvider*	CreateArgument();
+				controls::list::TextItemStyleProvider::IBulletFactory*			CreateArgument();
 				controls::GuiSelectableButton::IStyleController*				CreateBulletStyle();
 			};
 

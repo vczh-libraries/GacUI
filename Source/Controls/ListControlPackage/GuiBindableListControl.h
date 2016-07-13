@@ -79,7 +79,7 @@ GuiBindableTextList
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
 				/// <param name="_itemSource">The item source.</param>
-				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider, Ptr<description::IValueEnumerable> _itemSource);
+				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, Ptr<description::IValueEnumerable> _itemSource);
 				~GuiBindableTextList();
 				
 				/// <summary>Text property name changed event.</summary>

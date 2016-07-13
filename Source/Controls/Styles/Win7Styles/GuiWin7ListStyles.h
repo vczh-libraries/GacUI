@@ -192,7 +192,7 @@ List
 ***********************************************************************/
 			
 			/// <summary>Text list style (Windows 7).</summary>
-			class Win7TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider, public Description<Win7TextListItemProvider>
+			class Win7TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::IBulletFactory, public Description<Win7TextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>

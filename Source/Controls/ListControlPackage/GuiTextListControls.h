@@ -32,7 +32,7 @@ TextList Style Provider
 				{
 				public:
 					/// <summary>Style provider for <see cref="TextItemStyleProvider"/>.</summary>
-					class ITextItemStyleProvider : public virtual IDescriptable, public Description<ITextItemStyleProvider>
+					class IBulletFactory : public virtual IDescriptable, public Description<IBulletFactory>
 					{
 					public:
 						/// <summary>Create the bullet style controller for an text item. The button selection state represents the text item check state.</summary>
@@ -98,7 +98,7 @@ TextList Style Provider
 					};
 
 				protected:
-					Ptr<ITextItemStyleProvider>					textItemStyleProvider;
+					Ptr<IBulletFactory>							bulletFactory;
 					ITextItemView*								textItemView;
 					GuiVirtualTextList*							listControl;
 
@@ -106,7 +106,7 @@ TextList Style Provider
 				public:
 					/// <summary>Create a item style provider with a specified item style provider callback.</summary>
 					/// <param name="_textItemStyleProvider">The item style provider callback.</param>
-					TextItemStyleProvider(ITextItemStyleProvider* _textItemStyleProvider);
+					TextItemStyleProvider(IBulletFactory* _bulletFactory);
 					~TextItemStyleProvider();
 
 					void										AttachListControl(GuiListControl* value)override;
@@ -217,7 +217,7 @@ TextList Control
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
 
 				/// <summary>Item checked changed event.</summary>
@@ -229,7 +229,7 @@ TextList Control
 				/// <summary>Set the item style provider.</summary>
 				/// <returns>The old item style provider.</returns>
 				/// <param name="itemStyleProvider">The new item style provider.</param>
-				Ptr<GuiListControl::IItemStyleProvider>					ChangeItemStyle(list::TextItemStyleProvider::ITextItemStyleProvider* itemStyleProvider);
+				Ptr<GuiListControl::IItemStyleProvider>					ChangeItemStyle(list::TextItemStyleProvider::IBulletFactory* bulletFactory);
 			};
 			
 			/// <summary>Text list control.</summary>
@@ -241,7 +241,7 @@ TextList Control
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
-				GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider);
+				GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
 				~GuiTextList();
 
 				/// <summary>Get all text items.</summary>

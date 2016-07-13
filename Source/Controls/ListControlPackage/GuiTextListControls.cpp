@@ -44,7 +44,7 @@ TextItemStyleProvider::TextItemStyleController
 					textComposition->SetOwnedElement(textElement);
 					textComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 
-					GuiSelectableButton::IStyleController* bulletStyleController=textItemStyleProvider->textItemStyleProvider->CreateBulletStyleController();
+					GuiSelectableButton::IStyleController* bulletStyleController=textItemStyleProvider->bulletFactory->CreateBulletStyleController();
 					if(bulletStyleController)
 					{
 						bulletButton=new GuiSelectableButton(bulletStyleController);
@@ -134,8 +134,8 @@ TextItemStyleProvider
 					}
 				}
 
-				TextItemStyleProvider::TextItemStyleProvider(ITextItemStyleProvider* _textItemStyleProvider)
-					:textItemStyleProvider(_textItemStyleProvider)
+				TextItemStyleProvider::TextItemStyleProvider(IBulletFactory* _bulletFactory)
+					:bulletFactory(_bulletFactory)
 					,textItemView(0)
 					,listControl(0)
 				{
@@ -339,13 +339,13 @@ TextItemProvider
 GuiTextList
 ***********************************************************************/
 
-			GuiVirtualTextList::GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualTextList::GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_styleProvider, _itemProvider)
 			{
 				ItemChecked.SetAssociatedComposition(boundsComposition);
 
 				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
-				ChangeItemStyle(_itemStyleProvider);
+				ChangeItemStyle(_bulletFactory);
 				SetArranger(new list::FixedHeightItemArranger);
 			}
 
@@ -358,11 +358,11 @@ GuiTextList
 				return styleProvider;
 			}
 
-			Ptr<GuiListControl::IItemStyleProvider> GuiVirtualTextList::ChangeItemStyle(list::TextItemStyleProvider::ITextItemStyleProvider* itemStyleProvider)
+			Ptr<GuiListControl::IItemStyleProvider> GuiVirtualTextList::ChangeItemStyle(list::TextItemStyleProvider::IBulletFactory* bulletFactory)
 			{
 				if(itemStyleProvider)
 				{
-					return SetStyleProvider(new list::TextItemStyleProvider(itemStyleProvider));
+					return SetStyleProvider(new list::TextItemStyleProvider(bulletFactory));
 				}
 				else
 				{
@@ -374,8 +374,8 @@ GuiTextList
 GuiTextList
 ***********************************************************************/
 
-			GuiTextList::GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider)
-				:GuiVirtualTextList(_styleProvider, _itemStyleProvider, new list::TextItemProvider)
+			GuiTextList::GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory)
+				:GuiVirtualTextList(_styleProvider, _bulletFactory, new list::TextItemProvider)
 			{
 				items=dynamic_cast<list::TextItemProvider*>(itemProvider.Obj());
 				items->listControl=this;

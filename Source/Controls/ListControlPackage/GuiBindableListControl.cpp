@@ -178,8 +178,8 @@ GuiBindableTextList::ItemSource
 GuiBindableTextList
 ***********************************************************************/
 
-			GuiBindableTextList::GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider, Ptr<description::IValueEnumerable> _itemSource)
-				:GuiVirtualTextList(_styleProvider, _itemStyleProvider, new ItemSource(_itemSource))
+			GuiBindableTextList::GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, Ptr<description::IValueEnumerable> _itemSource)
+				:GuiVirtualTextList(_styleProvider, _bulletFactory, new ItemSource(_itemSource))
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 

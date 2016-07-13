@@ -233,17 +233,17 @@ Win7Theme
 				return new Win7TextListProvider;
 			}
 
-			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win7Theme::CreateTextListItemStyle()
+			controls::list::TextItemStyleProvider::IBulletFactory* Win7Theme::CreateTextListItemStyle()
 			{
 				return new Win7TextListItemProvider;
 			}
 
-			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win7Theme::CreateCheckTextListItemStyle()
+			controls::list::TextItemStyleProvider::IBulletFactory* Win7Theme::CreateCheckTextListItemStyle()
 			{
 				return new Win7CheckTextListItemProvider;
 			}
 
-			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win7Theme::CreateRadioTextListItemStyle()
+			controls::list::TextItemStyleProvider::IBulletFactory* Win7Theme::CreateRadioTextListItemStyle()
 			{
 				return new Win7RadioTextListItemProvider;
 			}

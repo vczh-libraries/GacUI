@@ -610,12 +610,12 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(TextItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextItemStyleProvider>(TextItemStyleProvider::ITextItemStyleProvider*), {L"textItemStyleProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextItemStyleProvider>(TextItemStyleProvider::IBulletFactory*), {L"bulletFactory"})
 			END_CLASS_MEMBER(TextItemStyleProvider)
 
-			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
+			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::IBulletFactory)
 				CLASS_MEMBER_METHOD(CreateBulletStyleController, NO_PARAMETER)
-			END_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
+			END_INTERFACE_MEMBER(TextItemStyleProvider::IBulletFactory)
 
 			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
 				CLASS_MEMBER_BASE(GuiListControl::IItemPrimaryTextView)
@@ -646,11 +646,11 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTextList)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiVirtualTextList::IStyleProvider* _ TextItemStyleProvider::ITextItemStyleProvider* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"itemStyleProvider" _ L"itemProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiVirtualTextList::IStyleProvider* _ TextItemStyleProvider::IBulletFactory* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"bulletFactory" _ L"itemProvider"})
 
 				CLASS_MEMBER_GUIEVENT(ItemChecked)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextListStyleProvider)
-				CLASS_MEMBER_METHOD(ChangeItemStyle, {L"itemStyleProvider"})
+				CLASS_MEMBER_METHOD(ChangeItemStyle, {L"bulletFactory"})
 			END_CLASS_MEMBER(GuiVirtualTextList)
 
 			BEGIN_INTERFACE_MEMBER(GuiVirtualTextList::IStyleProvider)
@@ -663,7 +663,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::IStyleProvider* _ TextItemStyleProvider::ITextItemStyleProvider*), {L"styleProvider" _ L"itemStyleProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::IStyleProvider* _ TextItemStyleProvider::IBulletFactory*), {L"styleProvider" _ L"bulletFactory"})
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
@@ -1729,7 +1729,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*, list::TextItemStyleProvider::ITextItemStyleProvider*, Ptr<IValueEnumerable>), {L"styleProvider" _ L"itemStyleProvider" _ L"itemSource"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*, list::TextItemStyleProvider::IBulletFactory*, Ptr<IValueEnumerable>), {L"styleProvider" _ L"bulletFactory" _ L"itemSource"})
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(CheckedProperty)

@@ -82,7 +82,7 @@ List
 ***********************************************************************/
 			
 			/// <summary>Text list style (Windows 8).</summary>
-			class Win8TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider, public Description<Win8TextListItemProvider>
+			class Win8TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::IBulletFactory, public Description<Win8TextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>

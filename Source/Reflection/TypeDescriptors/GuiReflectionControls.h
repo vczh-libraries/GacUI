@@ -80,7 +80,7 @@ Type List
 			F(presentation::controls::list::FixedHeightMultiColumnItemArranger)\
 			F(presentation::controls::list::ItemStyleControllerBase)\
 			F(presentation::controls::list::TextItemStyleProvider)\
-			F(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)\
+			F(presentation::controls::list::TextItemStyleProvider::IBulletFactory)\
 			F(presentation::controls::list::TextItemStyleProvider::ITextItemView)\
 			F(presentation::controls::list::TextItemStyleProvider::TextItemStyleController)\
 			F(presentation::controls::list::TextItem)\
@@ -652,13 +652,13 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiSelectableListControl::IItemStyleProvider)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)
+			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::list::TextItemStyleProvider::IBulletFactory)
 
 				presentation::controls::GuiSelectableButton::IStyleController* CreateBulletStyleController()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateBulletStyleController);
 				}
-			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)
+			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::IBulletFactory)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::TextItemStyleProvider::ITextItemView,
 				presentation::controls::GuiListControl::IItemPrimaryTextView

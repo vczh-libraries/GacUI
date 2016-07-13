@@ -724,7 +724,7 @@ GuiTextListTemplate_StyleProvider
 				return controlTemplate->GetTextColor();
 			}
 
-			controls::list::TextItemStyleProvider::ITextItemStyleProvider* GuiTextListTemplate_StyleProvider::CreateArgument()
+			controls::list::TextItemStyleProvider::IBulletFactory* GuiTextListTemplate_StyleProvider::CreateArgument()
 			{
 				return new ItemStyleProvider(this);
 			}

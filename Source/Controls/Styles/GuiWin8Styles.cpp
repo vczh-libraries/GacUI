@@ -232,17 +232,17 @@ Win8Theme
 				return new Win8TextListProvider;
 			}
 
-			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win8Theme::CreateTextListItemStyle()
+			controls::list::TextItemStyleProvider::IBulletFactory* Win8Theme::CreateTextListItemStyle()
 			{
 				return new Win8TextListItemProvider;
 			}
 
-			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win8Theme::CreateCheckTextListItemStyle()
+			controls::list::TextItemStyleProvider::IBulletFactory* Win8Theme::CreateCheckTextListItemStyle()
 			{
 				return new Win8CheckTextListItemProvider;
 			}
 
-			controls::list::TextItemStyleProvider::ITextItemStyleProvider* Win8Theme::CreateRadioTextListItemStyle()
+			controls::list::TextItemStyleProvider::IBulletFactory* Win8Theme::CreateRadioTextListItemStyle()
 			{
 				return new Win8RadioTextListItemProvider;
 			}
