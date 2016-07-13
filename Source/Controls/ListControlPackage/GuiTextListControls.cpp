@@ -360,7 +360,7 @@ GuiTextList
 
 			Ptr<GuiListControl::IItemStyleProvider> GuiVirtualTextList::ChangeItemStyle(list::TextItemStyleProvider::IBulletFactory* bulletFactory)
 			{
-				if(itemStyleProvider)
+				if(bulletFactory)
 				{
 					return SetStyleProvider(new list::TextItemStyleProvider(bulletFactory));
 				}

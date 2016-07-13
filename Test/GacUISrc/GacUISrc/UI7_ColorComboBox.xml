@@ -100,6 +100,7 @@
 
           <Cell Site="row:1 column:0">
             <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.TextProperty>name</att.TextProperty>
               <att.ItemSource-eval>demo::ColorItem::GetFewItems()</att.ItemSource-eval>
               <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -107,6 +108,7 @@
           </Cell>
           <Cell Site="row:1 column:1">
             <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.TextProperty>name</att.TextProperty>
               <att.ItemSource-eval>demo::ColorItem::GetManyItems()</att.ItemSource-eval>
               <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
