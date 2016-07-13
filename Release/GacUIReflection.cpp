@@ -2043,14 +2043,12 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(TextItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextItemStyleProvider>(TextItemStyleProvider::ITextItemStyleProvider*), {L"textItemStyleProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextItemStyleProvider>(TextItemStyleProvider::IBulletFactory*), {L"bulletFactory"})
 			END_CLASS_MEMBER(TextItemStyleProvider)
 
-			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
-				CLASS_MEMBER_METHOD(CreateBackgroundStyleController, NO_PARAMETER)
+			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::IBulletFactory)
 				CLASS_MEMBER_METHOD(CreateBulletStyleController, NO_PARAMETER)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
-			END_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemStyleProvider)
+			END_INTERFACE_MEMBER(TextItemStyleProvider::IBulletFactory)
 
 			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
 				CLASS_MEMBER_BASE(GuiListControl::IItemPrimaryTextView)
@@ -2060,15 +2058,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetChecked, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(SetCheckedSilently, {L"itemIndex" _ L"value"})
 			END_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
-
-			BEGIN_CLASS_MEMBER(TextItemStyleProvider::TextItemStyleController)
-				CLASS_MEMBER_BASE(ItemStyleControllerBase)
-				CLASS_MEMBER_CONSTRUCTOR(TextItemStyleProvider::TextItemStyleController*(TextItemStyleProvider*), {L"provider"})
-
-				CLASS_MEMBER_PROPERTY_FAST(Selected)
-				CLASS_MEMBER_PROPERTY_FAST(Checked)
-				CLASS_MEMBER_PROPERTY_FAST(Text)
-			END_CLASS_MEMBER(TextItemStyleProvider::TextItemStyleController)
 
 			BEGIN_CLASS_MEMBER(TextItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextItem>(), NO_PARAMETER)
@@ -2081,16 +2070,24 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTextList)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiSelectableListControl::IStyleProvider* _ TextItemStyleProvider::ITextItemStyleProvider* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"itemStyleProvider" _ L"itemProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiVirtualTextList::IStyleProvider* _ TextItemStyleProvider::IBulletFactory* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"bulletFactory" _ L"itemProvider"})
 
 				CLASS_MEMBER_GUIEVENT(ItemChecked)
-
-				CLASS_MEMBER_METHOD(ChangeItemStyle, {L"itemStyleProvider"})
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextListStyleProvider)
+				CLASS_MEMBER_METHOD(ChangeItemStyle, {L"bulletFactory"})
 			END_CLASS_MEMBER(GuiVirtualTextList)
+
+			BEGIN_INTERFACE_MEMBER(GuiVirtualTextList::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleProvider)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
+
+				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
+			END_INTERFACE_MEMBER(GuiVirtualTextList::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiSelectableListControl::IStyleProvider* _ TextItemStyleProvider::ITextItemStyleProvider*), {L"styleProvider" _ L"itemStyleProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::IStyleProvider* _ TextItemStyleProvider::IBulletFactory*), {L"styleProvider" _ L"bulletFactory"})
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
@@ -3156,7 +3153,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*, list::TextItemStyleProvider::ITextItemStyleProvider*, Ptr<IValueEnumerable>), {L"styleProvider" _ L"itemStyleProvider" _ L"itemSource"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*, list::TextItemStyleProvider::IBulletFactory*, Ptr<IValueEnumerable>), {L"styleProvider" _ L"bulletFactory" _ L"itemSource"})
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(CheckedProperty)
@@ -3935,8 +3932,15 @@ Type Declaration
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiListItemTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate)
+			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate)
 				CLASS_MEMBER_BASE(GuiListItemTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiTextListItemTemplate*(), NO_PARAMETER)
+
+				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiTextListItemTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate)
+				CLASS_MEMBER_BASE(GuiTextListItemTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiTreeItemTemplate*(), NO_PARAMETER)
 
 				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
@@ -4076,7 +4080,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextListTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiScrollView::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiVirtualTextList::IStyleProvider)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
 				CLASS_MEMBER_METHOD(CreateArgument, NO_PARAMETER)
@@ -4109,17 +4113,11 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiControlTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
 			END_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
 
-			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
-				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)
-
-				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate_ItemStyleController*(GuiListItemTemplate_ItemStyleProvider*), { L"itemStyleProvider" })
-			END_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
-
-			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleProvider)
+			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiListItemTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
-			END_CLASS_MEMBER(GuiListItemTemplate_ItemStyleProvider)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiTextListItemTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
+			END_CLASS_MEMBER(GuiTextListItemTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(tree::INodeItemStyleProvider)

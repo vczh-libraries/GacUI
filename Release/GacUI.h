@@ -11010,18 +11010,12 @@ TextList Style Provider
 				{
 				public:
 					/// <summary>Style provider for <see cref="TextItemStyleProvider"/>.</summary>
-					class ITextItemStyleProvider : public virtual IDescriptable, public Description<ITextItemStyleProvider>
+					class IBulletFactory : public virtual IDescriptable, public Description<IBulletFactory>
 					{
 					public:
-						/// <summary>Create the background style controller for an text item. The button selection state represents the text item selection state.</summary>
-						/// <returns>The created background style controller.</returns>
-						virtual GuiSelectableButton::IStyleController*		CreateBackgroundStyleController()=0;
 						/// <summary>Create the bullet style controller for an text item. The button selection state represents the text item check state.</summary>
 						/// <returns>The created bullet style controller.</returns>
 						virtual GuiSelectableButton::IStyleController*		CreateBulletStyleController()=0;
-						/// <summary>Get the text color.</summary>
-						/// <returns>The text color.</returns>
-						virtual Color										GetTextColor()=0;
 					};
 
 					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="TextItemStyleProvider"/>.</summary>
@@ -11045,6 +11039,7 @@ TextList Style Provider
 						virtual void							SetCheckedSilently(vint itemIndex, bool value)=0;
 					};
 
+				protected:
 					/// <summary>The item style controller for <see cref="TextItemStyleProvider"/>.</summary>
 					class TextItemStyleController : public ItemStyleControllerBase, public Description<TextItemStyleController>
 					{
@@ -11082,7 +11077,7 @@ TextList Style Provider
 					};
 
 				protected:
-					Ptr<ITextItemStyleProvider>					textItemStyleProvider;
+					Ptr<IBulletFactory>							bulletFactory;
 					ITextItemView*								textItemView;
 					GuiVirtualTextList*							listControl;
 
@@ -11090,7 +11085,7 @@ TextList Style Provider
 				public:
 					/// <summary>Create a item style provider with a specified item style provider callback.</summary>
 					/// <param name="_textItemStyleProvider">The item style provider callback.</param>
-					TextItemStyleProvider(ITextItemStyleProvider* _textItemStyleProvider);
+					TextItemStyleProvider(IBulletFactory* _bulletFactory);
 					~TextItemStyleProvider();
 
 					void										AttachListControl(GuiListControl* value)override;
@@ -11183,41 +11178,58 @@ TextList Control
 			class GuiVirtualTextList : public GuiSelectableListControl, public Description<GuiVirtualTextList>
 			{
 			public:
+				/// <summary>Style provider interface for <see cref="GuiVirtualTreeView"/>.</summary>
+				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
+				{
+				public:
+					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of a node.</summary>
+					/// <returns>The created style controller for an item background.</returns>
+					virtual GuiSelectableButton::IStyleController*		CreateItemBackground()=0;
+					/// <summary>Get the text color.</summary>
+					/// <returns>The text color.</returns>
+					virtual Color										GetTextColor()=0;
+				};
+			protected:
+				IStyleProvider*											styleProvider;
+			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
 
 				/// <summary>Item checked changed event.</summary>
-				compositions::GuiItemNotifyEvent				ItemChecked;
+				compositions::GuiItemNotifyEvent						ItemChecked;
 				
+				/// <summary>Get the style provider for this control.</summary>
+				/// <returns>The style provider for this control.</returns>
+				IStyleProvider*											GetTextListStyleProvider();
 				/// <summary>Set the item style provider.</summary>
 				/// <returns>The old item style provider.</returns>
 				/// <param name="itemStyleProvider">The new item style provider.</param>
-				Ptr<GuiListControl::IItemStyleProvider>			ChangeItemStyle(list::TextItemStyleProvider::ITextItemStyleProvider* itemStyleProvider);
+				Ptr<GuiListControl::IItemStyleProvider>					ChangeItemStyle(list::TextItemStyleProvider::IBulletFactory* bulletFactory);
 			};
 			
 			/// <summary>Text list control.</summary>
 			class GuiTextList : public GuiVirtualTextList, public Description<GuiTextList>
 			{
 			protected:
-				list::TextItemProvider*							items;
+				list::TextItemProvider*									items;
 			public:
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
-				GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider);
+				GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
 				~GuiTextList();
 
 				/// <summary>Get all text items.</summary>
 				/// <returns>All text items.</returns>
-				list::TextItemProvider&							GetItems();
+				list::TextItemProvider&									GetItems();
 
 				/// <summary>Get the selected item.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
-				Ptr<list::TextItem>								GetSelectedItem();
+				Ptr<list::TextItem>										GetSelectedItem();
 			};
 		}
 	}
@@ -13225,10 +13237,10 @@ ComboBox with GuiListControl
 				class IItemStyleProvider : public virtual IDescriptable, public Description<IItemStyleProvider>
 				{
 				public:
-					/// <summary>Called when an item style provider in installed to a <see cref="GuiListControl"/>.</summary>
+					/// <summary>Called when an item style provider in installed to a <see cref="GuiComboBoxListControl"/>.</summary>
 					/// <param name="value">The list control.</param>
 					virtual void							AttachComboBox(GuiComboBoxListControl* value)=0;
-					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
+					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiComboBoxListControl"/>.</summary>
 					virtual void							DetachComboBox()=0;
 					/// <summary>Create an item style controller from an item.</summary>
 					/// <returns>The created item style controller.</returns>
@@ -16581,7 +16593,7 @@ GuiBindableTextList
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
 				/// <param name="_itemSource">The item source.</param>
-				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::ITextItemStyleProvider* _itemStyleProvider, Ptr<description::IValueEnumerable> _itemSource);
+				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, Ptr<description::IValueEnumerable> _itemSource);
 				~GuiBindableTextList();
 				
 				/// <summary>Text property name changed event.</summary>
@@ -17528,16 +17540,16 @@ namespace vl
 				
 				/// <summary>Create a style for text list.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiScrollView::IStyleProvider*							CreateTextListStyle()=0;
+				virtual controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()=0;
 				/// <summary>Create a style for text list item.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateTextListItemStyle()=0;
+				virtual controls::list::TextItemStyleProvider::IBulletFactory*				CreateTextListItemStyle()=0;
 				/// <summary>Create a style for check text list item.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateCheckTextListItemStyle()=0;
+				virtual controls::list::TextItemStyleProvider::IBulletFactory*				CreateCheckTextListItemStyle()=0;
 				/// <summary>Create a style for radio text list item.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateRadioTextListItemStyle()=0;
+				virtual controls::list::TextItemStyleProvider::IBulletFactory*				CreateRadioTextListItemStyle()=0;
 			};
 
 			/// <summary>Get the current theme style factory object. The default theme is [T:vl.presentation.win7.Win7Theme]. Call [M:vl.presentation.theme.SetCurrentTheme] to change the default theme.</summary>
@@ -17765,10 +17777,10 @@ Theme
 				vint																GetScrollDefaultSize()override;
 				vint																GetTrackerDefaultSize()override;
 
-				controls::GuiScrollView::IStyleProvider*							CreateTextListStyle()override;
-				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateTextListItemStyle()override;
-				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateCheckTextListItemStyle()override;
-				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateRadioTextListItemStyle()override;
+				controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()override;
+				controls::list::TextItemStyleProvider::IBulletFactory*				CreateTextListItemStyle()override;
+				controls::list::TextItemStyleProvider::IBulletFactory*				CreateCheckTextListItemStyle()override;
+				controls::list::TextItemStyleProvider::IBulletFactory*				CreateRadioTextListItemStyle()override;
 			};
 		}
 	}
@@ -17853,10 +17865,10 @@ Theme
 				vint																GetScrollDefaultSize()override;
 				vint																GetTrackerDefaultSize()override;
 
-				controls::GuiScrollView::IStyleProvider*							CreateTextListStyle()override;
-				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateTextListItemStyle()override;
-				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateCheckTextListItemStyle()override;
-				controls::list::TextItemStyleProvider::ITextItemStyleProvider*		CreateRadioTextListItemStyle()override;
+				controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()override;
+				controls::list::TextItemStyleProvider::IBulletFactory*				CreateTextListItemStyle()override;
+				controls::list::TextItemStyleProvider::IBulletFactory*				CreateCheckTextListItemStyle()override;
+				controls::list::TextItemStyleProvider::IBulletFactory*				CreateRadioTextListItemStyle()override;
 			};
 		}
 	}
@@ -18249,7 +18261,7 @@ Control Template
 Item Template
 ***********************************************************************/
 
-			class GuiListItemTemplate : public GuiTemplate, public AggregatableDescription<GuiListItemTemplate>
+			class GuiListItemTemplate : public GuiTemplate, public Description<GuiListItemTemplate>
 			{
 			public:
 				GuiListItemTemplate();
@@ -18262,7 +18274,19 @@ Item Template
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTreeItemTemplate : public GuiListItemTemplate, public AggregatableDescription<GuiTreeItemTemplate>
+			class GuiTextListItemTemplate : public GuiListItemTemplate, public AggregatableDescription<GuiTextListItemTemplate>
+			{
+			public:
+				GuiTextListItemTemplate();
+				~GuiTextListItemTemplate();
+				
+#define GuiTextListItemTemplate_PROPERTIES(F)\
+				F(GuiTextListItemTemplate, Color, TextColor)\
+
+				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiTreeItemTemplate : public GuiTextListItemTemplate, public AggregatableDescription<GuiTreeItemTemplate>
 			{
 			public:
 				GuiTreeItemTemplate();
@@ -18642,7 +18666,7 @@ Control Template
 
 			class GuiTextListTemplate_StyleProvider
 				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiScrollView::IStyleProvider
+				, public virtual controls::GuiVirtualTextList::IStyleProvider
 				, public Description<GuiTextListTemplate_StyleProvider>
 			{
 			protected:
@@ -18652,7 +18676,7 @@ Control Template
 				
 				class ItemStyleProvider
 					: public Object
-					, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider
+					, public virtual controls::list::TextItemStyleProvider::IBulletFactory
 				{
 				protected:
 					GuiTextListTemplate_StyleProvider*							styleProvider;
@@ -18661,16 +18685,16 @@ Control Template
 					ItemStyleProvider(GuiTextListTemplate_StyleProvider* _styleProvider);
 					~ItemStyleProvider();
 
-					controls::GuiSelectableButton::IStyleController*			CreateBackgroundStyleController()override;
 					controls::GuiSelectableButton::IStyleController*			CreateBulletStyleController()override;
-					Color														GetTextColor()override;
 				};
 			public:
 				GuiTextListTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
 				~GuiTextListTemplate_StyleProvider();
 				
-				controls::list::TextItemStyleProvider::ITextItemStyleProvider*	CreateArgument();
-				controls::GuiSelectableButton::IStyleController*				CreateBackgroundStyle();
+				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
+				Color															GetTextColor()override;
+				
+				controls::list::TextItemStyleProvider::IBulletFactory*			CreateArgument();
 				controls::GuiSelectableButton::IStyleController*				CreateBulletStyle();
 			};
 
@@ -18788,22 +18812,25 @@ Item Template (GuiControlTemplate)
 			};
 
 /***********************************************************************
-Item Template (GuiListItemTemplate)
+Item Template (GuiTextListItemTemplate)
 ***********************************************************************/
 
-			class GuiListItemTemplate_ItemStyleProvider
+			class GuiTextListItemTemplate_ItemStyleController;
+
+			class GuiTextListItemTemplate_ItemStyleProvider
 				: public Object
 				, public virtual controls::GuiSelectableListControl::IItemStyleProvider
-				, public Description<GuiListItemTemplate_ItemStyleProvider>
+				, public Description<GuiTextListItemTemplate_ItemStyleProvider>
 			{
+				friend class GuiTextListItemTemplate_ItemStyleController;
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
-				controls::GuiListControl*							listControl;
+				controls::GuiVirtualTextList*						listControl;
 				controls::GuiListControl::IItemBindingView*			bindingView;
 
 			public:
-				GuiListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
-				~GuiListItemTemplate_ItemStyleProvider();
+				GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				~GuiTextListItemTemplate_ItemStyleProvider();
 
 				void												AttachListControl(controls::GuiListControl* value)override;
 				void												DetachListControl()override;
@@ -18815,22 +18842,24 @@ Item Template (GuiListItemTemplate)
 				void												SetStyleSelected(controls::GuiListControl::IItemStyleController* style, bool value)override;
 			};
 
-			class GuiListItemTemplate_ItemStyleController
+			class GuiTextListItemTemplate_ItemStyleController
 				: public Object
 				, public virtual controls::GuiListControl::IItemStyleController
-				, public Description<GuiListItemTemplate_ItemStyleController>
+				, public Description<GuiTextListItemTemplate_ItemStyleController>
 			{
+				friend class GuiTextListItemTemplate_ItemStyleProvider;
 			protected:
-				GuiListItemTemplate_ItemStyleProvider*				itemStyleProvider;
-				GuiListItemTemplate*								itemTemplate;
+				GuiTextListItemTemplate_ItemStyleProvider*			itemStyleProvider;
+				GuiTextListItemTemplate*							itemTemplate;
 				bool												installed;
+				controls::GuiSelectableButton*						backgroundButton;
 
 			public:
-				GuiListItemTemplate_ItemStyleController(GuiListItemTemplate_ItemStyleProvider* _itemStyleProvider);
-				~GuiListItemTemplate_ItemStyleController();
+				GuiTextListItemTemplate_ItemStyleController(GuiTextListItemTemplate_ItemStyleProvider* _itemStyleProvider);
+				~GuiTextListItemTemplate_ItemStyleController();
 
-				GuiListItemTemplate*								GetTemplate();
-				void												SetTemplate(GuiListItemTemplate* _itemTemplate);
+				GuiTextListItemTemplate*							GetTemplate();
+				void												SetTemplate(GuiTextListItemTemplate* _itemTemplate);
 
 				controls::GuiListControl::IItemStyleProvider*		GetStyleProvider()override;
 				vint												GetItemStyleId()override;
@@ -18845,12 +18874,15 @@ Item Template (GuiListItemTemplate)
 Item Template (GuiTreeItemTemplate)
 ***********************************************************************/
 
+			class GuiTreeItemTemplate_ItemStyleController;
+
 			class GuiTreeItemTemplate_ItemStyleProvider
 				: public Object
 				, public virtual controls::tree::INodeItemStyleProvider
 				, protected virtual controls::tree::INodeProviderCallback
 				, public Description<GuiTreeItemTemplate_ItemStyleProvider>
 			{
+				friend class GuiTreeItemTemplate_ItemStyleController;
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
 				controls::GuiVirtualTreeListControl*				treeListControl;
@@ -18881,18 +18913,30 @@ Item Template (GuiTreeItemTemplate)
 			};
 			
 			class GuiTreeItemTemplate_ItemStyleController
-				: public GuiListItemTemplate_ItemStyleController
+				: public Object
 				, public virtual controls::tree::INodeItemStyleController
 				, public Description<GuiTreeItemTemplate_ItemStyleController>
 			{
+				friend class GuiTreeItemTemplate_ItemStyleProvider;
 			protected:
 				GuiTreeItemTemplate_ItemStyleProvider*				nodeStyleProvider;
+				GuiTreeItemTemplate*								itemTemplate;
+				bool												installed;
 
 			public:
 				GuiTreeItemTemplate_ItemStyleController(GuiTreeItemTemplate_ItemStyleProvider* _nodeStyleProvider);
 				~GuiTreeItemTemplate_ItemStyleController();
+
+				GuiTreeItemTemplate*								GetTemplate();
+				void												SetTemplate(GuiTreeItemTemplate* _itemTemplate);
 				
 				controls::GuiListControl::IItemStyleProvider*		GetStyleProvider()override;
+				vint												GetItemStyleId()override;
+				compositions::GuiBoundsComposition*					GetBoundsComposition()override;
+				bool												IsCacheable()override;
+				bool												IsInstalled()override;
+				void												OnInstalled()override;
+				void												OnUninstalled()override;
 				controls::tree::INodeItemStyleProvider*				GetNodeStyleProvider()override;
 			};
 
@@ -20451,6 +20495,7 @@ TextBox
 			
 #pragma warning(push)
 #pragma warning(disable:4250)
+
 			/// <summary>Document viewer style (Windows 7).</summary>
 			class Win7DocumentViewerStyle : public Win7MultilineTextBoxProvider, public virtual controls::GuiDocumentViewer::IStyleProvider, public Description<Win7DocumentViewerStyle>
 			{
@@ -22314,42 +22359,53 @@ List
 ***********************************************************************/
 			
 			/// <summary>Text list style (Windows 7).</summary>
-			class Win7TextListProvider : public Object, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider, public Description<Win7TextListProvider>
+			class Win7TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::IBulletFactory, public Description<Win7TextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win7TextListProvider();
-				~Win7TextListProvider();
+				Win7TextListItemProvider();
+				~Win7TextListItemProvider();
 
-				controls::GuiSelectableButton::IStyleController*		CreateBackgroundStyleController()override;
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-				Color													GetTextColor()override;
 			};
 			
 			/// <summary>Check box text list style (Windows 7).</summary>
-			class Win7CheckTextListProvider : public Win7TextListProvider, public Description<Win7CheckTextListProvider>
+			class Win7CheckTextListItemProvider : public Win7TextListItemProvider, public Description<Win7CheckTextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win7CheckTextListProvider();
-				~Win7CheckTextListProvider();
+				Win7CheckTextListItemProvider();
+				~Win7CheckTextListItemProvider();
 
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
 			};
 			
 			/// <summary>Radio button text list style (Windows 7).</summary>
-			class Win7RadioTextListProvider : public Win7TextListProvider, public Description<Win7RadioTextListProvider>
+			class Win7RadioTextListItemProvider : public Win7TextListItemProvider, public Description<Win7RadioTextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win7RadioTextListProvider();
-				~Win7RadioTextListProvider();
+				Win7RadioTextListItemProvider();
+				~Win7RadioTextListItemProvider();
 
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
 			};
 
 #pragma warning(push)
 #pragma warning(disable:4250)
+			
+			/// <summary>Multiline text box style (Windows 7).</summary>
+			class Win7TextListProvider : public Win7MultilineTextBoxProvider, public virtual controls::GuiVirtualTextList::IStyleProvider, public Description<Win7TextListProvider>
+			{
+			public:
+				/// <summary>Create the style.</summary>
+				Win7TextListProvider();
+				~Win7TextListProvider();
+
+				virtual controls::GuiSelectableButton::IStyleController*	CreateItemBackground()override;
+				virtual Color												GetTextColor()override;
+			};
+
 			/// <summary>List view style (Windows 7).</summary>
 			class Win7ListViewProvider : public Win7MultilineTextBoxProvider, public virtual controls::GuiListView::IStyleProvider, public Description<Win7ListViewProvider>
 			{
@@ -22671,42 +22727,53 @@ List
 ***********************************************************************/
 			
 			/// <summary>Text list style (Windows 8).</summary>
-			class Win8TextListProvider : public Object, public virtual controls::list::TextItemStyleProvider::ITextItemStyleProvider, public Description<Win8TextListProvider>
+			class Win8TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::IBulletFactory, public Description<Win8TextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win8TextListProvider();
-				~Win8TextListProvider();
+				Win8TextListItemProvider();
+				~Win8TextListItemProvider();
 
-				controls::GuiSelectableButton::IStyleController*		CreateBackgroundStyleController()override;
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-				Color													GetTextColor()override;
 			};
 			
 			/// <summary>Check box text list style (Windows 8).</summary>
-			class Win8CheckTextListProvider : public Win8TextListProvider, public Description<Win8CheckTextListProvider>
+			class Win8CheckTextListItemProvider : public Win8TextListItemProvider, public Description<Win8CheckTextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win8CheckTextListProvider();
-				~Win8CheckTextListProvider();
+				Win8CheckTextListItemProvider();
+				~Win8CheckTextListItemProvider();
 
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
 			};
 			
 			/// <summary>Radio button text list style (Windows 8).</summary>
-			class Win8RadioTextListProvider : public Win8TextListProvider, public Description<Win8RadioTextListProvider>
+			class Win8RadioTextListItemProvider : public Win8TextListItemProvider, public Description<Win8RadioTextListItemProvider>
 			{
 			public:
 				/// <summary>Create the style.</summary>
-				Win8RadioTextListProvider();
-				~Win8RadioTextListProvider();
+				Win8RadioTextListItemProvider();
+				~Win8RadioTextListItemProvider();
 
 				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
 			};
 
 #pragma warning(push)
 #pragma warning(disable:4250)
+			
+			/// <summary>Multiline text box style (Windows 7).</summary>
+			class Win8TextListProvider : public Win8MultilineTextBoxProvider, public virtual controls::GuiVirtualTextList::IStyleProvider, public Description<Win8TextListProvider>
+			{
+			public:
+				/// <summary>Create the style.</summary>
+				Win8TextListProvider();
+				~Win8TextListProvider();
+
+				virtual controls::GuiSelectableButton::IStyleController*	CreateItemBackground()override;
+				virtual Color												GetTextColor()override;
+			};
+
 			/// <summary>List view style (Windows 8).</summary>
 			class Win8ListViewProvider : public Win8MultilineTextBoxProvider, public virtual controls::GuiListView::IStyleProvider, public Description<Win8ListViewProvider>
 			{

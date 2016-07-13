@@ -350,7 +350,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextListTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiScrollView::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiVirtualTextList::IStyleProvider)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
 				CLASS_MEMBER_METHOD(CreateArgument, NO_PARAMETER)

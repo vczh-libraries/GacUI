@@ -534,11 +534,11 @@ Type List
 			F(presentation::controls::list::FixedHeightMultiColumnItemArranger)\
 			F(presentation::controls::list::ItemStyleControllerBase)\
 			F(presentation::controls::list::TextItemStyleProvider)\
-			F(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)\
+			F(presentation::controls::list::TextItemStyleProvider::IBulletFactory)\
 			F(presentation::controls::list::TextItemStyleProvider::ITextItemView)\
-			F(presentation::controls::list::TextItemStyleProvider::TextItemStyleController)\
 			F(presentation::controls::list::TextItem)\
 			F(presentation::controls::GuiVirtualTextList)\
+			F(presentation::controls::GuiVirtualTextList::IStyleProvider)\
 			F(presentation::controls::GuiTextList)\
 			F(presentation::controls::list::ListViewItemStyleProviderBase)\
 			F(presentation::controls::list::ListViewItemStyleProviderBase::ListViewItemStyleController)\
@@ -1105,23 +1105,13 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiSelectableListControl::IItemStyleProvider)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)
-
-				presentation::controls::GuiSelectableButton::IStyleController* CreateBackgroundStyleController()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateBackgroundStyleController);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::list::TextItemStyleProvider::IBulletFactory)
 
 				presentation::controls::GuiSelectableButton::IStyleController* CreateBulletStyleController()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateBulletStyleController);
 				}
-
-				presentation::Color GetTextColor()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTextColor);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemStyleProvider)
+			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::IBulletFactory)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::TextItemStyleProvider::ITextItemView,
 				presentation::controls::GuiListControl::IItemPrimaryTextView
@@ -1142,6 +1132,21 @@ Interface Proxy
 					INVOKE_INTERFACE_PROXY(SetCheckedSilently, itemIndex, value);
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemView)
+
+			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiVirtualTextList::IStyleProvider,
+				presentation::controls::GuiSelectableListControl::IStyleProvider
+				)
+
+				presentation::controls::GuiSelectableButton::IStyleController* CreateItemBackground()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateItemBackground);
+				}
+
+				presentation::Color GetTextColor()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTextColor);
+				}
+			END_INTERFACE_PROXY(presentation::controls::GuiVirtualTreeView::IStyleProvider)
 
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiListViewBase::IStyleProvider,
 				presentation::controls::GuiScrollView::IStyleProvider
@@ -2048,6 +2053,7 @@ Type List
 			F(presentation::templates::GuiTreeViewTemplate)\
 			F(presentation::templates::GuiTabTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
+			F(presentation::templates::GuiTextListItemTemplate)\
 			F(presentation::templates::GuiTreeItemTemplate)\
 			F(presentation::templates::GuiGridVisualizerTemplate)\
 			F(presentation::templates::GuiGridEditorTemplate)\
@@ -2073,8 +2079,7 @@ Type List
 			F(presentation::templates::GuiTreeViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTabTemplate_StyleProvider)\
 			F(presentation::templates::GuiControlTemplate_ItemStyleProvider)\
-			F(presentation::templates::GuiListItemTemplate_ItemStyleController)\
-			F(presentation::templates::GuiListItemTemplate_ItemStyleProvider)\
+			F(presentation::templates::GuiTextListItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiTreeItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiBindableDataVisualizer)\
 			F(presentation::templates::GuiBindableDataVisualizer::Factory)\
