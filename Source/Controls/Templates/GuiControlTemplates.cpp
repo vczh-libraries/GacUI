@@ -454,7 +454,6 @@ GuiTabTemplate
 
 			GuiTabTemplate::~GuiTabTemplate()
 			{
-				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -471,6 +470,22 @@ GuiListItemTemplate
 			}
 
 			GuiListItemTemplate::~GuiListItemTemplate()
+			{
+				FinalizeAggregation();
+			}
+
+/***********************************************************************
+GuiTextListItemTemplate
+***********************************************************************/
+
+			GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
+
+			GuiTextListItemTemplate::GuiTextListItemTemplate()
+			{
+				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
+			}
+
+			GuiTextListItemTemplate::~GuiTextListItemTemplate()
 			{
 				FinalizeAggregation();
 			}

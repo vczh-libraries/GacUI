@@ -626,15 +626,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetCheckedSilently, {L"itemIndex" _ L"value"})
 			END_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
 
-			BEGIN_CLASS_MEMBER(TextItemStyleProvider::TextItemStyleController)
-				CLASS_MEMBER_BASE(ItemStyleControllerBase)
-				CLASS_MEMBER_CONSTRUCTOR(TextItemStyleProvider::TextItemStyleController*(TextItemStyleProvider*), {L"provider"})
-
-				CLASS_MEMBER_PROPERTY_FAST(Selected)
-				CLASS_MEMBER_PROPERTY_FAST(Checked)
-				CLASS_MEMBER_PROPERTY_FAST(Text)
-			END_CLASS_MEMBER(TextItemStyleProvider::TextItemStyleController)
-
 			BEGIN_CLASS_MEMBER(TextItem)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextItem>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextItem>(const WString&), {L"text"})

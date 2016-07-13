@@ -51,6 +51,7 @@ Type List
 			F(presentation::templates::GuiTreeViewTemplate)\
 			F(presentation::templates::GuiTabTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
+			F(presentation::templates::GuiTextListItemTemplate)\
 			F(presentation::templates::GuiTreeItemTemplate)\
 			F(presentation::templates::GuiGridVisualizerTemplate)\
 			F(presentation::templates::GuiGridEditorTemplate)\
@@ -76,8 +77,7 @@ Type List
 			F(presentation::templates::GuiTreeViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTabTemplate_StyleProvider)\
 			F(presentation::templates::GuiControlTemplate_ItemStyleProvider)\
-			F(presentation::templates::GuiListItemTemplate_ItemStyleController)\
-			F(presentation::templates::GuiListItemTemplate_ItemStyleProvider)\
+			F(presentation::templates::GuiTextListItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiTreeItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiBindableDataVisualizer)\
 			F(presentation::templates::GuiBindableDataVisualizer::Factory)\

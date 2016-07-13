@@ -61,6 +61,7 @@ TextList Style Provider
 						virtual void							SetCheckedSilently(vint itemIndex, bool value)=0;
 					};
 
+				protected:
 					/// <summary>The item style controller for <see cref="TextItemStyleProvider"/>.</summary>
 					class TextItemStyleController : public ItemStyleControllerBase, public Description<TextItemStyleController>
 					{

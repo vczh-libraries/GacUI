@@ -381,7 +381,7 @@ Control Template
 Item Template
 ***********************************************************************/
 
-			class GuiListItemTemplate : public GuiTemplate, public AggregatableDescription<GuiListItemTemplate>
+			class GuiListItemTemplate : public GuiTemplate, public Description<GuiListItemTemplate>
 			{
 			public:
 				GuiListItemTemplate();
@@ -394,7 +394,19 @@ Item Template
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTreeItemTemplate : public GuiListItemTemplate, public AggregatableDescription<GuiTreeItemTemplate>
+			class GuiTextListItemTemplate : public GuiListItemTemplate, public AggregatableDescription<GuiTextListItemTemplate>
+			{
+			public:
+				GuiTextListItemTemplate();
+				~GuiTextListItemTemplate();
+				
+#define GuiTextListItemTemplate_PROPERTIES(F)\
+				F(GuiTextListItemTemplate, Color, TextColor)\
+
+				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiTreeItemTemplate : public GuiTextListItemTemplate, public AggregatableDescription<GuiTreeItemTemplate>
 			{
 			public:
 				GuiTreeItemTemplate();

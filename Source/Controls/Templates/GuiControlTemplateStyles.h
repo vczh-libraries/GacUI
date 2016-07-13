@@ -478,22 +478,25 @@ Item Template (GuiControlTemplate)
 			};
 
 /***********************************************************************
-Item Template (GuiListItemTemplate)
+Item Template (GuiTextListItemTemplate)
 ***********************************************************************/
 
-			class GuiListItemTemplate_ItemStyleProvider
+			class GuiTextListItemTemplate_ItemStyleController;
+
+			class GuiTextListItemTemplate_ItemStyleProvider
 				: public Object
 				, public virtual controls::GuiSelectableListControl::IItemStyleProvider
-				, public Description<GuiListItemTemplate_ItemStyleProvider>
+				, public Description<GuiTextListItemTemplate_ItemStyleProvider>
 			{
+				friend class GuiTextListItemTemplate_ItemStyleController;
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
-				controls::GuiListControl*							listControl;
+				controls::GuiVirtualTextList*						listControl;
 				controls::GuiListControl::IItemBindingView*			bindingView;
 
 			public:
-				GuiListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
-				~GuiListItemTemplate_ItemStyleProvider();
+				GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				~GuiTextListItemTemplate_ItemStyleProvider();
 
 				void												AttachListControl(controls::GuiListControl* value)override;
 				void												DetachListControl()override;
@@ -505,22 +508,24 @@ Item Template (GuiListItemTemplate)
 				void												SetStyleSelected(controls::GuiListControl::IItemStyleController* style, bool value)override;
 			};
 
-			class GuiListItemTemplate_ItemStyleController
+			class GuiTextListItemTemplate_ItemStyleController
 				: public Object
 				, public virtual controls::GuiListControl::IItemStyleController
-				, public Description<GuiListItemTemplate_ItemStyleController>
+				, public Description<GuiTextListItemTemplate_ItemStyleController>
 			{
+				friend class GuiTextListItemTemplate_ItemStyleProvider;
 			protected:
-				GuiListItemTemplate_ItemStyleProvider*				itemStyleProvider;
-				GuiListItemTemplate*								itemTemplate;
+				GuiTextListItemTemplate_ItemStyleProvider*			itemStyleProvider;
+				GuiTextListItemTemplate*							itemTemplate;
 				bool												installed;
+				controls::GuiSelectableButton*						backgroundButton;
 
 			public:
-				GuiListItemTemplate_ItemStyleController(GuiListItemTemplate_ItemStyleProvider* _itemStyleProvider);
-				~GuiListItemTemplate_ItemStyleController();
+				GuiTextListItemTemplate_ItemStyleController(GuiTextListItemTemplate_ItemStyleProvider* _itemStyleProvider);
+				~GuiTextListItemTemplate_ItemStyleController();
 
-				GuiListItemTemplate*								GetTemplate();
-				void												SetTemplate(GuiListItemTemplate* _itemTemplate);
+				GuiTextListItemTemplate*							GetTemplate();
+				void												SetTemplate(GuiTextListItemTemplate* _itemTemplate);
 
 				controls::GuiListControl::IItemStyleProvider*		GetStyleProvider()override;
 				vint												GetItemStyleId()override;
@@ -535,12 +540,15 @@ Item Template (GuiListItemTemplate)
 Item Template (GuiTreeItemTemplate)
 ***********************************************************************/
 
+			class GuiTreeItemTemplate_ItemStyleController;
+
 			class GuiTreeItemTemplate_ItemStyleProvider
 				: public Object
 				, public virtual controls::tree::INodeItemStyleProvider
 				, protected virtual controls::tree::INodeProviderCallback
 				, public Description<GuiTreeItemTemplate_ItemStyleProvider>
 			{
+				friend class GuiTreeItemTemplate_ItemStyleController;
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
 				controls::GuiVirtualTreeListControl*				treeListControl;
@@ -571,18 +579,30 @@ Item Template (GuiTreeItemTemplate)
 			};
 			
 			class GuiTreeItemTemplate_ItemStyleController
-				: public GuiListItemTemplate_ItemStyleController
+				: public Object
 				, public virtual controls::tree::INodeItemStyleController
 				, public Description<GuiTreeItemTemplate_ItemStyleController>
 			{
+				friend class GuiTreeItemTemplate_ItemStyleProvider;
 			protected:
 				GuiTreeItemTemplate_ItemStyleProvider*				nodeStyleProvider;
+				GuiTreeItemTemplate*								itemTemplate;
+				bool												installed;
 
 			public:
 				GuiTreeItemTemplate_ItemStyleController(GuiTreeItemTemplate_ItemStyleProvider* _nodeStyleProvider);
 				~GuiTreeItemTemplate_ItemStyleController();
+
+				GuiTreeItemTemplate*								GetTemplate();
+				void												SetTemplate(GuiTreeItemTemplate* _itemTemplate);
 				
 				controls::GuiListControl::IItemStyleProvider*		GetStyleProvider()override;
+				vint												GetItemStyleId()override;
+				compositions::GuiBoundsComposition*					GetBoundsComposition()override;
+				bool												IsCacheable()override;
+				bool												IsInstalled()override;
+				void												OnInstalled()override;
+				void												OnUninstalled()override;
 				controls::tree::INodeItemStyleProvider*				GetNodeStyleProvider()override;
 			};
 

@@ -122,6 +122,7 @@
   <Instance name="ColorBomboItemTemplateResource">
     <Instance ref.Class="demo::ColorBomboItemTemplate">
       <ref.Parameter Name="Source" Class="demo::ColorItem"/>
+      <ref.Property Name="TextColor" Type="Color"/>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -140,7 +141,7 @@
           </Cell>
 
           <Cell Site="row:0 column:2 rowSpan:3">
-            <SolidLabel Font-bind="self.Font" Text-eval="Source.name" Ellipse="true" VerticalAlignment="Center"/>
+            <SolidLabel Text-eval="Source.name" Font-bind="self.Font" Color-bind="self.TextColor" Ellipse="true" VerticalAlignment="Center"/>
           </Cell>
         </Table>
       </ControlTemplate>
@@ -148,53 +149,11 @@
   </Instance>
 
   <Instance name="ColorListItemTemplateResource">
-    <Instance ref.Class="demo::ColorListItemTemplate">
+    <Instance ref.Class="demo::ColorListItemTemplate" xmlns:x="demo::*">
       <ref.Parameter Name="Source" Class="demo::ColorItem"/>
-      <ListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <CheckBox Selected-bind="self.Selected" AutoSelection="false">
-          <att.ControlTemplate>demo::ColorListItemBackgroundTemplate</att.ControlTemplate>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-            <att.Rows>
-              <CellOption>composeType:Percentage percentage:1.0</CellOption>
-              <CellOption>composeType:Absolute absolute:16</CellOption>
-              <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            </att.Rows>
-            <att.Columns>
-              <CellOption>composeType:Absolute absolute:16</CellOption>
-              <CellOption>composeType:Percentage percentage:1.0</CellOption>
-            </att.Columns>
-
-            <Cell Site="row:1 column:0">
-              <SolidBackground Color-eval="Source.color"/>
-            </Cell>
-
-            <Cell Site="row:0 column:1 rowSpan:3">
-              <SolidLabel Font-bind="self.Font" Text-eval="Source.name" Ellipse="true" VerticalAlignment="Center">
-                <att.Color-bind>cast Color (self.Selected ? "#FFFFFF" : "#000000")</att.Color-bind>
-              </SolidLabel>
-            </Cell>
-          </Table>
-        </CheckBox>
-      </ListItemTemplate>
-    </Instance>
-  </Instance>
-
-  <Instance name="ColorListItemBackgroundTemplateResource">
-    <Instance ref.Class="demo::ColorListItemBackgroundTemplate">
-      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground>
-          <att.Color-bind>
-            <![CDATA[
-              cast Color (
-                self.Selected ? "#000000" :
-                self.State != "Normal" ? "#C0C0C0" :
-                "#00000000"
-              )
-            ]]>
-          </att.Color-bind>
-        </SolidBackground>
-      </SelectableButtonTemplate>
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <x:ColorBomboItemTemplate Source-eval="Source" Font-bind="self.Font" TextColor-bind="self.TextColor" AlignmentToParent="left:3 top:3 right:3 bottom:3"/>
+      </TextListItemTemplate>
     </Instance>
   </Instance>
 </Resource>

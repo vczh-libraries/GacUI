@@ -1097,27 +1097,27 @@ GuiControlTemplate_ItemStyleProvider
 			}
 
 /***********************************************************************
-GuiListItemTemplate_ItemStyleProvider
+GuiTextListItemTemplate_ItemStyleProvider
 ***********************************************************************/
 
-			GuiListItemTemplate_ItemStyleProvider::GuiListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
+			GuiTextListItemTemplate_ItemStyleProvider::GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
 				:factory(_factory)
 				, listControl(0)
 				, bindingView(0)
 			{
 			}
 
-			GuiListItemTemplate_ItemStyleProvider::~GuiListItemTemplate_ItemStyleProvider()
+			GuiTextListItemTemplate_ItemStyleProvider::~GuiTextListItemTemplate_ItemStyleProvider()
 			{
 			}
 
-			void GuiListItemTemplate_ItemStyleProvider::AttachListControl(controls::GuiListControl* value)
+			void GuiTextListItemTemplate_ItemStyleProvider::AttachListControl(controls::GuiListControl* value)
 			{
-				listControl = value;
+				listControl = dynamic_cast<GuiVirtualTextList*>(value);
 				bindingView = dynamic_cast<GuiListControl::IItemBindingView*>(listControl->GetItemProvider()->RequestView(GuiListControl::IItemBindingView::Identifier));
 			}
 
-			void GuiListItemTemplate_ItemStyleProvider::DetachListControl()
+			void GuiTextListItemTemplate_ItemStyleProvider::DetachListControl()
 			{
 				if (listControl && bindingView)
 				{
@@ -1127,24 +1127,24 @@ GuiListItemTemplate_ItemStyleProvider
 				bindingView = 0;
 			}
 
-			vint GuiListItemTemplate_ItemStyleProvider::GetItemStyleId(vint itemIndex)
+			vint GuiTextListItemTemplate_ItemStyleProvider::GetItemStyleId(vint itemIndex)
 			{
 				return 0;
 			}
 
-			controls::GuiListControl::IItemStyleController* GuiListItemTemplate_ItemStyleProvider::CreateItemStyle(vint styleId)
+			controls::GuiListControl::IItemStyleController* GuiTextListItemTemplate_ItemStyleProvider::CreateItemStyle(vint styleId)
 			{
-				return new GuiListItemTemplate_ItemStyleController(this);
+				return new GuiTextListItemTemplate_ItemStyleController(this);
 			}
 
-			void GuiListItemTemplate_ItemStyleProvider::DestroyItemStyle(controls::GuiListControl::IItemStyleController* style)
+			void GuiTextListItemTemplate_ItemStyleProvider::DestroyItemStyle(controls::GuiListControl::IItemStyleController* style)
 			{
 				delete style;
 			}
 
-			void GuiListItemTemplate_ItemStyleProvider::Install(controls::GuiListControl::IItemStyleController* style, vint itemIndex)
+			void GuiTextListItemTemplate_ItemStyleProvider::Install(controls::GuiListControl::IItemStyleController* style, vint itemIndex)
 			{
-				if (auto controller = dynamic_cast<GuiListItemTemplate_ItemStyleController*>(style))
+				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
 				{
 					Value viewModel;
 					if (bindingView)
@@ -1153,10 +1153,11 @@ GuiListItemTemplate_ItemStyleProvider
 					}
 					
 					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
-					if (auto listItemTemplate = dynamic_cast<GuiListItemTemplate*>(itemTemplate))
+					if (auto listItemTemplate = dynamic_cast<GuiTextListItemTemplate*>(itemTemplate))
 					{
 						listItemTemplate->SetFont(listControl->GetFont());
 						listItemTemplate->SetIndex(itemIndex);
+						listItemTemplate->SetTextColor(listControl->GetTextListStyleProvider()->GetTextColor());
 						controller->SetTemplate(listItemTemplate);
 					}
 					else
@@ -1166,9 +1167,9 @@ GuiListItemTemplate_ItemStyleProvider
 				}
 			}
 
-			void GuiListItemTemplate_ItemStyleProvider::SetStyleIndex(controls::GuiListControl::IItemStyleController* style, vint value)
+			void GuiTextListItemTemplate_ItemStyleProvider::SetStyleIndex(controls::GuiListControl::IItemStyleController* style, vint value)
 			{
-				if (auto controller = dynamic_cast<GuiListItemTemplate_ItemStyleController*>(style))
+				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
 				{
 					if (auto itemTemplate = controller->GetTemplate())
 					{
@@ -1177,10 +1178,11 @@ GuiListItemTemplate_ItemStyleProvider
 				}
 			}
 
-			void GuiListItemTemplate_ItemStyleProvider::SetStyleSelected(controls::GuiListControl::IItemStyleController* style, bool value)
+			void GuiTextListItemTemplate_ItemStyleProvider::SetStyleSelected(controls::GuiListControl::IItemStyleController* style, bool value)
 			{
-				if (auto controller = dynamic_cast<GuiListItemTemplate_ItemStyleController*>(style))
+				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
 				{
+					controller->backgroundButton->SetSelected(value);
 					if (auto itemTemplate = controller->GetTemplate())
 					{
 						itemTemplate->SetSelected(value);
@@ -1189,64 +1191,67 @@ GuiListItemTemplate_ItemStyleProvider
 			}
 
 /***********************************************************************
-GuiListItemTemplate_ItemStyleController
+GuiTextListItemTemplate_ItemStyleController
 ***********************************************************************/
 
-			GuiListItemTemplate_ItemStyleController::GuiListItemTemplate_ItemStyleController(GuiListItemTemplate_ItemStyleProvider* _itemStyleProvider)
+			GuiTextListItemTemplate_ItemStyleController::GuiTextListItemTemplate_ItemStyleController(GuiTextListItemTemplate_ItemStyleProvider* _itemStyleProvider)
 				:itemStyleProvider(_itemStyleProvider)
 				, itemTemplate(0)
 				, installed(false)
+				, backgroundButton(0)
 			{
-
+				backgroundButton = new GuiSelectableButton(itemStyleProvider->listControl->GetTextListStyleProvider()->CreateItemBackground());
 			}
 
-			GuiListItemTemplate_ItemStyleController::~GuiListItemTemplate_ItemStyleController()
+			GuiTextListItemTemplate_ItemStyleController::~GuiTextListItemTemplate_ItemStyleController()
 			{
-				SafeDeleteComposition(itemTemplate);
+				SafeDeleteControl(backgroundButton);
 			}
 
-			GuiListItemTemplate* GuiListItemTemplate_ItemStyleController::GetTemplate()
+			GuiTextListItemTemplate* GuiTextListItemTemplate_ItemStyleController::GetTemplate()
 			{
 				return itemTemplate;
 			}
 
-			void GuiListItemTemplate_ItemStyleController::SetTemplate(GuiListItemTemplate* _itemTemplate)
+			void GuiTextListItemTemplate_ItemStyleController::SetTemplate(GuiTextListItemTemplate* _itemTemplate)
 			{
 				SafeDeleteComposition(itemTemplate);
 				itemTemplate = _itemTemplate;
+				itemTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				backgroundButton->GetContainerComposition()->AddChild(itemTemplate);
 			}
 
-			controls::GuiListControl::IItemStyleProvider* GuiListItemTemplate_ItemStyleController::GetStyleProvider()
+			controls::GuiListControl::IItemStyleProvider* GuiTextListItemTemplate_ItemStyleController::GetStyleProvider()
 			{
 				return itemStyleProvider;
 			}
 
-			vint GuiListItemTemplate_ItemStyleController::GetItemStyleId()
+			vint GuiTextListItemTemplate_ItemStyleController::GetItemStyleId()
 			{
 				return 0;
 			}
 
-			compositions::GuiBoundsComposition* GuiListItemTemplate_ItemStyleController::GetBoundsComposition()
+			compositions::GuiBoundsComposition* GuiTextListItemTemplate_ItemStyleController::GetBoundsComposition()
 			{
-				return itemTemplate;
+				return backgroundButton->GetBoundsComposition();
 			}
 
-			bool GuiListItemTemplate_ItemStyleController::IsCacheable()
+			bool GuiTextListItemTemplate_ItemStyleController::IsCacheable()
 			{
 				return false;
 			}
 
-			bool GuiListItemTemplate_ItemStyleController::IsInstalled()
+			bool GuiTextListItemTemplate_ItemStyleController::IsInstalled()
 			{
 				return installed;
 			}
 
-			void GuiListItemTemplate_ItemStyleController::OnInstalled()
+			void GuiTextListItemTemplate_ItemStyleController::OnInstalled()
 			{
 				installed = true;
 			}
 
-			void GuiListItemTemplate_ItemStyleController::OnUninstalled()
+			void GuiTextListItemTemplate_ItemStyleController::OnUninstalled()
 			{
 				installed = false;
 			}
@@ -1409,20 +1414,60 @@ GuiTreeItemTemplate_ItemStyleController
 ***********************************************************************/
 
 			GuiTreeItemTemplate_ItemStyleController::GuiTreeItemTemplate_ItemStyleController(GuiTreeItemTemplate_ItemStyleProvider* _nodeStyleProvider)
-				:GuiListItemTemplate_ItemStyleController(0)
-				, nodeStyleProvider(_nodeStyleProvider)
+				:nodeStyleProvider(_nodeStyleProvider)
+				, itemTemplate(0)
+				, installed(false)
 			{
-
 			}
 
 			GuiTreeItemTemplate_ItemStyleController::~GuiTreeItemTemplate_ItemStyleController()
 			{
+			}
 
+			GuiTreeItemTemplate* GuiTreeItemTemplate_ItemStyleController::GetTemplate()
+			{
+				return itemTemplate;
+			}
+
+			void GuiTreeItemTemplate_ItemStyleController::SetTemplate(GuiTreeItemTemplate* _itemTemplate)
+			{
+				SafeDeleteComposition(itemTemplate);
+				itemTemplate = _itemTemplate;
 			}
 
 			controls::GuiListControl::IItemStyleProvider* GuiTreeItemTemplate_ItemStyleController::GetStyleProvider()
 			{
 				return nodeStyleProvider->GetBindedItemStyleProvider();
+			}
+
+			vint GuiTreeItemTemplate_ItemStyleController::GetItemStyleId()
+			{
+				return 0;
+			}
+
+			compositions::GuiBoundsComposition* GuiTreeItemTemplate_ItemStyleController::GetBoundsComposition()
+			{
+				return itemTemplate;
+			}
+
+			bool GuiTreeItemTemplate_ItemStyleController::IsCacheable()
+			{
+				return false;
+			}
+
+			bool GuiTreeItemTemplate_ItemStyleController::IsInstalled()
+			{
+				return installed;
+			}
+
+			void GuiTreeItemTemplate_ItemStyleController::OnInstalled()
+			{
+				installed = true;
+			}
+
+			void GuiTreeItemTemplate_ItemStyleController::OnUninstalled()
+			{
+				installed = false;
 			}
 
 			controls::tree::INodeItemStyleProvider* GuiTreeItemTemplate_ItemStyleController::GetNodeStyleProvider()

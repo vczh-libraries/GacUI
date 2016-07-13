@@ -87,7 +87,7 @@ GuiSelectableListControlInstanceLoader
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::_ItemTemplate)
 						{
-							if (auto stat = CreateSetControlTemplateStyle<GuiListItemTemplate_ItemStyleProvider, GuiListItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", errors))
+							if (auto stat = CreateSetControlTemplateStyle<GuiTextListItemTemplate_ItemStyleProvider, GuiTextListItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", errors))
 							{
 								block->statements.Add(stat);
 							}

@@ -202,8 +202,15 @@ Type Declaration
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiListItemTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate)
+			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate)
 				CLASS_MEMBER_BASE(GuiListItemTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiTextListItemTemplate*(), NO_PARAMETER)
+
+				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiTextListItemTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate)
+				CLASS_MEMBER_BASE(GuiTextListItemTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiTreeItemTemplate*(), NO_PARAMETER)
 
 				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
@@ -376,17 +383,11 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiControlTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
 			END_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
 
-			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
-				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)
-
-				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate_ItemStyleController*(GuiListItemTemplate_ItemStyleProvider*), { L"itemStyleProvider" })
-			END_CLASS_MEMBER(GuiListItemTemplate_ItemStyleController)
-
-			BEGIN_CLASS_MEMBER(GuiListItemTemplate_ItemStyleProvider)
+			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiListItemTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
-			END_CLASS_MEMBER(GuiListItemTemplate_ItemStyleProvider)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiTextListItemTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
+			END_CLASS_MEMBER(GuiTextListItemTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(tree::INodeItemStyleProvider)
