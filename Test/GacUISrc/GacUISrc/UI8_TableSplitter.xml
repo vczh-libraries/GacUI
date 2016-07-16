@@ -43,6 +43,16 @@
                     <CellOption>composeType:Absolute absolute:50</CellOption>
                   </att.Columns>
 
+                  <RowSplitter RowsToTheTop="2"/>
+                  <RowSplitter RowsToTheTop="3"/>
+                  <RowSplitter RowsToTheTop="5"/>
+                  <RowSplitter RowsToTheTop="6"/>
+                  
+                  <ColumnSplitter ColumnsToTheLeft="2"/>
+                  <ColumnSplitter ColumnsToTheLeft="3"/>
+                  <ColumnSplitter ColumnsToTheLeft="5"/>
+                  <ColumnSplitter ColumnsToTheLeft="6"/>
+
                   <Cell Site="row:0 column:1">
                     <Label Text-format="$(table.observe as _(_.GetColumnOption(1).absolute on _.ConfigChanged))px"/>
                   </Cell>

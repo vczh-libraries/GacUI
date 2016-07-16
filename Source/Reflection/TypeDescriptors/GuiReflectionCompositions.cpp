@@ -175,6 +175,22 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetSite, {L"row" _ L"column" _ L"rowSpan" _ L"columnSpan"})
 			END_CLASS_MEMBER(GuiCellComposition)
 
+			BEGIN_CLASS_MEMBER(GuiRowSplitterComposition)
+				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_CONSTRUCTOR(GuiRowSplitterComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TableParent)
+				CLASS_MEMBER_PROPERTY_FAST(RowsToTheTop)
+			END_CLASS_MEMBER(GuiRowSplitterComposition)
+
+			BEGIN_CLASS_MEMBER(GuiColumnSplitterComposition)
+				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_CONSTRUCTOR(GuiColumnSplitterComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TableParent)
+				CLASS_MEMBER_PROPERTY_FAST(ColumnsToTheLeft)
+			END_CLASS_MEMBER(GuiColumnSplitterComposition)
+
 			BEGIN_ENUM_ITEM(FlowAlignment)
 				ENUM_CLASS_ITEM(Left)
 				ENUM_CLASS_ITEM(Center)

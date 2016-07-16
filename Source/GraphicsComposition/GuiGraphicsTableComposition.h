@@ -24,6 +24,8 @@ Table Compositions
 
 			class GuiTableComposition;
 			class GuiCellComposition;
+			class GuiRowSplitterComposition;
+			class GuiColumnSplitterComposition;
 
 			/// <summary>
 			/// Represnets a sizing configuration for a row or a column.
@@ -96,6 +98,8 @@ Table Compositions
 			class GuiTableComposition : public GuiBoundsComposition, public Description<GuiTableComposition>
 			{
 				friend class GuiCellComposition;
+				friend class GuiRowSplitterComposition;
+				friend class GuiColumnSplitterComposition;
 			protected:
 				vint										rows;
 				vint										columns;
@@ -106,7 +110,13 @@ Table Compositions
 				collections::Array<GuiCellOption>			rowOptions;
 				collections::Array<GuiCellOption>			columnOptions;
 				collections::Array<GuiCellComposition*>		cellCompositions;
+				
 				collections::Array<Rect>					cellBounds;
+				collections::Array<vint>					rowOffsets;
+				collections::Array<vint>					columnOffsets;
+				collections::Array<vint>					rowSizes;
+				collections::Array<vint>					columnSizes;
+
 				Rect										previousBounds;
 				Size										previousContentMinSize;
 				Size										tableContentMinSize;
@@ -254,6 +264,62 @@ Table Compositions
 				/// <param name="_rowSpan">The total numbers of acrossed rows for this cell composition.</param>
 				/// <param name="_columnSpan">The total numbers of acrossed columns for this cell composition.</param>
 				bool								SetSite(vint _row, vint _column, vint _rowSpan, vint _columnSpan);
+
+				Rect								GetBounds()override;
+			};
+			
+			/// <summary>
+			/// Represents a row splitter composition of a <see cref="GuiTableComposition"/>.
+			/// </summary>
+			class GuiRowSplitterComposition : public GuiGraphicsSite, public Description<GuiRowSplitterComposition>
+			{
+			protected:
+				GuiTableComposition*				tableParent;
+				vint								rowsToTheTop;
+				
+				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
+			public:
+				GuiRowSplitterComposition();
+				~GuiRowSplitterComposition();
+
+				/// <summary>Get the owner table composition.</summary>
+				/// <returns>The owner table composition.</returns>
+				GuiTableComposition*				GetTableParent();
+
+				/// <summary>Get the number of rows that above the splitter.</summary>
+				/// <returns>The number of rows that above the splitter.</summary>
+				vint								GetRowsToTheTop();
+				/// <summary>Set the number of rows that above the splitter.</summary>
+				/// <param name="value">The number of rows that above the splitter</param>
+				void								SetRowsToTheTop(vint value);
+
+				Rect								GetBounds()override;
+			};
+			
+			/// <summary>
+			/// Represents a column splitter composition of a <see cref="GuiTableComposition"/>.
+			/// </summary>
+			class GuiColumnSplitterComposition : public GuiGraphicsSite, public Description<GuiColumnSplitterComposition>
+			{
+			protected:
+				GuiTableComposition*				tableParent;
+				vint								columnsToTheLeft;
+				
+				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
+			public:
+				GuiColumnSplitterComposition();
+				~GuiColumnSplitterComposition();
+
+				/// <summary>Get the owner table composition.</summary>
+				/// <returns>The owner table composition.</returns>
+				GuiTableComposition*				GetTableParent();
+
+				/// <summary>Get the number of columns that before the splitter.</summary>
+				/// <returns>The number of columns that before the splitter.</summary>
+				vint								GetColumnsToTheLeft();
+				/// <summary>Set the number of columns that before the splitter.</summary>
+				/// <param name="value">The number of columns that before the splitter</param>
+				void								SetColumnsToTheLeft(vint value);
 
 				Rect								GetBounds()override;
 			};

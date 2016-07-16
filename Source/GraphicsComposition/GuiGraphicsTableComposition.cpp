@@ -307,7 +307,6 @@ GuiTableComposition
 
 			void GuiTableComposition::UpdateCellBoundsInternal()
 			{
-				Array<vint> rowOffsets, columnOffsets, rowSizes, columnSizes;
 				rowOffsets.Resize(rows);
 				rowSizes.Resize(rows);
 				columnOffsets.Resize(columns);
@@ -779,6 +778,114 @@ GuiCellComposition
 				else
 				{
 					result = Rect();
+				}
+				UpdatePreviousBounds(result);
+				return result;
+			}
+
+/***********************************************************************
+GuiRowSplitterComposition
+***********************************************************************/
+
+			void GuiRowSplitterComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
+			{
+				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
+			}
+			
+			GuiRowSplitterComposition::GuiRowSplitterComposition()
+				:tableParent(0)
+				, rowsToTheTop(0)
+			{
+				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
+			}
+
+			GuiRowSplitterComposition::~GuiRowSplitterComposition()
+			{
+			}
+
+			GuiTableComposition* GuiRowSplitterComposition::GetTableParent()
+			{
+				return tableParent;
+			}
+
+			vint GuiRowSplitterComposition::GetRowsToTheTop()
+			{
+				return rowsToTheTop;
+			}
+
+			void GuiRowSplitterComposition::SetRowsToTheTop(vint value)
+			{
+				rowsToTheTop = value;
+			}
+
+			Rect GuiRowSplitterComposition::GetBounds()
+			{
+				Rect result(0, 0, 0, 0);
+				if (tableParent)
+				{
+					if (0 < rowsToTheTop && rowsToTheTop < tableParent->rows)
+					{
+						vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
+						result.x1 = offset;
+						result.x2 = offset + tableParent->GetCellArea().Width();
+						result.y1 = offset + tableParent->rowOffsets[rowsToTheTop] - tableParent->cellPadding;
+						result.y2 = result.y1 + tableParent->cellPadding;
+					}
+				}
+				UpdatePreviousBounds(result);
+				return result;
+			}
+
+/***********************************************************************
+GuiColumnSplitterComposition
+***********************************************************************/
+
+			void GuiColumnSplitterComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
+			{
+				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
+			}
+			
+			GuiColumnSplitterComposition::GuiColumnSplitterComposition()
+				:tableParent(0)
+				, columnsToTheLeft(0)
+			{
+				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
+			}
+
+			GuiColumnSplitterComposition::~GuiColumnSplitterComposition()
+			{
+			}
+
+			GuiTableComposition* GuiColumnSplitterComposition::GetTableParent()
+			{
+				return tableParent;
+			}
+
+			vint GuiColumnSplitterComposition::GetColumnsToTheLeft()
+			{
+				return columnsToTheLeft;
+			}
+
+			void GuiColumnSplitterComposition::SetColumnsToTheLeft(vint value)
+			{
+				columnsToTheLeft = value;
+			}
+
+			Rect GuiColumnSplitterComposition::GetBounds()
+			{
+				Rect result(0, 0, 0, 0);
+				if (tableParent)
+				{
+					if (0 < columnsToTheLeft && columnsToTheLeft < tableParent->columns)
+					{
+						vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
+						result.y1 = offset;
+						result.y2 = offset + tableParent->GetCellArea().Height();
+						result.x1 = offset + tableParent->columnOffsets[columnsToTheLeft] - tableParent->cellPadding;
+						result.x2 = result.x1 + tableParent->cellPadding;
+					}
 				}
 				UpdatePreviousBounds(result);
 				return result;
