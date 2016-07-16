@@ -133,6 +133,34 @@
                     <SolidBorder Color="#FF8000"/>
                   </Cell>
 
+                  <Cell Site="row:1 column:3 columnSpan:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:2 column:3 columnSpan:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  
+                  <Cell Site="row:5 column:3 columnSpan:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:6 column:3 columnSpan:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  
+                  <Cell Site="row:3 column:1 rowSpan:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:3 column:2 rowSpan:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  
+                  <Cell Site="row:3 column:5 rowSpan:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:3 column:6 rowSpan:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+
                   <Cell Site="row:3 column:3">
                     <SolidBorder Color="#008000"/>
                   </Cell>
