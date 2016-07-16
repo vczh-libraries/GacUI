@@ -291,15 +291,13 @@ GuiTableComposition
 			vint GuiTableComposition::UpdateCellBoundsOffsets(
 				collections::Array<vint>& offsets,
 				collections::Array<vint>& sizes,
-				vint start,
 				vint max
 				)
 			{
-				offsets[0]=start;
+				offsets[0]=0;
 				for(vint i=1;i<offsets.Count();i++)
 				{
-					start+=cellPadding+sizes[i-1];
-					offsets[i]=start;
+					offsets[i] = offsets[i - 1] + cellPadding + sizes[i - 1];
 				}
 
 				vint last=offsets.Count()-1;
@@ -315,8 +313,8 @@ GuiTableComposition
 				columnOffsets.Resize(columns);
 				columnSizes.Resize(columns);
 				{
-					vint rowTotal=(rows-1)*cellPadding;
-					vint columnTotal=(columns-1)*cellPadding;
+					vint rowTotal = (rows - 1)*cellPadding;
+					vint columnTotal = (columns - 1)*cellPadding;
 					vint rowTotalWithPercentage=rowTotal;
 					vint columnTotalWithPercentage=columnTotal;
 
@@ -352,8 +350,8 @@ GuiTableComposition
 					Rect area=GetCellArea();
 					UpdateCellBoundsPercentages(rowSizes, rowTotal, area.Height(), rowOptions);
 					UpdateCellBoundsPercentages(columnSizes, columnTotal, area.Width(), columnOptions);
-					rowExtending=UpdateCellBoundsOffsets(rowOffsets, rowSizes, cellPadding, cellPadding+area.Height());
-					columnExtending=UpdateCellBoundsOffsets(columnOffsets, columnSizes, cellPadding, cellPadding+area.Width());
+					rowExtending=UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
+					columnExtending=UpdateCellBoundsOffsets(columnOffsets, columnSizes, area.Width());
 
 					for(vint i=0;i<rows;i++)
 					{
@@ -372,8 +370,8 @@ GuiTableComposition
 				rowSizes.Resize(rows);
 				columnSizes.Resize(columns);
 				{
-					vint rowTotal=(rows+1)*cellPadding;
-					vint columnTotal=(columns+1)*cellPadding;
+					vint rowTotal = (rows - 1) * cellPadding;
+					vint columnTotal = (columns - 1) * cellPadding;
 					vint rowTotalWithPercentage=rowTotal;
 					vint columnTotalWithPercentage=columnTotal;
 
@@ -424,11 +422,13 @@ GuiTableComposition
 
 			GuiTableComposition::GuiTableComposition()
 				:rows(0)
-				,columns(0)
-				,cellPadding(0)
-				,rowExtending(0)
-				,columnExtending(0)
+				, columns(0)
+				, cellPadding(0)
+				, borderVisible(true)
+				, rowExtending(0)
+				, columnExtending(0)
 			{
+				ConfigChanged.SetAssociatedComposition(this);
 				SetRowsAndColumns(1, 1);
 			}
 
@@ -469,6 +469,7 @@ GuiTableComposition
 						cell->OnTableRowsAndColumnsChanged();
 					}
 				}
+				ConfigChanged.Execute(GuiEventArgs(this));
 				UpdateCellBounds();
 				return true;
 			}
@@ -486,6 +487,7 @@ GuiTableComposition
 			void GuiTableComposition::SetRowOption(vint _row, GuiCellOption option)
 			{
 				rowOptions[_row]=option;
+				ConfigChanged.Execute(GuiEventArgs(this));
 			}
 
 			GuiCellOption GuiTableComposition::GetColumnOption(vint _column)
@@ -496,6 +498,7 @@ GuiTableComposition
 			void GuiTableComposition::SetColumnOption(vint _column, GuiCellOption option)
 			{
 				columnOptions[_column]=option;
+				ConfigChanged.Execute(GuiEventArgs(this));
 			}
 
 			vint GuiTableComposition::GetCellPadding()
@@ -509,15 +512,30 @@ GuiTableComposition
 				cellPadding=value;
 			}
 
+			bool GuiTableComposition::GetBorderVisible()
+			{
+				return borderVisible;
+			}
+
+			void GuiTableComposition::SetBorderVisible(bool value)
+			{
+				if (borderVisible != value)
+				{
+					borderVisible = value;
+					UpdateCellBounds();
+				}
+			}
+
 			Rect GuiTableComposition::GetCellArea()
 			{
 				Rect bounds(Point(0, 0), GuiBoundsComposition::GetBounds().GetSize());
-				bounds.x1+=margin.left+internalMargin.left+cellPadding;
-				bounds.y1+=margin.top+internalMargin.top+cellPadding;
-				bounds.x2-=margin.right+internalMargin.right+cellPadding;
-				bounds.y2-=margin.bottom+internalMargin.bottom+cellPadding;
-				if(bounds.x2<bounds.x1) bounds.x2=bounds.x1;
-				if(bounds.y2<bounds.y1) bounds.y2=bounds.y1;
+				vint borderThickness = borderVisible ? cellPadding : 0;
+				bounds.x1 += margin.left + internalMargin.left + borderThickness;
+				bounds.y1 += margin.top + internalMargin.top + borderThickness;
+				bounds.x2 -= margin.right + internalMargin.right + borderThickness;
+				bounds.y2 -= margin.bottom + internalMargin.bottom + borderThickness;
+				if (bounds.x2 < bounds.x1) bounds.x2 = bounds.x1;
+				if (bounds.y2 < bounds.y1) bounds.y2 = bounds.y1;
 				return bounds;
 			}
 
@@ -755,7 +773,8 @@ GuiCellComposition
 							}
 						}
 					}
-					result = Rect(bounds1.x1, bounds1.y1, bounds2.x2, bounds2.y2);
+					vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
+					result = Rect(bounds1.x1 + offset, bounds1.y1 + offset, bounds2.x2 + offset, bounds2.y2 + offset);
 				}
 				else
 				{

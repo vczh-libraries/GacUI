@@ -100,6 +100,7 @@ Table Compositions
 				vint										rows;
 				vint										columns;
 				vint										cellPadding;
+				bool										borderVisible;
 				vint										rowExtending;
 				vint										columnExtending;
 				collections::Array<GuiCellOption>			rowOptions;
@@ -136,7 +137,6 @@ Table Compositions
 				vint									UpdateCellBoundsOffsets(
 														collections::Array<vint>& offsets,
 														collections::Array<vint>& sizes,
-														vint start,
 														vint max
 														);
 				
@@ -146,6 +146,8 @@ Table Compositions
 			public:
 				GuiTableComposition();
 				~GuiTableComposition();
+
+				compositions::GuiNotifyEvent		ConfigChanged;
 
 				/// <summary>Get the number of rows.</summary>
 				/// <returns>The number of rows.</returns>
@@ -187,6 +189,12 @@ Table Compositions
 				/// <summary>Set the cell padding. A cell padding is the distance between a table client area and a cell, or between two cells.</summary>
 				/// <param name="value">The cell padding.</param>
 				void								SetCellPadding(vint value);
+				/// <summary>Get the border visibility.</summary>
+				/// <returns>Returns true means the border thickness equals to the cell padding, otherwise zero.</returns>
+				bool								GetBorderVisible();
+				/// <summary>Set the border visibility.</summary>
+				/// <param name="value">Set to true to let the border thickness equal to the cell padding, otherwise zero.</param>
+				void								SetBorderVisible(bool value);
 				/// <summary>Get the cell area in the space of the table's parent composition's client area.</summary>
 				/// <returns>The cell area.</returns>
 				Rect								GetCellArea();

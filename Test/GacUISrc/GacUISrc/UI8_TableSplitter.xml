@@ -14,7 +14,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <CheckBox Text="Table size contains borders" Selected="true"/>
+            <CheckBox ref.Name="checkBorder" Text="Table size contains borders" Selected="true"/>
           </Cell>
 
           <Cell Site="row:1 column:0">
@@ -23,7 +23,7 @@
 
               <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
                 <SolidBorder Color="#0000FF"/>
-                <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                <Table ref.Name="table" BorderVisible-bind="checkBorder.Selected" CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
                   <att.Rows>
                     <CellOption>composeType:MinSize</CellOption>
                     <CellOption>composeType:Absolute absolute:50</CellOption>
@@ -44,10 +44,10 @@
                   </att.Columns>
 
                   <Cell Site="row:0 column:1">
-                    <Label Text="50px"/>
+                    <Label Text-format="$(table.observe as _(_.GetColumnOption(1).absolute on _.ConfigChanged))px"/>
                   </Cell>
                   <Cell Site="row:0 column:2">
-                    <Label Text="50px"/>
+                    <Label Text-format="$(table.observe as _(_.GetColumnOption(2).absolute on _.ConfigChanged))px"/>
                   </Cell>
                   <Cell Site="row:0 column:3">
                     <Label Text="50%"/>
@@ -56,17 +56,17 @@
                     <Label Text="50%"/>
                   </Cell>
                   <Cell Site="row:0 column:5">
-                    <Label Text="50px"/>
+                    <Label Text-format="$(table.observe as _(_.GetColumnOption(5).absolute on _.ConfigChanged))px"/>
                   </Cell>
                   <Cell Site="row:0 column:6">
-                    <Label Text="50px"/>
+                    <Label Text-format="$(table.observe as _(_.GetColumnOption(6).absolute on _.ConfigChanged))px"/>
                   </Cell>
 
                   <Cell Site="row:1 column:0">
-                    <Label Text="50px"/>
+                    <Label Text-format="$(table.observe as _(_.GetRowOption(1).absolute on _.ConfigChanged))px"/>
                   </Cell>
                   <Cell Site="row:2 column:0">
-                    <Label Text="50px"/>
+                    <Label Text-format="$(table.observe as _(_.GetRowOption(2).absolute on _.ConfigChanged))px"/>
                   </Cell>
                   <Cell Site="row:3 column:0">
                     <Label Text="50%"/>
@@ -75,10 +75,10 @@
                     <Label Text="50%"/>
                   </Cell>
                   <Cell Site="row:5 column:0">
-                    <Label Text="50px"/>
+                    <Label Text-format="$(table.observe as _(_.GetRowOption(5).absolute on _.ConfigChanged))px"/>
                   </Cell>
                   <Cell Site="row:6 column:0">
-                    <Label Text="50px"/>
+                    <Label Text-format="$(table.observe as _(_.GetRowOption(6).absolute on _.ConfigChanged))px"/>
                   </Cell>
 
                   <Cell Site="row:1 column:1">

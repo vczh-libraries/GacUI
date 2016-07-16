@@ -140,7 +140,10 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiTableComposition*(), NO_PARAMETER)
 
+				CLASS_MEMBER_GUIEVENT(ConfigChanged)
+
 				CLASS_MEMBER_PROPERTY_FAST(CellPadding)
+				CLASS_MEMBER_PROPERTY_FAST(BorderVisible)
 
 				CLASS_MEMBER_METHOD(GetRows, NO_PARAMETER)
 				CLASS_MEMBER_EXTERNALMETHOD(SetRows, {L"value"}, void(GuiTableComposition::*)(vint), &GuiTableComposition_SetRows)
