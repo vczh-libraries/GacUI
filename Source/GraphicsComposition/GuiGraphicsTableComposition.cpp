@@ -792,12 +792,77 @@ GuiRowSplitterComposition
 				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
 				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
 			}
+
+			void GuiRowSplitterComposition::OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			{
+				dragging = true;
+				draggingY = arguments.y;
+			}
+
+			void GuiRowSplitterComposition::OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			{
+				dragging = false;
+			}
+
+			void GuiRowSplitterComposition::OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			{
+				if (dragging)
+				{
+					if (tableParent)
+					{
+						if (0 < rowsToTheTop && rowsToTheTop < tableParent->rows)
+						{
+							auto o1 = tableParent->GetRowOption(rowsToTheTop - 1);
+							auto o2 = tableParent->GetRowOption(rowsToTheTop);
+							bool c1 = o1.composeType == GuiCellOption::Absolute;
+							bool c2 = o2.composeType == GuiCellOption::Absolute;
+
+							vint offset = arguments.y - draggingY;
+							if (offset < 0)
+							{
+								if (c1 && o1.absolute < -offset)
+								{
+									offset = -o1.absolute;
+								}
+							}
+							else if (offset > 0)
+							{
+								if (c2 && o2.absolute < offset)
+								{
+									offset = o2.absolute;
+								}
+							}
+							else
+							{
+								return;
+							}
+
+							if (c1)
+							{
+								o1.absolute += offset;
+								tableParent->SetRowOption(rowsToTheTop - 1, o1);
+							}
+							if (c2)
+							{
+								o2.absolute -= offset;
+								tableParent->SetRowOption(rowsToTheTop, o2);
+							}
+							tableParent->ForceCalculateSizeImmediately();
+						}
+					}
+				}
+			}
 			
 			GuiRowSplitterComposition::GuiRowSplitterComposition()
 				:tableParent(0)
 				, rowsToTheTop(0)
+				, dragging(false)
+				, draggingY(0)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
+				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiRowSplitterComposition::OnLeftButtonDown);
+				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiRowSplitterComposition::OnLeftButtonUp);
+				GetEventReceiver()->mouseMove.AttachMethod(this, &GuiRowSplitterComposition::OnMouseMove);
 			}
 
 			GuiRowSplitterComposition::~GuiRowSplitterComposition()
@@ -846,12 +911,77 @@ GuiColumnSplitterComposition
 				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
 				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
 			}
+
+			void GuiColumnSplitterComposition::OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			{
+				dragging = true;
+				draggingX = arguments.x;
+			}
+
+			void GuiColumnSplitterComposition::OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			{
+				dragging = false;
+			}
+
+			void GuiColumnSplitterComposition::OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			{
+				if (dragging)
+				{
+					if (tableParent)
+					{
+						if (0 < columnsToTheLeft && columnsToTheLeft < tableParent->columns)
+						{
+							auto o1 = tableParent->GetColumnOption(columnsToTheLeft - 1);
+							auto o2 = tableParent->GetColumnOption(columnsToTheLeft);
+							bool c1 = o1.composeType == GuiCellOption::Absolute;
+							bool c2 = o2.composeType == GuiCellOption::Absolute;
+
+							vint offset = arguments.x - draggingX;
+							if (offset < 0)
+							{
+								if (c1 && o1.absolute < -offset)
+								{
+									offset = -o1.absolute;
+								}
+							}
+							else if (offset > 0)
+							{
+								if (c2 && o2.absolute < offset)
+								{
+									offset = o2.absolute;
+								}
+							}
+							else
+							{
+								return;
+							}
+
+							if (c1)
+							{
+								o1.absolute += offset;
+								tableParent->SetColumnOption(columnsToTheLeft - 1, o1);
+							}
+							if (c2)
+							{
+								o2.absolute -= offset;
+								tableParent->SetColumnOption(columnsToTheLeft, o2);
+							}
+							tableParent->ForceCalculateSizeImmediately();
+						}
+					}
+				}
+			}
 			
 			GuiColumnSplitterComposition::GuiColumnSplitterComposition()
 				:tableParent(0)
 				, columnsToTheLeft(0)
+				, dragging(false)
+				, draggingX(0)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
+				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiColumnSplitterComposition::OnLeftButtonDown);
+				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiColumnSplitterComposition::OnLeftButtonUp);
+				GetEventReceiver()->mouseMove.AttachMethod(this, &GuiColumnSplitterComposition::OnMouseMove);
 			}
 
 			GuiColumnSplitterComposition::~GuiColumnSplitterComposition()

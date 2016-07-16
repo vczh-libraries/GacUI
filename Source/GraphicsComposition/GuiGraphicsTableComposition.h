@@ -276,8 +276,14 @@ Table Compositions
 			protected:
 				GuiTableComposition*				tableParent;
 				vint								rowsToTheTop;
+
+				bool								dragging;
+				vint								draggingY;
 				
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
+				void								OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				void								OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 			public:
 				GuiRowSplitterComposition();
 				~GuiRowSplitterComposition();
@@ -305,7 +311,13 @@ Table Compositions
 				GuiTableComposition*				tableParent;
 				vint								columnsToTheLeft;
 				
+				bool								dragging;
+				vint								draggingX;
+				
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
+				void								OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				void								OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 			public:
 				GuiColumnSplitterComposition();
 				~GuiColumnSplitterComposition();
