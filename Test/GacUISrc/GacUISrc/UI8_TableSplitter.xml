@@ -1,0 +1,156 @@
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="demo::MainWindow">
+      <Window Text="MainWindow" ClientSize="x:640 y:480">
+        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+
+        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <CheckBox Text="Table size contains borders" Selected="true"/>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <GroupBox Text="Drag spaces between cells to resize">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+
+              <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                <SolidBorder Color="#0000FF"/>
+                <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+                  <att.Rows>
+                    <CellOption>composeType:MinSize</CellOption>
+                    <CellOption>composeType:Absolute absolute:50</CellOption>
+                    <CellOption>composeType:Absolute absolute:50</CellOption>
+                    <CellOption>composeType:Percentage percentage:0.5</CellOption>
+                    <CellOption>composeType:Percentage percentage:0.5</CellOption>
+                    <CellOption>composeType:Absolute absolute:50</CellOption>
+                    <CellOption>composeType:Absolute absolute:50</CellOption>
+                  </att.Rows>
+                  <att.Columns>
+                    <CellOption>composeType:MinSize</CellOption>
+                    <CellOption>composeType:Absolute absolute:50</CellOption>
+                    <CellOption>composeType:Absolute absolute:50</CellOption>
+                    <CellOption>composeType:Percentage percentage:0.5</CellOption>
+                    <CellOption>composeType:Percentage percentage:0.5</CellOption>
+                    <CellOption>composeType:Absolute absolute:50</CellOption>
+                    <CellOption>composeType:Absolute absolute:50</CellOption>
+                  </att.Columns>
+
+                  <Cell Site="row:0 column:1">
+                    <Label Text="50px"/>
+                  </Cell>
+                  <Cell Site="row:0 column:2">
+                    <Label Text="50px"/>
+                  </Cell>
+                  <Cell Site="row:0 column:3">
+                    <Label Text="50%"/>
+                  </Cell>
+                  <Cell Site="row:0 column:4">
+                    <Label Text="50%"/>
+                  </Cell>
+                  <Cell Site="row:0 column:5">
+                    <Label Text="50px"/>
+                  </Cell>
+                  <Cell Site="row:0 column:6">
+                    <Label Text="50px"/>
+                  </Cell>
+
+                  <Cell Site="row:1 column:0">
+                    <Label Text="50px"/>
+                  </Cell>
+                  <Cell Site="row:2 column:0">
+                    <Label Text="50px"/>
+                  </Cell>
+                  <Cell Site="row:3 column:0">
+                    <Label Text="50%"/>
+                  </Cell>
+                  <Cell Site="row:4 column:0">
+                    <Label Text="50%"/>
+                  </Cell>
+                  <Cell Site="row:5 column:0">
+                    <Label Text="50px"/>
+                  </Cell>
+                  <Cell Site="row:6 column:0">
+                    <Label Text="50px"/>
+                  </Cell>
+
+                  <Cell Site="row:1 column:1">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:1 column:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:2 column:1">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:2 column:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+
+                  <Cell Site="row:1 column:5">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:1 column:6">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:2 column:5">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:2 column:6">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+
+                  <Cell Site="row:5 column:1">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:5 column:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:6 column:1">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:6 column:2">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+
+                  <Cell Site="row:5 column:5">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:5 column:6">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:6 column:5">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+                  <Cell Site="row:6 column:6">
+                    <SolidBorder Color="#FF8000"/>
+                  </Cell>
+
+                  <Cell Site="row:3 column:3">
+                    <SolidBorder Color="#008000"/>
+                  </Cell>
+                  <Cell Site="row:3 column:4">
+                    <SolidBorder Color="#008000"/>
+                  </Cell>
+                  <Cell Site="row:4 column:3">
+                    <SolidBorder Color="#008000"/>
+                  </Cell>
+                  <Cell Site="row:4 column:4">
+                    <SolidBorder Color="#008000"/>
+                  </Cell>
+                </Table>
+              </Bounds>
+            </GroupBox>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

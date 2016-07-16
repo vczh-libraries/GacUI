@@ -98,7 +98,7 @@ void GuiMain_Resource()
 	//}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(L"UI7_ColorComboBox.xml", errors);
+		auto resource = GuiResource::LoadFromXml(L"UI8_TableSplitter.xml", errors);
 		resource->Precompile(nullptr, errors);
 
 		{
@@ -139,7 +139,7 @@ void GuiMain_Resource()
 		}
 	}
 
-	// UI1 / UI3 / UI4 / UI5 / UI7
+	// UI1 / UI3 / UI4 / UI5 / UI7 / UI8
 	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
 	// UI2

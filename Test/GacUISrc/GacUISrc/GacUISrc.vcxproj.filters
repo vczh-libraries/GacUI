@@ -850,5 +850,8 @@
     <Xml Include="UI7_ColorComboBox.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="UI8_TableSplitter.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

@@ -427,6 +427,7 @@
     </Xml>
     <Xml Include="UI6_FontList.xml" />
     <Xml Include="UI7_ColorComboBox.xml" />
+    <Xml Include="UI8_TableSplitter.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
