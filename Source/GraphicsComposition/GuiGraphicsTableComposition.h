@@ -147,6 +147,7 @@ Table Compositions
 				GuiTableComposition();
 				~GuiTableComposition();
 
+				/// <summary>Event that will be raised with row numbers, column numbers or options are changed.</summary>
 				compositions::GuiNotifyEvent		ConfigChanged;
 
 				/// <summary>Get the number of rows.</summary>
