@@ -24,6 +24,7 @@ Table Compositions
 
 			class GuiTableComposition;
 			class GuiCellComposition;
+			class GuiTableSplitterCompositionBase;
 			class GuiRowSplitterComposition;
 			class GuiColumnSplitterComposition;
 
@@ -98,6 +99,7 @@ Table Compositions
 			class GuiTableComposition : public GuiBoundsComposition, public Description<GuiTableComposition>
 			{
 				friend class GuiCellComposition;
+				friend class GuiTableSplitterCompositionBase;
 				friend class GuiRowSplitterComposition;
 				friend class GuiColumnSplitterComposition;
 			protected:
@@ -267,30 +269,58 @@ Table Compositions
 
 				Rect								GetBounds()override;
 			};
-			
-			/// <summary>
-			/// Represents a row splitter composition of a <see cref="GuiTableComposition"/>.
-			/// </summary>
-			class GuiRowSplitterComposition : public GuiGraphicsSite, public Description<GuiRowSplitterComposition>
+
+			class GuiTableSplitterCompositionBase : public GuiGraphicsSite, public Description<GuiTableSplitterCompositionBase>
 			{
 			protected:
 				GuiTableComposition*				tableParent;
-				vint								rowsToTheTop;
 
 				bool								dragging;
-				vint								draggingY;
+				Point								draggingPoint;
 				
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
 				void								OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 				void								OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
-				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+
+				void								OnMouseMoveHelper(
+														vint cellsBefore,
+														vint GuiTableComposition::* cells,
+														vint offset,
+														GuiCellOption(GuiTableComposition::*getOption)(vint),
+														void(GuiTableComposition::*setOption)(vint, GuiCellOption)
+														);
+
+				Rect								GetBoundsHelper(
+														vint cellsBefore,
+														vint GuiTableComposition::* cells,
+														vint(Rect::* dimSize)()const,
+														collections::Array<vint> GuiTableComposition::* cellOffsets,
+														vint Rect::* dimU1,
+														vint Rect::* dimU2,
+														vint Rect::* dimV1,
+														vint Rect::* dimV2
+														);
 			public:
-				GuiRowSplitterComposition();
-				~GuiRowSplitterComposition();
+				GuiTableSplitterCompositionBase();
+				~GuiTableSplitterCompositionBase();
 
 				/// <summary>Get the owner table composition.</summary>
 				/// <returns>The owner table composition.</returns>
 				GuiTableComposition*				GetTableParent();
+			};
+			
+			/// <summary>
+			/// Represents a row splitter composition of a <see cref="GuiTableComposition"/>.
+			/// </summary>
+			class GuiRowSplitterComposition : public GuiTableSplitterCompositionBase, public Description<GuiRowSplitterComposition>
+			{
+			protected:
+				vint								rowsToTheTop;
+				
+				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+			public:
+				GuiRowSplitterComposition();
+				~GuiRowSplitterComposition();
 
 				/// <summary>Get the number of rows that above the splitter.</summary>
 				/// <returns>The number of rows that above the splitter.</summary>
@@ -305,26 +335,15 @@ Table Compositions
 			/// <summary>
 			/// Represents a column splitter composition of a <see cref="GuiTableComposition"/>.
 			/// </summary>
-			class GuiColumnSplitterComposition : public GuiGraphicsSite, public Description<GuiColumnSplitterComposition>
+			class GuiColumnSplitterComposition : public GuiTableSplitterCompositionBase, public Description<GuiColumnSplitterComposition>
 			{
 			protected:
-				GuiTableComposition*				tableParent;
 				vint								columnsToTheLeft;
 				
-				bool								dragging;
-				vint								draggingX;
-				
-				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
-				void								OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
-				void								OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 			public:
 				GuiColumnSplitterComposition();
 				~GuiColumnSplitterComposition();
-
-				/// <summary>Get the owner table composition.</summary>
-				/// <returns>The owner table composition.</returns>
-				GuiTableComposition*				GetTableParent();
 
 				/// <summary>Get the number of columns that before the splitter.</summary>
 				/// <returns>The number of columns that before the splitter.</summary>

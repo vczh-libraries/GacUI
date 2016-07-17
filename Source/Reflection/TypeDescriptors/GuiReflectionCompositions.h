@@ -36,6 +36,7 @@ Type List
 			F(presentation::compositions::GuiCellOption::ComposeType)\
 			F(presentation::compositions::GuiTableComposition)\
 			F(presentation::compositions::GuiCellComposition)\
+			F(presentation::compositions::GuiTableSplitterCompositionBase)\
 			F(presentation::compositions::GuiRowSplitterComposition)\
 			F(presentation::compositions::GuiColumnSplitterComposition)\
 			F(presentation::compositions::FlowAlignment)\

@@ -784,52 +784,75 @@ GuiCellComposition
 			}
 
 /***********************************************************************
-GuiRowSplitterComposition
+GuiTableSplitterCompositionBase
 ***********************************************************************/
 
-			void GuiRowSplitterComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
+			void GuiTableSplitterCompositionBase::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
 				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
 				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
 			}
 
-			void GuiRowSplitterComposition::OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			void GuiTableSplitterCompositionBase::OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
 				dragging = true;
-				draggingY = arguments.y;
+				draggingPoint = Point(arguments.x, arguments.y);
 			}
 
-			void GuiRowSplitterComposition::OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			void GuiTableSplitterCompositionBase::OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
 				dragging = false;
 			}
 
-			void GuiRowSplitterComposition::OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			void GuiTableSplitterCompositionBase::OnMouseMoveHelper(
+				vint cellsBefore,
+				vint GuiTableComposition::* cells,
+				vint offset,
+				GuiCellOption(GuiTableComposition::*getOption)(vint),
+				void(GuiTableComposition::*setOption)(vint, GuiCellOption)
+				)
 			{
 				if (dragging)
 				{
 					if (tableParent)
 					{
-						if (0 < rowsToTheTop && rowsToTheTop < tableParent->rows)
+						if (0 < cellsBefore && cellsBefore < tableParent->*cells)
 						{
-							auto o1 = tableParent->GetRowOption(rowsToTheTop - 1);
-							auto o2 = tableParent->GetRowOption(rowsToTheTop);
+							auto o1 = (tableParent->*getOption)(cellsBefore - 1);
+							auto o2 = (tableParent->*getOption)(cellsBefore);
 							bool c1 = o1.composeType == GuiCellOption::Absolute;
 							bool c2 = o2.composeType == GuiCellOption::Absolute;
 
-							vint offset = arguments.y - draggingY;
 							if (offset < 0)
 							{
-								if (c1 && o1.absolute < -offset)
+								vint max = -offset;
+								if (c1)
 								{
-									offset = -o1.absolute;
+									max = o1.absolute;
+								}
+								else
+								{
+								}
+
+								if (max < -offset)
+								{
+									offset = -max;
 								}
 							}
 							else if (offset > 0)
 							{
-								if (c2 && o2.absolute < offset)
+								vint max = offset;
+								if (c2)
 								{
-									offset = o2.absolute;
+									max = o2.absolute;
+								}
+								else
+								{
+								}
+
+								if (max < offset)
+								{
+									offset = max;
 								}
 							}
 							else
@@ -840,38 +863,88 @@ GuiRowSplitterComposition
 							if (c1)
 							{
 								o1.absolute += offset;
-								tableParent->SetRowOption(rowsToTheTop - 1, o1);
+								(tableParent->*setOption)(cellsBefore - 1, o1);
 							}
 							if (c2)
 							{
 								o2.absolute -= offset;
-								tableParent->SetRowOption(rowsToTheTop, o2);
+								(tableParent->*setOption)(cellsBefore, o2);
 							}
 							tableParent->ForceCalculateSizeImmediately();
 						}
 					}
 				}
 			}
+
+			Rect GuiTableSplitterCompositionBase::GetBoundsHelper(
+				vint cellsBefore,
+				vint GuiTableComposition::* cells,
+				vint(Rect::* dimSize)()const,
+				collections::Array<vint> GuiTableComposition::* cellOffsets,
+				vint Rect::* dimU1,
+				vint Rect::* dimU2,
+				vint Rect::* dimV1,
+				vint Rect::* dimV2
+				)
+			{
+				Rect result(0, 0, 0, 0);
+				if (tableParent)
+				{
+					if (0 < cellsBefore && cellsBefore < tableParent->*cells)
+					{
+						vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
+						result.*dimU1 = offset;
+						result.*dimU2 = offset + (tableParent->GetCellArea().*dimSize)();
+						result.*dimV1 = offset + (tableParent->*cellOffsets)[cellsBefore] - tableParent->cellPadding;
+						result.*dimV2 = (result.*dimV1) + tableParent->cellPadding;
+					}
+				}
+				UpdatePreviousBounds(result);
+				return result;
+			}
 			
-			GuiRowSplitterComposition::GuiRowSplitterComposition()
+			GuiTableSplitterCompositionBase::GuiTableSplitterCompositionBase()
 				:tableParent(0)
-				, rowsToTheTop(0)
 				, dragging(false)
-				, draggingY(0)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
-				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiRowSplitterComposition::OnLeftButtonDown);
-				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiRowSplitterComposition::OnLeftButtonUp);
+				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonDown);
+				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonUp);
+			}
+
+			GuiTableSplitterCompositionBase::~GuiTableSplitterCompositionBase()
+			{
+			}
+
+			GuiTableComposition* GuiTableSplitterCompositionBase::GetTableParent()
+			{
+				return tableParent;
+			}
+
+/***********************************************************************
+GuiRowSplitterComposition
+***********************************************************************/
+
+			void GuiRowSplitterComposition::OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
+			{
+				OnMouseMoveHelper(
+					rowsToTheTop,
+					&GuiTableComposition::rows,
+					arguments.y - draggingPoint.y,
+					&GuiTableComposition::GetRowOption,
+					&GuiTableComposition::SetRowOption
+					);
+			}
+			
+			GuiRowSplitterComposition::GuiRowSplitterComposition()
+				:rowsToTheTop(0)
+			{
+				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
 				GetEventReceiver()->mouseMove.AttachMethod(this, &GuiRowSplitterComposition::OnMouseMove);
 			}
 
 			GuiRowSplitterComposition::~GuiRowSplitterComposition()
 			{
-			}
-
-			GuiTableComposition* GuiRowSplitterComposition::GetTableParent()
-			{
-				return tableParent;
 			}
 
 			vint GuiRowSplitterComposition::GetRowsToTheTop()
@@ -886,111 +959,42 @@ GuiRowSplitterComposition
 
 			Rect GuiRowSplitterComposition::GetBounds()
 			{
-				Rect result(0, 0, 0, 0);
-				if (tableParent)
-				{
-					if (0 < rowsToTheTop && rowsToTheTop < tableParent->rows)
-					{
-						vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
-						result.x1 = offset;
-						result.x2 = offset + tableParent->GetCellArea().Width();
-						result.y1 = offset + tableParent->rowOffsets[rowsToTheTop] - tableParent->cellPadding;
-						result.y2 = result.y1 + tableParent->cellPadding;
-					}
-				}
-				UpdatePreviousBounds(result);
-				return result;
+				return GetBoundsHelper(
+					rowsToTheTop,
+					&GuiTableComposition::rows,
+					&Rect::Width,
+					&GuiTableComposition::rowOffsets,
+					&Rect::x1,
+					&Rect::x2,
+					&Rect::y1,
+					&Rect::y2
+					);
 			}
 
 /***********************************************************************
 GuiColumnSplitterComposition
 ***********************************************************************/
 
-			void GuiColumnSplitterComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
-			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
-				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
-			}
-
-			void GuiColumnSplitterComposition::OnLeftButtonDown(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
-			{
-				dragging = true;
-				draggingX = arguments.x;
-			}
-
-			void GuiColumnSplitterComposition::OnLeftButtonUp(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
-			{
-				dragging = false;
-			}
-
 			void GuiColumnSplitterComposition::OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments)
 			{
-				if (dragging)
-				{
-					if (tableParent)
-					{
-						if (0 < columnsToTheLeft && columnsToTheLeft < tableParent->columns)
-						{
-							auto o1 = tableParent->GetColumnOption(columnsToTheLeft - 1);
-							auto o2 = tableParent->GetColumnOption(columnsToTheLeft);
-							bool c1 = o1.composeType == GuiCellOption::Absolute;
-							bool c2 = o2.composeType == GuiCellOption::Absolute;
-
-							vint offset = arguments.x - draggingX;
-							if (offset < 0)
-							{
-								if (c1 && o1.absolute < -offset)
-								{
-									offset = -o1.absolute;
-								}
-							}
-							else if (offset > 0)
-							{
-								if (c2 && o2.absolute < offset)
-								{
-									offset = o2.absolute;
-								}
-							}
-							else
-							{
-								return;
-							}
-
-							if (c1)
-							{
-								o1.absolute += offset;
-								tableParent->SetColumnOption(columnsToTheLeft - 1, o1);
-							}
-							if (c2)
-							{
-								o2.absolute -= offset;
-								tableParent->SetColumnOption(columnsToTheLeft, o2);
-							}
-							tableParent->ForceCalculateSizeImmediately();
-						}
-					}
-				}
+				OnMouseMoveHelper(
+					columnsToTheLeft,
+					&GuiTableComposition::columns,
+					arguments.x - draggingPoint.x,
+					&GuiTableComposition::GetColumnOption,
+					&GuiTableComposition::SetColumnOption
+					);
 			}
 			
 			GuiColumnSplitterComposition::GuiColumnSplitterComposition()
-				:tableParent(0)
-				, columnsToTheLeft(0)
-				, dragging(false)
-				, draggingX(0)
+				:columnsToTheLeft(0)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
-				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiColumnSplitterComposition::OnLeftButtonDown);
-				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiColumnSplitterComposition::OnLeftButtonUp);
 				GetEventReceiver()->mouseMove.AttachMethod(this, &GuiColumnSplitterComposition::OnMouseMove);
 			}
 
 			GuiColumnSplitterComposition::~GuiColumnSplitterComposition()
 			{
-			}
-
-			GuiTableComposition* GuiColumnSplitterComposition::GetTableParent()
-			{
-				return tableParent;
 			}
 
 			vint GuiColumnSplitterComposition::GetColumnsToTheLeft()
@@ -1005,20 +1009,16 @@ GuiColumnSplitterComposition
 
 			Rect GuiColumnSplitterComposition::GetBounds()
 			{
-				Rect result(0, 0, 0, 0);
-				if (tableParent)
-				{
-					if (0 < columnsToTheLeft && columnsToTheLeft < tableParent->columns)
-					{
-						vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
-						result.y1 = offset;
-						result.y2 = offset + tableParent->GetCellArea().Height();
-						result.x1 = offset + tableParent->columnOffsets[columnsToTheLeft] - tableParent->cellPadding;
-						result.x2 = result.x1 + tableParent->cellPadding;
-					}
-				}
-				UpdatePreviousBounds(result);
-				return result;
+				return GetBoundsHelper(
+					columnsToTheLeft,
+					&GuiTableComposition::columns,
+					&Rect::Height,
+					&GuiTableComposition::columnOffsets,
+					&Rect::y1,
+					&Rect::y2,
+					&Rect::x1,
+					&Rect::x2
+					);
 			}
 		}
 	}
