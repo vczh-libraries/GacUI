@@ -6949,7 +6949,7 @@ Table Compositions
 				~GuiRowSplitterComposition();
 
 				/// <summary>Get the number of rows that above the splitter.</summary>
-				/// <returns>The number of rows that above the splitter.</summary>
+				/// <returns>The number of rows that above the splitter.</returns>
 				vint								GetRowsToTheTop();
 				/// <summary>Set the number of rows that above the splitter.</summary>
 				/// <param name="value">The number of rows that above the splitter</param>
@@ -6972,7 +6972,7 @@ Table Compositions
 				~GuiColumnSplitterComposition();
 
 				/// <summary>Get the number of columns that before the splitter.</summary>
-				/// <returns>The number of columns that before the splitter.</summary>
+				/// <returns>The number of columns that before the splitter.</returns>
 				vint								GetColumnsToTheLeft();
 				/// <summary>Set the number of columns that before the splitter.</summary>
 				/// <param name="value">The number of columns that before the splitter</param>
