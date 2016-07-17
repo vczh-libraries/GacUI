@@ -285,6 +285,7 @@ Table Compositions
 				void								OnMouseMoveHelper(
 														vint cellsBefore,
 														vint GuiTableComposition::* cells,
+														collections::Array<vint>& cellSizes,
 														vint offset,
 														GuiCellOption(GuiTableComposition::*getOption)(vint),
 														void(GuiTableComposition::*setOption)(vint, GuiCellOption)
@@ -294,7 +295,7 @@ Table Compositions
 														vint cellsBefore,
 														vint GuiTableComposition::* cells,
 														vint(Rect::* dimSize)()const,
-														collections::Array<vint> GuiTableComposition::* cellOffsets,
+														collections::Array<vint>& cellOffsets,
 														vint Rect::* dimU1,
 														vint Rect::* dimU2,
 														vint Rect::* dimV1,

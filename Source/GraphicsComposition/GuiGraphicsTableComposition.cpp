@@ -807,6 +807,7 @@ GuiTableSplitterCompositionBase
 			void GuiTableSplitterCompositionBase::OnMouseMoveHelper(
 				vint cellsBefore,
 				vint GuiTableComposition::* cells,
+				collections::Array<vint>& cellSizes,
 				vint offset,
 				GuiCellOption(GuiTableComposition::*getOption)(vint),
 				void(GuiTableComposition::*setOption)(vint, GuiCellOption)
@@ -820,52 +821,78 @@ GuiTableSplitterCompositionBase
 						{
 							auto o1 = (tableParent->*getOption)(cellsBefore - 1);
 							auto o2 = (tableParent->*getOption)(cellsBefore);
-							bool c1 = o1.composeType == GuiCellOption::Absolute;
-							bool c2 = o2.composeType == GuiCellOption::Absolute;
+
+							vint indexStart = -1;
+							vint indexEnd = -1;
+							vint indexStep = -1;
+							vint max = 0;
 
 							if (offset < 0)
 							{
-								vint max = -offset;
-								if (c1)
-								{
-									max = o1.absolute;
-								}
-								else
-								{
-								}
-
-								if (max < -offset)
-								{
-									offset = -max;
-								}
+								indexStart = cellsBefore - 1;
+								indexEnd = -1;
+								indexStep = -1;
 							}
 							else if (offset > 0)
 							{
-								vint max = offset;
-								if (c2)
-								{
-									max = o2.absolute;
-								}
-								else
-								{
-								}
-
-								if (max < offset)
-								{
-									offset = max;
-								}
+								indexStart = cellsBefore;
+								indexEnd = tableParent->*cells;
+								indexStep = 1;
 							}
 							else
 							{
 								return;
 							}
 
-							if (c1)
+							{
+								auto o = (tableParent->*getOption)(indexStart);
+								if (o.composeType == GuiCellOption::Absolute)
+								{
+									max = o.absolute - 1;
+								}
+								else
+								{
+									for (vint i = indexStart; i != indexEnd; i += indexStep)
+									{
+										o = (tableParent->*getOption)(i);
+										if (o.composeType == GuiCellOption::Absolute)
+										{
+											break;
+										}
+										else if (o.composeType == GuiCellOption::Percentage)
+										{
+											max += cellSizes[i] - 1;
+										}
+									}
+								}
+
+								if (max <= 0)
+								{
+									return;
+								}
+							}
+
+							if (offset < 0)
+							{
+								if (max < -offset)
+								{
+									offset = -max;
+								}
+							}
+							else
+							{
+								if (max < offset)
+								{
+									offset = max;
+								}
+							}
+
+							if (o1.composeType == GuiCellOption::Absolute)
 							{
 								o1.absolute += offset;
 								(tableParent->*setOption)(cellsBefore - 1, o1);
 							}
-							if (c2)
+							if (o2.composeType == GuiCellOption::Absolute)
 							{
 								o2.absolute -= offset;
 								(tableParent->*setOption)(cellsBefore, o2);
@@ -880,7 +907,7 @@ GuiTableSplitterCompositionBase
 				vint cellsBefore,
 				vint GuiTableComposition::* cells,
 				vint(Rect::* dimSize)()const,
-				collections::Array<vint> GuiTableComposition::* cellOffsets,
+				collections::Array<vint>& cellOffsets,
 				vint Rect::* dimU1,
 				vint Rect::* dimU2,
 				vint Rect::* dimV1,
@@ -895,7 +922,7 @@ GuiTableSplitterCompositionBase
 						vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
 						result.*dimU1 = offset;
 						result.*dimU2 = offset + (tableParent->GetCellArea().*dimSize)();
-						result.*dimV1 = offset + (tableParent->*cellOffsets)[cellsBefore] - tableParent->cellPadding;
+						result.*dimV1 = offset + cellOffsets[cellsBefore] - tableParent->cellPadding;
 						result.*dimV2 = (result.*dimV1) + tableParent->cellPadding;
 					}
 				}
@@ -930,6 +957,7 @@ GuiRowSplitterComposition
 				OnMouseMoveHelper(
 					rowsToTheTop,
 					&GuiTableComposition::rows,
+					tableParent->rowSizes,
 					arguments.y - draggingPoint.y,
 					&GuiTableComposition::GetRowOption,
 					&GuiTableComposition::SetRowOption
@@ -963,7 +991,7 @@ GuiRowSplitterComposition
 					rowsToTheTop,
 					&GuiTableComposition::rows,
 					&Rect::Width,
-					&GuiTableComposition::rowOffsets,
+					tableParent->rowOffsets,
 					&Rect::x1,
 					&Rect::x2,
 					&Rect::y1,
@@ -980,6 +1008,7 @@ GuiColumnSplitterComposition
 				OnMouseMoveHelper(
 					columnsToTheLeft,
 					&GuiTableComposition::columns,
+					tableParent->columnSizes,
 					arguments.x - draggingPoint.x,
 					&GuiTableComposition::GetColumnOption,
 					&GuiTableComposition::SetColumnOption
@@ -1013,7 +1042,7 @@ GuiColumnSplitterComposition
 					columnsToTheLeft,
 					&GuiTableComposition::columns,
 					&Rect::Height,
-					&GuiTableComposition::columnOffsets,
+					tableParent->columnOffsets,
 					&Rect::y1,
 					&Rect::y2,
 					&Rect::x1,
