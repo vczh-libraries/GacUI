@@ -72,7 +72,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <ComboBox SelectedIndex="0">
+            <ComboBox SelectedIndex-eval="0">
               <att.ItemTemplate>demo::ColorBomboItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
@@ -85,7 +85,7 @@
             </ComboBox>
           </Cell>
           <Cell Site="row:0 column:1">
-            <ComboBox SelectedIndex="0">
+            <ComboBox SelectedIndex-eval="0">
               <att.ItemTemplate>demo::ColorBomboItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
