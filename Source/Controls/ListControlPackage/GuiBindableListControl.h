@@ -303,10 +303,11 @@ GuiBindableTreeView
 					void											UnprepareChildren();
 				public:
 					ItemSourceNode(const description::Value& _itemSource, ItemSourceNode* _parent);
-					ItemSourceNode(const description::Value& _itemSource, ItemSource* _rootProvider);
+					ItemSourceNode(ItemSource* _rootProvider);
 					~ItemSourceNode();
 
 					description::Value								GetItemSource();
+					void											SetItemSource(const description::Value& _itemSource);
 
 					// ===================== tree::INodeProvider =====================
 
@@ -338,7 +339,7 @@ GuiBindableTreeView
 					~ItemSource();
 
 					description::Value								GetItemSource();
-					void											SetItemSource(description::Value _itemSource);
+					void											SetItemSource(const description::Value& _itemSource);
 
 					void											UpdateBindingProperties(bool updateChildrenProperty);
 
@@ -429,7 +430,7 @@ GuiBindableDataGrid
 					WString											valueProperty;
 
 				public:
-					BindableDataColumn(BindableDataProvider* _dataProvider);
+					BindableDataColumn();
 					~BindableDataColumn();
 				
 					/// <summary>Value property name changed event.</summary>

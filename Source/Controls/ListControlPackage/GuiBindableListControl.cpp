@@ -54,6 +54,7 @@ GuiBindableTextList::ItemSource
 
 			GuiBindableTextList::ItemSource::~ItemSource()
 			{
+				SetItemSource(nullptr);
 			}
 
 			Ptr<description::IValueEnumerable> GuiBindableTextList::ItemSource::GetItemSource()
@@ -328,6 +329,7 @@ GuiBindableListView::ItemSource
 
 			GuiBindableListView::ItemSource::~ItemSource()
 			{
+				SetItemSource(nullptr);
 			}
 
 			Ptr<description::IValueEnumerable> GuiBindableListView::ItemSource::GetItemSource()
@@ -757,9 +759,9 @@ GuiBindableTreeView::ItemSourceNode
 				{
 					auto ol = childrenVirtualList.Cast<IValueObservableList>();
 					ol->ItemChanged.Remove(itemChangedEventHandler);
-					itemChangedEventHandler = 0;
+					itemChangedEventHandler = nullptr;
 				}
-				childrenVirtualList = 0;
+				childrenVirtualList = nullptr;
 				FOREACH(Ptr<ItemSourceNode>, node, children)
 				{
 					node->UnprepareChildren();
@@ -775,22 +777,31 @@ GuiBindableTreeView::ItemSourceNode
 			{
 			}
 
-			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(const description::Value& _itemSource, ItemSource* _rootProvider)
-				:itemSource(_itemSource)
-				, rootProvider(_rootProvider)
-				, parent(0)
+			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(ItemSource* _rootProvider)
+				:rootProvider(_rootProvider)
+				, parent(nullptr)
 				, callback(_rootProvider)
 			{
 			}
 
 			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
 			{
-				UnprepareChildren();
+				SetItemSource(Value());
 			}
 
 			description::Value GuiBindableTreeView::ItemSourceNode::GetItemSource()
 			{
 				return itemSource;
+			}
+
+			void GuiBindableTreeView::ItemSourceNode::SetItemSource(const description::Value& _itemSource)
+			{
+				vint oldCount = GetChildCount();
+				UnprepareChildren();
+				itemSource = _itemSource;
+				vint newCount = GetChildCount();
+				callback->OnBeforeItemModified(this, 0, oldCount, newCount);
+				callback->OnAfterItemModified(this, 0, oldCount, newCount);
 			}
 
 			bool GuiBindableTreeView::ItemSourceNode::GetExpanding()
@@ -865,7 +876,7 @@ GuiBindableTreeView::ItemSource
 
 			GuiBindableTreeView::ItemSource::ItemSource()
 			{
-				rootNode = new ItemSourceNode(_itemSource, this);
+				rootNode = new ItemSourceNode(this);
 			}
 
 			GuiBindableTreeView::ItemSource::~ItemSource()
@@ -874,12 +885,12 @@ GuiBindableTreeView::ItemSource
 
 			description::Value GuiBindableTreeView::ItemSource::GetItemSource()
 			{
-				throw 0;
+				return rootNode->GetItemSource();
 			}
 
-			void GuiBindableTreeView::ItemSource::SetItemSource(description::Value _itemSource)
+			void GuiBindableTreeView::ItemSource::SetItemSource(const description::Value& _itemSource)
 			{
-				throw 0;
+				rootNode->SetItemSource(_itemSource);
 			}
 
 			void GuiBindableTreeView::ItemSource::UpdateBindingProperties(bool updateChildrenProperty)
@@ -952,7 +963,7 @@ GuiBindableTreeView::ItemSource
 					auto value = ReadProperty(itemSourceNode->GetItemSource(), imageProperty);
 					return value.GetSharedPtr().Cast<GuiImageData>();
 				}
-				return 0;
+				return nullptr;
 			}
 
 			WString GuiBindableTreeView::ItemSource::GetNodeText(tree::INodeProvider* node)
@@ -1060,8 +1071,8 @@ GuiBindableTreeView
 GuiBindableDataColumn
 ***********************************************************************/
 
-				BindableDataColumn::BindableDataColumn(BindableDataProvider* _dataProvider)
-					:dataProvider(_dataProvider)
+				BindableDataColumn::BindableDataColumn()
+					:dataProvider(nullptr)
 				{
 				}
 
@@ -1145,6 +1156,7 @@ GuiBindableDataProvider
 
 				BindableDataProvider::~BindableDataProvider()
 				{
+					SetItemSource(nullptr);
 				}
 
 				Ptr<description::IValueEnumerable> BindableDataProvider::GetItemSource()
