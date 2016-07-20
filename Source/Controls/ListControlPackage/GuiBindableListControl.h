@@ -95,7 +95,7 @@ GuiBindableTextList
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
 				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
-				void												SetItemSource(Ptr<description::IValueEnumerable> itemSource);
+				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
 				/// <returns>The text property name.</returns>
@@ -246,7 +246,7 @@ GuiBindableListView
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
 				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
-				void												SetItemSource(Ptr<description::IValueEnumerable> itemSource);
+				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Large image property name changed event.</summary>
 				compositions::GuiNotifyEvent						LargeImagePropertyChanged;
@@ -384,7 +384,7 @@ GuiBindableTreeView
 				description::Value									GetItemSource();
 				/// <summary>Set the item source.</summary>
 				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
-				void												SetItemSource(description::Value itemSource);
+				void												SetItemSource(description::Value _itemSource);
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
 				/// <returns>The text property name.</returns>
@@ -505,7 +505,7 @@ GuiBindableDataGrid
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
 				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
-				void												SetItemSource(Ptr<description::IValueEnumerable> itemSource);
+				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Insert a column.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
