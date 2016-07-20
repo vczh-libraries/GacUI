@@ -1720,8 +1720,9 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*, list::TextItemStyleProvider::IBulletFactory*, Ptr<IValueEnumerable>), {L"styleProvider" _ L"bulletFactory" _ L"itemSource"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*, list::TextItemStyleProvider::IBulletFactory*), {L"styleProvider" _ L"bulletFactory"})
 
+				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(CheckedProperty)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
@@ -1729,10 +1730,11 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableListView)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableListView*(GuiBindableListView::IStyleProvider*, Ptr<IValueEnumerable>), {L"styleProvider" _ L"itemSource"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableListView*(GuiBindableListView::IStyleProvider*), {L"styleProvider"})
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)
+				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImageProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SmallImageProperty)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
@@ -1740,8 +1742,9 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTreeView*(GuiBindableTreeView::IStyleProvider*, const Value&), {L"styleProvider" _ L"itemSource"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTreeView*(GuiBindableTreeView::IStyleProvider*), {L"styleProvider"})
 				
+				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ImageProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ChildrenProperty)
@@ -1760,13 +1763,14 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableDataGrid*(GuiBindableDataGrid::IStyleProvider*, Ptr<IValueEnumerable>, const Value&), {L"styleProvider" _ L"itemSource" _ L"viewModelContext"})
-
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableDataGrid*(GuiBindableDataGrid::IStyleProvider*, const Value&), {L"styleProvider" _ L"viewModelContext"})
+				
 				CLASS_MEMBER_METHOD(InsertBindableColumn, { L"index" _ L"column" })
 				CLASS_MEMBER_METHOD(AddBindableColumn, { L"column" })
 				CLASS_MEMBER_METHOD(RemoveBindableColumn, { L"column" })
 				CLASS_MEMBER_METHOD(ClearBindableColumns, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetBindableColumn, { L"index" })
+				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedRowValue, SelectedCellChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedCellValue, SelectedCellChanged)
 			END_CLASS_MEMBER(GuiBindableDataGrid)

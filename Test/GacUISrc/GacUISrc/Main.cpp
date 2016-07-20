@@ -98,7 +98,7 @@ void GuiMain_Resource()
 	//}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(L"UI8_TableSplitter.xml", errors);
+		auto resource = GuiResource::LoadFromXml(L"UI7_ColorComboBox.xml", errors);
 		resource->Precompile(nullptr, errors);
 
 		{

@@ -43,8 +43,11 @@ GuiBindableTextList
 					WString											checkedProperty;
 
 				public:
-					ItemSource(Ptr<description::IValueEnumerable> _itemSource);
+					ItemSource();
 					~ItemSource();
+
+					Ptr<description::IValueEnumerable>				GetItemSource();
+					void											SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 
 					description::Value								Get(vint index);
 					void											UpdateBindingProperties();
@@ -79,13 +82,20 @@ GuiBindableTextList
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
 				/// <param name="_itemSource">The item source.</param>
-				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, Ptr<description::IValueEnumerable> _itemSource);
+				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
 				~GuiBindableTextList();
 				
 				/// <summary>Text property name changed event.</summary>
 				compositions::GuiNotifyEvent						TextPropertyChanged;
 				/// <summary>Checked property name changed event.</summary>
 				compositions::GuiNotifyEvent						CheckedPropertyChanged;
+
+				/// <summary>Get the item source.</summary>
+				/// <returns>The item source.</returns>
+				Ptr<description::IValueEnumerable>					GetItemSource();
+				/// <summary>Set the item source.</summary>
+				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				void												SetItemSource(Ptr<description::IValueEnumerable> itemSource);
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
 				/// <returns>The text property name.</returns>
@@ -166,8 +176,11 @@ GuiBindableListView
 					WString											smallImageProperty;
 
 				public:
-					ItemSource(Ptr<description::IValueEnumerable> _itemSource);
+					ItemSource();
 					~ItemSource();
+
+					Ptr<description::IValueEnumerable>				GetItemSource();
+					void											SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 					
 					description::Value								Get(vint index);
 					void											UpdateBindingProperties();
@@ -218,7 +231,7 @@ GuiBindableListView
 				/// <summary>Create a bindable List view control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemSource">The item source.</param>
-				GuiBindableListView(IStyleProvider* _styleProvider, Ptr<description::IValueEnumerable> _itemSource);
+				GuiBindableListView(IStyleProvider* _styleProvider);
 				~GuiBindableListView();
 
 				/// <summary>Get all data columns indices in columns.</summary>
@@ -227,6 +240,13 @@ GuiBindableListView
 				/// <summary>Get all columns.</summary>
 				/// <returns>All columns.</returns>
 				ListViewColumns&									GetColumns();
+
+				/// <summary>Get the item source.</summary>
+				/// <returns>The item source.</returns>
+				Ptr<description::IValueEnumerable>					GetItemSource();
+				/// <summary>Set the item source.</summary>
+				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				void												SetItemSource(Ptr<description::IValueEnumerable> itemSource);
 				
 				/// <summary>Large image property name changed event.</summary>
 				compositions::GuiNotifyEvent						LargeImagePropertyChanged;
@@ -314,8 +334,11 @@ GuiBindableTreeView
 					Ptr<ItemSourceNode>								rootNode;
 
 				public:
-					ItemSource(const description::Value& _itemSource);
+					ItemSource();
 					~ItemSource();
+
+					description::Value								GetItemSource();
+					void											SetItemSource(description::Value _itemSource);
 
 					void											UpdateBindingProperties(bool updateChildrenProperty);
 
@@ -346,7 +369,7 @@ GuiBindableTreeView
 				/// <summary>Create a bindable Tree view control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemSource">The item source.</param>
-				GuiBindableTreeView(IStyleProvider* _styleProvider, const description::Value& _itemSource);
+				GuiBindableTreeView(IStyleProvider* _styleProvider);
 				~GuiBindableTreeView();
 				
 				/// <summary>Text property name changed event.</summary>
@@ -355,6 +378,13 @@ GuiBindableTreeView
 				compositions::GuiNotifyEvent						ImagePropertyChanged;
 				/// <summary>Children property name changed event.</summary>
 				compositions::GuiNotifyEvent						ChildrenPropertyChanged;
+
+				/// <summary>Get the item source.</summary>
+				/// <returns>The item source.</returns>
+				description::Value									GetItemSource();
+				/// <summary>Set the item source.</summary>
+				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				void												SetItemSource(description::Value itemSource);
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
 				/// <returns>The text property name.</returns>
@@ -438,8 +468,11 @@ GuiBindableDataGrid
 					Ptr<EventHandler>								itemChangedEventHandler;
 
 				public:
-					BindableDataProvider(Ptr<description::IValueEnumerable> _itemSource, const description::Value& _viewModelContext);
+					BindableDataProvider(const description::Value& _viewModelContext);
 					~BindableDataProvider();
+
+					Ptr<description::IValueEnumerable>				GetItemSource();
+					void											SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 
 					vint											GetRowCount()override;
 					description::Value								GetRowValue(vint row);
@@ -464,8 +497,15 @@ GuiBindableDataGrid
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_itemSource">The item source.</param>
 				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
-				GuiBindableDataGrid(IStyleProvider* _styleProvider, Ptr<description::IValueEnumerable> _itemSource, const description::Value& _viewModelContext = description::Value());
+				GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
+
+				/// <summary>Get the item source.</summary>
+				/// <returns>The item source.</returns>
+				Ptr<description::IValueEnumerable>					GetItemSource();
+				/// <summary>Set the item source.</summary>
+				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				void												SetItemSource(Ptr<description::IValueEnumerable> itemSource);
 				
 				/// <summary>Insert a column.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
