@@ -1060,12 +1060,8 @@ GuiBindableTreeView
 GuiBindableDataColumn
 ***********************************************************************/
 
-				void BindableDataColumn::SetItemSource(Ptr<description::IValueReadonlyList> _itemSource)
-				{
-					itemSource = _itemSource;
-				}
-
-				BindableDataColumn::BindableDataColumn()
+				BindableDataColumn::BindableDataColumn(BindableDataProvider* _dataProvider)
+					:dataProvider(_dataProvider)
 				{
 				}
 
@@ -1092,19 +1088,25 @@ GuiBindableDataColumn
 
 				description::Value BindableDataColumn::GetCellValue(vint row)
 				{
-					if (0 <= row && row < itemSource->GetCount())
+					if (dataProvider->itemSource)
 					{
-						return ReadProperty(itemSource->Get(row), valueProperty);
+						if (0 <= row && row < dataProvider->itemSource->GetCount())
+						{
+							return ReadProperty(dataProvider->itemSource->Get(row), valueProperty);
+						}
 					}
 					return Value();
 				}
 
 				void BindableDataColumn::SetCellValue(vint row, description::Value value)
 				{
-					if (0 <= row && row < itemSource->GetCount())
+					if (dataProvider->itemSource)
 					{
-						auto rowValue = itemSource->Get(row);
-						return WriteProperty(rowValue, valueProperty, value);
+						if (0 <= row && row < dataProvider->itemSource->GetCount())
+						{
+							auto rowValue = dataProvider->itemSource->Get(row);
+							return WriteProperty(rowValue, valueProperty, value);
+						}
 					}
 				}
 
@@ -1129,7 +1131,7 @@ GuiBindableDataColumn
 
 				const description::Value& BindableDataColumn::GetViewModelContext()
 				{
-					return viewModelContext;
+					return dataProvider->viewModelContext;
 				}
 
 /***********************************************************************
@@ -1139,66 +1141,79 @@ GuiBindableDataProvider
 				BindableDataProvider::BindableDataProvider(const description::Value& _viewModelContext)
 					:viewModelContext(_viewModelContext)
 				{
-					if (auto ol = _itemSource.Cast<IValueObservableList>())
-					{
-						itemSource = ol;
-						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
-						{
-							commandExecutor->OnDataProviderItemModified(start, oldCount, newCount);
-						});
-					}
-					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
-					{
-						itemSource = rl;
-					}
-					else
-					{
-						itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
-					}
 				}
 
 				BindableDataProvider::~BindableDataProvider()
 				{
+				}
+
+				Ptr<description::IValueEnumerable> BindableDataProvider::GetItemSource()
+				{
+					return itemSource;
+				}
+
+				void BindableDataProvider::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+				{
+					vint oldCount = 0;
+					if (itemSource)
+					{
+						oldCount = itemSource->GetCount();
+					}
 					if (itemChangedEventHandler)
 					{
 						auto ol = itemSource.Cast<IValueObservableList>();
 						ol->ItemChanged.Remove(itemChangedEventHandler);
 					}
-				}
 
-				Ptr<description::IValueEnumerable> BindableDataProvider::GetItemSource()
-				{
-					throw 0;
-				}
+					itemSource = nullptr;
+					itemChangedEventHandler = nullptr;
 
-				void BindableDataProvider::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
-				{
-					throw 0;
+					if (_itemSource)
+					{
+						if (auto ol = _itemSource.Cast<IValueObservableList>())
+						{
+							itemSource = ol;
+							itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+							{
+								commandExecutor->OnDataProviderItemModified(start, oldCount, newCount);
+							});
+						}
+						else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
+						{
+							itemSource = rl;
+						}
+						else
+						{
+							itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
+						}
+					}
+
+					commandExecutor->OnDataProviderItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
 				}
 
 				vint BindableDataProvider::GetRowCount()
 				{
+					if (!itemSource) return 0;
 					return itemSource->GetCount();
 				}
 
 				description::Value BindableDataProvider::GetRowValue(vint row)
 				{
-					if (0 <= row && row < itemSource->GetCount())
+					if (itemSource)
 					{
-						return itemSource->Get(row);
+						if (0 <= row && row < itemSource->GetCount())
+						{
+							return itemSource->Get(row);
+						}
 					}
-					else
-					{
-						return Value();
-					}
+					return Value();
 				}
 
 				bool BindableDataProvider::InsertBindableColumn(vint index, Ptr<BindableDataColumn> column)
 				{
 					if (InsertColumnInternal(index, column, true))
 					{
-						column->viewModelContext = viewModelContext;
-						column->itemSource = itemSource;
+						column->dataProvider = this;
 						return true;
 					}
 					else
@@ -1211,8 +1226,7 @@ GuiBindableDataProvider
 				{
 					if (AddColumnInternal(column, true))
 					{
-						column->viewModelContext = viewModelContext;
-						column->itemSource = itemSource;
+						column->dataProvider = this;
 						return true;
 					}
 					else
@@ -1225,8 +1239,7 @@ GuiBindableDataProvider
 				{
 					if (RemoveColumnInternal(column, true))
 					{
-						column->viewModelContext = Value();
-						column->itemSource = nullptr;
+						column->dataProvider = nullptr;
 						return true;
 					}
 					else
@@ -1239,8 +1252,7 @@ GuiBindableDataProvider
 				{
 					FOREACH(Ptr<StructuredColummProviderBase>, column, columns)
 					{
-						column.Cast<BindableDataColumn>()->viewModelContext = Value();
-						column.Cast<BindableDataColumn>()->itemSource = nullptr;
+						column.Cast<BindableDataColumn>()->dataProvider = nullptr;
 					}
 					return ClearColumnsInternal(true);
 				}
@@ -1279,12 +1291,12 @@ GuiBindableDataGrid
 
 			Ptr<description::IValueEnumerable> GuiBindableDataGrid::GetItemSource()
 			{
-				throw 0;
+				return bindableDataProvider->GetItemSource();
 			}
 
 			void GuiBindableDataGrid::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
 			{
-				throw 0;
+				bindableDataProvider->SetItemSource(_itemSource);
 			}
 
 			bool GuiBindableDataGrid::InsertBindableColumn(vint index, Ptr<list::BindableDataColumn> column)

@@ -418,18 +418,18 @@ GuiBindableDataGrid
 			
 			namespace list
 			{
+				class BindableDataProvider;
+
 				/// <summary>Column object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
 				class BindableDataColumn : public StructuredColummProviderBase, public Description<BindableDataColumn>
 				{
 					friend class BindableDataProvider;
 				protected:
-					description::Value								viewModelContext;
-					Ptr<description::IValueReadonlyList>			itemSource;
+					BindableDataProvider*							dataProvider;
 					WString											valueProperty;
 
-					void											SetItemSource(Ptr<description::IValueReadonlyList> _itemSource);
 				public:
-					BindableDataColumn();
+					BindableDataColumn(BindableDataProvider* _dataProvider);
 					~BindableDataColumn();
 				
 					/// <summary>Value property name changed event.</summary>
@@ -462,6 +462,7 @@ GuiBindableDataGrid
 				/// <summary>Data provider object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
 				class BindableDataProvider : public StructuredDataProviderBase, public Description<BindableDataProvider>
 				{
+					friend class BindableDataColumn;
 				protected:
 					description::Value								viewModelContext;
 					Ptr<description::IValueReadonlyList>			itemSource;
