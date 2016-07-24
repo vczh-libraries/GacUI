@@ -4542,37 +4542,62 @@ namespace vl
 GuiBindableTextList::ItemSource
 ***********************************************************************/
 
-			GuiBindableTextList::ItemSource::ItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			GuiBindableTextList::ItemSource::ItemSource()
 			{
-				if (auto ol = _itemSource.Cast<IValueObservableList>())
-				{
-					itemSource = ol;
-					itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
-					{
-						InvokeOnItemModified(start, oldCount, newCount);
-					});
-				}
-				else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
-				{
-					itemSource = rl;
-				}
-				else
-				{
-					itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
-				}
 			}
 
 			GuiBindableTextList::ItemSource::~ItemSource()
 			{
+				SetItemSource(nullptr);
+			}
+
+			Ptr<description::IValueEnumerable> GuiBindableTextList::ItemSource::GetItemSource()
+			{
+				return itemSource;
+			}
+
+			void GuiBindableTextList::ItemSource::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			{
+				vint oldCount = 0;
+				if (itemSource)
+				{
+					oldCount = itemSource->GetCount();
+				}
 				if (itemChangedEventHandler)
 				{
 					auto ol = itemSource.Cast<IValueObservableList>();
 					ol->ItemChanged.Remove(itemChangedEventHandler);
 				}
+
+				itemSource = nullptr;
+				itemChangedEventHandler = nullptr;
+
+				if (_itemSource)
+				{
+					if (auto ol = _itemSource.Cast<IValueObservableList>())
+					{
+						itemSource = ol;
+						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+						{
+							InvokeOnItemModified(start, oldCount, newCount);
+						});
+					}
+					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
+					{
+						itemSource = rl;
+					}
+					else
+					{
+						itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
+					}
+				}
+
+				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
 			}
 
 			description::Value GuiBindableTextList::ItemSource::Get(vint index)
 			{
+				if (!itemSource) return Value();
 				return itemSource->Get(index);
 			}
 
@@ -4585,6 +4610,7 @@ GuiBindableTextList::ItemSource
 			
 			vint GuiBindableTextList::ItemSource::Count()
 			{
+				if (!itemSource) return 0;
 				return itemSource->GetCount();
 			}
 			
@@ -4616,9 +4642,12 @@ GuiBindableTextList::ItemSource
 
 			description::Value GuiBindableTextList::ItemSource::GetBindingValue(vint itemIndex)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+				if (itemSource)
 				{
-					return itemSource->Get(itemIndex);
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+					{
+						return itemSource->Get(itemIndex);
+					}
 				}
 				return Value();
 			}
@@ -4632,6 +4661,7 @@ GuiBindableTextList::ItemSource
 			
 			bool GuiBindableTextList::ItemSource::ContainsPrimaryText(vint itemIndex)
 			{
+				if (!itemSource) return false;
 				return 0 <= itemIndex && itemIndex < itemSource->GetCount();
 			}
 					
@@ -4639,21 +4669,27 @@ GuiBindableTextList::ItemSource
 
 			WString GuiBindableTextList::ItemSource::GetText(vint itemIndex)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+				if (itemSource)
 				{
-					return ReadProperty(itemSource->Get(itemIndex), textProperty).GetText();
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+					{
+						return ReadProperty(itemSource->Get(itemIndex), textProperty).GetText();
+					}
 				}
 				return L"";
 			}
 			
 			bool GuiBindableTextList::ItemSource::GetChecked(vint itemIndex)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+				if (itemSource)
 				{
-					auto value = ReadProperty(itemSource->Get(itemIndex), checkedProperty);
-					if (value.GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
 					{
-						return UnboxValue<bool>(value);
+						auto value = ReadProperty(itemSource->Get(itemIndex), checkedProperty);
+						if (value.GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
+						{
+							return UnboxValue<bool>(value);
+						}
 					}
 				}
 				return false;
@@ -4661,10 +4697,13 @@ GuiBindableTextList::ItemSource
 			
 			void GuiBindableTextList::ItemSource::SetCheckedSilently(vint itemIndex, bool value)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+				if (itemSource)
 				{
-					auto thisValue = itemSource->Get(itemIndex);
-					WriteProperty(thisValue, checkedProperty, BoxValue(value));
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+					{
+						auto thisValue = itemSource->Get(itemIndex);
+						WriteProperty(thisValue, checkedProperty, BoxValue(value));
+					}
 				}
 			}
 
@@ -4672,8 +4711,8 @@ GuiBindableTextList::ItemSource
 GuiBindableTextList
 ***********************************************************************/
 
-			GuiBindableTextList::GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, Ptr<description::IValueEnumerable> _itemSource)
-				:GuiVirtualTextList(_styleProvider, _bulletFactory, new ItemSource(_itemSource))
+			GuiBindableTextList::GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory)
+				:GuiVirtualTextList(_styleProvider, _bulletFactory, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -4683,6 +4722,16 @@ GuiBindableTextList
 
 			GuiBindableTextList::~GuiBindableTextList()
 			{
+			}
+
+			Ptr<description::IValueEnumerable> GuiBindableTextList::GetItemSource()
+			{
+				return itemSource->GetItemSource();
+			}
+
+			void GuiBindableTextList::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			{
+				itemSource->SetItemSource(_itemSource);
 			}
 
 			const WString& GuiBindableTextList::GetTextProperty()
@@ -4766,40 +4815,64 @@ GuiBindableListView::ListViewColumns
 GuiBindableListView::ItemSource
 ***********************************************************************/
 
-			GuiBindableListView::ItemSource::ItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			GuiBindableListView::ItemSource::ItemSource()
 			{
-				if (auto ol = _itemSource.Cast<IValueObservableList>())
-				{
-					itemSource = ol;
-					itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
-					{
-						InvokeOnItemModified(start, oldCount, newCount);
-					});
-				}
-				else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
-				{
-					itemSource = rl;
-				}
-				else
-				{
-					itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
-				}
-
 				columns.itemProvider = this;
 				dataColumns.itemProvider = this;
 			}
 
 			GuiBindableListView::ItemSource::~ItemSource()
 			{
+				SetItemSource(nullptr);
+			}
+
+			Ptr<description::IValueEnumerable> GuiBindableListView::ItemSource::GetItemSource()
+			{
+				return itemSource;
+			}
+
+			void GuiBindableListView::ItemSource::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			{
+				vint oldCount = 0;
+				if (itemSource)
+				{
+					oldCount = itemSource->GetCount();
+				}
 				if (itemChangedEventHandler)
 				{
 					auto ol = itemSource.Cast<IValueObservableList>();
 					ol->ItemChanged.Remove(itemChangedEventHandler);
 				}
+
+				itemSource = nullptr;
+				itemChangedEventHandler = nullptr;
+
+				if (_itemSource)
+				{
+					if (auto ol = _itemSource.Cast<IValueObservableList>())
+					{
+						itemSource = ol;
+						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+						{
+							InvokeOnItemModified(start, oldCount, newCount);
+						});
+					}
+					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
+					{
+						itemSource = rl;
+					}
+					else
+					{
+						itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
+					}
+				}
+
+				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
 			}
 
 			description::Value GuiBindableListView::ItemSource::Get(vint index)
 			{
+				if (!itemSource) return Value();
 				return itemSource->Get(index);
 			}
 
@@ -4810,6 +4883,7 @@ GuiBindableListView::ItemSource
 
 			bool GuiBindableListView::ItemSource::NotifyUpdate(vint start, vint count)
 			{
+				if (!itemSource) return false;
 				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
 				{
 					return false;
@@ -4835,6 +4909,7 @@ GuiBindableListView::ItemSource
 
 			vint GuiBindableListView::ItemSource::Count()
 			{
+				if (!itemSource) return 0;
 				return itemSource->GetCount();
 			}
 
@@ -4870,9 +4945,12 @@ GuiBindableListView::ItemSource
 
 			description::Value GuiBindableListView::ItemSource::GetBindingValue(vint itemIndex)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+				if (itemSource)
 				{
-					return itemSource->Get(itemIndex);
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+					{
+						return itemSource->Get(itemIndex);
+					}
 				}
 				return Value();
 			}
@@ -4893,38 +4971,50 @@ GuiBindableListView::ItemSource
 
 			Ptr<GuiImageData> GuiBindableListView::ItemSource::GetSmallImage(vint itemIndex)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+				if (itemSource)
 				{
-					auto value = ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
-					return value.GetSharedPtr().Cast<GuiImageData>();
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+					{
+						auto value = ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
+						return value.GetSharedPtr().Cast<GuiImageData>();
+					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			Ptr<GuiImageData> GuiBindableListView::ItemSource::GetLargeImage(vint itemIndex)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+				if (itemSource)
 				{
-					auto value = ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
-					return value.GetSharedPtr().Cast<GuiImageData>();
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+					{
+						auto value = ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
+						return value.GetSharedPtr().Cast<GuiImageData>();
+					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			WString GuiBindableListView::ItemSource::GetText(vint itemIndex)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount() && columns.Count()>0)
+				if (itemSource)
 				{
-					return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty()).GetText();
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && columns.Count()>0)
+					{
+						return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty()).GetText();
+					}
 				}
 				return L"";
 			}
 
 			WString GuiBindableListView::ItemSource::GetSubItem(vint itemIndex, vint index)
 			{
-				if (0 <= itemIndex && itemIndex < itemSource->GetCount() && 0 <= index && index < columns.Count() - 1)
+				if (itemSource)
 				{
-					return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty()).GetText();
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && 0 <= index && index < columns.Count() - 1)
+					{
+						return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty()).GetText();
+					}
 				}
 				return L"";
 			}
@@ -4956,8 +5046,8 @@ GuiBindableListView::ItemSource
 
 			bool GuiBindableListView::ItemSource::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
 			{
-				vint index=columnItemViewCallbacks.IndexOf(value);
-				if(index==-1)
+				vint index = columnItemViewCallbacks.IndexOf(value);
+				if (index == -1)
 				{
 					return false;
 				}
@@ -4975,7 +5065,7 @@ GuiBindableListView::ItemSource
 
 			WString GuiBindableListView::ItemSource::GetColumnText(vint index)
 			{
-				if(index<0 || index>=columns.Count())
+				if (index < 0 || index >= columns.Count())
 				{
 					return L"";
 				}
@@ -4987,7 +5077,7 @@ GuiBindableListView::ItemSource
 
 			vint GuiBindableListView::ItemSource::GetColumnSize(vint index)
 			{
-				if(index<0 || index>=columns.Count())
+				if (index < 0 || index >= columns.Count())
 				{
 					return 0;
 				}
@@ -4999,7 +5089,7 @@ GuiBindableListView::ItemSource
 
 			void GuiBindableListView::ItemSource::SetColumnSize(vint index, vint value)
 			{
-				if(index>=0 && index<columns.Count())
+				if (index >= 0 && index < columns.Count())
 				{
 					columns[index]->SetSize(value);
 				}
@@ -5007,7 +5097,7 @@ GuiBindableListView::ItemSource
 
 			GuiMenu* GuiBindableListView::ItemSource::GetDropdownPopup(vint index)
 			{
-				if(index<0 || index>=columns.Count())
+				if (index < 0 || index >= columns.Count())
 				{
 					return 0;
 				}
@@ -5019,7 +5109,7 @@ GuiBindableListView::ItemSource
 
 			GuiListViewColumnHeader::ColumnSortingState GuiBindableListView::ItemSource::GetSortingState(vint index)
 			{
-				if(index<0 || index>=columns.Count())
+				if (index < 0 || index >= columns.Count())
 				{
 					return GuiListViewColumnHeader::NotSorted;
 				}
@@ -5033,8 +5123,8 @@ GuiBindableListView::ItemSource
 GuiBindableListView
 ***********************************************************************/
 
-			GuiBindableListView::GuiBindableListView(IStyleProvider* _styleProvider, Ptr<description::IValueEnumerable> _itemSource)
-				:GuiVirtualListView(_styleProvider, new ItemSource(_itemSource))
+			GuiBindableListView::GuiBindableListView(IStyleProvider* _styleProvider)
+				:GuiVirtualListView(_styleProvider, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -5054,6 +5144,16 @@ GuiBindableListView
 			GuiBindableListView::ListViewColumns& GuiBindableListView::GetColumns()
 			{
 				return itemSource->GetColumns();
+			}
+
+			Ptr<description::IValueEnumerable> GuiBindableListView::GetItemSource()
+			{
+				return itemSource->GetItemSource();
+			}
+
+			void GuiBindableListView::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			{
+				itemSource->SetItemSource(_itemSource);
 			}
 
 			const WString& GuiBindableListView::GetLargeImageProperty()
@@ -5153,9 +5253,9 @@ GuiBindableTreeView::ItemSourceNode
 				{
 					auto ol = childrenVirtualList.Cast<IValueObservableList>();
 					ol->ItemChanged.Remove(itemChangedEventHandler);
-					itemChangedEventHandler = 0;
+					itemChangedEventHandler = nullptr;
 				}
-				childrenVirtualList = 0;
+				childrenVirtualList = nullptr;
 				FOREACH(Ptr<ItemSourceNode>, node, children)
 				{
 					node->UnprepareChildren();
@@ -5171,22 +5271,31 @@ GuiBindableTreeView::ItemSourceNode
 			{
 			}
 
-			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(const description::Value& _itemSource, ItemSource* _rootProvider)
-				:itemSource(_itemSource)
-				, rootProvider(_rootProvider)
-				, parent(0)
+			GuiBindableTreeView::ItemSourceNode::ItemSourceNode(ItemSource* _rootProvider)
+				:rootProvider(_rootProvider)
+				, parent(nullptr)
 				, callback(_rootProvider)
 			{
 			}
 
 			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
 			{
-				UnprepareChildren();
+				SetItemSource(Value());
 			}
 
 			description::Value GuiBindableTreeView::ItemSourceNode::GetItemSource()
 			{
 				return itemSource;
+			}
+
+			void GuiBindableTreeView::ItemSourceNode::SetItemSource(const description::Value& _itemSource)
+			{
+				vint oldCount = GetChildCount();
+				UnprepareChildren();
+				itemSource = _itemSource;
+				vint newCount = GetChildCount();
+				callback->OnBeforeItemModified(this, 0, oldCount, newCount);
+				callback->OnAfterItemModified(this, 0, oldCount, newCount);
 			}
 
 			bool GuiBindableTreeView::ItemSourceNode::GetExpanding()
@@ -5259,13 +5368,23 @@ GuiBindableTreeView::ItemSourceNode
 GuiBindableTreeView::ItemSource
 ***********************************************************************/
 
-			GuiBindableTreeView::ItemSource::ItemSource(const description::Value& _itemSource)
+			GuiBindableTreeView::ItemSource::ItemSource()
 			{
-				rootNode = new ItemSourceNode(_itemSource, this);
+				rootNode = new ItemSourceNode(this);
 			}
 
 			GuiBindableTreeView::ItemSource::~ItemSource()
 			{
+			}
+
+			description::Value GuiBindableTreeView::ItemSource::GetItemSource()
+			{
+				return rootNode->GetItemSource();
+			}
+
+			void GuiBindableTreeView::ItemSource::SetItemSource(const description::Value& _itemSource)
+			{
+				rootNode->SetItemSource(_itemSource);
 			}
 
 			void GuiBindableTreeView::ItemSource::UpdateBindingProperties(bool updateChildrenProperty)
@@ -5338,7 +5457,7 @@ GuiBindableTreeView::ItemSource
 					auto value = ReadProperty(itemSourceNode->GetItemSource(), imageProperty);
 					return value.GetSharedPtr().Cast<GuiImageData>();
 				}
-				return 0;
+				return nullptr;
 			}
 
 			WString GuiBindableTreeView::ItemSource::GetNodeText(tree::INodeProvider* node)
@@ -5354,8 +5473,8 @@ GuiBindableTreeView::ItemSource
 GuiBindableTreeView
 ***********************************************************************/
 
-			GuiBindableTreeView::GuiBindableTreeView(IStyleProvider* _styleProvider, const description::Value& _itemSource)
-				:GuiVirtualTreeView(_styleProvider, new ItemSource(_itemSource))
+			GuiBindableTreeView::GuiBindableTreeView(IStyleProvider* _styleProvider)
+				:GuiVirtualTreeView(_styleProvider, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
 
@@ -5366,6 +5485,16 @@ GuiBindableTreeView
 
 			GuiBindableTreeView::~GuiBindableTreeView()
 			{
+			}
+
+			description::Value GuiBindableTreeView::GetItemSource()
+			{
+				throw 0;
+			}
+
+			void GuiBindableTreeView::SetItemSource(description::Value _itemSource)
+			{
+				throw 0;
 			}
 
 			const WString& GuiBindableTreeView::GetTextProperty()
@@ -5436,12 +5565,8 @@ GuiBindableTreeView
 GuiBindableDataColumn
 ***********************************************************************/
 
-				void BindableDataColumn::SetItemSource(Ptr<description::IValueReadonlyList> _itemSource)
-				{
-					itemSource = _itemSource;
-				}
-
 				BindableDataColumn::BindableDataColumn()
+					:dataProvider(nullptr)
 				{
 				}
 
@@ -5468,19 +5593,25 @@ GuiBindableDataColumn
 
 				description::Value BindableDataColumn::GetCellValue(vint row)
 				{
-					if (0 <= row && row < itemSource->GetCount())
+					if (dataProvider->itemSource)
 					{
-						return ReadProperty(itemSource->Get(row), valueProperty);
+						if (0 <= row && row < dataProvider->itemSource->GetCount())
+						{
+							return ReadProperty(dataProvider->itemSource->Get(row), valueProperty);
+						}
 					}
 					return Value();
 				}
 
 				void BindableDataColumn::SetCellValue(vint row, description::Value value)
 				{
-					if (0 <= row && row < itemSource->GetCount())
+					if (dataProvider->itemSource)
 					{
-						auto rowValue = itemSource->Get(row);
-						return WriteProperty(rowValue, valueProperty, value);
+						if (0 <= row && row < dataProvider->itemSource->GetCount())
+						{
+							auto rowValue = dataProvider->itemSource->Get(row);
+							return WriteProperty(rowValue, valueProperty, value);
+						}
 					}
 				}
 
@@ -5505,66 +5636,90 @@ GuiBindableDataColumn
 
 				const description::Value& BindableDataColumn::GetViewModelContext()
 				{
-					return viewModelContext;
+					return dataProvider->viewModelContext;
 				}
 
 /***********************************************************************
 GuiBindableDataProvider
 ***********************************************************************/
 
-				BindableDataProvider::BindableDataProvider(Ptr<description::IValueEnumerable> _itemSource, const description::Value& _viewModelContext)
+				BindableDataProvider::BindableDataProvider(const description::Value& _viewModelContext)
 					:viewModelContext(_viewModelContext)
 				{
-					if (auto ol = _itemSource.Cast<IValueObservableList>())
-					{
-						itemSource = ol;
-						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
-						{
-							commandExecutor->OnDataProviderItemModified(start, oldCount, newCount);
-						});
-					}
-					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
-					{
-						itemSource = rl;
-					}
-					else
-					{
-						itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
-					}
 				}
 
 				BindableDataProvider::~BindableDataProvider()
 				{
+					SetItemSource(nullptr);
+				}
+
+				Ptr<description::IValueEnumerable> BindableDataProvider::GetItemSource()
+				{
+					return itemSource;
+				}
+
+				void BindableDataProvider::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+				{
+					vint oldCount = 0;
+					if (itemSource)
+					{
+						oldCount = itemSource->GetCount();
+					}
 					if (itemChangedEventHandler)
 					{
 						auto ol = itemSource.Cast<IValueObservableList>();
 						ol->ItemChanged.Remove(itemChangedEventHandler);
 					}
+
+					itemSource = nullptr;
+					itemChangedEventHandler = nullptr;
+
+					if (_itemSource)
+					{
+						if (auto ol = _itemSource.Cast<IValueObservableList>())
+						{
+							itemSource = ol;
+							itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
+							{
+								commandExecutor->OnDataProviderItemModified(start, oldCount, newCount);
+							});
+						}
+						else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
+						{
+							itemSource = rl;
+						}
+						else
+						{
+							itemSource = IValueList::Create(GetLazyList<Value>(_itemSource));
+						}
+					}
+
+					commandExecutor->OnDataProviderItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
 				}
 
 				vint BindableDataProvider::GetRowCount()
 				{
+					if (!itemSource) return 0;
 					return itemSource->GetCount();
 				}
 
 				description::Value BindableDataProvider::GetRowValue(vint row)
 				{
-					if (0 <= row && row < itemSource->GetCount())
+					if (itemSource)
 					{
-						return itemSource->Get(row);
+						if (0 <= row && row < itemSource->GetCount())
+						{
+							return itemSource->Get(row);
+						}
 					}
-					else
-					{
-						return Value();
-					}
+					return Value();
 				}
 
 				bool BindableDataProvider::InsertBindableColumn(vint index, Ptr<BindableDataColumn> column)
 				{
 					if (InsertColumnInternal(index, column, true))
 					{
-						column->viewModelContext = viewModelContext;
-						column->itemSource = itemSource;
+						column->dataProvider = this;
 						return true;
 					}
 					else
@@ -5577,8 +5732,7 @@ GuiBindableDataProvider
 				{
 					if (AddColumnInternal(column, true))
 					{
-						column->viewModelContext = viewModelContext;
-						column->itemSource = itemSource;
+						column->dataProvider = this;
 						return true;
 					}
 					else
@@ -5591,8 +5745,7 @@ GuiBindableDataProvider
 				{
 					if (RemoveColumnInternal(column, true))
 					{
-						column->viewModelContext = Value();
-						column->itemSource = nullptr;
+						column->dataProvider = nullptr;
 						return true;
 					}
 					else
@@ -5605,8 +5758,7 @@ GuiBindableDataProvider
 				{
 					FOREACH(Ptr<StructuredColummProviderBase>, column, columns)
 					{
-						column.Cast<BindableDataColumn>()->viewModelContext = Value();
-						column.Cast<BindableDataColumn>()->itemSource = nullptr;
+						column.Cast<BindableDataColumn>()->dataProvider = nullptr;
 					}
 					return ClearColumnsInternal(true);
 				}
@@ -5633,14 +5785,24 @@ GuiBindableDataProvider
 GuiBindableDataGrid
 ***********************************************************************/
 
-			GuiBindableDataGrid::GuiBindableDataGrid(IStyleProvider* _styleProvider, Ptr<description::IValueEnumerable> _itemSource, const description::Value& _viewModelContext)
-				:GuiVirtualDataGrid(_styleProvider, new BindableDataProvider(_itemSource, _viewModelContext))
+			GuiBindableDataGrid::GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext)
+				:GuiVirtualDataGrid(_styleProvider, new BindableDataProvider(_viewModelContext))
 			{
 				bindableDataProvider = GetStructuredDataProvider()->GetStructuredDataProvider().Cast<BindableDataProvider>();
 			}
 
 			GuiBindableDataGrid::~GuiBindableDataGrid()
 			{
+			}
+
+			Ptr<description::IValueEnumerable> GuiBindableDataGrid::GetItemSource()
+			{
+				return bindableDataProvider->GetItemSource();
+			}
+
+			void GuiBindableDataGrid::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+			{
+				bindableDataProvider->SetItemSource(_itemSource);
 			}
 
 			bool GuiBindableDataGrid::InsertBindableColumn(vint index, Ptr<list::BindableDataColumn> column)

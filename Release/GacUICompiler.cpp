@@ -4111,52 +4111,9 @@ GuiListViewInstanceLoader
 			{
 			};
 
-#define BASE_TYPE GuiListViewInstanceLoaderBase<GuiBindableListView>
-			class GuiBindableListViewInstanceLoader : public BASE_TYPE
+			class GuiBindableListViewInstanceLoader : public GuiListViewInstanceLoaderBase<GuiBindableListView>
 			{
-			protected:
-				GlobalStringKey		_ItemSource;
-
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
-				{
-					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
-					if (indexItemSource != -1)
-					{
-						createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
-					}
-				}
-			public:
-				GuiBindableListViewInstanceLoader()
-				{
-					_ItemSource = GlobalStringKey::Get(L"ItemSource");
-				}
-
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(_ItemSource);
-					}
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == _ItemSource)
-					{
-						if (bindable)
-						{
-							auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<IValueEnumerable>());
-							info->scope = GuiInstancePropertyInfo::Constructor;
-							info->required = true;
-							info->bindable = true;
-							return info;
-						}
-					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
-				}
 			};
-#undef BASE_TYPE
 
 /***********************************************************************
 GuiTreeViewInstanceLoader
@@ -4297,49 +4254,9 @@ GuiTreeViewInstanceLoader
 			{
 			};
 
-#define BASE_TYPE GuiTreeViewInstanceLoaderBase<GuiBindableTreeView>
-			class GuiBindableTreeViewInstanceLoader : public BASE_TYPE
+			class GuiBindableTreeViewInstanceLoader : public GuiTreeViewInstanceLoaderBase<GuiBindableTreeView>
 			{
-			protected:
-				GlobalStringKey		_ItemSource;
-
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
-				{
-					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
-					if (indexItemSource != -1)
-					{
-						createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
-					}
-				}
-			public:
-				GuiBindableTreeViewInstanceLoader()
-				{
-					_ItemSource = GlobalStringKey::Get(L"ItemSource");
-				}
-
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(_ItemSource);
-					}
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == _ItemSource)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						info->required = true;
-						info->bindable = true;
-						return info;
-					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
-				}
 			};
-#undef BASE_TYPE
 
 /***********************************************************************
 GuiBindableTextListInstanceLoader
@@ -4348,52 +4265,15 @@ GuiBindableTextListInstanceLoader
 #define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableTextList, GuiTextListTemplate_StyleProvider, GuiTextListTemplate>
 			class GuiBindableTextListInstanceLoader : public BASE_TYPE
 			{
-			protected:
-				GlobalStringKey					_ItemSource;
-				
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
-				{
-					vint indexItemSource = arguments.Keys().IndexOf(_ItemSource);
-					if (indexItemSource != -1)
-					{
-						createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
-					}
-				}
 			public:
-				GuiBindableTextListInstanceLoader(const WString& type)
-					:BASE_TYPE(
-						L"presentation::controls::GuiBindable" + type + L"TextList",
-						L"CreateTextListStyle",
-						L"Create" + type + L"TextListItemStyle"
-						)
+				GuiBindableTextListInstanceLoader()
+					:BASE_TYPE(description::TypeInfo<GuiBindableTextList>::TypeName, L"CreateTextListStyle", L"CreateTextListItemStyle")
 				{
-					_ItemSource = GlobalStringKey::Get(L"ItemSource");
 				}
 
 				GlobalStringKey GetTypeName()override
 				{
 					return typeName;
-				}
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(_ItemSource);
-					}
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == _ItemSource)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<IValueEnumerable>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						info->required = true;
-						info->bindable = true;
-						return info;
-					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 			};
 #undef BASE_TYPE
@@ -4564,15 +4444,11 @@ GuiBindableDataGridInstanceLoader
 			{
 			protected:
 				GlobalStringKey		typeName;
-				GlobalStringKey		_ItemSource;
 				GlobalStringKey		_ViewModelContext;
 				GlobalStringKey		_Columns;
 				
 				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)override
 				{
-					auto indexItemSource = arguments.Keys().IndexOf(_ItemSource);
-					createControl->arguments.Add(arguments.GetByIndex(indexItemSource)[0].expression);
-
 					auto indexViewModelContext = arguments.Keys().IndexOf(_ViewModelContext);
 					if (indexViewModelContext == -1)
 					{
@@ -4590,7 +4466,6 @@ GuiBindableDataGridInstanceLoader
 					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::TypeName, L"CreateListViewStyle")
 				{
 					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::TypeName);
-					_ItemSource = GlobalStringKey::Get(L"ItemSource");
 					_ViewModelContext = GlobalStringKey::Get(L"ViewModelContext");
 					_Columns = GlobalStringKey::Get(L"Columns");
 				}
@@ -4610,7 +4485,6 @@ GuiBindableDataGridInstanceLoader
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
-						propertyNames.Add(_ItemSource);
 						propertyNames.Add(_ViewModelContext);
 					}
 					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
@@ -4621,14 +4495,6 @@ GuiBindableDataGridInstanceLoader
 					if (propertyInfo.propertyName == _Columns)
 					{
 						return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<list::BindableDataColumn>());
-					}
-					else if (propertyInfo.propertyName == _ItemSource)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<IValueEnumerable>());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						info->required = true;
-						info->bindable = true;
-						return info;
 					}
 					else if (propertyInfo.propertyName == _ViewModelContext)
 					{
@@ -4872,9 +4738,7 @@ Initialization
 				manager->SetLoader(new GuiTreeViewInstanceLoader);
 				manager->SetLoader(new GuiBindableTreeViewInstanceLoader);
 
-				manager->SetLoader(new GuiBindableTextListInstanceLoader(L""));
-				manager->SetLoader(new GuiBindableTextListInstanceLoader(L"Check"));
-				manager->SetLoader(new GuiBindableTextListInstanceLoader(L"Radio"));
+				manager->SetLoader(new GuiBindableTextListInstanceLoader);
 
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);
