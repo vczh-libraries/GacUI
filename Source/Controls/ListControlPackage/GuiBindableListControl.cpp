@@ -995,12 +995,12 @@ GuiBindableTreeView
 
 			description::Value GuiBindableTreeView::GetItemSource()
 			{
-				throw 0;
+				return itemSource->GetItemSource();
 			}
 
 			void GuiBindableTreeView::SetItemSource(description::Value _itemSource)
 			{
-				throw 0;
+				itemSource->SetItemSource(_itemSource);
 			}
 
 			const WString& GuiBindableTreeView::GetTextProperty()
