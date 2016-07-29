@@ -183,10 +183,12 @@ GuiVirtualTreeListControl NodeProvider
 					, protected virtual INodeItemView
 					, public Description<NodeItemProvider>
 				{
+					typedef collections::Dictionary<INodeProvider*, vint>			NodeIntMap;
 				protected:
 					Ptr<INodeRootProvider>			root;
 					INodeItemPrimaryTextView*		nodeItemPrimaryTextView;
-					vint							offsetBeforeChildModified;
+					NodeIntMap						offsetBeforeChildModifieds;
+					
 
 					INodeProvider*					GetNodeByOffset(INodeProvider* provider, vint offset);
 					void							OnAttached(INodeRootProvider* provider)override;

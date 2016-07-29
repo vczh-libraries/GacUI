@@ -52,21 +52,32 @@ NodeItemProvider
 
 				void NodeItemProvider::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
 				{
-					offsetBeforeChildModified=0;
+					vint offset = 0;
 					vint base=CalculateNodeVisibilityIndexInternal(parentNode);
 					if(base!=-2 && parentNode->GetExpanding())
 					{
 						for(vint i=0;i<count;i++)
 						{
 							INodeProvider* child=parentNode->GetChild(start+i);
-							offsetBeforeChildModified+=child->CalculateTotalVisibleNodes();
+							offset+=child->CalculateTotalVisibleNodes();
 							child->Release();
 						}
 					}
+					offsetBeforeChildModifieds.Set(parentNode, offset);
 				}
 
 				void NodeItemProvider::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
 				{
+					vint offsetBeforeChildModified = 0;
+					{
+						vint index = offsetBeforeChildModifieds.Keys().IndexOf(parentNode);
+						if (index != -1)
+						{
+							offsetBeforeChildModified = offsetBeforeChildModifieds.Values().Get(index);
+							offsetBeforeChildModifieds.Remove(parentNode);
+						}
+					}
+
 					vint base=CalculateNodeVisibilityIndexInternal(parentNode);
 					if(base!=-2 && parentNode->GetExpanding())
 					{
