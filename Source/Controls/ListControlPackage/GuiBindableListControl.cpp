@@ -278,53 +278,13 @@ GuiBindableTextList
 			}
 
 /***********************************************************************
-GuiBindableListView::ListViewDataColumns
-***********************************************************************/
-
-			void GuiBindableListView::ListViewDataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
-			{
-				itemProvider->NotifyUpdate(0, itemProvider->Count());
-			}
-
-			GuiBindableListView::ListViewDataColumns::ListViewDataColumns()
-				:itemProvider(0)
-			{
-			}
-
-			GuiBindableListView::ListViewDataColumns::~ListViewDataColumns()
-			{
-			}
-
-/***********************************************************************
-GuiBindableListView::ListViewColumns
-***********************************************************************/
-
-			void GuiBindableListView::ListViewColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
-			{
-				for(vint i=0;i<itemProvider->columnItemViewCallbacks.Count();i++)
-				{
-					itemProvider->columnItemViewCallbacks[i]->OnColumnChanged();
-				}
-				itemProvider->NotifyUpdate(0, itemProvider->Count());
-			}
-
-			GuiBindableListView::ListViewColumns::ListViewColumns()
-				:itemProvider(0)
-			{
-			}
-
-			GuiBindableListView::ListViewColumns::~ListViewColumns()
-			{
-			}
-
-/***********************************************************************
 GuiBindableListView::ItemSource
 ***********************************************************************/
 
 			GuiBindableListView::ItemSource::ItemSource()
+				:columns(this)
+				, dataColumns(this)
 			{
-				columns.itemProvider = this;
-				dataColumns.itemProvider = this;
 			}
 
 			GuiBindableListView::ItemSource::~ItemSource()
@@ -401,14 +361,29 @@ GuiBindableListView::ItemSource
 				}
 			}
 
-			GuiBindableListView::ListViewDataColumns& GuiBindableListView::ItemSource::GetDataColumns()
+			list::ListViewDataColumns& GuiBindableListView::ItemSource::GetDataColumns()
 			{
 				return dataColumns;
 			}
 
-			GuiBindableListView::ListViewColumns& GuiBindableListView::ItemSource::GetColumns()
+			list::ListViewColumns& GuiBindableListView::ItemSource::GetColumns()
 			{
 				return columns;
+			}
+					
+			// ===================== list::IListViewItemProvider =====================
+
+			void GuiBindableListView::ItemSource::NotifyAllItemsUpdate()
+			{
+				NotifyUpdate(0, Count());
+			}
+
+			void GuiBindableListView::ItemSource::NotifyAllColumnsUpdate()
+			{
+				for (vint i = 0; i < columnItemViewCallbacks.Count(); i++)
+				{
+					columnItemViewCallbacks[i]->OnColumnChanged();
+				}
 			}
 
 			// ===================== GuiListControl::IItemProvider =====================
@@ -642,12 +617,12 @@ GuiBindableListView
 			{
 			}
 
-			GuiBindableListView::ListViewDataColumns& GuiBindableListView::GetDataColumns()
+			list::ListViewDataColumns& GuiBindableListView::GetDataColumns()
 			{
 				return itemSource->GetDataColumns();
 			}
 
-			GuiBindableListView::ListViewColumns& GuiBindableListView::GetColumns()
+			list::ListViewColumns& GuiBindableListView::GetColumns()
 			{
 				return itemSource->GetColumns();
 			}

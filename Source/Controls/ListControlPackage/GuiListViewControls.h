@@ -796,42 +796,45 @@ ListView
 					void											SetSortingState(GuiListViewColumnHeader::ColumnSortingState value);
 				};
 
-				class ListViewItemProvider;
+				class IListViewItemProvider : public virtual Interface
+				{
+				public:
+					virtual void									NotifyAllItemsUpdate() = 0;
+					virtual void									NotifyAllColumnsUpdate() = 0;
+				};
 
 				/// <summary>List view data column container.</summary>
 				class ListViewDataColumns : public ItemsBase<vint>
 				{
-					friend class ListViewItemProvider;
 				protected:
-					ListViewItemProvider*							itemProvider;
+					IListViewItemProvider*							itemProvider;
 
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 				public:
 					/// <summary>Create a container.</summary>
-					ListViewDataColumns();
+					ListViewDataColumns(IListViewItemProvider* _itemProvider);
 					~ListViewDataColumns();
 				};
 				
 				/// <summary>List view column container.</summary>
 				class ListViewColumns : public ItemsBase<Ptr<ListViewColumn>>
 				{
-					friend class ListViewColumn;
-					friend class ListViewItemProvider;
 				protected:
-					ListViewItemProvider*							itemProvider;
+					IListViewItemProvider*							itemProvider;
 
 					void											AfterInsert(vint index, const Ptr<ListViewColumn>& value)override;
 					void											BeforeRemove(vint index, const Ptr<ListViewColumn>& value)override;
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 				public:
 					/// <summary>Create a container.</summary>
-					ListViewColumns();
+					ListViewColumns(IListViewItemProvider* _itemProvider);
 					~ListViewColumns();
 				};
 				
 				/// <summary>Item provider for <see cref="GuiListViewBase"/> and <see cref="ListViewItemStyleProvider"/>.</summary>
 				class ListViewItemProvider
 					: public ListProvider<Ptr<ListViewItem>>
+					, protected virtual IListViewItemProvider
 					, protected virtual ListViewItemStyleProvider::IListViewItemView
 					, protected virtual ListViewColumnItemArranger::IColumnItemView
 					, protected GuiListControl::IItemBindingView
@@ -848,6 +851,9 @@ ListView
 
 					void												AfterInsert(vint index, const Ptr<ListViewItem>& value)override;
 					void												BeforeRemove(vint index, const Ptr<ListViewItem>& value)override;
+
+					void												NotifyAllItemsUpdate()override;
+					void												NotifyAllColumnsUpdate()override;
 
 					bool												ContainsPrimaryText(vint itemIndex)override;
 					WString												GetPrimaryTextViewText(vint itemIndex)override;

@@ -12394,42 +12394,45 @@ ListView
 					void											SetSortingState(GuiListViewColumnHeader::ColumnSortingState value);
 				};
 
-				class ListViewItemProvider;
+				class IListViewItemProvider : public virtual Interface
+				{
+				public:
+					virtual void									NotifyAllItemsUpdate() = 0;
+					virtual void									NotifyAllColumnsUpdate() = 0;
+				};
 
 				/// <summary>List view data column container.</summary>
 				class ListViewDataColumns : public ItemsBase<vint>
 				{
-					friend class ListViewItemProvider;
 				protected:
-					ListViewItemProvider*							itemProvider;
+					IListViewItemProvider*							itemProvider;
 
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 				public:
 					/// <summary>Create a container.</summary>
-					ListViewDataColumns();
+					ListViewDataColumns(IListViewItemProvider* _itemProvider);
 					~ListViewDataColumns();
 				};
 				
 				/// <summary>List view column container.</summary>
 				class ListViewColumns : public ItemsBase<Ptr<ListViewColumn>>
 				{
-					friend class ListViewColumn;
-					friend class ListViewItemProvider;
 				protected:
-					ListViewItemProvider*							itemProvider;
+					IListViewItemProvider*							itemProvider;
 
 					void											AfterInsert(vint index, const Ptr<ListViewColumn>& value)override;
 					void											BeforeRemove(vint index, const Ptr<ListViewColumn>& value)override;
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 				public:
 					/// <summary>Create a container.</summary>
-					ListViewColumns();
+					ListViewColumns(IListViewItemProvider* _itemProvider);
 					~ListViewColumns();
 				};
 				
 				/// <summary>Item provider for <see cref="GuiListViewBase"/> and <see cref="ListViewItemStyleProvider"/>.</summary>
 				class ListViewItemProvider
 					: public ListProvider<Ptr<ListViewItem>>
+					, protected virtual IListViewItemProvider
 					, protected virtual ListViewItemStyleProvider::IListViewItemView
 					, protected virtual ListViewColumnItemArranger::IColumnItemView
 					, protected GuiListControl::IItemBindingView
@@ -12446,6 +12449,9 @@ ListView
 
 					void												AfterInsert(vint index, const Ptr<ListViewItem>& value)override;
 					void												BeforeRemove(vint index, const Ptr<ListViewItem>& value)override;
+
+					void												NotifyAllItemsUpdate()override;
+					void												NotifyAllColumnsUpdate()override;
 
 					bool												ContainsPrimaryText(vint itemIndex)override;
 					WString												GetPrimaryTextViewText(vint itemIndex)override;
@@ -16747,49 +16753,17 @@ GuiBindableListView
 			class GuiBindableListView : public GuiVirtualListView, public Description<GuiBindableListView>
 			{
 			protected:
-				class ItemSource;
-			public:
-				/// <summary>List view data column container.</summary>
-				class ListViewDataColumns : public list::ItemsBase<vint>
-				{
-					friend class ItemSource;
-				protected:
-					ItemSource*										itemProvider;
-
-					void NotifyUpdateInternal(vint start, vint count, vint newCount)override;
-				public:
-					/// <summary>Create a container.</summary>
-					ListViewDataColumns();
-					~ListViewDataColumns();
-				};
-				
-				/// <summary>List view column container.</summary>
-				class ListViewColumns : public list::ItemsBase<Ptr<list::ListViewColumn>>
-				{
-					friend class ItemSource;
-				protected:
-					ItemSource*										itemProvider;
-
-					void NotifyUpdateInternal(vint start, vint count, vint newCount)override;
-				public:
-					/// <summary>Create a container.</summary>
-					ListViewColumns();
-					~ListViewColumns();
-				};
-
-			protected:
 				class ItemSource
 					: public list::ItemProviderBase
+					, protected virtual list::IListViewItemProvider
 					, protected GuiListControl::IItemBindingView
 					, protected virtual list::ListViewItemStyleProvider::IListViewItemView
 					, protected virtual list::ListViewColumnItemArranger::IColumnItemView
 				{
-					friend class ListViewDataColumns;
-					friend class ListViewColumns;
 					typedef collections::List<list::ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
 				protected:
-					ListViewDataColumns								dataColumns;
-					ListViewColumns									columns;
+					list::ListViewDataColumns						dataColumns;
+					list::ListViewColumns							columns;
 					ColumnItemViewCallbackList						columnItemViewCallbacks;
 					Ptr<EventHandler>								itemChangedEventHandler;
 					Ptr<description::IValueReadonlyList>			itemSource;
@@ -16808,8 +16782,13 @@ GuiBindableListView
 					description::Value								Get(vint index);
 					void											UpdateBindingProperties();
 					bool											NotifyUpdate(vint start, vint count);
-					ListViewDataColumns&							GetDataColumns();
-					ListViewColumns&								GetColumns();
+					list::ListViewDataColumns&						GetDataColumns();
+					list::ListViewColumns&							GetColumns();
+					
+					// ===================== list::IListViewItemProvider =====================
+
+					void											NotifyAllItemsUpdate()override;
+					void											NotifyAllColumnsUpdate()override;
 					
 					// ===================== GuiListControl::IItemProvider =====================
 
@@ -16859,10 +16838,10 @@ GuiBindableListView
 
 				/// <summary>Get all data columns indices in columns.</summary>
 				/// <returns>All data columns indices in columns.</returns>
-				ListViewDataColumns&								GetDataColumns();
+				list::ListViewDataColumns&							GetDataColumns();
 				/// <summary>Get all columns.</summary>
 				/// <returns>All columns.</returns>
-				ListViewColumns&									GetColumns();
+				list::ListViewColumns&								GetColumns();
 
 				/// <summary>Get the item source.</summary>
 				/// <returns>The item source.</returns>

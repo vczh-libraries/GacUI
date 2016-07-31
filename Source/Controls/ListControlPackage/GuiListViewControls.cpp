@@ -675,6 +675,7 @@ ListViewTileContentProvider
 
 					GuiTableComposition* table=new GuiTableComposition;
 					contentComposition->AddChild(table);
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					table->SetRowsAndColumns(3, 2);
 					table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 					table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -704,6 +705,7 @@ ListViewTileContentProvider
 						cell->SetPreferredMinSize(Size(224, 0));
 
 						textTable=new GuiTableComposition;
+						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						textTable->SetCellPadding(1);
 						ResetTextTable(1);
 						textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
@@ -814,6 +816,7 @@ ListViewInformationContentProvider
 
 					GuiTableComposition* table=new GuiTableComposition;
 					contentComposition->AddChild(table);
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					table->SetRowsAndColumns(3, 3);
 					table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 					table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -857,6 +860,7 @@ ListViewInformationContentProvider
 						cell->SetPreferredMinSize(Size(224, 0));
 
 						textTable=new GuiTableComposition;
+						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						textTable->SetCellPadding(4);
 						textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						cell->AddChild(textTable);
@@ -901,7 +905,8 @@ ListViewInformationContentProvider
 
 					vint dataColumnCount=view->GetDataColumnCount();
 					dataTexts.Resize(dataColumnCount);
-					textTable->SetRowsAndColumns(dataColumnCount, 1);
+					textTable->SetRowsAndColumns(dataColumnCount+1, 1);
+					textTable->SetRowOption(dataColumnCount, GuiCellOption::PercentageOption(1.0));
 					textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
 					for(vint i=0;i<dataColumnCount;i++)
 					{
@@ -1522,7 +1527,7 @@ ListViewColumn
 					if (owner)
 					{
 						vint index = owner->IndexOf(this);
-						owner->NotifyUpdateInternal(index, 1, 1);
+						owner->NotifyUpdate(index, 1);
 					}
 				}
 
@@ -1596,11 +1601,11 @@ ListViewDataColumns
 
 				void ListViewDataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
-					itemProvider->NotifyUpdate(0, itemProvider->Count());
+					itemProvider->NotifyAllItemsUpdate();
 				}
 
-				ListViewDataColumns::ListViewDataColumns()
-					:itemProvider(0)
+				ListViewDataColumns::ListViewDataColumns(IListViewItemProvider* _itemProvider)
+					:itemProvider(_itemProvider)
 				{
 				}
 
@@ -1626,18 +1631,12 @@ ListViewColumns
 
 				void ListViewColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
-					for(vint i=0;i<itemProvider->columnItemViewCallbacks.Count();i++)
-					{
-						itemProvider->columnItemViewCallbacks[i]->OnColumnChanged();
-					}
-					if (count != newCount)
-					{
-						itemProvider->NotifyUpdate(0, itemProvider->Count());
-					}
+					itemProvider->NotifyAllColumnsUpdate();
+					itemProvider->NotifyAllItemsUpdate();
 				}
 
-				ListViewColumns::ListViewColumns()
-					:itemProvider(0)
+				ListViewColumns::ListViewColumns(IListViewItemProvider* _itemProvider)
+					:itemProvider(_itemProvider)
 				{
 				}
 
@@ -1659,6 +1658,19 @@ ListViewItemProvider
 				{
 					value->owner = 0;
 					ListProvider<Ptr<ListViewItem>>::AfterInsert(index, value);
+				}
+
+				void ListViewItemProvider::NotifyAllItemsUpdate()
+				{
+					NotifyUpdate(0, Count());
+				}
+
+				void ListViewItemProvider::NotifyAllColumnsUpdate()
+				{
+					for (vint i = 0; i < columnItemViewCallbacks.Count(); i++)
+					{
+						columnItemViewCallbacks[i]->OnColumnChanged();
+					}
 				}
 
 				bool ListViewItemProvider::ContainsPrimaryText(vint itemIndex)
@@ -1803,9 +1815,9 @@ ListViewItemProvider
 				}
 
 				ListViewItemProvider::ListViewItemProvider()
+					:columns(this)
+					, dataColumns(this)
 				{
-					columns.itemProvider=this;
-					dataColumns.itemProvider=this;
 				}
 
 				ListViewItemProvider::~ListViewItemProvider()
