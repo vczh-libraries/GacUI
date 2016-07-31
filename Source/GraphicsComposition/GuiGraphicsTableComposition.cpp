@@ -553,7 +553,8 @@ GuiTableComposition
 
 			Size GuiTableComposition::GetMinPreferredClientSize()
 			{
-				return tableContentMinSize;
+				vint offset = (borderVisible ? 2 * cellPadding : 0);
+				return Size(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
 			}
 
 			Rect GuiTableComposition::GetBounds()

@@ -1,0 +1,50 @@
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="demo::MainWindow">
+      <Window Text="MainWindow" ClientSize="x:640 y:480">
+        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+
+        <ListView View="Tile" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+
+          <att.Columns>
+            <ListViewColumn Text="Name"/>
+            <ListViewColumn Text="Birthday"/>
+            <ListViewColumn Text="Phone"/>
+            <ListViewColumn Text="Address"/>
+          </att.Columns>
+
+          <att.DataColumns>
+            <Int32>0</Int32>
+            <Int32>1</Int32>
+            <Int32>2</Int32>
+          </att.DataColumns>
+
+          <att.Items>
+            <ListViewItem Text="A">
+              <att.SubItems>
+                <String>X1</String>
+                <String>Y1</String>
+                <String>Z1</String>
+              </att.SubItems>
+            </ListViewItem>
+            <ListViewItem Text="B">
+              <att.SubItems>
+                <String>X2</String>
+                <String>Y2</String>
+                <String>Z2</String>
+              </att.SubItems>
+            </ListViewItem>
+            <ListViewItem Text="C">
+              <att.SubItems>
+                <String>X3</String>
+                <String>Y3</String>
+                <String>Z3</String>
+              </att.SubItems>
+            </ListViewItem>
+          </att.Items>
+        </ListView>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

@@ -816,7 +816,6 @@ ListViewInformationContentProvider
 
 					GuiTableComposition* table=new GuiTableComposition;
 					contentComposition->AddChild(table);
-					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					table->SetRowsAndColumns(3, 3);
 					table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 					table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -824,6 +823,7 @@ ListViewInformationContentProvider
 					table->SetColumnOption(0, GuiCellOption::MinSizeOption());
 					table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
 					table->SetColumnOption(2, GuiCellOption::MinSizeOption());
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					table->SetCellPadding(4);
 					{
@@ -860,8 +860,8 @@ ListViewInformationContentProvider
 						cell->SetPreferredMinSize(Size(224, 0));
 
 						textTable=new GuiTableComposition;
-						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						textTable->SetCellPadding(4);
+						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						cell->AddChild(textTable);
 					}
@@ -883,8 +883,8 @@ ListViewInformationContentProvider
 
 				void ListViewInformationContentProvider::ItemContent::Install(GuiListViewBase::IStyleProvider* styleProvider, ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)
 				{
-					Ptr<GuiImageData> imageData=view->GetLargeImage(itemIndex);
-					if(imageData)
+					Ptr<GuiImageData> imageData = view->GetLargeImage(itemIndex);
+					if (imageData)
 					{
 						image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
 					}
@@ -896,53 +896,55 @@ ListViewInformationContentProvider
 					text->SetColor(styleProvider->GetPrimaryTextColor());
 					bottomLine->SetColor(styleProvider->GetItemSeparatorColor());
 
-					for(vint i=0;i<dataTexts.Count();i++)
+					for (vint i = 0; i < dataTexts.Count(); i++)
 					{
-						GuiCellComposition* cell=textTable->GetSitedCell(i, 0);
+						GuiCellComposition* cell = textTable->GetSitedCell(i, 0);
 						textTable->RemoveChild(cell);
 						delete cell;
 					}
 
-					vint dataColumnCount=view->GetDataColumnCount();
+					vint dataColumnCount = view->GetDataColumnCount();
 					dataTexts.Resize(dataColumnCount);
-					textTable->SetRowsAndColumns(dataColumnCount+1, 1);
-					textTable->SetRowOption(dataColumnCount, GuiCellOption::PercentageOption(1.0));
-					textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-					for(vint i=0;i<dataColumnCount;i++)
+					textTable->SetRowsAndColumns(dataColumnCount + 2, 1);
+					textTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+					for (vint i = 0; i < dataColumnCount; i++)
 					{
-						textTable->SetRowOption(i, GuiCellOption::MinSizeOption());
+						textTable->SetRowOption(i + 1, GuiCellOption::MinSizeOption());
 					}
+					textTable->SetRowOption(dataColumnCount + 1, GuiCellOption::PercentageOption(0.5));
+					textTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
 					
-					for(vint i=0;i<dataColumnCount;i++)
+					for (vint i = 0; i < dataColumnCount; i++)
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						textTable->AddChild(cell);
-						cell->SetSite(i, 0, 1, 1);
+						cell->SetSite(i + 1, 0, 1, 1);
 
-						GuiTableComposition* dataTable=new GuiTableComposition;
+						GuiTableComposition* dataTable = new GuiTableComposition;
 						dataTable->SetRowsAndColumns(1, 2);
 						dataTable->SetRowOption(0, GuiCellOption::MinSizeOption());
 						dataTable->SetColumnOption(0, GuiCellOption::MinSizeOption());
 						dataTable->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
+						dataTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						dataTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						cell->AddChild(dataTable);
 						{
-							GuiCellComposition* cell=new GuiCellComposition;
+							GuiCellComposition* cell = new GuiCellComposition;
 							dataTable->AddChild(cell);
 							cell->SetSite(0, 0, 1, 1);
 
-							GuiSolidLabelElement* textColumn=GuiSolidLabelElement::Create();
+							GuiSolidLabelElement* textColumn = GuiSolidLabelElement::Create();
 							textColumn->SetFont(baselineFont);
-							textColumn->SetText(view->GetColumnText(view->GetDataColumn(i)+1)+L": ");
+							textColumn->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
 							textColumn->SetColor(styleProvider->GetSecondaryTextColor());
 							cell->SetOwnedElement(textColumn);
 						}
 						{
-							GuiCellComposition* cell=new GuiCellComposition;
+							GuiCellComposition* cell = new GuiCellComposition;
 							dataTable->AddChild(cell);
 							cell->SetSite(0, 1, 1, 1);
 
-							GuiSolidLabelElement* textData=GuiSolidLabelElement::Create();
+							GuiSolidLabelElement* textData = GuiSolidLabelElement::Create();
 							textData->SetFont(baselineFont);
 							textData->SetEllipse(true);
 							textData->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
