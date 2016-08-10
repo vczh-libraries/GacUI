@@ -141,7 +141,8 @@ GuiComboBoxListControl
 				{
 					itemStyleController->SetFont(GetFont());
 				}
-				OnListControlAdoptedSizeInvalidated(nullptr, GetNotifyEventArguments());
+				auto args = GetNotifyEventArguments();
+				OnListControlAdoptedSizeInvalidated(nullptr, args);
 			}
 
 			void GuiComboBoxListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

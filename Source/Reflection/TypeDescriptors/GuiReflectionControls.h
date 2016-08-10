@@ -1151,7 +1151,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxListControl::IStyleController)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiComboBoxListControl::IItemStyleProvider)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::GuiComboBoxListControl::IItemStyleProvider)
 				
 				void AttachComboBox(presentation::controls::GuiComboBoxListControl* value)override
 				{
