@@ -371,7 +371,7 @@ GuiDefaultInstanceLoader
 				return GlobalStringKey::Empty;
 			}
 
-			void ClearReflectionCache()
+			void ClearReflectionCache()override
 			{
 				propertyTypes.Clear();
 				defaultConstructors.Clear();
@@ -1045,7 +1045,7 @@ GuiInstanceLoaderManager
 				return GlobalStringKey::Empty;
 			}
 
-			void ClearReflectionCache()
+			void ClearReflectionCache()override
 			{
 				rootLoader->ClearReflectionCache();
 				FOREACH(Ptr<VirtualTypeInfo>, info, typeInfos.Values())
