@@ -15686,7 +15686,7 @@ DescriptableObject
 		{
 		}
 
-		DescriptableObject::~DescriptableObject() throw()
+		DescriptableObject::~DescriptableObject()
 		{
 			destructing = true;
 			if (IsAggregated())
