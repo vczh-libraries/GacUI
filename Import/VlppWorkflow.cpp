@@ -2964,7 +2964,7 @@ WfRuntimeThreadContext (Operators)
 				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
 				T firstValue = UnboxValue<T>(first);
 				T secondValue = UnboxValue<T>(second);
-				T value = exp(secondValue * log(firstValue));
+				T value = (T)exp(secondValue * log(firstValue));
 				context.PushValue(BoxValue(value));
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}

@@ -19558,7 +19558,7 @@ GuiGrammarColorizer
 ***********************************************************************/
 
 			/// <summary>Grammar based colorizer.</summary>
-			class GuiGrammarColorizer : public GuiTextBoxRegexColorizer, private RepeatingParsingExecutor::CallbackBase
+			class GuiGrammarColorizer : public GuiTextBoxRegexColorizer, protected RepeatingParsingExecutor::CallbackBase
 			{
 				typedef collections::Pair<WString, WString>					FieldDesc;
 				typedef collections::Dictionary<FieldDesc, vint>			FieldContextColors;
@@ -19667,7 +19667,7 @@ GuiGrammarAutoComplete
 			/// <summary>Grammar based auto complete controller.</summary>
 			class GuiGrammarAutoComplete
 				: public GuiTextBoxAutoCompleteBase
-				, private RepeatingParsingExecutor::CallbackBase
+				, protected RepeatingParsingExecutor::CallbackBase
 				, private RepeatingTaskExecutor<RepeatingParsingOutput>
 			{
 			public:

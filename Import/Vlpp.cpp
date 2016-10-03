@@ -15686,7 +15686,7 @@ DescriptableObject
 		{
 		}
 
-		DescriptableObject::~DescriptableObject()
+		DescriptableObject::~DescriptableObject() throw()
 		{
 			destructing = true;
 			if (IsAggregated())
@@ -15695,7 +15695,11 @@ DescriptableObject
 				{
 					if (aggregationInfo[aggregationSize + 1] != nullptr)
 					{
+#pragma warning (push)
+#pragma warning (disable: 4297)
+						// Your class should call FinalizeAggregation in the destructor if it inherits from AggregatableDescription<T>.
 						CHECK_ERROR(!IsAggregated(), L"vl::reflection::DescriptableObject::~DescriptableObject0()#FinalizeAggregation function should be called.");
+#pragma warning (pop)
 					}
 				}
 				for (vint i = 0; i < aggregationSize; i++)

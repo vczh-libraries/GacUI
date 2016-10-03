@@ -25,7 +25,7 @@ GuiGrammarAutoComplete
 			/// <summary>Grammar based auto complete controller.</summary>
 			class GuiGrammarAutoComplete
 				: public GuiTextBoxAutoCompleteBase
-				, private RepeatingParsingExecutor::CallbackBase
+				, protected RepeatingParsingExecutor::CallbackBase
 				, private RepeatingTaskExecutor<RepeatingParsingOutput>
 			{
 			public:

@@ -2446,10 +2446,10 @@ WinTransform
 		WinTransform WinTransform::Rotate(float Angle)
 		{
 			XFORM Transform;
-			Transform.eM11=cos(Angle);
-			Transform.eM12=sin(Angle);
-			Transform.eM21=-sin(Angle);
-			Transform.eM22=cos(Angle);
+			Transform.eM11=(FLOAT)cos(Angle);
+			Transform.eM12= (FLOAT)sin(Angle);
+			Transform.eM21= (FLOAT)-sin(Angle);
+			Transform.eM22= (FLOAT)cos(Angle);
 			Transform.eDx=0.0f;
 			Transform.eDy=0.0f;
 			return Transform;
@@ -2493,7 +2493,7 @@ WinTransform
 
 		WinTransform WinTransform::Reflect(float VectorX, float VectorY)
 		{
-			float Len=sqrt(VectorX*VectorX+VectorY*VectorY);
+			float Len= (FLOAT)sqrt(VectorX*VectorX+VectorY*VectorY);
 			float Cos=VectorX/Len;
 			float Sin=VectorY/Len;
 
@@ -2502,7 +2502,7 @@ WinTransform
 
 		WinTransform WinTransform::Reflect(float OriginX, float OriginY, float VectorX, float VectorY)
 		{
-			float Len=sqrt(VectorX*VectorX+VectorY*VectorY);
+			float Len= (FLOAT)sqrt(VectorX*VectorX+VectorY*VectorY);
 			float Cos=VectorX/Len;
 			float Sin=VectorY/Len;
 
@@ -2524,10 +2524,10 @@ WinTransform
 		WinTransform WinTransform::AxisA(float AngleX, float LenX, float AngleY, float LenY)
 		{
 			XFORM Transform;
-			Transform.eM11=cos(AngleX)*LenX;
-			Transform.eM12=sin(AngleX)*LenX;
-			Transform.eM21=cos(AngleY)*LenY;
-			Transform.eM22=sin(AngleY)*LenY;
+			Transform.eM11=(FLOAT)cos(AngleX)*LenX;
+			Transform.eM12=(FLOAT)sin(AngleX)*LenX;
+			Transform.eM21=(FLOAT)cos(AngleY)*LenY;
+			Transform.eM22=(FLOAT)sin(AngleY)*LenY;
 			Transform.eDx=0.0f;
 			Transform.eDy=0.0f;
 			return Transform;
