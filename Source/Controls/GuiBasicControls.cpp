@@ -1516,7 +1516,7 @@ GuiSaveFileDialog
 					GetHostWindow()->GetNativeWindow(),
 					fileNames,
 					filterIndex,
-					(enabledPreview ? INativeDialogService::FileDialogOpenPreview : INativeDialogService::FileDialogOpen),
+					(enabledPreview ? INativeDialogService::FileDialogSavePreview : INativeDialogService::FileDialogSave),
 					title,
 					fileName,
 					directory,
