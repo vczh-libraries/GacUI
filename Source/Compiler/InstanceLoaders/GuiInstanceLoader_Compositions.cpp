@@ -404,24 +404,33 @@ GuiCellCompositionInstanceLoader
 
 								auto call = MakePtr<WfCallExpression>();
 								call->function = refSetSite;
+
+								auto GetValueText = [](const Value& value)
+								{
+									WString result;
+									auto st = value.GetTypeDescriptor()->GetSerializableType();
+									st->Serialize(value, result);
+									return result;
+								};
+
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
-									arg->value.value = siteValue.GetProperty(L"row").GetText();
+									arg->value.value = GetValueText(siteValue.GetProperty(L"row"));
 									call->arguments.Add(arg);
 								}
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
-									arg->value.value = siteValue.GetProperty(L"column").GetText();
+									arg->value.value = GetValueText(siteValue.GetProperty(L"column"));
 									call->arguments.Add(arg);
 								}
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
-									arg->value.value = siteValue.GetProperty(L"rowSpan").GetText();
+									arg->value.value = GetValueText(siteValue.GetProperty(L"rowSpan"));
 									call->arguments.Add(arg);
 								}
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
-									arg->value.value = siteValue.GetProperty(L"columnSpan").GetText();
+									arg->value.value = GetValueText(siteValue.GetProperty(L"columnSpan"));
 									call->arguments.Add(arg);
 								}
 

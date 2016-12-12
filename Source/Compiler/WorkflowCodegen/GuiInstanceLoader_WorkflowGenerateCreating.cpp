@@ -79,8 +79,7 @@ WorkflowGenerateCreatingVisitor
 						auto str = MakePtr<WfStringExpression>();
 						str->value.value = textValue;
 
-						auto type = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-						type->SetTypeDescriptor(td);
+						auto type = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
 
 						auto cast = MakePtr<WfTypeCastingExpression>();
 						cast->type = GetTypeFromTypeInfo(type.Obj());

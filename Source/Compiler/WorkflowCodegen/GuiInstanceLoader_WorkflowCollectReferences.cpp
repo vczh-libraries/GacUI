@@ -197,15 +197,23 @@ WorkflowReferenceNamesVisitor
 										switch (propType->GetDecorator())
 										{
 										case ITypeInfo::Nullable:
+											{
+												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+												auto decoratedType = MakePtr<NullableTypeInfo>(elementType);
+												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
+											}
+											break;
 										case ITypeInfo::RawPtr:
+											{
+												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+												auto decoratedType = MakePtr<RawPtrTypeInfo>(elementType);
+												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
+											}
+											break;
 										case ITypeInfo::SharedPtr:
 											{
-												auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-												elementType->SetTypeDescriptor(td);
-
-												auto decoratedType = MakePtr<TypeInfoImpl>(propType->GetDecorator());
-												decoratedType->SetElementType(elementType);
-												
+												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+												auto decoratedType = MakePtr<SharedPtrTypeInfo>(elementType);
 												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
 											}
 											break;
@@ -517,11 +525,8 @@ WorkflowReferenceNamesVisitor
 						resolvingResult.typeInfos.Add(parameter->name, typeInfo);
 					}
 					{
-						auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-						elementType->SetTypeDescriptor(type);
-
-						auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
-						pointerType->SetElementType(elementType);
+						auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
+						auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
 
 						resolvingResult.typeOverrides.Add(parameter->name, pointerType);
 					}

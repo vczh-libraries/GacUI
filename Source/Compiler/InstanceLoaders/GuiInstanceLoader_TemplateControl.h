@@ -200,11 +200,8 @@ GuiVrtualTypeInstanceLoader
 
 							Ptr<ITypeInfo> controlTemplateType;
 							{
-								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-								elementType->SetTypeDescriptor(controlTemplateTd);
-
-								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
-								pointerType->SetElementType(elementType);
+								auto elementType = MakePtr<TypeDescriptorTypeInfo>(controlTemplateTd, TypeInfoHint::Normal);
+								auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 								controlTemplateType = pointerType;
 							}

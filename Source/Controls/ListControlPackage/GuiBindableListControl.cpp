@@ -44,6 +44,21 @@ namespace vl
 				}
 			}
 
+			WString GetValueText(Value& value)
+			{
+				if (auto td = value.GetTypeDescriptor())
+				{
+					if (auto st = td->GetSerializableType())
+					{
+						WString result;
+						st->Serialize(value, result);
+						return result;
+					}
+					return L"<" + td->GetTypeName() + L">";
+				}
+				return L"";
+			}
+
 /***********************************************************************
 GuiBindableTextList::ItemSource
 ***********************************************************************/
@@ -179,7 +194,7 @@ GuiBindableTextList::ItemSource
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
 					{
-						return ReadProperty(itemSource->Get(itemIndex), textProperty).GetText();
+						return GetValueText(ReadProperty(itemSource->Get(itemIndex), textProperty));
 					}
 				}
 				return L"";
@@ -482,7 +497,7 @@ GuiBindableListView::ItemSource
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && columns.Count()>0)
 					{
-						return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty()).GetText();
+						return GetValueText(ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty()));
 					}
 				}
 				return L"";
@@ -494,7 +509,7 @@ GuiBindableListView::ItemSource
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && 0 <= index && index < columns.Count() - 1)
 					{
-						return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty()).GetText();
+						return GetValueText(ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty()));
 					}
 				}
 				return L"";
@@ -945,7 +960,7 @@ GuiBindableTreeView::ItemSource
 			{
 				if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
 				{
-					return ReadProperty(itemSourceNode->GetItemSource(), textProperty).GetText();
+					return GetValueText(ReadProperty(itemSourceNode->GetItemSource(), textProperty));
 				}
 				return L"";
 			}
@@ -1069,7 +1084,7 @@ GuiBindableDataColumn
 
 				WString BindableDataColumn::GetCellText(vint row)
 				{
-					return GetCellValue(row).GetText();
+					return GetValueText(GetCellValue(row));
 				}
 
 				description::Value BindableDataColumn::GetCellValue(vint row)

@@ -128,11 +128,8 @@ Workflow_InstallCtorClass
 			auto thisParam = MakePtr<WfFunctionArgument>();
 			thisParam->name.value = L"<this>";
 			{
-				Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-				elementType->SetTypeDescriptor(rootTypeDescriptor);
-
-				Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::RawPtr);
-				pointerType->SetElementType(elementType);
+				auto elementType = MakePtr<TypeDescriptorTypeInfo>(rootTypeDescriptor, TypeInfoHint::Normal);
+				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 				thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
 			}
@@ -140,11 +137,8 @@ Workflow_InstallCtorClass
 			auto resolverParam = MakePtr<WfFunctionArgument>();
 			resolverParam->name.value = L"<resolver>";
 			{
-				Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-				elementType->SetTypeDescriptor(description::GetTypeDescriptor<GuiResourcePathResolver>());
-
-				Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::RawPtr);
-				pointerType->SetElementType(elementType);
+				auto elementType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<GuiResourcePathResolver>(), TypeInfoHint::Normal);
+				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 				resolverParam->type = GetTypeFromTypeInfo(pointerType.Obj());
 			}
@@ -195,11 +189,8 @@ Variable
 
 			if (!var->type)
 			{
-				Ptr<TypeInfoImpl> elementType = new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-				elementType->SetTypeDescriptor(type);
-
-				Ptr<TypeInfoImpl> pointerType = new TypeInfoImpl(ITypeInfo::RawPtr);
-				pointerType->SetElementType(elementType);
+				auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
+				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 				var->type = GetTypeFromTypeInfo(pointerType.Obj());
 			}

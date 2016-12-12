@@ -328,11 +328,8 @@ Workflow_GenerateInstanceClass
 			{
 				if ((ctorTd = description::GetTypeDescriptor(context->className + L"<Ctor>")))
 				{
-					auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-					elementType->SetTypeDescriptor(ctorTd);
-
-					auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
-					pointerType->SetElementType(elementType);
+					auto elementType = MakePtr<TypeDescriptorTypeInfo>(ctorTd, TypeInfoHint::Normal);
+					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
 
 					ctorType = pointerType;
 				}
@@ -362,8 +359,7 @@ Workflow_GenerateInstanceClass
 			auto module = Workflow_CreateModuleWithUsings(context);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
-				auto typeInfo = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-				typeInfo->SetTypeDescriptor(baseTd);
+				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
 				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
 				instanceClass->baseTypes.Add(baseType);
 			}

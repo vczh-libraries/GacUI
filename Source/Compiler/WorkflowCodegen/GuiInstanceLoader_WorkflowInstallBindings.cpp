@@ -83,11 +83,8 @@ Workflow_InstallBindProperty
 			}
 			else
 			{
-				auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-				elementType->SetTypeDescriptor(td);
-
-				auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::SharedPtr);
-				pointerType->SetElementType(elementType);
+				auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+				auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
 				convertedType = pointerType;
 			}
 
@@ -141,8 +138,7 @@ Workflow_InstallBindProperty
 				member->parent = refResourceValue;
 				member->name.value = L"Text";
 
-				auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-				elementType->SetTypeDescriptor(td);
+				auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
 
 				auto cast = MakePtr<WfTypeCastingExpression>();
 				cast->expression = member;
