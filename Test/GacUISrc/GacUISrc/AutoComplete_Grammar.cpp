@@ -1,3 +1,4 @@
+#define GAC_HEADER_USE_NAMESPACE
 #include "..\..\..\Source\GacUI.h"
 #include "..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageColorizer.h"
 #include "..\..\..\Source\Controls\TextEditorPackage\LanguageService\GuiLanguageAutoComplete.h"

@@ -22,7 +22,7 @@ GuiAxisInstanceLoader
 			public:
 				GuiAxisInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiAxis>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiAxis>::content.typeName);
 					_AxisDirection = GlobalStringKey::Get(L"AxisDirection");
 				}
 
@@ -96,7 +96,7 @@ GuiCompositionInstanceLoader
 			public:
 				GuiCompositionInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiGraphicsComposition>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiGraphicsComposition>::content.typeName);
 				}
 
 				GlobalStringKey GetTypeName()override
@@ -216,7 +216,7 @@ GuiTableCompositionInstanceLoader
 			public:
 				GuiTableCompositionInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiTableComposition>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiTableComposition>::content.typeName);
 					_Rows = GlobalStringKey::Get(L"Rows");
 					_Columns = GlobalStringKey::Get(L"Columns");
 				}
@@ -356,7 +356,7 @@ GuiCellCompositionInstanceLoader
 			public:
 				GuiCellCompositionInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiCellComposition>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiCellComposition>::content.typeName);
 					_Site = GlobalStringKey::Get(L"Site");
 				}
 

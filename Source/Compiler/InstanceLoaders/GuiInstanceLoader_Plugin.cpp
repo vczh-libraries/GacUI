@@ -21,7 +21,7 @@ GuiControlInstanceLoader
 			public:
 				GuiControlInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiControl>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiControl>::content.typeName);
 				}
 
 				GlobalStringKey GetTypeName()override
@@ -206,7 +206,7 @@ GuiPredefinedInstanceLoadersPlugin
 
 	#define ADD_VIRTUAL_TYPE_LOADER(TYPENAME, LOADER)\
 		manager->CreateVirtualType(\
-			GlobalStringKey::Get(description::TypeInfo<TYPENAME>::TypeName),\
+			GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
 			new LOADER\
 			)
 
@@ -237,7 +237,7 @@ GuiPredefinedInstanceLoadersPlugin
 			)
 
 	#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE)\
-		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::TypeName),\
+		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
 		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				L ## #STYLE_METHOD\
@@ -245,7 +245,7 @@ GuiPredefinedInstanceLoadersPlugin
 			)
 
 	#define ADD_VIRTUAL_CONTROL_2(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, ARGUMENT_METHOD, TEMPLATE)\
-		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::TypeName),\
+		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
 		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				L ## #STYLE_METHOD,\
@@ -254,7 +254,7 @@ GuiPredefinedInstanceLoadersPlugin
 			)
 
 	#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, TEMPLATE, INIT_FUNCTION)\
-		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::TypeName),\
+		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
 		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				L ## #STYLE_METHOD,\

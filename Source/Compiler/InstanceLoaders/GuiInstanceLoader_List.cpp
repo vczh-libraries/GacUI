@@ -55,7 +55,7 @@ GuiSelectableListControlInstanceLoader
 			public:
 				GuiSelectableListControlInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiSelectableListControl>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiSelectableListControl>::content.typeName);
 				}
 
 				GlobalStringKey GetTypeName()override
@@ -114,7 +114,7 @@ GuiVirtualTreeViewInstanceLoader
 			public:
 				GuiVirtualTreeViewInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiVirtualTreeView>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiVirtualTreeView>::content.typeName);
 				}
 
 				GlobalStringKey GetTypeName()override
@@ -331,7 +331,7 @@ GuiListViewInstanceLoader
 
 			public:
 				GuiListViewInstanceLoaderBase()
-					:BASE_TYPE(description::TypeInfo<TControl>::TypeName, L"CreateListViewStyle")
+					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, L"CreateListViewStyle")
 				{
 					_View = GlobalStringKey::Get(L"View");
 					_IconSize = GlobalStringKey::Get(L"IconSize");
@@ -424,7 +424,7 @@ GuiTreeViewInstanceLoader
 
 			public:
 				GuiTreeViewInstanceLoaderBase()
-					:BASE_TYPE(description::TypeInfo<TControl>::TypeName, L"CreateTreeViewStyle")
+					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, L"CreateTreeViewStyle")
 				{
 					_Nodes = GlobalStringKey::Get(L"Nodes");
 					_IconSize = GlobalStringKey::Get(L"IconSize");
@@ -526,7 +526,7 @@ GuiBindableTextListInstanceLoader
 			{
 			public:
 				GuiBindableTextListInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableTextList>::TypeName, L"CreateTextListStyle", L"CreateTextListItemStyle")
+					:BASE_TYPE(description::TypeInfo<GuiBindableTextList>::content.typeName, L"CreateTextListStyle", L"CreateTextListItemStyle")
 				{
 				}
 
@@ -551,7 +551,7 @@ GuiBindableDataColumnInstanceLoader
 			public:
 				GuiBindableDataColumnInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<list::BindableDataColumn>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<list::BindableDataColumn>::content.typeName);
 					_VisualizerTemplates = GlobalStringKey::Get(L"VisualizerTemplates");
 					_EditorTemplate = GlobalStringKey::Get(L"EditorTemplate");
 				}
@@ -722,9 +722,9 @@ GuiBindableDataGridInstanceLoader
 				}
 			public:
 				GuiBindableDataGridInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::TypeName, L"CreateListViewStyle")
+					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, L"CreateListViewStyle")
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::content.typeName);
 					_ViewModelContext = GlobalStringKey::Get(L"ViewModelContext");
 					_Columns = GlobalStringKey::Get(L"Columns");
 				}
@@ -984,7 +984,7 @@ Initialization
 			void LoadListControls(IGuiInstanceLoaderManager* manager)
 			{
 				manager->CreateVirtualType(
-					GlobalStringKey::Get(description::TypeInfo<GuiComboBoxListControl>::TypeName),
+					GlobalStringKey::Get(description::TypeInfo<GuiComboBoxListControl>::content.typeName),
 					new GuiComboBoxInstanceLoader
 					);
 
@@ -1003,7 +1003,7 @@ Initialization
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);
 				
 				manager->CreateVirtualType(
-					GlobalStringKey::Get(description::TypeInfo<tree::MemoryNodeProvider>::TypeName),
+					GlobalStringKey::Get(description::TypeInfo<tree::MemoryNodeProvider>::content.typeName),
 					new GuiTreeNodeInstanceLoader
 					);
 			}

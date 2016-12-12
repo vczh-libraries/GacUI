@@ -1,5 +1,6 @@
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
+#define GAC_HEADER_USE_NAMESPACE
 #include "..\..\..\Source\GacUI.h"
 #include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
 #include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h"

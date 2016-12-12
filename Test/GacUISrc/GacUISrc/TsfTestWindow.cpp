@@ -1,3 +1,4 @@
+#define GAC_HEADER_USE_NAMESPACE
 #include "..\..\..\Source\GacUI.h"
 #include "..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h"
 #include "..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h"

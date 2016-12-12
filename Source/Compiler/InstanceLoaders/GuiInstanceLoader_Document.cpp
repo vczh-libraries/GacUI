@@ -22,7 +22,7 @@ GuiDocumentItemInstanceLoader
 			public:
 				GuiDocumentItemInstanceLoader()
 				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiDocumentItem>::TypeName);
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiDocumentItem>::content.typeName);
 					_Name = GlobalStringKey::Get(L"Name");
 				}
 
@@ -163,7 +163,7 @@ GuiDocumentViewerInstanceLoader
 			{
 			public:
 				GuiDocumentViewerInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiDocumentViewer>::TypeName, L"CreateDocumentViewerStyle")
+					:BASE_TYPE(description::TypeInfo<GuiDocumentViewer>::content.typeName, L"CreateDocumentViewerStyle")
 				{
 				}
 
@@ -228,7 +228,7 @@ GuiDocumentLabelInstanceLoader
 			{
 			public:
 				GuiDocumentLabelInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiDocumentLabel>::TypeName, L"CreateDocumentLabelStyle")
+					:BASE_TYPE(description::TypeInfo<GuiDocumentLabel>::content.typeName, L"CreateDocumentLabelStyle")
 				{
 				}
 
