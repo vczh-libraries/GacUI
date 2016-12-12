@@ -11,9 +11,6 @@ Interfaces:
 
 #include "GuiReflectionElements.h"
 #include "GuiReflectionCompositions.h"
-#include "../../Controls/GuiApplication.h"
-#include "../../Controls/TextEditorPackage/LanguageService/GuiLanguageColorizer.h"
-#include "../../Controls/TextEditorPackage/LanguageService/GuiLanguageAutoComplete.h"
 
 namespace vl
 {

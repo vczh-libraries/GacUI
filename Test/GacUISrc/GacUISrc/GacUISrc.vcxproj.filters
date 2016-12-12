@@ -477,6 +477,9 @@
     <ClCompile Include="..\..\..\Source\Resources\GuiResourceManager.cpp">
       <Filter>GacUI\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\GacUIReflectionHelper.cpp">
+      <Filter>GacUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -811,6 +814,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Resources\GuiResourceManager.h">
       <Filter>GacUI\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\GacUIReflectionHelper.h">
+      <Filter>GacUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

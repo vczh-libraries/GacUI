@@ -125,6 +125,11 @@ GuiEventInfoImpl
 				~GuiEventInfoImpl()
 				{
 				}
+
+				ICpp* GetCpp()override
+				{
+					throw 0;
+				}
 			};
 
 			template<typename T>

@@ -20,116 +20,20 @@ namespace vl
 
 			GUIREFLECTIONBASIC_TYPELIST(IMPL_VL_TYPE_INFO)
 
-			GuiGraphicsAnimationManager* GuiControlHost_GetAnimationManager(GuiControlHost* thisObject)
-			{
-				return thisObject->GetGraphicsHost()->GetAnimationManager();
-			}
-
-/***********************************************************************
-Serialization (Color)
-***********************************************************************/
-
-			Color TypedValueSerializerProvider<Color>::GetDefaultValue()
-			{
-				return Color();
-			}
-
-			bool TypedValueSerializerProvider<Color>::Serialize(const Color& input, WString& output)
-			{
-				output=input.ToString();
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<Color>::Deserialize(const WString& input, Color& output)
-			{
-				output=Color::Parse(input);
-				return true;
-			}
-
-/***********************************************************************
-Serialization (DocumentFontSize)
-***********************************************************************/
-
-			DocumentFontSize TypedValueSerializerProvider<DocumentFontSize>::GetDefaultValue()
-			{
-				return DocumentFontSize();
-			}
-
-			bool TypedValueSerializerProvider<DocumentFontSize>::Serialize(const DocumentFontSize& input, WString& output)
-			{
-				output=input.ToString();
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<DocumentFontSize>::Deserialize(const WString& input, DocumentFontSize& output)
-			{
-				output=DocumentFontSize::Parse(input);
-				return true;
-			}
-
-/***********************************************************************
-Serialization (GlobalStringKey)
-***********************************************************************/
-
-			GlobalStringKey TypedValueSerializerProvider<GlobalStringKey>::GetDefaultValue()
-			{
-				return GlobalStringKey();
-			}
-
-			bool TypedValueSerializerProvider<GlobalStringKey>::Serialize(const GlobalStringKey& input, WString& output)
-			{
-				output=input.ToString();
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<GlobalStringKey>::Deserialize(const WString& input, GlobalStringKey& output)
-			{
-				output = GlobalStringKey::Get(input);
-				return true;
-			}
-
-/***********************************************************************
-External Functions
-***********************************************************************/
-
-			Ptr<INativeImage> INativeImage_Constructor(const WString& path)
-			{
-				return GetCurrentController()->ImageService()->CreateImageFromFile(path);
-			}
-
-			INativeCursor* INativeCursor_Constructor1()
-			{
-				return GetCurrentController()->ResourceService()->GetDefaultSystemCursor();
-			}
-
-			INativeCursor* INativeCursor_Constructor2(INativeCursor::SystemCursorType type)
-			{
-				return GetCurrentController()->ResourceService()->GetSystemCursor(type);
-			}
-
-			Ptr<DocumentModel> DocumentModel_Constructor(const WString& path)
-			{
-				FileStream fileStream(path, FileStream::ReadOnly);
-				if(!fileStream.IsAvailable()) return 0;
-
-				BomDecoder decoder;
-				DecoderStream decoderStream(fileStream, decoder);
-				StreamReader reader(decoderStream);
-				WString xmlText=reader.ReadToEnd();
-
-				Ptr<ParsingTable> table=XmlLoadTable();
-				Ptr<XmlDocument> xml=XmlParseDocument(xmlText, table);
-				if(!xml) return 0;
-
-				List<WString> errors;
-				return DocumentModel::LoadFromXml(xml, GetFolderPath(path), errors);
-			}
-
 /***********************************************************************
 Type Declaration
 ***********************************************************************/
 
 #define _ ,
+			BEGIN_STRUCT_MEMBER(Color)
+				valueType = new SerializableValueType<Color>();
+				serializableType = new SerializableType<Color>();
+				STRUCT_MEMBER(r)
+				STRUCT_MEMBER(g)
+				STRUCT_MEMBER(b)
+				STRUCT_MEMBER(a)
+				STRUCT_MEMBER(value)
+			END_STRUCT_MEMBER(Color)
 
 			BEGIN_ENUM_ITEM(Alignment)
 				ENUM_CLASS_ITEM(Left)
@@ -195,6 +99,11 @@ Type Declaration
 				STRUCT_MEMBER(verticalAntialias)
 			END_STRUCT_MEMBER(FontProperties)
 
+			BEGIN_STRUCT_MEMBER_FLAG(GlobalStringKey, TypeDescriptorFlags::Primitive)
+				valueType = new SerializableValueType<GlobalStringKey>();
+				serializableType = new SerializableType<GlobalStringKey>();
+			END_STRUCT_MEMBER(GlobalStringKey)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeImageFrame)
 				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetSize, NO_PARAMETER)
@@ -204,7 +113,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetFormat, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFrameCount, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFrame, {L"index"})
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<INativeImage>(const WString&), {L"filePath"}, &INativeImage_Constructor)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<INativeImage>(const WString&), {L"filePath"}, vl::reflection::description::INativeImage_Constructor)
 			END_INTERFACE_MEMBER(INativeImage)
 
 			BEGIN_ENUM_ITEM(INativeImage::FormatType)
@@ -222,8 +131,8 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeCursor)
 				CLASS_MEMBER_METHOD(IsSystemCursor, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetSystemCursorType, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(), NO_PARAMETER, &INativeCursor_Constructor1)
-				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(INativeCursor::SystemCursorType), NO_PARAMETER, &INativeCursor_Constructor2)
+				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(), NO_PARAMETER, vl::reflection::description::INativeCursor_Constructor1)
+				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(INativeCursor::SystemCursorType), NO_PARAMETER, vl::reflection::description::INativeCursor_Constructor2)
 			END_INTERFACE_MEMBER(INativeCursor)
 
 			BEGIN_ENUM_ITEM(INativeCursor::SystemCursorType)
@@ -435,7 +344,7 @@ Type Declaration
 			END_ENUM_ITEM(INativeDialogService::FileDialogOptions)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeController)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), &GetCurrentController)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::reflection::description::GetCurrentController)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(OSVersion)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ExecutablePath)
@@ -465,6 +374,13 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Text)
 			END_CLASS_MEMBER(GuiTextData)
+				
+			BEGIN_STRUCT_MEMBER(DocumentFontSize)
+				valueType = new SerializableValueType<DocumentFontSize>();
+				serializableType = new SerializableType<DocumentFontSize>();
+				STRUCT_MEMBER(size)
+				STRUCT_MEMBER(relative)
+			END_STRUCT_MEMBER(DocumentFontSize)
 
 			BEGIN_CLASS_MEMBER(DocumentStyleProperties)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DocumentStyleProperties>(), NO_PARAMETER)
@@ -567,7 +483,7 @@ Type Declaration
 			END_CLASS_MEMBER(DocumentStyle)
 
 			BEGIN_CLASS_MEMBER(DocumentModel)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<DocumentModel>(const WString&), {L"filePath"}, &DocumentModel_Constructor)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<DocumentModel>(const WString&), {L"filePath"}, vl::reflection::description::DocumentModel_Constructor)
 				
 				CLASS_MEMBER_FIELD(paragraphs)
 				CLASS_MEMBER_FIELD(styles)
@@ -619,7 +535,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiResource)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiResource>(), NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiResource>(const WString&, List<WString>&), {L"filePath" _ L"errors"}, &GuiResource::LoadFromXml);
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiResource>(const WString&, List<WString>&), {L"filePath" _ L"errors"}, vl::presentation::GuiResource::LoadFromXml);
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(WorkingDirectory)
 
@@ -640,8 +556,8 @@ Type Declaration
 				ENUM_CLASS_ITEM(Application)
 			END_ENUM_ITEM(GuiResourceUsage)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiResourceManager)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetResourceManager, NO_PARAMETER, IGuiResourceManager*(*)(), &GetResourceManager)
+				BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiResourceManager)
+					CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetResourceManager, NO_PARAMETER, IGuiResourceManager*(*)(), vl::presentation::GetResourceManager)
 				CLASS_MEMBER_METHOD(SetResource, { L"name" _ L"resource" _ L"usage" })
 				CLASS_MEMBER_METHOD(GetResource, { L"name" })
 				CLASS_MEMBER_METHOD(GetResourceFromClassName, { L"name" })

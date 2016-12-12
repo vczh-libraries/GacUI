@@ -55,6 +55,7 @@ Instruction
 				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
 				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
 				CreateRange,			// I1248/U1248			: Value-begin, Value-end -> <enumerable>							;
+				CreateStruct,			// flag, typeDescriptor	: () -> Value														;
 				ReverseEnumerable,		//						: Value -> Value													;
 				DeleteRawPtr,			//						: Value -> ()														;
 				ConvertToType,			// flag, typeDescriptor	: Value -> Value													;
@@ -67,6 +68,7 @@ Instruction
 				InvokeWithContext,		// function, count		: Value-1, ..., Value-n -> Value									;
 				GetProperty,			// IPropertyInfo*		: Value-this -> Value												;
 				SetProperty,			// IPropertyInfo*		: Value, Value-this -> ()											;
+				UpdateProperty,			// IPropertyInfo*		: Value-this, Value -> Value-this									;
 				InvokeProxy,			// count				: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeMethod,			// IMethodInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
 				InvokeEvent,			// IEventInfo*, count	: Value-1, ..., Value-n, Value-this -> Value						;
@@ -78,7 +80,6 @@ Instruction
 				RaiseException,			// 						: Value -> ()														; (trap)
 				TestElementInSet,		//						: Value-element, Value-set -> bool									;
 				CompareLiteral,			// I48/U48/F48/S		: Value, Value -> <int>												;
-				CompareStruct,			// 						: Value, Value -> <bool>											;
 				CompareReference,		// 						: Value, Value -> <bool>											;
 				CompareValue,			// 						: Value, Value -> <bool>											;
 				OpNot,					// B/I1248/U1248		: Value -> Value													;
@@ -127,6 +128,7 @@ Instruction
 			APPLY(CreateClosure)\
 			APPLY_METHOD_COUNT(CreateInterface)\
 			APPLY_TYPE(CreateRange)\
+			APPLY_FLAG_TYPEDESCRIPTOR(CreateStruct)\
 			APPLY(ReverseEnumerable)\
 			APPLY(DeleteRawPtr)\
 			APPLY_FLAG_TYPEDESCRIPTOR(ConvertToType)\
@@ -139,6 +141,7 @@ Instruction
 			APPLY_FUNCTION_COUNT(InvokeWithContext)\
 			APPLY_PROPERTY(GetProperty)\
 			APPLY_PROPERTY(SetProperty)\
+			APPLY_PROPERTY(UpdateProperty)\
 			APPLY_COUNT(InvokeProxy)\
 			APPLY_METHOD_COUNT(InvokeMethod)\
 			APPLY_EVENT_COUNT(InvokeEvent)\
@@ -150,7 +153,6 @@ Instruction
 			APPLY(RaiseException)\
 			APPLY(TestElementInSet)\
 			APPLY_TYPE(CompareLiteral)\
-			APPLY(CompareStruct)\
 			APPLY(CompareReference)\
 			APPLY(CompareValue)\
 			APPLY_TYPE(OpNot)\
@@ -368,6 +370,7 @@ Method
 				WfMethodBase(bool isStatic);
 				~WfMethodBase();
 
+				ICpp*									GetCpp()override;
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetReturn(Ptr<ITypeInfo> type);
 			};
@@ -470,6 +473,7 @@ Event
 				WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
 				~WfEvent();
 
+				ICpp*									GetCpp()override;
 				void									SetHandlerType(Ptr<ITypeInfo> typeInfo);
 			};
 
@@ -500,6 +504,7 @@ Field
 				WfField(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
 				~WfField();
 
+				ICpp*									GetCpp()override;
 				void									SetReturn(Ptr<ITypeInfo> typeInfo);
 			};
 
@@ -533,6 +538,14 @@ Custom Type
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 				typedef reflection::description::IMethodGroupInfo			IMethodGroupInfo;
 				typedef collections::List<ITypeDescriptor*>					TypeDescriptorList;
+
+				struct WfTypeInfoContent : reflection::description::TypeInfoContent
+				{
+					WString								workflowTypeName;
+
+					WfTypeInfoContent(const WString& _workflowTypeName);
+				};
+
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
 				bool									baseTypeExpanded = false;

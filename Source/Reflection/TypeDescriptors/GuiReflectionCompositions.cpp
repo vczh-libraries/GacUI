@@ -7,10 +7,6 @@ namespace vl
 		namespace description
 		{
 			using namespace collections;
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace parsing::xml;
-			using namespace stream;
 			using namespace presentation;
 			using namespace presentation::compositions;
 
@@ -19,41 +15,13 @@ namespace vl
 			GUIREFLECTIONCOMPOSITION_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
-External Functions
-***********************************************************************/
-
-			void GuiTableComposition_SetRows(GuiTableComposition* thisObject, vint value)
-			{
-				vint columns=thisObject->GetColumns();
-				if(columns<=0) columns=1;
-				thisObject->SetRowsAndColumns(value, columns);
-			}
-
-			void GuiTableComposition_SetColumns(GuiTableComposition* thisObject, vint value)
-			{
-				vint row=thisObject->GetRows();
-				if(row<=0) row=1;
-				thisObject->SetRowsAndColumns(row, value);
-			}
-
-			void IGuiAltActionHost_CollectAltActions(IGuiAltActionHost* host, List<IGuiAltAction*>& actions)
-			{
-				Group<WString, IGuiAltAction*> group;
-				host->CollectAltActions(group);
-				for (vint i = 0; i < group.Count(); i++)
-				{
-					CopyFrom(actions, group.GetByIndex(i), true);
-				}
-			}
-
-/***********************************************************************
 Type Declaration
 ***********************************************************************/
 
 #define _ ,
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
-	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), []()->WString{return INTERFACE::Identifier;})
+	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<INTERFACE>)
 
 			BEGIN_ENUM_ITEM(KeyDirection)
 				ENUM_CLASS_ITEM(Up)
@@ -146,10 +114,10 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(BorderVisible)
 
 				CLASS_MEMBER_METHOD(GetRows, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALMETHOD(SetRows, {L"value"}, void(GuiTableComposition::*)(vint), &GuiTableComposition_SetRows)
+				CLASS_MEMBER_EXTERNALMETHOD(SetRows, {L"value"}, void(GuiTableComposition::*)(vint), vl::reflection::description::GuiTableComposition_SetRows)
 				CLASS_MEMBER_PROPERTY(Rows, GetRows, SetRows)
 				CLASS_MEMBER_METHOD(GetColumns, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALMETHOD(SetColumns, {L"value"}, void(GuiTableComposition::*)(vint), &GuiTableComposition_SetColumns)
+				CLASS_MEMBER_EXTERNALMETHOD(SetColumns, {L"value"}, void(GuiTableComposition::*)(vint), vl::reflection::description::GuiTableComposition_SetColumns)
 				CLASS_MEMBER_PROPERTY(Columns, GetColumns, SetColumns)
 				CLASS_MEMBER_METHOD(SetRowsAndColumns, {L"rows" _ L"columns"})
 
@@ -337,7 +305,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(OnActivatedAltHost, { L"previousHost" })
 				CLASS_MEMBER_METHOD(OnDeactivatedAltHost, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), &IGuiAltActionHost_CollectAltActions)
+				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), vl::reflection::description::IGuiAltActionHost_CollectAltActions)
 			END_INTERFACE_MEMBER(IGuiAltActionHost)
 
 #undef INTERFACE_EXTERNALCTOR

@@ -25,13 +25,9 @@ Global Objects:
 #ifndef VCZH_PRESENTATION_GACUI
 #define VCZH_PRESENTATION_GACUI
 
-#include "Controls/GuiApplication.h"
-#include "Controls/Styles/GuiWin7Styles.h"
-#include "Controls/Styles/GuiWin8Styles.h"
-#include "Controls/Templates/GuiControlTemplateStyles.h"
-#include "Resources/GuiResourceManager.h"
+#include "GacUIReflectionHelper.h"
 
-#if !defined(__APPLE__) && !defined(__APPLE_CC__) && !defined(GAC_HEADER_USE_NAMESPACE)
+#ifdef GAC_HEADER_USE_NAMESPACE
 
 using namespace vl;
 using namespace vl::presentation;

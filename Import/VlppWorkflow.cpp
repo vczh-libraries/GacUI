@@ -868,25 +868,35 @@ Serizliation (ITypeInfo)
 				{
 					vint decorator = 0;
 					reader << decorator;
-					auto typeInfoImpl = MakePtr<TypeInfoImpl>(static_cast<ITypeInfo::Decorator>(decorator));
-					typeInfo = typeInfoImpl;
-					
-					switch (typeInfoImpl->GetDecorator())
+					switch (static_cast<ITypeInfo::Decorator>(decorator))
 					{
 					case ITypeInfo::RawPtr:
+						{
+							Ptr<ITypeInfo> elementType;
+							IOType(reader, elementType);
+							typeInfo = MakePtr<RawPtrTypeInfo>(elementType);
+						}
+						break;
 					case ITypeInfo::SharedPtr:
+						{
+							Ptr<ITypeInfo> elementType;
+							IOType(reader, elementType);
+							typeInfo = MakePtr<SharedPtrTypeInfo>(elementType);
+						}
+						break;
 					case ITypeInfo::Nullable:
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							typeInfoImpl->SetElementType(elementType);
+							typeInfo = MakePtr<NullableTypeInfo>(elementType);
 						}
 						break;
 					case ITypeInfo::Generic:
 						{
 							Ptr<ITypeInfo> elementType;
 							IOType(reader, elementType);
-							typeInfoImpl->SetElementType(elementType);
+							auto genericType = MakePtr<GenericTypeInfo>(elementType);
+							typeInfo = genericType;
 
 							vint count = 0;
 							reader << count;
@@ -894,15 +904,18 @@ Serizliation (ITypeInfo)
 							{
 								Ptr<ITypeInfo> argumentType;
 								IOType(reader, argumentType);
-								typeInfoImpl->AddGenericArgument(argumentType);
+								genericType->AddGenericArgument(argumentType);
 							}
 						}
 						break;
 					case ITypeInfo::TypeDescriptor:
 						{
+							vint hint = 0;
+							reader << hint;
+
 							vint index;
 							reader << index;
-							typeInfoImpl->SetTypeDescriptor(reader.context->tdIndex[index]);
+							typeInfo = MakePtr<TypeDescriptorTypeInfo>(reader.context->tdIndex[index], static_cast<TypeInfoHint>(hint));
 						}
 						break;
 					}
@@ -933,6 +946,9 @@ Serizliation (ITypeInfo)
 						break;
 					case ITypeInfo::TypeDescriptor:
 						{
+							vint hint = static_cast<vint>(typeInfo->GetHint());
+							writer << hint;
+
 							vint index = writer.context->tdIndex[typeInfo->GetTypeDescriptor()];
 							writer << index;
 						}
@@ -1181,9 +1197,42 @@ Serizliation (Metadata)
 						return;
 					}
 
-					WString text;
-					reader << text;
-					type->GetValueSerializer()->Parse(text, value);
+					if (auto st = type->GetSerializableType())
+					{
+						WString text;
+						reader << text;
+						st->Deserialize(text, value);
+					}
+					else
+					{
+						switch (type->GetTypeDescriptorFlags())
+						{
+						case TypeDescriptorFlags::FlagEnum:
+						case TypeDescriptorFlags::NormalEnum:
+							{
+								vint64_t intValue;
+								reader << intValue;
+								value = type->GetEnumType()->ToEnum((vuint64_t)intValue);
+							}
+							break;
+						case TypeDescriptorFlags::Struct:
+							{
+								value = type->GetValueType()->CreateDefault();
+								vint count = 0;
+								reader << count;
+
+								for (vint i = 0; i < count; i++)
+								{
+									vint propName = 0;
+									Value propValue;
+									reader << propName << propValue;
+									reader.context->piIndex[propName]->SetValue(value, propValue);
+								}
+							}
+							break;
+						default:;
+						}
+					}
 				}
 					
 				static void IO(WfWriter& writer, Value& value)
@@ -1210,8 +1259,40 @@ Serizliation (Metadata)
 
 						if (typeFlag == 2)
 						{
-							auto text = value.GetText();
-							writer << text;
+							if (auto st = type->GetSerializableType())
+							{
+								WString text;
+								st->Serialize(value, text);
+								writer << text;
+							}
+							else
+							{
+								switch (type->GetTypeDescriptorFlags())
+								{
+								case TypeDescriptorFlags::FlagEnum:
+								case TypeDescriptorFlags::NormalEnum:
+									{
+										vint64_t intValue = (vint64_t)type->GetEnumType()->FromEnum(value);
+										writer << intValue;
+									}
+									break;
+								case TypeDescriptorFlags::Struct:
+									{
+										vint count = type->GetPropertyCount();
+										writer << count;
+
+										for (vint i = 0; i < count; i++)
+										{
+											auto prop = type->GetProperty(i);
+											vint propName = writer.context->piIndex[prop];
+											Value propValue = prop->GetValue(value);
+											writer << propName << propValue;
+										}
+									}
+									break;
+								default:;
+								}
+							}
 						}
 					}
 				}
@@ -2920,7 +3001,7 @@ WfRuntimeThreadContext (Operators)
 				Value operand;\
 				CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");\
 				T value = OPERATOR UnboxValue<T>(operand);\
-				context.PushValue(BoxValue(value));\
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");\
 				return WfRuntimeExecutionAction::ExecuteInstruction;\
 			}\
 
@@ -2932,7 +3013,7 @@ WfRuntimeThreadContext (Operators)
 				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");\
 				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");\
 				T value = UnboxValue<T>(first) OPERATOR UnboxValue<T>(second);\
-				context.PushValue(BoxValue(value));\
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");\
 				return WfRuntimeExecutionAction::ExecuteInstruction;\
 			}\
 
@@ -2965,7 +3046,7 @@ WfRuntimeThreadContext (Operators)
 				T firstValue = UnboxValue<T>(first);
 				T secondValue = UnboxValue<T>(second);
 				T value = (T)exp(secondValue * log(firstValue));
-				context.PushValue(BoxValue(value));
+				CONTEXT_ACTION(PushValue(BoxValue(value)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
 			
@@ -2982,17 +3063,18 @@ WfRuntimeThreadContext (Operators)
 				{
 					if (secondNull)
 					{
-						context.PushValue(BoxValue((vint)0));
+						CONTEXT_ACTION(PushValue(BoxValue((vint)0)), L"failed to push a value to the stack.");
 					}
 					else
 					{
-						context.PushValue(BoxValue((vint)-1));
+						CONTEXT_ACTION(PushValue(BoxValue((vint)-1)), L"failed to push a value to the stack.");
 					}
 				}
 				else
 				{
 					if (secondNull)
-					{context.PushValue(BoxValue((vint)1));
+					{
+						CONTEXT_ACTION(PushValue(BoxValue((vint)1)), L"failed to push a value to the stack.");
 					}
 					else
 					{
@@ -3000,15 +3082,15 @@ WfRuntimeThreadContext (Operators)
 						T secondValue = UnboxValue<T>(second);
 						if (firstValue < secondValue)
 						{
-							context.PushValue(BoxValue((vint)-1));
+							CONTEXT_ACTION(PushValue(BoxValue((vint)-1)), L"failed to push a value to the stack.");
 						}
 						else if (firstValue > secondValue)
 						{
-							context.PushValue(BoxValue((vint)1));
+							CONTEXT_ACTION(PushValue(BoxValue((vint)1)), L"failed to push a value to the stack.");
 						}
 						else
 						{
-							context.PushValue(BoxValue((vint)0));
+							CONTEXT_ACTION(PushValue(BoxValue((vint)0)), L"failed to push a value to the stack.");
 						}
 					}
 				}
@@ -3026,7 +3108,7 @@ WfRuntimeThreadContext (TypeConversion)
 				case Value::Null:
 					return false;
 				case Value::RawPtr:
-					if (result.GetValueType() == Value::Text)
+					if (result.GetValueType() == Value::BoxedValue)
 					{
 						return false;
 					}
@@ -3043,7 +3125,7 @@ WfRuntimeThreadContext (TypeConversion)
 					}
 					break;
 				case Value::SharedPtr:
-					if (result.GetValueType() == Value::Text)
+					if (result.GetValueType() == Value::BoxedValue)
 					{
 						return false;
 					}
@@ -3059,31 +3141,65 @@ WfRuntimeThreadContext (TypeConversion)
 						}
 					}
 					break;
-				case Value::Text:
-					if (result.GetValueType() != Value::Text)
+				case Value::BoxedValue:
+					if (result.GetValueType() != Value::BoxedValue)
 					{
 						return false;
 					}
-					else if (ins.typeDescriptorParameter == GetTypeDescriptor<void>())
+					if (result.GetTypeDescriptor() == ins.typeDescriptorParameter)
 					{
-						if (result.GetText() != L"")
+						converted = result;
+						return true;
+					}
+
+					if (auto stFrom = result.GetTypeDescriptor()->GetSerializableType())
+					{
+						if (auto stTo = ins.typeDescriptorParameter->GetSerializableType())
 						{
-							return false;
+							WString text;
+							return stFrom->Serialize(result, text) && stTo->Deserialize(text, converted);
+						}
+						else
+						{
+							switch (ins.typeDescriptorParameter->GetTypeDescriptorFlags())
+							{
+							case TypeDescriptorFlags::FlagEnum:
+							case TypeDescriptorFlags::NormalEnum:
+								if (result.GetTypeDescriptor() != GetTypeDescriptor<vuint64_t>())
+								{
+									return false;
+								}
+								else
+								{
+									auto intValue = result.GetBoxedValue().Cast<IValueType::TypedBox<vuint64_t>>()->value;
+									converted = ins.typeDescriptorParameter->GetEnumType()->ToEnum(intValue);
+								}
+								break;
+							default:
+								return false;
+							}
 						}
 					}
 					else
 					{
-						auto serializer = ins.typeDescriptorParameter->GetValueSerializer();
-						if (!serializer)
+						switch (result.GetTypeDescriptor()->GetTypeDescriptorFlags())
 						{
-							return false;
-						}
-						if (!serializer->Parse(result.GetText(), converted))
-						{
+						case TypeDescriptorFlags::FlagEnum:
+						case TypeDescriptorFlags::NormalEnum:
+							if (ins.typeDescriptorParameter != GetTypeDescriptor<vuint64_t>())
+							{
+								return false;
+							}
+							else
+							{
+								auto intValue = result.GetTypeDescriptor()->GetEnumType()->FromEnum(result);
+								converted = BoxValue<vuint64_t>(intValue);
+							}
+							break;
+						default:
 							return false;
 						}
 					}
-					break;
 				}
 
 				return true;
@@ -3102,7 +3218,7 @@ WfRuntimeThreadContext (Range)
 				T firstValue = UnboxValue<T>(first);
 				T secondValue = UnboxValue<T>(second);
 				auto enumerable = MakePtr<WfRuntimeRange<T>>(firstValue, secondValue);
-				context.PushValue(Value::From(enumerable));
+				CONTEXT_ACTION(PushValue(Value::From(enumerable)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
 			
@@ -3192,30 +3308,30 @@ WfRuntimeThreadContext
 				switch (ins.code)
 				{
 				case WfInsCode::LoadValue:
-					PushValue(ins.valueParameter);
+					CONTEXT_ACTION(PushValue(ins.valueParameter), L"failed to push a value to the stack.");
 					return WfRuntimeExecutionAction::ExecuteInstruction;
 				case WfInsCode::LoadFunction:
 					{
-						PushValue(BoxValue(ins.indexParameter));
+						CONTEXT_ACTION(PushValue(BoxValue(ins.indexParameter)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadException:
 					{
-						PushValue(BoxValue(exceptionInfo));
+						CONTEXT_ACTION(PushValue(BoxValue(exceptionInfo)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadLocalVar:
 					{
 						Value operand;
 						CONTEXT_ACTION(LoadLocalVariable(ins.indexParameter, operand), L"illegal local variable index.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadCapturedVar:
 					{
 						Value operand;
 						CONTEXT_ACTION(LoadCapturedVariable(ins.indexParameter, operand), L"illegal captured variable index.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadGlobalVar:
@@ -3223,12 +3339,12 @@ WfRuntimeThreadContext
 						CALL_DEBUGGER(callback->BreakRead(globalContext->assembly.Obj(), ins.indexParameter));
 						Value operand;
 						CONTEXT_ACTION(LoadGlobalVariable(ins.indexParameter, operand), L"illegal global variable index.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadMethodInfo:
 					{
-						PushValue(Value::From(ins.methodParameter));
+						CONTEXT_ACTION(PushValue(Value::From(ins.methodParameter)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadMethodClosure:
@@ -3236,13 +3352,13 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						auto closure = ins.methodParameter->CreateFunctionProxy(operand);
-						PushValue(closure);
+						CONTEXT_ACTION(PushValue(closure), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::LoadClosureContext:
 					{
 						auto capturedVariables = GetCurrentStackFrame().capturedVariables;
-						PushValue(Value::From(capturedVariables));
+						CONTEXT_ACTION(PushValue(Value::From(capturedVariables)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::StoreLocalVar:
@@ -3272,7 +3388,7 @@ WfRuntimeThreadContext
 						vint index = stack.Count() - 1 - ins.countParameter;
 						Value operand;
 						CONTEXT_ACTION(LoadStackValue(index, operand), L"failed to duplicate a value from the stack.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::Pop:
@@ -3286,7 +3402,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop the function result.");
 						CONTEXT_ACTION(PopStackFrame(), L"failed to pop the stack frame.");
-						PushValue(operand);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						if (stackFrames.Count() == 0)
 						{
 							status = WfRuntimeExecutionStatus::Finished;
@@ -3302,7 +3418,7 @@ WfRuntimeThreadContext
 							CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 							list->Add(operand);
 						}
-						PushValue(Value::From(list));
+						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateMap:
@@ -3315,7 +3431,7 @@ WfRuntimeThreadContext
 							CONTEXT_ACTION(PopValue(key), L"failed to pop a value from the stack.");
 							map->Set(key, value);
 						}
-						PushValue(Value::From(map));
+						CONTEXT_ACTION(PushValue(Value::From(map)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateClosureContext:
@@ -3333,7 +3449,7 @@ WfRuntimeThreadContext
 							}
 						}
 
-						PushValue(Value::From(capturedVariables));
+						CONTEXT_ACTION(PushValue(Value::From(capturedVariables)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateClosure:
@@ -3345,7 +3461,7 @@ WfRuntimeThreadContext
 						auto functionIndex = UnboxValue<vint>(function);
 
 						auto lambda = MakePtr<WfRuntimeLambda>(globalContext, capturedVariables, functionIndex);
-						PushValue(Value::From(lambda));
+						CONTEXT_ACTION(PushValue(Value::From(lambda)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateInterface:
@@ -3371,7 +3487,7 @@ WfRuntimeThreadContext
 						auto obj = ins.methodParameter->Invoke(Value(), arguments);
 						capturedVariables->variables[capturedVariables->variables.Count() - 1] = Value::From(obj.GetRawPtr());
 
-						PushValue(obj);
+						CONTEXT_ACTION(PushValue(obj), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CreateRange:
@@ -3385,12 +3501,22 @@ WfRuntimeThreadContext
 						EXECUTE(OpCreateRange, U4)
 						EXECUTE(OpCreateRange, U8)
 					END_TYPE
+				case WfInsCode::CreateStruct:
+					{
+						if (ins.typeDescriptorParameter->GetTypeDescriptorFlags() != TypeDescriptorFlags::Struct)
+						{
+							INTERNAL_ERROR(L"Type \"" + ins.typeDescriptorParameter->GetTypeName() + L"\" is not a struct.");
+						}
+						Value result = ins.typeDescriptorParameter->GetValueType()->CreateDefault();
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::ReverseEnumerable:
 					{
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						Value reversedEnumerable = OPERATOR_OpReverseEnumerable(operand);
-						PushValue(reversedEnumerable);
+						CONTEXT_ACTION(PushValue(reversedEnumerable), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::DeleteRawPtr:
@@ -3406,11 +3532,28 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(result), L"failed to pop a value from the stack.");
 						if (OPERATOR_OpConvertToType(result, converted, ins))
 						{
-							PushValue(converted);
+							CONTEXT_ACTION(PushValue(converted), L"failed to push a value to the stack.");
 						}
 						else
 						{
-							WString from = result.IsNull() ? L"<null>" : L"<" + result.GetText() + L"> of " + result.GetTypeDescriptor()->GetTypeName();
+							WString from;
+							if (result.IsNull())
+							{
+								from = L"<null>";
+							}
+							else
+							{
+								if (auto st = result.GetTypeDescriptor()->GetSerializableType())
+								{
+									WString text;
+									st->Serialize(result, text);
+									from = L"<" + text + L"> of " + result.GetTypeDescriptor()->GetTypeName();
+								}
+								else
+								{
+									from = result.GetTypeDescriptor()->GetTypeName();
+								}
+							}
 							WString to = ins.typeDescriptorParameter->GetTypeName();
 							RaiseException(L"Failed to convert from \"" + from + L"\" to \"" + to + L"\".", false);
 						}
@@ -3422,11 +3565,11 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(result), L"failed to pop a value from the stack.");
 						if (OPERATOR_OpConvertToType(result, converted, ins))
 						{
-							PushValue(converted);
+							CONTEXT_ACTION(PushValue(converted), L"failed to push a value to the stack.");
 						}
 						else
 						{
-							PushValue(Value());
+							CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
 						}
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
@@ -3436,11 +3579,11 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						if (operand.GetTypeDescriptor() && operand.GetValueType() == ins.flagParameter && operand.GetTypeDescriptor()->CanConvertTo(ins.typeDescriptorParameter))
 						{
-							PushValue(BoxValue(true));
+							CONTEXT_ACTION(PushValue(BoxValue(true)), L"failed to push a value to the stack.");
 						}
 						else
 						{
-							PushValue(BoxValue(false));
+							CONTEXT_ACTION(PushValue(BoxValue(false)), L"failed to push a value to the stack.");
 						}
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
@@ -3448,7 +3591,7 @@ WfRuntimeThreadContext
 					{
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						PushValue(Value::From(operand.GetTypeDescriptor()));
+						CONTEXT_ACTION(PushValue(Value::From(operand.GetTypeDescriptor())), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::Jump:
@@ -3482,7 +3625,7 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						CALL_DEBUGGER(callback->BreakGet(operand.GetRawPtr(), ins.propertyParameter));
 						Value result = ins.propertyParameter->GetValue(operand);
-						PushValue(result);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::SetProperty:
@@ -3492,6 +3635,16 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
 						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
 						ins.propertyParameter->SetValue(operand, value);
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::UpdateProperty:
+					{
+						Value operand, value;
+						CONTEXT_ACTION(PopValue(value), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakSet(operand.GetRawPtr(), ins.propertyParameter));
+						ins.propertyParameter->SetValue(operand, value);
+						CONTEXT_ACTION(PushValue(operand), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeProxy:
@@ -3524,7 +3677,7 @@ WfRuntimeThreadContext
 
 						Ptr<IValueList> list = new ValueListWrapper<List<Value>*>(&arguments);
 						Value result = proxy->Invoke(list);
-						PushValue(result);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeMethod:
@@ -3564,7 +3717,7 @@ WfRuntimeThreadContext
 						}
 
 						Value result = ins.methodParameter->Invoke(thisValue, arguments);
-						PushValue(result);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeEvent:
@@ -3582,7 +3735,7 @@ WfRuntimeThreadContext
 						}
 
 						ins.eventParameter->Invoke(thisValue, arguments);
-						PushValue(Value());
+						CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InvokeBaseCtor:
@@ -3627,7 +3780,7 @@ WfRuntimeThreadContext
 							Value baseValue = ins.methodParameter->Invoke(Value(), arguments);
 							instance->InstallBaseObject(ins.methodParameter->GetOwnerTypeDescriptor(), baseValue);
 						}
-						PushValue(Value());
+						CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::AttachEvent:
@@ -3638,7 +3791,7 @@ WfRuntimeThreadContext
 						CALL_DEBUGGER(callback->BreakAttach(thisValue.GetRawPtr(), ins.eventParameter));
 						auto proxy = UnboxValue<Ptr<IValueFunctionProxy>>(function);
 						auto handler = ins.eventParameter->Attach(thisValue, proxy);
-						PushValue(Value::From(handler));
+						CONTEXT_ACTION(PushValue(Value::From(handler)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::DetachEvent:
@@ -3648,7 +3801,7 @@ WfRuntimeThreadContext
 						auto handler = UnboxValue<Ptr<IEventHandler>>(operand);
 						CALL_DEBUGGER(callback->BreakDetach(handler->GetOwnerObject().GetRawPtr(), handler->GetOwnerEvent()));
 						auto result = handler->Detach();
-						PushValue(BoxValue(result));
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::InstallTry:
@@ -3668,9 +3821,11 @@ WfRuntimeThreadContext
 					{
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						if (operand.GetValueType() == Value::Text)
+						if (operand.GetValueType() == Value::BoxedValue)
 						{
-							RaiseException(operand.GetText(), false);
+							WString text;
+							operand.GetTypeDescriptor()->GetSerializableType()->Serialize(operand, text);
+							RaiseException(text, false);
 						}
 						else if (auto info = operand.GetSharedPtr().Cast<WfRuntimeExceptionInfo>())
 						{
@@ -3694,11 +3849,11 @@ WfRuntimeThreadContext
 						{
 							if (enumerator->GetCurrent() == element)
 							{
-								PushValue(BoxValue(true));
+								CONTEXT_ACTION(PushValue(BoxValue(true)), L"failed to push a value to the stack.");
 								return WfRuntimeExecutionAction::ExecuteInstruction;
 							}
 						}
-						PushValue(BoxValue(false));
+						CONTEXT_ACTION(PushValue(BoxValue(false)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CompareLiteral:
@@ -3716,41 +3871,13 @@ WfRuntimeThreadContext
 						EXECUTE(OpCompare, F8)
 						EXECUTE(OpCompare, String)
 					END_TYPE
-				case WfInsCode::CompareStruct:
-					{
-						Value first, second;
-						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
-						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						if (!first.IsNull() && !first.GetTypeDescriptor()->GetValueSerializer())
-						{
-							INTERNAL_ERROR(L"type" + first.GetTypeDescriptor()->GetTypeName() + L" is not a struct.");
-						}
-						if (!second.IsNull() && !second.GetTypeDescriptor()->GetValueSerializer())
-						{
-							INTERNAL_ERROR(L"type" + second.GetTypeDescriptor()->GetTypeName() + L" is not a struct.");
-						}
-
-						if (first.GetValueType() != second.GetValueType())
-						{
-							PushValue(BoxValue(false));
-						}
-						else if (first.IsNull())
-						{
-							PushValue(BoxValue(true));
-						}
-						else
-						{
-							PushValue(BoxValue(first.GetText() == second.GetText()));
-						}
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
 				case WfInsCode::CompareReference:
 					{
 						Value first, second;
 						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						bool result = first.GetValueType() != Value::Text && second.GetValueType() != Value::Text && first.GetRawPtr() == second.GetRawPtr();
-						PushValue(BoxValue(result));
+						bool result = first.GetValueType() != Value::BoxedValue && second.GetValueType() != Value::BoxedValue && first.GetRawPtr() == second.GetRawPtr();
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::CompareValue:
@@ -3758,32 +3885,8 @@ WfRuntimeThreadContext
 						Value first, second;
 						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						switch (first.GetValueType())
-						{
-						case Value::RawPtr:
-						case Value::SharedPtr:
-							switch (first.GetValueType())
-							{
-							case Value::RawPtr:
-							case Value::SharedPtr:
-								PushValue(BoxValue(first.GetRawPtr() == second.GetRawPtr()));
-								break;
-							default:
-								PushValue(BoxValue(false));
-							}
-							break;
-						case Value::Text:
-							switch (first.GetValueType())
-							{
-							case Value::Text:
-								PushValue(BoxValue(first.GetText() == second.GetText()));
-							default:
-								PushValue(BoxValue(false));
-							}
-							break;
-						default:
-							PushValue(BoxValue(second.IsNull()));
-						}
+						bool result = first == second;
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::OpNot:
@@ -3825,7 +3928,12 @@ WfRuntimeThreadContext
 						Value first, second;
 						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-						PushValue(BoxValue(first.GetText() + second.GetText()));
+
+						WString firstText, secondText;
+						first.GetTypeDescriptor()->GetSerializableType()->Serialize(first, firstText);
+						first.GetTypeDescriptor()->GetSerializableType()->Serialize(second, secondText);
+
+						CONTEXT_ACTION(PushValue(BoxValue(firstText + secondText)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::OpExp:
@@ -3959,7 +4067,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value < 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value < 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -3968,7 +4076,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value > 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value > 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -3977,7 +4085,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value <= 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value <= 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -3986,7 +4094,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value >= 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value >= 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -3995,7 +4103,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value == 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value == 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -4004,7 +4112,7 @@ WfRuntimeThreadContext
 						Value operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
 						vint value = UnboxValue<vint>(operand);
-						PushValue(BoxValue(value != 0));
+						CONTEXT_ACTION(PushValue(BoxValue(value != 0)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 					break;
@@ -4359,6 +4467,11 @@ WfMethodBase
 			WfMethodBase::~WfMethodBase()
 			{
 			}
+
+			IMethodInfo::ICpp* WfMethodBase::GetCpp()
+			{
+				return nullptr;
+			}
 			
 			runtime::WfRuntimeGlobalContext* WfMethodBase::GetGlobalContext()
 			{
@@ -4616,6 +4729,11 @@ WfEvent
 			{
 			}
 
+			IEventInfo::ICpp* WfEvent::GetCpp()
+			{
+				return nullptr;
+			}
+
 			void WfEvent::SetHandlerType(Ptr<ITypeInfo> typeInfo)
 			{
 				handlerType = typeInfo;
@@ -4651,6 +4769,11 @@ WfField
 
 			WfField::~WfField()
 			{
+			}
+
+			IPropertyInfo::ICpp* WfField::GetCpp()
+			{
+				return nullptr;
 			}
 
 			void WfField::SetReturn(Ptr<ITypeInfo> typeInfo)
@@ -4690,6 +4813,14 @@ WfProperty
 WfCustomType
 ***********************************************************************/
 
+			WfCustomType::WfTypeInfoContent::WfTypeInfoContent(const WString& _workflowTypeName)
+				:workflowTypeName(_workflowTypeName)
+			{
+				typeName = workflowTypeName.Buffer();
+				cppFullTypeName = nullptr;
+				cppName = TypeInfoContent::CppType;
+			}
+
 			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group)
 			{
 				vint methodCount = group->GetMethodCount();
@@ -4725,12 +4856,14 @@ WfCustomType
 			}
 
 			WfCustomType::WfCustomType(TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
-				:TypeDescriptorImpl(typeDescriptorFlags, typeName, L"")
+				:TypeDescriptorImpl(typeDescriptorFlags, new WfTypeInfoContent(typeName))
 			{
 			}
 
 			WfCustomType::~WfCustomType()
 			{
+				auto typeInfoContent = GetTypeInfoContentInternal();
+				delete static_cast<WfTypeInfoContent*>(const_cast<TypeInfoContent*>(typeInfoContent));
 			}
 			
 			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()

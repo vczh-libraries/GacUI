@@ -8267,7 +8267,6 @@ Attribute
 		///
 		///		a) enum:
 		///			use BEGIN_ENUM_ITEM_MERGABLE instead of BEGIN_ENUM_ITEM if enum items are consider mergable using "|".
-		///			if you want to provide a default value, use BEGIN_ENUM_ITEM_DEFAULT_VALUE(<your type>, <default value>)
 		///
 		///			BEGIN_ENUM_ITEM(Season)
 		///				ENUM_ITEM(Spring)
@@ -8311,7 +8310,9 @@ Attribute
 		///				CLASS_MEMBER_CONSTRUCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"})
 		///
 		///				VI) Inject a global function as a constructor
-		///				CLASS_MEMBER_EXTERNALCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, CreateMyClass)
+		///				CLASS_MEMBER_EXTERNALCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, mynamespace::CreateMyClass)
+		///				CLASS_MEMBER_EXTERNALCTOR_INVOKETEMPLATE(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, CreateMyClass, L"mynamespace::GetMyClass($Arguments)")
+		///				CLASS_MEMBER_EXTERNALCTOR_INVOKETEMPLATE(Ptr<MyClass>(), NO_PARAMETER, []()->Ptr<MyClass>{return nullptr;}, L"*")
 		///
 		///				VII) Add unoverloaded functions
 		///				CLASS_MEMBER_METHOD(MyFunction1, NO_PARAMETER)
@@ -8332,8 +8333,8 @@ Attribute
 		///				CLASS_MEMBER_METHOD_OVERLOAD_RENAME(MyNewName4, MyFunction3, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&))
 		///
 		///				X) Inject global functions as methods:
-		///				CLASS_MEMBER_EXTERNALMETHOD(MyNewName5, {L"parameter"}, int(MyClass::*)(int), &AGlobalFunction)
-		///				CLASS_MEMBER_EXTERNALMETHOD(MyNewName5, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&), [](MyClass* a, int b, const WString& c){return 0;})
+		///				CLASS_MEMBER_EXTERNALMETHOD(MyNewName5, {L"parameter"}, int(MyClass::*)(int), mynamespace::AGlobalFunction)
+		///				CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(MyNewName5, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&), [](MyClass* a, int b, const WString& c){return 0;}, L"*")
 		///
 		///				XI) Add unoverloaded static functions
 		///				CLASS_MEMBER_STATIC_METHOD(MyFunction4, NO_PARAMETER)
@@ -8345,8 +8346,8 @@ Attribute
 		///				CLASS_MEMBER_METHOD_OVERLOAD(MyFunction6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&))
 		///
 		///				XIII) Inject global functions as static methods:
-		///				CLASS_MEMBER_STATIC_EXTERNALMETHOD(MyNewName6, {L"parameter"}, int(*)(int), &AGlobalFunction2)
-		///				CLASS_MEMBER_STATIC_EXTERNALMETHOD(MyNewName6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&), [](int b, const WString& c){return 0;})
+		///				CLASS_MEMBER_STATIC_EXTERNALMETHOD(MyNewName6, {L"parameter"}, int(*)(int), mynamespace::AGlobalFunction2)
+		///				CLASS_MEMBER_STATIC_EXTERNALMETHOD_INVOKETEMPLATE(MyNewName6, {L"parameter1" _ L"parameter2"}, int(*)(int, const WString&), [](int b, const WString& c){return 0;}, L"*")
 		///
 		///				XIV) Add a getter function as a property
 		///				CLASS_MEMBER_PROPERTY_READONLY_FAST(X)
@@ -8549,6 +8550,12 @@ ReferenceCounterOperator
 Value
 ***********************************************************************/
 
+			class IBoxedValue : public virtual IDescriptable, public Description<IBoxedValue>
+			{
+			public:
+				virtual Ptr<IBoxedValue>		Copy() = 0;
+			};
+
 			/// <summary>A type to store all values of reflectable types.</summary>
 			class Value : public Object
 			{
@@ -8562,31 +8569,31 @@ Value
 					RawPtr,
 					/// <summary>The value stored using a smart pointer.</summary>
 					SharedPtr,
-					/// <summary>The value stored using a string.</summary>
-					Text,
+					/// <summary>The value stored using a boxed value.</summary>
+					BoxedValue,
 				};
 			protected:
 				ValueType						valueType;
 				DescriptableObject*				rawPtr;
 				Ptr<DescriptableObject>			sharedPtr;
-				WString							text;
+				Ptr<IBoxedValue>				boxedValue;
 				ITypeDescriptor*				typeDescriptor;
 
 				Value(DescriptableObject* value);
 				Value(Ptr<DescriptableObject> value);
-				Value(const WString& value, ITypeDescriptor* associatedTypeDescriptor);
+				Value(Ptr<IBoxedValue> value, ITypeDescriptor* associatedTypeDescriptor);
 
 				vint							Compare(const Value& a, const Value& b)const;
 			public:
 				Value();
 				Value(const Value& value);
 				Value&							operator=(const Value& value);
-				bool							operator==(const Value& value)const { return Compare(*this, value)==0; }
-				bool							operator!=(const Value& value)const { return Compare(*this, value)!=0; }
+				bool							operator==(const Value& value)const { return Compare(*this, value) == 0; }
+				bool							operator!=(const Value& value)const { return Compare(*this, value) != 0; }
 				bool							operator<(const Value& value)const { return Compare(*this, value)<0; }
-				bool							operator<=(const Value& value)const { return Compare(*this, value)<=0; }
+				bool							operator<=(const Value& value)const { return Compare(*this, value) <= 0; }
 				bool							operator>(const Value& value)const { return Compare(*this, value)>0; }
-				bool							operator>=(const Value& value)const { return Compare(*this, value)>=0; }
+				bool							operator>=(const Value& value)const { return Compare(*this, value) >= 0; }
 
 				/// <summary>Get how the value is stored.</summary>
 				/// <returns>How the value is stored.</returns>
@@ -8599,7 +8606,7 @@ Value
 				Ptr<DescriptableObject>			GetSharedPtr()const;
 				/// <summary>Get the stored text if possible.</summary>
 				/// <returns>The stored text. Returns empty if failed.</returns>
-				const WString&					GetText()const;
+				Ptr<IBoxedValue>				GetBoxedValue()const;
 				/// <summary>Get the real type of the stored object.</summary>
 				/// <returns>The real type. Returns null if the value is null.</returns>
 				ITypeDescriptor*				GetTypeDescriptor()const;
@@ -8620,7 +8627,7 @@ Value
 				/// <returns>The boxed value.</returns>
 				/// <param name="value">The text to store.</param>
 				/// <param name="type">The type that you expect to interpret the text.</param>
-				static Value					From(const WString& value, ITypeDescriptor* type);
+				static Value					From(Ptr<IBoxedValue> value, ITypeDescriptor* type);
 
 				static IMethodInfo*				SelectMethod(IMethodGroupInfo* methodGroup, collections::Array<Value>& arguments);
 				static Value					Create(ITypeDescriptor* type);
@@ -8639,31 +8646,81 @@ Value
 				bool							DeleteRawPtr();
 			};
 
-			class IValueSerializer : public virtual IDescriptable, public Description<IValueSerializer>
+/***********************************************************************
+ValueType
+***********************************************************************/
+
+			class IValueType : public virtual IDescriptable, public Description<IValueType>
 			{
 			public:
-				virtual ITypeDescriptor*		GetOwnerTypeDescriptor()=0;
-				virtual bool					Validate(const WString& text)=0;
-				virtual bool					Parse(const WString& input, Value& output)=0;
-				virtual WString					GetDefaultText() = 0;
+				template<typename T>
+				class TypedBox : public IBoxedValue
+				{
+				public:
+					T							value;
 
-				virtual bool					HasCandidate()=0;
-				virtual vint					GetCandidateCount()=0;
-				virtual WString					GetCandidate(vint index)=0;
-				virtual bool					CanMergeCandidate()=0;
+					TypedBox()
+						:value{}
+					{
+					}
+
+					TypedBox(const T& _value)
+						:value(_value)
+					{
+					}
+
+					Ptr<IBoxedValue> Copy()override
+					{
+						return new TypedBox<T>(value);
+					}
+				};
+
+				enum CompareResult
+				{
+					Smaller,
+					Greater,
+					Equal,
+					NotComparable,
+				};
+
+				virtual Value					CreateDefault() = 0;
+				virtual CompareResult			Compare(const Value& a, const Value& b) = 0;
 			};
 
-			template<typename T>
-			class ITypedValueSerializer : public IValueSerializer
+			class IEnumType : public virtual IDescriptable, public Description<IEnumType>
 			{
 			public:
-				virtual bool					Serialize(const T& input, Value& output)=0;
-				virtual bool					Deserialize(const Value& input, T& output)=0;
+				virtual bool					IsFlagEnum() = 0;
+				virtual vint					GetItemCount() = 0;
+				virtual WString					GetItemName(vint index) = 0;
+				virtual vuint64_t				GetItemValue(vint index) = 0;
+				virtual vint					IndexOfItem(WString name) = 0;
+
+				virtual Value					ToEnum(vuint64_t value) = 0;
+				virtual vuint64_t				FromEnum(const Value& value) = 0;
+			};
+
+			class ISerializableType : public virtual IDescriptable, public Description<ISerializableType>
+			{
+			public:
+				virtual bool					Serialize(const Value& input, WString& output) = 0;
+				virtual bool					Deserialize(const WString& input, Value& output) = 0;
 			};
 
 /***********************************************************************
 ITypeDescriptor (type)
 ***********************************************************************/
+
+			enum class TypeInfoHint
+			{
+				Normal,
+				LazyList,
+				Array,
+				List,
+				SortedList,
+				Dictionary,
+				Unknown,
+			};
 
 			class ITypeInfo : public virtual IDescriptable, public Description<ITypeInfo>
 			{
@@ -8677,12 +8734,13 @@ ITypeDescriptor (type)
 					Generic,
 				};
 
-				virtual Decorator				GetDecorator()=0;
-				virtual ITypeInfo*				GetElementType()=0;
-				virtual ITypeDescriptor*		GetTypeDescriptor()=0;
-				virtual vint					GetGenericArgumentCount()=0;
-				virtual ITypeInfo*				GetGenericArgument(vint index)=0;
-				virtual WString					GetTypeFriendlyName()=0;
+				virtual Decorator				GetDecorator() = 0;
+				virtual TypeInfoHint			GetHint() = 0;
+				virtual ITypeInfo*				GetElementType() = 0;
+				virtual ITypeDescriptor*		GetTypeDescriptor() = 0;
+				virtual vint					GetGenericArgumentCount() = 0;
+				virtual ITypeInfo*				GetGenericArgument(vint index) = 0;
+				virtual WString					GetTypeFriendlyName() = 0;
 			};
 
 /***********************************************************************
@@ -8713,6 +8771,41 @@ ITypeDescriptor (event)
 			class IEventInfo : public virtual IMemberInfo, public Description<IEventInfo>
 			{
 			public:
+				class ICpp : public virtual IDescriptable, public Description<ICpp>
+				{
+				public:
+					/*
+					Arguments:
+						$Type:					C++ full type name
+						$Name:					Event name
+						$This:					Expression for the "this" argument
+						$Handler:				Event subscription / Event handler
+						$Arguments:				Expressions for arguments separated by ", "
+					Default (for Vlpp Event):
+						Handler:				::vl::Ptr<::vl::EventHandler>
+						Attach:					$This->$Name.Add($Handler)
+						Detach:					$This->$Name.Remove($Handler)
+						Invoke:					$This->$Name($Arguments)
+					Example:
+						External constructor:	<full-function-name>($Arguments)
+						External method:		<full-function-name>($This, $Arguments)
+						Renamed method:			$This-><function-name>($Arguments)
+
+					GetInvokeTemplate() == L"*":
+						This event does not exist in C++
+					*/
+					virtual const WString&		GetHandlerType() = 0;
+					virtual const WString&		GetAttachTemplate() = 0;
+					virtual const WString&		GetDetachTemplate() = 0;
+					virtual const WString&		GetInvokeTemplate() = 0;
+				};
+				/*
+				Priority:
+					1. Use ICpp
+					2. Use Default
+				*/
+				virtual ICpp*					GetCpp() = 0;
+
 				virtual ITypeInfo*				GetHandlerType()=0;
 				virtual vint					GetObservingPropertyCount()=0;
 				virtual IPropertyInfo*			GetObservingProperty(vint index)=0;
@@ -8727,6 +8820,33 @@ ITypeDescriptor (property)
 			class IPropertyInfo : public virtual IMemberInfo, public Description<IPropertyInfo>
 			{
 			public:
+				class ICpp : public virtual IDescriptable, public Description<ICpp>
+				{
+				public:
+					/*
+					Arguments:
+						$Type:					C++ full type name
+						$Name:					Property name
+						$This:					Expression for the "this" argument
+					Default:
+						Struct:					$This.$Name
+						Class:					$This->$Name
+					Example:
+						Token in syntax tree:	$This->$Name.value
+
+					GetReferenceTemplate() == L"*":
+						This property does not exist in C++
+					*/
+					virtual const WString&		GetReferenceTemplate() = 0;
+				};
+				/*
+				Priority:
+					1. Use ICpp
+					2. Use ICpp from getter and setter
+					3. Use default
+				*/
+				virtual ICpp*					GetCpp() = 0;
+
 				virtual bool					IsReadable()=0;
 				virtual bool					IsWritable()=0;
 				virtual ITypeInfo*				GetReturn()=0;
@@ -8751,6 +8871,32 @@ ITypeDescriptor (method)
 			class IMethodInfo : public virtual IMemberInfo, public Description<IMethodInfo>
 			{
 			public:
+				class ICpp : public virtual IDescriptable, public Description<ICpp>
+				{
+				public:
+					/*
+					Arguments:
+						$Type:					C++ full type name
+						$Name:					Method name
+						$This:					Expression for the "this" argument;
+						$Arguments:				Expressions for arguments separated by ", "
+					Default:
+						Constructor:			new $Type($Arguments)
+						Static:					$Type::$Name($Arguments)
+						Normal:					$This->$Name($Arguments)
+
+					GetInvokeTemplate() == L"*":
+						This method does not exist in C++
+					*/
+					virtual const WString&		GetInvokeTemplate() = 0;
+				};
+				/*
+				Priority:
+					1. Use ICpp
+					2. Use default
+				*/
+				virtual ICpp*					GetCpp() = 0;
+
 				virtual IMethodGroupInfo*		GetOwnerMethodGroup()=0;
 				virtual IPropertyInfo*			GetOwnerProperty()=0;
 				virtual vint					GetParameterCount()=0;
@@ -8790,7 +8936,6 @@ ITypeDescriptor
 				ReferenceType		= ClassType | InterfaceType,
 				EnumType			= FlagEnum | NormalEnum,
 				StructType			= Primitive | Struct,
-				SerializableType	= StructType | EnumType,
 			};
 
 			inline TypeDescriptorFlags operator&(TypeDescriptorFlags a, TypeDescriptorFlags b)
@@ -8806,12 +8951,32 @@ ITypeDescriptor
 			class ITypeDescriptor : public virtual IDescriptable, public Description<ITypeDescriptor>
 			{
 			public:
+				class ICpp : public virtual IDescriptable, public Description<ICpp>
+				{
+				public:
+					/*
+						Default:				refer to TypeInfoContent::VlppType
+
+						GetFullName() == L"*":
+							This type does not exist in C++
+					*/
+					virtual const WString&		GetFullName() = 0;
+				};
+				/*
+				Priority:
+					1. Use ICpp
+					2. Use default
+				*/
+				virtual ICpp*					GetCpp() = 0;
+
 				virtual TypeDescriptorFlags		GetTypeDescriptorFlags() = 0;
 				virtual bool					IsAggregatable() = 0;
-
 				virtual const WString&			GetTypeName() = 0;
-				virtual const WString&			GetCppFullTypeName() = 0;
-				virtual IValueSerializer*		GetValueSerializer() = 0;
+
+				virtual IValueType*				GetValueType() = 0;
+				virtual IEnumType*				GetEnumType() = 0;
+				virtual ISerializableType*		GetSerializableType() = 0;
+
 				virtual vint					GetBaseTypeDescriptorCount() = 0;
 				virtual ITypeDescriptor*		GetBaseTypeDescriptor(vint index) = 0;
 				virtual bool					CanConvertTo(ITypeDescriptor* targetType) = 0;
@@ -8866,10 +9031,26 @@ ITypeManager
 			extern ITypeManager*				GetGlobalTypeManager();
 			extern bool							DestroyGlobalTypeManager();
 			extern bool							ResetGlobalTypeManager();
-			extern IValueSerializer*			GetValueSerializer(const WString& name);
 			extern ITypeDescriptor*				GetTypeDescriptor(const WString& name);
 			extern bool							IsInterfaceType(ITypeDescriptor* typeDescriptor, bool& acceptProxy);
 			extern void							LogTypeManager(stream::TextWriter& writer);
+
+/***********************************************************************
+Cpp Helper Functions
+***********************************************************************/
+
+			extern WString						CppGetFullName(ITypeDescriptor* type);
+			extern WString						CppGetReferenceTemplate(IPropertyInfo* prop);
+			extern WString						CppGetInvokeTemplate(IMethodInfo* method);
+			extern WString						CppGetHandlerType(IEventInfo* ev);
+			extern WString						CppGetAttachTemplate(IEventInfo* ev);
+			extern WString						CppGetDetachTemplate(IEventInfo* ev);
+			extern WString						CppGetInvokeTemplate(IEventInfo* ev);
+
+			extern bool							CppExists(ITypeDescriptor* type);
+			extern bool							CppExists(IPropertyInfo* prop);
+			extern bool							CppExists(IMethodInfo* method);
+			extern bool							CppExists(IEventInfo* ev);
 
 /***********************************************************************
 Collections
@@ -10693,10 +10874,24 @@ namespace vl
 TypeInfo
 ***********************************************************************/
 
-#define DECL_TYPE_INFO(TYPENAME) template<>struct TypeInfo<TYPENAME>{static const wchar_t* TypeName; static const wchar_t* CppFullTypeName;};
-#define IMPL_VL_TYPE_INFO(TYPENAME) const wchar_t* TypeInfo<TYPENAME>::TypeName = L ## #TYPENAME; const wchar_t* TypeInfo<TYPENAME>::CppFullTypeName = L"vl::" L ## #TYPENAME;
-#define IMPL_CPP_TYPE_INFO(TYPENAME) const wchar_t* TypeInfo<TYPENAME>::TypeName = L ## #TYPENAME; const wchar_t* TypeInfo<TYPENAME>::CppFullTypeName = L ## #TYPENAME;
-#define IMPL_TYPE_INFO_RENAME(TYPENAME, EXPECTEDNAME) const wchar_t* TypeInfo<TYPENAME>::TypeName = L ## #EXPECTEDNAME; const wchar_t* TypeInfo<TYPENAME>::CppFullTypeName = L ## #TYPENAME;
+#define DECL_TYPE_INFO(TYPENAME) template<>struct TypeInfo<TYPENAME>{ static const TypeInfoContent content; };
+#define IMPL_VL_TYPE_INFO(TYPENAME) const TypeInfoContent TypeInfo<TYPENAME>::content = { L ## #TYPENAME, nullptr, TypeInfoContent::VlppType };
+#define IMPL_CPP_TYPE_INFO(TYPENAME) const TypeInfoContent TypeInfo<TYPENAME>::content = { L ## #TYPENAME, nullptr, TypeInfoContent::CppType };
+#define IMPL_TYPE_INFO_RENAME(TYPENAME, EXPECTEDNAME) const TypeInfoContent TypeInfo<TYPENAME>::content = { L ## #EXPECTEDNAME, L ## #TYPENAME, TypeInfoContent::Renamed };
+
+			struct TypeInfoContent
+			{
+				enum TypeInfoCppName
+				{
+					VlppType,			// vl::<type-name>
+					CppType,			// <type-name>
+					Renamed,			// CppFullTypeName
+				};
+
+				const wchar_t*		typeName;
+				const wchar_t*		cppFullTypeName;
+				TypeInfoCppName		cppName;
+			};
 
 			template<typename T>
 			struct TypeInfo
@@ -10704,299 +10899,61 @@ TypeInfo
 			};
 
 			template<typename T>
-			ITypedValueSerializer<T>* GetValueSerializer()
-			{
-				return dynamic_cast<ITypedValueSerializer<T>*>(GetValueSerializer(TypeInfo<T>::TypeName));
-			}
-
-			template<typename T>
 			ITypeDescriptor* GetTypeDescriptor()
 			{
-				return GetTypeDescriptor(TypeInfo<T>::TypeName);
+				return GetTypeDescriptor(TypeInfo<T>::content.typeName);
 			}
-
-/***********************************************************************
-GeneralValueSerializer
-***********************************************************************/
-
-			template<typename T>
-			class GeneralValueSerializer : public Object, public ITypedValueSerializer<T>
-			{
-			protected:
-				ITypeDescriptor*							ownedTypeDescriptor;
-
-				virtual T									GetDefaultValue() = 0;
-				virtual bool								Serialize(const T& input, WString& output)=0;
-				virtual bool								Deserialize(const WString& input, T& output)=0;
-			public:
-				typedef T ValueType;
-
-				GeneralValueSerializer(ITypeDescriptor* _ownedTypeDescriptor)
-					:ownedTypeDescriptor(_ownedTypeDescriptor)
-				{
-				}
-
-				ITypeDescriptor* GetOwnerTypeDescriptor()override
-				{
-					return ownedTypeDescriptor;
-				}
-
-				bool Validate(const WString& text)override
-				{
-					T output;
-					return Deserialize(text, output);
-				}
-
-				bool Parse(const WString& input, Value& output)override
-				{
-					T value;
-					if(Deserialize(input, value))
-					{
-						WString text;
-						Serialize(value, text);
-						output = Value::From(text, ownedTypeDescriptor);
-						return true;
-					}
-					return false;
-				}
-
-				WString GetDefaultText()override
-				{
-					T defaultValue = GetDefaultValue();
-					WString output;
-					Serialize(defaultValue, output);
-					return output;
-				}
-
-				bool HasCandidate()override
-				{
-					return false;
-				}
-
-				vint GetCandidateCount()override
-				{
-					return 0;
-				}
-
-				WString GetCandidate(vint index)override
-				{
-					return L"";
-				}
-
-				bool CanMergeCandidate()override
-				{
-					return false;
-				}
-
-				bool Serialize(const T& input, Value& output)override
-				{
-					WString text;
-					if(Serialize(input, text))
-					{
-						output=Value::From(text, ownedTypeDescriptor);
-						return true;
-					}
-					return false;
-				}
-
-				bool Deserialize(const Value& input, T& output)override
-				{
-					if(input.GetValueType()!=Value::Text)
-					{
-						return false;
-					}
-					return Deserialize(input.GetText(), output);
-				}
-			};
-
-/***********************************************************************
-TypedValueSerializer
-***********************************************************************/
 
 			template<typename T>
 			struct TypedValueSerializerProvider
 			{
 			};
 
-			template<typename T>
-			class TypedValueSerializer : public GeneralValueSerializer<T>
-			{
-			protected:
-				T											defaultValue;
-
-				T GetDefaultValue()override
-				{
-					return defaultValue;
-				}
-
-				bool Serialize(const T& input, WString& output)override
-				{
-					return TypedValueSerializerProvider<T>::Serialize(input, output);
-				}
-
-				bool Deserialize(const WString& input, T& output)override
-				{
-					return TypedValueSerializerProvider<T>::Deserialize(input, output);
-				}
-			public:
-				TypedValueSerializer(ITypeDescriptor* _ownedTypeDescriptor, const T& _defaultValue)
-					:GeneralValueSerializer<T>(_ownedTypeDescriptor)
-					, defaultValue(_defaultValue)
-				{
-				}
-			};
-
-			template<typename T>
-			class TypedDefaultValueSerializer : public TypedValueSerializer<T>
-			{
-			public:
-				TypedDefaultValueSerializer(ITypeDescriptor* _ownedTypeDescriptor)
-					:TypedValueSerializer<T>(_ownedTypeDescriptor, TypedValueSerializerProvider<T>::GetDefaultValue())
-				{
-				}
-			};
-
-/***********************************************************************
-EnumValueSerializer
-***********************************************************************/
-
-			template<typename T, bool CanMerge>
-			struct EnumValueSerializerProvider
-			{
-			};
-
-			template<typename T>
-			struct EnumValueSerializerProvider<T, true>
-			{
-				static bool Serialize(collections::Dictionary<WString, T>& candidates, const T& input, WString& output)
-				{
-					WString result;
-					for (vint i = 0; i < candidates.Count(); i++)
-					{
-						if (static_cast<vuint64_t>(candidates.Values().Get(i)) & static_cast<vuint64_t>(input))
-						{
-							if (result != L"") result += L"|";
-							result += candidates.Keys()[i];
-						}
-					}
-					output = result;
-					return true;
-				}
-
-				static bool Deserialize(collections::Dictionary<WString, T>& candidates, const WString& input, T& output)
-				{
-					T result=(T)0;
-					const wchar_t* reading=input.Buffer();
-					while(*reading)
-					{
-						const wchar_t* sep=wcschr(reading, L'|');
-						if(!sep) sep=reading+wcslen(reading);
-						WString item(reading, vint(sep-reading));
-						reading=*sep?sep+1:sep;
-
-						vint index=candidates.Keys().IndexOf(item);
-						if(index==-1) return false;
-						result=(T)(result|candidates.Values().Get(index));
-					}
-					output=result;
-					return true;
-				}
-			};
-
-			template<typename T>
-			struct EnumValueSerializerProvider<T, false>
-			{
-				static bool Serialize(collections::Dictionary<WString, T>& candidates, const T& input, WString& output)
-				{
-					for(vint i=0;i<candidates.Count();i++)
-					{
-						if(candidates.Values().Get(i)==input)
-						{
-							output=candidates.Keys()[i];
-							return true;
-						}
-					}
-					return false;
-				}
-
-				static bool Deserialize(collections::Dictionary<WString, T>& candidates, const WString& input, T& output)
-				{
-					vint index=candidates.Keys().IndexOf(input);
-					if(index==-1) return false;
-					output=candidates.Values().Get(index);
-					return true;
-				}
-			};
-
-			template<typename T, bool CanMerge>
-			class EnumValueSerializer : public GeneralValueSerializer<T>
-			{
-			protected:
-				T											defaultValue;
-				collections::Dictionary<WString, T>			candidates;
-
-				T GetDefaultValue()override
-				{
-					return defaultValue;
-				}
-
-				bool Serialize(const T& input, WString& output)override
-				{
-					return EnumValueSerializerProvider<T, CanMerge>::Serialize(candidates, input, output);
-				}
-
-				bool Deserialize(const WString& input, T& output)override
-				{
-					return EnumValueSerializerProvider<T, CanMerge>::Deserialize(candidates, input, output);
-				}
-			public:
-				EnumValueSerializer(ITypeDescriptor* _ownedTypeDescriptor, const T& _defaultValue)
-					:GeneralValueSerializer<T>(_ownedTypeDescriptor)
-					, defaultValue(_defaultValue)
-				{
-				}
-
-				bool HasCandidate()override
-				{
-					return true;
-				}
-
-				vint GetCandidateCount()override
-				{
-					return candidates.Count();
-				}
-
-				WString GetCandidate(vint index)override
-				{
-					return candidates.Keys()[index];
-				}
-
-				bool CanMergeCandidate()override
-				{
-					return CanMerge;
-				}
-			};
-
 /***********************************************************************
 SerializableTypeDescriptor
 ***********************************************************************/
 
-			class SerializableTypeDescriptorBase : public Object, public ITypeDescriptor
+			class TypeDescriptorImplBase : public Object, public ITypeDescriptor, private ITypeDescriptor::ICpp
 			{
-			protected:
+			private:
 				TypeDescriptorFlags							typeDescriptorFlags;
-				Ptr<IValueSerializer>						serializer;
+				const TypeInfoContent*						typeInfoContent;
 				WString										typeName;
 				WString										cppFullTypeName;
-			public:
-				SerializableTypeDescriptorBase(TypeDescriptorFlags _typeDescriptorFlags, const WString& _typeName, const WString& _cppFullTypeName, Ptr<IValueSerializer> _serializer);
-				~SerializableTypeDescriptorBase();
 
+				const WString&								GetFullName()override;
+
+			protected:
+				const TypeInfoContent*						GetTypeInfoContentInternal();
+
+			public:
+				TypeDescriptorImplBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
+				~TypeDescriptorImplBase();
+
+				ITypeDescriptor::ICpp*						GetCpp()override;
 				TypeDescriptorFlags							GetTypeDescriptorFlags()override;
-				bool										IsAggregatable()override;
 				const WString&								GetTypeName()override;
-				const WString&								GetCppFullTypeName()override;
-				IValueSerializer*							GetValueSerializer()override;
+			};
+
+			class ValueTypeDescriptorBase : public TypeDescriptorImplBase
+			{
+			protected:
+				bool										loaded;
+				Ptr<IValueType>								valueType;
+				Ptr<IEnumType>								enumType;
+				Ptr<ISerializableType>						serializableType;
+
+				virtual void								LoadInternal();;
+				void										Load();
+			public:
+				ValueTypeDescriptorBase(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
+				~ValueTypeDescriptorBase();
+
+				bool										IsAggregatable()override;
+				IValueType*									GetValueType()override;
+				IEnumType*									GetEnumType()override;
+				ISerializableType*							GetSerializableType()override;
+
 				vint										GetBaseTypeDescriptorCount()override;
 				ITypeDescriptor*							GetBaseTypeDescriptor(vint index)override;
 				bool										CanConvertTo(ITypeDescriptor* targetType)override;
@@ -11015,14 +10972,13 @@ SerializableTypeDescriptor
 				IMethodGroupInfo*							GetConstructorGroup()override;
 			};
 
-			template<typename TSerializer, TypeDescriptorFlags TDFlags>
-			class SerializableTypeDescriptor : public SerializableTypeDescriptorBase
+			template<typename T, TypeDescriptorFlags TDFlags>
+			class TypedValueTypeDescriptorBase : public ValueTypeDescriptorBase
 			{
 			public:
-				SerializableTypeDescriptor()
-					:SerializableTypeDescriptorBase(TDFlags, TypeInfo<typename TSerializer::ValueType>::TypeName, TypeInfo<typename TSerializer::ValueType>::CppFullTypeName, 0)
+				TypedValueTypeDescriptorBase()
+					:ValueTypeDescriptorBase(TDFlags, &TypeInfo<T>::content)
 				{
-					serializer=new TSerializer(this);
 				}
 			};
 
@@ -11114,8 +11070,8 @@ Predefined Types
 			DECL_TYPE_INFO(bool)
 			DECL_TYPE_INFO(wchar_t)
 			DECL_TYPE_INFO(WString)
-			DECL_TYPE_INFO(DateTime)
 			DECL_TYPE_INFO(Locale)
+			DECL_TYPE_INFO(DateTime)
 
 			DECL_TYPE_INFO(IValueEnumerator)
 			DECL_TYPE_INFO(IValueEnumerable)
@@ -11131,7 +11087,11 @@ Predefined Types
 			DECL_TYPE_INFO(IValueCallStack)
 			DECL_TYPE_INFO(IValueException)
 
-			DECL_TYPE_INFO(IValueSerializer)
+			DECL_TYPE_INFO(IBoxedValue)
+			DECL_TYPE_INFO(IValueType::CompareResult)
+			DECL_TYPE_INFO(IValueType)
+			DECL_TYPE_INFO(IEnumType)
+			DECL_TYPE_INFO(ISerializableType)
 			DECL_TYPE_INFO(ITypeInfo)
 			DECL_TYPE_INFO(ITypeInfo::Decorator)
 			DECL_TYPE_INFO(IMemberInfo)
@@ -11144,109 +11104,42 @@ Predefined Types
 			DECL_TYPE_INFO(TypeDescriptorFlags)
 			DECL_TYPE_INFO(ITypeDescriptor)
 
-			template<>
-			struct TypedValueSerializerProvider<vuint8_t>
-			{
-				static vuint8_t GetDefaultValue();
-				static bool Serialize(const vuint8_t& input, WString& output);
-				static bool Deserialize(const WString& input, vuint8_t& output);
-			};
 
-			template<>
-			struct TypedValueSerializerProvider<vuint16_t>
-			{
-				static vuint16_t GetDefaultValue();
-				static bool Serialize(const vuint16_t& input, WString& output);
-				static bool Deserialize(const WString& input, vuint16_t& output);
-			};
+#define DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(TYPENAME)\
+			template<>\
+			struct TypedValueSerializerProvider<TYPENAME>\
+			{\
+				static TYPENAME GetDefaultValue();\
+				static bool Serialize(const TYPENAME& input, WString& output);\
+				static bool Deserialize(const WString& input, TYPENAME& output);\
+				static IValueType::CompareResult Compare(const TYPENAME& a, const TYPENAME& b);\
+			};\
 
-			template<>
-			struct TypedValueSerializerProvider<vuint32_t>
-			{
-				static vuint32_t GetDefaultValue();
-				static bool Serialize(const vuint32_t& input, WString& output);
-				static bool Deserialize(const WString& input, vuint32_t& output);
-			};
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint8_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint16_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint32_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint64_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint8_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint16_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint32_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint64_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(float)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(double)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(bool)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(wchar_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(WString)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(Locale)
 
-			template<>
-			struct TypedValueSerializerProvider<vuint64_t>
-			{
-				static vuint64_t GetDefaultValue();
-				static bool Serialize(const vuint64_t& input, WString& output);
-				static bool Deserialize(const WString& input, vuint64_t& output);
-			};
+#undef DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER
 
-			template<>
-			struct TypedValueSerializerProvider<vint8_t>
-			{
-				static vint8_t GetDefaultValue();
-				static bool Serialize(const vint8_t& input, WString& output);
-				static bool Deserialize(const WString& input, vint8_t& output);
-			};
+/***********************************************************************
+Helper Functions
+***********************************************************************/
 
-			template<>
-			struct TypedValueSerializerProvider<vint16_t>
-			{
-				static vint16_t GetDefaultValue();
-				static bool Serialize(const vint16_t& input, WString& output);
-				static bool Deserialize(const WString& input, vint16_t& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<vint32_t>
-			{
-				static vint32_t GetDefaultValue();
-				static bool Serialize(const vint32_t& input, WString& output);
-				static bool Deserialize(const WString& input, vint32_t& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<vint64_t>
-			{
-				static vint64_t GetDefaultValue();
-				static bool Serialize(const vint64_t& input, WString& output);
-				static bool Deserialize(const WString& input, vint64_t& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<float>
-			{
-				static float GetDefaultValue();
-				static bool Serialize(const float& input, WString& output);
-				static bool Deserialize(const WString& input, float& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<double>
-			{
-				static double GetDefaultValue();
-				static bool Serialize(const double& input, WString& output);
-				static bool Deserialize(const WString& input, double& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<wchar_t>
-			{
-				static wchar_t GetDefaultValue();
-				static bool Serialize(const wchar_t& input, WString& output);
-				static bool Deserialize(const WString& input, wchar_t& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<WString>
-			{
-				static WString GetDefaultValue();
-				static bool Serialize(const WString& input, WString& output);
-				static bool Deserialize(const WString& input, WString& output);
-			};
-
-			template<>
-			struct TypedValueSerializerProvider<Locale>
-			{
-				static Locale GetDefaultValue();
-				static bool Serialize(const Locale& input, WString& output);
-				static bool Deserialize(const WString& input, Locale& output);
-			};
+			extern vint										ITypeDescriptor_GetTypeDescriptorCount();
+			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(vint index);
+			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(const WString& name);
+			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(const Value& value);
 
 /***********************************************************************
 LoadPredefinedTypes
@@ -11282,30 +11175,89 @@ namespace vl
 		{
 
 /***********************************************************************
-TypeInfoImp;
+TypeInfoImp
 ***********************************************************************/
 
-			class TypeInfoImpl : public Object, public ITypeInfo
+			class TypeDescriptorTypeInfo : public Object, public ITypeInfo
 			{
 			protected:
-				Decorator								decorator;
 				ITypeDescriptor*						typeDescriptor;
-				collections::List<Ptr<ITypeInfo>>		genericArguments;
-				Ptr<ITypeInfo>							elementType;
+				TypeInfoHint							hint;
+
 			public:
-				TypeInfoImpl(Decorator _decorator);
-				~TypeInfoImpl();
+				TypeDescriptorTypeInfo(ITypeDescriptor* _typeDescriptor, TypeInfoHint _hint);
+				~TypeDescriptorTypeInfo();
 
 				Decorator								GetDecorator()override;
+				TypeInfoHint							GetHint()override;
 				ITypeInfo*								GetElementType()override;
 				ITypeDescriptor*						GetTypeDescriptor()override;
 				vint									GetGenericArgumentCount()override;
 				ITypeInfo*								GetGenericArgument(vint index)override;
 				WString									GetTypeFriendlyName()override;
+			};
 
-				void									SetTypeDescriptor(ITypeDescriptor* value);
+			class DecoratedTypeInfo : public Object, public ITypeInfo
+			{
+			protected:
+				Ptr<ITypeInfo>							elementType;
+
+			public:
+				DecoratedTypeInfo(Ptr<ITypeInfo> _elementType);
+				~DecoratedTypeInfo();
+
+				TypeInfoHint							GetHint()override;
+				ITypeInfo*								GetElementType()override;
+				ITypeDescriptor*						GetTypeDescriptor()override;
+				vint									GetGenericArgumentCount()override;
+				ITypeInfo*								GetGenericArgument(vint index)override;
+			};
+
+			class RawPtrTypeInfo : public DecoratedTypeInfo
+			{
+			public:
+				RawPtrTypeInfo(Ptr<ITypeInfo> _elementType);
+				~RawPtrTypeInfo();
+
+				Decorator								GetDecorator()override;
+				WString									GetTypeFriendlyName()override;
+			};
+
+			class SharedPtrTypeInfo : public DecoratedTypeInfo
+			{
+			public:
+				SharedPtrTypeInfo(Ptr<ITypeInfo> _elementType);
+				~SharedPtrTypeInfo();
+
+				Decorator								GetDecorator()override;
+				WString									GetTypeFriendlyName()override;
+			};
+
+			class NullableTypeInfo : public DecoratedTypeInfo
+			{
+			public:
+				NullableTypeInfo(Ptr<ITypeInfo> _elementType);
+				~NullableTypeInfo();
+
+				Decorator								GetDecorator()override;
+				WString									GetTypeFriendlyName()override;
+			};
+
+			class GenericTypeInfo : public DecoratedTypeInfo
+			{
+			protected:
+				collections::List<Ptr<ITypeInfo>>		genericArguments;
+
+			public:
+				GenericTypeInfo(Ptr<ITypeInfo> _elementType);
+				~GenericTypeInfo();
+
+				Decorator								GetDecorator()override;
+				vint									GetGenericArgumentCount()override;
+				ITypeInfo*								GetGenericArgument(vint index)override;
+				WString									GetTypeFriendlyName()override;
+
 				void									AddGenericArgument(Ptr<ITypeInfo> value);
-				void									SetElementType(Ptr<ITypeInfo> value);
 			};
 
 /***********************************************************************
@@ -11455,15 +11407,19 @@ TypeDescriptorImpl
 			protected:
 				ITypeDescriptor*						ownerTypeDescriptor;
 				WString									name;
+				Ptr<ICpp>								cpp;
 				MethodInfoImpl*							getter;
 				MethodInfoImpl*							setter;
 				EventInfoImpl*							valueChangedEvent;
+
 			public:
 				PropertyInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, MethodInfoImpl* _getter, MethodInfoImpl* _setter, EventInfoImpl* _valueChangedEvent);
 				~PropertyInfoImpl();
 
 				ITypeDescriptor*						GetOwnerTypeDescriptor()override;
 				const WString&							GetName()override;
+				IPropertyInfo::ICpp*					GetCpp()override;
+
 				bool									IsReadable()override;
 				bool									IsWritable()override;
 				ITypeInfo*								GetReturn()override;
@@ -11472,6 +11428,20 @@ TypeDescriptorImpl
 				IEventInfo*								GetValueChangedEvent()override;
 				Value									GetValue(const Value& thisObject)override;
 				void									SetValue(Value& thisObject, const Value& newValue)override;
+			};
+
+			class PropertyInfoImpl_StaticCpp : public PropertyInfoImpl, private IPropertyInfo::ICpp
+			{
+			private:
+				WString									referenceTemplate;
+
+				const WString&							GetReferenceTemplate()override;
+
+			public:
+				PropertyInfoImpl_StaticCpp(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, MethodInfoImpl* _getter, MethodInfoImpl* _setter, EventInfoImpl* _valueChangedEvent, const WString& _referenceTemplate);
+				~PropertyInfoImpl_StaticCpp();
+
+				IPropertyInfo::ICpp*					GetCpp()override;
 			};
 
 /***********************************************************************
@@ -11507,14 +11477,10 @@ FieldInfoImpl
 TypeDescriptorImpl
 ***********************************************************************/
 
-			class TypeDescriptorImpl : public Object, public ITypeDescriptor
+			class TypeDescriptorImpl : public TypeDescriptorImplBase
 			{
 			private:
 				bool														loaded;
-				TypeDescriptorFlags											typeDescriptorFlags;
-				WString														typeName;
-				WString														cppFullTypeName;
-				Ptr<IValueSerializer>										valueSerializer;
 				collections::List<ITypeDescriptor*>							baseTypeDescriptors;
 				collections::Dictionary<WString, Ptr<IPropertyInfo>>		properties;
 				collections::Dictionary<WString, Ptr<IEventInfo>>			events;
@@ -11533,15 +11499,14 @@ TypeDescriptorImpl
 				virtual void				LoadInternal()=0;
 				void						Load();
 			public:
-				TypeDescriptorImpl(TypeDescriptorFlags _typeDescriptorFlags, const WString& _typeName, const WString& _cppFullTypeName);
+				TypeDescriptorImpl(TypeDescriptorFlags _typeDescriptorFlags, const TypeInfoContent* _typeInfoContent);
 				~TypeDescriptorImpl();
 
-				TypeDescriptorFlags			GetTypeDescriptorFlags()override;
 				bool						IsAggregatable()override;
+				IValueType*					GetValueType()override;
+				IEnumType*					GetEnumType()override;
+				ISerializableType*			GetSerializableType()override;
 
-				const WString&				GetTypeName()override;
-				const WString&				GetCppFullTypeName()override;
-				IValueSerializer*			GetValueSerializer()override;
 				vint						GetBaseTypeDescriptorCount()override;
 				ITypeDescriptor*			GetBaseTypeDescriptor(vint index)override;
 				bool						CanConvertTo(ITypeDescriptor* targetType)override;
@@ -11663,6 +11628,64 @@ TypeFlagTester
 			};
 
 /***********************************************************************
+TypeHintTester
+***********************************************************************/
+
+			template<typename T>
+			struct TypeHintTester
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::Normal;
+			};
+
+			template<typename T>
+			struct TypeHintTester<T*>
+			{
+				static const TypeInfoHint								Result = TypeHintTester<T>::Result;
+			};
+
+			template<typename T>
+			struct TypeHintTester<T&>
+			{
+				static const TypeInfoHint								Result = TypeHintTester<T>::Result;
+			};
+
+			template<typename T>
+			struct TypeHintTester<const T>
+			{
+				static const TypeInfoHint								Result = TypeHintTester<T>::Result;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::LazyList<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::LazyList;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::Array<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::Array;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::List<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::List;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::SortedList<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::SortedList;
+			};
+
+			template<typename K, typename V>
+			struct TypeHintTester<collections::Dictionary<K, V>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::Dictionary;
+			};
+
+/***********************************************************************
 TypeFlagSelector
 ***********************************************************************/
 
@@ -11748,8 +11771,9 @@ TypeInfoRetriver
 			template<typename T>
 			struct TypeInfoRetriver
 			{
-				static const TypeFlags															TypeFlag=TypeFlagSelector<T>::Result;
-				static const ITypeInfo::Decorator												Decorator=DetailTypeInfoRetriver<T, TypeFlag>::Decorator;
+				static const TypeFlags															TypeFlag = TypeFlagSelector<T>::Result;
+				static const TypeInfoHint														Hint = TypeHintTester<T>::Result;
+				static const ITypeInfo::Decorator												Decorator = DetailTypeInfoRetriver<T, TypeFlag>::Decorator;
 
 				typedef typename DetailTypeInfoRetriver<T, TypeFlag>::Type						Type;
 				typedef typename DetailTypeInfoRetriver<T, TypeFlag>::TempValueType				TempValueType;
@@ -11758,7 +11782,7 @@ TypeInfoRetriver
 
 				static Ptr<ITypeInfo> CreateTypeInfo()
 				{
-					return DetailTypeInfoRetriver<typename RemoveCVR<T>::Type, TypeFlag>::CreateTypeInfo();
+					return DetailTypeInfoRetriver<typename RemoveCVR<T>::Type, TypeFlag>::CreateTypeInfo(Hint);
 				}
 			};
 
@@ -11842,16 +11866,16 @@ Value_xs
 				template<typename T>
 				Value_xs& operator,(T& value)
 				{
-					arguments.Resize(arguments.Count()+1);
-					arguments[arguments.Count()-1]=BoxParameter<T>(value);
+					arguments.Resize(arguments.Count() + 1);
+					arguments[arguments.Count() - 1] = BoxParameter<T>(value);
 					return *this;
 				}
 
 				template<typename T>
 				Value_xs& operator,(const T& value)
 				{
-					arguments.Resize(arguments.Count()+1);
-					arguments[arguments.Count()-1]=BoxParameter<const T>(value);
+					arguments.Resize(arguments.Count() + 1);
+					arguments[arguments.Count() - 1] = BoxParameter<const T>(value);
 					return *this;
 				}
 
@@ -11902,270 +11926,258 @@ CustomFieldInfoImpl
 					, fieldRef(_fieldRef)
 				{
 				}
+
+				IPropertyInfo::ICpp* GetCpp()override
+				{
+					return nullptr;
+				}
 			};
 
 /***********************************************************************
-StructValueSerializer
+PrimitiveTypeDescriptor
 ***********************************************************************/
 
 			template<typename T>
-			class StructValueSerializer : public GeneralValueSerializer<T>
+			class SerializableValueType : public Object, public virtual IValueType
 			{
 			public:
-				class FieldSerializerBase : public Object
+				Value CreateDefault()override
 				{
-				public:
-					virtual bool				SerializeField(const T& input, WString& output)=0;
-					virtual bool				DeserializeField(WString& input, T& output)=0;
-				};
+					return BoxValue<T>(TypedValueSerializerProvider<T>::GetDefaultValue());
+				}
 
+				CompareResult Compare(const Value& a, const Value& b)override
+				{
+					auto va = UnboxValue<T>(a);
+					auto vb = UnboxValue<T>(b);
+					return TypedValueSerializerProvider<T>::Compare(va, vb);
+				}
+			};
+
+			template<typename T>
+			class SerializableType : public Object, public virtual ISerializableType
+			{
+			public:
+				bool Serialize(const Value& input, WString& output)override
+				{
+					return TypedValueSerializerProvider<T>::Serialize(UnboxValue<T>(input), output);
+				}
+
+				bool Deserialize(const WString& input, Value& output)override
+				{
+					T value;
+					if (!TypedValueSerializerProvider<T>::Deserialize(input, value))
+					{
+						return false;
+					}
+					output = BoxValue<T>(value);
+					return true;
+				}
+			};
+
+			template<typename T>
+			class PrimitiveTypeDescriptor : public TypedValueTypeDescriptorBase<T, TypeDescriptorFlags::Primitive>
+			{
+			protected:
+				void LoadInternal()override
+				{
+					this->valueType = new SerializableValueType<T>();
+					this->serializableType = new SerializableType<T>();
+				}
+			};
+
+/***********************************************************************
+EnumTypeDescriptor
+***********************************************************************/
+
+			template<typename T>
+			class EnumValueType : public Object, public virtual IValueType
+			{
+			public:
+				Value CreateDefault()override
+				{
+					return BoxValue<T>(static_cast<T>(0));
+				}
+
+				CompareResult Compare(const Value& a, const Value& b)override
+				{
+					auto ea = static_cast<vuint64_t>(UnboxValue<T>(a));
+					auto eb = static_cast<vuint64_t>(UnboxValue<T>(b));
+					if (ea < eb) return IValueType::Smaller;
+					if (ea > eb)return IValueType::Greater;
+					return IValueType::Equal;
+				}
+			};
+
+			template<typename T, bool Flag>
+			class EnumType : public Object, public virtual IEnumType
+			{
+			protected:
+				collections::Dictionary<WString, T>			candidates;
+
+			public:
+				void AddItem(WString name, T value)
+				{
+					candidates.Add(name, value);
+				}
+
+				bool IsFlagEnum()override
+				{
+					return Flag;
+				}
+
+				vint GetItemCount()override
+				{
+					return candidates.Count();
+				}
+
+				WString GetItemName(vint index)override
+				{
+					if (index < 0 || index >= candidates.Count())
+					{
+						return L"";
+					}
+					return candidates.Keys()[index];
+				}
+
+				vuint64_t GetItemValue(vint index)override
+				{
+					if (index < 0 || index >= candidates.Count())
+					{
+						return 0;
+					}
+					return static_cast<vuint64_t>(candidates.Values()[index]);
+				}
+
+				vint IndexOfItem(WString name)override
+				{
+					return candidates.Keys().IndexOf(name);
+				}
+
+				Value ToEnum(vuint64_t value)override
+				{
+					return BoxValue<T>(static_cast<T>(value));
+				}
+
+				vuint64_t FromEnum(const Value& value)override
+				{
+					return static_cast<vuint64_t>(UnboxValue<T>(value));
+				}
+			};
+
+			template<typename T, TypeDescriptorFlags TDFlags>
+			class EnumTypeDescriptor : public TypedValueTypeDescriptorBase<T, TDFlags>
+			{
+				using TEnumType = EnumType<T, TDFlags == TypeDescriptorFlags::FlagEnum>;
+			protected:
+				Ptr<TEnumType>					enumType;
+
+				void LoadInternal()override
+				{
+					this->enumType = new TEnumType;
+					this->valueType = new EnumValueType<T>();
+					TypedValueTypeDescriptorBase<T, TDFlags>::enumType = enumType;
+				}
+			};
+
+/***********************************************************************
+StructTypeDescriptor
+***********************************************************************/
+
+			template<typename T>
+			class StructValueType : public Object, public virtual IValueType
+			{
+			public:
+				Value CreateDefault()override
+				{
+					return BoxValue<T>(T{});
+				}
+
+				CompareResult Compare(const Value& a, const Value& b)override
+				{
+					return IValueType::NotComparable;
+				}
+			};
+
+			template<typename T, TypeDescriptorFlags TDFlags>
+			class StructTypeDescriptor : public TypedValueTypeDescriptorBase<T, TDFlags>
+			{
+			protected:
 				template<typename TField>
-				class FieldSerializer : public FieldSerializerBase, public FieldInfoImpl
+				class StructFieldInfo : public FieldInfoImpl
 				{
 				protected:
 					TField T::*					field;
 
 					Value GetValueInternal(const Value& thisObject)override
 					{
-						T structValue=UnboxValue<T>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
-						TField fieldValue=structValue.*field;
-						return BoxValue<TField>(fieldValue, GetReturn()->GetTypeDescriptor());
+						auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<T>>();
+						if (!structValue)
+						{
+							throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
+						}
+						return BoxValue<TField>(structValue->value.*field);
 					}
 
 					void SetValueInternal(Value& thisObject, const Value& newValue)override
 					{
-						T structValue=UnboxValue<T>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
-						TField fieldValue=UnboxValue<TField>(newValue, GetReturn()->GetTypeDescriptor(), L"newValue");
-						structValue.*field=fieldValue;
-						thisObject=BoxValue<T>(structValue, GetOwnerTypeDescriptor());
+						auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<T>>();
+						if (!structValue)
+						{
+							throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
+						}
+						(structValue->value.*field) = UnboxValue<TField>(newValue);
 					}
 				public:
-					FieldSerializer(ITypeDescriptor* _ownerTypeDescriptor, TField T::* _field, const WString& _name)
+					StructFieldInfo(ITypeDescriptor* _ownerTypeDescriptor, TField T::* _field, const WString& _name)
 						:field(_field)
-						,FieldInfoImpl(_ownerTypeDescriptor, _name, TypeInfoRetriver<TField>::CreateTypeInfo())
+						, FieldInfoImpl(_ownerTypeDescriptor, _name, TypeInfoRetriver<TField>::CreateTypeInfo())
 					{
 					}
 
-					bool SerializeField(const T& input, WString& output)override
+					IPropertyInfo::ICpp* GetCpp()override
 					{
-						ITypedValueSerializer<TField>* serializer=GetValueSerializer<TField>();
-						if(!serializer) return false;
-						Value result;
-						if(!serializer->Serialize(input.*field, result)) return false;
-						output=result.GetText();
-						return true;
-					}
-
-					bool DeserializeField(WString& input, T& output)override
-					{
-						ITypedValueSerializer<TField>* serializer=GetValueSerializer<TField>();
-						if(!serializer) return false;
-						Value value=Value::From(input, serializer->GetOwnerTypeDescriptor());
-						return serializer->Deserialize(value, output.*field);
+						return nullptr;
 					}
 				};
 
 			protected:
-				collections::Dictionary<WString, Ptr<FieldSerializerBase>>		fieldSerializers;
-				bool															loaded;
-
-				virtual void													LoadInternal()=0;
-
-				void Load()
-				{
-					if(!loaded)
-					{
-						loaded=true;
-						LoadInternal();
-					}
-				}
-
-				bool IsSpace(wchar_t c)
-				{
-					return c == L' ' || c == L'\t' || c == L'\r' || c == L'\n';
-				}
-
-				const wchar_t* FindSpace(const wchar_t* text)
-				{
-					while (*text)
-					{
-						if (IsSpace(*text)) return text;
-						text++;
-					}
-					return 0;
-				}
-
-				WString Escape(const WString& text)
-				{
-					const wchar_t* reading=text.Buffer();
-					if(FindSpace(reading)==0 && wcschr(reading, L'{')==0 && wcschr(reading, L'}')==0)
-					{
-						return text;
-					}
-
-					WString result;
-					while(wchar_t c=*reading++)
-					{
-						switch(c)
-						{
-						case L'{':
-							result+=L"{{";
-							break;
-						case L'}':
-							result+=L"}}";
-							break;
-						default:
-							result+=c;
-						}
-					}
-					return L"{"+result+L"}";
-				}
-
-				bool Unescape(const wchar_t*& reading, WString& field)
-				{
-					if(*reading==L'{')
-					{
-						const wchar_t* start=reading+1;
-						const wchar_t* end=start;
-						bool stop=false;
-						while(!stop)
-						{
-							switch(*end)
-							{
-							case L'\0':
-								return false;
-							case L'{':
-								if(end[1]!=L'{') return false;
-								end+=2;
-								field+=L'{';
-								break;
-							case L'}':
-								if(end[1]==L'}')
-								{
-									end+=2;
-									field+=L'}';
-								}
-								else
-								{
-									stop=true;
-								}
-								break;
-							default:
-								field+=*end;
-								end++;
-							}
-						}
-						reading=end+1;
-					}
-					else
-					{
-						const wchar_t* space=FindSpace(reading);
-						if(space)
-						{
-							field=WString(reading, vint(space-reading));
-							reading=space+1;
-						}
-						else
-						{
-							field=reading;
-							reading+=field.Length();
-						}
-					}
-					return true;
-				}
-
-				T GetDefaultValue()override
-				{
-					return T();
-				}
-
-				bool Serialize(const T& input, WString& output)override
-				{
-					Load();
-					WString result, field;
-					for(vint i=0;i<fieldSerializers.Count();i++)
-					{
-						if(result!=L"") result+=L" ";
-						result+=fieldSerializers.Keys()[i]+L":";
-
-						Ptr<FieldSerializerBase> fieldSerializer=fieldSerializers.Values().Get(i);
-						if(!fieldSerializer->SerializeField(input, field)) return false;
-						result+=Escape(field);
-					}
-					output=result;
-					return true;
-				}
-
-				bool Deserialize(const WString& input, T& output)override
-				{
-					Load();
-					const wchar_t* reading=input.Buffer();
-					while(true)
-					{
-						while(IsSpace(*reading)) reading++;
-						if(*reading==0) break;
-						const wchar_t* comma=wcschr(reading, L':');
-						if(!comma) return false;
-
-						vint index=fieldSerializers.Keys().IndexOf(WString(reading, vint(comma-reading)));
-						if(index==-1) return false;
-						reading=comma+1;
-
-						WString field;
-						if(!Unescape(reading, field)) return false;
-						Ptr<FieldSerializerBase> fieldSerializer=fieldSerializers.Values().Get(index);
-						if(!fieldSerializer->DeserializeField(field, output)) return false;
-					}
-					return true;
-				}
-			public:
-				StructValueSerializer(ITypeDescriptor* _ownedTypeDescriptor)
-					:GeneralValueSerializer<T>(_ownedTypeDescriptor)
-					,loaded(false)
-				{
-				}
-
-				const collections::Dictionary<WString, Ptr<FieldSerializerBase>>& GetFieldSerializers()
-				{
-					Load();
-					return fieldSerializers;
-				}
-			};
-
-			template<typename TSerializer, TypeDescriptorFlags TDFlags>
-			class StructTypeDescriptor : public SerializableTypeDescriptor<TSerializer, TDFlags>
-			{
-			protected:
-				Ptr<TSerializer>				typedSerializer;
+				collections::Dictionary<WString, Ptr<IPropertyInfo>>		fields;
 
 			public:
 				StructTypeDescriptor()
 				{
-					auto serializer = SerializableTypeDescriptor<TSerializer, TDFlags>::serializer;
-					typedSerializer = serializer.template Cast<TSerializer>();
+					this->valueType = new StructValueType<T>();
 				}
 
 				vint GetPropertyCount()override
 				{
-					return typedSerializer->GetFieldSerializers().Count();
+					this->Load();
+					return fields.Count();
 				}
 
 				IPropertyInfo* GetProperty(vint index)override
 				{
-					auto serializer = typedSerializer->GetFieldSerializers().Values().Get(index);
-					return serializer.template Cast<IPropertyInfo>().Obj();
+					this->Load();
+					if (index < 0 || index >= fields.Count())
+					{
+						return nullptr;
+					}
+					return fields.Values()[index].Obj();
 				}
 
 				bool IsPropertyExists(const WString& name, bool inheritable)override
 				{
-					return typedSerializer->GetFieldSerializers().Keys().Contains(name);
+					this->Load();
+					return fields.Keys().Contains(name);
 				}
 
 				IPropertyInfo* GetPropertyByName(const WString& name, bool inheritable)override
 				{
-					vint index=typedSerializer->GetFieldSerializers().Keys().IndexOf(name);
-					if(index==-1) return 0;
-					return GetProperty(index);
+					this->Load();
+					vint index = fields.Keys().IndexOf(name);
+					if (index == -1) return nullptr;
+					return fields.Values()[index].Obj();
 				}
 			};
 		}
@@ -12209,11 +12221,9 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&												ResultReferenceType;
 				typedef T												ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					type->SetTypeDescriptor(GetTypeDescriptor<Type>());
-					return type;
+					return MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<Type>(), hint);
 				}
 			};
 
@@ -12228,7 +12238,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef const T&												ResultReferenceType;
 				typedef const T													ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
 				}
@@ -12245,7 +12255,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&														ResultReferenceType;
 				typedef T														ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
 				}
@@ -12262,12 +12272,9 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T*&														ResultReferenceType;
 				typedef T*														ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					Ptr<ITypeInfo> elementType=TypeInfoRetriver<T>::CreateTypeInfo();
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::RawPtr);
-					type->SetElementType(elementType);
-					return type;
+					return MakePtr<RawPtrTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
 				}
 			};
 
@@ -12282,12 +12289,9 @@ DetailTypeInfoRetriver<TStruct>
 				typedef Ptr<T>&													ResultReferenceType;
 				typedef Ptr<T>													ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					Ptr<ITypeInfo> elementType=TypeInfoRetriver<T>::CreateTypeInfo();
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::SharedPtr);
-					type->SetElementType(elementType);
-					return type;
+					return MakePtr<SharedPtrTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
 				}
 			};
 
@@ -12302,12 +12306,9 @@ DetailTypeInfoRetriver<TStruct>
 				typedef Nullable<T>&											ResultReferenceType;
 				typedef Nullable<T>												ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					Ptr<ITypeInfo> elementType=TypeInfoRetriver<T>::CreateTypeInfo();
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::Nullable);
-					type->SetElementType(elementType);
-					return type;
+					return MakePtr<NullableTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
 				}
 			};
 
@@ -12322,7 +12323,7 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&														ResultReferenceType;
 				typedef T														ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
 				}
@@ -12433,39 +12434,29 @@ ParameterAccessor<TStruct>
 			{
 				static Value BoxValue(const T& object, ITypeDescriptor* typeDescriptor)
 				{
-					typedef ITypedValueSerializer<typename RemoveCVR<T>::Type> TSerializer;
 					if(!typeDescriptor)
 					{
-						typeDescriptor=GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
+						typeDescriptor = GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
 					}
-					TSerializer* serializer=dynamic_cast<TSerializer*>(typeDescriptor->GetValueSerializer());
-					Value result;
-					serializer->Serialize(object, result);
-					return result;
+					using Type = typename vl::RemoveCVR<T>::Type;
+					return Value::From(new IValueType::TypedBox<Type>(object), typeDescriptor);
 				}
 
 				static T UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor, const WString& valueName)
 				{
-					ITypeDescriptor* valueTd = value.GetTypeDescriptor();
-					ITypedValueSerializer<T>* serializer = valueTd ? dynamic_cast<ITypedValueSerializer<T>*>(valueTd->GetValueSerializer()) : 0;
-					if(!serializer)
+					using Type = typename vl::RemoveCVR<T>::Type;
+					if (auto unboxedValue = value.GetBoxedValue().Cast<IValueType::TypedBox<Type>>())
 					{
-						if(!typeDescriptor)
-						{
-							typeDescriptor=GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
-						}
-						serializer=dynamic_cast<ITypedValueSerializer<T>*>(typeDescriptor->GetValueSerializer());
+						return unboxedValue->value;
 					}
-					T result;
-					if(!serializer->Deserialize(value, result))
+					else
 					{
-						if(!typeDescriptor)
+						if (!typeDescriptor)
 						{
-							typeDescriptor=GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
+							typeDescriptor = GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
 						}
-						throw ArgumentTypeMismtatchException(valueName, typeDescriptor, Value::Text, value);
+						throw ArgumentTypeMismtatchException(valueName, typeDescriptor, Value::BoxedValue, value);
 					}
-					return result;
 				}
 			};
 
@@ -12533,7 +12524,7 @@ DetailTypeInfoRetriver<Func<R(TArgs...)>>
 				template<typename T>
 				struct GenericArgumentAdder
 				{
-					static void Add(Ptr<TypeInfoImpl> genericType)
+					static void Add(Ptr<GenericTypeInfo> genericType)
 					{
 					}
 				};
@@ -12541,7 +12532,7 @@ DetailTypeInfoRetriver<Func<R(TArgs...)>>
 				template<typename T0, typename ...TNextArgs>
 				struct GenericArgumentAdder<TypeTuple<T0, TNextArgs...>>
 				{
-					static void Add(Ptr<TypeInfoImpl> genericType)
+					static void Add(Ptr<GenericTypeInfo> genericType)
 					{
 						genericType->AddGenericArgument(TypeInfoRetriver<T0>::CreateTypeInfo());
 						GenericArgumentAdder<TypeTuple<TNextArgs...>>::Add(genericType);
@@ -12560,18 +12551,15 @@ DetailTypeInfoRetriver<Func<R(TArgs...)>>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
  
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					Ptr<TypeInfoImpl> functionType=new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					functionType->SetTypeDescriptor(Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor());
+					auto functionType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor(), hint);
  
-					Ptr<TypeInfoImpl> genericType=new TypeInfoImpl(ITypeInfo::Generic);
-					genericType->SetElementType(functionType);
+					auto genericType = MakePtr<GenericTypeInfo>(functionType);
 					genericType->AddGenericArgument(TypeInfoRetriver<R>::CreateTypeInfo());
 					internal_helper::GenericArgumentAdder<TypeTuple<TArgs...>>::Add(genericType);
- 
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::SharedPtr);
-					type->SetElementType(genericType);
+
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
 			};
@@ -12806,6 +12794,11 @@ CustomConstructorInfoImpl<R(TArgs...)>
 				{
 					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
 				}
+
+				IMethodInfo::ICpp* GetCpp()override
+				{
+					return nullptr;
+				}
 			};
  
 /***********************************************************************
@@ -12859,9 +12852,33 @@ CustomStaticMethodInfoImpl<TClass, R(TArgs...)>
 					}
 				};
 			}
+			class MethodInfoImpl_StaticCpp : public MethodInfoImpl, private IMethodInfo::ICpp
+			{
+			private:
+				WString invokeTemplate;
+
+				const WString& GetInvokeTemplate()override
+				{
+					return invokeTemplate;
+				}
+			public:
+				MethodInfoImpl_StaticCpp(IMethodGroupInfo* _ownerMethodGroup, Ptr<ITypeInfo> _return, bool _isStatic, const wchar_t* _invokeTemplate)
+					:MethodInfoImpl(_ownerMethodGroup, _return, _isStatic)
+				{
+					if (_invokeTemplate)
+					{
+						invokeTemplate = WString(_invokeTemplate, false);
+					}
+				}
+
+				IMethodInfo::ICpp* GetCpp()override
+				{
+					return invokeTemplate.Length() == 0 ? nullptr : this;
+				}
+			};
 
 			template<typename TClass, typename R, typename ...TArgs>
-			class CustomMethodInfoImpl<TClass, R(TArgs...)> : public MethodInfoImpl
+			class CustomMethodInfoImpl<TClass, R(TArgs...)> : public MethodInfoImpl_StaticCpp
 			{
 			protected:
 				R(__thiscall TClass::* method)(TArgs...);
@@ -12879,8 +12896,8 @@ CustomStaticMethodInfoImpl<TClass, R(TArgs...)>
 					return BoxParameter<Func<R(TArgs...)>>(proxy);
 				}
 			public:
-				CustomMethodInfoImpl(const wchar_t* parameterNames[], R(__thiscall TClass::* _method)(TArgs...))
-					:MethodInfoImpl(0, TypeInfoRetriver<R>::CreateTypeInfo(), false)
+				CustomMethodInfoImpl(const wchar_t* parameterNames[], R(__thiscall TClass::* _method)(TArgs...), const wchar_t* _invokeTemplate)
+					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), false, _invokeTemplate)
 					,method(_method)
 				{
 					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
@@ -12888,7 +12905,7 @@ CustomStaticMethodInfoImpl<TClass, R(TArgs...)>
 			};
  
 			template<typename TClass, typename R, typename ...TArgs>
-			class CustomExternalMethodInfoImpl<TClass, R(TArgs...)> : public MethodInfoImpl
+			class CustomExternalMethodInfoImpl<TClass, R(TArgs...)> : public MethodInfoImpl_StaticCpp
 			{
 			protected:
 				R(*method)(TClass*, TArgs...);
@@ -12906,8 +12923,8 @@ CustomStaticMethodInfoImpl<TClass, R(TArgs...)>
 					return BoxParameter<Func<R(TArgs...)>>(proxy);
 				}
 			public:
-				CustomExternalMethodInfoImpl(const wchar_t* parameterNames[], R(*_method)(TClass*, TArgs...))
-					:MethodInfoImpl(0, TypeInfoRetriver<R>::CreateTypeInfo(), false)
+				CustomExternalMethodInfoImpl(const wchar_t* parameterNames[], R(*_method)(TClass*, TArgs...), const wchar_t* _invokeTemplate)
+					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), false, _invokeTemplate)
 					,method(_method)
 				{
 					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
@@ -12944,7 +12961,7 @@ CustomStaticMethodInfoImpl<R(TArgs...)>
 			}
 
 			template<typename R, typename ...TArgs>
-			class CustomStaticMethodInfoImpl<R(TArgs...)> : public MethodInfoImpl
+			class CustomStaticMethodInfoImpl<R(TArgs...)> : public MethodInfoImpl_StaticCpp
 			{
 			protected:
 				R(* method)(TArgs...);
@@ -12960,8 +12977,8 @@ CustomStaticMethodInfoImpl<R(TArgs...)>
 					return BoxParameter<Func<R(TArgs...)>>(proxy);
 				}
 			public:
-				CustomStaticMethodInfoImpl(const wchar_t* parameterNames[], R(* _method)(TArgs...))
-					:MethodInfoImpl(0, TypeInfoRetriver<R>::CreateTypeInfo(), true)
+				CustomStaticMethodInfoImpl(const wchar_t* parameterNames[], R(* _method)(TArgs...), const wchar_t* _invokeTemplate)
+					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), true, _invokeTemplate)
 					,method(_method)
 				{
 					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
@@ -13069,6 +13086,11 @@ CustomEventInfoImpl<void(TArgs...)>
 
 				~CustomEventInfoImpl()
 				{
+				}
+
+				IEventInfo::ICpp* GetCpp()override
+				{
+					return nullptr;
 				}
 			};
 
@@ -13506,20 +13528,17 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::ElementType										ElementType;
 
-					Ptr<TypeInfoImpl> arrayType=new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					arrayType->SetTypeDescriptor(Description<IValueEnumerable>::GetAssociatedTypeDescriptor());
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueEnumerable>::GetAssociatedTypeDescriptor(), hint);
 
-					Ptr<TypeInfoImpl> genericType=new TypeInfoImpl(ITypeInfo::Generic);
-					genericType->SetElementType(arrayType);
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
 
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::SharedPtr);
-					type->SetElementType(genericType);
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
 			};
@@ -13535,20 +13554,17 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::ElementType										ElementType;
 
-					Ptr<TypeInfoImpl> arrayType=new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					arrayType->SetTypeDescriptor(Description<IValueReadonlyList>::GetAssociatedTypeDescriptor());
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueReadonlyList>::GetAssociatedTypeDescriptor(), hint);
 
-					Ptr<TypeInfoImpl> genericType=new TypeInfoImpl(ITypeInfo::Generic);
-					genericType->SetElementType(arrayType);
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
 
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::SharedPtr);
-					type->SetElementType(genericType);
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
 			};
@@ -13564,20 +13580,17 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::ElementType										ElementType;
 
-					Ptr<TypeInfoImpl> arrayType=new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					arrayType->SetTypeDescriptor(Description<IValueList>::GetAssociatedTypeDescriptor());
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueList>::GetAssociatedTypeDescriptor(), hint);
 
-					Ptr<TypeInfoImpl> genericType=new TypeInfoImpl(ITypeInfo::Generic);
-					genericType->SetElementType(arrayType);
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
 
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::SharedPtr);
-					type->SetElementType(genericType);
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
 			};
@@ -13593,7 +13606,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::KeyContainer									KeyContainer;
@@ -13601,16 +13614,13 @@ DetailTypeInfoRetriver<TContainer>
 					typedef typename KeyContainer::ElementType										KeyType;
 					typedef typename ValueContainer::ElementType									ValueType;
 
-					Ptr<TypeInfoImpl> arrayType=new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					arrayType->SetTypeDescriptor(Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor());
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor(), hint);
 
-					Ptr<TypeInfoImpl> genericType=new TypeInfoImpl(ITypeInfo::Generic);
-					genericType->SetElementType(arrayType);
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<KeyType>::CreateTypeInfo());
 					genericType->AddGenericArgument(TypeInfoRetriver<ValueType>::CreateTypeInfo());
 
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::SharedPtr);
-					type->SetElementType(genericType);
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
 			};
@@ -13626,7 +13636,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
-				static Ptr<ITypeInfo> CreateTypeInfo()
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
 					typedef typename ContainerType::KeyContainer									KeyContainer;
@@ -13634,16 +13644,13 @@ DetailTypeInfoRetriver<TContainer>
 					typedef typename KeyContainer::ElementType										KeyType;
 					typedef typename ValueContainer::ElementType									ValueType;
 
-					Ptr<TypeInfoImpl> arrayType=new TypeInfoImpl(ITypeInfo::TypeDescriptor);
-					arrayType->SetTypeDescriptor(Description<IValueDictionary>::GetAssociatedTypeDescriptor());
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueDictionary>::GetAssociatedTypeDescriptor(), hint);
 
-					Ptr<TypeInfoImpl> genericType=new TypeInfoImpl(ITypeInfo::Generic);
-					genericType->SetElementType(arrayType);
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
 					genericType->AddGenericArgument(TypeInfoRetriver<KeyType>::CreateTypeInfo());
 					genericType->AddGenericArgument(TypeInfoRetriver<ValueType>::CreateTypeInfo());
 
-					Ptr<TypeInfoImpl> type=new TypeInfoImpl(ITypeInfo::SharedPtr);
-					type->SetElementType(genericType);
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
 			};
@@ -13875,6 +13882,9 @@ namespace vl
 				}
 			};
 
+			template<typename T>
+			using FUNCTIONNAME_AddPointer = T*;
+
 /***********************************************************************
 Type
 ***********************************************************************/
@@ -13884,7 +13894,7 @@ Type
 #define ADD_TYPE_INFO(TYPENAME)\
 			{\
 				Ptr<ITypeDescriptor> type=new CustomTypeDescriptorSelector<TYPENAME>::CustomTypeDescriptorImpl();\
-				manager->SetTypeDescriptor(TypeInfo<TYPENAME>::TypeName, type);\
+				manager->SetTypeDescriptor(TypeInfo<TYPENAME>::content.typeName, type);\
 			}
 
 /***********************************************************************
@@ -13986,67 +13996,58 @@ InterfaceProxy::Invoke
 Enum
 ***********************************************************************/
 
-#define BEGIN_ENUM_ITEM_FLAG(TYPENAME, DEFAULTVALUE, FLAG, TDFLAGS)\
+#define BEGIN_ENUM_ITEM_FLAG(TYPENAME, TDFLAGS)\
 			template<>\
 			struct CustomTypeDescriptorSelector<TYPENAME>\
 			{\
-				static const TypeDescriptorFlags TDFlags = TDFLAGS;\
 			public:\
-				class CustomEnumValueSerializer : public EnumValueSerializer<TYPENAME, FLAG>\
+				class CustomTypeDescriptorImpl : public EnumTypeDescriptor<TYPENAME, TDFLAGS>\
 				{\
 					typedef TYPENAME EnumType;\
 				public:\
-					CustomEnumValueSerializer(ITypeDescriptor* _ownerTypeDescriptor)\
-						:EnumValueSerializer(_ownerTypeDescriptor, DEFAULTVALUE)\
-					{
+					void LoadInternal()override\
+					{\
+						EnumTypeDescriptor<TYPENAME, TDFLAGS>::LoadInternal();\
 
-#define BEGIN_ENUM_ITEM_DEFAULT_VALUE(TYPENAME, DEFAULTVALUE) BEGIN_ENUM_ITEM_FLAG(TYPENAME, TYPENAME::DEFAULTVALUE, false, TypeDescriptorFlags::NormalEnum)
-#define BEGIN_ENUM_ITEM(TYPENAME) BEGIN_ENUM_ITEM_FLAG(TYPENAME, (TYPENAME)0, false, TypeDescriptorFlags::NormalEnum)
-#define BEGIN_ENUM_ITEM_MERGABLE(TYPENAME) BEGIN_ENUM_ITEM_FLAG(TYPENAME, (TYPENAME)0, true, TypeDescriptorFlags::FlagEnum)
+#define BEGIN_ENUM_ITEM(TYPENAME) BEGIN_ENUM_ITEM_FLAG(TYPENAME, TypeDescriptorFlags::NormalEnum)
+#define BEGIN_ENUM_ITEM_MERGABLE(TYPENAME) BEGIN_ENUM_ITEM_FLAG(TYPENAME, TypeDescriptorFlags::FlagEnum)
 
 #define END_ENUM_ITEM(TYPENAME)\
 					}\
 				};\
-				typedef SerializableTypeDescriptor<CustomEnumValueSerializer, TDFlags> CustomTypeDescriptorImpl;\
 			};
 
 #define ENUM_ITEM_NAMESPACE(TYPENAME) typedef TYPENAME EnumItemNamespace;
-#define ENUM_ITEM(ITEMNAME) candidates.Add(L ## #ITEMNAME, ITEMNAME);
-#define ENUM_NAMESPACE_ITEM(ITEMNAME) candidates.Add(L ## #ITEMNAME, EnumItemNamespace::ITEMNAME);
-#define ENUM_CLASS_ITEM(ITEMNAME) candidates.Add(L ## #ITEMNAME, EnumType::ITEMNAME);
+#define ENUM_ITEM(ITEMNAME) enumType->AddItem(L ## #ITEMNAME, ITEMNAME);
+#define ENUM_NAMESPACE_ITEM(ITEMNAME) enumType->AddItem(L ## #ITEMNAME, EnumItemNamespace::ITEMNAME);
+#define ENUM_CLASS_ITEM(ITEMNAME) enumType->AddItem(L ## #ITEMNAME, EnumType::ITEMNAME);
 
 /***********************************************************************
 Struct
 ***********************************************************************/
 
-#define BEGIN_STRUCT_MEMBER(TYPENAME)\
+#define BEGIN_STRUCT_MEMBER_FLAG(TYPENAME, TDFLAGS)\
 			template<>\
 			struct CustomTypeDescriptorSelector<TYPENAME>\
 			{\
 			public:\
-				class CustomStructValueSerializer : public StructValueSerializer<TYPENAME>\
+				class CustomTypeDescriptorImpl : public StructTypeDescriptor<TYPENAME, TDFLAGS>\
 				{\
 					typedef TYPENAME StructType;\
-				public:\
-					CustomStructValueSerializer(ITypeDescriptor* _ownerTypeDescriptor)\
-						:StructValueSerializer(_ownerTypeDescriptor)\
-					{\
-					}\
 				protected:\
 					void LoadInternal()override\
 					{
 
-#define END_STRUCT_MEMBER_FLAG(TYPENAME, TDFLAGS)\
-					}\
-				};\
-				typedef StructTypeDescriptor<CustomStructValueSerializer, TDFLAGS> CustomTypeDescriptorImpl;\
-			};
+#define BEGIN_STRUCT_MEMBER(TYPENAME)\
+			BEGIN_STRUCT_MEMBER_FLAG(TYPENAME, TypeDescriptorFlags::Struct)
 
 #define END_STRUCT_MEMBER(TYPENAME)\
-			END_STRUCT_MEMBER_FLAG(TYPENAME, TypeDescriptorFlags::Struct)
+					}\
+				};\
+			};
 
 #define STRUCT_MEMBER(FIELDNAME)\
-	fieldSerializers.Add(L ## #FIELDNAME, new FieldSerializer<decltype(((StructType*)0)->FIELDNAME)>(GetOwnerTypeDescriptor(), &StructType::FIELDNAME, L ## #FIELDNAME));
+	fields.Add(L ## #FIELDNAME, new StructFieldInfo<decltype(((StructType*)0)->FIELDNAME)>(this, &StructType::FIELDNAME, L ## #FIELDNAME));
 
 /***********************************************************************
 Class
@@ -14063,7 +14064,7 @@ Class
 					static const TypeDescriptorFlags		TDFlags = TypeDescriptorFlags::Class;\
 				public:\
 					CustomTypeDescriptorImpl()\
-						:TypeDescriptorImpl(TDFlags, TypeInfo<TYPENAME>::TypeName, TypeInfo<TYPENAME>::CppFullTypeName)\
+						:TypeDescriptorImpl(TDFlags, &TypeInfo<TYPENAME>::content)\
 					{\
 						Description<TYPENAME>::SetAssociatedTypeDescroptor(this);\
 					}\
@@ -14104,7 +14105,7 @@ Interface
 					MethodPointerBinaryData::MethodMap		methodsForProxy;\
 				public:\
 					CustomTypeDescriptorImpl()\
-						:TypeDescriptorImpl(TDFLAGS, TypeInfo<TYPENAME>::TypeName, TypeInfo<TYPENAME>::CppFullTypeName)\
+						:TypeDescriptorImpl(TDFLAGS, &TypeInfo<TYPENAME>::content)\
 					{\
 						Description<TYPENAME>::SetAssociatedTypeDescroptor(this);\
 					}\
@@ -14130,7 +14131,7 @@ Interface
 
 #define BEGIN_INTERFACE_MEMBER(TYPENAME)\
 	BEGIN_INTERFACE_MEMBER_NOPROXY(TYPENAME)\
-	CLASS_MEMBER_EXTERNALCTOR(decltype(ValueInterfaceProxy<TYPENAME>::Create(nullptr))(Ptr<IValueInterfaceProxy>), { L"proxy" }, &ValueInterfaceProxy<TYPENAME>::Create)
+	CLASS_MEMBER_EXTERNALCTOR(decltype(ValueInterfaceProxy<TYPENAME>::Create(nullptr))(Ptr<IValueInterfaceProxy>), { L"proxy" }, vl::reflection::description::ValueInterfaceProxy<TYPENAME>::Create)
 
 #define END_INTERFACE_MEMBER(TYPENAME)\
 						if (GetBaseTypeDescriptorCount() == 0 && TDFlags == TypeDescriptorFlags::Interface) CLASS_MEMBER_BASE(IDescriptable)\
@@ -14163,19 +14164,22 @@ Constructor
 				AddConstructor(new CustomConstructorInfoImpl<FUNCTIONTYPE>(parameterNames));\
 			}
 
-#define CLASS_MEMBER_EXTERNALCTOR(FUNCTIONTYPE, PARAMETERNAMES, SOURCE)\
+#define CLASS_MEMBER_EXTERNALCTOR_INVOKETEMPLATE(FUNCTIONTYPE, PARAMETERNAMES, SOURCE, INVOKETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddConstructor(\
-					new CustomStaticMethodInfoImpl<FUNCTIONTYPE>(parameterNames, SOURCE)\
+					new CustomStaticMethodInfoImpl<FUNCTIONTYPE>(parameterNames, SOURCE, INVOKETEMPLATE)\
 					);\
 			}
+
+#define CLASS_MEMBER_EXTERNALCTOR(FUNCTIONTYPE, PARAMETERNAMES, SOURCE)\
+			CLASS_MEMBER_EXTERNALCTOR_INVOKETEMPLATE(FUNCTIONTYPE, PROTECT_PARAMETERS(PARAMETERNAMES), (FUNCTIONNAME_AddPointer<FUNCTIONTYPE>)&::SOURCE, L"::" L ## #SOURCE L"($Arguments)")
 
 /***********************************************************************
 Method
 ***********************************************************************/
 
-#define CLASS_MEMBER_EXTERNALMETHOD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE)\
+#define CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE, INVOKETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddMethod(\
@@ -14183,18 +14187,21 @@ Method
 					new CustomExternalMethodInfoImpl<\
 						ClassType,\
 						vl::function_lambda::LambdaRetriveType<FUNCTIONTYPE>::FunctionType\
-						>(parameterNames, SOURCE)\
+						>(parameterNames, SOURCE, INVOKETEMPLATE)\
 					);\
 			}
 
-#define CLASS_MEMBER_METHOD_OVERLOAD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
+#define CLASS_MEMBER_EXTERNALMETHOD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE)\
+			CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &::SOURCE, L"::" L ## #SOURCE L"($This, $Arguments)")\
+
+#define CLASS_MEMBER_METHOD_OVERLOAD_RENAME_INVOKETEMPLATE(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, INVOKETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				auto methodInfo = new CustomMethodInfoImpl<\
 						ClassType,\
 						vl::function_lambda::LambdaRetriveType<FUNCTIONTYPE>::FunctionType\
 						>\
-					(parameterNames, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME);\
+					(parameterNames, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME, INVOKETEMPLATE);\
 				AddMethod(\
 					L ## #EXPECTEDNAME,\
 					methodInfo\
@@ -14203,8 +14210,11 @@ Method
 				MethodPointerBinaryDataRecorder<ClassType, TDFlags>::RecordMethod(binaryDataRetriver.GetBinaryData(), this, methodInfo);\
 			}
 
+#define CLASS_MEMBER_METHOD_OVERLOAD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
+			CLASS_MEMBER_METHOD_OVERLOAD_RENAME_INVOKETEMPLATE(EXPECTEDNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, L"$This->" L ## #FUNCTIONNAME L"($Arguments)")
+
 #define CLASS_MEMBER_METHOD_OVERLOAD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
-			CLASS_MEMBER_METHOD_OVERLOAD_RENAME(FUNCTIONNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE)
+			CLASS_MEMBER_METHOD_OVERLOAD_RENAME_INVOKETEMPLATE(FUNCTIONNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, nullptr)
 
 #define CLASS_MEMBER_METHOD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES)\
 			CLASS_MEMBER_METHOD_OVERLOAD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), decltype(&ClassType::FUNCTIONNAME))
@@ -14216,19 +14226,22 @@ Method
 Static Method
 ***********************************************************************/
 
-#define CLASS_MEMBER_STATIC_EXTERNALMETHOD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE)\
+#define CLASS_MEMBER_STATIC_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE, INVOKETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddMethod(\
 					L ## #FUNCTIONNAME,\
 					new CustomStaticMethodInfoImpl<\
 						vl::function_lambda::FunctionObjectRetriveType<FUNCTIONTYPE>::FunctionType\
-						>(parameterNames, SOURCE)\
+						>(parameterNames, (FUNCTIONTYPE)SOURCE, INVOKETEMPLATE)\
 					);\
 			}
 
+#define CLASS_MEMBER_STATIC_EXTERNALMETHOD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE)\
+			CLASS_MEMBER_STATIC_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &::SOURCE, L"::" L ## #SOURCE L"($Arguments)")
+
 #define CLASS_MEMBER_STATIC_METHOD_OVERLOAD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
-			CLASS_MEMBER_STATIC_EXTERNALMETHOD(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME)
+			CLASS_MEMBER_STATIC_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &ClassType::FUNCTIONNAME, nullptr)
 
 #define CLASS_MEMBER_STATIC_METHOD(FUNCTIONNAME, PARAMETERNAMES)\
 			CLASS_MEMBER_STATIC_METHOD_OVERLOAD(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), decltype(&ClassType::FUNCTIONNAME))
@@ -14255,8 +14268,8 @@ Property
 					this,\
 					L ## #PROPERTYNAME,\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
-					0,\
-					0\
+					nullptr,\
+					nullptr\
 					)\
 				);
 
@@ -14267,7 +14280,7 @@ Property
 					L ## #PROPERTYNAME,\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #SETTER, true)->GetMethod(0)),\
-					0\
+					nullptr\
 					)\
 				);
 
@@ -14288,8 +14301,20 @@ Property
 					this,\
 					L ## #PROPERTYNAME,\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
-					0,\
+					nullptr,\
 					dynamic_cast<EventInfoImpl*>(GetEventByName(L ## #EVENT, true))\
+					)\
+				);
+
+#define CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE(PROPERTYNAME, GETTER, SETTER, REFERENCETEMPLATE)\
+			AddProperty(\
+				new PropertyInfoImpl_StaticCpp(\
+					this,\
+					L ## #PROPERTYNAME,\
+					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
+					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #SETTER, true)->GetMethod(0)),\
+					nullptr,\
+					WString(REFERENCETEMPLATE, false)\
 					)\
 				);
 

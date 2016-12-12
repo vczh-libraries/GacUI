@@ -27,25 +27,6 @@ namespace vl
 			GUIREFLECTIONCONTROLS_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
-External Functions
-***********************************************************************/
-
-			Ptr<ITheme> CreateWin7Theme()
-			{
-				return new win7::Win7Theme();
-			}
-
-			Ptr<ITheme> CreateWin8Theme()
-			{
-				return new win8::Win8Theme();
-			}
-
-			ListViewItemStyleProvider::IListViewItemContent* ListViewItemStyleProvider_GetItemContent(ListViewItemStyleProvider* thisObject, GuiListControl::IItemStyleController* itemStyleController)
-			{
-				return thisObject->GetItemContent<ListViewItemStyleProvider::IListViewItemContent>(itemStyleController);
-			}
-
-/***********************************************************************
 Type Declaration
 ***********************************************************************/
 
@@ -61,10 +42,10 @@ Type Declaration
 	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(CONTROL::IStyleProvider*), {L"styleProvider"})
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
-	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), []()->WString{return INTERFACE::Identifier;})
+	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<INTERFACE>)
 
 			BEGIN_CLASS_MEMBER(GuiApplication)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetApplication, NO_PARAMETER, GuiApplication*(*)(), &GetApplication)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetApplication, NO_PARAMETER, GuiApplication*(*)(), vl::presentation::controls::GetApplication)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MainWindow)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TooltipOwner)
@@ -84,10 +65,10 @@ Type Declaration
 			END_CLASS_MEMBER(GuiApplication)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITheme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentTheme, NO_PARAMETER, ITheme*(*)(), &GetCurrentTheme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(SetCurrentTheme, {L"theme"}, void(*)(ITheme*), &SetCurrentTheme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin7Theme, NO_PARAMETER, Ptr<ITheme>(*)(), &CreateWin7Theme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin8Theme, NO_PARAMETER, Ptr<ITheme>(*)(), &CreateWin8Theme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentTheme, NO_PARAMETER, ITheme*(*)(), vl::presentation::theme::GetCurrentTheme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(SetCurrentTheme, {L"theme"}, void(*)(ITheme*), vl::presentation::theme::SetCurrentTheme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin7Theme, NO_PARAMETER, Ptr<ITheme>(*)(), vl::reflection::description::CreateWin7Theme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin8Theme, NO_PARAMETER, Ptr<ITheme>(*)(), vl::reflection::description::CreateWin8Theme)
 
 				CLASS_MEMBER_METHOD(CreateWindowStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateCustomControlStyle, NO_PARAMETER)
@@ -339,7 +320,7 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiTab)
 				CLASS_MEMBER_BASE(GuiControl)
 				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTab)
-				CONTROL_CONSTRUCTOR_DEFAULT(GuiTab, &g::NewTab)
+				CONTROL_CONSTRUCTOR_DEFAULT(GuiTab, vl::presentation::theme::g::NewTab)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedPage)
 
@@ -723,7 +704,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(IsItemStyleAttachedToListView, {L"itemStyle"})
 				CLASS_MEMBER_METHOD(GetItemContentFromItemStyleController, {L"itemStyleController"})
 				CLASS_MEMBER_METHOD(GetItemStyleControllerFromItemContent, {L"itemContent"})
-				CLASS_MEMBER_EXTERNALMETHOD(GetItemContent, {L"itemStyleController"}, ListViewItemStyleProvider::IListViewItemContent*(ListViewItemStyleProvider::*)(GuiListControl::IItemStyleController*), &ListViewItemStyleProvider_GetItemContent)
+				CLASS_MEMBER_EXTERNALMETHOD(GetItemContent, {L"itemStyleController"}, ListViewItemStyleProvider::IListViewItemContent*(ListViewItemStyleProvider::*)(GuiListControl::IItemStyleController*), vl::presentation::description::ListViewItemStyleProvider_GetItemContent)
 			END_CLASS_MEMBER(ListViewItemStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemView)
@@ -1699,7 +1680,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
 				CONTROL_CONSTRUCTOR_PROVIDER(GuiStringGrid)
 
-				CLASS_MEMBER_METHOD_RENAME(GetGrids, Grids, NO_PARAMETER)
+				CLASS_MEMBER_EXTERNALMETHOD(GetGrids, NO_PARAMETER, StringGridProvider*(GuiStringGrid::*)(), vl::reflection::description::GuiStringGrid_GetGrids)
 				CLASS_MEMBER_PROPERTY_READONLY(Grids, GetGrids)
 			END_CLASS_MEMBER(GuiStringGrid)
 

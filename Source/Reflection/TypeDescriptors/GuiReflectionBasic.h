@@ -9,9 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 
-#include "../../Resources/GuiDocument.h"
-#include "../../Resources/GuiResourceManager.h"
-#include "../../Controls/Styles/GuiThemeStyleFactory.h"
+#include "../../GacUIReflectionHelper.h"
 
 namespace vl
 {
@@ -101,63 +99,6 @@ Type List
 			F(presentation::controls::GuiControlHost)\
 
 			GUIREFLECTIONBASIC_TYPELIST(DECL_TYPE_INFO)
-
-/***********************************************************************
-Serialization (Color)
-***********************************************************************/
-
-			template<>
-			struct TypedValueSerializerProvider<presentation::Color>
-			{
-				static presentation::Color GetDefaultValue();
-				static bool Serialize(const presentation::Color& input, WString& output);
-				static bool Deserialize(const WString& input, presentation::Color& output);
-			};
-
-			template<>
-			struct CustomTypeDescriptorSelector<presentation::Color>
-			{
-			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::Color>, TypeDescriptorFlags::Primitive> CustomTypeDescriptorImpl;
-			};
-
-/***********************************************************************
-Serialization (DocumentFontSize)
-***********************************************************************/
-
-			template<>
-			struct TypedValueSerializerProvider<presentation::DocumentFontSize>
-			{
-				static presentation::DocumentFontSize GetDefaultValue();
-				static bool Serialize(const presentation::DocumentFontSize& input, WString& output);
-				static bool Deserialize(const WString& input, presentation::DocumentFontSize& output);
-			};
-
-			template<>
-			struct CustomTypeDescriptorSelector<presentation::DocumentFontSize>
-			{
-			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::DocumentFontSize>, TypeDescriptorFlags::Primitive> CustomTypeDescriptorImpl;
-			};
-
-/***********************************************************************
-Serialization (GlobalStringKey)
-***********************************************************************/
-
-			template<>
-			struct TypedValueSerializerProvider<presentation::GlobalStringKey>
-			{
-				static presentation::GlobalStringKey GetDefaultValue();
-				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
-				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
-			};
-
-			template<>
-			struct CustomTypeDescriptorSelector<presentation::GlobalStringKey>
-			{
-			public:
-				typedef SerializableTypeDescriptor<TypedDefaultValueSerializer<presentation::GlobalStringKey>, TypeDescriptorFlags::Primitive> CustomTypeDescriptorImpl;
-			};
 
 /***********************************************************************
 Interface Proxy

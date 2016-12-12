@@ -1,0 +1,89 @@
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection Helper
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GACUIREFLECTIONHELPER
+#define VCZH_PRESENTATION_GACUIREFLECTIONHELPER
+
+#include "Controls/GuiApplication.h"
+#include "Controls/Styles/GuiWin7Styles.h"
+#include "Controls/Styles/GuiWin8Styles.h"
+#include "Controls/Templates/GuiControlTemplateStyles.h"
+#include "Resources/GuiResourceManager.h"
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Serialization
+***********************************************************************/
+
+			template<>
+			struct TypedValueSerializerProvider<presentation::Color>
+			{
+				static presentation::Color GetDefaultValue();
+				static bool Serialize(const presentation::Color& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::Color& output);
+				static IValueType::CompareResult Compare(const presentation::Color& a, const presentation::Color& b);
+			};
+
+			template<>
+			struct TypedValueSerializerProvider<presentation::DocumentFontSize>
+			{
+				static presentation::DocumentFontSize GetDefaultValue();
+				static bool Serialize(const presentation::DocumentFontSize& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::DocumentFontSize& output);
+				static IValueType::CompareResult Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b);
+			};
+
+			template<>
+			struct TypedValueSerializerProvider<presentation::GlobalStringKey>
+			{
+				static presentation::GlobalStringKey GetDefaultValue();
+				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
+				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
+				static IValueType::CompareResult Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b);
+			};
+
+/***********************************************************************
+External Functions
+***********************************************************************/
+
+			extern presentation::compositions::GuiGraphicsAnimationManager*	GuiControlHost_GetAnimationManager(presentation::controls::GuiControlHost* thisObject);
+			extern Ptr<presentation::INativeImage>							INativeImage_Constructor(const WString& path);
+			extern presentation::INativeCursor*								INativeCursor_Constructor1();
+			extern presentation::INativeCursor*								INativeCursor_Constructor2(presentation::INativeCursor::SystemCursorType type);
+			extern Ptr<presentation::DocumentModel>							DocumentModel_Constructor(const WString& path);
+
+			template<typename T>
+			Ptr<T> Element_Constructor()
+			{
+				return T::Create();
+			}
+			extern presentation::elements::text::TextLines*					GuiColorizedTextElement_GetLines(presentation::elements::GuiColorizedTextElement* thisObject);
+
+			extern void														GuiTableComposition_SetRows(presentation::compositions::GuiTableComposition* thisObject, vint value);
+			extern void														GuiTableComposition_SetColumns(presentation::compositions::GuiTableComposition* thisObject, vint value);
+			extern void														IGuiAltActionHost_CollectAltActions(presentation::compositions::IGuiAltActionHost* host, collections::List<presentation::compositions::IGuiAltAction*>& actions);
+
+			extern Ptr<presentation::theme::ITheme>							CreateWin7Theme();
+			extern Ptr<presentation::theme::ITheme>							CreateWin8Theme();
+			extern presentation::controls::list::ListViewItemStyleProvider::IListViewItemContent*	ListViewItemStyleProvider_GetItemContent(presentation::controls::list::ListViewItemStyleProvider* thisObject, presentation::controls::GuiListControl::IItemStyleController* itemStyleController);
+			template<typename T>
+			WString Interface_GetIdentifier()
+			{
+				return T::Identifier;
+			}
+			extern presentation::controls::list::StringGridProvider*		GuiStringGrid_GetGrids(presentation::controls::GuiStringGrid* grid);
+		}
+	}
+}
+
+#endif

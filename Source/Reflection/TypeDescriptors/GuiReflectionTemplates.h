@@ -10,7 +10,6 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIOTEMPLATES
 
 #include "GuiReflectionControls.h"
-#include "../../Controls/Templates/GuiControlTemplateStyles.h"
 
 namespace vl
 {
