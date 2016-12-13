@@ -247,7 +247,6 @@ GuiListViewInstanceLoader
 			class GuiListViewInstanceLoaderBase : public BASE_TYPE
 			{
 			protected:
-				bool				bindable;
 				GlobalStringKey		_View, _IconSize;
 
 				void PrepareAdditionalArgumentsAfterCreation(const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)override
@@ -439,8 +438,9 @@ GuiTreeViewInstanceLoader
 				}
 
 			public:
-				GuiTreeViewInstanceLoaderBase()
+				GuiTreeViewInstanceLoaderBase(bool _bindable)
 					:BASE_TYPE(description::TypeInfo<TControl>::content.typeName, L"CreateTreeViewStyle")
+					, bindable(_bindable)
 				{
 					_Nodes = GlobalStringKey::Get(L"Nodes");
 					_IconSize = GlobalStringKey::Get(L"IconSize");
@@ -459,7 +459,6 @@ GuiTreeViewInstanceLoader
 				{
 					if (typeInfo.typeName == BASE_TYPE::GetTypeName())
 					{
-						propertyNames.Add(_Nodes);
 						propertyNames.Add(_IconSize);
 					}
 					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
@@ -527,10 +526,20 @@ GuiTreeViewInstanceLoader
 
 			class GuiTreeViewInstanceLoader : public GuiTreeViewInstanceLoaderBase<GuiTreeView>
 			{
+			public:
+				GuiTreeViewInstanceLoader()
+					:GuiTreeViewInstanceLoaderBase<GuiTreeView>(false)
+				{
+				}
 			};
 
 			class GuiBindableTreeViewInstanceLoader : public GuiTreeViewInstanceLoaderBase<GuiBindableTreeView>
 			{
+			public:
+				GuiBindableTreeViewInstanceLoader()
+					:GuiTreeViewInstanceLoaderBase<GuiBindableTreeView>(true)
+				{
+				}
 			};
 
 /***********************************************************************
