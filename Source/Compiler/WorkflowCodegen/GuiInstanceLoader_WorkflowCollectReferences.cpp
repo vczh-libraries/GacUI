@@ -75,7 +75,10 @@ WorkflowReferenceNamesVisitor
 					case TypeDescriptorFlags::FlagEnum:
 					case TypeDescriptorFlags::NormalEnum:
 					case TypeDescriptorFlags::Struct:
-						resolvingResult.propertyResolvings.Add(repr, candidate);
+						if (auto expression = Workflow_ParseTextValue(td, repr->text, errors))
+						{
+							resolvingResult.propertyResolvings.Add(repr, candidate);
+						}
 						break;
 					default:
 						{

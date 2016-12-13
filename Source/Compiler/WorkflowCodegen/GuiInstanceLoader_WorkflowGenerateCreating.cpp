@@ -68,34 +68,11 @@ WorkflowGenerateCreatingVisitor
 
 				if (serializable)
 				{
-					if (td == description::GetTypeDescriptor<WString>())
-					{
-						auto str = MakePtr<WfStringExpression>();
-						str->value.value = textValue;
-						argumentInfo.expression = str;
-					}
-					else if(td->GetSerializableType())
-					{
-						auto str = MakePtr<WfStringExpression>();
-						str->value.value = textValue;
+					argumentInfo.expression = Workflow_ParseTextValue(td, textValue, errors);
 
-						auto type = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-
-						auto cast = MakePtr<WfTypeCastingExpression>();
-						cast->type = GetTypeFromTypeInfo(type.Obj());
-						cast->strategy = WfTypeCastingStrategy::Strong;
-						cast->expression = str;
-
-						argumentInfo.expression = cast;
-					}
-					else if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-					{
-						throw 0;
-					}
-					else
-					{
-						throw 0;
-					}
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = argumentInfo.expression;
+					Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, textValue, stat);
 				}
 				else
 				{

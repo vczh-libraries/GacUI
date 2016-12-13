@@ -5,7 +5,9 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace reflection::description;
 		using namespace workflow;
+		using namespace workflow::analyzer;
 
 /***********************************************************************
 Parser
@@ -37,6 +39,61 @@ Workflow_ModuleToString
 			stream.SeekFromBegin(0);
 			stream::StreamReader reader(stream);
 			return reader.ReadToEnd();
+		}
+
+/***********************************************************************
+Converter
+***********************************************************************/
+
+		Ptr<workflow::WfExpression> Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, types::ErrorList& errors)
+		{
+			if (typeDescriptor == description::GetTypeDescriptor<WString>())
+			{
+				auto str = MakePtr<WfStringExpression>();
+				str->value.value = textValue;
+				return str;
+			}
+			else if (typeDescriptor->GetSerializableType())
+			{
+				auto str = MakePtr<WfStringExpression>();
+				str->value.value = textValue;
+
+				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+
+				auto cast = MakePtr<WfTypeCastingExpression>();
+				cast->type = GetTypeFromTypeInfo(type.Obj());
+				cast->strategy = WfTypeCastingStrategy::Strong;
+				cast->expression = str;
+
+				return cast;
+			}
+			else if (typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+			{
+				auto valueExpr = Workflow_ParseExpression(L"{" + textValue + L"}", errors);
+				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+
+				auto infer = MakePtr<WfInferExpression>();
+				infer->type = GetTypeFromTypeInfo(type.Obj());
+				infer->expression = valueExpr;
+
+				return infer;
+			}
+			else
+			{
+				auto valueExpr = Workflow_ParseExpression(L"(" + textValue + L")", errors);
+				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+
+				auto infer = MakePtr<WfInferExpression>();
+				infer->type = GetTypeFromTypeInfo(type.Obj());
+				infer->expression = valueExpr;
+
+				return infer;
+			}
+		}
+
+		Ptr<workflow::WfExpression> Workflow_CreateValueTypeExpression(description::ITypeDescriptor* typeDescriptor, const description::Value& value, types::ErrorList& errors)
+		{
+
 		}
 	}
 }
