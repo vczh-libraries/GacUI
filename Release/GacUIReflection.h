@@ -2300,14 +2300,15 @@ Macros
 #define GUIEVENT_HANDLER_PARAMETERS {L"sender", L"arguments"}
 
 #define CLASS_MEMBER_GUIEVENT_HANDLER(FUNCTIONNAME, ARGUMENTTYPE)\
-			CLASS_MEMBER_EXTERNALMETHOD(\
+			CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(\
 				FUNCTIONNAME,\
 				GUIEVENT_HANDLER_PARAMETERS,\
 				void(ClassType::*)(vl::presentation::compositions::GuiGraphicsComposition*, ARGUMENTTYPE*),\
 				[](ClassType* owner, vl::presentation::compositions::GuiGraphicsComposition* sender, ARGUMENTTYPE* arguments)\
 				{\
 					owner->FUNCTIONNAME(sender, *arguments);\
-				})\
+				},\
+				L"[](auto owner, auto sender, auto arguments){ return owner->$Name(sender, *arguments); }($This, $Arguments)")\
 
 /***********************************************************************
 Type Loader
