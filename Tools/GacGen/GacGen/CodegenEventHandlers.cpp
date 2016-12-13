@@ -16,7 +16,7 @@ WString GetEventHandlerCommentEnd(const WString& prefix)
 
 WString GetEventHandlerHeader(const WString& prefix, Ptr<Instance> instance, const WString& name, bool addClassName)
 {
-	return prefix + L"void " + (addClassName ? instance->typeName + L"::" : L"") + name + L"(GuiGraphicsComposition* sender, " + GetCppTypeName(instance->eventHandlers[name].argumentType) + L"& arguments)" + (addClassName ? L"" : L";");
+	return prefix + L"void " + (addClassName ? instance->typeName + L"::" : L"") + name + L"(::vl::presentation::compositions::GuiGraphicsComposition* sender, " + GetCppTypeName(instance->eventHandlers[name].argumentType) + L"& arguments)" + (addClassName ? L"" : L";");
 }
 
 void WriteControlClassHeaderFileEventHandlers(Ptr<CodegenConfig> config, Ptr<Instance> instance, const WString& prefix, StreamWriter& writer)

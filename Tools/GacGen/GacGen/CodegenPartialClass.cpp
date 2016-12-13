@@ -130,7 +130,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 		FOREACH(Ptr<GuiInstanceParameter>, parameter, instance->context->parameters)
 		{
 			writer.WriteString(prefix + L"\t");
-			writer.WriteString(L"Ptr<");
+			writer.WriteString(L"vl::Ptr<");
 			writer.WriteString(parameter->className.ToString());
 			writer.WriteString(L"> ");
 			writer.WriteString(parameter->name.ToString());
@@ -165,7 +165,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 			{
 				writer.WriteString(L", ");
 			}
-			writer.WriteString(L"Ptr<");
+			writer.WriteString(L"vl::Ptr<");
 			writer.WriteString(parameter->className.ToString());
 			writer.WriteString(L"> ");
 			writer.WriteString(parameter->name.ToString());
@@ -274,7 +274,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 						prefix + L"\t\t[]()\r\n" +
 						prefix + L"\t\t{\r\n" +
 						prefix + L"\t\t\tvl::reflection::description::Value value;\r\n" +
-						prefix + L"\t\t\treflection::description::GetTypeDescriptor<" + cppType + L">()->GetSerializableType()->Deserialize(L\"" + state->value + L"\", value);\r\n" +
+						prefix + L"\t\t\tvl::reflection::description::GetTypeDescriptor<" + cppType + L">()->GetSerializableType()->Deserialize(L\"" + state->value + L"\", value);\r\n" +
 						prefix + L"\t\t\treturn value;\r\n" +
 						prefix + L"\t\t}());"
 						);
@@ -289,11 +289,11 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 				{
 					auto cppType = GetCppTypeFromTypeInfo(typeInfo.Obj());
 					writer.WriteLine(
-						prefix + L"\t\tthis->" + prop->name.ToString() + L" = vl::reflection::description::UnboxValue<" + cppType + L">(\r\n" +
+						prefix + L"\t\tthis->" + prop->name.ToString() + L"_ = vl::reflection::description::UnboxValue<" + cppType + L">(\r\n" +
 						prefix + L"\t\t[]()\r\n" +
 						prefix + L"\t\t{\r\n" +
 						prefix + L"\t\t\tvl::reflection::description::Value value;\r\n" +
-						prefix + L"\t\t\treflection::description::GetTypeDescriptor<" + cppType + L">()->GetSerializableType()->Deserialize(L\"" + prop->value + L"\", value);\r\n" +
+						prefix + L"\t\t\tvl::reflection::description::GetTypeDescriptor<" + cppType + L">()->GetSerializableType()->Deserialize(L\"" + prop->value + L"\", value);\r\n" +
 						prefix + L"\t\t\treturn value;\r\n" +
 						prefix + L"\t\t}());"
 					);
@@ -306,7 +306,7 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 		{
 			writer.WriteLine(L"");
 			writer.WriteString(prefix + L"\t");
-			writer.WriteString(L"Ptr<");
+			writer.WriteString(L"vl::Ptr<");
 			writer.WriteString(parameter->className.ToString());
 			writer.WriteString(L"> Get");
 			writer.WriteString(parameter->name.ToString());
@@ -524,7 +524,7 @@ void WritePartialClassCppFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeManag
 			{
 				writer.WriteString(L", ");
 			}
-			writer.WriteString(L"Ptr<");
+			writer.WriteString(L"vl::Ptr<");
 			writer.WriteString(parameter->className.ToString());
 			writer.WriteString(L">");
 		}

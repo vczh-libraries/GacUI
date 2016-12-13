@@ -193,7 +193,8 @@ Macros
 				[](ClassType* owner, vl::presentation::compositions::GuiGraphicsComposition* sender, ARGUMENTTYPE* arguments)\
 				{\
 					owner->FUNCTIONNAME(sender, *arguments);\
-				})\
+				},\
+				L"[](auto owner, auto sender, auto arguments){ return owner->$Name(sender, *arguments); }($This, $Arguments)")\
 
 /***********************************************************************
 Type Loader

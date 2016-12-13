@@ -12,7 +12,7 @@ void WriteControlClassHeaderCtorArgs(Ptr<CodegenConfig> config, Ptr<Instance> in
 		{
 			writer.WriteString(L", ");
 		}
-		writer.WriteString(L"Ptr<");
+		writer.WriteString(L"vl::Ptr<");
 		writer.WriteString(parameter->className.ToString());
 		writer.WriteString(L"> ");
 		writer.WriteString(parameter->name.ToString());
