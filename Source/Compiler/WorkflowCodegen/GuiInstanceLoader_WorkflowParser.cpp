@@ -91,7 +91,7 @@ Converter
 			}
 		}
 
-		Ptr<workflow::WfExpression> Workflow_CreateValueTypeExpression(description::ITypeDescriptor* typeDescriptor, const description::Value& value, types::ErrorList& errors)
+		Ptr<workflow::WfExpression> Workflow_CreateValue(description::ITypeDescriptor* typeDescriptor, const description::Value& value, types::ErrorList& errors)
 		{
 
 		}

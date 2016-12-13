@@ -420,24 +420,17 @@ Workflow_GenerateInstanceClass
 				if (propInfo)
 				{
 					auto propTd = propInfo->GetReturn()->GetTypeDescriptor();
-					auto flag = propTd->GetTypeDescriptorFlags();
-					if ((flag & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
+					if ((propTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
 					{
-						auto defaultValue =
-							value == L""
-							? propTd->GetValueType()->CreateDefault()
-							: value
-							;
-						
-						auto stringExpr = MakePtr<WfStringExpression>();
-						stringExpr->value.value = defaultValue;
-
-						auto castExpr = MakePtr<WfTypeCastingExpression>();
-						castExpr->strategy = WfTypeCastingStrategy::Strong;
-						castExpr->type = CopyType(type);
-						castExpr->expression = stringExpr;
-
-						return castExpr;
+						if (value == L"")
+						{
+							return Workflow_ParseTextValue(propTd, value, errors);
+						}
+						else
+						{
+							auto defaultValue = propTd->GetValueType()->CreateDefault();
+							return Workflow_CreateValue(propTd, defaultValue, errors);
+						}
 					}
 					else
 					{

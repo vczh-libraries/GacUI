@@ -55,7 +55,7 @@ WorkflowCompiler (Parser)
 		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, types::ErrorList& errors);
 		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, types::ErrorList& errors);
-		extern Ptr<workflow::WfExpression>						Workflow_CreateValueTypeExpression(description::ITypeDescriptor* typeDescriptor, const description::Value& value, types::ErrorList& errors);
+		extern Ptr<workflow::WfExpression>						Workflow_CreateValue(description::ITypeDescriptor* typeDescriptor, const description::Value& value, types::ErrorList& errors);
 
 /***********************************************************************
 WorkflowCompiler (Installation)
