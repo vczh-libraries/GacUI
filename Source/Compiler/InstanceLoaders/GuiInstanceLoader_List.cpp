@@ -258,9 +258,25 @@ GuiListViewInstanceLoader
 						vint indexView = arguments.Keys().IndexOf(_View);
 						if (indexView != -1)
 						{
-							auto value = arguments.GetByIndex(indexView)[0].expression;
-							auto viewValue = ParseConstantArgument<ListViewViewType>(value, typeInfo, L"View", L"", errors);
-							view = UnboxValue<ListViewViewType>(viewValue);
+							auto viewExpr = arguments.GetByIndex(indexView)[0].expression;
+							if (auto inferExpr = viewExpr.Cast<WfInferExpression>())
+							{
+								if (auto refExpr = inferExpr->expression.Cast<WfReferenceExpression>())
+								{
+									auto enumType = description::GetTypeDescriptor<ListViewViewType>()->GetEnumType();
+									vint index = enumType->IndexOfItem(refExpr->name.value);
+									if (index == -1)
+									{
+										goto ILLEGAL_VIEW_PROPERTY;
+									}
+									
+									view = UnboxValue<ListViewViewType>(enumType->ToEnum(enumType->GetItemValue(index)));
+									goto FINISH_VIEW_PROPERTY;
+								}
+							}
+						ILLEGAL_VIEW_PROPERTY:
+							errors.Add(L"Precompile: The value of property \"View\" of type \"" + typeInfo.typeName.ToString() + L"\" is not in a right format.");
+						FINISH_VIEW_PROPERTY:;
 						}
 
 						vint indexIconSize = arguments.Keys().IndexOf(_IconSize);

@@ -387,12 +387,58 @@ GuiCellCompositionInstanceLoader
 					{
 						if (prop == _Site)
 						{
-							auto value = arguments.GetByIndex(index)[0].expression;
-							Value siteValue = ParseConstantArgument<SiteValue>(value, typeInfo, L"Site", L"row:<integer> column:<integer> rowSpan:<integer> columnSpan:<integer>", errors);
-							if (siteValue.IsNull())
+							SiteValue site;
 							{
+								auto siteExpr = arguments.GetByIndex(index)[0].expression;
+								if (auto inferExpr = siteExpr.Cast<WfInferExpression>())
+								{
+									if (auto ctorExpr = inferExpr->expression.Cast<WfConstructorExpression>())
+									{
+										auto st = description::GetTypeDescriptor<vint>()->GetSerializableType();
+										FOREACH(Ptr<WfConstructorArgument>, argument, ctorExpr->arguments)
+										{
+											if (auto keyExpr = argument->key.Cast<WfReferenceExpression>())
+											{
+												if (auto valueExpr = argument->value.Cast<WfIntegerExpression>())
+												{
+													Value value;
+													if (st->Deserialize(valueExpr->value.value, value))
+													{
+														vint propValue = UnboxValue<vint>(value);
+														if (keyExpr->name.value == L"row")
+														{
+															site.row = propValue;
+														}
+														else if (keyExpr->name.value == L"column")
+														{
+															site.column = propValue;
+														}
+														else if (keyExpr->name.value == L"rowSpan")
+														{
+															site.rowSpan = propValue;
+														}
+														else if (keyExpr->name.value == L"columnSpan")
+														{
+															site.columnSpan = propValue;
+														}
+														else
+														{
+															goto ILLEGAL_SITE_PROPERTY;
+														}
+														continue;
+													}
+												}
+											}
+											goto ILLEGAL_SITE_PROPERTY;
+										}
+										goto FINISH_SITE_PROPERTY;
+									}
+								}
+							ILLEGAL_SITE_PROPERTY:
+								errors.Add(L"Precompile: The value of property \"Site\" of type \"" + typeInfo.typeName.ToString() + L"\" is not in a right format: \"row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]\".");
 								continue;
 							}
+						FINISH_SITE_PROPERTY:;
 
 							{
 								auto refComposition = MakePtr<WfReferenceExpression>();
@@ -415,22 +461,22 @@ GuiCellCompositionInstanceLoader
 
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
-									arg->value.value = GetValueText(siteValue.GetProperty(L"row"));
+									arg->value.value = itow(site.row);
 									call->arguments.Add(arg);
 								}
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
-									arg->value.value = GetValueText(siteValue.GetProperty(L"column"));
+									arg->value.value = itow(site.column);
 									call->arguments.Add(arg);
 								}
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
-									arg->value.value = GetValueText(siteValue.GetProperty(L"rowSpan"));
+									arg->value.value = itow(site.rowSpan);
 									call->arguments.Add(arg);
 								}
 								{
 									auto arg = MakePtr<WfIntegerExpression>();
-									arg->value.value = GetValueText(siteValue.GetProperty(L"columnSpan"));
+									arg->value.value = itow(site.columnSpan);
 									call->arguments.Add(arg);
 								}
 

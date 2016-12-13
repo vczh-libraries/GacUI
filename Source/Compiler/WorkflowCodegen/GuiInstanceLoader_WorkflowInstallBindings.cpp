@@ -73,7 +73,7 @@ Workflow_InstallBindProperty
 
 			auto td = propInfo->acceptableTypes[0];
 			Ptr<ITypeInfo> convertedType;
-			if (td->GetValueSerializer())
+			if (td->GetSerializableType())
 			{
 				convertedType = TypeInfoRetriver<Ptr<GuiTextData>>::CreateTypeInfo();
 			}
@@ -129,7 +129,7 @@ Workflow_InstallBindProperty
 			}
 
 			Ptr<WfExpression> evalExpression;
-			if (td->GetValueSerializer())
+			if (td->GetSerializableType())
 			{
 				auto refResourceValue = MakePtr<WfReferenceExpression>();
 				refResourceValue->name.value = L"<resource-value>";
