@@ -429,7 +429,7 @@ Workflow_GenerateInstanceClass
 						else
 						{
 							auto defaultValue = propTd->GetValueType()->CreateDefault();
-							return Workflow_CreateValue(propTd, defaultValue, errors);
+							return Workflow_CreateValue(defaultValue, errors);
 						}
 					}
 					else
