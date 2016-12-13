@@ -46,9 +46,10 @@ WorkflowReferenceNamesVisitor
 				auto propertyInfo = candidate.propertyInfo;
 				auto td = candidate.info->acceptableTypes[0];
 
-				if (auto serializer = td->GetValueSerializer())
+				if (auto st = td->GetSerializableType())
 				{
-					if (serializer->Validate(repr->text))
+					Value value;
+					if (st->Deserialize(repr->text, value))
 					{
 						resolvingResult.propertyResolvings.Add(repr, candidate);
 					}
@@ -69,17 +70,27 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					auto error
-						= L"Precompile: Property \""
-						+ propertyInfo.propertyName.ToString()
-						+ L"\" of type \""
-						+ propertyInfo.typeInfo.typeName.ToString()
-						+ L"\" does not accept a value of text \""
-						+ repr->text
-						+ L"\" because its type \""
-						+ td->GetTypeName()
-						+ L"\" is not serializable.";
-					errors.Add(error);
+					switch (td->GetTypeDescriptorFlags())
+					{
+					case TypeDescriptorFlags::FlagEnum:
+					case TypeDescriptorFlags::NormalEnum:
+					case TypeDescriptorFlags::Struct:
+						break;
+					default:
+						{
+							auto error
+								= L"Precompile: Property \""
+								+ propertyInfo.propertyName.ToString()
+								+ L"\" of type \""
+								+ propertyInfo.typeInfo.typeName.ToString()
+								+ L"\" does not accept a value of text \""
+								+ repr->text
+								+ L"\" because its type \""
+								+ td->GetTypeName()
+								+ L"\" is not serializable.";
+							errors.Add(error);
+						}
+					}
 				}
 			}
 
@@ -90,9 +101,10 @@ WorkflowReferenceNamesVisitor
 					resolvingResult.propertyResolvings.Add(repr, candidatePropertyTypeInfos[selectedPropertyTypeInfo]);
 				}
 
+				bool isReferenceType = (resolvedTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
 				if (repr->instanceName == GlobalStringKey::Empty)
 				{
-					if (resolvedTypeInfo.typeDescriptor->GetValueSerializer() == nullptr)
+					if (isReferenceType)
 					{
 						auto name = GlobalStringKey::Get(L"<precompile>" + itow(generatedNameCount++));
 						repr->instanceName = name;
@@ -103,7 +115,7 @@ WorkflowReferenceNamesVisitor
 				{
 					errors.Add(L"Precompile: Referece name \"" + repr->instanceName.ToString() + L"\" conflict with an existing named object.");
 				}
-				else if (resolvedTypeInfo.typeDescriptor->GetValueSerializer())
+				else if (!isReferenceType)
 				{
 					errors.Add(L"Precompile: Reference name \"" + repr->instanceName.ToString() + L"\" cannot be added to a non-reference instance of type \"" + resolvedTypeInfo.typeName.ToString() + L"\".");
 				}
