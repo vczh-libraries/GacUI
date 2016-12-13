@@ -8,6 +8,7 @@ namespace vl
 	{
 		using namespace workflow;
 		using namespace collections;
+		using namespace reflection::description;
 
 /***********************************************************************
 WorkflowGenerateBindingVisitor
@@ -43,15 +44,11 @@ WorkflowGenerateBindingVisitor
 					reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				}
 				
-				if (reprTypeInfo.typeDescriptor && reprTypeInfo.typeDescriptor->GetValueSerializer() == nullptr)
+				if (reprTypeInfo.typeDescriptor && (reprTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 				{
 					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 					{
 						auto propertyName = repr->setters.Keys()[index];
-						if (propertyName.ToString() == L"EmbeddedButton")
-						{
-							int a = 0;
-						}
 						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 						{
 							if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))

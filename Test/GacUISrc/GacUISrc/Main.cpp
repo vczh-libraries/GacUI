@@ -122,6 +122,7 @@ void GuiMain_Resource()
 		{
 			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
 			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
+			CHECK_ERROR(errors.Count() == 0, L"Error");
 		}
 		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DevelopmentTool);
 
@@ -141,11 +142,11 @@ void GuiMain_Resource()
 	}
 
 	// UI1 / UI3 / UI4 / UI5 / UI7 / UI8
-	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
 	// UI2
-	// auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
-	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
+	auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
+	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
 
 	// UI6
 	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
