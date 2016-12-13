@@ -117,7 +117,7 @@ WorkflowGenerateCreatingVisitor
 			{
 				auto reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				
-				if (reprTypeInfo.typeDescriptor && reprTypeInfo.typeDescriptor->GetValueSerializer() == nullptr)
+				if (reprTypeInfo.typeDescriptor && (reprTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 				{
 					Group<GlobalStringKey, IGuiInstanceLoader*> usedProps;
 					FOREACH(GlobalStringKey, prop, From(repr->setters.Keys()).Reverse())

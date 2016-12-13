@@ -75,6 +75,7 @@ WorkflowReferenceNamesVisitor
 					case TypeDescriptorFlags::FlagEnum:
 					case TypeDescriptorFlags::NormalEnum:
 					case TypeDescriptorFlags::Struct:
+						resolvingResult.propertyResolvings.Add(repr, candidate);
 						break;
 					default:
 						{
