@@ -56,7 +56,7 @@ WorkflowGenerateCreatingVisitor
 					{
 						td = resolvingResult.typeInfos[ctor->instanceName].typeDescriptor;
 					}
-					if (td->GetSerializableType() != nullptr)
+					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
 					{
 						serializable = true;
 						textValue = ctor->setters.Values()[0]->values[0].Cast<GuiTextRepr>()->text;

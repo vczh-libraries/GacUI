@@ -6309,7 +6309,11 @@ GenerateInstructions(Expression)
 										INSTRUCTION(Ins::CompareLiteral(WfInsType::U8));
 										if (node->op == WfBinaryOperator::NE)
 										{
-											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+											INSTRUCTION(Ins::OpNE());
+										}
+										else
+										{
+											INSTRUCTION(Ins::OpEQ());
 										}
 										return;
 									default:;

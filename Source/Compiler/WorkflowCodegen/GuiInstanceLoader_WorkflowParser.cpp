@@ -110,10 +110,10 @@ Converter
 				str->value.value = UnboxValue<WString>(value);
 				return str;
 			}
-			else if (typeDescriptor->GetSerializableType())
+			else if (auto st = typeDescriptor->GetSerializableType())
 			{
 				auto str = MakePtr<WfStringExpression>();
-				str->value.value = UnboxValue<WString>(value);
+				st->Serialize(value, str->value.value);
 
 				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 

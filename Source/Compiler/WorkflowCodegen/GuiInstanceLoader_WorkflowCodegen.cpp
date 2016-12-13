@@ -66,6 +66,7 @@ Workflow_ValidateStatement
 				failed = true;
 			}
 
+			resolvingResult.moduleContent->statements.Remove(statement.Obj());
 			return !failed;
 		}
 
@@ -424,12 +425,12 @@ Workflow_GenerateInstanceClass
 					{
 						if (value == L"")
 						{
-							return Workflow_ParseTextValue(propTd, value, errors);
+							auto defaultValue = propTd->GetValueType()->CreateDefault();
+							return Workflow_CreateValue(defaultValue, errors);
 						}
 						else
 						{
-							auto defaultValue = propTd->GetValueType()->CreateDefault();
-							return Workflow_CreateValue(defaultValue, errors);
+							return Workflow_ParseTextValue(propTd, value, errors);
 						}
 					}
 					else
