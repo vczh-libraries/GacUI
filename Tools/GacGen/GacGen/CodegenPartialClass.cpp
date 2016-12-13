@@ -266,10 +266,18 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 		{
 			if (auto typeInfo = GetTypeInfoFromWorkflowType(config, state->typeName))
 			{
-				if (typeInfo->GetTypeDescriptor()->GetValueSerializer())
+				if (typeInfo->GetTypeDescriptor()->GetSerializableType())
 				{
 					auto cppType = GetCppTypeFromTypeInfo(typeInfo.Obj());
-					writer.WriteLine(prefix + L"\t\tthis->" + state->name.ToString() + L" = vl::reflection::description::UnboxValue<" + cppType + L">(vl::reflection::description::Value::From(L\"" + state->value + L"\", reflection::description::GetTypeDescriptor<" + cppType + L">()));");
+					writer.WriteLine(
+						prefix + L"\t\tthis->" + state->name.ToString() + L" = vl::reflection::description::UnboxValue<" + cppType + L">(\r\n" +
+						prefix + L"\t\t[]()\r\n" +
+						prefix + L"\t\t{\r\n" +
+						prefix + L"\t\t\tvl::reflection::description::Value value;\r\n" +
+						prefix + L"\t\t\treflection::description::GetTypeDescriptor<" + cppType + L">()->GetSerializableType()->Deserialize(L\"" + state->value + L"\", value);\r\n" +
+						prefix + L"\t\t\treturn value;\r\n" +
+						prefix + L"\t\t}());"
+						);
 				}
 			}
 		}
@@ -277,10 +285,18 @@ void WritePartialClassHeaderFile(Ptr<CodegenConfig> config, Ptr<WfLexicalScopeMa
 		{
 			if (auto typeInfo = GetTypeInfoFromWorkflowType(config, prop->typeName))
 			{
-				if (typeInfo->GetTypeDescriptor()->GetValueSerializer())
+				if (typeInfo->GetTypeDescriptor()->GetSerializableType())
 				{
 					auto cppType = GetCppTypeFromTypeInfo(typeInfo.Obj());
-					writer.WriteLine(prefix + L"\t\tthis->" + prop->name.ToString() + L"_ = vl::reflection::description::UnboxValue<" + cppType + L">(vl::reflection::description::Value::From(L\"" + prop->value + L"\", reflection::description::GetTypeDescriptor<" + cppType + L">()));");
+					writer.WriteLine(
+						prefix + L"\t\tthis->" + prop->name.ToString() + L" = vl::reflection::description::UnboxValue<" + cppType + L">(\r\n" +
+						prefix + L"\t\t[]()\r\n" +
+						prefix + L"\t\t{\r\n" +
+						prefix + L"\t\t\tvl::reflection::description::Value value;\r\n" +
+						prefix + L"\t\t\treflection::description::GetTypeDescriptor<" + cppType + L">()->GetSerializableType()->Deserialize(L\"" + prop->value + L"\", value);\r\n" +
+						prefix + L"\t\t\treturn value;\r\n" +
+						prefix + L"\t\t}());"
+					);
 				}
 			}
 		}

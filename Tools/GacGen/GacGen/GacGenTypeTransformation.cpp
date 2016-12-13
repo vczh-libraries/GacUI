@@ -45,7 +45,7 @@ WString GetCppTypeName(ITypeDescriptor* typeDescriptor)
 	}
 	else
 	{
-		auto cppType = typeDescriptor->GetCppFullTypeName();
+		auto cppType = CppGetFullName(typeDescriptor);
 		return cppType == L"" ? typeDescriptor->GetTypeName() : cppType;
 	}
 }

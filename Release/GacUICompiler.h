@@ -809,6 +809,8 @@ WorkflowCompiler (Parser)
 		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression(const WString& code, types::ErrorList& errors);
 		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, types::ErrorList& errors);
 		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
+		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, types::ErrorList& errors);
+		extern Ptr<workflow::WfExpression>						Workflow_CreateValue(const description::Value& value, types::ErrorList& errors);
 
 /***********************************************************************
 WorkflowCompiler (Installation)
@@ -901,33 +903,6 @@ namespace vl
 			using namespace workflow::analyzer;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-			template<typename TStruct>
-			Value ParseConstantArgument(Ptr<WfExpression> value, const IGuiInstanceLoader::TypeInfo& typeInfo, const WString& propertyName, const WString& formatSample, collections::List<WString>& errors)
-			{
-				auto castExpr = value.Cast<WfTypeCastingExpression>();
-				if (!castExpr)
-				{
-					errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
-				}
-				auto stringExpr = castExpr->expression.Cast<WfStringExpression>();
-				if (!stringExpr)
-				{
-					errors.Add(L"Precompile: The value of property \"" + propertyName + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" should be a constant.");
-				}
-
-				Value siteValue;
-				if (!description::GetTypeDescriptor<TStruct>()->GetValueSerializer()->Parse(stringExpr->value.value, siteValue))
-				{
-					errors.Add(L"Precompile: \"" + stringExpr->value.value + L"\" is not in a right format." + (formatSample == L"" ? WString() : L" It should be \"" + formatSample + L"\", in which components are all optional."));
-				}
-
-				return siteValue;
-			}
 
 /***********************************************************************
 GuiVrtualTypeInstanceLoader
@@ -1074,11 +1049,8 @@ GuiVrtualTypeInstanceLoader
 
 							Ptr<ITypeInfo> controlTemplateType;
 							{
-								auto elementType = MakePtr<TypeInfoImpl>(ITypeInfo::TypeDescriptor);
-								elementType->SetTypeDescriptor(controlTemplateTd);
-
-								auto pointerType = MakePtr<TypeInfoImpl>(ITypeInfo::RawPtr);
-								pointerType->SetElementType(elementType);
+								auto elementType = MakePtr<TypeDescriptorTypeInfo>(controlTemplateTd, TypeInfoHint::Normal);
+								auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 								controlTemplateType = pointerType;
 							}

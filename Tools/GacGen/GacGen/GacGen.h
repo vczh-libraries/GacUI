@@ -1,6 +1,7 @@
 #ifndef VCZH_GACGEN
 #define VCZH_GACGEN
 
+#define GAC_HEADER_USE_NAMESPACE
 #include "GacUICompiler.h"
 
 using namespace vl::console;

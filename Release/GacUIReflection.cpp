@@ -208,116 +208,20 @@ namespace vl
 
 			GUIREFLECTIONBASIC_TYPELIST(IMPL_VL_TYPE_INFO)
 
-			GuiGraphicsAnimationManager* GuiControlHost_GetAnimationManager(GuiControlHost* thisObject)
-			{
-				return thisObject->GetGraphicsHost()->GetAnimationManager();
-			}
-
-/***********************************************************************
-Serialization (Color)
-***********************************************************************/
-
-			Color TypedValueSerializerProvider<Color>::GetDefaultValue()
-			{
-				return Color();
-			}
-
-			bool TypedValueSerializerProvider<Color>::Serialize(const Color& input, WString& output)
-			{
-				output=input.ToString();
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<Color>::Deserialize(const WString& input, Color& output)
-			{
-				output=Color::Parse(input);
-				return true;
-			}
-
-/***********************************************************************
-Serialization (DocumentFontSize)
-***********************************************************************/
-
-			DocumentFontSize TypedValueSerializerProvider<DocumentFontSize>::GetDefaultValue()
-			{
-				return DocumentFontSize();
-			}
-
-			bool TypedValueSerializerProvider<DocumentFontSize>::Serialize(const DocumentFontSize& input, WString& output)
-			{
-				output=input.ToString();
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<DocumentFontSize>::Deserialize(const WString& input, DocumentFontSize& output)
-			{
-				output=DocumentFontSize::Parse(input);
-				return true;
-			}
-
-/***********************************************************************
-Serialization (GlobalStringKey)
-***********************************************************************/
-
-			GlobalStringKey TypedValueSerializerProvider<GlobalStringKey>::GetDefaultValue()
-			{
-				return GlobalStringKey();
-			}
-
-			bool TypedValueSerializerProvider<GlobalStringKey>::Serialize(const GlobalStringKey& input, WString& output)
-			{
-				output=input.ToString();
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<GlobalStringKey>::Deserialize(const WString& input, GlobalStringKey& output)
-			{
-				output = GlobalStringKey::Get(input);
-				return true;
-			}
-
-/***********************************************************************
-External Functions
-***********************************************************************/
-
-			Ptr<INativeImage> INativeImage_Constructor(const WString& path)
-			{
-				return GetCurrentController()->ImageService()->CreateImageFromFile(path);
-			}
-
-			INativeCursor* INativeCursor_Constructor1()
-			{
-				return GetCurrentController()->ResourceService()->GetDefaultSystemCursor();
-			}
-
-			INativeCursor* INativeCursor_Constructor2(INativeCursor::SystemCursorType type)
-			{
-				return GetCurrentController()->ResourceService()->GetSystemCursor(type);
-			}
-
-			Ptr<DocumentModel> DocumentModel_Constructor(const WString& path)
-			{
-				FileStream fileStream(path, FileStream::ReadOnly);
-				if(!fileStream.IsAvailable()) return 0;
-
-				BomDecoder decoder;
-				DecoderStream decoderStream(fileStream, decoder);
-				StreamReader reader(decoderStream);
-				WString xmlText=reader.ReadToEnd();
-
-				Ptr<ParsingTable> table=XmlLoadTable();
-				Ptr<XmlDocument> xml=XmlParseDocument(xmlText, table);
-				if(!xml) return 0;
-
-				List<WString> errors;
-				return DocumentModel::LoadFromXml(xml, GetFolderPath(path), errors);
-			}
-
 /***********************************************************************
 Type Declaration
 ***********************************************************************/
 
 #define _ ,
+			BEGIN_STRUCT_MEMBER(Color)
+				valueType = new SerializableValueType<Color>();
+				serializableType = new SerializableType<Color>();
+				STRUCT_MEMBER(r)
+				STRUCT_MEMBER(g)
+				STRUCT_MEMBER(b)
+				STRUCT_MEMBER(a)
+				STRUCT_MEMBER(value)
+			END_STRUCT_MEMBER(Color)
 
 			BEGIN_ENUM_ITEM(Alignment)
 				ENUM_CLASS_ITEM(Left)
@@ -383,6 +287,11 @@ Type Declaration
 				STRUCT_MEMBER(verticalAntialias)
 			END_STRUCT_MEMBER(FontProperties)
 
+			BEGIN_STRUCT_MEMBER_FLAG(GlobalStringKey, TypeDescriptorFlags::Primitive)
+				valueType = new SerializableValueType<GlobalStringKey>();
+				serializableType = new SerializableType<GlobalStringKey>();
+			END_STRUCT_MEMBER(GlobalStringKey)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeImageFrame)
 				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetSize, NO_PARAMETER)
@@ -392,7 +301,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetFormat, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFrameCount, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFrame, {L"index"})
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<INativeImage>(const WString&), {L"filePath"}, &INativeImage_Constructor)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<INativeImage>(const WString&), {L"filePath"}, vl::reflection::description::INativeImage_Constructor)
 			END_INTERFACE_MEMBER(INativeImage)
 
 			BEGIN_ENUM_ITEM(INativeImage::FormatType)
@@ -410,8 +319,8 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeCursor)
 				CLASS_MEMBER_METHOD(IsSystemCursor, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetSystemCursorType, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(), NO_PARAMETER, &INativeCursor_Constructor1)
-				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(INativeCursor::SystemCursorType), NO_PARAMETER, &INativeCursor_Constructor2)
+				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(), NO_PARAMETER, vl::reflection::description::INativeCursor_Constructor1)
+				CLASS_MEMBER_EXTERNALCTOR(INativeCursor*(INativeCursor::SystemCursorType), NO_PARAMETER, vl::reflection::description::INativeCursor_Constructor2)
 			END_INTERFACE_MEMBER(INativeCursor)
 
 			BEGIN_ENUM_ITEM(INativeCursor::SystemCursorType)
@@ -623,7 +532,7 @@ Type Declaration
 			END_ENUM_ITEM(INativeDialogService::FileDialogOptions)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeController)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), &GetCurrentController)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::reflection::description::GetCurrentController)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(OSVersion)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ExecutablePath)
@@ -653,6 +562,13 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Text)
 			END_CLASS_MEMBER(GuiTextData)
+				
+			BEGIN_STRUCT_MEMBER(DocumentFontSize)
+				valueType = new SerializableValueType<DocumentFontSize>();
+				serializableType = new SerializableType<DocumentFontSize>();
+				STRUCT_MEMBER(size)
+				STRUCT_MEMBER(relative)
+			END_STRUCT_MEMBER(DocumentFontSize)
 
 			BEGIN_CLASS_MEMBER(DocumentStyleProperties)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DocumentStyleProperties>(), NO_PARAMETER)
@@ -755,7 +671,7 @@ Type Declaration
 			END_CLASS_MEMBER(DocumentStyle)
 
 			BEGIN_CLASS_MEMBER(DocumentModel)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<DocumentModel>(const WString&), {L"filePath"}, &DocumentModel_Constructor)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<DocumentModel>(const WString&), {L"filePath"}, vl::reflection::description::DocumentModel_Constructor)
 				
 				CLASS_MEMBER_FIELD(paragraphs)
 				CLASS_MEMBER_FIELD(styles)
@@ -807,7 +723,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiResource)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiResource>(), NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiResource>(const WString&, List<WString>&), {L"filePath" _ L"errors"}, &GuiResource::LoadFromXml);
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiResource>(const WString&, List<WString>&), {L"filePath" _ L"errors"}, vl::presentation::GuiResource::LoadFromXml);
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(WorkingDirectory)
 
@@ -828,8 +744,8 @@ Type Declaration
 				ENUM_CLASS_ITEM(Application)
 			END_ENUM_ITEM(GuiResourceUsage)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiResourceManager)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetResourceManager, NO_PARAMETER, IGuiResourceManager*(*)(), &GetResourceManager)
+				BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiResourceManager)
+					CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetResourceManager, NO_PARAMETER, IGuiResourceManager*(*)(), vl::presentation::GetResourceManager)
 				CLASS_MEMBER_METHOD(SetResource, { L"name" _ L"resource" _ L"usage" })
 				CLASS_MEMBER_METHOD(GetResource, { L"name" })
 				CLASS_MEMBER_METHOD(GetResourceFromClassName, { L"name" })
@@ -1083,10 +999,6 @@ namespace vl
 		namespace description
 		{
 			using namespace collections;
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace parsing::xml;
-			using namespace stream;
 			using namespace presentation;
 			using namespace presentation::compositions;
 
@@ -1095,41 +1007,13 @@ namespace vl
 			GUIREFLECTIONCOMPOSITION_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
-External Functions
-***********************************************************************/
-
-			void GuiTableComposition_SetRows(GuiTableComposition* thisObject, vint value)
-			{
-				vint columns=thisObject->GetColumns();
-				if(columns<=0) columns=1;
-				thisObject->SetRowsAndColumns(value, columns);
-			}
-
-			void GuiTableComposition_SetColumns(GuiTableComposition* thisObject, vint value)
-			{
-				vint row=thisObject->GetRows();
-				if(row<=0) row=1;
-				thisObject->SetRowsAndColumns(row, value);
-			}
-
-			void IGuiAltActionHost_CollectAltActions(IGuiAltActionHost* host, List<IGuiAltAction*>& actions)
-			{
-				Group<WString, IGuiAltAction*> group;
-				host->CollectAltActions(group);
-				for (vint i = 0; i < group.Count(); i++)
-				{
-					CopyFrom(actions, group.GetByIndex(i), true);
-				}
-			}
-
-/***********************************************************************
 Type Declaration
 ***********************************************************************/
 
 #define _ ,
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
-	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), []()->WString{return INTERFACE::Identifier;})
+	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<INTERFACE>)
 
 			BEGIN_ENUM_ITEM(KeyDirection)
 				ENUM_CLASS_ITEM(Up)
@@ -1222,10 +1106,10 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(BorderVisible)
 
 				CLASS_MEMBER_METHOD(GetRows, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALMETHOD(SetRows, {L"value"}, void(GuiTableComposition::*)(vint), &GuiTableComposition_SetRows)
+				CLASS_MEMBER_EXTERNALMETHOD(SetRows, {L"value"}, void(GuiTableComposition::*)(vint), vl::reflection::description::GuiTableComposition_SetRows)
 				CLASS_MEMBER_PROPERTY(Rows, GetRows, SetRows)
 				CLASS_MEMBER_METHOD(GetColumns, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALMETHOD(SetColumns, {L"value"}, void(GuiTableComposition::*)(vint), &GuiTableComposition_SetColumns)
+				CLASS_MEMBER_EXTERNALMETHOD(SetColumns, {L"value"}, void(GuiTableComposition::*)(vint), vl::reflection::description::GuiTableComposition_SetColumns)
 				CLASS_MEMBER_PROPERTY(Columns, GetColumns, SetColumns)
 				CLASS_MEMBER_METHOD(SetRowsAndColumns, {L"rows" _ L"columns"})
 
@@ -1413,7 +1297,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(OnActivatedAltHost, { L"previousHost" })
 				CLASS_MEMBER_METHOD(OnDeactivatedAltHost, NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), &IGuiAltActionHost_CollectAltActions)
+				CLASS_MEMBER_EXTERNALMETHOD(CollectAltActions, {L"actions"}, void(IGuiAltActionHost::*)(List<IGuiAltAction*>&), vl::reflection::description::IGuiAltActionHost_CollectAltActions)
 			END_INTERFACE_MEMBER(IGuiAltActionHost)
 
 #undef INTERFACE_EXTERNALCTOR
@@ -1483,25 +1367,6 @@ namespace vl
 			GUIREFLECTIONCONTROLS_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
-External Functions
-***********************************************************************/
-
-			Ptr<ITheme> CreateWin7Theme()
-			{
-				return new win7::Win7Theme();
-			}
-
-			Ptr<ITheme> CreateWin8Theme()
-			{
-				return new win8::Win8Theme();
-			}
-
-			ListViewItemStyleProvider::IListViewItemContent* ListViewItemStyleProvider_GetItemContent(ListViewItemStyleProvider* thisObject, GuiListControl::IItemStyleController* itemStyleController)
-			{
-				return thisObject->GetItemContent<ListViewItemStyleProvider::IListViewItemContent>(itemStyleController);
-			}
-
-/***********************************************************************
 Type Declaration
 ***********************************************************************/
 
@@ -1517,10 +1382,10 @@ Type Declaration
 	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(CONTROL::IStyleProvider*), {L"styleProvider"})
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
-	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), []()->WString{return INTERFACE::Identifier;})
+	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<INTERFACE>)
 
 			BEGIN_CLASS_MEMBER(GuiApplication)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetApplication, NO_PARAMETER, GuiApplication*(*)(), &GetApplication)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetApplication, NO_PARAMETER, GuiApplication*(*)(), vl::presentation::controls::GetApplication)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MainWindow)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TooltipOwner)
@@ -1540,10 +1405,10 @@ Type Declaration
 			END_CLASS_MEMBER(GuiApplication)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITheme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentTheme, NO_PARAMETER, ITheme*(*)(), &GetCurrentTheme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(SetCurrentTheme, {L"theme"}, void(*)(ITheme*), &SetCurrentTheme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin7Theme, NO_PARAMETER, Ptr<ITheme>(*)(), &CreateWin7Theme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin8Theme, NO_PARAMETER, Ptr<ITheme>(*)(), &CreateWin8Theme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentTheme, NO_PARAMETER, ITheme*(*)(), vl::presentation::theme::GetCurrentTheme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(SetCurrentTheme, {L"theme"}, void(*)(ITheme*), vl::presentation::theme::SetCurrentTheme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin7Theme, NO_PARAMETER, Ptr<ITheme>(*)(), vl::reflection::description::CreateWin7Theme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin8Theme, NO_PARAMETER, Ptr<ITheme>(*)(), vl::reflection::description::CreateWin8Theme)
 
 				CLASS_MEMBER_METHOD(CreateWindowStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateCustomControlStyle, NO_PARAMETER)
@@ -1795,7 +1660,7 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiTab)
 				CLASS_MEMBER_BASE(GuiControl)
 				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTab)
-				CONTROL_CONSTRUCTOR_DEFAULT(GuiTab, &g::NewTab)
+				CONTROL_CONSTRUCTOR_DEFAULT(GuiTab, vl::presentation::theme::g::NewTab)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedPage)
 
@@ -2179,7 +2044,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(IsItemStyleAttachedToListView, {L"itemStyle"})
 				CLASS_MEMBER_METHOD(GetItemContentFromItemStyleController, {L"itemStyleController"})
 				CLASS_MEMBER_METHOD(GetItemStyleControllerFromItemContent, {L"itemContent"})
-				CLASS_MEMBER_EXTERNALMETHOD(GetItemContent, {L"itemStyleController"}, ListViewItemStyleProvider::IListViewItemContent*(ListViewItemStyleProvider::*)(GuiListControl::IItemStyleController*), &ListViewItemStyleProvider_GetItemContent)
+				CLASS_MEMBER_EXTERNALMETHOD(GetItemContent, {L"itemStyleController"}, ListViewItemStyleProvider::IListViewItemContent*(ListViewItemStyleProvider::*)(GuiListControl::IItemStyleController*), vl::presentation::description::ListViewItemStyleProvider_GetItemContent)
 			END_CLASS_MEMBER(ListViewItemStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemView)
@@ -3155,7 +3020,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
 				CONTROL_CONSTRUCTOR_PROVIDER(GuiStringGrid)
 
-				CLASS_MEMBER_METHOD_RENAME(GetGrids, Grids, NO_PARAMETER)
+				CLASS_MEMBER_EXTERNALMETHOD(GetGrids, NO_PARAMETER, StringGridProvider*(GuiStringGrid::*)(), vl::reflection::description::GuiStringGrid_GetGrids)
 				CLASS_MEMBER_PROPERTY_READONLY(Grids, GetGrids)
 			END_CLASS_MEMBER(GuiStringGrid)
 
@@ -3293,21 +3158,6 @@ namespace vl
 			GUIREFLECTIONELEMENT_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
-External Functions
-***********************************************************************/
-
-			template<typename T>
-			Ptr<T> Element_Constructor()
-			{
-				return T::Create();
-			}
-
-			text::TextLines* GuiColorizedTextElement_GetLines(GuiColorizedTextElement* thisObject)
-			{
-				return &thisObject->GetLines();
-			}
-
-/***********************************************************************
 Type Declaration
 ***********************************************************************/
 
@@ -3336,7 +3186,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSolidBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBorderElement>(), NO_PARAMETER, &Element_Constructor<GuiSolidBorderElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiSolidBorderElement>)
 
 				CLASS_MEMBER_PROPERTY_FAST(Color)
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
@@ -3344,7 +3194,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiRoundBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRoundBorderElement>(), NO_PARAMETER, &Element_Constructor<GuiRoundBorderElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRoundBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiRoundBorderElement>)
 				
 				CLASS_MEMBER_PROPERTY_FAST(Color)
 				CLASS_MEMBER_PROPERTY_FAST(Radius)
@@ -3352,7 +3202,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(Gui3DBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DBorderElement>(), NO_PARAMETER, &Element_Constructor<Gui3DBorderElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<Gui3DBorderElement>)
 				
 				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
 
@@ -3362,7 +3212,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(Gui3DSplitterElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DSplitterElement>(), NO_PARAMETER, &Element_Constructor<Gui3DSplitterElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DSplitterElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<Gui3DSplitterElement>)
 				
 				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
 
@@ -3379,7 +3229,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSolidBackgroundElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBackgroundElement>(), NO_PARAMETER, &Element_Constructor<GuiSolidBackgroundElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiSolidBackgroundElement>)
 				
 				CLASS_MEMBER_PROPERTY_FAST(Color)
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
@@ -3387,7 +3237,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiGradientBackgroundElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiGradientBackgroundElement>(), NO_PARAMETER, &Element_Constructor<GuiGradientBackgroundElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiGradientBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiGradientBackgroundElement>)
 				
 				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
 
@@ -3405,7 +3255,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSolidLabelElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidLabelElement>(), NO_PARAMETER, &Element_Constructor<GuiSolidLabelElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidLabelElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiSolidLabelElement>)
 				
 				CLASS_MEMBER_METHOD(SetAlignments, {L"horizontal" _ L"vertical"})
 
@@ -3422,7 +3272,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiImageFrameElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiImageFrameElement>(), NO_PARAMETER, &Element_Constructor<GuiImageFrameElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiImageFrameElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiImageFrameElement>)
 
 				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER)
 				CLASS_MEMBER_METHOD_OVERLOAD(SetImage, {L"value"}, void(GuiImageFrameElement::*)(Ptr<INativeImage>))
@@ -3438,7 +3288,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiPolygonElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiPolygonElement>(), NO_PARAMETER, &Element_Constructor<GuiPolygonElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiPolygonElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiPolygonElement>)
 
 				CLASS_MEMBER_METHOD_RENAME(GetPoints, GetPointsArray, NO_PARAMETER);
 				CLASS_MEMBER_METHOD_RENAME(SetPoints, SetPointsArray, {L"points"});
@@ -3485,7 +3335,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiColorizedTextElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiColorizedTextElement>(), NO_PARAMETER, &Element_Constructor<GuiColorizedTextElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiColorizedTextElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiColorizedTextElement>)
 
 				CLASS_MEMBER_PROPERTY_FAST(Font)
 				CLASS_MEMBER_PROPERTY_FAST(PasswordChar)
@@ -3497,14 +3347,14 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(CaretVisible)
 				CLASS_MEMBER_PROPERTY_FAST(CaretColor)
 
-				CLASS_MEMBER_EXTERNALMETHOD(GetLines, NO_PARAMETER, text::TextLines*(GuiColorizedTextElement::*)(), &GuiColorizedTextElement_GetLines)
+				CLASS_MEMBER_EXTERNALMETHOD(GetLines, NO_PARAMETER, text::TextLines*(GuiColorizedTextElement::*)(), vl::reflection::description::GuiColorizedTextElement_GetLines)
 				CLASS_MEMBER_PROPERTY_READONLY(Lines, GetLines)
 				CLASS_MEMBER_PROPERTY_FAST(Colors)
 			END_CLASS_MEMBER(GuiColorizedTextElement)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiDocumentElement>(), NO_PARAMETER, &Element_Constructor<GuiDocumentElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiDocumentElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiDocumentElement>)
 
 				CLASS_MEMBER_PROPERTY_FAST(Document)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretBegin)
@@ -3805,7 +3655,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiTemplate)
 			
 			BEGIN_INTERFACE_MEMBER(GuiTemplate::IFactory)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiTemplate::IFactory>(const List<ITypeDescriptor*>&), { L"types" }, &GuiTemplate::IFactory::CreateTemplateFactory)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiTemplate::IFactory>(const List<ITypeDescriptor*>&), { L"types" }, vl::presentation::templates::GuiTemplate::IFactory::CreateTemplateFactory)
 
 				CLASS_MEMBER_METHOD(CreateTemplate, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiTemplate::IFactory)
