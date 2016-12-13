@@ -56,7 +56,7 @@ WorkflowGenerateCreatingVisitor
 					{
 						td = resolvingResult.typeInfos[ctor->instanceName].typeDescriptor;
 					}
-					if (td->GetValueSerializer() != nullptr)
+					if (td->GetSerializableType() != nullptr)
 					{
 						serializable = true;
 						textValue = ctor->setters.Values()[0]->values[0].Cast<GuiTextRepr>()->text;
@@ -74,7 +74,7 @@ WorkflowGenerateCreatingVisitor
 						str->value.value = textValue;
 						argumentInfo.expression = str;
 					}
-					else
+					else if(td->GetSerializableType())
 					{
 						auto str = MakePtr<WfStringExpression>();
 						str->value.value = textValue;
@@ -87,6 +87,14 @@ WorkflowGenerateCreatingVisitor
 						cast->expression = str;
 
 						argumentInfo.expression = cast;
+					}
+					else if (td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+					{
+						throw 0;
+					}
+					else
+					{
+						throw 0;
 					}
 				}
 				else

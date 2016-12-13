@@ -425,7 +425,7 @@ Workflow_GenerateInstanceClass
 					{
 						auto defaultValue =
 							value == L""
-							? propTd->GetValueSerializer()->GetDefaultText()
+							? propTd->GetValueType()->CreateDefault()
 							: value
 							;
 						
