@@ -36,7 +36,7 @@ namespace vl
 				compositions::IGuiShortcutKeyItem*			shortcutKeyItem;
 				bool										enabled;
 				bool										selected;
-				Ptr<compositions::GuiNotifyEvent::IHandler>	shortcutKeyItemExecutedHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	shortcutKeyItemExecutedHandler;
 				Ptr<ShortcutBuilder>						shortcutBuilder;
 				GuiControlHost*								shortcutOwner;
 

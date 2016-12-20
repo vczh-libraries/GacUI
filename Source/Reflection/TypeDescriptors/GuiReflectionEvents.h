@@ -41,6 +41,43 @@ Type List
 GuiEventInfoImpl
 ***********************************************************************/
 
+			class GuiEventInfoCpp : public Object, public IEventInfo::ICpp
+			{
+			public:
+				WString								handlerType;
+				WString								attachTemplate;
+				WString								detachTemplate;
+				WString								invokeTemplate;
+
+				GuiEventInfoCpp()
+					:handlerType(L"::vl::Ptr<::vl::presentation::compositions::IGuiGraphicsEventHandler>", false)
+					, attachTemplate(L"$This->GetEventReceiver()->$Name.AttachLambda($Handler)", false)
+					, detachTemplate(L"$This->GetEventReceiver()->$Name.Detach($Handler)", false)
+					, invokeTemplate(L"$This->GetEventReceiver()->$Name.Execute($Arguments)", false)
+				{
+				}
+
+				const WString& GetHandlerType()override
+				{
+					return handlerType;
+				}
+
+				const WString& GetAttachTemplate()override
+				{
+					return attachTemplate;
+				}
+
+				const WString& GetDetachTemplate()override
+				{
+					return detachTemplate;
+				}
+
+				const WString& GetInvokeTemplate()override
+				{
+					return invokeTemplate;
+				}
+			};
+
 			template<typename T>
 			class GuiEventInfoImpl : public EventInfoImpl
 			{
@@ -52,6 +89,7 @@ GuiEventInfoImpl
 				typedef Func<GuiGraphicsEvent<T>*(DescriptableObject*, bool)>		EventRetriverFunction;
 
 				EventRetriverFunction				eventRetriver;
+				Ptr<GuiEventInfoCpp>				cpp;
 
 				void AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override
 				{
@@ -88,7 +126,7 @@ GuiEventInfoImpl
 							GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
 							if(eventObject)
 							{
-								auto handler=handlerImpl->GetDescriptableTag().Cast<typename GuiGraphicsEvent<T>::IHandler>();
+								auto handler=handlerImpl->GetDescriptableTag().Cast<presentation::compositions::IGuiGraphicsEventHandler>();
 								if(handler)
 								{
 									eventObject->Detach(handler);
@@ -115,10 +153,12 @@ GuiEventInfoImpl
 				{
 					return TypeInfoRetriver<Func<void(GuiGraphicsComposition*, T*)>>::CreateTypeInfo();
 				}
+
 			public:
 				GuiEventInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, const EventRetriverFunction& _eventRetriver)
 					:EventInfoImpl(_ownerTypeDescriptor, _name)
-					,eventRetriver(_eventRetriver)
+					, eventRetriver(_eventRetriver)
+					, cpp(MakePtr<GuiEventInfoCpp>())
 				{
 				}
 
@@ -128,7 +168,7 @@ GuiEventInfoImpl
 
 				ICpp* GetCpp()override
 				{
-					throw 0;
+					return cpp.Obj();
 				}
 			};
 

@@ -310,18 +310,18 @@ List Control
 				class VisibleStyleHelper
 				{
 				public:
-					Ptr<compositions::GuiMouseEvent::IHandler>		leftButtonDownHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		leftButtonUpHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		leftButtonDoubleClickHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		middleButtonDownHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		middleButtonUpHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		middleButtonDoubleClickHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		rightButtonDownHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		rightButtonUpHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		rightButtonDoubleClickHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		mouseMoveHandler;
-					Ptr<compositions::GuiNotifyEvent::IHandler>		mouseEnterHandler;
-					Ptr<compositions::GuiNotifyEvent::IHandler>		mouseLeaveHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonDownHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonUpHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonDoubleClickHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonDownHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonUpHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonDoubleClickHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonDownHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonUpHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonDoubleClickHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseMoveHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseEnterHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseLeaveHandler;
 				};
 				
 				friend class collections::ArrayBase<Ptr<VisibleStyleHelper>>;

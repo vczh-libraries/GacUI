@@ -883,7 +883,7 @@ GuiWindow
 			{
 				owner->SetEnabled(false);
 				GetNativeWindow()->SetParent(owner->GetNativeWindow());
-				auto container = CreateEventHandlerContainer<GuiEventArgs>();
+				auto container = MakePtr<IGuiGraphicsEventHandler::Container>();
 				container->handler = WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
 					GetApplication()->InvokeInMainThread([=]()

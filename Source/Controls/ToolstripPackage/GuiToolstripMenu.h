@@ -217,7 +217,7 @@ Toolstrip Component
 			{
 			protected:
 				GuiToolstripCommand*							command;
-				Ptr<compositions::GuiNotifyEvent::IHandler>		descriptionChangedHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>		descriptionChangedHandler;
 
 				void											UpdateCommandContent();
 				void											OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

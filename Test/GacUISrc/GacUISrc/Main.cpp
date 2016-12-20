@@ -99,7 +99,7 @@ void GuiMain_Resource()
 	//}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(LR"(C:\Code\VczhLibraries\Release\Tutorial\GacUI_ControlTemplate\BlackSkin\UI\Resource.xml)", errors);
+		auto resource = GuiResource::LoadFromXml(LR"(UI2_Properties.xml)", errors);
 		resource->Precompile(nullptr, errors);
 
 		{
