@@ -24629,6 +24629,7 @@ GuiTabTemplate
 
 			GuiTabTemplate::~GuiTabTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************

@@ -1072,6 +1072,7 @@ namespace vl
 		using namespace workflow::analyzer;
 		using namespace workflow::runtime;
 		using namespace controls;
+		using namespace stream;
 
 /***********************************************************************
 GuiResourceInstanceBinder (uri)
@@ -1220,7 +1221,22 @@ GuiBindInstanceBinder (bind)
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
-				if (auto expression = Workflow_ParseExpression(L"bind(" + code + L")", errors))
+				WString typeExpr;
+				{
+					auto type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+
+					MemoryStream stream;
+					{
+						StreamWriter writer(stream);
+						WfPrint(type, L"", writer);
+					}
+					stream.SeekFromBegin(0);
+					{
+						StreamReader reader(stream);
+						typeExpr = reader.ReadToEnd();
+					}
+				}
+				if (auto expression = Workflow_ParseExpression(L"bind((" + code + L") of (" + typeExpr + L"))", errors))
 				{
 					return Workflow_InstallBindProperty(variableName, propertyInfo, expression);
 				}
@@ -4108,12 +4124,37 @@ GuiListViewInstanceLoader
 					else
 					{
 						{
-							auto stringValue = MakePtr<WfStringExpression>();
-							stringValue->value.value = L"x:32 y:32";
+							auto ctorExpr = MakePtr<WfConstructorExpression>();
+							{
+								auto argument = MakePtr<WfConstructorArgument>();
+								{
+									auto key = MakePtr<WfReferenceExpression>();
+									key->name.value = L"x";
+									argument->key = key;
 
-							auto iconSizeValue = MakePtr<WfTypeCastingExpression>();
+									auto value = MakePtr<WfIntegerExpression>();
+									value->value.value = L"32";
+									argument->value = value;
+								}
+								ctorExpr->arguments.Add(argument);
+							}
+							{
+								auto argument = MakePtr<WfConstructorArgument>();
+								{
+									auto key = MakePtr<WfReferenceExpression>();
+									key->name.value = L"y";
+									argument->key = key;
+
+									auto value = MakePtr<WfIntegerExpression>();
+									value->value.value = L"32";
+									argument->value = value;
+								}
+								ctorExpr->arguments.Add(argument);
+							}
+
+							auto iconSizeValue = MakePtr<WfInferExpression>();
 							iconSizeValue->type = GetTypeFromTypeInfo(TypeInfoRetriver<Size>::CreateTypeInfo().Obj());
-							iconSizeValue->expression = stringValue;
+							iconSizeValue->expression = ctorExpr;
 
 							createStyle->arguments.Add(iconSizeValue);
 						}

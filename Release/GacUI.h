@@ -18392,7 +18392,7 @@ Control Template
 Item Template
 ***********************************************************************/
 
-			class GuiListItemTemplate : public GuiTemplate, public Description<GuiListItemTemplate>
+			class GuiListItemTemplate : public GuiTemplate, public AggregatableDescription<GuiListItemTemplate>
 			{
 			public:
 				GuiListItemTemplate();

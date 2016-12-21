@@ -14,7 +14,7 @@
   <Instance name="FontListItemTemplateResource">
     <Instance ref.Class="demo::FontListItemTemplate">
       <ref.Parameter Name="Source" Class="presentation::controls::list::TextItem"/>
-      <ListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <CheckBox Selected-bind="self.Selected" AutoSelection="false">
           <att.ControlTemplate>demo::FontListItemBackgroundTemplate</att.ControlTemplate>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -33,7 +33,7 @@
             <Cell Site="row:1 column:0">
               <SolidLabel Text-eval="Source.Text">
                 <att.Color-bind>cast Color (self.Selected ? "#FFFFFF" : "#000000")</att.Color-bind>
-                <att.Font-format>fontFamily:{$(Source.Text)} size:$(self.Font.size * 2) antialias:true</att.Font-format>
+                <att.Font-bind>{fontFamily:Source.Text size:(self.Font.size * 2) antialias:true}</att.Font-bind>
               </SolidLabel>
             </Cell>
 
@@ -44,7 +44,7 @@
             </Cell>
           </Table>
         </CheckBox>
-      </ListItemTemplate>
+      </TextListItemTemplate>
     </Instance>
   </Instance>
 
@@ -56,7 +56,7 @@
             <![CDATA[
               cast Color (
                 self.Selected ? "#000000" :
-                self.State != "Normal" ? "#C0C0C0" :
+                self.State != Button::ControlState::Normal ? "#C0C0C0" :
                 "#00000000"
               )
             ]]>

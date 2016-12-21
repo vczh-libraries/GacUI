@@ -454,6 +454,7 @@ GuiTabTemplate
 
 			GuiTabTemplate::~GuiTabTemplate()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************

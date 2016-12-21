@@ -312,12 +312,37 @@ GuiListViewInstanceLoader
 					else
 					{
 						{
-							auto stringValue = MakePtr<WfStringExpression>();
-							stringValue->value.value = L"x:32 y:32";
+							auto ctorExpr = MakePtr<WfConstructorExpression>();
+							{
+								auto argument = MakePtr<WfConstructorArgument>();
+								{
+									auto key = MakePtr<WfReferenceExpression>();
+									key->name.value = L"x";
+									argument->key = key;
 
-							auto iconSizeValue = MakePtr<WfTypeCastingExpression>();
+									auto value = MakePtr<WfIntegerExpression>();
+									value->value.value = L"32";
+									argument->value = value;
+								}
+								ctorExpr->arguments.Add(argument);
+							}
+							{
+								auto argument = MakePtr<WfConstructorArgument>();
+								{
+									auto key = MakePtr<WfReferenceExpression>();
+									key->name.value = L"y";
+									argument->key = key;
+
+									auto value = MakePtr<WfIntegerExpression>();
+									value->value.value = L"32";
+									argument->value = value;
+								}
+								ctorExpr->arguments.Add(argument);
+							}
+
+							auto iconSizeValue = MakePtr<WfInferExpression>();
 							iconSizeValue->type = GetTypeFromTypeInfo(TypeInfoRetriver<Size>::CreateTypeInfo().Obj());
-							iconSizeValue->expression = stringValue;
+							iconSizeValue->expression = ctorExpr;
 
 							createStyle->arguments.Add(iconSizeValue);
 						}

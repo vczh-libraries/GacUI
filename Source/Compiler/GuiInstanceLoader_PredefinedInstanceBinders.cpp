@@ -13,6 +13,7 @@ namespace vl
 		using namespace workflow::analyzer;
 		using namespace workflow::runtime;
 		using namespace controls;
+		using namespace stream;
 
 /***********************************************************************
 GuiResourceInstanceBinder (uri)
@@ -161,7 +162,22 @@ GuiBindInstanceBinder (bind)
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors)override
 			{
-				if (auto expression = Workflow_ParseExpression(L"bind(" + code + L")", errors))
+				WString typeExpr;
+				{
+					auto type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
+
+					MemoryStream stream;
+					{
+						StreamWriter writer(stream);
+						WfPrint(type, L"", writer);
+					}
+					stream.SeekFromBegin(0);
+					{
+						StreamReader reader(stream);
+						typeExpr = reader.ReadToEnd();
+					}
+				}
+				if (auto expression = Workflow_ParseExpression(L"bind((" + code + L") of (" + typeExpr + L"))", errors))
 				{
 					return Workflow_InstallBindProperty(variableName, propertyInfo, expression);
 				}
