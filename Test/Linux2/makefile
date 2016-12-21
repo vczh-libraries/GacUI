@@ -1,47 +1,41 @@
-# This file is generated from "./makefile.debug.makegen" by Vczh Makefile Generator
+.PHONY: all clean pre-build
+.DEFAULT_GOAL := all
 
-# Config
-.PHONY : all clean
+CPP_COMPILE_OPTIONS=-I ../../Import -I ../../Release
+include $(VCPROOT)/vl/makefile-cpp
 
-# Targets
-bin_TARGET = ././Bin/
-obj_TARGET = ././Obj/
+pre-build:
+	if ! [ -d ./Bin ]; then mkdir ./Bin; fi
+	if ! [ -d ./Obj ]; then mkdir ./Obj; fi
+	if ! [ -d ./Coverage ]; then mkdir ./Coverage; fi
 
-# Folders
-GACUI_IMPORT_DIR = ./../../Import/
-GACUI_IMPORT_cpp = $(wildcard $(GACUI_IMPORT_DIR)*.cpp)
-GACUI_IMPORT_h = $(wildcard $(GACUI_IMPORT_DIR)*.h)
-GACUI_MAIN_DIR = ././
-GACUI_MAIN_cpp = $(GACUI_MAIN_DIR)Main.cpp
-GACUI_RELEASE_DIR = ./../../Release/
-GACUI_RELEASE_cpp = $(GACUI_RELEASE_DIR)GacUI.cpp $(GACUI_RELEASE_DIR)GacUIReflection.cpp
-GACUI_RELEASE_h = $(GACUI_RELEASE_DIR)GacUI.h $(GACUI_RELEASE_DIR)GacUIReflection.h
-
-# Output Categories
-GACUI_IMPORT_o = $(patsubst $(GACUI_IMPORT_DIR)%.cpp, $(obj_TARGET)%.o, $(GACUI_IMPORT_cpp))
-GACUI_MAIN_o = $(patsubst $(GACUI_MAIN_DIR)%.cpp, $(obj_TARGET)%.o, $(GACUI_MAIN_cpp))
-GACUI_RELEASE_o = $(patsubst $(GACUI_RELEASE_DIR)%.cpp, $(obj_TARGET)%.o, $(GACUI_RELEASE_cpp))
-
-# All
-ALL_o = $(GACUI_IMPORT_o) $(GACUI_MAIN_o) $(GACUI_RELEASE_o)
-all : $(ALL_o)
-	clang++ -std=c++11 -pthread -g -o $(bin_TARGET)UnitTest $(ALL_o)
-
-# Dependencies
-# $(GACUI_RELEASE_h) : $(GACUI_IMPORT_h)
-# $(GACUI_IMPORT_cpp) : $(GACUI_IMPORT_h)
-# $(GACUI_MAIN_cpp) : $(GACUI_RELEASE_h)
-# $(GACUI_RELEASE_cpp) : $(GACUI_RELEASE_h)
-
-# Rules
-$(GACUI_IMPORT_o) : $(obj_TARGET)%.o : $(GACUI_IMPORT_DIR)%.cpp $(GACUI_IMPORT_h)
-	clang++ -std=c++11 -g -I ../../Import -I ../../Release -o $@ -c $<
-$(GACUI_MAIN_o) : $(obj_TARGET)%.o : $(GACUI_MAIN_DIR)%.cpp $(GACUI_IMPORT_h) $(GACUI_RELEASE_h)
-	clang++ -std=c++11 -g -I ../../Import -I ../../Release -o $@ -c $<
-$(GACUI_RELEASE_o) : $(obj_TARGET)%.o : $(GACUI_RELEASE_DIR)%.cpp $(GACUI_IMPORT_h) $(GACUI_RELEASE_h)
-	clang++ -std=c++11 -g -I ../../Import -I ../../Release -o $@ -c $<
-
-# Clean
 clean:
-	rm $(bin_TARGET)* -rf
-	rm $(obj_TARGET)* -rf
+	if [ -d ./Bin ]; then rm -r ./Bin; fi
+	if [ -d ./Obj ]; then rm -r ./Obj; fi
+	if [ -d ./Coverage ]; then rm -r ./Coverage; fi
+
+all:pre-build ./Bin/UnitTest
+
+./Bin/UnitTest:./Obj/Vlpp.o ./Obj/VlppWorkflowCompiler.o ./Obj/VlppWorkflow.o ./Obj/GacUI.o ./Obj/GacUIReflection.o ./Obj/GacUICompiler.o ./Obj/Main.o
+	$(CPP_LINK)
+
+./Obj/Vlpp.o: ../../Import/Vlpp.cpp ../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/VlppWorkflowCompiler.o: ../../Import/VlppWorkflowCompiler.cpp ../../Import/VlppWorkflowCompiler.h ../../Import/Vlpp.h ../../Import/VlppWorkflow.h
+	$(CPP_COMPILE)
+
+./Obj/VlppWorkflow.o: ../../Import/VlppWorkflow.cpp ../../Import/VlppWorkflow.h ../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/GacUI.o: ../../Release/GacUI.cpp ../../Release/GacUI.h ../../Import/Vlpp.h
+	$(CPP_COMPILE)
+
+./Obj/GacUIReflection.o: ../../Release/GacUIReflection.cpp ../../Release/GacUIReflection.h ../../Import/Vlpp.h ../../Import/VlppWorkflow.h ../../Release/GacUI.h
+	$(CPP_COMPILE)
+
+./Obj/GacUICompiler.o: ../../Release/GacUICompiler.cpp ../../Release/GacUICompiler.h ../../Import/Vlpp.h ../../Import/VlppWorkflow.h ../../Import/VlppWorkflowCompiler.h ../../Release/GacUI.h ../../Release/GacUIReflection.h
+	$(CPP_COMPILE)
+
+./Obj/Main.o: Main.cpp ../../Release/GacUI.h ../../Import/Vlpp.h
+	$(CPP_COMPILE)
