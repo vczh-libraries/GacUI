@@ -8346,6 +8346,7 @@ Attribute
 			/// <returns>The aggregation root object. If this object is not aggregated, or it is the root object of others, than this function return itself.</returns>
 			DescriptableObject*						SafeGetAggregationRoot();
 			/// <summary>Cast the object to another type, considered aggregation.</summary>
+			/// <returns>The object with the expected type in all aggregated objects.</returns>
 			/// <typeparam name="T">The expected type to cast.</typeparam>
 			template<typename T>
 			T* SafeAggregationCast()

@@ -158,6 +158,7 @@ ComboBox with GuiListControl
 				void										SetSelectedIndex(vint value);
 
 				/// <summary>Get the selected item.</summary>
+				/// <returns>The selected item.</returns>
 				description::Value							GetSelectedItem();
 				/// <summary>Get the item provider in the list control.</summary>
 				/// <returns>The item provider in the list control.</returns>

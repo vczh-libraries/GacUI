@@ -3529,6 +3529,7 @@ Resource
 			void									SavePrecompiledBinary(stream::IStream& stream);
 
 			/// <summary>Precompile this resource to improve performance.</summary>
+			/// <param name="callback">A callback to receive progress.</param>
 			/// <param name="errors">All collected errors during precompiling a resource.</param>
 			void									Precompile(IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors);
 
@@ -3853,11 +3854,11 @@ Resource Resolver Manager
 			virtual vint										GetMaxInitializePassIndex() = 0;
 			/// <summary>Get names of all per resource resolvers for a pass.</summary>
 			/// <param name="passIndex">The pass index.</param>
-			/// <param name="resolvers">Names of resolvers</param>
+			/// <param name="names">Names of resolvers</param>
 			virtual void										GetPerResourceResolverNames(vint passIndex, collections::List<WString>& names) = 0;
 			/// <summary>Get names of all per pass resolvers for a pass.</summary>
 			/// <param name="passIndex">The pass index.</param>
-			/// <param name="resolvers">Names of resolvers</param>
+			/// <param name="names">Names of resolvers</param>
 			virtual void										GetPerPassResolverNames(vint passIndex, collections::List<WString>& names) = 0;
 		};
 		
@@ -11192,7 +11193,7 @@ TextList Style Provider
 					void										OnStyleCheckedChanged(TextItemStyleController* style);
 				public:
 					/// <summary>Create a item style provider with a specified item style provider callback.</summary>
-					/// <param name="_textItemStyleProvider">The item style provider callback.</param>
+					/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 					TextItemStyleProvider(IBulletFactory* _bulletFactory);
 					~TextItemStyleProvider();
 
@@ -11302,7 +11303,7 @@ TextList Control
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
+				/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
@@ -11315,7 +11316,7 @@ TextList Control
 				IStyleProvider*											GetTextListStyleProvider();
 				/// <summary>Set the item style provider.</summary>
 				/// <returns>The old item style provider.</returns>
-				/// <param name="itemStyleProvider">The new item style provider.</param>
+				/// <param name="bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				Ptr<GuiListControl::IItemStyleProvider>					ChangeItemStyle(list::TextItemStyleProvider::IBulletFactory* bulletFactory);
 			};
 			
@@ -11327,7 +11328,7 @@ TextList Control
 			public:
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
+				/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
 				~GuiTextList();
 
@@ -11827,7 +11828,7 @@ ListView ItemStyleProvider
 					class IListViewItemContentProvider : public virtual IDescriptable, public Description<IListViewItemContentProvider>
 					{
 					public:
-						/// <summary>Create a default and preferred <see cref="T:vl.presentation.controls.compositions.IGuiAxis"/> for the related item style provider.</summary>
+						/// <summary>Create a default and preferred <see cref="compositions::IGuiAxis"/> for the related item style provider.</summary>
 						/// <returns>The created item coordinate transformer.</returns>
 						virtual compositions::IGuiAxis*							CreatePreferredAxis()=0;
 						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemArranger"/> for the related item style provider.</summary>
@@ -12411,6 +12412,7 @@ ListView
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 				public:
 					/// <summary>Create a container.</summary>
+					/// <param name="_itemProvider">The item provider in the same control to receive notifications.</param>
 					ListViewDataColumns(IListViewItemProvider* _itemProvider);
 					~ListViewDataColumns();
 				};
@@ -12426,6 +12428,7 @@ ListView
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 				public:
 					/// <summary>Create a container.</summary>
+					/// <param name="_itemProvider">The item provider in the same control to receive notifications.</param>
 					ListViewColumns(IListViewItemProvider* _itemProvider);
 					~ListViewColumns();
 				};
@@ -13412,6 +13415,7 @@ ComboBox with GuiListControl
 				void										SetSelectedIndex(vint value);
 
 				/// <summary>Get the selected item.</summary>
+				/// <returns>The selected item.</returns>
 				description::Value							GetSelectedItem();
 				/// <summary>Get the item provider in the list control.</summary>
 				/// <returns>The item provider in the list control.</returns>
@@ -16710,8 +16714,7 @@ GuiBindableTextList
 			public:
 				/// <summary>Create a bindable Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
-				/// <param name="_itemSource">The item source.</param>
+				/// <param name = "_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
 				~GuiBindableTextList();
 				
@@ -16724,7 +16727,7 @@ GuiBindableTextList
 				/// <returns>The item source.</returns>
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
@@ -16833,7 +16836,6 @@ GuiBindableListView
 			public:
 				/// <summary>Create a bindable List view control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemSource">The item source.</param>
 				GuiBindableListView(IStyleProvider* _styleProvider);
 				~GuiBindableListView();
 
@@ -16848,7 +16850,7 @@ GuiBindableListView
 				/// <returns>The item source.</returns>
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Large image property name changed event.</summary>
@@ -16972,7 +16974,6 @@ GuiBindableTreeView
 			public:
 				/// <summary>Create a bindable Tree view control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemSource">The item source.</param>
 				GuiBindableTreeView(IStyleProvider* _styleProvider);
 				~GuiBindableTreeView();
 				
@@ -16987,7 +16988,7 @@ GuiBindableTreeView
 				/// <returns>The item source.</returns>
 				description::Value									GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(description::Value _itemSource);
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
@@ -17100,7 +17101,6 @@ GuiBindableDataGrid
 			public:
 				/// <summary>Create a bindable Data grid control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemSource">The item source.</param>
 				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
 				GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
@@ -17109,7 +17109,7 @@ GuiBindableDataGrid
 				/// <returns>The item source.</returns>
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Insert a column.</summary>

@@ -80,8 +80,7 @@ GuiBindableTextList
 			public:
 				/// <summary>Create a bindable Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
-				/// <param name="_itemSource">The item source.</param>
+				/// <param name = "_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
 				~GuiBindableTextList();
 				
@@ -94,7 +93,7 @@ GuiBindableTextList
 				/// <returns>The item source.</returns>
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
@@ -203,7 +202,6 @@ GuiBindableListView
 			public:
 				/// <summary>Create a bindable List view control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemSource">The item source.</param>
 				GuiBindableListView(IStyleProvider* _styleProvider);
 				~GuiBindableListView();
 
@@ -218,7 +216,7 @@ GuiBindableListView
 				/// <returns>The item source.</returns>
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Large image property name changed event.</summary>
@@ -342,7 +340,6 @@ GuiBindableTreeView
 			public:
 				/// <summary>Create a bindable Tree view control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemSource">The item source.</param>
 				GuiBindableTreeView(IStyleProvider* _styleProvider);
 				~GuiBindableTreeView();
 				
@@ -357,7 +354,7 @@ GuiBindableTreeView
 				/// <returns>The item source.</returns>
 				description::Value									GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(description::Value _itemSource);
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
@@ -470,7 +467,6 @@ GuiBindableDataGrid
 			public:
 				/// <summary>Create a bindable Data grid control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemSource">The item source.</param>
 				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
 				GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
@@ -479,7 +475,7 @@ GuiBindableDataGrid
 				/// <returns>The item source.</returns>
 				Ptr<description::IValueEnumerable>					GetItemSource();
 				/// <summary>Set the item source.</summary>
-				/// <param name="itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 				
 				/// <summary>Insert a column.</summary>

@@ -228,7 +228,7 @@ ListView ItemStyleProvider
 					class IListViewItemContentProvider : public virtual IDescriptable, public Description<IListViewItemContentProvider>
 					{
 					public:
-						/// <summary>Create a default and preferred <see cref="T:vl.presentation.controls.compositions.IGuiAxis"/> for the related item style provider.</summary>
+						/// <summary>Create a default and preferred <see cref="compositions::IGuiAxis"/> for the related item style provider.</summary>
 						/// <returns>The created item coordinate transformer.</returns>
 						virtual compositions::IGuiAxis*							CreatePreferredAxis()=0;
 						/// <summary>Create a default and preferred <see cref="GuiListControl::IItemArranger"/> for the related item style provider.</summary>
@@ -812,6 +812,7 @@ ListView
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 				public:
 					/// <summary>Create a container.</summary>
+					/// <param name="_itemProvider">The item provider in the same control to receive notifications.</param>
 					ListViewDataColumns(IListViewItemProvider* _itemProvider);
 					~ListViewDataColumns();
 				};
@@ -827,6 +828,7 @@ ListView
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 				public:
 					/// <summary>Create a container.</summary>
+					/// <param name="_itemProvider">The item provider in the same control to receive notifications.</param>
 					ListViewColumns(IListViewItemProvider* _itemProvider);
 					~ListViewColumns();
 				};

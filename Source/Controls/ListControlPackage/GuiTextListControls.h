@@ -106,7 +106,7 @@ TextList Style Provider
 					void										OnStyleCheckedChanged(TextItemStyleController* style);
 				public:
 					/// <summary>Create a item style provider with a specified item style provider callback.</summary>
-					/// <param name="_textItemStyleProvider">The item style provider callback.</param>
+					/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 					TextItemStyleProvider(IBulletFactory* _bulletFactory);
 					~TextItemStyleProvider();
 
@@ -216,7 +216,7 @@ TextList Control
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
+				/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
@@ -229,7 +229,7 @@ TextList Control
 				IStyleProvider*											GetTextListStyleProvider();
 				/// <summary>Set the item style provider.</summary>
 				/// <returns>The old item style provider.</returns>
-				/// <param name="itemStyleProvider">The new item style provider.</param>
+				/// <param name="bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				Ptr<GuiListControl::IItemStyleProvider>					ChangeItemStyle(list::TextItemStyleProvider::IBulletFactory* bulletFactory);
 			};
 			
@@ -241,7 +241,7 @@ TextList Control
 			public:
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_itemStyleProvider">The item style provider callback for this control.</param>
+				/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
 				~GuiTextList();
 

@@ -364,6 +364,7 @@ Resource
 			void									SavePrecompiledBinary(stream::IStream& stream);
 
 			/// <summary>Precompile this resource to improve performance.</summary>
+			/// <param name="callback">A callback to receive progress.</param>
 			/// <param name="errors">All collected errors during precompiling a resource.</param>
 			void									Precompile(IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors);
 
@@ -688,11 +689,11 @@ Resource Resolver Manager
 			virtual vint										GetMaxInitializePassIndex() = 0;
 			/// <summary>Get names of all per resource resolvers for a pass.</summary>
 			/// <param name="passIndex">The pass index.</param>
-			/// <param name="resolvers">Names of resolvers</param>
+			/// <param name="names">Names of resolvers</param>
 			virtual void										GetPerResourceResolverNames(vint passIndex, collections::List<WString>& names) = 0;
 			/// <summary>Get names of all per pass resolvers for a pass.</summary>
 			/// <param name="passIndex">The pass index.</param>
-			/// <param name="resolvers">Names of resolvers</param>
+			/// <param name="names">Names of resolvers</param>
 			virtual void										GetPerPassResolverNames(vint passIndex, collections::List<WString>& names) = 0;
 		};
 		
