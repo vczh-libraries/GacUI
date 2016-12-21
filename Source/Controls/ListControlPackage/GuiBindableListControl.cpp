@@ -44,7 +44,7 @@ namespace vl
 				}
 			}
 
-			WString GetValueText(Value& value)
+			WString GetValueText(const Value& value)
 			{
 				if (auto td = value.GetTypeDescriptor())
 				{
