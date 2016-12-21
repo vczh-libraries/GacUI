@@ -4054,9 +4054,9 @@ GuiListViewInstanceLoader
 						if (indexView != -1)
 						{
 							auto viewExpr = arguments.GetByIndex(indexView)[0].expression;
-							if (auto inferExpr = viewExpr.Cast<WfInferExpression>())
+							if (auto inferExpr = viewExpr.template Cast<WfInferExpression>())
 							{
-								if (auto refExpr = inferExpr->expression.Cast<WfReferenceExpression>())
+								if (auto refExpr = inferExpr->expression.template Cast<WfReferenceExpression>())
 								{
 									auto enumType = description::GetTypeDescriptor<ListViewViewType>()->GetEnumType();
 									vint index = enumType->IndexOfItem(refExpr->name.value);

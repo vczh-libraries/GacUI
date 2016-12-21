@@ -5284,6 +5284,9 @@ Colorized Plain Text (model)
 					/// Background color.
 					/// </summary>
 					Color							background;
+
+					bool							operator==(const ColorItem& value)const { return text == value.text && background == value.background; }
+					bool							operator!=(const ColorItem& value)const { return !(*this == value); }
 				};
 				
 				/// <summary>
@@ -5304,8 +5307,8 @@ Colorized Plain Text (model)
 					/// </summary>
 					ColorItem						selectedUnfocused;
 
-					bool							operator==(const ColorEntry& value){return false;}
-					bool							operator!=(const ColorEntry& value){return true;}
+					bool							operator==(const ColorEntry& value)const {return normal == value.normal && selectedFocused == value.selectedFocused && selectedUnfocused == value.selectedUnfocused;}
+					bool							operator!=(const ColorEntry& value)const {return !(*this == value);}
 				};
 			}
 
@@ -5826,6 +5829,16 @@ namespace vl
 Event
 ***********************************************************************/
 
+			class IGuiGraphicsEventHandler : public virtual IDescriptable, public Description<IGuiGraphicsEventHandler>
+			{
+			public:
+				class Container
+				{
+				public:
+					Ptr<IGuiGraphicsEventHandler>	handler;
+				};
+			};
+
 			template<typename T>
 			class GuiGraphicsEvent : public Object, public Description<GuiGraphicsEvent<T>>
 			{
@@ -5833,20 +5846,8 @@ Event
 				typedef void(RawFunctionType)(GuiGraphicsComposition*, T&);
 				typedef Func<RawFunctionType>						FunctionType;
 				typedef T											ArgumentType;
-
-				class IHandler : public virtual IDescriptable, public Description<IHandler>
-				{
-				public:
-					virtual void			Execute(GuiGraphicsComposition* sender, T& argument)=0;
-				};
-
-				class HandlerContainer
-				{
-				public:
-					Ptr<IHandler>			handler;
-				};
 				
-				class FunctionHandler : public Object, public IHandler
+				class FunctionHandler : public Object, public IGuiGraphicsEventHandler
 				{
 				protected:
 					FunctionType			handler;
@@ -5856,7 +5857,7 @@ Event
 					{
 					}
 
-					void Execute(GuiGraphicsComposition* sender, T& argument)override
+					void Execute(GuiGraphicsComposition* sender, T& argument)
 					{
 						handler(sender, argument);
 					}
@@ -5864,12 +5865,31 @@ Event
 			protected:
 				struct HandlerNode
 				{
-					Ptr<IHandler>										handler;
+					Ptr<FunctionHandler>								handler;
 					Ptr<HandlerNode>									next;
 				};
 
 				GuiGraphicsComposition*									sender;
 				Ptr<HandlerNode>										handlers;
+
+				bool Attach(Ptr<FunctionHandler> handler)
+				{
+					Ptr<HandlerNode>* currentHandler = &handlers;
+					while (*currentHandler)
+					{
+						if ((*currentHandler)->handler == handler)
+						{
+							return false;
+						}
+						else
+						{
+							currentHandler = &(*currentHandler)->next;
+						}
+					}
+					(*currentHandler) = new HandlerNode;
+					(*currentHandler)->handler = handler;
+					return true;
+				}
 			public:
 				GuiGraphicsEvent(GuiGraphicsComposition* _sender=0)
 					:sender(_sender)
@@ -5890,63 +5910,50 @@ Event
 					sender=_sender;
 				}
 
-				bool Attach(Ptr<IHandler> handler)
-				{
-					Ptr<HandlerNode>* currentHandler=&handlers;
-					while(*currentHandler)
-					{
-						if((*currentHandler)->handler==handler)
-						{
-							return false;
-						}
-						else
-						{
-							currentHandler=&(*currentHandler)->next;
-						}
-					}
-					(*currentHandler)=new HandlerNode;
-					(*currentHandler)->handler=handler;
-					return true;
-				}
-
 				template<typename TClass, typename TMethod>
-				Ptr<IHandler> AttachMethod(TClass* receiver, TMethod TClass::* method)
+				Ptr<IGuiGraphicsEventHandler> AttachMethod(TClass* receiver, TMethod TClass::* method)
 				{
-					Ptr<IHandler> handler=new FunctionHandler(FunctionType(receiver, method));
+					auto handler=MakePtr<FunctionHandler>(FunctionType(receiver, method));
 					Attach(handler);
 					return handler;
 				}
 
-				Ptr<IHandler> AttachFunction(RawFunctionType* function)
+				Ptr<IGuiGraphicsEventHandler> AttachFunction(RawFunctionType* function)
 				{
-					Ptr<IHandler> handler=new FunctionHandler(FunctionType(function));
+					auto handler = MakePtr<FunctionHandler>(FunctionType(function));
 					Attach(handler);
 					return handler;
 				}
 
-				Ptr<IHandler> AttachFunction(const FunctionType& function)
+				Ptr<IGuiGraphicsEventHandler> AttachFunction(const FunctionType& function)
 				{
-					Ptr<IHandler> handler=new FunctionHandler(function);
+					auto handler = MakePtr<FunctionHandler>(function);
 					Attach(handler);
 					return handler;
 				}
 
 				template<typename TLambda>
-				Ptr<IHandler> AttachLambda(const TLambda& lambda)
+				Ptr<IGuiGraphicsEventHandler> AttachLambda(const TLambda& lambda)
 				{
-					Ptr<IHandler> handler=new FunctionHandler(FunctionType(lambda));
+					auto handler = MakePtr<FunctionHandler>(FunctionType(lambda));
 					Attach(handler);
 					return handler;
 				}
 
-				bool Detach(Ptr<IHandler> handler)
+				bool Detach(Ptr<IGuiGraphicsEventHandler> handler)
 				{
-					Ptr<HandlerNode>* currentHandler=&handlers;
+					auto typedHandler = handler.Cast<FunctionHandler>();
+					if (!typedHandler)
+					{
+						return false;
+					}
+
+					auto currentHandler=&handlers;
 					while(*currentHandler)
 					{
-						if((*currentHandler)->handler==handler)
+						if((*currentHandler)->handler == typedHandler)
 						{
-							Ptr<HandlerNode> next=(*currentHandler)->next;
+							auto next=(*currentHandler)->next;
 							(*currentHandler)=next;
 							return true;
 						}
@@ -5960,7 +5967,7 @@ Event
 
 				void ExecuteWithNewSender(T& argument, GuiGraphicsComposition* newSender)
 				{
-					Ptr<HandlerNode>* currentHandler=&handlers;
+					auto currentHandler=&handlers;
 					while(*currentHandler)
 					{
 						(*currentHandler)->handler->Execute(newSender?newSender:sender, argument);
@@ -5979,12 +5986,6 @@ Event
 					ExecuteWithNewSender(t, 0);
 				}
 			};
-
-			template<typename T>
-			Ptr<typename GuiGraphicsEvent<T>::HandlerContainer> CreateEventHandlerContainer()
-			{
-				return new typename GuiGraphicsEvent<T>::HandlerContainer;
-			}
 
 /***********************************************************************
 Predefined Events
@@ -10705,18 +10706,18 @@ List Control
 				class VisibleStyleHelper
 				{
 				public:
-					Ptr<compositions::GuiMouseEvent::IHandler>		leftButtonDownHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		leftButtonUpHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		leftButtonDoubleClickHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		middleButtonDownHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		middleButtonUpHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		middleButtonDoubleClickHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		rightButtonDownHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		rightButtonUpHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		rightButtonDoubleClickHandler;
-					Ptr<compositions::GuiMouseEvent::IHandler>		mouseMoveHandler;
-					Ptr<compositions::GuiNotifyEvent::IHandler>		mouseEnterHandler;
-					Ptr<compositions::GuiNotifyEvent::IHandler>		mouseLeaveHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonDownHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonUpHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		leftButtonDoubleClickHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonDownHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonUpHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		middleButtonDoubleClickHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonDownHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonUpHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		rightButtonDoubleClickHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseMoveHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseEnterHandler;
+					Ptr<compositions::IGuiGraphicsEventHandler>		mouseLeaveHandler;
 				};
 				
 				friend class collections::ArrayBase<Ptr<VisibleStyleHelper>>;
@@ -17186,7 +17187,7 @@ namespace vl
 				compositions::IGuiShortcutKeyItem*			shortcutKeyItem;
 				bool										enabled;
 				bool										selected;
-				Ptr<compositions::GuiNotifyEvent::IHandler>	shortcutKeyItemExecutedHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>	shortcutKeyItemExecutedHandler;
 				Ptr<ShortcutBuilder>						shortcutBuilder;
 				GuiControlHost*								shortcutOwner;
 
@@ -17471,7 +17472,7 @@ Toolstrip Component
 			{
 			protected:
 				GuiToolstripCommand*							command;
-				Ptr<compositions::GuiNotifyEvent::IHandler>		descriptionChangedHandler;
+				Ptr<compositions::IGuiGraphicsEventHandler>		descriptionChangedHandler;
 
 				void											UpdateCommandContent();
 				void											OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
