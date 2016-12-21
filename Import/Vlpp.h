@@ -2697,7 +2697,15 @@ Classes:
 #ifndef VCZH_COLLECTIONS_LIST
 #define VCZH_COLLECTIONS_LIST
 
+#ifdef VCZH_CHECK_MEMORY_LEAKS_NEW
+#undef new
+#endif
+
 #include <string.h>
+
+#ifdef VCZH_GCC
+#include <new>
+#endif
 
 namespace vl
 {
@@ -2705,68 +2713,153 @@ namespace vl
 	{
 
 /***********************************************************************
-储存结构
+Memory Management
 ***********************************************************************/
 
 		template<typename T, bool PODType>
 		class ListStore abstract : public Object
 		{
 		};
-		
+
 		template<typename T>
 		class ListStore<T, false> abstract : public Object
 		{
 		protected:
-			static void CopyObjects(T* dest, const T* source, vint count)
+			static void InitializeItemsByDefault(void* dst, vint count)
 			{
-				if(dest<source)
+				T* ds = (T*)dst;
+
+				for (vint i = 0; i < count; i++)
 				{
-					for(vint i=0;i<count;i++)
+					new(&ds[i])T();
+				}
+			}
+
+			static void InitializeItemsByMove(void* dst, void* src, vint count)
+			{
+				T* ds = (T*)dst;
+				T* ss = (T*)src;
+
+				for (vint i = 0; i < count; i++)
+				{
+					new(&ds[i])T(MoveValue(ss[i]));
+				}
+			}
+
+			static void InitializeItemsByCopy(void* dst, void* src, vint count)
+			{
+				T* ds = (T*)dst;
+				T* ss = (T*)src;
+
+				for (vint i = 0; i < count; i++)
+				{
+					new(&ds[i])T(ss[i]);
+				}
+			}
+
+			static void MoveItemsInTheSameBuffer(void* dst, void* src, vint count)
+			{
+				T* ds = (T*)dst;
+				T* ss = (T*)src;
+
+				if (ds < ss)
+				{
+					for (vint i = 0; i < count; i++)
 					{
-						dest[i]=MoveValue(source[i]);
+						ds[i] = MoveValue(ss[i]);
 					}
 				}
-				else if(dest>source)
+				else if (ds > ss)
 				{
-					for(vint i=count-1;i>=0;i--)
+					for (vint i = count - 1; i >= 0; i--)
 					{
-						dest[i]=MoveValue(source[i]);
+						ds[i] = MoveValue(ss[i]);
 					}
 				}
 			}
 
-			static void ClearObjects(T* dest, vint count)
+			static void ReleaseItems(void* dst, vint count)
 			{
-				for(vint i=0;i<count;i++)
+				T* ds = (T*)dst;
+
+				for (vint i = 0; i < count; i++)
 				{
-					dest[i]=T();
+					ds[i].~T();
 				}
+			}
+			
+			static void* AllocateBuffer(vint size)
+			{
+				if (size <= 0) return nullptr;
+				return (void*)malloc(sizeof(T) * size);
+			}
+
+			static void DeallocateBuffer(void* buffer)
+			{
+				if (buffer == nullptr)return;
+				free(buffer);
 			}
 		public:
 		};
-		
+
 		template<typename T>
 		class ListStore<T, true> abstract : public Object
 		{
 		protected:
-			static void CopyObjects(T* dest, const T* source, vint count)
+			static void InitializeItemsByDefault(void* dst, vint count)
 			{
-				if(count)
+			}
+
+			static void InitializeItemsByMove(void* dst, void* src, vint count)
+			{
+				if (count > 0)
 				{
-					memmove(dest, source, sizeof(T)*count);
+					memcpy(dst, src, sizeof(T) * count);
 				}
 			}
 
-			static void ClearObjects(T* dest, vint count)
+			static void InitializeItemsByCopy(void* dst, void* src, vint count)
 			{
+				if (count > 0)
+				{
+					memcpy(dst, src, sizeof(T) * count);
+				}
+			}
+
+			static void MoveItemsInTheSameBuffer(void* dst, void* src, vint count)
+			{
+				if (count > 0)
+				{
+					memmove(dst, src, sizeof(T) * count);
+				}
+			}
+
+			static void ReleaseItems(void* dst, vint count)
+			{
+			}
+
+			static void* AllocateBuffer(vint size)
+			{
+				if (size <= 0) return nullptr;
+				return (void*)malloc(sizeof(T) * size);
+			}
+
+			static void DeallocateBuffer(void* buffer)
+			{
+				if (buffer == nullptr) return;
+				free(buffer);
 			}
 		public:
 		};
-		
+
+/***********************************************************************
+ArrayBase
+***********************************************************************/
+
 		/// <summary>Base type of all linear container.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
 		template<typename T>
-		class ArrayBase abstract : public ListStore<T,POD<T>::Result>, public virtual IEnumerable<T>
+		class ArrayBase abstract : public ListStore<T, POD<T>::Result>, public virtual IEnumerable<T>
 		{
 		protected:
 			class Enumerator : public Object, public virtual IEnumerator<T>
@@ -2776,10 +2869,10 @@ namespace vl
 				vint							index;
 
 			public:
-				Enumerator(const ArrayBase<T>* _container, vint _index=-1)
+				Enumerator(const ArrayBase<T>* _container, vint _index = -1)
 				{
-					container=_container;
-					index=_index;
+					container = _container;
+					index = _index;
 				}
 
 				IEnumerator<T>* Clone()const
@@ -2800,21 +2893,34 @@ namespace vl
 				bool Next()
 				{
 					index++;
-					return index>=0 && index<container->Count();
+					return index >= 0 && index < container->Count();
 				}
 
 				void Reset()
 				{
-					index=-1;
+					index = -1;
 				}
 			};
-			
-			T*						buffer;
-			vint					count;
+
+			void*					buffer = nullptr;
+			vint					count = 0;
+
+			static void* AddressOf(void* bufferOfTs, vint index)
+			{
+				return (void*)((char*)bufferOfTs + sizeof(T) * index);
+			}
+
+			const T& ItemOf(vint index)const
+			{
+				return *(const T*)AddressOf(buffer, index);
+			}
+
+			T& ItemOf(vint index)
+			{
+				return *(T*)AddressOf(buffer, index);
+			}
 		public:
 			ArrayBase()
-				:buffer(0)
-				,count(0)
 			{
 			}
 
@@ -2835,199 +2941,54 @@ namespace vl
 			/// <param name="index">The index of the element.</param>
 			const T& Get(vint index)const
 			{
-				CHECK_ERROR(index>=0 && index<count, L"ArrayBase<T, K>::Get(vint)#Argument index not in range.");
-				return buffer[index];
+				CHECK_ERROR(index >= 0 && index < this->count, L"ArrayBase<T, K>::Get(vint)#Argument index not in range.");
+				return ItemOf(index);
 			}
-			
+
 			/// <summary>Get the reference to the specified element.</summary>
 			/// <returns>The reference to the specified element.</returns>
 			/// <param name="index">The index of the element.</param>
 			const T& operator[](vint index)const
 			{
-				CHECK_ERROR(index>=0 && index<count, L"ArrayBase<T, K>::operator[](vint)#Argument index not in range.");
-				return buffer[index];
-			}
-		};
-
-		/// <summary>Base type for a list container.</summary>
-		/// <typeparam name="T">Type of elements.</typeparam>
-		/// <typeparam name="K">Type of the key type of elements.</typeparam>
-		template<typename T, typename K=typename KeyType<T>::Type>
-		class ListBase abstract : public ArrayBase<T>
-		{
-		protected:
-			vint					capacity;
-			bool					lessMemoryMode;
-
-			vint CalculateCapacity(vint expected)
-			{
-				vint result=capacity;
-				while(result<expected)
-				{
-					result=result*5/4+1;
-				}
-				return result;
-			}
-
-			void MakeRoom(vint index, vint _count)
-			{
-				vint newCount=ArrayBase<T>::count+_count;
-				if(newCount>capacity)
-				{
-					vint newCapacity=CalculateCapacity(newCount);
-					T* newBuffer=new T[newCapacity];
-					ListStore<T, POD<T>::Result>::CopyObjects(newBuffer, ArrayBase<T>::buffer, index);
-					ListStore<T, POD<T>::Result>::CopyObjects(newBuffer+index+_count, ArrayBase<T>::buffer+index, ArrayBase<T>::count-index);
-					delete[] ArrayBase<T>::buffer;
-					capacity=newCapacity;
-					ArrayBase<T>::buffer=newBuffer;
-				}
-				else
-				{
-					ListStore<T, POD<T>::Result>::CopyObjects(ArrayBase<T>::buffer+index+_count, ArrayBase<T>::buffer+index, ArrayBase<T>::count-index);
-				}
-				ArrayBase<T>::count=newCount;
-			}
-
-			void ReleaseUnnecessaryBuffer(vint previousCount)
-			{
-				if(ArrayBase<T>::buffer && ArrayBase<T>::count<previousCount)
-				{
-					ListStore<T, POD<T>::Result>::ClearObjects(&ArrayBase<T>::buffer[ArrayBase<T>::count], previousCount-ArrayBase<T>::count);
-				}
-				if(lessMemoryMode && ArrayBase<T>::count<=capacity/2)
-				{
-					vint newCapacity=capacity*5/8;
-					if(ArrayBase<T>::count<newCapacity)
-					{
-						T* newBuffer=new T[newCapacity];
-						ListStore<T, POD<T>::Result>::CopyObjects(newBuffer, ArrayBase<T>::buffer, ArrayBase<T>::count);
-						delete[] ArrayBase<T>::buffer;
-						capacity=newCapacity;
-						ArrayBase<T>::buffer=newBuffer;
-					}
-				}
-			}
-		public:
-			ListBase()
-			{
-				ArrayBase<T>::count=0;
-				capacity=0;
-				ArrayBase<T>::buffer=0;
-				lessMemoryMode=true;
-			}
-
-			~ListBase()
-			{
-				delete[] ArrayBase<T>::buffer;
-			}
-
-			/// <summary>Set a preference of using memory.</summary>
-			/// <param name="mode">Set to true (by default) to let the container efficiently reduce memory usage when necessary.</param>
-			void SetLessMemoryMode(bool mode)
-			{
-				lessMemoryMode=mode;
-			}
-
-			/// <summary>Remove an element.</summary>
-			/// <returns>Returns true if the element is removed.</returns>
-			/// <param name="index">The index of the element to remove.</param>
-			bool RemoveAt(vint index)
-			{
-				vint previousCount=ArrayBase<T>::count;
-				CHECK_ERROR(index>=0 && index<ArrayBase<T>::count, L"ListBase<T, K>::RemoveAt(vint)#Argument index not in range.");
-				ListStore<T, POD<T>::Result>::CopyObjects(ArrayBase<T>::buffer+index,ArrayBase<T>::buffer+index+1,ArrayBase<T>::count-index-1);
-				ArrayBase<T>::count--;
-				ReleaseUnnecessaryBuffer(previousCount);
-				return true;
-			}
-			
-			/// <summary>Remove elements.</summary>
-			/// <returns>Returns true if the element is removed.</returns>
-			/// <param name="index">The index of the first element to remove.</param>
-			/// <param name="_count">The number of elements to remove.</param>
-			bool RemoveRange(vint index, vint _count)
-			{
-				vint previousCount=ArrayBase<T>::count;
-				CHECK_ERROR(index>=0 && index<=ArrayBase<T>::count, L"ListBase<T, K>::RemoveRange(vint, vint)#Argument index not in range.");
-				CHECK_ERROR(index+_count>=0 && index+_count<=ArrayBase<T>::count, L"ListBase<T,K>::RemoveRange(vint, vint)#Argument _count not in range.");
-				ListStore<T, POD<T>::Result>::CopyObjects(ArrayBase<T>::buffer+index, ArrayBase<T>::buffer+index+_count, ArrayBase<T>::count-index-_count);
-				ArrayBase<T>::count-=_count;
-				ReleaseUnnecessaryBuffer(previousCount);
-				return true;
-			}
-
-			/// <summary>Remove all elements.</summary>
-			/// <returns>Returns true if all elements are removed.</returns>
-			bool Clear()
-			{
-				vint previousCount=ArrayBase<T>::count;
-				ArrayBase<T>::count=0;
-				if(lessMemoryMode)
-				{
-					capacity=0;
-					delete[] ArrayBase<T>::buffer;
-					ArrayBase<T>::buffer=0;
-				}
-				else
-				{
-					ReleaseUnnecessaryBuffer(previousCount);
-				}
-				return true;
+				CHECK_ERROR(index >= 0 && index < this->count, L"ArrayBase<T, K>::operator[](vint)#Argument index not in range.");
+				return ItemOf(index);
 			}
 		};
 
 /***********************************************************************
-列表对象
+Array
 ***********************************************************************/
 
 		/// <summary>Array.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
 		/// <typeparam name="K">Type of the key type of elements.</typeparam>
-		template<typename T, typename K=typename KeyType<T>::Type>
+		template<typename T, typename K = typename KeyType<T>::Type>
 		class Array : public ArrayBase<T>
 		{
-		protected:
-			void Create(vint size)
-			{
-				if(size>0)
-				{
-					ArrayBase<T>::count=size;
-					ArrayBase<T>::buffer=new T[size];
-				}
-				else
-				{
-					ArrayBase<T>::count=0;
-					ArrayBase<T>::buffer=0;
-				}
-			}
-
-			void Destroy()
-			{
-				ArrayBase<T>::count=0;
-				delete[] ArrayBase<T>::buffer;
-				ArrayBase<T>::buffer=0;
-			}
 		public:
 			/// <summary>Create an array.</summary>
 			/// <param name="size">The size of the array.</param>
-			Array(vint size=0)
+			Array(vint size = 0)
 			{
-				Create(size);
+				this->buffer = this->AllocateBuffer(size);
+				this->InitializeItemsByDefault(this->buffer, size);
+				this->count = size;
 			}
-			
+
 			/// <summary>Create an array.</summary>
 			/// <param name="_buffer">Pointer to an array to copy.</param>
 			/// <param name="size">The size of the array.</param>
 			Array(const T* _buffer, vint size)
 			{
-				Create(size);
-				ListStore<T, POD<T>::Result>::CopyObjects(ArrayBase<T>::buffer, _buffer, size);
+				this->buffer = this->AllocateBuffer(size);
+				this->InitializeItemsByCopy(this->buffer, (void*)_buffer, size);
+				this->count = size;
 			}
 
 			~Array()
 			{
-				Destroy();
+				this->ReleaseItems(this->buffer, this->count);
+				this->DeallocateBuffer(this->buffer);
 			}
 
 			/// <summary>Test does the array contain an item or not.</summary>
@@ -3035,17 +2996,17 @@ namespace vl
 			/// <param name="item">The item to test.</param>
 			bool Contains(const K& item)const
 			{
-				return IndexOf(item)!=-1;
+				return IndexOf(item) != -1;
 			}
-			
+
 			/// <summary>Get the position of an item in this array.</summary>
 			/// <returns>Returns the position. Returns -1 if not exists</returns>
 			/// <param name="item">The item to find.</param>
 			vint IndexOf(const K& item)const
 			{
-				for(vint i=0;i<ArrayBase<T>::count;i++)
+				for (vint i = 0; i < this->count; i++)
 				{
-					if(ArrayBase<T>::buffer[i]==item)
+					if (this->ItemOf(i) == item)
 					{
 						return i;
 					}
@@ -3058,36 +3019,195 @@ namespace vl
 			/// <param name="item">The new item to put into the array.</param>
 			void Set(vint index, const T& item)
 			{
-				CHECK_ERROR(index>=0 && index<ArrayBase<T>::count, L"Array<T, K>::Set(vint)#Argument index not in range.");
-				ArrayBase<T>::buffer[index]=item;
+				CHECK_ERROR(index >= 0 && index < this->count, L"Array<T, K>::Set(vint)#Argument index not in range.");
+				this->ItemOf(index) = item;
 			}
-			
+
 			/// <summary>Get the reference to the specified element.</summary>
 			/// <returns>The reference to the specified element.</returns>
 			/// <param name="index">The index of the element.</param>
 			using ArrayBase<T>::operator[];
 			T& operator[](vint index)
 			{
-				CHECK_ERROR(index>=0 && index<ArrayBase<T>::count, L"Array<T, K>::operator[](vint)#Argument index not in range.");
-				return ArrayBase<T>::buffer[index];
+				CHECK_ERROR(index >= 0 && index < this->count, L"Array<T, K>::operator[](vint)#Argument index not in range.");
+				return this->ItemOf(index);
 			}
 
 			/// <summary>Change the size of the array.</summary>
 			/// <param name="size">The new size of the array.</param>
 			void Resize(vint size)
 			{
-				vint oldCount=ArrayBase<T>::count;
-				T* oldBuffer=ArrayBase<T>::buffer;
-				Create(size);
-				ListStore<T, POD<T>::Result>::CopyObjects(ArrayBase<T>::buffer, oldBuffer, (ArrayBase<T>::count<oldCount?ArrayBase<T>::count:oldCount));
-				delete[] oldBuffer;
+				void* newBuffer = this->AllocateBuffer(size);
+				if (size < this->count)
+				{
+					this->InitializeItemsByMove(this->AddressOf(newBuffer, 0), this->AddressOf(this->buffer, 0), size);
+				}
+				else
+				{
+					this->InitializeItemsByMove(this->AddressOf(newBuffer, 0), this->AddressOf(this->buffer, 0), this->count);
+					this->InitializeItemsByDefault(this->AddressOf(newBuffer, this->count), size - this->count);
+				}
+
+				this->ReleaseItems(this->buffer, this->count);
+				this->DeallocateBuffer(this->buffer);
+				this->buffer = newBuffer;
+				this->count = size;
 			}
 		};
+
+/***********************************************************************
+ListBase
+***********************************************************************/
+
+		/// <summary>Base type for a list container.</summary>
+		/// <typeparam name="T">Type of elements.</typeparam>
+		/// <typeparam name="K">Type of the key type of elements.</typeparam>
+		template<typename T, typename K = typename KeyType<T>::Type>
+		class ListBase abstract : public ArrayBase<T>
+		{
+		protected:
+			vint					capacity = 0;
+			bool					lessMemoryMode = false;
+
+			vint CalculateCapacity(vint expected)
+			{
+				vint result = capacity;
+				while (result < expected)
+				{
+					result = result * 5 / 4 + 1;
+				}
+				return result;
+			}
+
+			void MakeRoom(vint index, vint _count, bool& uninitialized)
+			{
+				vint newCount = this->count + _count;
+				if (newCount > capacity)
+				{
+					vint newCapacity = CalculateCapacity(newCount);
+					void* newBuffer = this->AllocateBuffer(newCapacity);
+					this->InitializeItemsByMove(this->AddressOf(newBuffer, 0), this->AddressOf(this->buffer, 0), index);
+					this->InitializeItemsByMove(this->AddressOf(newBuffer, index + _count), this->AddressOf(this->buffer, index), this->count - index);
+					this->ReleaseItems(this->buffer, this->count);
+					this->DeallocateBuffer(this->buffer);
+					this->capacity = newCapacity;
+					this->buffer = newBuffer;
+					uninitialized = true;
+				}
+				else if (index >= this->count)
+				{
+					uninitialized = true;
+				}
+				else if (this->count - index < _count)
+				{
+					this->InitializeItemsByMove(this->AddressOf(this->buffer, index + _count), this->AddressOf(this->buffer, index), this->count - index);
+					this->ReleaseItems(this->AddressOf(this->buffer, index), _count - (this->count - index));
+					uninitialized = true;
+				}
+				else
+				{
+					this->InitializeItemsByMove(this->AddressOf(this->buffer, this->count), this->AddressOf(this->buffer, this->count - _count), _count);
+					this->MoveItemsInTheSameBuffer(this->AddressOf(this->buffer, index + _count), this->AddressOf(this->buffer, index), this->count - index - _count);
+					uninitialized = false;
+				}
+				this->count = newCount;
+			}
+
+			void ReleaseUnnecessaryBuffer(vint previousCount)
+			{
+				if (this->buffer && this->count < previousCount)
+				{
+					this->ReleaseItems(this->AddressOf(this->buffer, this->count), previousCount - this->count);
+				}
+				if (this->lessMemoryMode && this->count <= this->capacity / 2)
+				{
+					vint newCapacity = capacity * 5 / 8;
+					if (this->count < newCapacity)
+					{
+						void* newBuffer = this->AllocateBuffer(newCapacity);
+						this->InitializeItemsByMove(this->AddressOf(newBuffer, 0), this->AddressOf(this->buffer, 0), this->count);
+						this->ReleaseItems(this->buffer, this->count);
+						this->DeallocateBuffer(this->buffer);
+						this->capacity = newCapacity;
+						this->buffer = newBuffer;
+					}
+				}
+			}
+		public:
+			ListBase()
+			{
+			}
+
+			~ListBase()
+			{
+				this->ReleaseItems(this->buffer, this->count);
+				this->DeallocateBuffer(this->buffer);
+			}
+
+			/// <summary>Set a preference of using memory.</summary>
+			/// <param name="mode">Set to true (by default) to let the container efficiently reduce memory usage when necessary.</param>
+			void SetLessMemoryMode(bool mode)
+			{
+				this->lessMemoryMode = mode;
+			}
+
+			/// <summary>Remove an element.</summary>
+			/// <returns>Returns true if the element is removed.</returns>
+			/// <param name="index">The index of the element to remove.</param>
+			bool RemoveAt(vint index)
+			{
+				vint previousCount = this->count;
+				CHECK_ERROR(index >= 0 && index < this->count, L"ListBase<T, K>::RemoveAt(vint)#Argument index not in range.");
+				this->MoveItemsInTheSameBuffer(this->AddressOf(this->buffer, index), this->AddressOf(this->buffer, index + 1), this->count - index - 1);
+				this->count--;
+				ReleaseUnnecessaryBuffer(previousCount);
+				return true;
+			}
+
+			/// <summary>Remove elements.</summary>
+			/// <returns>Returns true if the element is removed.</returns>
+			/// <param name="index">The index of the first element to remove.</param>
+			/// <param name="_count">The number of elements to remove.</param>
+			bool RemoveRange(vint index, vint _count)
+			{
+				vint previousCount = this->count;
+				CHECK_ERROR(index >= 0 && index <= this->count, L"ListBase<T, K>::RemoveRange(vint, vint)#Argument index not in range.");
+				CHECK_ERROR(index + _count >= 0 && index + _count <= this->count, L"ListBase<T,K>::RemoveRange(vint, vint)#Argument _count not in range.");
+				this->MoveItemsInTheSameBuffer(this->AddressOf(this->buffer, index), this->AddressOf(this->buffer, index + _count), this->count - index - _count);
+				this->count -= _count;
+				ReleaseUnnecessaryBuffer(previousCount);
+				return true;
+			}
+
+			/// <summary>Remove all elements.</summary>
+			/// <returns>Returns true if all elements are removed.</returns>
+			bool Clear()
+			{
+				vint previousCount = this->count;
+				this->count = 0;
+				if (lessMemoryMode)
+				{
+					this->capacity = 0;
+					this->ReleaseItems(this->buffer, this->count);
+					this->DeallocateBuffer(this->buffer);
+					this->buffer = nullptr;
+				}
+				else
+				{
+					ReleaseUnnecessaryBuffer(previousCount);
+				}
+				return true;
+			}
+		};
+
+/***********************************************************************
+List
+***********************************************************************/
 
 		/// <summary>List.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
 		/// <typeparam name="K">Type of the key type of elements.</typeparam>
-		template<typename T, typename K=typename KeyType<T>::Type>
+		template<typename T, typename K = typename KeyType<T>::Type>
 		class List : public ListBase<T, K>
 		{
 		public:
@@ -3095,23 +3215,23 @@ namespace vl
 			List()
 			{
 			}
-			
+
 			/// <summary>Test does the list contain an item or not.</summary>
 			/// <returns>Returns true if the list contains the specified item.</returns>
 			/// <param name="item">The item to test.</param>
 			bool Contains(const K& item)const
 			{
-				return IndexOf(item)!=-1;
+				return IndexOf(item) != -1;
 			}
-			
+
 			/// <summary>Get the position of an item in this list.</summary>
 			/// <returns>Returns the position. Returns -1 if not exists</returns>
 			/// <param name="item">The item to find.</param>
 			vint IndexOf(const K& item)const
 			{
-				for(vint i=0;i<ArrayBase<T>::count;i++)
+				for (vint i = 0; i < this->count; i++)
 				{
-					if(ArrayBase<T>::buffer[i]==item)
+					if (this->ItemOf(i) == item)
 					{
 						return i;
 					}
@@ -3124,20 +3244,26 @@ namespace vl
 			/// <param name="item">The item to add.</param>
 			vint Add(const T& item)
 			{
-				ListBase<T, K>::MakeRoom(ArrayBase<T>::count, 1);
-				ArrayBase<T>::buffer[ArrayBase<T>::count-1]=item;
-				return ArrayBase<T>::count-1;
+				return Insert(this->count, item);
 			}
-			
+
 			/// <summary>Add an item at the specified position.</summary>
 			/// <returns>The index of the added item.</returns>
 			/// <param name="index">The position of the item to add.</param>
 			/// <param name="item">The item to add.</param>
 			vint Insert(vint index, const T& item)
 			{
-				CHECK_ERROR(index>=0 && index<=ArrayBase<T>::count, L"List<T, K>::Insert(vint, const T&)#Argument index not in range.");
-				ListBase<T, K>::MakeRoom(index,1);
-				ArrayBase<T>::buffer[index]=item;
+				CHECK_ERROR(index >= 0 && index <= this->count, L"List<T, K>::Insert(vint, const T&)#Argument index not in range.");
+				bool uninitialized = false;
+				this->MakeRoom(index, 1, uninitialized);
+				if (uninitialized)
+				{
+					new(&this->ItemOf(index))T(item);
+				}
+				else
+				{
+					this->ItemOf(index) = item;
+				}
 				return index;
 			}
 
@@ -3146,10 +3272,10 @@ namespace vl
 			/// <param name="item">The item to remove.</param>
 			bool Remove(const K& item)
 			{
-				vint index=IndexOf(item);
-				if(index>=0 && index<ArrayBase<T>::count)
+				vint index = IndexOf(item);
+				if (index >= 0 && index < this->count)
 				{
-					ListBase<T, K>::RemoveAt(index);
+					this->RemoveAt(index);
 					return true;
 				}
 				else
@@ -3157,138 +3283,139 @@ namespace vl
 					return false;
 				}
 			}
-			
+
 			/// <summary>Replace an item.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="index">The position of the item.</param>
 			/// <param name="item">The new item to put into the array.</param>
 			bool Set(vint index, const T& item)
 			{
-				CHECK_ERROR(index>=0 && index<ArrayBase<T>::count, L"List<T, K>::Set(vint)#Argument index not in range.");
-				ArrayBase<T>::buffer[index]=item;
+				CHECK_ERROR(index >= 0 && index < this->count, L"List<T, K>::Set(vint)#Argument index not in range.");
+				this->ItemOf(index) = item;
 				return true;
 			}
-			
+
 			/// <summary>Get the reference to the specified element.</summary>
 			/// <returns>The reference to the specified element.</returns>
 			/// <param name="index">The index of the element.</param>
 			using ListBase<T, K>::operator[];
 			T& operator[](vint index)
 			{
-				CHECK_ERROR(index>=0 && index<ArrayBase<T>::count, L"List<T, K>::operator[](vint)#Argument index not in range.");
-				return ArrayBase<T>::buffer[index];
+				CHECK_ERROR(index >= 0 && index < this->count, L"List<T, K>::operator[](vint)#Argument index not in range.");
+				return this->ItemOf(index);
 			}
 		};
+
+/***********************************************************************
+SortedList
+***********************************************************************/
 
 		/// <summary>List that keeps everything in order.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
 		/// <typeparam name="K">Type of the key type of elements.</typeparam>
-		template<typename T, typename K=typename KeyType<T>::Type>
+		template<typename T, typename K = typename KeyType<T>::Type>
 		class SortedList : public ListBase<T, K>
 		{
+		protected:
+
+			/// <summary>Get the position of an item in this list.</summary>
+			/// <typeparam name="Key">Type of the item to find.</typeparam>
+			/// <returns>Returns the position. Returns -1 if not exists</returns>
+			/// <param name="item">The item to find.</param>
+			/// <param name="index">Returns the last index.</param>
+			template<typename Key>
+			vint IndexOfInternal(const Key& item, vint& index)const
+			{
+				vint start = 0;
+				vint end = this->count - 1;
+				index = -1;
+				while (start <= end)
+				{
+					index = start + (end - start) / 2;
+					if (this->ItemOf(index) == item)
+					{
+						return index;
+					}
+					else if (this->ItemOf(index) > item)
+					{
+						end = index - 1;
+					}
+					else
+					{
+						start = index + 1;
+					}
+				}
+				return -1;
+			}
+
+			vint Insert(vint index, const T& item)
+			{
+				bool uninitialized = false;
+				this->MakeRoom(index, 1, uninitialized);
+				if (uninitialized)
+				{
+					new(&this->ItemOf(index))T(item);
+				}
+				else
+				{
+					this->ItemOf(index) = item;
+				}
+				return index;
+			}
 		public:
 			/// <summary>Create a list.</summary>
 			SortedList()
 			{
 			}
-			
+
 			/// <summary>Test does the list contain an item or not.</summary>
 			/// <returns>Returns true if the list contains the specified item.</returns>
 			/// <param name="item">The item to test.</param>
 			bool Contains(const K& item)const
 			{
-				return IndexOf(item)!=-1;
+				return IndexOf(item) != -1;
 			}
-			
-			/// <summary>Get the position of an item in this list.</summary>
-			/// <typeparam name="Key">Type of the item to find.</typeparam>
-			/// <returns>Returns the position. Returns -1 if not exists</returns>
-			/// <param name="item">The item to find.</param>
-			template<typename Key>
-			vint IndexOf(const Key& item)const
-			{
-				vint start=0;
-				vint end=ArrayBase<T>::count-1;
-				while(start<=end)
-				{
-					vint index=start+(end-start)/2;
-					if(ArrayBase<T>::buffer[index]==item)
-					{
-						return index;
-					}
-					else if(ArrayBase<T>::buffer[index]>item)
-					{
-						end=index-1;
-					}
-					else
-					{
-						start=index+1;
-					}
-				}
-				return -1;
-			}
-			
+
 			/// <summary>Get the position of an item in this list.</summary>
 			/// <returns>Returns the position. Returns -1 if not exists</returns>
 			/// <param name="item">The item to find.</param>
 			vint IndexOf(const K& item)const
 			{
-				return IndexOf<K>(item);
+				vint outputIndex = -1;
+				return IndexOfInternal<K>(item, outputIndex);
 			}
-			
+
 			/// <summary>Add an item at a correct position to keep everying in order.</summary>
 			/// <returns>The index of the added item.</returns>
 			/// <param name="item">The item to add.</param>
 			vint Add(const T& item)
 			{
-				if(ArrayBase<T>::count==0)
+				if (ArrayBase<T>::count == 0)
 				{
-					ListBase<T, K>::MakeRoom(0, 1);
-					ArrayBase<T>::buffer[0]=item;
-					return 0;
+					return Insert(0, item);
 				}
 				else
 				{
-					vint start=0;
-					vint end=ArrayBase<T>::count-1;
-					vint index=-1;
-					while(start<=end)
+					vint outputIndex = -1;
+					IndexOfInternal<T>(item, outputIndex);
+					CHECK_ERROR(outputIndex >= 0 && outputIndex < this->count, L"SortedList<T, K>::Add(const T&)#Internal error, index not in range.");
+					if (this->ItemOf(outputIndex) < item)
 					{
-						index=(start+end)/2;
-						if(ArrayBase<T>::buffer[index]==item)
-						{
-							goto SORTED_LIST_INSERT;
-						}
-						else if(ArrayBase<T>::buffer[index]>item)
-						{
-							end=index-1;
-						}
-						else
-						{
-							start=index+1;
-						}
+						outputIndex++;
 					}
-					CHECK_ERROR(index>=0 && index<ArrayBase<T>::count, L"SortedList<T, K>::Add(const T&)#Internal error, index not in range.");
-					if(ArrayBase<T>::buffer[index]<item)
-					{
-						index++;
-					}
-SORTED_LIST_INSERT:
-					ListBase<T, K>::MakeRoom(index, 1);
-					ArrayBase<T>::buffer[index]=item;
-					return index;
+					return Insert(outputIndex, item);
 				}
 			}
-			
+
 			/// <summary>Remove an item.</summary>
 			/// <returns>Returns true if the item is removed.</returns>
 			/// <param name="item">The item to remove.</param>
 			bool Remove(const K& item)
 			{
-				vint index=IndexOf(item);
-				if(index>=0 && index<ArrayBase<T>::count)
+				vint index = IndexOf(item);
+				if (index >= 0 && index < ArrayBase<T>::count)
 				{
-					ListBase<T, K>::RemoveAt(index);
+					this->RemoveAt(index);
 					return true;
 				}
 				else
@@ -3299,7 +3426,7 @@ SORTED_LIST_INSERT:
 		};
 
 /***********************************************************************
-特殊容器
+Special Containers
 ***********************************************************************/
 
 		template<typename T>
@@ -3426,7 +3553,7 @@ SORTED_LIST_INSERT:
 		};
 
 /***********************************************************************
-随机访问
+Random Access
 ***********************************************************************/
 
 		namespace randomaccess_internal
@@ -3454,6 +3581,10 @@ SORTED_LIST_INSERT:
 		}
 	}
 }
+
+#ifdef VCZH_CHECK_MEMORY_LEAKS_NEW
+#define new VCZH_CHECK_MEMORY_LEAKS_NEW
+#endif
 
 #endif
 
@@ -7513,7 +7644,7 @@ namespace vl
 		{
 			Ptr<EventHandlerImpl> impl = handler.Cast<EventHandlerImpl>();
 			if (!impl) return false;
-			vint index = handlers.IndexOf(impl);
+			vint index = handlers.IndexOf(impl.Obj());
 			if (index == -1) return false;
 			impl->attached = false;
 			handlers.RemoveAt(index);
@@ -14893,7 +15024,7 @@ namespace vl
 				{
 				}
 
-				vint Compare(const DefinitionTypeScopePair& pair)
+				vint Compare(const DefinitionTypeScopePair& pair)const
 				{
 					if(type<pair.type) return -1;
 					if(type>pair.type) return 1;
@@ -14902,12 +15033,12 @@ namespace vl
 					return 0;
 				}
 
-				bool operator==(const DefinitionTypeScopePair& pair){return Compare(pair)==0;}
-				bool operator!=(const DefinitionTypeScopePair& pair){return Compare(pair)!=0;}
-				bool operator>(const DefinitionTypeScopePair& pair){return Compare(pair)>0;}
-				bool operator>=(const DefinitionTypeScopePair& pair){return Compare(pair)>=0;}
-				bool operator<(const DefinitionTypeScopePair& pair){return Compare(pair)<0;}
-				bool operator<=(const DefinitionTypeScopePair& pair){return Compare(pair)<=0;}
+				bool operator==	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)==0;}
+				bool operator!=	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)!=0;}
+				bool operator>	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)>0;}
+				bool operator>=	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)>=0;}
+				bool operator<	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)<0;}
+				bool operator<=	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)<=0;}
 			};
 
 /***********************************************************************

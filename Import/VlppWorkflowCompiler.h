@@ -109,21 +109,24 @@ namespace vl
 			KEYWORD_CATCH = 80,
 			KEYWORD_FINALLY = 81,
 			KEYWORD_CLASS = 82,
-			KEYWORD_PROP = 83,
-			KEYWORD_EVENT = 84,
-			KEYWORD_STATIC = 85,
-			KEYWORD_OVERRIDE = 86,
-			KEYWORD_USING = 87,
-			KEYWORD_NAMESPACE = 88,
-			KEYWORD_MODULE = 89,
-			KEYWORD_UNIT = 90,
-			NAME = 91,
-			ORDERED_NAME = 92,
-			FLOAT = 93,
-			INTEGER = 94,
-			STRING = 95,
-			FORMATSTRING = 96,
-			SPACE = 97,
+			KEYWORD_ENUM = 83,
+			KEYWORD_FLAGENUM = 84,
+			KEYWORD_STRUCT = 85,
+			KEYWORD_PROP = 86,
+			KEYWORD_EVENT = 87,
+			KEYWORD_STATIC = 88,
+			KEYWORD_OVERRIDE = 89,
+			KEYWORD_USING = 90,
+			KEYWORD_NAMESPACE = 91,
+			KEYWORD_MODULE = 92,
+			KEYWORD_UNIT = 93,
+			NAME = 94,
+			ORDERED_NAME = 95,
+			FLOAT = 96,
+			INTEGER = 97,
+			STRING = 98,
+			FORMATSTRING = 99,
+			SPACE = 100,
 		};
 		class WfType;
 		class WfPredefinedType;
@@ -198,6 +201,11 @@ namespace vl
 		class WfConstructorDeclaration;
 		class WfDestructorDeclaration;
 		class WfClassDeclaration;
+		class WfEnumItemIntersection;
+		class WfEnumItem;
+		class WfEnumDeclaration;
+		class WfStructMember;
+		class WfStructDeclaration;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
 		class WfModuleUsingWildCardFragment;
@@ -985,6 +993,8 @@ namespace vl
 				virtual void Visit(WfConstructorDeclaration* node)=0;
 				virtual void Visit(WfDestructorDeclaration* node)=0;
 				virtual void Visit(WfClassDeclaration* node)=0;
+				virtual void Visit(WfEnumDeclaration* node)=0;
+				virtual void Visit(WfStructDeclaration* node)=0;
 			};
 
 			virtual void Accept(WfDeclaration::IVisitor* visitor)=0;
@@ -1180,6 +1190,67 @@ namespace vl
 			static vl::Ptr<WfClassDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
+		enum class WfEnumKind
+		{
+			Normal,
+			Flag,
+		};
+
+		enum class WfEnumItemKind
+		{
+			Constant,
+			Intersection,
+		};
+
+		class WfEnumItemIntersection : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfEnumItemIntersection>
+		{
+		public:
+			vl::parsing::ParsingToken name;
+
+			static vl::Ptr<WfEnumItemIntersection> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfEnumItem : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfEnumItem>
+		{
+		public:
+			vl::parsing::ParsingToken name;
+			WfEnumItemKind kind;
+			vl::parsing::ParsingToken number;
+			vl::collections::List<vl::Ptr<WfEnumItemIntersection>> intersections;
+
+			static vl::Ptr<WfEnumItem> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfEnumDeclaration : public WfDeclaration, vl::reflection::Description<WfEnumDeclaration>
+		{
+		public:
+			WfEnumKind kind;
+			vl::collections::List<vl::Ptr<WfEnumItem>> items;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfEnumDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfStructMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStructMember>
+		{
+		public:
+			vl::parsing::ParsingToken name;
+			vl::Ptr<WfType> type;
+
+			static vl::Ptr<WfStructMember> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfStructDeclaration : public WfDeclaration, vl::reflection::Description<WfStructDeclaration>
+		{
+		public:
+			vl::collections::List<vl::Ptr<WfStructMember>> members;
+
+			void Accept(WfDeclaration::IVisitor* visitor)override;
+
+			static vl::Ptr<WfStructDeclaration> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
 		class WfModuleUsingFragment abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfModuleUsingFragment>
 		{
 		public:
@@ -1371,6 +1442,13 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfConstructorDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfDestructorDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfClassDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfEnumKind)
+			DECL_TYPE_INFO(vl::workflow::WfEnumItemKind)
+			DECL_TYPE_INFO(vl::workflow::WfEnumItemIntersection)
+			DECL_TYPE_INFO(vl::workflow::WfEnumItem)
+			DECL_TYPE_INFO(vl::workflow::WfEnumDeclaration)
+			DECL_TYPE_INFO(vl::workflow::WfStructMember)
+			DECL_TYPE_INFO(vl::workflow::WfStructDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingWildCardFragment)
@@ -1709,6 +1787,16 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
+				void Visit(vl::workflow::WfEnumDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::workflow::WfStructDeclaration* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
 			END_INTERFACE_PROXY(vl::workflow::WfDeclaration::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfModuleUsingFragment::IVisitor)
@@ -1953,7 +2041,7 @@ Scope Manager
 				typedef collections::Dictionary<Ptr<WfExpression>, ResolveExpressionResult>					ExpressionResolvingMap;
 				typedef collections::Dictionary<parsing::ParsingTreeCustomBase*, Ptr<WfLexicalCapture>>		LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
-				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<typeimpl::WfCustomType>>			DeclarationTypeMap;
+				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<ITypeDescriptor>>					DeclarationTypeMap;
 				typedef collections::Dictionary<Ptr<WfDeclaration>, Ptr<IMemberInfo>>						DeclarationMemberInfoMap;
 
 				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
@@ -2101,6 +2189,7 @@ Global Name
 ***********************************************************************/
 
 			extern void										BuildGlobalNameFromTypeDescriptors(WfLexicalScopeManager* manager);
+			extern void										BuildNameForDeclaration(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name, WfDeclaration* decl);
 			extern void										BuildGlobalNameFromModules(WfLexicalScopeManager* manager);
 			extern void										ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name);
 
@@ -2374,6 +2463,13 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfConstructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclaration(WfDestructorDeclaration* node);
 				static Ptr<parsing::ParsingError>			WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
+				static Ptr<parsing::ParsingError>			EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
+				static Ptr<parsing::ParsingError>			FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
+				static Ptr<parsing::ParsingError>			FlagValueNotExists(WfEnumItemIntersection* node, WfEnumDeclaration* owner);
+				static Ptr<parsing::ParsingError>			DuplicatedEnumValue(WfEnumItem* node, WfEnumDeclaration* owner);
+				static Ptr<parsing::ParsingError>			StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
+				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path);
+				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);

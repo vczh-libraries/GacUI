@@ -376,6 +376,9 @@ Colorized Plain Text (model)
 					/// Background color.
 					/// </summary>
 					Color							background;
+
+					bool							operator==(const ColorItem& value)const { return text == value.text && background == value.background; }
+					bool							operator!=(const ColorItem& value)const { return !(*this == value); }
 				};
 				
 				/// <summary>
@@ -396,8 +399,8 @@ Colorized Plain Text (model)
 					/// </summary>
 					ColorItem						selectedUnfocused;
 
-					bool							operator==(const ColorEntry& value){return false;}
-					bool							operator!=(const ColorEntry& value){return true;}
+					bool							operator==(const ColorEntry& value)const {return normal == value.normal && selectedFocused == value.selectedFocused && selectedUnfocused == value.selectedUnfocused;}
+					bool							operator!=(const ColorEntry& value)const {return !(*this == value);}
 				};
 			}
 

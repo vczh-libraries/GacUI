@@ -483,20 +483,22 @@ FilePath
 
 		void FilePath::Initialize()
 		{
-			Array<wchar_t> buffer(fullPath.Length() + 1);
-#if defined VCZH_MSVC
-			wcscpy_s(&buffer[0], fullPath.Length() + 1, fullPath.Buffer());
-#elif defined VCZH_GCC
-			wcscpy(&buffer[0], fullPath.Buffer());
-#endif
-			for (vint i = 0; i < buffer.Count(); i++)
 			{
-				if (buffer[i] == L'\\' || buffer[i] == L'/')
+				Array<wchar_t> buffer(fullPath.Length() + 1);
+#if defined VCZH_MSVC
+				wcscpy_s(&buffer[0], fullPath.Length() + 1, fullPath.Buffer());
+#elif defined VCZH_GCC
+				wcscpy(&buffer[0], fullPath.Buffer());
+#endif
+				for (vint i = 0; i < buffer.Count(); i++)
 				{
-					buffer[i] = Delimiter;
+					if (buffer[i] == L'\\' || buffer[i] == L'/')
+					{
+						buffer[i] = Delimiter;
+					}
 				}
+				fullPath = &buffer[0];
 			}
-			fullPath = &buffer[0];
 
 #if defined VCZH_MSVC
 			if (fullPath.Length() < 2 || fullPath[1] != L':')

@@ -295,33 +295,24 @@ namespace vl
 
 	namespace reflection
 	{
-		template<>
-		class Description<workflow::typeimpl::WfClassInstance> : public virtual DescriptableObject
-		{
-		private:
-			description::ITypeDescriptor*				associatedTypeDescriptor;
+#define DEFINE_DESCRIPTION(TYPE)\
+		template<>\
+		class Description<workflow::typeimpl::TYPE> : public virtual DescriptableObject\
+		{\
+		private:\
+			description::ITypeDescriptor*				associatedTypeDescriptor;\
+		public:\
+			Description(description::ITypeDescriptor* _associatedTypeDescriptor)\
+				:associatedTypeDescriptor(_associatedTypeDescriptor)\
+			{\
+				typeDescriptor = &associatedTypeDescriptor;\
+			}\
+		};\
 
-		public:
-			Description(description::ITypeDescriptor* _associatedTypeDescriptor)
-				:associatedTypeDescriptor(_associatedTypeDescriptor)
-			{
-				typeDescriptor = &associatedTypeDescriptor;
-			}
-		};
+		DEFINE_DESCRIPTION(WfClassInstance)
+		DEFINE_DESCRIPTION(WfInterfaceInstance)
 
-		template<>
-		class Description<workflow::typeimpl::WfInterfaceInstance> : public virtual DescriptableObject
-		{
-		private:
-			description::ITypeDescriptor*				associatedTypeDescriptor;
-
-		public:
-			Description(description::ITypeDescriptor* _associatedTypeDescriptor)
-				:associatedTypeDescriptor(_associatedTypeDescriptor)
-			{
-				typeDescriptor = &associatedTypeDescriptor;
-			}
-		};
+#undef DEFINE_DESCRIPTION
 	}
 
 	namespace workflow
@@ -508,6 +499,23 @@ Field
 				void									SetReturn(Ptr<ITypeInfo> typeInfo);
 			};
 
+			class WfStructField : public reflection::description::FieldInfoImpl
+			{
+				typedef reflection::description::ITypeDescriptor			ITypeDescriptor;
+				typedef reflection::description::ITypeInfo					ITypeInfo;
+				typedef reflection::description::Value						Value;
+			protected:
+
+				Value									GetValueInternal(const Value& thisObject)override;
+				void									SetValueInternal(Value& thisObject, const Value& newValue)override;
+			public:
+				WfStructField(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
+				~WfStructField();
+
+				ICpp*									GetCpp()override;
+				void									SetReturn(Ptr<ITypeInfo> typeInfo);
+			};
+
 /***********************************************************************
 Property
 ***********************************************************************/
@@ -530,7 +538,25 @@ Property
 Custom Type
 ***********************************************************************/
 
-			class WfCustomType : public reflection::description::TypeDescriptorImpl
+			struct WfTypeInfoContent : reflection::description::TypeInfoContent
+			{
+				WString								workflowTypeName;
+
+				WfTypeInfoContent(const WString& _workflowTypeName);
+			};
+
+			template<typename TBase>
+			class WfCustomTypeBase : private WfTypeInfoContent, public TBase
+			{
+			public:
+				WfCustomTypeBase(reflection::description::TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
+					:WfTypeInfoContent(typeName)
+					, TBase(typeDescriptorFlags, this)
+				{
+				}
+			};
+
+			class WfCustomType : public WfCustomTypeBase<reflection::description::TypeDescriptorImpl>
 			{
 			protected:
 				typedef reflection::description::TypeDescriptorFlags		TypeDescriptorFlags;
@@ -538,13 +564,6 @@ Custom Type
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 				typedef reflection::description::IMethodGroupInfo			IMethodGroupInfo;
 				typedef collections::List<ITypeDescriptor*>					TypeDescriptorList;
-
-				struct WfTypeInfoContent : reflection::description::TypeInfoContent
-				{
-					WString								workflowTypeName;
-
-					WfTypeInfoContent(const WString& _workflowTypeName);
-				};
 
 			protected:
 				runtime::WfRuntimeGlobalContext*		globalContext = nullptr;
@@ -588,6 +607,89 @@ Custom Type
 				~WfInterface();
 			};
 
+			class WfStruct : public WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>
+			{
+				using FieldMap = collections::Dictionary<WString, Ptr<WfStructField>>;
+				using IPropertyInfo = reflection::description::IPropertyInfo;
+				using IValueType = reflection::description::IValueType;
+
+			protected:
+				class WfValueType : public Object, public virtual IValueType
+				{
+					using Value = reflection::description::Value;
+
+				protected:
+					WfStruct*							owner;
+
+				public:
+					WfValueType(WfStruct* _owner);
+
+					Value								CreateDefault()override;
+					CompareResult						Compare(const Value& a, const Value& b)override;
+				};
+
+			protected:
+				FieldMap								fields;
+
+			public:
+				WfStruct(const WString& typeName);
+				~WfStruct();
+
+				vint									GetPropertyCount()override;
+				IPropertyInfo*							GetProperty(vint index)override;
+				bool									IsPropertyExists(const WString& name, bool inheritable)override;
+				IPropertyInfo*							GetPropertyByName(const WString& name, bool inheritable)override;
+
+				void									AddMember(Ptr<WfStructField> value);
+			};
+
+			class WfEnum : public WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>
+			{
+				using EnumItemMap = collections::Dictionary<WString, vuint64_t>;
+				using IValueType = reflection::description::IValueType;
+				using IEnumType = reflection::description::IEnumType;
+				using Value = reflection::description::Value;
+
+			protected:
+				class WfValueType : public Object, public virtual IValueType
+				{
+				protected:
+					WfEnum*							owner;
+
+				public:
+					WfValueType(WfEnum* _owner);
+
+					Value								CreateDefault()override;
+					CompareResult						Compare(const Value& a, const Value& b)override;
+				};
+
+				class WfEnumType : public Object, public virtual IEnumType
+				{
+				protected:
+					WfEnum*								owner;
+
+				public:
+					WfEnumType(WfEnum* _owner);
+
+					bool								IsFlagEnum()override;
+					vint								GetItemCount()override;
+					WString								GetItemName(vint index)override;
+					vuint64_t							GetItemValue(vint index)override;
+					vint								IndexOfItem(WString name)override;
+					Value								ToEnum(vuint64_t value)override;
+					vuint64_t							FromEnum(const Value& value)override;
+				};
+
+			protected:
+				EnumItemMap								enumItems;
+
+			public:
+				WfEnum(bool isFlags, const WString& typeName);
+				~WfEnum();
+
+				void									AddEnumItem(const WString& name, vuint64_t value);
+			};
+
 /***********************************************************************
 Instance
 ***********************************************************************/
@@ -621,6 +723,36 @@ Instance
 				Ptr<IValueInterfaceProxy>				GetProxy();
 			};
 
+			struct WfStructInstance
+			{
+				using FieldValueMap = collections::Dictionary<WfStructField*, reflection::description::Value>;
+
+				FieldValueMap							fieldValues;
+
+				WfStructInstance()
+				{
+				}
+
+				WfStructInstance(const WfStructInstance& si)
+				{
+					CopyFrom(fieldValues, si.fieldValues);
+				}
+
+				WfStructInstance& operator=(const WfStructInstance& si)
+				{
+					if (this != &si)
+					{
+						CopyFrom(fieldValues, si.fieldValues);
+					}
+					return *this;
+				}
+			};
+
+			struct WfEnumInstance
+			{
+				vuint64_t								value = 0;
+			};
+
 /***********************************************************************
 Plugin
 ***********************************************************************/
@@ -633,6 +765,8 @@ Plugin
 			public:
 				collections::List<Ptr<WfClass>>			classes;
 				collections::List<Ptr<WfInterface>>		interfaces;
+				collections::List<Ptr<WfStruct>>		structs;
+				collections::List<Ptr<WfEnum>>			enums;
 				
 				runtime::WfRuntimeGlobalContext*		GetGlobalContext();
 				void									SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext);

@@ -682,6 +682,8 @@ Serialization (CollectMetadata)
 
 			static void CollectTd(WfCustomType* td, WfWriterContextPrepare& prepare)
 			{
+				CollectTd((ITypeDescriptor*)td, prepare);
+
 				vint baseCount = td->GetBaseTypeDescriptorCount();
 				for (vint i = 0; i < baseCount; i++)
 				{
@@ -724,6 +726,22 @@ Serialization (CollectMetadata)
 				}
 			}
 
+			static void CollectTd(WfStruct* td, WfWriterContextPrepare& prepare)
+			{
+				CollectTd((ITypeDescriptor*)td, prepare);
+
+				vint propertyCount = td->GetPropertyCount();
+				for (vint i = 0; i < propertyCount; i++)
+				{
+					CollectTd(td->GetProperty(i), prepare);
+				}
+			}
+
+			static void CollectTd(WfEnum* td, WfWriterContextPrepare& prepare)
+			{
+				CollectTd((ITypeDescriptor*)td, prepare);
+			}
+
 			static void CollectMetadata(WfTypeImpl* typeImpl, WfWriterContextPrepare& prepare)
 			{
 				FOREACH(Ptr<WfClass>, td, typeImpl->classes)
@@ -731,6 +749,14 @@ Serialization (CollectMetadata)
 					CollectTd(td.Obj(), prepare);
 				}
 				FOREACH(Ptr<WfInterface>, td, typeImpl->interfaces)
+				{
+					CollectTd(td.Obj(), prepare);
+				}
+				FOREACH(Ptr<WfStruct>, td, typeImpl->structs)
+				{
+					CollectTd(td.Obj(), prepare);
+				}
+				FOREACH(Ptr<WfEnum>, td, typeImpl->enums)
 				{
 					CollectTd(td.Obj(), prepare);
 				}
@@ -776,7 +802,8 @@ Serialization (CollectMetadata)
 							COLLECTMETADATA_EVENT,
 							COLLECTMETADATA_EVENT_COUNT,
 							COLLECTMETADATA_LABEL,
-							COLLECTMETADATA_TYPE)
+							COLLECTMETADATA_TYPE
+							)
 					}
 				}
 
@@ -1691,6 +1718,76 @@ Serialization (TypeImpl)
 
 				//----------------------------------------------------
 
+				static void IOStruct(WfReader& reader, WfStruct* td)
+				{
+					vint count;
+					reader << count;
+
+					for (vint i = 0; i < count; i++)
+					{
+						WString name;
+						reader << name;
+
+						Ptr<ITypeInfo> typeInfo;
+						IOType(reader, typeInfo);
+
+						auto field = MakePtr<WfStructField>(td, name);
+						field->SetReturn(typeInfo);
+						td->AddMember(field);
+					}
+				}
+
+				static void IOStruct(WfWriter& writer, WfStruct* td)
+				{
+					vint count = td->GetPropertyCount();
+					writer << count;
+
+					for (vint i = 0; i < count; i++)
+					{
+						auto prop = td->GetProperty(i);
+
+						WString name = prop->GetName();
+						writer << name;
+
+						ITypeInfo* typeInfo = prop->GetReturn();
+						IOType(writer, typeInfo);
+					}
+				}
+
+				//----------------------------------------------------
+
+				static void IOEnum(WfReader& reader, WfEnum* td)
+				{
+					vint count;
+					reader << count;
+
+					auto et = td->GetEnumType();
+					for (vint i = 0; i < count; i++)
+					{
+						WString name;
+						vint64_t value;
+						reader << name << value;
+						td->AddEnumItem(name, (vuint64_t)value);
+					}
+				}
+
+				static void IOEnum(WfWriter& writer, WfEnum* td)
+				{
+					auto et = td->GetEnumType();
+
+					vint count = et->GetItemCount();
+					writer << count;
+					
+					for (vint i = 0; i < count; i++)
+					{
+						WString name = et->GetItemName(i);
+						vint64_t value = (vint64_t)et->GetItemValue(i);
+						writer << name << value;
+					}
+				}
+
+				//----------------------------------------------------
+
 				static void IO(WfReader& reader, WfTypeImpl& value)
 				{
 					// fill types
@@ -1701,6 +1798,14 @@ Serialization (TypeImpl)
 					FOREACH(Ptr<WfInterface>, td, value.interfaces)
 					{
 						IOInterface(reader, td.Obj());
+					}
+					FOREACH(Ptr<WfStruct>, td, value.structs)
+					{
+						IOStruct(reader, td.Obj());
+					}
+					FOREACH(Ptr<WfEnum>, td, value.enums)
+					{
+						IOEnum(reader, td.Obj());
 					}
 				}
 					
@@ -1714,6 +1819,14 @@ Serialization (TypeImpl)
 					FOREACH(Ptr<WfInterface>, td, value.interfaces)
 					{
 						IOInterface(writer, td.Obj());
+					}
+					FOREACH(Ptr<WfStruct>, td, value.structs)
+					{
+						IOStruct(writer, td.Obj());
+					}
+					FOREACH(Ptr<WfEnum>, td, value.enums)
+					{
+						IOEnum(writer, td.Obj());
 					}
 				}
 			};
@@ -1861,6 +1974,38 @@ Serialization (Assembly)
 			{
 				//----------------------------------------------------
 
+				static void IOCustomType(WfReader& reader, Ptr<WfEnum>& type)
+				{
+					bool isFlags;
+					WString typeName;
+					reader << isFlags << typeName;
+					type = MakePtr<WfEnum>(isFlags, typeName);
+				}
+
+				static void IOCustomType(WfWriter& writer, Ptr<WfEnum>& type)
+				{
+					bool isFlags = type->GetTypeDescriptorFlags() == TypeDescriptorFlags::FlagEnum;
+					WString typeName = type->GetTypeName();
+					writer << isFlags << typeName;
+				}
+
+				template<typename TType>
+				static void IOCustomType(WfReader& reader, Ptr<TType>& type)
+				{
+					WString typeName;
+					reader << typeName;
+					type = MakePtr<TType>(typeName);
+				}
+
+				template<typename TType>
+				static void IOCustomType(WfWriter& writer, Ptr<TType>& type)
+				{
+					WString typeName = type->GetTypeName();
+					writer << typeName;
+				}
+
+				//----------------------------------------------------
+
 				template<typename TType>
 				static void IOCustomTypeList(WfReader& reader, List<Ptr<TType>>& types)
 				{
@@ -1868,9 +2013,9 @@ Serialization (Assembly)
 					reader << typeCount;
 					for (vint i = 0; i < typeCount; i++)
 					{
-						WString typeName;
-						reader << typeName;
-						types.Add(MakePtr<TType>(typeName));
+						Ptr<TType> type;
+						IOCustomType(reader, type);
+						types.Add(type);
 					}
 
 					for (vint i = 0; i < typeCount; i++)
@@ -1887,8 +2032,8 @@ Serialization (Assembly)
 					writer << typeCount;
 					for (vint i = 0; i < typeCount; i++)
 					{
-						WString typeName = types[i]->GetTypeName();
-						writer << typeName;
+						auto type = types[i];
+						IOCustomType(writer, type);
 					}
 					
 					for (vint i = 0; i < typeCount; i++)
@@ -1910,6 +2055,8 @@ Serialization (Assembly)
 						value.typeImpl = new WfTypeImpl;
 						IOCustomTypeList(reader, value.typeImpl->classes);
 						IOCustomTypeList(reader, value.typeImpl->interfaces);
+						IOCustomTypeList(reader, value.typeImpl->structs);
+						IOCustomTypeList(reader, value.typeImpl->enums);
 					}
 
 					vint tdCount = -1;
@@ -1959,6 +2106,8 @@ Serialization (Assembly)
 					{
 						IOCustomTypeList(writer, value.typeImpl->classes);
 						IOCustomTypeList(writer, value.typeImpl->interfaces);
+						IOCustomTypeList(writer, value.typeImpl->structs);
+						IOCustomTypeList(writer, value.typeImpl->enums);
 					}
 
 					WfWriterContextPrepare prepare;
@@ -4782,6 +4931,57 @@ WfField
 			}
 
 /***********************************************************************
+WfStructField
+***********************************************************************/
+
+			Value WfStructField::GetValueInternal(const Value& thisObject)
+			{
+				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+				if (!structValue)
+				{
+					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
+				}
+				vint index = structValue->value.fieldValues.Keys().IndexOf(this);
+				if (index == -1)
+				{
+					return returnInfo->GetTypeDescriptor()->GetValueType()->CreateDefault();
+				}
+				else
+				{
+					return structValue->value.fieldValues.Values()[index];
+				}
+			}
+
+			void WfStructField::SetValueInternal(Value& thisObject, const Value& newValue)
+			{
+				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+				if (!structValue)
+				{
+					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
+				}
+				structValue->value.fieldValues.Set(this, newValue);
+			}
+
+			WfStructField::WfStructField(ITypeDescriptor* ownerTypeDescriptor, const WString& name)
+				:FieldInfoImpl(ownerTypeDescriptor, name, nullptr)
+			{
+			}
+
+			WfStructField::~WfStructField()
+			{
+			}
+
+			IPropertyInfo::ICpp* WfStructField::GetCpp()
+			{
+				return nullptr;
+			}
+
+			void WfStructField::SetReturn(Ptr<ITypeInfo> typeInfo)
+			{
+				returnInfo = typeInfo;
+			}
+
+/***********************************************************************
 WfProperty
 ***********************************************************************/
 
@@ -4810,16 +5010,20 @@ WfProperty
 			}
 
 /***********************************************************************
-WfCustomType
+WfTypeInfoContent
 ***********************************************************************/
 
-			WfCustomType::WfTypeInfoContent::WfTypeInfoContent(const WString& _workflowTypeName)
+			WfTypeInfoContent::WfTypeInfoContent(const WString& _workflowTypeName)
 				:workflowTypeName(_workflowTypeName)
 			{
 				typeName = workflowTypeName.Buffer();
 				cppFullTypeName = nullptr;
 				cppName = TypeInfoContent::CppType;
 			}
+
+/***********************************************************************
+WfCustomType
+***********************************************************************/
 
 			void WfCustomType::SetGlobalContext(runtime::WfRuntimeGlobalContext* _globalContext, IMethodGroupInfo* group)
 			{
@@ -4855,15 +5059,13 @@ WfCustomType
 			{
 			}
 
-			WfCustomType::WfCustomType(TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
-				:TypeDescriptorImpl(typeDescriptorFlags, new WfTypeInfoContent(typeName))
+			WfCustomType::WfCustomType(reflection::description::TypeDescriptorFlags typeDescriptorFlags, const WString& typeName)
+				:WfCustomTypeBase<reflection::description::TypeDescriptorImpl>(typeDescriptorFlags, typeName)
 			{
 			}
 
 			WfCustomType::~WfCustomType()
 			{
-				auto typeInfoContent = GetTypeInfoContentInternal();
-				delete static_cast<WfTypeInfoContent*>(const_cast<TypeInfoContent*>(typeInfoContent));
 			}
 			
 			runtime::WfRuntimeGlobalContext* WfCustomType::GetGlobalContext()
@@ -4959,6 +5161,178 @@ WfInterface
 
 			WfInterface::~WfInterface()
 			{
+			}
+
+/***********************************************************************
+WfStruct
+***********************************************************************/
+
+			WfStruct::WfValueType::WfValueType(WfStruct* _owner)
+				:owner(_owner)
+			{
+			}
+
+			Value WfStruct::WfValueType::CreateDefault()
+			{
+				return Value::From(new IValueType::TypedBox<WfStructInstance>, owner);
+			}
+
+			IValueType::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
+			{
+				return IValueType::CompareResult::NotComparable;
+			}
+
+			WfStruct::WfStruct(const WString& typeName)
+				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>(TypeDescriptorFlags::Struct, typeName)
+			{
+				this->valueType = new WfValueType(this);
+			}
+
+			WfStruct::~WfStruct()
+			{
+			}
+
+			vint WfStruct::GetPropertyCount()
+			{
+				this->Load();
+				return fields.Count();
+			}
+
+			IPropertyInfo* WfStruct::GetProperty(vint index)
+			{
+				this->Load();
+				if (index < 0 || index >= fields.Count())
+				{
+					return nullptr;
+				}
+				return fields.Values()[index].Obj();
+			}
+
+			bool WfStruct::IsPropertyExists(const WString& name, bool inheritable)
+			{
+				this->Load();
+				return fields.Keys().Contains(name);
+			}
+
+			IPropertyInfo* WfStruct::GetPropertyByName(const WString& name, bool inheritable)
+			{
+				this->Load();
+				vint index = fields.Keys().IndexOf(name);
+				if (index == -1) return nullptr;
+				return fields.Values()[index].Obj();
+			}
+
+			void WfStruct::AddMember(Ptr<WfStructField> value)
+			{
+				fields.Add(value->GetName(), value);
+			}
+
+/***********************************************************************
+WfEnum::WfEnumType
+***********************************************************************/
+
+			WfEnum::WfEnumType::WfEnumType(WfEnum* _owner)
+				:owner(_owner)
+			{
+			}
+
+			bool WfEnum::WfEnumType::IsFlagEnum()
+			{
+				return owner->GetTypeDescriptorFlags() == TypeDescriptorFlags::FlagEnum;
+			}
+
+			vint WfEnum::WfEnumType::GetItemCount()
+			{
+				return owner->enumItems.Count();
+			}
+
+			WString WfEnum::WfEnumType::GetItemName(vint index)
+			{
+				if (index < 0 || index >= owner->enumItems.Count())
+				{
+					return L"";
+				}
+				return owner->enumItems.Keys()[index];
+			}
+
+			vuint64_t WfEnum::WfEnumType::GetItemValue(vint index)
+			{
+				if (index < 0 || index >= owner->enumItems.Count())
+				{
+					return 0;
+				}
+				return owner->enumItems.Values()[index];
+			}
+
+			vint WfEnum::WfEnumType::IndexOfItem(WString name)
+			{
+				return owner->enumItems.Keys().IndexOf(name);
+			}
+
+			Value WfEnum::WfEnumType::ToEnum(vuint64_t value)
+			{
+				auto boxedValue = MakePtr<IValueType::TypedBox<WfEnumInstance>>();
+				boxedValue->value.value = value;
+				return Value::From(boxedValue, owner);
+			}
+
+			vuint64_t WfEnum::WfEnumType::FromEnum(const Value& value)
+			{
+				auto enumValue = value.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!enumValue)
+				{
+					throw ArgumentTypeMismtatchException(L"enumValue", owner, Value::BoxedValue, value);
+				}
+				return enumValue->value.value;
+			}
+
+/***********************************************************************
+WfEnum
+***********************************************************************/
+
+			WfEnum::WfValueType::WfValueType(WfEnum* _owner)
+				:owner(_owner)
+			{
+			}
+
+			Value WfEnum::WfValueType::CreateDefault()
+			{
+				return Value::From(new IValueType::TypedBox<WfEnumInstance>, owner);
+			}
+
+			IValueType::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
+			{
+				auto ea = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!ea)
+				{
+					throw ArgumentTypeMismtatchException(L"ea", owner, Value::BoxedValue, a);
+				}
+
+				auto eb = b.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				if (!eb)
+				{
+					throw ArgumentTypeMismtatchException(L"eb", owner, Value::BoxedValue, b);
+				}
+
+				if (ea->value.value < eb->value.value) return IValueType::Smaller;
+				if (ea->value.value > eb->value.value)return IValueType::Greater;
+				return IValueType::Equal;
+			}
+
+			WfEnum::WfEnum(bool isFlags, const WString& typeName)
+				:WfCustomTypeBase<reflection::description::ValueTypeDescriptorBase>((isFlags ? TypeDescriptorFlags::FlagEnum : TypeDescriptorFlags::NormalEnum), typeName)
+			{
+				this->valueType = new WfValueType(this);
+				this->enumType = new WfEnumType(this);
+			}
+
+			WfEnum::~WfEnum()
+			{
+			}
+
+			void WfEnum::AddEnumItem(const WString& name, vuint64_t value)
+			{
+				enumItems.Add(name, value);
 			}
 
 /***********************************************************************
@@ -5086,6 +5460,14 @@ WfTypeImpl
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
+				FOREACH(Ptr<WfStruct>, td, structs)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
+				FOREACH(Ptr<WfEnum>, td, enums)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), td);
+				}
 			}
 
 			void WfTypeImpl::Unload(reflection::description::ITypeManager* manager)
@@ -5095,6 +5477,14 @@ WfTypeImpl
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
 				FOREACH(Ptr<WfInterface>, td, interfaces)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+				FOREACH(Ptr<WfStruct>, td, structs)
+				{
+					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
+				}
+				FOREACH(Ptr<WfEnum>, td, enums)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
