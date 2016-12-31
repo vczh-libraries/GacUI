@@ -6,6 +6,10 @@ GacUI Reflection: Basic
 Interfaces:
 ***********************************************************************/
 
+#ifdef VCZH_DEBUG_NO_REFLECTION
+static_assert(false, "Don't use GacUIReflection.(h|cpp) if VCZH_DEBUG_NO_REFLECTION is defined.");
+#endif
+
 #ifndef VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 

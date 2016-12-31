@@ -15552,6 +15552,8 @@ namespace vl
 DescriptableObject
 ***********************************************************************/
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 		bool DescriptableObject::IsAggregated()
 		{
 			return aggregationInfo != nullptr;
@@ -15629,9 +15631,11 @@ DescriptableObject
 			aggregationInfo = new DescriptableObject*[size + 2];
 			memset(aggregationInfo, 0, sizeof(*aggregationInfo) * (size + 2));
 		}
+#endif
 
 		void DescriptableObject::FinalizeAggregation()
 		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			if (IsAggregated())
 			{
 				if (auto root = GetAggregationRoot())
@@ -15652,21 +15656,25 @@ DescriptableObject
 					}
 				}
 			}
+#endif
 		}
 
 		DescriptableObject::DescriptableObject()
 			:referenceCounter(0)
 			, sharedPtrDestructorProc(0)
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			, objectSize(0)
 			, typeDescriptor(0)
 			, destructing(false)
 			, aggregationInfo(nullptr)
 			, aggregationSize(-1)
+#endif
 		{
 		}
 
 		DescriptableObject::~DescriptableObject()
 		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			destructing = true;
 			if (IsAggregated())
 			{
@@ -15693,12 +15701,17 @@ DescriptableObject
 				}
 				delete[] aggregationInfo;
 			}
+#endif
 		}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 		description::ITypeDescriptor* DescriptableObject::GetTypeDescriptor()
 		{
 			return typeDescriptor?*typeDescriptor:0;
 		}
+
+#endif
 
 		Ptr<Object> DescriptableObject::GetInternalProperty(const WString& name)
 		{
@@ -15748,6 +15761,7 @@ DescriptableObject
 
 		bool DescriptableObject::Dispose(bool forceDisposing)
 		{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			if (IsAggregated())
 			{
 				if (auto root = GetAggregationRoot())
@@ -15755,6 +15769,7 @@ DescriptableObject
 					return root->Dispose(forceDisposing);
 				}
 			}
+#endif
 
 			if (referenceCounter > 0 && forceDisposing)
 			{
@@ -15772,6 +15787,8 @@ DescriptableObject
 			}
 		}
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 		DescriptableObject* DescriptableObject::SafeGetAggregationRoot()
 		{
 			if (IsAggregated())
@@ -15784,6 +15801,8 @@ DescriptableObject
 			return this;
 		}
 
+#endif
+
 /***********************************************************************
 description::Value
 ***********************************************************************/
@@ -15793,31 +15812,46 @@ description::Value
 			Value::Value(DescriptableObject* value)
 				:valueType(value ? RawPtr :Null)
 				,rawPtr(nullptr)
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				,typeDescriptor(0)
+#endif
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (value)
 				{
 					rawPtr = value->SafeGetAggregationRoot();
 				}
+#else
+				rawPtr = value;
+#endif
 			}
 
 			Value::Value(Ptr<DescriptableObject> value)
 				:valueType(value ? SharedPtr : Null)
 				,rawPtr(nullptr)
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				,typeDescriptor(0)
+#endif
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (value)
 				{
 					rawPtr = value->SafeGetAggregationRoot();
 					sharedPtr = rawPtr;
 				}
+#else
+				rawPtr = value.Obj();
+				sharedPtr = value;
+#endif
 			}
 
 			Value::Value(Ptr<IBoxedValue> value, ITypeDescriptor* associatedTypeDescriptor)
 				:valueType(value ? BoxedValue : Null)
 				, rawPtr(nullptr)
 				, boxedValue(value)
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				, typeDescriptor(associatedTypeDescriptor)
+#endif
 			{
 			}
 
@@ -15851,6 +15885,7 @@ description::Value
 						return 1;
 					case Value::BoxedValue:
 						{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 							auto aSt = a.GetTypeDescriptor()->GetSerializableType();
 							auto bSt = b.GetTypeDescriptor()->GetSerializableType();
 							if (aSt)
@@ -15923,6 +15958,13 @@ description::Value
 									}
 								}
 							}
+#else
+								auto pa = a.GetBoxedValue().Obj();
+								auto pb = b.GetBoxedValue().Obj();
+								if (pa < pb) return -1;
+								if (pa > pb) return 1;
+								return 0;
+#endif
 						}
 					default:
 						return 1;
@@ -15943,7 +15985,9 @@ description::Value
 			Value::Value()
 				:valueType(Null)
 				,rawPtr(0)
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				,typeDescriptor(0)
+#endif
 			{
 			}
 
@@ -15952,7 +15996,9 @@ description::Value
 				,rawPtr(value.rawPtr)
 				,sharedPtr(value.sharedPtr)
 				,boxedValue(value.boxedValue ? value.boxedValue->Copy() : nullptr)
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				,typeDescriptor(value.typeDescriptor)
+#endif
 			{
 			}
 
@@ -15962,7 +16008,9 @@ description::Value
 				rawPtr = value.rawPtr;
 				sharedPtr = value.sharedPtr;
 				boxedValue = value.boxedValue ? value.boxedValue->Copy() : nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				typeDescriptor = value.typeDescriptor;
+#endif
 				return *this;
 			}
 
@@ -15985,6 +16033,13 @@ description::Value
 			{
 				return boxedValue;
 			}
+
+			bool Value::IsNull()const
+			{
+				return valueType == Null;
+			}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 			ITypeDescriptor* Value::GetTypeDescriptor()const
 			{
@@ -16013,11 +16068,6 @@ description::Value
 				default:
 					return L"null";
 				}
-			}
-
-			bool Value::IsNull()const
-			{
-				return valueType==Null;
 			}
 
 			bool Value::CanConvertTo(ITypeDescriptor* targetType, ValueType targetValueType)const
@@ -16074,6 +16124,8 @@ description::Value
 				return CanConvertTo(targetType->GetTypeDescriptor(), targetValueType);
 			}
 
+#endif
+
 			Value Value::From(DescriptableObject* value)
 			{
 				return Value(value);
@@ -16088,6 +16140,8 @@ description::Value
 			{
 				return Value(value, type);
 			}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 			IMethodInfo* Value::SelectMethod(IMethodGroupInfo* methodGroup, collections::Array<Value>& arguments)
 			{
@@ -16230,6 +16284,8 @@ description::Value
 				return eventInfo->Attach(*this, proxy);
 			}
 
+#endif
+
 			bool Value::DeleteRawPtr()
 			{
 				if(valueType!=RawPtr) return false;
@@ -16238,6 +16294,8 @@ description::Value
 				*this=Value();
 				return true;
 			}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 description::TypeManager
@@ -16840,6 +16898,8 @@ Cpp Helper Functions
 				return cpp == nullptr || cpp->GetInvokeTemplate() != L"*";
 			}
 
+#endif
+
 /***********************************************************************
 IValueEnumerable
 ***********************************************************************/
@@ -16913,6 +16973,8 @@ namespace vl
 	{
 		namespace description
 		{
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 TypeDescriptorTypeInfo
@@ -18096,6 +18158,7 @@ Function Related
 				{
 				}
 			}
+#endif
 		}
 	}
 }
@@ -18115,6 +18178,8 @@ namespace vl
 	{
 		namespace description
 		{
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 TypeDescriptorImplBase
@@ -18297,9 +18362,13 @@ ValueTypeDescriptorBase
 				return 0;
 			}
 
+#endif
+
 /***********************************************************************
 TypeName
 ***********************************************************************/
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Sys,							system::Sys)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Math,						system::Math)
@@ -18354,6 +18423,8 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IMethodGroupInfo,			system::reflection::MethodGroupInfo)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::TypeDescriptorFlags,			system::reflection::TypeDescriptorFlags)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeDescriptor,				system::reflection::TypeDescriptor)
+
+#endif
 
 /***********************************************************************
 TypedValueSerializerProvider
@@ -18746,6 +18817,8 @@ DateTimeValueSerializer
 Helper Functions
 ***********************************************************************/
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 			vint ITypeDescriptor_GetTypeDescriptorCount()
 			{
 				return GetGlobalTypeManager()->GetTypeDescriptorCount();
@@ -18766,9 +18839,35 @@ Helper Functions
 				return value.GetTypeDescriptor();
 			}
 
+#else
+
+			vint ITypeDescriptor_GetTypeDescriptorCount()
+			{
+				return 0;
+			}
+
+			ITypeDescriptor* ITypeDescriptor_GetTypeDescriptor(vint index)
+			{
+				return nullptr;
+			}
+
+			ITypeDescriptor* ITypeDescriptor_GetTypeDescriptor(const WString& name)
+			{
+				return nullptr;
+			}
+
+			ITypeDescriptor* ITypeDescriptor_GetTypeDescriptor(const Value& value)
+			{
+				return nullptr;
+			}
+
+#endif
+
 /***********************************************************************
 LoadPredefinedTypes
 ***********************************************************************/
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 #define _ ,	
 			
@@ -19200,14 +19299,18 @@ LoadPredefinedTypes
 				}
 			};
 
+#endif
+
 			bool LoadPredefinedTypes()
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
 					Ptr<ITypeLoader> loader=new PredefinedTypeLoader;
 					return manager->AddTypeLoader(loader);
 				}
+#endif
 				return false;
 			}
 		}

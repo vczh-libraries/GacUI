@@ -2,9 +2,11 @@
 
 #define GAC_HEADER_USE_NAMESPACE
 #include "..\..\..\Source\GacUI.h"
+#ifndef VCZH_DEBUG_NO_REFLECTION
 #include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
 #include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h"
 #include "..\..\..\Source\Reflection\GuiInstancePartialClass.h"
+#endif
 #include <Windows.h>
 
 using namespace vl::regex;
@@ -90,6 +92,7 @@ void EnumerateFontFamilies(const Func<void(const WString&)>& callback)
 
 void GuiMain_Resource()
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
 	//{
 	//	FileStream fileStream(L"Reflection.txt", FileStream::WriteOnly);
 	//	BomEncoder encoder(BomEncoder::Utf16);
@@ -160,6 +163,7 @@ void GuiMain_Resource()
 	window->MoveToScreenCenter();
 	GetApplication()->Run(window);
 	delete window;
+#endif
 }
 
 void GuiMain()

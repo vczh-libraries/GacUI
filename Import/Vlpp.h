@@ -8280,19 +8280,24 @@ Attribute
 		private:
 			volatile vint							referenceCounter;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			size_t									objectSize;
 			description::ITypeDescriptor**			typeDescriptor;
+#endif
 			Ptr<InternalPropertyMap>				internalProperties;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			bool									destructing;
 			DescriptableObject**					aggregationInfo;
 			vint									aggregationSize;
+#endif
 
 		protected:
 			DestructorProc							sharedPtrDestructorProc;
 
 		protected:
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			bool									IsAggregated();
 			vint									GetAggregationSize();
 			DescriptableObject*						GetAggregationRoot();
@@ -8301,8 +8306,10 @@ Attribute
 			void									SetAggregationParent(vint index, DescriptableObject* value);
 			void									SetAggregationParent(vint index, Ptr<DescriptableObject>& value);
 			void									InitializeAggregation(vint size);
+#endif
 			void									FinalizeAggregation();
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			template<typename T>
 			void SafeAggregationCast(T*& result)
 			{
@@ -8323,13 +8330,17 @@ Attribute
 					}
 				}
 			}
+#endif
 		public:
 			DescriptableObject();
 			virtual ~DescriptableObject();
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			/// <summary>Get the type descriptor that describe the real type of this object.</summary>
 			/// <returns>The real type.</returns>
 			description::ITypeDescriptor*			GetTypeDescriptor();
+#endif
+
 			/// <summary>Get an internal property of this object. This map is totally for customization.</summary>
 			/// <returns>Value of the internal property of this object.</returns>
 			/// <param name="name">Name of the property.</param>
@@ -8342,18 +8353,26 @@ Attribute
 			/// <returns>Returns true if this operation succeeded. Returns false if the object refuces to be dispose.</returns>
 			/// <param name="forceDisposing">Set to true to force disposing this object. If the reference counter is not 0 if you force disposing it, it will raise a [T:vl.reflection.description.ValueNotDisposableException].</param>
 			bool									Dispose(bool forceDisposing);
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			/// <summary>Get the aggregation root object.</summary>
 			/// <returns>The aggregation root object. If this object is not aggregated, or it is the root object of others, than this function return itself.</returns>
 			DescriptableObject*						SafeGetAggregationRoot();
+
+#endif
 			/// <summary>Cast the object to another type, considered aggregation.</summary>
 			/// <returns>The object with the expected type in all aggregated objects.</returns>
 			/// <typeparam name="T">The expected type to cast.</typeparam>
 			template<typename T>
 			T* SafeAggregationCast()
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				T* result = nullptr;
 				SafeGetAggregationRoot()->SafeAggregationCast<T>(result);
 				return result;
+#else
+				return dynamic_cast<T*>(this);
+#endif
 			}
 		};
 		
@@ -8602,10 +8621,14 @@ Attribute
 		class Description : public virtual DescriptableObject
 		{
 		protected:
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			static description::ITypeDescriptor*		associatedTypeDescriptor;
+#endif
 		public:
 			Description()
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 				if(objectSize<sizeof(T))
 				{
 					objectSize=sizeof(T);
@@ -8614,8 +8637,10 @@ Attribute
 						typeDescriptor=&associatedTypeDescriptor;
 					}
 				}
+#endif
 			}
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			static description::ITypeDescriptor* GetAssociatedTypeDescriptor()
 			{
 				return associatedTypeDescriptor;
@@ -8625,6 +8650,7 @@ Attribute
 			{
 				associatedTypeDescriptor=typeDescroptor;
 			}
+#endif
 		};
 
 		template<typename T>
@@ -8632,8 +8658,10 @@ Attribute
 		{
 		};
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 		template<typename T>
 		description::ITypeDescriptor* Description<T>::associatedTypeDescriptor=0;
+#endif
 
 		/// <summary>Base types of all reflectable interfaces. All reflectable interface types should be virtual inherited.</summary>
 		class IDescriptable : public virtual Interface, public Description<IDescriptable>
@@ -8653,6 +8681,7 @@ ReferenceCounterOperator
 		static __forceinline volatile vint* CreateCounter(T* reference)
 		{
 			reflection::DescriptableObject* obj=reference;
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			if (obj->IsAggregated())
 			{
 				if (auto root = obj->GetAggregationRoot())
@@ -8660,6 +8689,7 @@ ReferenceCounterOperator
 					return &root->referenceCounter;
 				}
 			}
+#endif
 			return &obj->referenceCounter;
 		}
 
@@ -8707,7 +8737,9 @@ Value
 				DescriptableObject*				rawPtr;
 				Ptr<DescriptableObject>			sharedPtr;
 				Ptr<IBoxedValue>				boxedValue;
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				ITypeDescriptor*				typeDescriptor;
+#endif
 
 				Value(DescriptableObject* value);
 				Value(Ptr<DescriptableObject> value);
@@ -8739,11 +8771,14 @@ Value
 				Ptr<IBoxedValue>				GetBoxedValue()const;
 				/// <summary>Get the real type of the stored object.</summary>
 				/// <returns>The real type. Returns null if the value is null.</returns>
+
+				bool							IsNull()const;
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				ITypeDescriptor*				GetTypeDescriptor()const;
 				WString							GetTypeFriendlyName()const;
-				bool							IsNull()const;
 				bool							CanConvertTo(ITypeDescriptor* targetType, ValueType targetValueType)const;
 				bool							CanConvertTo(ITypeInfo* targetType)const;
+#endif
 
 				/// <summary>Store a raw pointer.</summary>
 				/// <returns>The boxed value.</returns>
@@ -8759,6 +8794,7 @@ Value
 				/// <param name="type">The type that you expect to interpret the text.</param>
 				static Value					From(Ptr<IBoxedValue> value, ITypeDescriptor* type);
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static IMethodInfo*				SelectMethod(IMethodGroupInfo* methodGroup, collections::Array<Value>& arguments);
 				static Value					Create(ITypeDescriptor* type);
 				static Value					Create(ITypeDescriptor* type, collections::Array<Value>& arguments);
@@ -8771,6 +8807,8 @@ Value
 				Value							Invoke(const WString& name)const;
 				Value							Invoke(const WString& name, collections::Array<Value>& arguments)const;
 				Ptr<IEventHandler>				AttachEvent(const WString& name, const Value& function)const;
+#endif
+
 				/// <summary>Dispose the object is it is stored as a raw pointer.</summary>
 				/// <returns>Returns true if the object is disposed. Returns false if the object cannot be disposed. An exception will be thrown if the reference counter is not 0.</returns>
 				bool							DeleteRawPtr();
@@ -9128,6 +9166,8 @@ ITypeDescriptor
 				virtual IMethodGroupInfo*		GetConstructorGroup() = 0;
 			};
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 /***********************************************************************
 ITypeManager
 ***********************************************************************/
@@ -9181,6 +9221,8 @@ Cpp Helper Functions
 			extern bool							CppExists(IPropertyInfo* prop);
 			extern bool							CppExists(IMethodInfo* method);
 			extern bool							CppExists(IEventInfo* ev);
+
+#endif
 
 /***********************************************************************
 Collections
@@ -9377,6 +9419,8 @@ Exceptions
 				}
 			};
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 			class TypeNotExistsException : public TypeDescriptorException
 			{
 			public:
@@ -9480,6 +9524,8 @@ Exceptions
 				{
 				}
 			};
+
+#endif
 		}
 	}
 }
@@ -11000,6 +11046,13 @@ namespace vl
 		namespace description
 		{
 
+			template<typename T>
+			struct TypedValueSerializerProvider
+			{
+			};
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 /***********************************************************************
 TypeInfo
 ***********************************************************************/
@@ -11033,11 +11086,6 @@ TypeInfo
 			{
 				return GetTypeDescriptor(TypeInfo<T>::content.typeName);
 			}
-
-			template<typename T>
-			struct TypedValueSerializerProvider
-			{
-			};
 
 /***********************************************************************
 SerializableTypeDescriptor
@@ -11112,6 +11160,8 @@ SerializableTypeDescriptor
 				}
 			};
 
+#endif
+
 /***********************************************************************
 Predefined Libraries
 ***********************************************************************/
@@ -11179,6 +11229,8 @@ Predefined Types
 
 			struct VoidValue{};
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 			DECL_TYPE_INFO(Sys)
 			DECL_TYPE_INFO(Math)
 			
@@ -11234,6 +11286,7 @@ Predefined Types
 			DECL_TYPE_INFO(TypeDescriptorFlags)
 			DECL_TYPE_INFO(ITypeDescriptor)
 
+#endif
 
 #define DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(TYPENAME)\
 			template<>\
@@ -11303,6 +11356,8 @@ namespace vl
 	{
 		namespace description
 		{
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 TypeInfoImp
@@ -11658,6 +11713,8 @@ TypeDescriptorImpl
 				IMethodGroupInfo*			GetConstructorGroup()override;
 			};
 
+#endif
+
 /***********************************************************************
 TypeFlagTester
 ***********************************************************************/
@@ -11910,10 +11967,12 @@ TypeInfoRetriver
 				typedef typename DetailTypeInfoRetriver<T, TypeFlag>::ResultReferenceType		ResultReferenceType;
 				typedef typename DetailTypeInfoRetriver<T, TypeFlag>::ResultNonReferenceType	ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo()
 				{
 					return DetailTypeInfoRetriver<typename RemoveCVR<T>::Type, TypeFlag>::CreateTypeInfo(Hint);
 				}
+#endif
 			};
 
 /***********************************************************************
@@ -11979,6 +12038,8 @@ TypeInfoRetriver Helper Functions (UnboxParameter)
 			{
 				ParameterAccessor<T, TypeInfoRetriver<T>::TypeFlag>::UnboxParameter(value, result, typeDescriptor, valueName);
 			}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 Value_xs
@@ -12310,6 +12371,7 @@ StructTypeDescriptor
 					return fields.Values()[index].Obj();
 				}
 			};
+#endif
 		}
 	}
 }
@@ -12351,10 +12413,12 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&												ResultReferenceType;
 				typedef T												ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<Type>(), hint);
 				}
+#endif
 			};
 
 			template<typename T>
@@ -12368,10 +12432,12 @@ DetailTypeInfoRetriver<TStruct>
 				typedef const T&												ResultReferenceType;
 				typedef const T													ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
 				}
+#endif
 			};
 
 			template<typename T>
@@ -12385,10 +12451,12 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&														ResultReferenceType;
 				typedef T														ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
 				}
+#endif
 			};
 
 			template<typename T>
@@ -12402,10 +12470,12 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T*&														ResultReferenceType;
 				typedef T*														ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return MakePtr<RawPtrTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
 				}
+#endif
 			};
 
 			template<typename T>
@@ -12419,10 +12489,12 @@ DetailTypeInfoRetriver<TStruct>
 				typedef Ptr<T>&													ResultReferenceType;
 				typedef Ptr<T>													ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return MakePtr<SharedPtrTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
 				}
+#endif
 			};
 
 			template<typename T>
@@ -12436,10 +12508,12 @@ DetailTypeInfoRetriver<TStruct>
 				typedef Nullable<T>&											ResultReferenceType;
 				typedef Nullable<T>												ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return MakePtr<NullableTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
 				}
+#endif
 			};
 
 			template<typename T>
@@ -12453,10 +12527,12 @@ DetailTypeInfoRetriver<TStruct>
 				typedef T&														ResultReferenceType;
 				typedef T														ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					return TypeInfoRetriver<T>::CreateTypeInfo();
 				}
+#endif
 			};
 
 			template<>
@@ -12500,11 +12576,15 @@ ParameterAccessor<TStruct>
 					}
 					if(!result)
 					{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 						if(!typeDescriptor)
 						{
 							typeDescriptor=GetTypeDescriptor<T>();
 						}
 						throw ArgumentTypeMismtatchException(valueName, typeDescriptor, Value::RawPtr, value);
+#else
+						CHECK_FAIL(L"vl::reflection::description::UnboxValue()#Argument type mismatch.");
+#endif
 					}
 					return result;
 				}
@@ -12528,11 +12608,15 @@ ParameterAccessor<TStruct>
 					}
 					if(!result)
 					{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 						if(!typeDescriptor)
 						{
 							typeDescriptor=GetTypeDescriptor<T>();
 						}
 						throw ArgumentTypeMismtatchException(valueName, typeDescriptor, Value::SharedPtr, value);
+#else
+						CHECK_FAIL(L"vl::reflection::description::UnboxValue()#Argument type mismatch.");
+#endif
 					}
 					return result;
 				}
@@ -12564,10 +12648,12 @@ ParameterAccessor<TStruct>
 			{
 				static Value BoxValue(const T& object, ITypeDescriptor* typeDescriptor)
 				{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 					if(!typeDescriptor)
 					{
 						typeDescriptor = GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
 					}
+#endif
 					using Type = typename vl::RemoveCVR<T>::Type;
 					return Value::From(new IValueType::TypedBox<Type>(object), typeDescriptor);
 				}
@@ -12581,11 +12667,15 @@ ParameterAccessor<TStruct>
 					}
 					else
 					{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 						if (!typeDescriptor)
 						{
 							typeDescriptor = GetTypeDescriptor<typename TypeInfoRetriver<T>::Type>();
 						}
 						throw ArgumentTypeMismtatchException(valueName, typeDescriptor, Value::BoxedValue, value);
+#else
+						CHECK_FAIL(L"vl::reflection::description::UnboxValue()#Argument type mismatch.");
+#endif
 					}
 				}
 			};
@@ -12649,6 +12739,7 @@ namespace vl
 DetailTypeInfoRetriver<Func<R(TArgs...)>>
 ***********************************************************************/
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			namespace internal_helper
 			{
 				template<typename T>
@@ -12669,6 +12760,7 @@ DetailTypeInfoRetriver<Func<R(TArgs...)>>
 					}
 				};
 			}
+#endif
 
 			template<typename R, typename ...TArgs>
 			struct DetailTypeInfoRetriver<Func<R(TArgs...)>, TypeFlags::FunctionType>
@@ -12681,6 +12773,7 @@ DetailTypeInfoRetriver<Func<R(TArgs...)>>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
  
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					auto functionType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor(), hint);
@@ -12692,6 +12785,7 @@ DetailTypeInfoRetriver<Func<R(TArgs...)>>
 					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
+#endif
 			};
 
 			template<typename R, typename ...TArgs>
@@ -12791,7 +12885,12 @@ ParameterAccessor<Func<R(TArgs...)>>
 				{
 					typedef R(RawFunctionType)(TArgs...);
 					Ptr<IValueFunctionProxy> result=new ValueFunctionProxyWrapper<RawFunctionType>(object);
-					return BoxValue<Ptr<IValueFunctionProxy>>(result, Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor());
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueFunctionProxy>>(result, td);
 				}
  
 				static void UnboxParameter(const Value& value, Func<R(TArgs...)>& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
@@ -12829,6 +12928,8 @@ ParameterAccessor<Func<R(TArgs...)>>
 			struct ParameterAccessor<const Func<R(TArgs...)>, TypeFlags::FunctionType> : ParameterAccessor<Func<R(TArgs...)>, TypeFlags::FunctionType>
 			{
 			};
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
  
 /***********************************************************************
 MethodInfoImpl
@@ -13235,10 +13336,11 @@ CustomEventInfoImpl<void(TArgs...)>
 			{
 				typedef TEvent								Type;
 			};
+#endif
 		}
 	}
 }
- 
+
 #endif
 
 /***********************************************************************
@@ -13658,6 +13760,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -13671,6 +13774,7 @@ DetailTypeInfoRetriver<TContainer>
 					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
+#endif
 			};
 
 			template<typename T>
@@ -13684,6 +13788,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -13697,6 +13802,7 @@ DetailTypeInfoRetriver<TContainer>
 					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
+#endif
 			};
 
 			template<typename T>
@@ -13710,6 +13816,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -13723,6 +13830,7 @@ DetailTypeInfoRetriver<TContainer>
 					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
+#endif
 			};
 
 			template<typename T>
@@ -13736,6 +13844,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -13753,6 +13862,7 @@ DetailTypeInfoRetriver<TContainer>
 					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
+#endif
 			};
 
 			template<typename T>
@@ -13766,6 +13876,7 @@ DetailTypeInfoRetriver<TContainer>
 				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
 				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
 					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
@@ -13783,6 +13894,7 @@ DetailTypeInfoRetriver<TContainer>
 					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
 					return type;
 				}
+#endif
 			};
  
 /***********************************************************************
@@ -13801,7 +13913,12 @@ ParameterAccessor<TContainer>
 								return BoxValue<T>(item);
 							})
 						);
-					return BoxValue<Ptr<IValueEnumerable>>(result, Description<IValueEnumerable>::GetAssociatedTypeDescriptor());
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueEnumerable>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueEnumerable>>(result, td);
 				}
 
 				static void UnboxParameter(const Value& value, collections::LazyList<T>& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
@@ -13818,7 +13935,12 @@ ParameterAccessor<TContainer>
 				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
 				{
 					Ptr<IValueReadonlyList> result=new ValueReadonlyListWrapper<T*>(&object);
-					return BoxValue<Ptr<IValueReadonlyList>>(result, Description<IValueReadonlyList>::GetAssociatedTypeDescriptor());
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueReadonlyList>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueReadonlyList>>(result, td);
 				}
 
 				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
@@ -13836,7 +13958,12 @@ ParameterAccessor<TContainer>
 				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
 				{
 					Ptr<IValueList> result=new ValueListWrapper<T*>(&object);
-					return BoxValue<Ptr<IValueList>>(result, Description<IValueList>::GetAssociatedTypeDescriptor());
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueList>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueList>>(result, td);
 				}
 
 				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
@@ -13854,7 +13981,12 @@ ParameterAccessor<TContainer>
 				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
 				{
 					Ptr<IValueReadonlyDictionary> result=new ValueReadonlyDictionaryWrapper<T*>(&object);
-					return BoxValue<Ptr<IValueReadonlyDictionary>>(result, Description<IValueReadonlyList>::GetAssociatedTypeDescriptor());
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueReadonlyDictionary>>(result, td);
 				}
 
 				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
@@ -13876,7 +14008,12 @@ ParameterAccessor<TContainer>
 				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
 				{
 					Ptr<IValueDictionary> result=new ValueDictionaryWrapper<T*>(&object);
-					return BoxValue<Ptr<IValueDictionary>>(result, Description<IValueList>::GetAssociatedTypeDescriptor());
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueDictionary>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueDictionary>>(result, td);
 				}
 
 				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
@@ -13911,6 +14048,8 @@ Classes:
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORMACROS
 #define VCZH_REFLECTION_GUITYPEDESCRIPTORMACROS
 
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 Macros
@@ -14470,6 +14609,7 @@ Property
 	}
 }
 
+#endif
 #endif
 
 /***********************************************************************
@@ -17865,6 +18005,8 @@ XML Representation for Code Generation:
 #define VCZH_REFLECTION_GUITYPEDESCRIPTORINTERFACEPROXIES
 
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
 namespace vl
 {
 	namespace reflection
@@ -18036,6 +18178,7 @@ Interface Implementation Proxy (Implement)
 	}
 }
 
+#endif
 #endif
 
 /***********************************************************************

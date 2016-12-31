@@ -18,6 +18,7 @@ Test/GacUISrc/GacUISrc/UI.txt
 
 # Build results
 
+[Dd]ebugNoReflection/
 [Dd]ebug/
 [Rr]elease/
 x64/

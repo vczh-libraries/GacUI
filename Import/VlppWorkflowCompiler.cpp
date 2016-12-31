@@ -14112,7 +14112,7 @@ Print (Type)
 			void Visit(WfFunctionType* node)override
 			{
 				writer.BeforePrint(node);
-				writer.WriteString(L"func ");
+				writer.WriteString(L"(func ");
 				writer.WriteString(L"(");
 				FOREACH_INDEXER(Ptr<WfType>, type, index, node->arguments)
 				{
@@ -14126,7 +14126,7 @@ Print (Type)
 
 				writer.WriteString(L" : (");
 				WfPrint(node->result, indent, writer);
-				writer.WriteString(L")");
+				writer.WriteString(L"))");
 				writer.AfterPrint(node);
 			}
 

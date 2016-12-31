@@ -6,75 +6,9 @@ namespace vl
 	{
 		namespace templates
 		{
-			using namespace description;
 			using namespace collections;
 			using namespace controls;
 			using namespace compositions;
-
-/***********************************************************************
-GuiTemplate::IFactory
-***********************************************************************/
-
-			class GuiTemplateReflectableFactory : public Object, public virtual GuiTemplate::IFactory
-			{
-			protected:
-				List<ITypeDescriptor*>			types;
-
-			public:
-				GuiTemplateReflectableFactory(const List<ITypeDescriptor*>& _types)
-				{
-					CopyFrom(types, _types);
-				}
-
-				GuiTemplate* CreateTemplate(const description::Value& viewModel)override
-				{
-					FOREACH(ITypeDescriptor*, type, types)
-					{
-						auto group = type->GetConstructorGroup();
-						vint count = group->GetMethodCount();
-						for (vint i = 0; i < count; i++)
-						{
-							auto ctor = group->GetMethod(i);
-							if (ctor->GetReturn()->GetDecorator() == ITypeInfo::RawPtr && ctor->GetParameterCount() <= 1)
-							{
-								Array<Value> arguments(ctor->GetParameterCount());
-								if (ctor->GetParameterCount() == 1)
-								{
-									if (!viewModel.CanConvertTo(ctor->GetParameter(0)->GetType()))
-									{
-										continue;
-									}
-									arguments[0] = viewModel;
-								}
-								return dynamic_cast<GuiTemplate*>(ctor->Invoke(Value(), arguments).GetRawPtr());
-							}
-						}
-					}
-					
-					WString message = L"Unable to create a template from types {";
-					FOREACH_INDEXER(ITypeDescriptor*, type, index, types)
-					{
-						if (index > 0) message += L", ";
-						message += type->GetTypeName();
-					}
-					message += L"} using view model: ";
-					if (viewModel.IsNull())
-					{
-						message += L"null.";
-					}
-					else
-					{
-						message += viewModel.GetTypeDescriptor()->GetTypeName() + L".";
-					}
-
-					throw ArgumentException(message);
-				}
-			};
-
-			Ptr<GuiTemplate::IFactory> GuiTemplate::IFactory::CreateTemplateFactory(const collections::List<description::ITypeDescriptor*>& types)
-			{
-				return new GuiTemplateReflectableFactory(types);
-			}
 
 /***********************************************************************
 GuiTemplate

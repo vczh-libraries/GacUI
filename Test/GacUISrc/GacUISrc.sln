@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GacUISrc", "GacUISrc\GacUISrc.vcxproj", "{407401EB-C968-42B2-AEE9-47AA1658E1FF}"
 EndProject
@@ -9,6 +9,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		DebugNoReflection|Win32 = DebugNoReflection|Win32
+		DebugNoReflection|x64 = DebugNoReflection|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
@@ -17,6 +19,10 @@ Global
 		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Debug|Win32.Build.0 = Debug|Win32
 		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Debug|x64.ActiveCfg = Debug|x64
 		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Debug|x64.Build.0 = Debug|x64
+		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.DebugNoReflection|Win32.ActiveCfg = DebugNoReflection|Win32
+		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.DebugNoReflection|Win32.Build.0 = DebugNoReflection|Win32
+		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.DebugNoReflection|x64.ActiveCfg = DebugNoReflection|x64
+		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.DebugNoReflection|x64.Build.0 = DebugNoReflection|x64
 		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Release|Win32.ActiveCfg = Release|Win32
 		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Release|Win32.Build.0 = Release|Win32
 		{407401EB-C968-42B2-AEE9-47AA1658E1FF}.Release|x64.ActiveCfg = Release|x64

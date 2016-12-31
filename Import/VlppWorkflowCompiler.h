@@ -1830,6 +1830,10 @@ Parser::WfExpression
 Interfaces:
 ***********************************************************************/
 
+#ifdef VCZH_DEBUG_NO_REFLECTION
+static_assert(false, "Don't use VlppWorkflow.(h|cpp) or VlppWorkflowCompiler.(h|cpp) if VCZH_DEBUG_NO_REFLECTION is defined.");
+#endif
+
 #ifndef VCZH_WORKFLOW_EXPRESSION_WFEXPRESSION
 #define VCZH_WORKFLOW_EXPRESSION_WFEXPRESSION
 

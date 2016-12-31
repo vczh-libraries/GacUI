@@ -55,8 +55,6 @@ namespace vl
 					/// <returns>The created template.</returns>
 					/// <param name="viewModel">The view model for binding.</param>
 					virtual GuiTemplate*				CreateTemplate(const description::Value& viewModel) = 0;
-
-					static Ptr<IFactory>				CreateTemplateFactory(const collections::List<description::ITypeDescriptor*>& types);
 				};
 
 				/// <summary>Create a template.</summary>
