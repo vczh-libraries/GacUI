@@ -47,6 +47,8 @@ Event
 				public:
 					Ptr<IGuiGraphicsEventHandler>	handler;
 				};
+
+				virtual bool IsAttached() = 0;
 			};
 
 			template<typename T>
@@ -59,12 +61,18 @@ Event
 				
 				class FunctionHandler : public Object, public IGuiGraphicsEventHandler
 				{
-				protected:
-					FunctionType			handler;
 				public:
+					bool					isAttached = true;
+					FunctionType			handler;
+
 					FunctionHandler(const FunctionType& _handler)
 						:handler(_handler)
 					{
+					}
+
+					bool IsAttached()override
+					{
+						return isAttached;
 					}
 
 					void Execute(GuiGraphicsComposition* sender, T& argument)
@@ -163,6 +171,8 @@ Event
 					{
 						if((*currentHandler)->handler == typedHandler)
 						{
+							(*currentHandler)->handler->isAttached = false;
+
 							auto next=(*currentHandler)->next;
 							(*currentHandler)=next;
 							return true;
@@ -473,6 +483,61 @@ Event Receiver
 				GuiNotifyEvent					clipboardNotify;
 			};
 		}
+	}
+
+	/***********************************************************************
+	Workflow to C++ Codegen Helpers
+	***********************************************************************/
+
+	namespace __vwsn
+	{
+		template<typename T>
+		struct EventHelper<presentation::compositions::GuiGraphicsEvent<T>>
+		{
+			using Event = presentation::compositions::GuiGraphicsEvent<T>;
+			using Sender = presentation::compositions::GuiGraphicsComposition;
+			using IGuiGraphicsEventHandler = presentation::compositions::IGuiGraphicsEventHandler;
+			using Handler = Func<void(Sender*, T*)>;
+
+			class EventHandlerImpl : public Object, public reflection::description::IEventHandler
+			{
+			public:
+				Ptr<IGuiGraphicsEventHandler> handler;
+
+				EventHandlerImpl(Ptr<IGuiGraphicsEventHandler> _handler)
+					:handler(_handler)
+				{
+				}
+
+				bool IsAttached()override
+				{
+					return handler->IsAttached();
+				}
+			};
+
+			static Ptr<reflection::description::IEventHandler> Attach(Event& e, Handler handler)
+			{
+				return MakePtr<EventHandlerImpl>(e.AttachLambda([=](Sender* sender, T& args)
+				{
+					handler(sender, &args);
+				}));
+			}
+
+			static bool Detach(Event& e, Ptr<reflection::description::IEventHandler> handler)
+			{
+				auto impl = handler.Cast<EventHandlerImpl>();
+				if (!impl) return false;
+				return e.Detach(impl->handler);
+			}
+
+			static auto Invoke(Event& e)
+			{
+				return [&](Sender* sender, T* args)
+				{
+					e.ExecuteWithNewSender(*args, sender);
+				};
+			}
+		};
 	}
 }
 

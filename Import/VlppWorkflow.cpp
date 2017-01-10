@@ -125,7 +125,7 @@ WfRuntimeCallStackInfo
 
 			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetLocalArguments()
 			{
-				return GetVariables(assembly->functions[functionIndex]->argumentNames, localVariables, cachedLocalArguments);
+				return GetVariables(assembly->functions[functionIndex]->argumentNames, arguments, cachedLocalArguments);
 			}
 
 			Ptr<IValueReadonlyDictionary> WfRuntimeCallStackInfo::GetCapturedVariables()
@@ -3875,12 +3875,12 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
 						CALL_DEBUGGER(callback->BreakInvoke(thisValue.GetRawPtr(), ins.eventParameter));
 
-						Array<Value> arguments(ins.countParameter);
+						auto arguments = IValueList::Create();
 						for (vint i = 0; i < ins.countParameter; i++)
 						{
 							Value argument;
 							CONTEXT_ACTION(PopValue(argument), L"failed to pop a value from the stack.");
-							arguments[ins.countParameter - i - 1] = argument;
+							arguments->Insert(0, argument);
 						}
 
 						ins.eventParameter->Invoke(thisValue, arguments);
@@ -3945,11 +3945,12 @@ WfRuntimeThreadContext
 					}
 				case WfInsCode::DetachEvent:
 					{
-						Value operand;
+						Value thisValue, operand;
 						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(thisValue), L"failed to pop a value from the stack.");
+						CALL_DEBUGGER(callback->BreakDetach(thisValue.GetRawPtr(), ins.eventParameter));
 						auto handler = UnboxValue<Ptr<IEventHandler>>(operand);
-						CALL_DEBUGGER(callback->BreakDetach(handler->GetOwnerObject().GetRawPtr(), handler->GetOwnerEvent()));
-						auto result = handler->Detach();
+						auto result = ins.eventParameter->Detach(thisValue, handler);
 						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
@@ -4835,19 +4836,28 @@ WfEvent
 				return GetInfoRecord<EventRecord>(this, thisObject, EventRecordInternalPropertyName, createIfNotExist);
 			}
 
-			void WfEvent::AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
+			Ptr<IEventHandler> WfEvent::AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)
 			{
 				auto record = GetEventRecord(thisObject, true);
-				record->handlers.Add(this, eventHandler);
+				auto result = MakePtr<EventHandlerImpl>(handler);
+				record->handlers.Add(this, result);
+				return result;
 			}
 
-			void WfEvent::DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)
+			bool WfEvent::DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)
 			{
+				auto impl = handler.Cast<EventHandlerImpl>();
+				if (!impl)return false;
 				auto record = GetEventRecord(thisObject, true);
-				record->handlers.Remove(this, eventHandler);
+				if (record->handlers.Remove(this, impl.Obj()))
+				{
+					impl->isAttached = false;
+					return true;
+				}
+				return false;
 			}
 
-			void WfEvent::InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)
+			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)
 			{
 				auto record = GetEventRecord(thisObject, false);
 				if (record)
@@ -4856,9 +4866,9 @@ WfEvent
 					if (index != -1)
 					{
 						auto& values = record->handlers.GetByIndex(index);
-						FOREACH(IEventHandler*, handler, values)
+						FOREACH(Ptr<EventHandlerImpl>, handler, values)
 						{
-							handler->Invoke(Value::From(thisObject), arguments);
+							handler->proxy->Invoke(arguments);
 						}
 					}
 				}

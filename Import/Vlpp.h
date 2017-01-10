@@ -8263,6 +8263,14 @@ Attribute
 			class IValueListener;
 			class IValueSubscription;
 
+			class IValueEnumerable;
+			class IValueEnumerator;
+			class IValueReadonlyList;
+			class IValueList;
+			class IValueObservableList;
+			class IValueReadonlyDictionary;
+			class IValueDictionary;
+
 			class IValueCallStack;
 			class IValueException;
 		}
@@ -8807,6 +8815,7 @@ Value
 				Value							Invoke(const WString& name)const;
 				Value							Invoke(const WString& name, collections::Array<Value>& arguments)const;
 				Ptr<IEventHandler>				AttachEvent(const WString& name, const Value& function)const;
+				bool							DetachEvent(const WString& name, Ptr<IEventHandler> handler)const;
 #endif
 
 				/// <summary>Dispose the object is it is stored as a raw pointer.</summary>
@@ -8929,11 +8938,7 @@ ITypeDescriptor (event)
 			class IEventHandler : public virtual IDescriptable, public Description<IEventHandler>
 			{
 			public:
-				virtual IEventInfo*				GetOwnerEvent()=0;
-				virtual Value					GetOwnerObject()=0;
 				virtual bool					IsAttached()=0;
-				virtual bool					Detach()=0;
-				virtual void					Invoke(const Value& thisObject, collections::Array<Value>& arguments)=0;
 			};
 
 			class IEventInfo : public virtual IMemberInfo, public Description<IEventInfo>
@@ -8944,25 +8949,18 @@ ITypeDescriptor (event)
 				public:
 					/*
 					Arguments:
-						$Type:					C++ full type name
 						$Name:					Event name
 						$This:					Expression for the "this" argument
-						$Handler:				Event subscription / Event handler
+						$Handler:				Event handler function / Event handler object
 						$Arguments:				Expressions for arguments separated by ", "
 					Default (for Vlpp Event):
-						Handler:				::vl::Ptr<::vl::EventHandler>
-						Attach:					$This->$Name.Add($Handler)
-						Detach:					$This->$Name.Remove($Handler)
-						Invoke:					$This->$Name($Arguments)
-					Example:
-						External constructor:	<full-function-name>($Arguments)
-						External method:		<full-function-name>($This, $Arguments)
-						Renamed method:			$This-><function-name>($Arguments)
+						Attach:					::vl::__vwsn::EventAttach($This->$Name, $Handler)
+						Detach:					::vl::__vwsn::EventDetach($This->$Name, $Handler)
+						Invoke:					::vl::__vwsn::EventInvoke($This->$Name)($Arguments)
 
 					GetInvokeTemplate() == L"*":
 						This event does not exist in C++
 					*/
-					virtual const WString&		GetHandlerType() = 0;
 					virtual const WString&		GetAttachTemplate() = 0;
 					virtual const WString&		GetDetachTemplate() = 0;
 					virtual const WString&		GetInvokeTemplate() = 0;
@@ -8978,7 +8976,8 @@ ITypeDescriptor (event)
 				virtual vint					GetObservingPropertyCount()=0;
 				virtual IPropertyInfo*			GetObservingProperty(vint index)=0;
 				virtual Ptr<IEventHandler>		Attach(const Value& thisObject, Ptr<IValueFunctionProxy> handler)=0;
-				virtual void					Invoke(const Value& thisObject, collections::Array<Value>& arguments)=0;
+				virtual bool					Detach(const Value& thisObject, Ptr<IEventHandler> handler)=0;
+				virtual void					Invoke(const Value& thisObject, Ptr<IValueList> arguments)=0;
 			};
 
 /***********************************************************************
@@ -9052,6 +9051,10 @@ ITypeDescriptor (method)
 						Constructor:			new $Type($Arguments)
 						Static:					$Type::$Name($Arguments)
 						Normal:					$This->$Name($Arguments)
+					Example:
+						External constructor:	<full-function-name>($Arguments)
+						External method:		<full-function-name>($This, $Arguments)
+						Renamed method:			$This-><function-name>($Arguments)
 
 					GetInvokeTemplate() == L"*":
 						This method does not exist in C++
@@ -9212,7 +9215,6 @@ Cpp Helper Functions
 			extern WString						CppGetFullName(ITypeDescriptor* type);
 			extern WString						CppGetReferenceTemplate(IPropertyInfo* prop);
 			extern WString						CppGetInvokeTemplate(IMethodInfo* method);
-			extern WString						CppGetHandlerType(IEventInfo* ev);
 			extern WString						CppGetAttachTemplate(IEventInfo* ev);
 			extern WString						CppGetDetachTemplate(IEventInfo* ev);
 			extern WString						CppGetInvokeTemplate(IEventInfo* ev);
@@ -9481,11 +9483,6 @@ Exceptions
 
 				ArgumentNullException(const WString& name, IEventInfo* target)
 					:TypeDescriptorException(L"Argument \"" + name + L"\" cannot be null when accessing event \"" + target->GetName() + L"\" in type \"" + target->GetOwnerTypeDescriptor()->GetTypeName() + L"\".")
-				{
-				}
-
-				ArgumentNullException(const WString& name, IEventHandler* target)
-					:TypeDescriptorException(L"Argument \"" + name + L"\" cannot be null when invoking event \"" + target->GetOwnerEvent()->GetName() + L"\" in type \"" + target->GetOwnerEvent()->GetOwnerTypeDescriptor()->GetTypeName() + L"\".")
 				{
 				}
 
@@ -11352,6 +11349,76 @@ Interfaces:
 
 namespace vl
 {
+
+/***********************************************************************
+Workflow to C++ Codegen Helpers
+***********************************************************************/
+
+	namespace __vwsn
+	{
+		template<typename T>
+		struct EventHelper
+		{
+		};
+
+		template<typename T>
+		Ptr<reflection::description::IEventHandler> EventAttach(T& e, typename EventHelper<T>::Handler handler)
+		{
+			return EventHelper<T>::Attach(e, handler);
+		}
+
+		template<typename T>
+		bool EventDetach(T& e, Ptr<reflection::description::IEventHandler> handler)
+		{
+			return EventHelper<T>::Detach(e, handler);
+		}
+
+		template<typename T>
+		auto EventInvoke(T& e)
+		{
+			return EventHelper<T>::Invoke(e);
+		}
+
+		template<typename ...TArgs>
+		struct EventHelper<Event<void(TArgs...)>>
+		{
+			using Handler = const Func<void(TArgs...)>&;
+
+			class EventHandlerImpl : public Object, public reflection::description::IEventHandler
+			{
+			public:
+				Ptr<EventHandler> handler;
+
+				EventHandlerImpl(Ptr<EventHandler> _handler)
+					:handler(_handler)
+				{
+				}
+
+				bool IsAttached()override
+				{
+					return handler->IsAttached();
+				}
+			};
+
+			static Ptr<reflection::description::IEventHandler> Attach(Event<void(TArgs...)>& e, Handler handler)
+			{
+				return MakePtr<EventHandlerImpl>(e.Add(handler));
+			}
+
+			static bool Detach(Event<void(TArgs...)>& e, Ptr<reflection::description::IEventHandler> handler)
+			{
+				auto impl = handler.Cast<EventHandlerImpl>();
+				if (!impl) return false;
+				return e.Remove(impl->handler);
+			}
+
+			static Event<void(TArgs...)>& Invoke(Event<void(TArgs...)>& e)
+			{
+				return e;
+			}
+		};
+	}
+
 	namespace reflection
 	{
 		namespace description
@@ -11528,34 +11595,6 @@ EventInfoImpl
 			class EventInfoImpl : public Object, public IEventInfo
 			{
 				friend class PropertyInfoImpl;
-			protected:
-				typedef collections::List<Ptr<IEventHandler>>		EventHandlerList;
-				static const wchar_t*								EventHandlerListInternalPropertyName;
-
-				class EventHandlerImpl : public Object, public IEventHandler
-				{
-				protected:
-					EventInfoImpl*						ownerEvent;
-					DescriptableObject*					ownerObject;
-					Ptr<IValueFunctionProxy>			handler;
-					Ptr<DescriptableObject>				descriptableTag;
-					Ptr<Object>							objectTag;
-					bool								attached;
-				public:
-					EventHandlerImpl(EventInfoImpl* _ownerEvent, DescriptableObject* _ownerObject, Ptr<IValueFunctionProxy> _handler);
-					~EventHandlerImpl();
-
-					IEventInfo*							GetOwnerEvent()override;
-					Value								GetOwnerObject()override;
-					bool								IsAttached()override;
-					bool								Detach()override;
-					void								Invoke(const Value& thisObject, collections::Array<Value>& arguments)override;
-
-					Ptr<DescriptableObject>				GetDescriptableTag();
-					void								SetDescriptableTag(Ptr<DescriptableObject> _tag);
-					Ptr<Object>							GetObjectTag();
-					void								SetObjectTag(Ptr<Object> _tag);
-				};
 
 			protected:
 				ITypeDescriptor*						ownerTypeDescriptor;
@@ -11563,13 +11602,10 @@ EventInfoImpl
 				WString									name;
 				Ptr<ITypeInfo>							handlerType;
 
-				virtual void							AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)=0;
-				virtual void							DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)=0;
-				virtual void							InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)=0;
+				virtual Ptr<IEventHandler>				AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)=0;
+				virtual bool							DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)=0;
+				virtual void							InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)=0;
 				virtual Ptr<ITypeInfo>					GetHandlerTypeInternal()=0;
-
-				void									AddEventHandler(DescriptableObject* thisObject, Ptr<IEventHandler> eventHandler);
-				void									RemoveEventHandler(DescriptableObject* thisObject, IEventHandler* eventHandler);
 			public:
 				EventInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name);
 				~EventInfoImpl();
@@ -11580,7 +11616,8 @@ EventInfoImpl
 				vint									GetObservingPropertyCount()override;
 				IPropertyInfo*							GetObservingProperty(vint index)override;
 				Ptr<IEventHandler>						Attach(const Value& thisObject, Ptr<IValueFunctionProxy> handler)override;
-				void									Invoke(const Value& thisObject, collections::Array<Value>& arguments)override;
+				bool									Detach(const Value& thisObject, Ptr<IEventHandler> handler)override;
+				void									Invoke(const Value& thisObject, Ptr<IValueList> arguments)override;
 			};
 
 /***********************************************************************
@@ -13222,28 +13259,10 @@ CustomEventInfoImpl<void(TArgs...)>
 
 			namespace internal_helper
 			{
-				extern void AddValueToArray(collections::Array<Value>& arguments, vint index);
-
-				template<typename T0, typename ...TArgs>
-				void AddValueToArray(collections::Array<Value>& arguments, vint index, T0&& p0, TArgs&& ...args)
-				{
-					arguments[index] = description::BoxParameter<T0>(p0);
-					AddValueToArray(arguments, index + 1, args...);
-				}
-
-				extern void UnboxSpecifiedParameter(collections::Array<Value>& arguments, vint index);
-
-				template<typename T0, typename ...TArgs>
-				void UnboxSpecifiedParameter(collections::Array<Value>& arguments, vint index, T0& p0, TArgs& ...args)
-				{
-					UnboxParameter<typename TypeInfoRetriver<T0>::TempValueType>(arguments[index], p0, 0, itow(index) + L"-th argument");
-					UnboxSpecifiedParameter(arguments, index + 1, args...);
-				}
-
 				template<typename ...TArgs>
 				struct BoxedEventInvoker
 				{
-					static void Invoke(Event<void(TArgs...)>& eventObject, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					static void Invoke(Event<void(TArgs...)>& eventObject, Ptr<IValueList> arguments, typename RemoveCVR<TArgs>::Type&& ...args)
 					{
 						UnboxSpecifiedParameter(arguments, 0, args...);
 						eventObject(args...);
@@ -13257,51 +13276,31 @@ CustomEventInfoImpl<void(TArgs...)>
 			protected:
 				Event<void(TArgs...)> TClass::*			eventRef;
 
-				void AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override
+				Ptr<IEventHandler> AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)override
 				{
-					if(thisObject)
-					{
-						if (EventHandlerImpl* handlerImpl = dynamic_cast<EventHandlerImpl*>(eventHandler))
+					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
+					Event<void(TArgs...)>& eventObject = object->*eventRef;
+					auto func = Func<void(TArgs...)>([=](TArgs ...args)
 						{
-							TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
-							Event<void(TArgs...)>& eventObject = object->*eventRef;
-							Ptr<EventHandler> handler = eventObject.Add(
-								Func<void(TArgs...)>([=](TArgs ...args)
-								{
-									collections::Array<Value> arguments(sizeof...(TArgs));
-									internal_helper::AddValueToArray(arguments, 0, ForwardValue<TArgs>(args)...);
-									eventHandler->Invoke(Value::From(thisObject), arguments);
-								}));
-							handlerImpl->SetObjectTag(handler);
-						}
-					}
+							auto arguments = IValueList::Create();
+							internal_helper::AddValueToList(arguments, ForwardValue<TArgs>(args)...);
+							handler->Invoke(arguments);
+						});
+					return __vwsn::EventAttach(eventObject, func);
 				}
 
-				void DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override
+				bool DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)override
 				{
-					if(thisObject)
-					{
-						if (EventHandlerImpl* handlerImpl = dynamic_cast<EventHandlerImpl*>(eventHandler))
-						{
-							TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
-							Event<void(TArgs...)>& eventObject = object->*eventRef;
-							Ptr<EventHandler> handler=handlerImpl->GetObjectTag().Cast<EventHandler>();
-							if (handler)
-							{
-								eventObject.Remove(handler);
-							}
-						}
-					}
+					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
+					Event<void(TArgs...)>& eventObject = object->*eventRef;
+					return __vwsn::EventDetach(eventObject, handler);
 				}
 
-				void InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)override
+				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override
 				{
-					if(thisObject)
-					{
-						TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
-						Event<void(TArgs...)>& eventObject = object->*eventRef;
-						return internal_helper::BoxedEventInvoker<TArgs...>::Invoke(eventObject, arguments, typename RemoveCVR<TArgs>::Type()...);
-					}
+					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
+					Event<void(TArgs...)>& eventObject = object->*eventRef;
+					internal_helper::BoxedEventInvoker<TArgs...>::Invoke(eventObject, arguments, typename RemoveCVR<TArgs>::Type()...);
 				}
 
 				Ptr<ITypeInfo> GetHandlerTypeInternal()override

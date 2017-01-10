@@ -102,7 +102,7 @@ void GuiMain_Resource()
 	//}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(LR"(UI9_ListView.xml)", errors);
+		auto resource = GuiResource::LoadFromXml(LR"(UI5_DocumentTextBox.xml)", errors);
 		resource->Precompile(nullptr, errors);
 
 		{

@@ -41,43 +41,6 @@ Type List
 GuiEventInfoImpl
 ***********************************************************************/
 
-			class GuiEventInfoCpp : public Object, public IEventInfo::ICpp
-			{
-			public:
-				WString								handlerType;
-				WString								attachTemplate;
-				WString								detachTemplate;
-				WString								invokeTemplate;
-
-				GuiEventInfoCpp()
-					:handlerType(L"::vl::Ptr<::vl::presentation::compositions::IGuiGraphicsEventHandler>", false)
-					, attachTemplate(L"$This->GetEventReceiver()->$Name.AttachLambda($Handler)", false)
-					, detachTemplate(L"$This->GetEventReceiver()->$Name.Detach($Handler)", false)
-					, invokeTemplate(L"$This->GetEventReceiver()->$Name.Execute($Arguments)", false)
-				{
-				}
-
-				const WString& GetHandlerType()override
-				{
-					return handlerType;
-				}
-
-				const WString& GetAttachTemplate()override
-				{
-					return attachTemplate;
-				}
-
-				const WString& GetDetachTemplate()override
-				{
-					return detachTemplate;
-				}
-
-				const WString& GetInvokeTemplate()override
-				{
-					return invokeTemplate;
-				}
-			};
-
 			template<typename T>
 			class GuiEventInfoImpl : public EventInfoImpl
 			{
@@ -89,63 +52,41 @@ GuiEventInfoImpl
 				typedef Func<GuiGraphicsEvent<T>*(DescriptableObject*, bool)>		EventRetriverFunction;
 
 				EventRetriverFunction				eventRetriver;
-				Ptr<GuiEventInfoCpp>				cpp;
 
-				void AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override
+				Ptr<IEventHandler> AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)override
 				{
-					if(thisObject)
-					{
-						if(EventHandlerImpl* handlerImpl=dynamic_cast<EventHandlerImpl*>(eventHandler))
+					GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, true);
+					auto func = [=](GuiGraphicsComposition* sender, T* arguments)
 						{
-							GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, true);
-							if(eventObject)
-							{
-								auto handler=eventObject->AttachLambda(
-									[=](GuiGraphicsComposition* sender, T& arguments)
-									{
-										Value senderObject = BoxValue<GuiGraphicsComposition*>(sender, Description<GuiGraphicsComposition>::GetAssociatedTypeDescriptor());
-										Value argumentsObject = BoxValue<T*>(&arguments, Description<T>::GetAssociatedTypeDescriptor());
+							Value senderObject = BoxValue<GuiGraphicsComposition*>(sender, Description<GuiGraphicsComposition>::GetAssociatedTypeDescriptor());
+							Value argumentsObject = BoxValue<T*>(arguments, Description<T>::GetAssociatedTypeDescriptor());
 
-										collections::Array<Value> eventArgs(2);
-										eventArgs[0] = senderObject;
-										eventArgs[1] = argumentsObject;
-										eventHandler->Invoke(Value::From(thisObject), eventArgs);
-									});
-								handlerImpl->SetDescriptableTag(handler);
-							}
-						}
-					}
+							auto eventArgs = IValueList::Create();
+							eventArgs->Add(senderObject);
+							eventArgs->Add(argumentsObject);
+							handler->Invoke(eventArgs);
+						};
+					return __vwsn::EventAttach(*eventObject, func);
 				}
 
-				void DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override
+				bool DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)override
 				{
-					if(thisObject)
+					GuiGraphicsEvent<T>* eventObject = eventRetriver(thisObject, false);
+					if(eventObject)
 					{
-						if(EventHandlerImpl* handlerImpl=dynamic_cast<EventHandlerImpl*>(eventHandler))
-						{
-							GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
-							if(eventObject)
-							{
-								auto handler=handlerImpl->GetDescriptableTag().Cast<presentation::compositions::IGuiGraphicsEventHandler>();
-								if(handler)
-								{
-									eventObject->Detach(handler);
-								}
-							}
-						}
+						return __vwsn::EventDetach(*eventObject, handler);
 					}
+					return false;
 				}
 
-				void InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)override
+				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override
 				{
-					if(thisObject)
+					GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
+					if(eventObject)
 					{
-						GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
-						if(eventObject)
-						{
-							T* value=UnboxValue<T*>(arguments[1], Description<T>::GetAssociatedTypeDescriptor());
-							eventObject->Execute(*value);
-						}
+						auto sender = UnboxValue<GuiGraphicsComposition*>(arguments->Get(0), Description<GuiGraphicsComposition>::GetAssociatedTypeDescriptor());
+						auto value=UnboxValue<T*>(arguments->Get(1), Description<T>::GetAssociatedTypeDescriptor());
+						eventObject->ExecuteWithNewSender(*value, sender);
 					}
 				}
 
@@ -158,7 +99,6 @@ GuiEventInfoImpl
 				GuiEventInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, const EventRetriverFunction& _eventRetriver)
 					:EventInfoImpl(_ownerTypeDescriptor, _name)
 					, eventRetriver(_eventRetriver)
-					, cpp(MakePtr<GuiEventInfoCpp>())
 				{
 				}
 
@@ -168,7 +108,7 @@ GuiEventInfoImpl
 
 				ICpp* GetCpp()override
 				{
-					return cpp.Obj();
+					return nullptr;
 				}
 			};
 
