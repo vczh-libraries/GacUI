@@ -432,6 +432,7 @@ GuiApplicationMain
 				DestroyPluginManager();
 				DestroyGlobalTypeManager();
 				ThreadLocalStorage::DisposeStorages();
+				FinalizeGlobalStorage();
 			}
 		}
 	}
