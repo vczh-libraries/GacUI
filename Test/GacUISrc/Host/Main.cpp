@@ -90,6 +90,9 @@ void EnumerateFontFamilies(const Func<void(const WString&)>& callback)
 	ReleaseDC(NULL, dc);
 }
 
+#define BINARY_FOLDER L"../TestCppCodegen/"
+#define SOURCE_FOLDER L"../TestCppCodegen/Source/"
+
 void GuiMain_Resource()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -106,7 +109,7 @@ void GuiMain_Resource()
 		resource->Precompile(nullptr, errors);
 
 		{
-			FileStream fileStream(L"UI.error.txt", FileStream::WriteOnly);
+			FileStream fileStream(BINARY_FOLDER L"UI.error.txt", FileStream::WriteOnly);
 			BomEncoder encoder(BomEncoder::Utf16);
 			EncoderStream encoderStream(fileStream, encoder);
 			StreamWriter writer(encoderStream);
@@ -119,11 +122,11 @@ void GuiMain_Resource()
 		CHECK_ERROR(errors.Count() == 0, L"Error");
 
 		{
-			FileStream fileStream(L"UI.bin", FileStream::WriteOnly);
+			FileStream fileStream(BINARY_FOLDER L"UI.bin", FileStream::WriteOnly);
 			resource->SavePrecompiledBinary(fileStream);
 		}
 		{
-			FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
+			FileStream fileStream(BINARY_FOLDER L"UI.bin", FileStream::ReadOnly);
 			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 			CHECK_ERROR(errors.Count() == 0, L"Error");
 		}
@@ -140,7 +143,7 @@ void GuiMain_Resource()
 				text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
 				text += code + L"\r\n";
 			}
-			File(L"UI.txt").WriteAllText(text);
+			File(BINARY_FOLDER L"UI.txt").WriteAllText(text);
 		}
 	}
 
