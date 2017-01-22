@@ -16,9 +16,9 @@ namespace vl
 		using namespace controls;
 		using namespace compositions;
 
-		/***********************************************************************
-		FindInstanceLoadingSource
-		***********************************************************************/
+/***********************************************************************
+FindInstanceLoadingSource
+***********************************************************************/
 
 		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
 		{
@@ -38,9 +38,9 @@ namespace vl
 			return InstanceLoadingSource();
 		}
 
-		/***********************************************************************
-		Workflow_ValidateStatement
-		***********************************************************************/
+/***********************************************************************
+Workflow_ValidateStatement
+***********************************************************************/
 
 		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
@@ -70,17 +70,17 @@ namespace vl
 			return !failed;
 		}
 
-		/***********************************************************************
-		Workflow_PrecompileInstanceContext (Passes)
-		***********************************************************************/
+/***********************************************************************
+Workflow_PrecompileInstanceContext (Passes)
+***********************************************************************/
 
 		extern ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
 		extern void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
 		extern void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
 
-		/***********************************************************************
-		Workflow_PrecompileInstanceContext
-		***********************************************************************/
+/***********************************************************************
+Workflow_PrecompileInstanceContext
+***********************************************************************/
 
 		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
@@ -113,9 +113,9 @@ namespace vl
 			return nullptr;
 		}
 
-		/***********************************************************************
-		WorkflowEventNamesVisitor
-		***********************************************************************/
+/***********************************************************************
+WorkflowEventNamesVisitor
+***********************************************************************/
 
 		class WorkflowEventNamesVisitor : public Object, public GuiValueRepr::IVisitor
 		{
@@ -218,6 +218,21 @@ namespace vl
 							decl->name.value = handler->value;
 
 							{
+								auto att = MakePtr<WfAttribute>();
+								att->category.value = L"cpp";
+								att->name.value = L"Protected";
+
+								decl->attributes.Add(att);
+							}
+							{
+								auto att = MakePtr<WfAttribute>();
+								att->category.value = L"cpp";
+								att->name.value = L"UserImpl";
+
+								decl->attributes.Add(att);
+							}
+
+							{
 								auto block = MakePtr<WfBlockStatement>();
 								decl->statement = block;
 
@@ -283,9 +298,9 @@ namespace vl
 			}
 		};
 
-		/***********************************************************************
-		Workflow_GenerateInstanceClass
-		***********************************************************************/
+/***********************************************************************
+Workflow_GenerateInstanceClass
+***********************************************************************/
 
 		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex)
 		{
@@ -329,6 +344,19 @@ namespace vl
 				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
 				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
 				instanceClass->baseTypes.Add(baseType);
+
+				if (context->codeBehind)
+				{
+					auto value = MakePtr<WfStringExpression>();
+					value->value.value = instanceClass->name.value;
+
+					auto att = MakePtr<WfAttribute>();
+					att->category.value = L"cpp";
+					att->name.value = L"File";
+					att->value = value;
+
+					instanceClass->attributes.Add(att);
+				}
 			}
 			if (!beforePrecompile)
 			{
@@ -658,9 +686,9 @@ namespace vl
 			return module;
 		}
 
-		/***********************************************************************
-		GuiWorkflowSharedManagerPlugin
-		***********************************************************************/
+/***********************************************************************
+GuiWorkflowSharedManagerPlugin
+***********************************************************************/
 
 #undef ERROR_CODE_PREFIX
 

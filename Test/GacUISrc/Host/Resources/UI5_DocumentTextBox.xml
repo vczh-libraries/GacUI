@@ -49,6 +49,7 @@ So as I pray, unlimited blade works.</Text>
     <Instance ref.Class="demo::MainWindow" xmlns:x="demo::*">
       <ref.Members>
         <![CDATA[
+          @cpp:Protected
           var flag : bool = false;
           
           event OnMakeFontLarger();
@@ -92,10 +93,11 @@ So as I pray, unlimited blade works.</Text>
           <att.Columns>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
           </att.Columns>
 
-          <Cell Site="row:0 column:0 columnSpan:3">
+          <Cell Site="row:0 column:0 columnSpan:4">
             <Tab>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
@@ -160,6 +162,9 @@ So as I pray, unlimited blade works.</Text>
           </Cell>
           <Cell Site="row:1 column:1">
             <Button Text="Make Font Smaller" Enabled-bind="textBoxS.Font.size &gt; 5" ev.Clicked-eval="self.OnMakeFontSmaller();"/>
+          </Cell>
+          <Cell Site="row:1 column:2">
+            <Button Text="I don't know" ev.Clicked="buttonIDoNotKnow_Clicked"/>
           </Cell>
         </Table>
       </Window>
