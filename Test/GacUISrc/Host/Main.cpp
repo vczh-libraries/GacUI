@@ -93,16 +93,16 @@ void EnumerateFontFamilies(const Func<void(const WString&)>& callback)
 void GuiMain_Resource()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
-	//{
-	//	FileStream fileStream(L"Reflection.txt", FileStream::WriteOnly);
-	//	BomEncoder encoder(BomEncoder::Utf16);
-	//	EncoderStream encoderStream(fileStream, encoder);
-	//	StreamWriter writer(encoderStream);
-	//	LogTypeManager(writer);
-	//}
+	{
+		FileStream fileStream(L"Reflection.txt", FileStream::WriteOnly);
+		BomEncoder encoder(BomEncoder::Utf16);
+		EncoderStream encoderStream(fileStream, encoder);
+		StreamWriter writer(encoderStream);
+		LogTypeManager(writer);
+	}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(LR"(UI5_DocumentTextBox.xml)", errors);
+		auto resource = GuiResource::LoadFromXml(LR"(Resources/UI5_DocumentTextBox.xml)", errors);
 		resource->Precompile(nullptr, errors);
 
 		{

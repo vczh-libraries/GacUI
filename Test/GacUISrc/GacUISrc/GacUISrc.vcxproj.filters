@@ -390,15 +390,6 @@
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.cpp">
       <Filter>GacUI\Reflection\TypeDescriptors</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AutoComplete_Grammar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TsfTestWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClCompile>
@@ -823,44 +814,10 @@
     <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
       <Filter>GacUI\Compiler\InstanceQuery</Filter>
     </Text>
-    <Text Include="UI1_StyleTemplate.xml">
-      <Filter>Resource Files</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Gaclib.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\Compiler\InstanceQuery\Codegen.bat">
       <Filter>GacUI\Compiler\InstanceQuery</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="UI2_Properties.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="UI3_DataGrid.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="UI4_UserControl.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="UI5_DocumentTextBox.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="UI6_FontList.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="UI7_ColorComboBox.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="UI8_TableSplitter.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="UI9_ListView.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
   </ItemGroup>
 </Project>
