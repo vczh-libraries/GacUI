@@ -1,9 +1,26 @@
-#define GAC_HEADER_USE_NAMESPACE
-#include "..\..\..\Source\GacUI.h"
+#include "Source/DemoIncludes.h"
 #include <Windows.h>
+
+using namespace vl;
+using namespace vl::collections;
+using namespace vl::stream;
+using namespace vl::presentation;
+using namespace vl::presentation::controls;
+using namespace demo;
 
 void GuiMain()
 {
+	{
+		List<WString> errors;
+		FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
+		auto resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
+		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DataOnly);
+	}
+
+	demo::MainWindow window;
+	window.ForceCalculateSizeImmediately();
+	window.MoveToScreenCenter();
+	GetApplication()->Run(&window);
 }
 
 //#define GUI_GRAPHICS_RENDERER_GDI
