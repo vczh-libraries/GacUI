@@ -16,9 +16,9 @@ namespace vl
 		using namespace controls;
 		using namespace compositions;
 
-/***********************************************************************
-FindInstanceLoadingSource
-***********************************************************************/
+		/***********************************************************************
+		FindInstanceLoadingSource
+		***********************************************************************/
 
 		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
 		{
@@ -29,7 +29,7 @@ FindInstanceLoadingSource
 				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
 				{
 					auto fullName = GlobalStringKey::Get(ns->prefix + ctor->typeName.ToString() + ns->postfix);
-					if(auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
+					if (auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
 					{
 						return InstanceLoadingSource(loader, fullName);
 					}
@@ -38,9 +38,9 @@ FindInstanceLoadingSource
 			return InstanceLoadingSource();
 		}
 
-/***********************************************************************
-Workflow_ValidateStatement
-***********************************************************************/
+		/***********************************************************************
+		Workflow_ValidateStatement
+		***********************************************************************/
 
 		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
@@ -70,17 +70,17 @@ Workflow_ValidateStatement
 			return !failed;
 		}
 
-/***********************************************************************
-Workflow_PrecompileInstanceContext (Passes)
-***********************************************************************/
+		/***********************************************************************
+		Workflow_PrecompileInstanceContext (Passes)
+		***********************************************************************/
 
 		extern ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
 		extern void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
 		extern void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
 
-/***********************************************************************
-Workflow_PrecompileInstanceContext
-***********************************************************************/
+		/***********************************************************************
+		Workflow_PrecompileInstanceContext
+		***********************************************************************/
 
 		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
@@ -113,9 +113,9 @@ Workflow_PrecompileInstanceContext
 			return nullptr;
 		}
 
-/***********************************************************************
-WorkflowEventNamesVisitor
-***********************************************************************/
+		/***********************************************************************
+		WorkflowEventNamesVisitor
+		***********************************************************************/
 
 		class WorkflowEventNamesVisitor : public Object, public GuiValueRepr::IVisitor
 		{
@@ -220,7 +220,7 @@ WorkflowEventNamesVisitor
 							{
 								auto block = MakePtr<WfBlockStatement>();
 								decl->statement = block;
-								
+
 								auto stringExpr = MakePtr<WfStringExpression>();
 								stringExpr->value.value = L"Not Implemented: " + handler->value;
 
@@ -283,9 +283,9 @@ WorkflowEventNamesVisitor
 			}
 		};
 
-/***********************************************************************
-Workflow_GenerateInstanceClass
-***********************************************************************/
+		/***********************************************************************
+		Workflow_GenerateInstanceClass
+		***********************************************************************/
 
 		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex)
 		{
@@ -297,7 +297,7 @@ Workflow_GenerateInstanceClass
 				beforePrecompile = true;
 				needEventHandler = false;
 				break;
-			case IGuiResourceTypeResolver_Precompile::Instance_GenerateTemporaryClass:
+			case IGuiResourceTypeResolver_Precompile::Instance_CollectEventHandlers:
 				beforePrecompile = true;
 				needEventHandler = true;
 				break;
@@ -323,38 +323,17 @@ Workflow_GenerateInstanceClass
 				return nullptr;
 			}
 
-			ITypeDescriptor* ctorTd = nullptr;
-			if (!beforePrecompile)
-			{
-				ctorTd = description::GetTypeDescriptor(context->className + L"Constructor");
-				if (!ctorTd)
-				{
-					errors.Add(
-						L"Precompile: Builder type \"" +
-						context->className +
-						L"Constructor\" does not exist.");
-					return nullptr;
-				}
-			}
-
-			ITypeDescriptor* contextTd = nullptr;
-			if (!beforePrecompile)
-			{
-				if (!(contextTd = description::GetTypeDescriptor(context->className)))
-				{
-					errors.Add(
-						L"Precompile: Instance type \"" +
-						context->className +
-						L"\" does not exist.");
-					return nullptr;
-				}
-			}
-
 			auto module = Workflow_CreateModuleWithUsings(context);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
 				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
 				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
+				instanceClass->baseTypes.Add(baseType);
+			}
+			if (!beforePrecompile)
+			{
+				auto baseType = MakePtr<WfReferenceType>();
+				baseType->name.value = instanceClass->name.value + L"Constructor";
 				instanceClass->baseTypes.Add(baseType);
 			}
 
@@ -409,13 +388,6 @@ Workflow_GenerateInstanceClass
 				block->statements.Add(raiseStat);
 				return block;
 			};
-
-			if (!beforePrecompile)
-			{
-				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(ctorTd, TypeInfoHint::Normal);
-				auto type = GetTypeFromTypeInfo(typeInfo.Obj());
-				instanceClass->baseTypes.Add(type);
-			}
 
 			if (context->memberScript != L"")
 			{
@@ -503,7 +475,7 @@ Workflow_GenerateInstanceClass
 
 						decl->name.value = L"<parameter>" + param->name.ToString();
 						decl->type = CopyType(type);
-						
+
 						auto nullExpr = MakePtr<WfLiteralExpression>();
 						nullExpr->value = WfLiteralValue::Null;
 						decl->expression = nullExpr;
@@ -644,7 +616,7 @@ Workflow_GenerateInstanceClass
 					initRef->name.value = L"<initialize-instance>";
 
 					auto refThis = MakePtr<WfThisExpression>();
-					
+
 					auto resolverRef = MakePtr<WfReferenceExpression>();
 					resolverRef->name.value = L"<resolver>";
 
@@ -686,9 +658,9 @@ Workflow_GenerateInstanceClass
 			return module;
 		}
 
-/***********************************************************************
-GuiWorkflowSharedManagerPlugin
-***********************************************************************/
+		/***********************************************************************
+		GuiWorkflowSharedManagerPlugin
+		***********************************************************************/
 
 #undef ERROR_CODE_PREFIX
 
@@ -730,7 +702,7 @@ GuiWorkflowSharedManagerPlugin
 		};
 		GUI_REGISTER_PLUGIN(GuiWorkflowSharedManagerPlugin)
 
-		WfLexicalScopeManager* Workflow_GetSharedManager()
+			WfLexicalScopeManager* Workflow_GetSharedManager()
 		{
 			return sharedManagerPlugin->GetWorkflowManager();
 		}

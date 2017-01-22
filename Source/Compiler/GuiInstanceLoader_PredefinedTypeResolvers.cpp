@@ -145,7 +145,6 @@ Instance Type Resolver (Instance)
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
 			const wchar_t* Path_TemporaryClass = L"Workflow/TemporaryClass";
-			const wchar_t* Path_InstanceCtor = L"Workflow/InstanceCtor";
 			const wchar_t* Path_InstanceClass = L"Workflow/InstanceClass";
 		public:
 			WString GetType()override
@@ -183,13 +182,11 @@ Instance Type Resolver (Instance)
 				switch (passIndex)
 				{
 				case Instance_CollectInstanceTypes:
-				case Instance_GenerateTemporaryClass:
-				case Instance_GenerateInstanceCtor:
+				case Instance_CollectEventHandlers:
 				case Instance_GenerateInstanceClass:
 					return PerResource;
-				case Instance_ValidateDependency:
-				case Instance_CompileTemporaryClass:
-				case Instance_CompileInstanceCtor:
+				case Instance_CompileInstanceTypes:
+				case Instance_CompileEventHandlers:
 				case Instance_CompileInstanceClass:
 					return PerPass;
 				default:
@@ -240,7 +237,7 @@ Instance Type Resolver (Instance)
 			{
 				switch (context.passIndex)
 				{
-				case Instance_GenerateTemporaryClass:
+				case Instance_CollectEventHandlers:
 					ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 				case Instance_CollectInstanceTypes:
 					{
@@ -266,34 +263,18 @@ Instance Type Resolver (Instance)
 						}
 					}
 					break;
-				case Instance_GenerateInstanceCtor:
+				case Instance_GenerateInstanceClass:
 					{
 						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							auto resolvingResult = MakePtr<types::ResolvingResult>();
-							if (auto module = Workflow_PrecompileInstanceContext(obj, *resolvingResult.Obj(), errors))
+							if (auto ctorModule = Workflow_PrecompileInstanceContext(obj, *resolvingResult.Obj(), errors))
 							{
-								context.additionalProperties.Add(obj, resolvingResult);
-								AddModule(context, Path_InstanceCtor, module, GuiInstanceCompiledWorkflow::InstanceCtor);
-								AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass);
-							}
-						}
-					}
-					break;
-				case Instance_GenerateInstanceClass:
-					{
-						ENSURE_ASSEMBLY_EXISTS(Path_InstanceCtor)
-						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
-						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
-						{
-							vint index = context.additionalProperties.Keys().IndexOf(obj.Obj());
-							if (index != -1)
-							{
-								auto resolvingResult = context.additionalProperties.Values()[index].Cast<types::ResolvingResult>();
-								if (auto module = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, context.passIndex))
+								if (auto instanceModule = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, context.passIndex))
 								{
-									AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass);
+									AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass);
+									AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass);
 								}
 							}
 						}
@@ -307,18 +288,14 @@ Instance Type Resolver (Instance)
 				WString path;
 				switch (context.passIndex)
 				{
-				case Instance_ValidateDependency:
+				case Instance_CompileInstanceTypes:
 					path = Path_TemporaryClass;
 					break;
-				case Instance_CompileTemporaryClass:
+				case Instance_CompileEventHandlers:
 					DELETE_ASSEMBLY(Path_TemporaryClass)
 					path = Path_TemporaryClass;
 					break;
-				case Instance_CompileInstanceCtor:
-					path = Path_InstanceCtor;
-					break;
 				case Instance_CompileInstanceClass:
-					UNLOAD_ASSEMBLY(Path_InstanceCtor)
 					UNLOAD_ASSEMBLY(Path_TemporaryClass)
 					path = Path_InstanceClass;
 					break;

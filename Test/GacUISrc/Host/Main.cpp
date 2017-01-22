@@ -129,7 +129,7 @@ void GuiMain_Resource()
 			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 			CHECK_ERROR(errors.Count() == 0, L"Error");
 		}
-		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DevelopmentTool);
+		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::InstanceClass);
 
 		{
 			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");

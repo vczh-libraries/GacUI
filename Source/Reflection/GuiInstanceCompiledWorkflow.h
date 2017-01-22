@@ -26,9 +26,7 @@ namespace vl
 		public:
 			enum AssemblyType
 			{
-				ViewModel,
 				Shared,
-				InstanceCtor,
 				InstanceClass,
 				TemporaryClass,
 			};

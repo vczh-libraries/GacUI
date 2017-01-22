@@ -57,7 +57,7 @@ Compiled Workflow Type Resolver (Workflow)
 
 			vint GetMaxPassIndex()override
 			{
-				return 3;
+				return 2;
 			}
 
 			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context)override
@@ -67,31 +67,18 @@ Compiled Workflow Type Resolver (Workflow)
 					switch (context.passIndex)
 					{
 					case 0:
-						if (compiled->type == GuiInstanceCompiledWorkflow::ViewModel)
+						if (compiled->type == GuiInstanceCompiledWorkflow::Shared)
 						{
-							if (context.usage == GuiResourceUsage::DevelopmentTool)
+							if (context.usage == GuiResourceUsage::InstanceClass)
 							{
 								compiled->Initialize(true);
 							}
 						}
 						break;
 					case 1:
-						if (compiled->type == GuiInstanceCompiledWorkflow::Shared)
+						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceClass)
 						{
-							compiled->Initialize(true);
-						}
-						break;
-					case 2:
-						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor)
-						{
-							if (context.usage == GuiResourceUsage::Application)
-							{
-								compiled->Initialize(true);
-							}
-						}
-						else if (compiled->type == GuiInstanceCompiledWorkflow::InstanceClass)
-						{
-							if (context.usage == GuiResourceUsage::DevelopmentTool)
+							if (context.usage == GuiResourceUsage::InstanceClass)
 							{
 								compiled->Initialize(true);
 							}

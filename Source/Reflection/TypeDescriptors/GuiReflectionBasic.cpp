@@ -552,8 +552,8 @@ Type Declaration
 			END_CLASS_MEMBER(GuiResourcePathResolver)
 
 			BEGIN_ENUM_ITEM(GuiResourceUsage)
-				ENUM_CLASS_ITEM(DevelopmentTool)
-				ENUM_CLASS_ITEM(Application)
+				ENUM_CLASS_ITEM(DataOnly)
+				ENUM_CLASS_ITEM(InstanceClass)
 			END_ENUM_ITEM(GuiResourceUsage)
 
 				BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiResourceManager)

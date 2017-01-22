@@ -316,8 +316,8 @@ Resource
 
 		enum class GuiResourceUsage
 		{
-			DevelopmentTool,
-			Application,
+			DataOnly,
+			InstanceClass,
 		};
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
@@ -527,13 +527,11 @@ Resource Type Resolver
 				Workflow_Max						= Workflow_Compile,
 
 				Instance_CollectInstanceTypes		= 2,
-				Instance_ValidateDependency			= 3,
-				Instance_GenerateTemporaryClass		= 4,
-				Instance_CompileTemporaryClass		= 5,
-				Instance_GenerateInstanceCtor		= 6,
-				Instance_CompileInstanceCtor		= 7,
-				Instance_GenerateInstanceClass		= 8,
-				Instance_CompileInstanceClass		= 9,
+				Instance_CompileInstanceTypes		= 3,
+				Instance_CollectEventHandlers		= 4,
+				Instance_CompileEventHandlers		= 5,
+				Instance_GenerateInstanceClass		= 6,
+				Instance_CompileInstanceClass		= 7,
 				Instance_Max						= Instance_CompileInstanceClass,
 			};
 
@@ -582,7 +580,7 @@ Resource Type Resolver
 		///			Pass 1: Script		(initialize shared scripts)
 		///			Pass 2: Script		(initialize instance scripts)
 		/// </summary>
-		class IGuiResourceTypeResolver_Initialize : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
+		class IGuiResourceTypeResolver_Initialize : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Initialize>
 		{
 		public:
 			/// <summary>Get the maximum pass index that the initializer needs.</summary>
