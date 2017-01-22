@@ -50,10 +50,40 @@ So as I pray, unlimited blade works.</Text>
       <ref.Members>
         <![CDATA[
           var flag : bool = false;
+          
+          event OnMakeFontLarger();
+          event OnMakeFontSmaller();
         ]]>
       </ref.Members>
-      <Window Text="MainWindow" ClientSize="x:480 y:320">
+      <Window ref.Name="self" Text="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+        <ev.OnMakeFontLarger-eval>
+          <![CDATA[
+              {
+                var oldFont = textBoxS.Font;
+                var newFont = {fontFamily:oldFont.fontFamily size:(oldFont.size + 5) antialias:true} of FontProperties;
+                textBoxS.Font = newFont;
+                textBoxM.Font = newFont;
+                documentTextBox.Font = newFont;
+                documentViewer.Font = newFont;
+                documentLabel.Font = newFont;
+              }
+            ]]>
+        </ev.OnMakeFontLarger-eval>
+        <ev.OnMakeFontSmaller-eval>
+          <![CDATA[
+              {
+                var oldFont = textBoxS.Font;
+                var newFont = {fontFamily:oldFont.fontFamily size:(oldFont.size - 5) antialias:true} of FontProperties;
+                textBoxS.Font = newFont;
+                textBoxM.Font = newFont;
+                documentTextBox.Font = newFont;
+                documentViewer.Font = newFont;
+                documentLabel.Font = newFont;
+              }
+            ]]>
+        </ev.OnMakeFontSmaller-eval>
+        
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -126,38 +156,10 @@ So as I pray, unlimited blade works.</Text>
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <Button Text="Make Font Larger">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    var oldFont = textBoxS.Font;
-                    var newFont = {fontFamily:oldFont.fontFamily size:(oldFont.size + 5) antialias:true} of FontProperties;
-                    textBoxS.Font = newFont;
-                    textBoxM.Font = newFont;
-                    documentTextBox.Font = newFont;
-                    documentViewer.Font = newFont;
-                    documentLabel.Font = newFont;
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <Button Text="Make Font Larger" ev.Clicked-eval="self.OnMakeFontLarger();"/>
           </Cell>
           <Cell Site="row:1 column:1">
-            <Button Text="Make Font Smaller" Enabled-bind="textBoxS.Font.size &gt; 5">
-              <ev.Clicked-eval>
-                <![CDATA[
-                  {
-                    var oldFont = textBoxS.Font;
-                    var newFont = {fontFamily:oldFont.fontFamily size:(oldFont.size - 5) antialias:true} of FontProperties;
-                    textBoxS.Font = newFont;
-                    textBoxM.Font = newFont;
-                    documentTextBox.Font = newFont;
-                    documentViewer.Font = newFont;
-                    documentLabel.Font = newFont;
-                  }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
+            <Button Text="Make Font Smaller" Enabled-bind="textBoxS.Font.size &gt; 5" ev.Clicked-eval="self.OnMakeFontSmaller();"/>
           </Cell>
         </Table>
       </Window>
