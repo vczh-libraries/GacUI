@@ -730,7 +730,7 @@ GuiWorkflowSharedManagerPlugin
 		};
 		GUI_REGISTER_PLUGIN(GuiWorkflowSharedManagerPlugin)
 
-			WfLexicalScopeManager* Workflow_GetSharedManager()
+		WfLexicalScopeManager* Workflow_GetSharedManager()
 		{
 			return sharedManagerPlugin->GetWorkflowManager();
 		}

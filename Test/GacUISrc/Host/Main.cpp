@@ -6,6 +6,7 @@
 #include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
 #include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h"
 #include "..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
+#include "..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h"
 #endif
 #include <Windows.h>
 
@@ -20,6 +21,7 @@ using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::collections;
 using namespace vl::filesystem;
+using namespace vl::workflow::cppcodegen;
 
 //#define GUI_GRAPHICS_RENDERER_GDI
 #define GUI_GRAPHICS_RENDERER_DIRECT2D
@@ -143,6 +145,24 @@ void GuiMain_Resource()
 				text += code + L"\r\n";
 			}
 			File(BINARY_FOLDER L"UI.txt").WriteAllText(text);
+		}
+		{
+			auto input = MakePtr<WfCppInput>(L"Demo");
+			input->comment = L"Source: Host.sln";
+			input->extraIncludes.Add(L"../../../Source/GacUI.h");
+			auto output = GenerateCppFiles(input, Workflow_GetSharedManager());
+			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
+			{
+				WString code = output->cppFiles.Values()[index];
+				File file(L"../TestCppCodegen/Source/" + fileName);
+
+				if (file.Exists())
+				{
+					code = MergeCppFileContent(file.ReadAllText(), code);
+				}
+
+				file.WriteAllText(code, false, BomEncoder::Utf8);
+			}
 		}
 	}
 
