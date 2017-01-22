@@ -33,7 +33,7 @@ namespace demo
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
-	protected:
+	public:
 		::demo::MainWindow* self = static_cast<::demo::MainWindow*>(nullptr);
 		::vl::presentation::controls::GuiSinglelineTextBox* textBoxS = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
 		::vl::presentation::controls::GuiMultilineTextBox* textBoxM = static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr);
@@ -66,7 +66,6 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_23 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
-	public:
 		MainWindowConstructor();
 	};
 

@@ -220,13 +220,6 @@ WorkflowEventNamesVisitor
 							{
 								auto att = MakePtr<WfAttribute>();
 								att->category.value = L"cpp";
-								att->name.value = L"Protected";
-
-								decl->attributes.Add(att);
-							}
-							{
-								auto att = MakePtr<WfAttribute>();
-								att->category.value = L"cpp";
 								att->name.value = L"UserImpl";
 
 								decl->attributes.Add(att);

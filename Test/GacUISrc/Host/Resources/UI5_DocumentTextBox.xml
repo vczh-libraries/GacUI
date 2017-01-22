@@ -49,7 +49,6 @@ So as I pray, unlimited blade works.</Text>
     <Instance ref.Class="demo::MainWindow" xmlns:x="demo::*">
       <ref.Members>
         <![CDATA[
-          @cpp:Protected
           var flag : bool = false;
           
           event OnMakeFontLarger();
