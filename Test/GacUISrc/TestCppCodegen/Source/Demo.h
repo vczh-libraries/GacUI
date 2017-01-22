@@ -11,6 +11,10 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_DEMO
 
 #include "../../../../Source/GacUI.h"
+#ifndef VCZH_DEBUG_NO_REFLECTION
+#include "../../../../Source/Reflection/TypeDescriptors/GuiReflectionTemplates.h"
+#include "../../../../Source/Reflection/TypeDescriptors/GuiReflectionEvents.h"
+#endif
 
 #if defined( _MSC_VER)
 #pragma warning(push)

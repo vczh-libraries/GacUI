@@ -138,7 +138,9 @@ void GuiMain_Resource()
 			{
 				auto input = MakePtr<WfCppInput>(L"Demo");
 				input->comment = L"Source: Host.sln";
-				input->extraIncludes.Add(L"../../../../Source/GacUI.h");
+				input->normalIncludes.Add(L"../../../../Source/GacUI.h");
+				input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionTemplates.h");
+				input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionEvents.h");
 				auto output = GenerateCppFiles(input, compiled->metadata.Obj());
 				FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 				{

@@ -18373,9 +18373,18 @@ GenerateCppFiles
 					writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName));
 					writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName));
 					writer.WriteLine(L"");
-					FOREACH(WString, include, input->extraIncludes)
+					FOREACH(WString, include, input->normalIncludes)
 					{
 						writer.WriteLine(L"#include \"" + include + L"\"");
+					}
+					if (input->reflectionIncludes.Count() > 0)
+					{
+						writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+						FOREACH(WString, include, input->reflectionIncludes)
+						{
+							writer.WriteLine(L"#include \"" + include + L"\"");
+						}
+						writer.WriteLine(L"#endif");
 					}
 					writer.WriteLine(L"");
 					config.WriteHeader(writer, multiFile);

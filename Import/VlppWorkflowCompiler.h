@@ -2775,7 +2775,8 @@ GenerateCppFiles
 				WString											assemblyNamespace;
 				WString											includeFileName;
 				WString											defaultFileName;
-				collections::List<WString>						extraIncludes;
+				collections::List<WString>						normalIncludes;
+				collections::List<WString>						reflectionIncludes;
 
 				WfCppInput(const WString& _assemblyName);
 			};
