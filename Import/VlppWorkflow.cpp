@@ -5187,9 +5187,9 @@ WfStruct
 				return Value::From(new IValueType::TypedBox<WfStructInstance>, owner);
 			}
 
-			IValueType::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
+			IBoxedValue::CompareResult WfStruct::WfValueType::Compare(const Value& a, const Value& b)
 			{
-				return IValueType::CompareResult::NotComparable;
+				return IBoxedValue::NotComparable;
 			}
 
 			WfStruct::WfStruct(const WString& typeName)
@@ -5310,7 +5310,7 @@ WfEnum
 				return Value::From(new IValueType::TypedBox<WfEnumInstance>, owner);
 			}
 
-			IValueType::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
+			IBoxedValue::CompareResult WfEnum::WfValueType::Compare(const Value& a, const Value& b)
 			{
 				auto ea = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
 				if (!ea)
@@ -5324,9 +5324,9 @@ WfEnum
 					throw ArgumentTypeMismtatchException(L"eb", owner, Value::BoxedValue, b);
 				}
 
-				if (ea->value.value < eb->value.value) return IValueType::Smaller;
-				if (ea->value.value > eb->value.value)return IValueType::Greater;
-				return IValueType::Equal;
+				if (ea->value.value < eb->value.value) return IBoxedValue::Smaller;
+				if (ea->value.value > eb->value.value)return IBoxedValue::Greater;
+				return IBoxedValue::Equal;
 			}
 
 			WfEnum::WfEnum(bool isFlags, const WString& typeName)

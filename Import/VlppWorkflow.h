@@ -631,6 +631,7 @@ Custom Type
 				using FieldMap = collections::Dictionary<WString, Ptr<WfStructField>>;
 				using IPropertyInfo = reflection::description::IPropertyInfo;
 				using IValueType = reflection::description::IValueType;
+				using IBoxedValue = reflection::description::IBoxedValue;
 
 			protected:
 				class WfValueType : public Object, public virtual IValueType
@@ -644,7 +645,7 @@ Custom Type
 					WfValueType(WfStruct* _owner);
 
 					Value								CreateDefault()override;
-					CompareResult						Compare(const Value& a, const Value& b)override;
+					IBoxedValue::CompareResult			Compare(const Value& a, const Value& b)override;
 				};
 
 			protected:
@@ -666,6 +667,7 @@ Custom Type
 			{
 				using EnumItemMap = collections::Dictionary<WString, vuint64_t>;
 				using IValueType = reflection::description::IValueType;
+				using IBoxedValue = reflection::description::IBoxedValue;
 				using IEnumType = reflection::description::IEnumType;
 				using Value = reflection::description::Value;
 
@@ -679,7 +681,7 @@ Custom Type
 					WfValueType(WfEnum* _owner);
 
 					Value								CreateDefault()override;
-					CompareResult						Compare(const Value& a, const Value& b)override;
+					IBoxedValue::CompareResult			Compare(const Value& a, const Value& b)override;
 				};
 
 				class WfEnumType : public Object, public virtual IEnumType

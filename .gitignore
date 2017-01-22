@@ -7,9 +7,10 @@ Test/Output/
 Test/Linux/Coverage/
 Tools/*.exe
 Tools/*.dll
-Test/GacUISrc/GacUISrc/UI.error.txt
-Test/GacUISrc/GacUISrc/UI.bin
-Test/GacUISrc/GacUISrc/UI.txt
+Test/GacUISrc/*/UI.error.txt
+Test/GacUISrc/*/UI.bin
+Test/GacUISrc/*/UI.txt
+Test/GacUISrc/*/Reflection.txt
 
 # User-specific files
 *.suo
@@ -167,4 +168,3 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
-Test/GacUISrc/GacUISrc/Reflection.txt

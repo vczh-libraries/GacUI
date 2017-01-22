@@ -726,6 +726,12 @@ namespace vl
 		
 		typedef decltype(Test((TFrom*)0)) YesNoType;
 	};
+
+	template<typename T, typename U>
+	struct AcceptAlways
+	{
+		typedef T Type;
+	};
 }
 
 #endif
@@ -6561,11 +6567,11 @@ ForEach宏
 ***********************************************************************/
 
 #define FOREACH(TYPE, VARIABLE, COLLECTION)\
-		SCOPE_VARIABLE(const ForEachIterator<TYPE>&, __foreach_iterator__, CreateForEachIterator(COLLECTION))\
+		SCOPE_VARIABLE(const ::vl::collections::ForEachIterator<TYPE>&, __foreach_iterator__, ::vl::collections::CreateForEachIterator(COLLECTION))\
 		for(TYPE VARIABLE;__foreach_iterator__.Next(VARIABLE);)
 
 #define FOREACH_INDEXER(TYPE, VARIABLE, INDEXER, COLLECTION)\
-		SCOPE_VARIABLE(const ForEachIterator<TYPE>&, __foreach_iterator__, CreateForEachIterator(COLLECTION))\
+		SCOPE_VARIABLE(const ::vl::collections::ForEachIterator<TYPE>&, __foreach_iterator__, ::vl::collections::CreateForEachIterator(COLLECTION))\
 		SCOPE_VARIABLE(vint, INDEXER, 0)\
 		for(TYPE VARIABLE;__foreach_iterator__.Next(VARIABLE);INDEXER++)
 	}
@@ -8273,6 +8279,11 @@ Attribute
 
 			class IValueCallStack;
 			class IValueException;
+
+			template<typename T>
+			struct TypedValueSerializerProvider
+			{
+			};
 		}
 
 		/// <summary>Base class of all reflectable object. You can use pointer or smart pointer to DescriptableObject to define variables, but if you want to create a reflectable class, you should inherit from [T:vl.reflection.Description`1].</summary>
@@ -8468,8 +8479,8 @@ Attribute
 		///
 		///				VI) Inject a global function as a constructor
 		///				CLASS_MEMBER_EXTERNALCTOR(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, mynamespace::CreateMyClass)
-		///				CLASS_MEMBER_EXTERNALCTOR_INVOKETEMPLATE(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, CreateMyClass, L"mynamespace::GetMyClass($Arguments)")
-		///				CLASS_MEMBER_EXTERNALCTOR_INVOKETEMPLATE(Ptr<MyClass>(), NO_PARAMETER, []()->Ptr<MyClass>{return nullptr;}, L"*")
+		///				CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(Ptr<MyClass>(int, const WString&), {L"numberParameter" _ L"stringParameter"}, CreateMyClass, L"mynamespace::GetMyClass($Arguments)", L"::vl::Func<$Func>(&mynamespace::GetMyClass)")
+		///				CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(Ptr<MyClass>(), NO_PARAMETER, []()->Ptr<MyClass>{return nullptr;}, L"*", L"*")
 		///
 		///				VII) Add unoverloaded functions
 		///				CLASS_MEMBER_METHOD(MyFunction1, NO_PARAMETER)
@@ -8491,7 +8502,7 @@ Attribute
 		///
 		///				X) Inject global functions as methods:
 		///				CLASS_MEMBER_EXTERNALMETHOD(MyNewName5, {L"parameter"}, int(MyClass::*)(int), mynamespace::AGlobalFunction)
-		///				CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(MyNewName5, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&), [](MyClass* a, int b, const WString& c){return 0;}, L"*")
+		///				CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(MyNewName5, {L"parameter1" _ L"parameter2"}, int(MyClass::*)(int, const WString&), [](MyClass* a, int b, const WString& c){return 0;}, L"*", L"*")
 		///
 		///				XI) Add unoverloaded static functions
 		///				CLASS_MEMBER_STATIC_METHOD(MyFunction4, NO_PARAMETER)
@@ -8721,7 +8732,16 @@ Value
 			class IBoxedValue : public virtual IDescriptable, public Description<IBoxedValue>
 			{
 			public:
+				enum CompareResult
+				{
+					Smaller,
+					Greater,
+					Equal,
+					NotComparable,
+				};
+
 				virtual Ptr<IBoxedValue>		Copy() = 0;
+				virtual CompareResult			ComparePrimitive(Ptr<IBoxedValue> boxedValue) = 0;
 			};
 
 			/// <summary>A type to store all values of reflectable types.</summary>
@@ -8833,6 +8853,33 @@ ValueType
 				template<typename T>
 				class TypedBox : public IBoxedValue
 				{
+				private:
+					template<typename U = T>
+					static CompareResult ComparePrimitiveInternal(const U& a, const U& b, typename AcceptAlways<vint, decltype(&TypedValueSerializerProvider<U>::Compare)>::Type)
+					{
+						return TypedValueSerializerProvider<U>::Compare(a, b);
+					}
+
+					template<typename U = T>
+					static CompareResult ComparePrimitiveInternal(const U& a, const U& b, double)
+					{
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdynamic-class-memaccess"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "--class-memaccess"
+#endif
+						auto result = memcmp(&a, &b, sizeof(U));
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+						if (result < 0) return IBoxedValue::Smaller;
+						if (result > 0) return IBoxedValue::Greater;
+						return IBoxedValue::Equal;
+					}
 				public:
 					T							value;
 
@@ -8850,18 +8897,22 @@ ValueType
 					{
 						return new TypedBox<T>(value);
 					}
+
+					CompareResult ComparePrimitive(Ptr<IBoxedValue> boxedValue)override
+					{
+						if (auto typedBox = boxedValue.Cast<TypedBox<T>>())
+						{
+							return ComparePrimitiveInternal(value, typedBox->value, 0);
+						}
+						else
+						{
+							return IBoxedValue::NotComparable;
+						}
+					}
 				};
 
-				enum CompareResult
-				{
-					Smaller,
-					Greater,
-					Equal,
-					NotComparable,
-				};
-
-				virtual Value					CreateDefault() = 0;
-				virtual CompareResult			Compare(const Value& a, const Value& b) = 0;
+				virtual Value						CreateDefault() = 0;
+				virtual IBoxedValue::CompareResult	Compare(const Value& a, const Value& b) = 0;
 			};
 
 			class IEnumType : public virtual IDescriptable, public Description<IEnumType>
@@ -9044,6 +9095,7 @@ ITypeDescriptor (method)
 					/*
 					Arguments:
 						$Type:					C++ full type name
+						$Func:					C++ function type (e.g. void(int)), object type not included for method
 						$Name:					Method name
 						$This:					Expression for the "this" argument;
 						$Arguments:				Expressions for arguments separated by ", "
@@ -9060,6 +9112,7 @@ ITypeDescriptor (method)
 						This method does not exist in C++
 					*/
 					virtual const WString&		GetInvokeTemplate() = 0;
+					virtual const WString&		GetClosureTemplate() = 0;
 				};
 				/*
 				Priority:
@@ -9214,6 +9267,7 @@ Cpp Helper Functions
 
 			extern WString						CppGetFullName(ITypeDescriptor* type);
 			extern WString						CppGetReferenceTemplate(IPropertyInfo* prop);
+			extern WString						CppGetClosureTemplate(IMethodInfo* method);
 			extern WString						CppGetInvokeTemplate(IMethodInfo* method);
 			extern WString						CppGetAttachTemplate(IEventInfo* ev);
 			extern WString						CppGetDetachTemplate(IEventInfo* ev);
@@ -9280,8 +9334,8 @@ Collections
 			class IValueReadonlyDictionary : public virtual IDescriptable, public Description<IValueReadonlyDictionary>
 			{
 			public:
-				virtual IValueReadonlyList*		GetKeys()=0;
-				virtual IValueReadonlyList*		GetValues()=0;
+				virtual Ptr<IValueReadonlyList>	GetKeys()=0;
+				virtual Ptr<IValueReadonlyList>	GetValues()=0;
 				virtual vint					GetCount()=0;
 				virtual Value					Get(const Value& key)=0;
 			};
@@ -9397,6 +9451,8 @@ Runtime Exception
 #pragma pop_macro("GetMessage")
 				virtual bool							GetFatal() = 0;
 				virtual Ptr<IValueReadonlyList>			GetCallStack() = 0;
+
+				static Ptr<IValueException>				Create(const WString& message);
 			};
 
 /***********************************************************************
@@ -11043,11 +11099,6 @@ namespace vl
 		namespace description
 		{
 
-			template<typename T>
-			struct TypedValueSerializerProvider
-			{
-			};
-
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
@@ -11267,7 +11318,7 @@ Predefined Types
 			DECL_TYPE_INFO(IValueException)
 
 			DECL_TYPE_INFO(IBoxedValue)
-			DECL_TYPE_INFO(IValueType::CompareResult)
+			DECL_TYPE_INFO(IBoxedValue::CompareResult)
 			DECL_TYPE_INFO(IValueType)
 			DECL_TYPE_INFO(IEnumType)
 			DECL_TYPE_INFO(ISerializableType)
@@ -11292,7 +11343,7 @@ Predefined Types
 				static TYPENAME GetDefaultValue();\
 				static bool Serialize(const TYPENAME& input, WString& output);\
 				static bool Deserialize(const WString& input, TYPENAME& output);\
-				static IValueType::CompareResult Compare(const TYPENAME& a, const TYPENAME& b);\
+				static IBoxedValue::CompareResult Compare(const TYPENAME& a, const TYPENAME& b);\
 			};\
 
 			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint8_t)
@@ -11349,76 +11400,6 @@ Interfaces:
 
 namespace vl
 {
-
-/***********************************************************************
-Workflow to C++ Codegen Helpers
-***********************************************************************/
-
-	namespace __vwsn
-	{
-		template<typename T>
-		struct EventHelper
-		{
-		};
-
-		template<typename T>
-		Ptr<reflection::description::IEventHandler> EventAttach(T& e, typename EventHelper<T>::Handler handler)
-		{
-			return EventHelper<T>::Attach(e, handler);
-		}
-
-		template<typename T>
-		bool EventDetach(T& e, Ptr<reflection::description::IEventHandler> handler)
-		{
-			return EventHelper<T>::Detach(e, handler);
-		}
-
-		template<typename T>
-		auto EventInvoke(T& e)
-		{
-			return EventHelper<T>::Invoke(e);
-		}
-
-		template<typename ...TArgs>
-		struct EventHelper<Event<void(TArgs...)>>
-		{
-			using Handler = const Func<void(TArgs...)>&;
-
-			class EventHandlerImpl : public Object, public reflection::description::IEventHandler
-			{
-			public:
-				Ptr<EventHandler> handler;
-
-				EventHandlerImpl(Ptr<EventHandler> _handler)
-					:handler(_handler)
-				{
-				}
-
-				bool IsAttached()override
-				{
-					return handler->IsAttached();
-				}
-			};
-
-			static Ptr<reflection::description::IEventHandler> Attach(Event<void(TArgs...)>& e, Handler handler)
-			{
-				return MakePtr<EventHandlerImpl>(e.Add(handler));
-			}
-
-			static bool Detach(Event<void(TArgs...)>& e, Ptr<reflection::description::IEventHandler> handler)
-			{
-				auto impl = handler.Cast<EventHandlerImpl>();
-				if (!impl) return false;
-				return e.Remove(impl->handler);
-			}
-
-			static Event<void(TArgs...)>& Invoke(Event<void(TArgs...)>& e)
-			{
-				return e;
-			}
-		};
-	}
-
 	namespace reflection
 	{
 		namespace description
@@ -12174,7 +12155,7 @@ PrimitiveTypeDescriptor
 					return BoxValue<T>(TypedValueSerializerProvider<T>::GetDefaultValue());
 				}
 
-				CompareResult Compare(const Value& a, const Value& b)override
+				IBoxedValue::CompareResult Compare(const Value& a, const Value& b)override
 				{
 					auto va = UnboxValue<T>(a);
 					auto vb = UnboxValue<T>(b);
@@ -12227,13 +12208,13 @@ EnumTypeDescriptor
 					return BoxValue<T>(static_cast<T>(0));
 				}
 
-				CompareResult Compare(const Value& a, const Value& b)override
+				IBoxedValue::CompareResult Compare(const Value& a, const Value& b)override
 				{
 					auto ea = static_cast<vuint64_t>(UnboxValue<T>(a));
 					auto eb = static_cast<vuint64_t>(UnboxValue<T>(b));
-					if (ea < eb) return IValueType::Smaller;
-					if (ea > eb)return IValueType::Greater;
-					return IValueType::Equal;
+					if (ea < eb) return IBoxedValue::Smaller;
+					if (ea > eb)return IBoxedValue::Greater;
+					return IBoxedValue::Equal;
 				}
 			};
 
@@ -12321,9 +12302,9 @@ StructTypeDescriptor
 					return BoxValue<T>(T{});
 				}
 
-				CompareResult Compare(const Value& a, const Value& b)override
+				IBoxedValue::CompareResult Compare(const Value& a, const Value& b)override
 				{
-					return IValueType::NotComparable;
+					return IBoxedValue::NotComparable;
 				}
 			};
 
@@ -12407,6 +12388,1642 @@ StructTypeDescriptor
 					if (index == -1) return nullptr;
 					return fields.Values()[index].Obj();
 				}
+			};
+#endif
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+REFLECTION\GUITYPEDESCRIPTORBUILDER_CONTAINER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::Reflection
+	
+Interfaces:
+***********************************************************************/
+ 
+#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_CONTAINER
+#define VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_CONTAINER
+ 
+ 
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Enumerable Wrappers
+***********************************************************************/
+
+			template<typename T>
+			class TypedEnumerator : public Object, public collections::IEnumerator<T>
+			{
+			private:
+				Ptr<IValueEnumerable>		enumerable;
+				Ptr<IValueEnumerator>		enumerator;
+				vint						index;
+				T							value;
+
+			public:
+				TypedEnumerator(Ptr<IValueEnumerable> _enumerable, vint _index, const T& _value)
+					:enumerable(_enumerable)
+					,index(_index)
+					,value(_value)
+				{
+					enumerator=enumerable->CreateEnumerator();
+					vint current=-1;
+					while(current++<index)
+					{
+						enumerator->Next();
+					}
+				}
+
+				TypedEnumerator(Ptr<IValueEnumerable> _enumerable)
+					:enumerable(_enumerable)
+					,index(-1)
+				{
+					Reset();
+				}
+
+				collections::IEnumerator<T>* Clone()const override
+				{
+					return new TypedEnumerator<T>(enumerable, index, value);
+				}
+
+				const T& Current()const override
+				{
+					return value;
+				}
+
+				vint Index()const override
+				{
+					return index;
+				}
+
+				bool Next() override
+				{
+					if(enumerator->Next())
+					{
+						index++;
+						value=UnboxValue<T>(enumerator->GetCurrent());
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+
+				void Reset() override
+				{
+					index=-1;
+					enumerator=enumerable->CreateEnumerator();
+				}
+			};
+
+			template<typename T>
+			collections::LazyList<T> GetLazyList(Ptr<IValueEnumerable> value)
+			{
+				return collections::LazyList<T>(new TypedEnumerator<T>(value));
+			}
+
+			template<typename T>
+			collections::LazyList<T> GetLazyList(Ptr<IValueReadonlyList> value)
+			{
+				return collections::Range<vint>(0, value->GetCount())
+					.Select([value](vint i)
+					{
+						return UnboxValue<T>(value->Get(i));
+					});
+			}
+
+			template<typename T>
+			collections::LazyList<T> GetLazyList(Ptr<IValueList> value)
+			{
+				return GetLazyList<T>(Ptr<IValueReadonlyList>(value));
+			}
+
+			template<typename T>
+			collections::LazyList<T> GetLazyList(Ptr<IValueObservableList> value)
+			{
+				return GetLazyList<T>(Ptr<IValueReadonlyList>(value));
+			}
+
+			template<typename K, typename V>
+			collections::LazyList<collections::Pair<K, V>> GetLazyList(Ptr<IValueReadonlyDictionary> value)
+			{
+				return collections::Range<vint>(0, value->GetCount())
+					.Select([value](vint i)
+					{
+						return collections::Pair<K, V>(UnboxValue<K>(value->GetKeys()->Get(i)), UnboxValue<V>(value->GetValues()->Get(i)));
+					});
+			}
+
+			template<typename K, typename V>
+			collections::LazyList<collections::Pair<K, V>> GetLazyList(Ptr<IValueDictionary> value)
+			{
+				return GetLazyList<K, V>(Ptr<IValueReadonlyDictionary>(value));
+			}
+
+/***********************************************************************
+Collection Wrappers
+***********************************************************************/
+
+			namespace trait_helper
+			{
+				template<typename T>
+				struct RemovePtr
+				{
+					typedef T					Type;
+				};
+				
+				template<typename T>
+				struct RemovePtr<T*>
+				{
+					typedef T					Type;
+				};
+				
+				template<typename T>
+				struct RemovePtr<Ptr<T>>
+				{
+					typedef T					Type;
+				};
+			}
+
+#pragma warning(push)
+#pragma warning(disable:4250)
+			template<typename T>
+			class ValueEnumeratorWrapper : public Object, public virtual IValueEnumerator
+			{
+			protected:
+				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
+				typedef typename ContainerType::ElementType				ElementType;
+
+				T								wrapperPointer;
+			public:
+				ValueEnumeratorWrapper(const T& _wrapperPointer)
+					:wrapperPointer(_wrapperPointer)
+				{
+				}
+
+				Value GetCurrent()override
+				{
+					return BoxValue<ElementType>(wrapperPointer->Current());
+				}
+
+				vint GetIndex()override
+				{
+					return wrapperPointer->Index();
+				}
+
+				bool Next()override
+				{
+					return wrapperPointer->Next();
+				}
+			};
+
+			template<typename T>
+			class ValueEnumerableWrapper : public Object, public virtual IValueEnumerable
+			{
+			protected:
+				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
+				typedef typename ContainerType::ElementType				ElementType;
+
+				T								wrapperPointer;
+			public:
+				ValueEnumerableWrapper(const T& _wrapperPointer)
+					:wrapperPointer(_wrapperPointer)
+				{
+				}
+
+				Ptr<IValueEnumerator> CreateEnumerator()override
+				{
+					return new ValueEnumeratorWrapper<Ptr<collections::IEnumerator<ElementType>>>(wrapperPointer->CreateEnumerator());
+				}
+			};
+
+#define WRAPPER_POINTER ValueEnumerableWrapper<T>::wrapperPointer
+
+			template<typename T>
+			class ValueReadonlyListWrapper : public ValueEnumerableWrapper<T>, public virtual IValueReadonlyList
+			{
+			protected:
+				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
+				typedef typename ContainerType::ElementType				ElementType;
+				typedef typename KeyType<ElementType>::Type				ElementKeyType;
+
+			public:
+				ValueReadonlyListWrapper(const T& _wrapperPointer)
+					:ValueEnumerableWrapper<T>(_wrapperPointer)
+				{
+				}
+
+				vint GetCount()override
+				{
+					return WRAPPER_POINTER->Count();
+				}
+
+				Value Get(vint index)override
+				{
+					return BoxValue<ElementType>(WRAPPER_POINTER->Get(index));
+				}
+
+				bool Contains(const Value& value)override
+				{
+					ElementKeyType item=UnboxValue<ElementKeyType>(value);
+					return WRAPPER_POINTER->Contains(item);
+				}
+
+				vint IndexOf(const Value& value)override
+				{
+					ElementKeyType item=UnboxValue<ElementKeyType>(value);
+					return WRAPPER_POINTER->IndexOf(item);
+				}
+			};
+
+			template<typename T>
+			class ValueObservableListWrapper : public ValueReadonlyListWrapper<T>, public virtual IValueObservableList
+			{
+			public:
+				ValueObservableListWrapper(const T& _wrapperPointer)
+					:ValueReadonlyListWrapper<T>(_wrapperPointer)
+				{
+				}
+			};
+
+			template<typename T>
+			class ValueListWrapper : public ValueReadonlyListWrapper<T>, public virtual IValueList
+			{
+			protected:
+				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
+				typedef typename ContainerType::ElementType				ElementType;
+				typedef typename KeyType<ElementType>::Type				ElementKeyType;
+
+			public:
+				ValueListWrapper(const T& _wrapperPointer)
+					:ValueReadonlyListWrapper<T>(_wrapperPointer)
+				{
+				}
+
+				void Set(vint index, const Value& value)override
+				{
+					ElementType item=UnboxValue<ElementType>(value);
+					WRAPPER_POINTER->Set(index, item);
+				}
+
+				vint Add(const Value& value)override
+				{
+					ElementType item=UnboxValue<ElementType>(value);
+					return WRAPPER_POINTER->Add(item);
+				}
+
+				vint Insert(vint index, const Value& value)override
+				{
+					ElementType item=UnboxValue<ElementType>(value);
+					return WRAPPER_POINTER->Insert(index, item);
+				}
+
+				bool Remove(const Value& value)override
+				{
+					ElementKeyType item=UnboxValue<ElementKeyType>(value);
+					return WRAPPER_POINTER->Remove(item);
+				}
+
+				bool RemoveAt(vint index)override
+				{
+					return WRAPPER_POINTER->RemoveAt(index);
+				}
+
+				void Clear()override
+				{
+					WRAPPER_POINTER->Clear();
+				}
+			};
+
+#undef WRAPPER_POINTER
+
+			template<typename T>
+			class ValueReadonlyDictionaryWrapper : public virtual Object, public virtual IValueReadonlyDictionary
+			{
+			protected:
+				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
+				typedef typename ContainerType::KeyContainer			KeyContainer;
+				typedef typename ContainerType::ValueContainer			ValueContainer;
+				typedef typename KeyContainer::ElementType				KeyValueType;
+				typedef typename KeyType<KeyValueType>::Type			KeyKeyType;
+				typedef typename ValueContainer::ElementType			ValueType;
+
+				T								wrapperPointer;
+				Ptr<IValueReadonlyList>			keys;
+				Ptr<IValueReadonlyList>			values;
+			public:
+				ValueReadonlyDictionaryWrapper(const T& _wrapperPointer)
+					:wrapperPointer(_wrapperPointer)
+				{
+				}
+
+				Ptr<IValueReadonlyList> GetKeys()override
+				{
+					if(!keys)
+					{
+						keys=new ValueReadonlyListWrapper<const KeyContainer*>(&wrapperPointer->Keys());
+					}
+					return keys;
+				}
+
+				Ptr<IValueReadonlyList> GetValues()override
+				{
+					if(!values)
+					{
+						values=new ValueReadonlyListWrapper<const ValueContainer*>(&wrapperPointer->Values());
+					}
+					return values;
+				}
+
+				vint GetCount()override
+				{
+					return wrapperPointer->Count();
+				}
+
+				Value Get(const Value& key)override
+				{
+					KeyKeyType item=UnboxValue<KeyKeyType>(key);
+					ValueType result=wrapperPointer->Get(item);
+					return BoxValue<ValueType>(result);
+				}
+			};
+
+#define WRAPPER_POINTER ValueReadonlyDictionaryWrapper<T>::wrapperPointer
+#define KEY_VALUE_TYPE typename ValueReadonlyDictionaryWrapper<T>::KeyValueType
+#define VALUE_TYPE typename ValueReadonlyDictionaryWrapper<T>::ValueType
+#define KEY_KEY_TYPE typename ValueReadonlyDictionaryWrapper<T>::KeyKeyType
+			
+			template<typename T>
+			class ValueDictionaryWrapper : public virtual ValueReadonlyDictionaryWrapper<T>, public virtual IValueDictionary
+			{
+			public:
+				ValueDictionaryWrapper(const T& _wrapperPointer)
+					:ValueReadonlyDictionaryWrapper<T>(_wrapperPointer)
+				{
+				}
+
+				void Set(const Value& key, const Value& value)override
+				{
+					KEY_VALUE_TYPE item=UnboxValue<KEY_VALUE_TYPE>(key);
+					VALUE_TYPE result=UnboxValue<VALUE_TYPE>(value);
+					WRAPPER_POINTER->Set(item, result);
+				}
+
+				bool Remove(const Value& key)override
+				{
+					KEY_KEY_TYPE item=UnboxValue<KEY_KEY_TYPE>(key);
+					return WRAPPER_POINTER->Remove(item);
+				}
+
+				void Clear()override
+				{
+					WRAPPER_POINTER->Clear();
+				}
+			};
+#undef WRAPPER_POINTER
+#undef KEY_VALUE_TYPE
+#undef VALUE_TYPE
+#undef KEY_KEY_TYPE
+#pragma warning(pop)
+
+/***********************************************************************
+DetailTypeInfoRetriver<TContainer>
+***********************************************************************/
+
+			template<typename T>
+			struct DetailTypeInfoRetriver<T, TypeFlags::EnumerableType>
+			{
+				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
+
+				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
+				typedef IValueEnumerable										Type;
+				typedef typename UpLevelRetriver::TempValueType					TempValueType;
+				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
+				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
+				{
+					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
+					typedef typename ContainerType::ElementType										ElementType;
+
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueEnumerable>::GetAssociatedTypeDescriptor(), hint);
+
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
+					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
+
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					return type;
+				}
+#endif
+			};
+
+			template<typename T>
+			struct DetailTypeInfoRetriver<T, TypeFlags::ReadonlyListType>
+			{
+				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
+
+				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
+				typedef IValueReadonlyList										Type;
+				typedef typename UpLevelRetriver::TempValueType					TempValueType;
+				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
+				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
+				{
+					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
+					typedef typename ContainerType::ElementType										ElementType;
+
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueReadonlyList>::GetAssociatedTypeDescriptor(), hint);
+
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
+					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
+
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					return type;
+				}
+#endif
+			};
+
+			template<typename T>
+			struct DetailTypeInfoRetriver<T, TypeFlags::ListType>
+			{
+				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
+
+				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
+				typedef IValueList												Type;
+				typedef typename UpLevelRetriver::TempValueType					TempValueType;
+				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
+				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
+				{
+					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
+					typedef typename ContainerType::ElementType										ElementType;
+
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueList>::GetAssociatedTypeDescriptor(), hint);
+
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
+					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
+
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					return type;
+				}
+#endif
+			};
+
+			template<typename T>
+			struct DetailTypeInfoRetriver<T, TypeFlags::ReadonlyDictionaryType>
+			{
+				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
+
+				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
+				typedef IValueReadonlyList										Type;
+				typedef typename UpLevelRetriver::TempValueType					TempValueType;
+				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
+				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
+				{
+					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
+					typedef typename ContainerType::KeyContainer									KeyContainer;
+					typedef typename ContainerType::ValueContainer									ValueContainer;
+					typedef typename KeyContainer::ElementType										KeyType;
+					typedef typename ValueContainer::ElementType									ValueType;
+
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor(), hint);
+
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
+					genericType->AddGenericArgument(TypeInfoRetriver<KeyType>::CreateTypeInfo());
+					genericType->AddGenericArgument(TypeInfoRetriver<ValueType>::CreateTypeInfo());
+
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					return type;
+				}
+#endif
+			};
+
+			template<typename T>
+			struct DetailTypeInfoRetriver<T, TypeFlags::DictionaryType>
+			{
+				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
+
+				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
+				typedef IValueReadonlyList										Type;
+				typedef typename UpLevelRetriver::TempValueType					TempValueType;
+				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
+				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
+				{
+					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
+					typedef typename ContainerType::KeyContainer									KeyContainer;
+					typedef typename ContainerType::ValueContainer									ValueContainer;
+					typedef typename KeyContainer::ElementType										KeyType;
+					typedef typename ValueContainer::ElementType									ValueType;
+
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueDictionary>::GetAssociatedTypeDescriptor(), hint);
+
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
+					genericType->AddGenericArgument(TypeInfoRetriver<KeyType>::CreateTypeInfo());
+					genericType->AddGenericArgument(TypeInfoRetriver<ValueType>::CreateTypeInfo());
+
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					return type;
+				}
+#endif
+			};
+ 
+/***********************************************************************
+ParameterAccessor<TContainer>
+***********************************************************************/
+
+			template<typename T>
+			struct ParameterAccessor<collections::LazyList<T>, TypeFlags::EnumerableType>
+			{
+				static Value BoxParameter(collections::LazyList<T>& object, ITypeDescriptor* typeDescriptor)
+				{
+					Ptr<IValueEnumerable> result=IValueEnumerable::Create(
+						collections::From(object)
+							.Select([](const T& item)
+							{
+								return BoxValue<T>(item);
+							})
+						);
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueEnumerable>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueEnumerable>>(result, td);
+				}
+
+				static void UnboxParameter(const Value& value, collections::LazyList<T>& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
+				{
+					typedef typename collections::LazyList<T>::ElementType ElementType;
+					Ptr<IValueEnumerable> listProxy=UnboxValue<Ptr<IValueEnumerable>>(value, typeDescriptor, valueName);
+					result=GetLazyList<T>(listProxy);
+				}
+			};
+
+			template<typename T>
+			struct ParameterAccessor<T, TypeFlags::ReadonlyListType>
+			{
+				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
+				{
+					Ptr<IValueReadonlyList> result=new ValueReadonlyListWrapper<T*>(&object);
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueReadonlyList>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueReadonlyList>>(result, td);
+				}
+
+				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
+				{
+					typedef typename T::ElementType ElementType;
+					Ptr<IValueReadonlyList> listProxy=UnboxValue<Ptr<IValueReadonlyList>>(value, typeDescriptor, valueName);
+					collections::LazyList<ElementType> lazyList=GetLazyList<ElementType>(listProxy);
+					collections::CopyFrom(result, lazyList);
+				}
+			};
+
+			template<typename T>
+			struct ParameterAccessor<T, TypeFlags::ListType>
+			{
+				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
+				{
+					Ptr<IValueList> result=new ValueListWrapper<T*>(&object);
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueList>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueList>>(result, td);
+				}
+
+				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
+				{
+					typedef typename T::ElementType ElementType;
+					Ptr<IValueList> listProxy=UnboxValue<Ptr<IValueList>>(value, typeDescriptor, valueName);
+					collections::LazyList<ElementType> lazyList=GetLazyList<ElementType>(listProxy);
+					collections::CopyFrom(result, lazyList);
+				}
+			};
+
+			template<typename T>
+			struct ParameterAccessor<T, TypeFlags::ReadonlyDictionaryType>
+			{
+				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
+				{
+					Ptr<IValueReadonlyDictionary> result=new ValueReadonlyDictionaryWrapper<T*>(&object);
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueReadonlyDictionary>>(result, td);
+				}
+
+				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
+				{
+					typedef typename T::KeyContainer					KeyContainer;
+					typedef typename T::ValueContainer					ValueContainer;
+					typedef typename KeyContainer::ElementType			KeyType;
+					typedef typename ValueContainer::ElementType		ValueType;
+
+					Ptr<IValueReadonlyDictionary> dictionaryProxy=UnboxValue<Ptr<IValueReadonlyDictionary>>(value, typeDescriptor, valueName);
+					collections::LazyList<collections::Pair<KeyType, ValueType>> lazyList=GetLazyList<KeyType, ValueType>(dictionaryProxy);
+					collections::CopyFrom(result, lazyList);
+				}
+			};
+
+			template<typename T>
+			struct ParameterAccessor<T, TypeFlags::DictionaryType>
+			{
+				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
+				{
+					Ptr<IValueDictionary> result=new ValueDictionaryWrapper<T*>(&object);
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueDictionary>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueDictionary>>(result, td);
+				}
+
+				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
+				{
+					typedef typename T::KeyContainer					KeyContainer;
+					typedef typename T::ValueContainer					ValueContainer;
+					typedef typename KeyContainer::ElementType			KeyType;
+					typedef typename ValueContainer::ElementType		ValueType;
+
+					Ptr<IValueDictionary> dictionaryProxy=UnboxValue<Ptr<IValueDictionary>>(value, typeDescriptor, valueName);
+					collections::LazyList<collections::Pair<KeyType, ValueType>> lazyList=GetLazyList<KeyType, ValueType>(dictionaryProxy);
+					collections::CopyFrom(result, lazyList);
+				}
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+REFLECTION\GUITYPEDESCRIPTORCPPHELPER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::Reflection
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORCPPHELPER
+#define VCZH_REFLECTION_GUITYPEDESCRIPTORCPPHELPER
+
+
+namespace vl
+{
+	namespace __vwsn
+	{
+		template<typename T>
+		struct RunOnExit
+		{
+			T* function;
+
+			RunOnExit(T* _function)
+				:function(_function)
+			{
+			}
+
+			~RunOnExit()
+			{
+				function->operator()();
+			}
+		};
+
+		template<typename T>
+		T* This(T* thisValue)
+		{
+			CHECK_ERROR(thisValue != nullptr, L"The this pointer cannot be null.");
+			return thisValue;
+		}
+
+		template<typename T>
+		T* Ensure(T* pointer)
+		{
+			CHECK_ERROR(pointer != nullptr, L"The pointer cannot be null.");
+			return pointer;
+		}
+
+		template<typename T>
+		Ptr<T>& Ensure(Ptr<T>& pointer)
+		{
+			CHECK_ERROR(pointer != nullptr, L"The pointer cannot be null.");
+			return pointer;
+		}
+
+		template<typename T>
+		Ptr<T> Ensure(Ptr<T>&& pointer)
+		{
+			CHECK_ERROR(pointer != nullptr, L"The pointer cannot be null.");
+			return MoveValue(pointer);
+		}
+
+		template<typename T>
+		Nullable<T> Ensure(Nullable<T>&& nullable)
+		{
+			CHECK_ERROR(nullable, L"The pointer cannot be null.");
+			return MoveValue(nullable);
+		}
+
+		template<typename T>
+		Nullable<T>& Ensure(Nullable<T>& nullable)
+		{
+			CHECK_ERROR(nullable, L"The pointer cannot be null.");
+			return nullable;
+		}
+
+		template<typename T>
+		WString ToString(const T& value)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			WString str;
+			CHECK_ERROR(reflection::description::TypedValueSerializerProvider<T>::Serialize(value, str), L"Failed to serialize.");
+			return str;
+		}
+
+		template<typename T>
+		T Parse(const WString& str)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			T value;
+			CHECK_ERROR(reflection::description::TypedValueSerializerProvider<T>::Deserialize(str, value), L"Failed to serialize.");
+			return value;
+		}
+
+		template<typename TTo, typename TFrom>
+		struct NullableCastHelper
+		{
+			static Nullable<TTo> Cast(Nullable<TFrom> nullable)
+			{
+				return Nullable<TTo>(static_cast<TTo>(nullable.Value()));
+			}
+		};
+
+		template<typename TFrom>
+		struct NullableCastHelper<WString, TFrom>
+		{
+			static Nullable<WString> Cast(Nullable<TFrom> nullable)
+			{
+				return Nullable<WString>(ToString(nullable.Value()));
+			}
+		};
+
+		template<typename TTo>
+		struct NullableCastHelper<TTo, WString>
+		{
+			static Nullable<TTo> Cast(Nullable<WString> nullable)
+			{
+				return Nullable<TTo>(Parse<TTo>(nullable.Value()));
+			}
+		};
+
+		template<typename TTo, typename TFrom>
+		Nullable<TTo> NullableCast(Nullable<TFrom> nullable)
+		{
+			if (!nullable) return Nullable<TTo>();
+			return NullableCastHelper<TTo, TFrom>::Cast(nullable);
+		}
+
+		template<typename TTo, typename TFrom>
+		TTo* RawPtrCast(TFrom* pointer)
+		{
+			if (!pointer) return nullptr;
+			return pointer->template SafeAggregationCast<TTo>();
+		}
+
+		template<typename TTo, typename TFrom>
+		Ptr<TTo> SharedPtrCast(TFrom* pointer)
+		{
+			if (!pointer) return nullptr;
+			return pointer->template SafeAggregationCast<TTo>();
+		}
+
+		template<typename T>
+		reflection::description::Value Box(const T& value)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			return reflection::description::BoxParameter<Type>(const_cast<T&>(value));
+		}
+
+		template<typename T>
+		T Unbox(const reflection::description::Value& value)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			T result;
+			reflection::description::UnboxParameter<Type>(value, result);
+			return result;
+		}
+
+		template<typename T>
+		struct UnboxWeakHelper
+		{
+		};
+
+		template<typename T>
+		struct UnboxWeakHelper<T*>
+		{
+			static T* Unbox(const reflection::description::Value& value)
+			{
+				if (value.IsNull()) return nullptr;
+				return value.GetRawPtr()->SafeAggregationCast<T>();
+			}
+		};
+
+		template<typename T>
+		struct UnboxWeakHelper<Ptr<T>>
+		{
+			static Ptr<T> Unbox(const reflection::description::Value& value)
+			{
+				if (value.IsNull()) return nullptr;
+				return value.GetRawPtr()->SafeAggregationCast<T>();
+			}
+		};
+
+		template<typename T>
+		struct UnboxWeakHelper<Nullable<T>>
+		{
+			static Nullable<T> Unbox(const reflection::description::Value& value)
+			{
+				if (value.IsNull()) return Nullable<T>();
+				auto boxed = value.GetBoxedValue().Cast<reflection::description::IValueType::TypedBox<T>>();
+				if (!boxed) return Nullable<T>();
+				return Nullable<T>(boxed->value);
+			}
+		};
+
+		template<typename T>
+		T UnboxWeak(const reflection::description::Value& value)
+		{
+			using Type = typename RemoveCVR<T>::Type;
+			return UnboxWeakHelper<Type>::Unbox(value);
+		}
+
+		template<typename T>
+		collections::LazyList<T> Range(T begin, T end)
+		{
+			return collections::Range<T>(begin, end - begin);
+		}
+
+		template<typename T>
+		bool InSet(const T& value, const collections::LazyList<T>& collection)
+		{
+			return collection.Any([&](const T& element) {return element == value; });
+		}
+
+		template<typename T>
+		bool InSet(const T& value, Ptr<reflection::description::IValueReadonlyList> collection)
+		{
+			return InSet<T>(value, reflection::description::GetLazyList<T>(collection));
+		}
+
+		struct CreateList
+		{
+			using IValueList = reflection::description::IValueList;
+
+			Ptr<IValueList>			list;
+
+			CreateList()
+				:list(IValueList::Create())
+			{
+			}
+
+			CreateList(Ptr<IValueList> _list)
+				:list(_list)
+			{
+			}
+
+			template<typename T>
+			CreateList Add(const T& value)
+			{
+				list->Add(Box(value));
+				return{ list };
+			}
+		};
+
+		struct CreateDictionary
+		{
+			using IValueDictionary = reflection::description::IValueDictionary;
+
+			Ptr<IValueDictionary>	dictionary;
+
+			CreateDictionary()
+				:dictionary(IValueDictionary::Create())
+			{
+			}
+
+			CreateDictionary(Ptr<IValueDictionary> _dictionary)
+				:dictionary(_dictionary)
+			{
+			}
+
+			template<typename K, typename V>
+			CreateDictionary Add(const K& key, const V& value)
+			{
+				dictionary->Set(Box(key), Box(value));
+				return{ dictionary };
+			}
+		};
+
+		template<typename T>
+		struct EventHelper
+		{
+		};
+
+		template<typename T>
+		Ptr<reflection::description::IEventHandler> EventAttach(T& e, typename EventHelper<T>::Handler handler)
+		{
+			return EventHelper<T>::Attach(e, handler);
+		}
+
+		template<typename T>
+		bool EventDetach(T& e, Ptr<reflection::description::IEventHandler> handler)
+		{
+			return EventHelper<T>::Detach(e, handler);
+		}
+
+		template<typename T>
+		decltype(auto) EventInvoke(T& e)
+		{
+			return EventHelper<T>::Invoke(e);
+		}
+
+		template<typename ...TArgs>
+		struct EventHelper<Event<void(TArgs...)>>
+		{
+			using Handler = const Func<void(TArgs...)>&;
+
+			class EventHandlerImpl : public Object, public reflection::description::IEventHandler
+			{
+			public:
+				Ptr<EventHandler> handler;
+
+				EventHandlerImpl(Ptr<EventHandler> _handler)
+					:handler(_handler)
+				{
+				}
+
+				bool IsAttached()override
+				{
+					return handler->IsAttached();
+				}
+			};
+
+			static Ptr<reflection::description::IEventHandler> Attach(Event<void(TArgs...)>& e, Handler handler)
+			{
+				return MakePtr<EventHandlerImpl>(e.Add(handler));
+			}
+
+			static bool Detach(Event<void(TArgs...)>& e, Ptr<reflection::description::IEventHandler> handler)
+			{
+				auto impl = handler.Cast<EventHandlerImpl>();
+				if (!impl) return false;
+				return e.Remove(impl->handler);
+			}
+
+			static Event<void(TArgs...)>& Invoke(Event<void(TArgs...)>& e)
+			{
+				return e;
+			}
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+REFLECTION\GUITYPEDESCRIPTORBUILDER_FUNCTION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::Reflection
+	
+Interfaces:
+***********************************************************************/
+ 
+#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_FUNCTION
+#define VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_FUNCTION
+ 
+ 
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+DetailTypeInfoRetriver<Func<R(TArgs...)>>
+***********************************************************************/
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+			namespace internal_helper
+			{
+				template<typename T>
+				struct GenericArgumentAdder
+				{
+					static void Add(Ptr<GenericTypeInfo> genericType)
+					{
+					}
+				};
+
+				template<typename T0, typename ...TNextArgs>
+				struct GenericArgumentAdder<TypeTuple<T0, TNextArgs...>>
+				{
+					static void Add(Ptr<GenericTypeInfo> genericType)
+					{
+						genericType->AddGenericArgument(TypeInfoRetriver<T0>::CreateTypeInfo());
+						GenericArgumentAdder<TypeTuple<TNextArgs...>>::Add(genericType);
+					}
+				};
+			}
+#endif
+
+			template<typename R, typename ...TArgs>
+			struct DetailTypeInfoRetriver<Func<R(TArgs...)>, TypeFlags::FunctionType>
+			{
+				typedef DetailTypeInfoRetriver<const Func<R(TArgs...)>, TypeFlags::NonGenericType>	UpLevelRetriver;
+ 
+				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
+				typedef IValueList												Type;
+				typedef typename UpLevelRetriver::TempValueType					TempValueType;
+				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
+				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
+ 
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
+				{
+					auto functionType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor(), hint);
+ 
+					auto genericType = MakePtr<GenericTypeInfo>(functionType);
+					genericType->AddGenericArgument(TypeInfoRetriver<R>::CreateTypeInfo());
+					internal_helper::GenericArgumentAdder<TypeTuple<TArgs...>>::Add(genericType);
+
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					return type;
+				}
+#endif
+			};
+
+			template<typename R, typename ...TArgs>
+			struct DetailTypeInfoRetriver<const Func<R(TArgs...)>, TypeFlags::FunctionType>
+				: DetailTypeInfoRetriver<Func<R(TArgs...)>, TypeFlags::FunctionType>
+			{
+			};
+ 
+/***********************************************************************
+ValueFunctionProxyWrapper<Func<R(TArgs...)>>
+***********************************************************************/
+
+			template<typename T>
+			class ValueFunctionProxyWrapper
+			{
+			};
+
+			namespace internal_helper
+			{
+				extern void UnboxSpecifiedParameter(Ptr<IValueList> arguments, vint index);
+
+				template<typename T0, typename ...TArgs>
+				void UnboxSpecifiedParameter(Ptr<IValueList> arguments, vint index, T0& p0, TArgs& ...args)
+				{
+					UnboxParameter<typename TypeInfoRetriver<T0>::TempValueType>(arguments->Get(index), p0, 0, itow(index + 1) + L"-th argument");
+					UnboxSpecifiedParameter(arguments, index + 1, args...);
+				}
+
+				template<typename R, typename ...TArgs>
+				struct BoxedFunctionInvoker
+				{
+					static Value Invoke(const Func<R(TArgs...)>& function, Ptr<IValueList> arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(arguments, 0, args...);
+						R result = function(args...);
+						return BoxParameter<R>(result);
+					}
+				};
+
+				template<typename ...TArgs>
+				struct BoxedFunctionInvoker<void, TArgs...>
+				{
+					static Value Invoke(const Func<void(TArgs...)>& function, Ptr<IValueList> arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(arguments, 0, args...);
+						function(args...);
+						return Value();
+					}
+				};
+			}
+
+			template<typename R, typename ...TArgs>
+			class ValueFunctionProxyWrapper<R(TArgs...)> : public Object, public virtual IValueFunctionProxy
+			{
+				typedef Func<R(TArgs...)>					FunctionType;
+			protected:
+				FunctionType			function;
+
+			public:
+				ValueFunctionProxyWrapper(const FunctionType& _function)
+					:function(_function)
+				{
+				}
+ 
+				FunctionType GetFunction()
+				{
+					return function;
+				}
+ 
+				Value Invoke(Ptr<IValueList> arguments)override
+				{
+					if (!arguments || arguments->GetCount() != sizeof...(TArgs))
+					{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+						throw ArgumentCountMismtatchException();
+#else
+						CHECK_FAIL(L"Argument count mismatch.");
+#endif
+					}
+					return internal_helper::BoxedFunctionInvoker<R, TArgs...>::Invoke(function, arguments, typename RemoveCVR<TArgs>::Type()...);
+				}
+			};
+ 
+/***********************************************************************
+ParameterAccessor<Func<R(TArgs...)>>
+***********************************************************************/
+
+			namespace internal_helper
+			{
+				extern void AddValueToList(Ptr<IValueList> arguments);
+
+				template<typename T0, typename ...TArgs>
+				void AddValueToList(Ptr<IValueList> arguments, T0&& p0, TArgs&& ...args)
+				{
+					arguments->Add(description::BoxParameter<T0>(p0));
+					AddValueToList(arguments, args...);
+				}
+			}
+ 
+			template<typename R, typename ...TArgs>
+			struct ParameterAccessor<Func<R(TArgs...)>, TypeFlags::FunctionType>
+			{
+				static Value BoxParameter(const Func<R(TArgs...)>& object, ITypeDescriptor* typeDescriptor)
+				{
+					typedef R(RawFunctionType)(TArgs...);
+					Ptr<IValueFunctionProxy> result=new ValueFunctionProxyWrapper<RawFunctionType>(object);
+
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueFunctionProxy>>(result, td);
+				}
+ 
+				static void UnboxParameter(const Value& value, Func<R(TArgs...)>& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
+				{
+					typedef R(RawFunctionType)(TArgs...);
+					typedef ValueFunctionProxyWrapper<RawFunctionType> ProxyType;
+					Ptr<IValueFunctionProxy> functionProxy=UnboxValue<Ptr<IValueFunctionProxy>>(value, typeDescriptor, valueName);
+					if(functionProxy)
+					{
+						if(Ptr<ProxyType> proxy=functionProxy.Cast<ProxyType>())
+						{
+							result=proxy->GetFunction();
+						}
+						else
+						{
+							result=[functionProxy](TArgs ...args)
+							{
+								Ptr<IValueList> arguments = IValueList::Create();
+								internal_helper::AddValueToList(arguments, ForwardValue<TArgs>(args)...);
+#if defined VCZH_MSVC
+								typedef TypeInfoRetriver<R>::TempValueType ResultType;
+#elif defined VCZH_GCC
+								typedef typename TypeInfoRetriver<R>::TempValueType ResultType;
+#endif
+								ResultType proxyResult;
+								description::UnboxParameter<ResultType>(functionProxy->Invoke(arguments), proxyResult);
+								return proxyResult;
+							};
+						}
+					}
+				}
+			};
+ 
+			template<typename R, typename ...TArgs>
+			struct ParameterAccessor<const Func<R(TArgs...)>, TypeFlags::FunctionType> : ParameterAccessor<Func<R(TArgs...)>, TypeFlags::FunctionType>
+			{
+			};
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+ 
+/***********************************************************************
+MethodInfoImpl
+***********************************************************************/
+ 
+			template<typename T>
+			class CustomConstructorInfoImpl{};
+ 
+			template<typename TClass, typename T>
+			class CustomMethodInfoImpl{};
+ 
+			template<typename TClass, typename T>
+			class CustomExternalMethodInfoImpl{};
+ 
+			template<typename T>
+			class CustomStaticMethodInfoImpl{};
+
+			template<typename TClass, typename T>
+			class CustomEventInfoImpl{};
+ 
+/***********************************************************************
+CustomConstructorInfoImpl<R(TArgs...)>
+***********************************************************************/
+
+			namespace internal_helper
+			{
+				extern void UnboxSpecifiedParameter(MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, vint index);
+
+				template<typename T0, typename ...TArgs>
+				void UnboxSpecifiedParameter(MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, vint index, T0& p0, TArgs& ...args)
+				{
+					UnboxParameter<typename TypeInfoRetriver<T0>::TempValueType>(arguments[index], p0, methodInfo->GetParameter(index)->GetType()->GetTypeDescriptor(), itow(index) + L"-th argument");
+					UnboxSpecifiedParameter(methodInfo, arguments, index + 1, args...);
+				}
+
+				template<typename R, typename ...TArgs>
+				struct BoxedConstructorInvoker
+				{
+					static Value Invoke(MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
+						R result = new typename TypeInfoRetriver<R>::Type(args...);
+						return BoxParameter<R>(result);
+					}
+				};
+
+				template<typename T>
+				struct ConstructorArgumentAdder
+				{
+					static void Add(MethodInfoImpl* methodInfo, const wchar_t* parameterNames[], vint index)
+					{
+					}
+				};
+
+				template<typename T0, typename ...TNextArgs>
+				struct ConstructorArgumentAdder<TypeTuple<T0, TNextArgs...>>
+				{
+					static void Add(MethodInfoImpl* methodInfo, const wchar_t* parameterNames[], vint index)
+					{
+						methodInfo->AddParameter(new ParameterInfoImpl(methodInfo, parameterNames[index], TypeInfoRetriver<T0>::CreateTypeInfo()));
+						ConstructorArgumentAdder<TypeTuple<TNextArgs...>>::Add(methodInfo, parameterNames, index + 1);
+					}
+				};
+			}
+
+			template<typename R, typename ...TArgs>
+			class CustomConstructorInfoImpl<R(TArgs...)> : public MethodInfoImpl
+			{
+			protected:
+				Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
+				{
+					return internal_helper::BoxedConstructorInvoker<R, TArgs...>::Invoke(this, arguments, typename RemoveCVR<TArgs>::Type()...);
+				}
+ 
+				Value CreateFunctionProxyInternal(const Value& thisObject)override
+				{
+					Func<R(TArgs...)> proxy(
+						LAMBDA([](TArgs ...args)->R
+						{
+#if defined VCZH_MSVC
+							R result = new TypeInfoRetriver<R>::Type(args...);
+#elif defined VCZH_GCC
+							R result = new typename TypeInfoRetriver<R>::Type(args...);
+#endif
+							return result;
+						})
+					);
+					return BoxParameter<Func<R(TArgs...)>>(proxy);
+				}
+			public:
+				CustomConstructorInfoImpl(const wchar_t* parameterNames[])
+					:MethodInfoImpl(0, TypeInfoRetriver<R>::CreateTypeInfo(), true)
+				{
+					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
+				}
+
+				IMethodInfo::ICpp* GetCpp()override
+				{
+					return nullptr;
+				}
+			};
+ 
+/***********************************************************************
+CustomMethodInfoImpl<TClass, R(TArgs...)>
+CustomStaticMethodInfoImpl<TClass, R(TArgs...)>
+***********************************************************************/
+
+			namespace internal_helper
+			{
+				template<typename TClass, typename R, typename ...TArgs>
+				struct BoxedMethodInvoker
+				{
+					static Value Invoke(TClass* object, R(__thiscall TClass::* method)(TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
+						R result = (object->*method)(args...);
+						return BoxParameter<R>(result, methodInfo->GetReturn()->GetTypeDescriptor());
+					}
+				};
+
+				template<typename TClass, typename ...TArgs>
+				struct BoxedMethodInvoker<TClass, void, TArgs...>
+				{
+					static Value Invoke(TClass* object, void(__thiscall TClass::* method)(TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
+						(object->*method)(args...);
+						return Value();
+					}
+				};
+				
+				template<typename TClass, typename R, typename ...TArgs>
+				struct BoxedExternalMethodInvoker
+				{
+					static Value Invoke(TClass* object, R(*method)(TClass*, TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
+						R result = method(object, args...);
+						return BoxParameter<R>(result, methodInfo->GetReturn()->GetTypeDescriptor());
+					}
+				};
+				
+				template<typename TClass, typename ...TArgs>
+				struct BoxedExternalMethodInvoker<TClass, void, TArgs...>
+				{
+					static Value Invoke(TClass* object, void(*method)(TClass*, TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
+						method(object, args...);
+						return Value();
+					}
+				};
+			}
+			class MethodInfoImpl_StaticCpp : public MethodInfoImpl, private IMethodInfo::ICpp
+			{
+			private:
+				WString invokeTemplate;
+				WString closureTemplate;
+
+				const WString& GetInvokeTemplate()override
+				{
+					return invokeTemplate;
+				}
+
+				const WString& GetClosureTemplate()override
+				{
+					return closureTemplate;
+				}
+			public:
+				MethodInfoImpl_StaticCpp(IMethodGroupInfo* _ownerMethodGroup, Ptr<ITypeInfo> _return, bool _isStatic, const wchar_t* _invokeTemplate, const wchar_t* _closureTemplate)
+					:MethodInfoImpl(_ownerMethodGroup, _return, _isStatic)
+				{
+					CHECK_ERROR((_invokeTemplate == nullptr) == (_closureTemplate == nullptr), L"MethodInfoImpl_StaticCpp::MethodInfoImpl_StaticCpp()#Templates should all be set or default at the same time.");
+					if (_invokeTemplate)
+					{
+						invokeTemplate = WString(_invokeTemplate, false);
+					}
+					if (_closureTemplate)
+					{
+						closureTemplate = WString(_closureTemplate, false);
+					}
+				}
+
+				IMethodInfo::ICpp* GetCpp()override
+				{
+					return invokeTemplate.Length() == 0 || closureTemplate.Length() == 0 ? nullptr : this;
+				}
+			};
+
+			template<typename TClass, typename R, typename ...TArgs>
+			class CustomMethodInfoImpl<TClass, R(TArgs...)> : public MethodInfoImpl_StaticCpp
+			{
+			protected:
+				R(__thiscall TClass::* method)(TArgs...);
+ 
+				Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
+				{
+					TClass* object=UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
+					return internal_helper::BoxedMethodInvoker<TClass, R, TArgs...>::Invoke(object, method, this, arguments, typename RemoveCVR<TArgs>::Type()...);
+				}
+ 
+				Value CreateFunctionProxyInternal(const Value& thisObject)override
+				{
+					TClass* object=UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
+					Func<R(TArgs...)> proxy(object, method);
+					return BoxParameter<Func<R(TArgs...)>>(proxy);
+				}
+			public:
+				CustomMethodInfoImpl(const wchar_t* parameterNames[], R(__thiscall TClass::* _method)(TArgs...), const wchar_t* _invokeTemplate, const wchar_t* _closureTemplate)
+					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), false, _invokeTemplate, _closureTemplate)
+					,method(_method)
+				{
+					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
+				}
+			};
+ 
+			template<typename TClass, typename R, typename ...TArgs>
+			class CustomExternalMethodInfoImpl<TClass, R(TArgs...)> : public MethodInfoImpl_StaticCpp
+			{
+			protected:
+				R(*method)(TClass*, TArgs...);
+ 
+				Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
+				{
+					TClass* object=UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
+					return internal_helper::BoxedExternalMethodInvoker<TClass, R, TArgs...>::Invoke(object, method, this, arguments, typename RemoveCVR<TArgs>::Type()...);
+				}
+ 
+				Value CreateFunctionProxyInternal(const Value& thisObject)override
+				{
+					TClass* object=UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
+					Func<R(TArgs...)> proxy = Curry(Func<R(TClass*, TArgs...)>(method))(object);
+					return BoxParameter<Func<R(TArgs...)>>(proxy);
+				}
+			public:
+				CustomExternalMethodInfoImpl(const wchar_t* parameterNames[], R(*_method)(TClass*, TArgs...), const wchar_t* _invokeTemplate, const wchar_t* _closureTemplate)
+					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), false, _invokeTemplate, _closureTemplate)
+					,method(_method)
+				{
+					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
+				}
+			};
+ 
+/***********************************************************************
+CustomStaticMethodInfoImpl<R(TArgs...)>
+***********************************************************************/
+
+			namespace internal_helper
+			{
+				template<typename R, typename ...TArgs>
+				struct BoxedStaticMethodInvoker
+				{
+					static Value Invoke(R(* method)(TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
+						R result = method(args...);
+						return BoxParameter<R>(result, methodInfo->GetReturn()->GetTypeDescriptor());
+					}
+				};
+
+				template<typename ...TArgs>
+				struct BoxedStaticMethodInvoker<void, TArgs...>
+				{
+					static Value Invoke(void(* method)(TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
+						method(args...);
+						return Value();
+					}
+				};
+			}
+
+			template<typename R, typename ...TArgs>
+			class CustomStaticMethodInfoImpl<R(TArgs...)> : public MethodInfoImpl_StaticCpp
+			{
+			protected:
+				R(* method)(TArgs...);
+ 
+				Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
+				{
+					return internal_helper::BoxedStaticMethodInvoker<R, TArgs...>::Invoke(method, this, arguments, typename RemoveCVR<TArgs>::Type()...);
+				}
+ 
+				Value CreateFunctionProxyInternal(const Value& thisObject)override
+				{
+					Func<R(TArgs...)> proxy(method);
+					return BoxParameter<Func<R(TArgs...)>>(proxy);
+				}
+			public:
+				CustomStaticMethodInfoImpl(const wchar_t* parameterNames[], R(* _method)(TArgs...), const wchar_t* _invokeTemplate, const wchar_t* _closureTemplate)
+					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), true, _invokeTemplate, _closureTemplate)
+					,method(_method)
+				{
+					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
+				}
+			};
+ 
+/***********************************************************************
+CustomEventInfoImpl<void(TArgs...)>
+***********************************************************************/
+
+			namespace internal_helper
+			{
+				template<typename ...TArgs>
+				struct BoxedEventInvoker
+				{
+					static void Invoke(Event<void(TArgs...)>& eventObject, Ptr<IValueList> arguments, typename RemoveCVR<TArgs>::Type&& ...args)
+					{
+						UnboxSpecifiedParameter(arguments, 0, args...);
+						eventObject(args...);
+					}
+				};
+			}
+
+			template<typename TClass, typename ...TArgs>
+			class CustomEventInfoImpl<TClass, void(TArgs...)> : public EventInfoImpl
+			{
+			protected:
+				Event<void(TArgs...)> TClass::*			eventRef;
+
+				Ptr<IEventHandler> AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)override
+				{
+					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
+					Event<void(TArgs...)>& eventObject = object->*eventRef;
+					auto func = Func<void(TArgs...)>([=](TArgs ...args)
+						{
+							auto arguments = IValueList::Create();
+							internal_helper::AddValueToList(arguments, ForwardValue<TArgs>(args)...);
+							handler->Invoke(arguments);
+						});
+					return __vwsn::EventAttach(eventObject, func);
+				}
+
+				bool DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)override
+				{
+					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
+					Event<void(TArgs...)>& eventObject = object->*eventRef;
+					return __vwsn::EventDetach(eventObject, handler);
+				}
+
+				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override
+				{
+					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
+					Event<void(TArgs...)>& eventObject = object->*eventRef;
+					internal_helper::BoxedEventInvoker<TArgs...>::Invoke(eventObject, arguments, typename RemoveCVR<TArgs>::Type()...);
+				}
+
+				Ptr<ITypeInfo> GetHandlerTypeInternal()override
+				{
+					return TypeInfoRetriver<Func<void(TArgs...)>>::CreateTypeInfo();
+				}
+			public:
+				CustomEventInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, Event<void(TArgs...)> TClass::* _eventRef)
+					:EventInfoImpl(_ownerTypeDescriptor, _name)
+					, eventRef(_eventRef)
+				{
+				}
+
+				~CustomEventInfoImpl()
+				{
+				}
+
+				IEventInfo::ICpp* GetCpp()override
+				{
+					return nullptr;
+				}
+			};
+
+			template<typename T>
+			struct CustomEventFunctionTypeRetriver
+			{
+				typedef vint								Type;
+			};
+
+			template<typename TClass, typename TEvent>
+			struct CustomEventFunctionTypeRetriver<Event<TEvent> TClass::*>
+			{
+				typedef TEvent								Type;
 			};
 #endif
 		}
@@ -12742,1289 +14359,6 @@ ParameterAccessor<TStruct>
 				static VoidValue UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor, const WString& valueName)
 				{
 					return VoidValue();
-				}
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-REFLECTION\GUITYPEDESCRIPTORBUILDER_FUNCTION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-	
-Interfaces:
-***********************************************************************/
- 
-#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_FUNCTION
-#define VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_FUNCTION
- 
- 
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-
-/***********************************************************************
-DetailTypeInfoRetriver<Func<R(TArgs...)>>
-***********************************************************************/
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			namespace internal_helper
-			{
-				template<typename T>
-				struct GenericArgumentAdder
-				{
-					static void Add(Ptr<GenericTypeInfo> genericType)
-					{
-					}
-				};
-
-				template<typename T0, typename ...TNextArgs>
-				struct GenericArgumentAdder<TypeTuple<T0, TNextArgs...>>
-				{
-					static void Add(Ptr<GenericTypeInfo> genericType)
-					{
-						genericType->AddGenericArgument(TypeInfoRetriver<T0>::CreateTypeInfo());
-						GenericArgumentAdder<TypeTuple<TNextArgs...>>::Add(genericType);
-					}
-				};
-			}
-#endif
-
-			template<typename R, typename ...TArgs>
-			struct DetailTypeInfoRetriver<Func<R(TArgs...)>, TypeFlags::FunctionType>
-			{
-				typedef DetailTypeInfoRetriver<const Func<R(TArgs...)>, TypeFlags::NonGenericType>	UpLevelRetriver;
- 
-				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
-				typedef IValueList												Type;
-				typedef typename UpLevelRetriver::TempValueType					TempValueType;
-				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
-				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
- 
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
-				{
-					auto functionType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor(), hint);
- 
-					auto genericType = MakePtr<GenericTypeInfo>(functionType);
-					genericType->AddGenericArgument(TypeInfoRetriver<R>::CreateTypeInfo());
-					internal_helper::GenericArgumentAdder<TypeTuple<TArgs...>>::Add(genericType);
-
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
-					return type;
-				}
-#endif
-			};
-
-			template<typename R, typename ...TArgs>
-			struct DetailTypeInfoRetriver<const Func<R(TArgs...)>, TypeFlags::FunctionType>
-				: DetailTypeInfoRetriver<Func<R(TArgs...)>, TypeFlags::FunctionType>
-			{
-			};
- 
-/***********************************************************************
-ValueFunctionProxyWrapper<Func<R(TArgs...)>>
-***********************************************************************/
-
-			template<typename T>
-			class ValueFunctionProxyWrapper
-			{
-			};
-
-			namespace internal_helper
-			{
-				extern void UnboxSpecifiedParameter(Ptr<IValueList> arguments, vint index);
-
-				template<typename T0, typename ...TArgs>
-				void UnboxSpecifiedParameter(Ptr<IValueList> arguments, vint index, T0& p0, TArgs& ...args)
-				{
-					UnboxParameter<typename TypeInfoRetriver<T0>::TempValueType>(arguments->Get(index), p0, 0, itow(index + 1) + L"-th argument");
-					UnboxSpecifiedParameter(arguments, index + 1, args...);
-				}
-
-				template<typename R, typename ...TArgs>
-				struct BoxedFunctionInvoker
-				{
-					static Value Invoke(const Func<R(TArgs...)>& function, Ptr<IValueList> arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(arguments, 0, args...);
-						R result = function(args...);
-						return BoxParameter<R>(result);
-					}
-				};
-
-				template<typename ...TArgs>
-				struct BoxedFunctionInvoker<void, TArgs...>
-				{
-					static Value Invoke(const Func<void(TArgs...)>& function, Ptr<IValueList> arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(arguments, 0, args...);
-						function(args...);
-						return Value();
-					}
-				};
-			}
-
-			template<typename R, typename ...TArgs>
-			class ValueFunctionProxyWrapper<R(TArgs...)> : public Object, public virtual IValueFunctionProxy
-			{
-				typedef Func<R(TArgs...)>					FunctionType;
-			protected:
-				FunctionType			function;
-
-			public:
-				ValueFunctionProxyWrapper(const FunctionType& _function)
-					:function(_function)
-				{
-				}
- 
-				FunctionType GetFunction()
-				{
-					return function;
-				}
- 
-				Value Invoke(Ptr<IValueList> arguments)override
-				{
-					if(!arguments || arguments->GetCount()!=sizeof...(TArgs)) throw ArgumentCountMismtatchException();
-					return internal_helper::BoxedFunctionInvoker<R, TArgs...>::Invoke(function, arguments, typename RemoveCVR<TArgs>::Type()...);
-				}
-			};
- 
-/***********************************************************************
-ParameterAccessor<Func<R(TArgs...)>>
-***********************************************************************/
-
-			namespace internal_helper
-			{
-				extern void AddValueToList(Ptr<IValueList> arguments);
-
-				template<typename T0, typename ...TArgs>
-				void AddValueToList(Ptr<IValueList> arguments, T0&& p0, TArgs&& ...args)
-				{
-					arguments->Add(description::BoxParameter<T0>(p0));
-					AddValueToList(arguments, args...);
-				}
-			}
- 
-			template<typename R, typename ...TArgs>
-			struct ParameterAccessor<Func<R(TArgs...)>, TypeFlags::FunctionType>
-			{
-				static Value BoxParameter(const Func<R(TArgs...)>& object, ITypeDescriptor* typeDescriptor)
-				{
-					typedef R(RawFunctionType)(TArgs...);
-					Ptr<IValueFunctionProxy> result=new ValueFunctionProxyWrapper<RawFunctionType>(object);
-
-					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-					td = Description<IValueFunctionProxy>::GetAssociatedTypeDescriptor();
-#endif
-					return BoxValue<Ptr<IValueFunctionProxy>>(result, td);
-				}
- 
-				static void UnboxParameter(const Value& value, Func<R(TArgs...)>& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
-				{
-					typedef R(RawFunctionType)(TArgs...);
-					typedef ValueFunctionProxyWrapper<RawFunctionType> ProxyType;
-					Ptr<IValueFunctionProxy> functionProxy=UnboxValue<Ptr<IValueFunctionProxy>>(value, typeDescriptor, valueName);
-					if(functionProxy)
-					{
-						if(Ptr<ProxyType> proxy=functionProxy.Cast<ProxyType>())
-						{
-							result=proxy->GetFunction();
-						}
-						else
-						{
-							result=[functionProxy](TArgs ...args)
-							{
-								Ptr<IValueList> arguments = IValueList::Create();
-								internal_helper::AddValueToList(arguments, ForwardValue<TArgs>(args)...);
-#if defined VCZH_MSVC
-								typedef TypeInfoRetriver<R>::TempValueType ResultType;
-#elif defined VCZH_GCC
-								typedef typename TypeInfoRetriver<R>::TempValueType ResultType;
-#endif
-								ResultType proxyResult;
-								description::UnboxParameter<ResultType>(functionProxy->Invoke(arguments), proxyResult);
-								return proxyResult;
-							};
-						}
-					}
-				}
-			};
- 
-			template<typename R, typename ...TArgs>
-			struct ParameterAccessor<const Func<R(TArgs...)>, TypeFlags::FunctionType> : ParameterAccessor<Func<R(TArgs...)>, TypeFlags::FunctionType>
-			{
-			};
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
- 
-/***********************************************************************
-MethodInfoImpl
-***********************************************************************/
- 
-			template<typename T>
-			class CustomConstructorInfoImpl{};
- 
-			template<typename TClass, typename T>
-			class CustomMethodInfoImpl{};
- 
-			template<typename TClass, typename T>
-			class CustomExternalMethodInfoImpl{};
- 
-			template<typename T>
-			class CustomStaticMethodInfoImpl{};
-
-			template<typename TClass, typename T>
-			class CustomEventInfoImpl{};
- 
-/***********************************************************************
-CustomConstructorInfoImpl<R(TArgs...)>
-***********************************************************************/
-
-			namespace internal_helper
-			{
-				extern void UnboxSpecifiedParameter(MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, vint index);
-
-				template<typename T0, typename ...TArgs>
-				void UnboxSpecifiedParameter(MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, vint index, T0& p0, TArgs& ...args)
-				{
-					UnboxParameter<typename TypeInfoRetriver<T0>::TempValueType>(arguments[index], p0, methodInfo->GetParameter(index)->GetType()->GetTypeDescriptor(), itow(index) + L"-th argument");
-					UnboxSpecifiedParameter(methodInfo, arguments, index + 1, args...);
-				}
-
-				template<typename R, typename ...TArgs>
-				struct BoxedConstructorInvoker
-				{
-					static Value Invoke(MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
-						R result = new typename TypeInfoRetriver<R>::Type(args...);
-						return BoxParameter<R>(result);
-					}
-				};
-
-				template<typename T>
-				struct ConstructorArgumentAdder
-				{
-					static void Add(MethodInfoImpl* methodInfo, const wchar_t* parameterNames[], vint index)
-					{
-					}
-				};
-
-				template<typename T0, typename ...TNextArgs>
-				struct ConstructorArgumentAdder<TypeTuple<T0, TNextArgs...>>
-				{
-					static void Add(MethodInfoImpl* methodInfo, const wchar_t* parameterNames[], vint index)
-					{
-						methodInfo->AddParameter(new ParameterInfoImpl(methodInfo, parameterNames[index], TypeInfoRetriver<T0>::CreateTypeInfo()));
-						ConstructorArgumentAdder<TypeTuple<TNextArgs...>>::Add(methodInfo, parameterNames, index + 1);
-					}
-				};
-			}
-
-			template<typename R, typename ...TArgs>
-			class CustomConstructorInfoImpl<R(TArgs...)> : public MethodInfoImpl
-			{
-			protected:
-				Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
-				{
-					return internal_helper::BoxedConstructorInvoker<R, TArgs...>::Invoke(this, arguments, typename RemoveCVR<TArgs>::Type()...);
-				}
- 
-				Value CreateFunctionProxyInternal(const Value& thisObject)override
-				{
-					Func<R(TArgs...)> proxy(
-						LAMBDA([](TArgs ...args)->R
-						{
-#if defined VCZH_MSVC
-							R result = new TypeInfoRetriver<R>::Type(args...);
-#elif defined VCZH_GCC
-							R result = new typename TypeInfoRetriver<R>::Type(args...);
-#endif
-							return result;
-						})
-					);
-					return BoxParameter<Func<R(TArgs...)>>(proxy);
-				}
-			public:
-				CustomConstructorInfoImpl(const wchar_t* parameterNames[])
-					:MethodInfoImpl(0, TypeInfoRetriver<R>::CreateTypeInfo(), true)
-				{
-					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
-				}
-
-				IMethodInfo::ICpp* GetCpp()override
-				{
-					return nullptr;
-				}
-			};
- 
-/***********************************************************************
-CustomMethodInfoImpl<TClass, R(TArgs...)>
-CustomStaticMethodInfoImpl<TClass, R(TArgs...)>
-***********************************************************************/
-
-			namespace internal_helper
-			{
-				template<typename TClass, typename R, typename ...TArgs>
-				struct BoxedMethodInvoker
-				{
-					static Value Invoke(TClass* object, R(__thiscall TClass::* method)(TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
-						R result = (object->*method)(args...);
-						return BoxParameter<R>(result, methodInfo->GetReturn()->GetTypeDescriptor());
-					}
-				};
-
-				template<typename TClass, typename ...TArgs>
-				struct BoxedMethodInvoker<TClass, void, TArgs...>
-				{
-					static Value Invoke(TClass* object, void(__thiscall TClass::* method)(TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
-						(object->*method)(args...);
-						return Value();
-					}
-				};
-				
-				template<typename TClass, typename R, typename ...TArgs>
-				struct BoxedExternalMethodInvoker
-				{
-					static Value Invoke(TClass* object, R(*method)(TClass*, TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
-						R result = method(object, args...);
-						return BoxParameter<R>(result, methodInfo->GetReturn()->GetTypeDescriptor());
-					}
-				};
-				
-				template<typename TClass, typename ...TArgs>
-				struct BoxedExternalMethodInvoker<TClass, void, TArgs...>
-				{
-					static Value Invoke(TClass* object, void(*method)(TClass*, TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
-						method(object, args...);
-						return Value();
-					}
-				};
-			}
-			class MethodInfoImpl_StaticCpp : public MethodInfoImpl, private IMethodInfo::ICpp
-			{
-			private:
-				WString invokeTemplate;
-
-				const WString& GetInvokeTemplate()override
-				{
-					return invokeTemplate;
-				}
-			public:
-				MethodInfoImpl_StaticCpp(IMethodGroupInfo* _ownerMethodGroup, Ptr<ITypeInfo> _return, bool _isStatic, const wchar_t* _invokeTemplate)
-					:MethodInfoImpl(_ownerMethodGroup, _return, _isStatic)
-				{
-					if (_invokeTemplate)
-					{
-						invokeTemplate = WString(_invokeTemplate, false);
-					}
-				}
-
-				IMethodInfo::ICpp* GetCpp()override
-				{
-					return invokeTemplate.Length() == 0 ? nullptr : this;
-				}
-			};
-
-			template<typename TClass, typename R, typename ...TArgs>
-			class CustomMethodInfoImpl<TClass, R(TArgs...)> : public MethodInfoImpl_StaticCpp
-			{
-			protected:
-				R(__thiscall TClass::* method)(TArgs...);
- 
-				Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
-				{
-					TClass* object=UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
-					return internal_helper::BoxedMethodInvoker<TClass, R, TArgs...>::Invoke(object, method, this, arguments, typename RemoveCVR<TArgs>::Type()...);
-				}
- 
-				Value CreateFunctionProxyInternal(const Value& thisObject)override
-				{
-					TClass* object=UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
-					Func<R(TArgs...)> proxy(object, method);
-					return BoxParameter<Func<R(TArgs...)>>(proxy);
-				}
-			public:
-				CustomMethodInfoImpl(const wchar_t* parameterNames[], R(__thiscall TClass::* _method)(TArgs...), const wchar_t* _invokeTemplate)
-					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), false, _invokeTemplate)
-					,method(_method)
-				{
-					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
-				}
-			};
- 
-			template<typename TClass, typename R, typename ...TArgs>
-			class CustomExternalMethodInfoImpl<TClass, R(TArgs...)> : public MethodInfoImpl_StaticCpp
-			{
-			protected:
-				R(*method)(TClass*, TArgs...);
- 
-				Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
-				{
-					TClass* object=UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
-					return internal_helper::BoxedExternalMethodInvoker<TClass, R, TArgs...>::Invoke(object, method, this, arguments, typename RemoveCVR<TArgs>::Type()...);
-				}
- 
-				Value CreateFunctionProxyInternal(const Value& thisObject)override
-				{
-					TClass* object=UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
-					Func<R(TArgs...)> proxy = Curry(Func<R(TClass*, TArgs...)>(method))(object);
-					return BoxParameter<Func<R(TArgs...)>>(proxy);
-				}
-			public:
-				CustomExternalMethodInfoImpl(const wchar_t* parameterNames[], R(*_method)(TClass*, TArgs...), const wchar_t* _invokeTemplate)
-					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), false, _invokeTemplate)
-					,method(_method)
-				{
-					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
-				}
-			};
- 
-/***********************************************************************
-CustomStaticMethodInfoImpl<R(TArgs...)>
-***********************************************************************/
-
-			namespace internal_helper
-			{
-				template<typename R, typename ...TArgs>
-				struct BoxedStaticMethodInvoker
-				{
-					static Value Invoke(R(* method)(TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
-						R result = method(args...);
-						return BoxParameter<R>(result, methodInfo->GetReturn()->GetTypeDescriptor());
-					}
-				};
-
-				template<typename ...TArgs>
-				struct BoxedStaticMethodInvoker<void, TArgs...>
-				{
-					static Value Invoke(void(* method)(TArgs...), MethodInfoImpl* methodInfo, collections::Array<Value>& arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(methodInfo, arguments, 0, args...);
-						method(args...);
-						return Value();
-					}
-				};
-			}
-
-			template<typename R, typename ...TArgs>
-			class CustomStaticMethodInfoImpl<R(TArgs...)> : public MethodInfoImpl_StaticCpp
-			{
-			protected:
-				R(* method)(TArgs...);
- 
-				Value InvokeInternal(const Value& thisObject, collections::Array<Value>& arguments)override
-				{
-					return internal_helper::BoxedStaticMethodInvoker<R, TArgs...>::Invoke(method, this, arguments, typename RemoveCVR<TArgs>::Type()...);
-				}
- 
-				Value CreateFunctionProxyInternal(const Value& thisObject)override
-				{
-					Func<R(TArgs...)> proxy(method);
-					return BoxParameter<Func<R(TArgs...)>>(proxy);
-				}
-			public:
-				CustomStaticMethodInfoImpl(const wchar_t* parameterNames[], R(* _method)(TArgs...), const wchar_t* _invokeTemplate)
-					:MethodInfoImpl_StaticCpp(0, TypeInfoRetriver<R>::CreateTypeInfo(), true, _invokeTemplate)
-					,method(_method)
-				{
-					internal_helper::ConstructorArgumentAdder<TypeTuple<TArgs...>>::Add(this, parameterNames, 0);
-				}
-			};
- 
-/***********************************************************************
-CustomEventInfoImpl<void(TArgs...)>
-***********************************************************************/
-
-			namespace internal_helper
-			{
-				template<typename ...TArgs>
-				struct BoxedEventInvoker
-				{
-					static void Invoke(Event<void(TArgs...)>& eventObject, Ptr<IValueList> arguments, typename RemoveCVR<TArgs>::Type&& ...args)
-					{
-						UnboxSpecifiedParameter(arguments, 0, args...);
-						eventObject(args...);
-					}
-				};
-			}
-
-			template<typename TClass, typename ...TArgs>
-			class CustomEventInfoImpl<TClass, void(TArgs...)> : public EventInfoImpl
-			{
-			protected:
-				Event<void(TArgs...)> TClass::*			eventRef;
-
-				Ptr<IEventHandler> AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)override
-				{
-					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
-					Event<void(TArgs...)>& eventObject = object->*eventRef;
-					auto func = Func<void(TArgs...)>([=](TArgs ...args)
-						{
-							auto arguments = IValueList::Create();
-							internal_helper::AddValueToList(arguments, ForwardValue<TArgs>(args)...);
-							handler->Invoke(arguments);
-						});
-					return __vwsn::EventAttach(eventObject, func);
-				}
-
-				bool DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)override
-				{
-					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
-					Event<void(TArgs...)>& eventObject = object->*eventRef;
-					return __vwsn::EventDetach(eventObject, handler);
-				}
-
-				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override
-				{
-					TClass* object = UnboxValue<TClass*>(Value::From(thisObject), GetOwnerTypeDescriptor(), L"thisObject");
-					Event<void(TArgs...)>& eventObject = object->*eventRef;
-					internal_helper::BoxedEventInvoker<TArgs...>::Invoke(eventObject, arguments, typename RemoveCVR<TArgs>::Type()...);
-				}
-
-				Ptr<ITypeInfo> GetHandlerTypeInternal()override
-				{
-					return TypeInfoRetriver<Func<void(TArgs...)>>::CreateTypeInfo();
-				}
-			public:
-				CustomEventInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, Event<void(TArgs...)> TClass::* _eventRef)
-					:EventInfoImpl(_ownerTypeDescriptor, _name)
-					, eventRef(_eventRef)
-				{
-				}
-
-				~CustomEventInfoImpl()
-				{
-				}
-
-				IEventInfo::ICpp* GetCpp()override
-				{
-					return nullptr;
-				}
-			};
-
-			template<typename T>
-			struct CustomEventFunctionTypeRetriver
-			{
-				typedef vint								Type;
-			};
-
-			template<typename TClass, typename TEvent>
-			struct CustomEventFunctionTypeRetriver<Event<TEvent> TClass::*>
-			{
-				typedef TEvent								Type;
-			};
-#endif
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-REFLECTION\GUITYPEDESCRIPTORBUILDER_CONTAINER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-	
-Interfaces:
-***********************************************************************/
- 
-#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_CONTAINER
-#define VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER_CONTAINER
- 
- 
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-
-/***********************************************************************
-Enumerable Wrappers
-***********************************************************************/
-
-			template<typename T>
-			class TypedEnumerator : public Object, public collections::IEnumerator<T>
-			{
-			private:
-				Ptr<IValueEnumerable>		enumerable;
-				Ptr<IValueEnumerator>		enumerator;
-				vint						index;
-				T							value;
-
-			public:
-				TypedEnumerator(Ptr<IValueEnumerable> _enumerable, vint _index, const T& _value)
-					:enumerable(_enumerable)
-					,index(_index)
-					,value(_value)
-				{
-					enumerator=enumerable->CreateEnumerator();
-					vint current=-1;
-					while(current++<index)
-					{
-						enumerator->Next();
-					}
-				}
-
-				TypedEnumerator(Ptr<IValueEnumerable> _enumerable)
-					:enumerable(_enumerable)
-					,index(-1)
-				{
-					Reset();
-				}
-
-				collections::IEnumerator<T>* Clone()const override
-				{
-					return new TypedEnumerator<T>(enumerable, index, value);
-				}
-
-				const T& Current()const override
-				{
-					return value;
-				}
-
-				vint Index()const override
-				{
-					return index;
-				}
-
-				bool Next() override
-				{
-					if(enumerator->Next())
-					{
-						index++;
-						value=UnboxValue<T>(enumerator->GetCurrent());
-						return true;
-					}
-					else
-					{
-						return false;
-					}
-				}
-
-				void Reset() override
-				{
-					index=-1;
-					enumerator=enumerable->CreateEnumerator();
-				}
-			};
-
-			template<typename T>
-			collections::LazyList<T> GetLazyList(Ptr<IValueEnumerable> value)
-			{
-				return collections::LazyList<T>(new TypedEnumerator<T>(value));
-			}
-
-			template<typename T>
-			collections::LazyList<T> GetLazyList(Ptr<IValueReadonlyList> value)
-			{
-				return collections::Range<vint>(0, value->GetCount())
-					.Select([value](vint i)
-					{
-						return UnboxValue<T>(value->Get(i));
-					});
-			}
-
-			template<typename T>
-			collections::LazyList<T> GetLazyList(Ptr<IValueList> value)
-			{
-				return GetLazyList<T>(Ptr<IValueReadonlyList>(value));
-			}
-
-			template<typename T>
-			collections::LazyList<T> GetLazyList(Ptr<IValueObservableList> value)
-			{
-				return GetLazyList<T>(Ptr<IValueReadonlyList>(value));
-			}
-
-			template<typename K, typename V>
-			collections::LazyList<collections::Pair<K, V>> GetLazyList(Ptr<IValueReadonlyDictionary> value)
-			{
-				return collections::Range<vint>(0, value->GetCount())
-					.Select([value](vint i)
-					{
-						return collections::Pair<K, V>(UnboxValue<K>(value->GetKeys()->Get(i)), UnboxValue<V>(value->GetValues()->Get(i)));
-					});
-			}
-
-			template<typename T>
-			collections::LazyList<T> GetLazyList(Ptr<IValueDictionary> value)
-			{
-				return GetLazyList<T>(Ptr<IValueReadonlyDictionary>(value));
-			}
-
-/***********************************************************************
-Collection Wrappers
-***********************************************************************/
-
-			namespace trait_helper
-			{
-				template<typename T>
-				struct RemovePtr
-				{
-					typedef T					Type;
-				};
-				
-				template<typename T>
-				struct RemovePtr<T*>
-				{
-					typedef T					Type;
-				};
-				
-				template<typename T>
-				struct RemovePtr<Ptr<T>>
-				{
-					typedef T					Type;
-				};
-			}
-
-#pragma warning(push)
-#pragma warning(disable:4250)
-			template<typename T>
-			class ValueEnumeratorWrapper : public Object, public virtual IValueEnumerator
-			{
-			protected:
-				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
-				typedef typename ContainerType::ElementType				ElementType;
-
-				T								wrapperPointer;
-			public:
-				ValueEnumeratorWrapper(const T& _wrapperPointer)
-					:wrapperPointer(_wrapperPointer)
-				{
-				}
-
-				Value GetCurrent()override
-				{
-					return BoxValue<ElementType>(wrapperPointer->Current());
-				}
-
-				vint GetIndex()override
-				{
-					return wrapperPointer->Index();
-				}
-
-				bool Next()override
-				{
-					return wrapperPointer->Next();
-				}
-			};
-
-			template<typename T>
-			class ValueEnumerableWrapper : public Object, public virtual IValueEnumerable
-			{
-			protected:
-				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
-				typedef typename ContainerType::ElementType				ElementType;
-
-				T								wrapperPointer;
-			public:
-				ValueEnumerableWrapper(const T& _wrapperPointer)
-					:wrapperPointer(_wrapperPointer)
-				{
-				}
-
-				Ptr<IValueEnumerator> CreateEnumerator()override
-				{
-					return new ValueEnumeratorWrapper<Ptr<collections::IEnumerator<ElementType>>>(wrapperPointer->CreateEnumerator());
-				}
-			};
-
-#define WRAPPER_POINTER ValueEnumerableWrapper<T>::wrapperPointer
-
-			template<typename T>
-			class ValueReadonlyListWrapper : public ValueEnumerableWrapper<T>, public virtual IValueReadonlyList
-			{
-			protected:
-				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
-				typedef typename ContainerType::ElementType				ElementType;
-				typedef typename KeyType<ElementType>::Type				ElementKeyType;
-
-			public:
-				ValueReadonlyListWrapper(const T& _wrapperPointer)
-					:ValueEnumerableWrapper<T>(_wrapperPointer)
-				{
-				}
-
-				vint GetCount()override
-				{
-					return WRAPPER_POINTER->Count();
-				}
-
-				Value Get(vint index)override
-				{
-					return BoxValue<ElementType>(WRAPPER_POINTER->Get(index));
-				}
-
-				bool Contains(const Value& value)override
-				{
-					ElementKeyType item=UnboxValue<ElementKeyType>(value);
-					return WRAPPER_POINTER->Contains(item);
-				}
-
-				vint IndexOf(const Value& value)override
-				{
-					ElementKeyType item=UnboxValue<ElementKeyType>(value);
-					return WRAPPER_POINTER->IndexOf(item);
-				}
-			};
-
-			template<typename T>
-			class ValueObservableListWrapper : public ValueReadonlyListWrapper<T>, public virtual IValueObservableList
-			{
-			public:
-				ValueObservableListWrapper(const T& _wrapperPointer)
-					:ValueReadonlyListWrapper<T>(_wrapperPointer)
-				{
-				}
-			};
-
-			template<typename T>
-			class ValueListWrapper : public ValueReadonlyListWrapper<T>, public virtual IValueList
-			{
-			protected:
-				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
-				typedef typename ContainerType::ElementType				ElementType;
-				typedef typename KeyType<ElementType>::Type				ElementKeyType;
-
-			public:
-				ValueListWrapper(const T& _wrapperPointer)
-					:ValueReadonlyListWrapper<T>(_wrapperPointer)
-				{
-				}
-
-				void Set(vint index, const Value& value)override
-				{
-					ElementType item=UnboxValue<ElementType>(value);
-					WRAPPER_POINTER->Set(index, item);
-				}
-
-				vint Add(const Value& value)override
-				{
-					ElementType item=UnboxValue<ElementType>(value);
-					return WRAPPER_POINTER->Add(item);
-				}
-
-				vint Insert(vint index, const Value& value)override
-				{
-					ElementType item=UnboxValue<ElementType>(value);
-					return WRAPPER_POINTER->Insert(index, item);
-				}
-
-				bool Remove(const Value& value)override
-				{
-					ElementKeyType item=UnboxValue<ElementKeyType>(value);
-					return WRAPPER_POINTER->Remove(item);
-				}
-
-				bool RemoveAt(vint index)override
-				{
-					return WRAPPER_POINTER->RemoveAt(index);
-				}
-
-				void Clear()override
-				{
-					WRAPPER_POINTER->Clear();
-				}
-			};
-
-#undef WRAPPER_POINTER
-
-			template<typename T>
-			class ValueReadonlyDictionaryWrapper : public virtual Object, public virtual IValueReadonlyDictionary
-			{
-			protected:
-				typedef typename trait_helper::RemovePtr<T>::Type		ContainerType;
-				typedef typename ContainerType::KeyContainer			KeyContainer;
-				typedef typename ContainerType::ValueContainer			ValueContainer;
-				typedef typename KeyContainer::ElementType				KeyValueType;
-				typedef typename KeyType<KeyValueType>::Type			KeyKeyType;
-				typedef typename ValueContainer::ElementType			ValueType;
-
-				T								wrapperPointer;
-				Ptr<IValueReadonlyList>			keys;
-				Ptr<IValueReadonlyList>			values;
-			public:
-				ValueReadonlyDictionaryWrapper(const T& _wrapperPointer)
-					:wrapperPointer(_wrapperPointer)
-				{
-				}
-
-				IValueReadonlyList* GetKeys()override
-				{
-					if(!keys)
-					{
-						keys=new ValueReadonlyListWrapper<const KeyContainer*>(&wrapperPointer->Keys());
-					}
-					return keys.Obj();
-				}
-
-				IValueReadonlyList* GetValues()override
-				{
-					if(!values)
-					{
-						values=new ValueReadonlyListWrapper<const ValueContainer*>(&wrapperPointer->Values());
-					}
-					return values.Obj();
-				}
-
-				vint GetCount()override
-				{
-					return wrapperPointer->Count();
-				}
-
-				Value Get(const Value& key)override
-				{
-					KeyKeyType item=UnboxValue<KeyKeyType>(key);
-					ValueType result=wrapperPointer->Get(item);
-					return BoxValue<ValueType>(result);
-				}
-			};
-
-#define WRAPPER_POINTER ValueReadonlyDictionaryWrapper<T>::wrapperPointer
-#define KEY_VALUE_TYPE typename ValueReadonlyDictionaryWrapper<T>::KeyValueType
-#define VALUE_TYPE typename ValueReadonlyDictionaryWrapper<T>::ValueType
-#define KEY_KEY_TYPE typename ValueReadonlyDictionaryWrapper<T>::KeyKeyType
-			
-			template<typename T>
-			class ValueDictionaryWrapper : public virtual ValueReadonlyDictionaryWrapper<T>, public virtual IValueDictionary
-			{
-			public:
-				ValueDictionaryWrapper(const T& _wrapperPointer)
-					:ValueReadonlyDictionaryWrapper<T>(_wrapperPointer)
-				{
-				}
-
-				void Set(const Value& key, const Value& value)override
-				{
-					KEY_VALUE_TYPE item=UnboxValue<KEY_VALUE_TYPE>(key);
-					VALUE_TYPE result=UnboxValue<VALUE_TYPE>(value);
-					WRAPPER_POINTER->Set(item, result);
-				}
-
-				bool Remove(const Value& key)override
-				{
-					KEY_KEY_TYPE item=UnboxValue<KEY_KEY_TYPE>(key);
-					return WRAPPER_POINTER->Remove(item);
-				}
-
-				void Clear()override
-				{
-					WRAPPER_POINTER->Clear();
-				}
-			};
-#undef WRAPPER_POINTER
-#undef KEY_VALUE_TYPE
-#undef VALUE_TYPE
-#undef KEY_KEY_TYPE
-#pragma warning(pop)
-
-/***********************************************************************
-DetailTypeInfoRetriver<TContainer>
-***********************************************************************/
-
-			template<typename T>
-			struct DetailTypeInfoRetriver<T, TypeFlags::EnumerableType>
-			{
-				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
-
-				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
-				typedef IValueEnumerable										Type;
-				typedef typename UpLevelRetriver::TempValueType					TempValueType;
-				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
-				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
-				{
-					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
-					typedef typename ContainerType::ElementType										ElementType;
-
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueEnumerable>::GetAssociatedTypeDescriptor(), hint);
-
-					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
-					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
-
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
-					return type;
-				}
-#endif
-			};
-
-			template<typename T>
-			struct DetailTypeInfoRetriver<T, TypeFlags::ReadonlyListType>
-			{
-				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
-
-				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
-				typedef IValueReadonlyList										Type;
-				typedef typename UpLevelRetriver::TempValueType					TempValueType;
-				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
-				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
-				{
-					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
-					typedef typename ContainerType::ElementType										ElementType;
-
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueReadonlyList>::GetAssociatedTypeDescriptor(), hint);
-
-					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
-					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
-
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
-					return type;
-				}
-#endif
-			};
-
-			template<typename T>
-			struct DetailTypeInfoRetriver<T, TypeFlags::ListType>
-			{
-				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
-
-				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
-				typedef IValueList												Type;
-				typedef typename UpLevelRetriver::TempValueType					TempValueType;
-				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
-				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
-				{
-					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
-					typedef typename ContainerType::ElementType										ElementType;
-
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueList>::GetAssociatedTypeDescriptor(), hint);
-
-					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
-					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
-
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
-					return type;
-				}
-#endif
-			};
-
-			template<typename T>
-			struct DetailTypeInfoRetriver<T, TypeFlags::ReadonlyDictionaryType>
-			{
-				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
-
-				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
-				typedef IValueReadonlyList										Type;
-				typedef typename UpLevelRetriver::TempValueType					TempValueType;
-				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
-				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
-				{
-					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
-					typedef typename ContainerType::KeyContainer									KeyContainer;
-					typedef typename ContainerType::ValueContainer									ValueContainer;
-					typedef typename KeyContainer::ElementType										KeyType;
-					typedef typename ValueContainer::ElementType									ValueType;
-
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor(), hint);
-
-					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
-					genericType->AddGenericArgument(TypeInfoRetriver<KeyType>::CreateTypeInfo());
-					genericType->AddGenericArgument(TypeInfoRetriver<ValueType>::CreateTypeInfo());
-
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
-					return type;
-				}
-#endif
-			};
-
-			template<typename T>
-			struct DetailTypeInfoRetriver<T, TypeFlags::DictionaryType>
-			{
-				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
-
-				static const ITypeInfo::Decorator								Decorator=UpLevelRetriver::Decorator;
-				typedef IValueReadonlyList										Type;
-				typedef typename UpLevelRetriver::TempValueType					TempValueType;
-				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
-				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
-				{
-					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
-					typedef typename ContainerType::KeyContainer									KeyContainer;
-					typedef typename ContainerType::ValueContainer									ValueContainer;
-					typedef typename KeyContainer::ElementType										KeyType;
-					typedef typename ValueContainer::ElementType									ValueType;
-
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueDictionary>::GetAssociatedTypeDescriptor(), hint);
-
-					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
-					genericType->AddGenericArgument(TypeInfoRetriver<KeyType>::CreateTypeInfo());
-					genericType->AddGenericArgument(TypeInfoRetriver<ValueType>::CreateTypeInfo());
-
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
-					return type;
-				}
-#endif
-			};
- 
-/***********************************************************************
-ParameterAccessor<TContainer>
-***********************************************************************/
-
-			template<typename T>
-			struct ParameterAccessor<collections::LazyList<T>, TypeFlags::EnumerableType>
-			{
-				static Value BoxParameter(collections::LazyList<T>& object, ITypeDescriptor* typeDescriptor)
-				{
-					Ptr<IValueEnumerable> result=IValueEnumerable::Create(
-						collections::From(object)
-							.Select([](const T& item)
-							{
-								return BoxValue<T>(item);
-							})
-						);
-
-					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-					td = Description<IValueEnumerable>::GetAssociatedTypeDescriptor();
-#endif
-					return BoxValue<Ptr<IValueEnumerable>>(result, td);
-				}
-
-				static void UnboxParameter(const Value& value, collections::LazyList<T>& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
-				{
-					typedef typename collections::LazyList<T>::ElementType ElementType;
-					Ptr<IValueEnumerable> listProxy=UnboxValue<Ptr<IValueEnumerable>>(value, typeDescriptor, valueName);
-					result=GetLazyList<T>(listProxy);
-				}
-			};
-
-			template<typename T>
-			struct ParameterAccessor<T, TypeFlags::ReadonlyListType>
-			{
-				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
-				{
-					Ptr<IValueReadonlyList> result=new ValueReadonlyListWrapper<T*>(&object);
-
-					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-					td = Description<IValueReadonlyList>::GetAssociatedTypeDescriptor();
-#endif
-					return BoxValue<Ptr<IValueReadonlyList>>(result, td);
-				}
-
-				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
-				{
-					typedef typename T::ElementType ElementType;
-					Ptr<IValueReadonlyList> listProxy=UnboxValue<Ptr<IValueReadonlyList>>(value, typeDescriptor, valueName);
-					collections::LazyList<ElementType> lazyList=GetLazyList<ElementType>(listProxy);
-					collections::CopyFrom(result, lazyList);
-				}
-			};
-
-			template<typename T>
-			struct ParameterAccessor<T, TypeFlags::ListType>
-			{
-				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
-				{
-					Ptr<IValueList> result=new ValueListWrapper<T*>(&object);
-
-					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-					td = Description<IValueList>::GetAssociatedTypeDescriptor();
-#endif
-					return BoxValue<Ptr<IValueList>>(result, td);
-				}
-
-				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
-				{
-					typedef typename T::ElementType ElementType;
-					Ptr<IValueList> listProxy=UnboxValue<Ptr<IValueList>>(value, typeDescriptor, valueName);
-					collections::LazyList<ElementType> lazyList=GetLazyList<ElementType>(listProxy);
-					collections::CopyFrom(result, lazyList);
-				}
-			};
-
-			template<typename T>
-			struct ParameterAccessor<T, TypeFlags::ReadonlyDictionaryType>
-			{
-				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
-				{
-					Ptr<IValueReadonlyDictionary> result=new ValueReadonlyDictionaryWrapper<T*>(&object);
-
-					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-					td = Description<IValueReadonlyDictionary>::GetAssociatedTypeDescriptor();
-#endif
-					return BoxValue<Ptr<IValueReadonlyDictionary>>(result, td);
-				}
-
-				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
-				{
-					typedef typename T::KeyContainer					KeyContainer;
-					typedef typename T::ValueContainer					ValueContainer;
-					typedef typename KeyContainer::ElementType			KeyType;
-					typedef typename ValueContainer::ElementType		ValueType;
-
-					Ptr<IValueReadonlyDictionary> dictionaryProxy=UnboxValue<Ptr<IValueReadonlyDictionary>>(value, typeDescriptor, valueName);
-					collections::LazyList<collections::Pair<KeyType, ValueType>> lazyList=GetLazyList<KeyType, ValueType>(dictionaryProxy);
-					collections::CopyFrom(result, lazyList);
-				}
-			};
-
-			template<typename T>
-			struct ParameterAccessor<T, TypeFlags::DictionaryType>
-			{
-				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
-				{
-					Ptr<IValueDictionary> result=new ValueDictionaryWrapper<T*>(&object);
-
-					ITypeDescriptor* td = nullptr;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-					td = Description<IValueDictionary>::GetAssociatedTypeDescriptor();
-#endif
-					return BoxValue<Ptr<IValueDictionary>>(result, td);
-				}
-
-				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
-				{
-					typedef typename T::KeyContainer					KeyContainer;
-					typedef typename T::ValueContainer					ValueContainer;
-					typedef typename KeyContainer::ElementType			KeyType;
-					typedef typename ValueContainer::ElementType		ValueType;
-
-					Ptr<IValueDictionary> dictionaryProxy=UnboxValue<Ptr<IValueDictionary>>(value, typeDescriptor, valueName);
-					collections::LazyList<collections::Pair<KeyType, ValueType>> lazyList=GetLazyList<KeyType, ValueType>(dictionaryProxy);
-					collections::CopyFrom(result, lazyList);
 				}
 			};
 		}
@@ -14432,22 +14766,22 @@ Constructor
 				AddConstructor(new CustomConstructorInfoImpl<FUNCTIONTYPE>(parameterNames));\
 			}
 
-#define CLASS_MEMBER_EXTERNALCTOR_INVOKETEMPLATE(FUNCTIONTYPE, PARAMETERNAMES, SOURCE, INVOKETEMPLATE)\
+#define CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(FUNCTIONTYPE, PARAMETERNAMES, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddConstructor(\
-					new CustomStaticMethodInfoImpl<FUNCTIONTYPE>(parameterNames, SOURCE, INVOKETEMPLATE)\
+					new CustomStaticMethodInfoImpl<FUNCTIONTYPE>(parameterNames, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 					);\
 			}
 
 #define CLASS_MEMBER_EXTERNALCTOR(FUNCTIONTYPE, PARAMETERNAMES, SOURCE)\
-			CLASS_MEMBER_EXTERNALCTOR_INVOKETEMPLATE(FUNCTIONTYPE, PROTECT_PARAMETERS(PARAMETERNAMES), (FUNCTIONNAME_AddPointer<FUNCTIONTYPE>)&::SOURCE, L"::" L ## #SOURCE L"($Arguments)")
+			CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(FUNCTIONTYPE, PROTECT_PARAMETERS(PARAMETERNAMES), (FUNCTIONNAME_AddPointer<FUNCTIONTYPE>)&::SOURCE, L"::" L ## #SOURCE L"($Arguments)", L"::vl::Func<$Func>(&::" L ## #SOURCE L")")
 
 /***********************************************************************
 Method
 ***********************************************************************/
 
-#define CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE, INVOKETEMPLATE)\
+#define CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddMethod(\
@@ -14455,21 +14789,21 @@ Method
 					new CustomExternalMethodInfoImpl<\
 						ClassType,\
 						vl::function_lambda::LambdaRetriveType<FUNCTIONTYPE>::FunctionType\
-						>(parameterNames, SOURCE, INVOKETEMPLATE)\
+						>(parameterNames, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 					);\
 			}
 
 #define CLASS_MEMBER_EXTERNALMETHOD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE)\
-			CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &::SOURCE, L"::" L ## #SOURCE L"($This, $Arguments)")\
+			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &::SOURCE, L"::" L ## #SOURCE L"($This, $Arguments)", L"::vl::Func<$Func>($This, &::" L ## #SOURCE L")")
 
-#define CLASS_MEMBER_METHOD_OVERLOAD_RENAME_INVOKETEMPLATE(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, INVOKETEMPLATE)\
+#define CLASS_MEMBER_METHOD_OVERLOAD_RENAME_TEMPLATE(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				auto methodInfo = new CustomMethodInfoImpl<\
 						ClassType,\
 						vl::function_lambda::LambdaRetriveType<FUNCTIONTYPE>::FunctionType\
 						>\
-					(parameterNames, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME, INVOKETEMPLATE);\
+					(parameterNames, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME, INVOKETEMPLATE, CLOSURETEMPLATE);\
 				AddMethod(\
 					L ## #EXPECTEDNAME,\
 					methodInfo\
@@ -14479,10 +14813,10 @@ Method
 			}
 
 #define CLASS_MEMBER_METHOD_OVERLOAD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
-			CLASS_MEMBER_METHOD_OVERLOAD_RENAME_INVOKETEMPLATE(EXPECTEDNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, L"$This->" L ## #FUNCTIONNAME L"($Arguments)")
+			CLASS_MEMBER_METHOD_OVERLOAD_RENAME_TEMPLATE(EXPECTEDNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, L"$This->" L ## #FUNCTIONNAME L"($Arguments)", L"::vl::Func<$Func>($This, &$Type::" L ## #FUNCTIONNAME L")")
 
 #define CLASS_MEMBER_METHOD_OVERLOAD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
-			CLASS_MEMBER_METHOD_OVERLOAD_RENAME_INVOKETEMPLATE(FUNCTIONNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, nullptr)
+			CLASS_MEMBER_METHOD_OVERLOAD_RENAME_TEMPLATE(FUNCTIONNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, nullptr, nullptr)
 
 #define CLASS_MEMBER_METHOD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES)\
 			CLASS_MEMBER_METHOD_OVERLOAD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), decltype(&ClassType::FUNCTIONNAME))
@@ -14494,22 +14828,22 @@ Method
 Static Method
 ***********************************************************************/
 
-#define CLASS_MEMBER_STATIC_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE, INVOKETEMPLATE)\
+#define CLASS_MEMBER_STATIC_EXTERNALMETHOD_TEMPLATE(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddMethod(\
 					L ## #FUNCTIONNAME,\
 					new CustomStaticMethodInfoImpl<\
 						vl::function_lambda::FunctionObjectRetriveType<FUNCTIONTYPE>::FunctionType\
-						>(parameterNames, (FUNCTIONTYPE)SOURCE, INVOKETEMPLATE)\
+						>(parameterNames, (FUNCTIONTYPE)SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 					);\
 			}
 
 #define CLASS_MEMBER_STATIC_EXTERNALMETHOD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, SOURCE)\
-			CLASS_MEMBER_STATIC_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &::SOURCE, L"::" L ## #SOURCE L"($Arguments)")
+			CLASS_MEMBER_STATIC_EXTERNALMETHOD_TEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &::SOURCE, L"::" L ## #SOURCE L"($Arguments)", L"::vl::Func<$Func>(&::" L ## #SOURCE L")")
 
 #define CLASS_MEMBER_STATIC_METHOD_OVERLOAD(FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
-			CLASS_MEMBER_STATIC_EXTERNALMETHOD_INVOKETEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &ClassType::FUNCTIONNAME, nullptr)
+			CLASS_MEMBER_STATIC_EXTERNALMETHOD_TEMPLATE(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), FUNCTIONTYPE, &ClassType::FUNCTIONNAME, nullptr, nullptr)
 
 #define CLASS_MEMBER_STATIC_METHOD(FUNCTIONNAME, PARAMETERNAMES)\
 			CLASS_MEMBER_STATIC_METHOD_OVERLOAD(FUNCTIONNAME, PROTECT_PARAMETERS(PARAMETERNAMES), decltype(&ClassType::FUNCTIONNAME))
@@ -18101,12 +18435,12 @@ Interface Implementation Proxy (Implement)
 			END_INTERFACE_PROXY(IValueObservableList)
 				
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueReadonlyDictionary)
-				IValueReadonlyList* GetKeys()override
+				Ptr<IValueReadonlyList> GetKeys()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetKeys);
 				}
 
-				IValueReadonlyList* GetValues()override
+				Ptr<IValueReadonlyList> GetValues()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValues);
 				}

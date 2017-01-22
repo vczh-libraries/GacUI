@@ -54,79 +54,81 @@ namespace vl
 			CLOSE_BRACE = 25,
 			OPEN_BRACKET = 26,
 			CLOSE_BRACKET = 27,
-			TYPE_VOID = 28,
-			TYPE_OBJECT = 29,
-			TYPE_INTERFACE = 30,
-			TYPE_INT = 31,
-			TYPE_UINT = 32,
-			TYPE_FLOAT = 33,
-			TYPE_DOUBLE = 34,
-			TYPE_STRING = 35,
-			TYPE_CHAR = 36,
-			TYPE_BOOL = 37,
-			KEYWORD_CONST = 38,
-			KEYWORD_SHL = 39,
-			KEYWORD_SHR = 40,
-			KEYWORD_XOR = 41,
-			KEYWORD_AND = 42,
-			KEYWORD_OR = 43,
-			KEYWORD_NOT = 44,
-			KEYWORD_NULL = 45,
-			KEYWORD_THIS = 46,
-			KEYWORD_TRUE = 47,
-			KEYWORD_FALSE = 48,
-			KEYWORD_LET = 49,
-			KEYWORD_IN = 50,
-			KEYWORD_RANGE = 51,
-			KEYWORD_NEW = 52,
-			KEYWORD_OF = 53,
-			KEYWORD_AS = 54,
-			KEYWORD_IS = 55,
-			KEYWORD_CAST = 56,
-			KEYWORD_FUNC = 57,
-			KEYWORD_TYPEOF = 58,
-			KEYWORD_TYPE = 59,
-			KEYWORD_BIND = 60,
-			KEYWORD_OBSERVE = 61,
-			KEYWORD_ON = 62,
-			KEYWORD_ATTACH = 63,
-			KEYWORD_DETACH = 64,
-			KEYWORD_VAR = 65,
-			KEYWORD_BREAK = 66,
-			KEYWORD_CONTINUE = 67,
-			KEYWORD_RETURN = 68,
-			KEYWORD_DELETE = 69,
-			KEYWORD_RAISE = 70,
-			KEYWORD_IF = 71,
-			KEYWORD_ELSE = 72,
-			KEYWORD_SWITCH = 73,
-			KEYWORD_CASE = 74,
-			KEYWORD_DEFAULT = 75,
-			KEYWORD_WHILE = 76,
-			KEYWORD_FOR = 77,
-			KEYWORD_REVERSED = 78,
-			KEYWORD_TRY = 79,
-			KEYWORD_CATCH = 80,
-			KEYWORD_FINALLY = 81,
-			KEYWORD_CLASS = 82,
-			KEYWORD_ENUM = 83,
-			KEYWORD_FLAGENUM = 84,
-			KEYWORD_STRUCT = 85,
-			KEYWORD_PROP = 86,
-			KEYWORD_EVENT = 87,
-			KEYWORD_STATIC = 88,
-			KEYWORD_OVERRIDE = 89,
-			KEYWORD_USING = 90,
-			KEYWORD_NAMESPACE = 91,
-			KEYWORD_MODULE = 92,
-			KEYWORD_UNIT = 93,
-			NAME = 94,
-			ORDERED_NAME = 95,
-			FLOAT = 96,
-			INTEGER = 97,
-			STRING = 98,
-			FORMATSTRING = 99,
-			SPACE = 100,
+			AT = 28,
+			TYPE_VOID = 29,
+			TYPE_OBJECT = 30,
+			TYPE_INTERFACE = 31,
+			TYPE_INT = 32,
+			TYPE_UINT = 33,
+			TYPE_FLOAT = 34,
+			TYPE_DOUBLE = 35,
+			TYPE_STRING = 36,
+			TYPE_CHAR = 37,
+			TYPE_BOOL = 38,
+			KEYWORD_CONST = 39,
+			KEYWORD_SHL = 40,
+			KEYWORD_SHR = 41,
+			KEYWORD_XOR = 42,
+			KEYWORD_AND = 43,
+			KEYWORD_OR = 44,
+			KEYWORD_NOT = 45,
+			KEYWORD_NULL = 46,
+			KEYWORD_THIS = 47,
+			KEYWORD_TRUE = 48,
+			KEYWORD_FALSE = 49,
+			KEYWORD_LET = 50,
+			KEYWORD_IN = 51,
+			KEYWORD_RANGE = 52,
+			KEYWORD_NEW = 53,
+			KEYWORD_OF = 54,
+			KEYWORD_AS = 55,
+			KEYWORD_IS = 56,
+			KEYWORD_CAST = 57,
+			KEYWORD_FUNC = 58,
+			KEYWORD_TYPEOF = 59,
+			KEYWORD_TYPE = 60,
+			KEYWORD_BIND = 61,
+			KEYWORD_OBSERVE = 62,
+			KEYWORD_ON = 63,
+			KEYWORD_ATTACH = 64,
+			KEYWORD_DETACH = 65,
+			KEYWORD_VAR = 66,
+			KEYWORD_BREAK = 67,
+			KEYWORD_CONTINUE = 68,
+			KEYWORD_RETURN = 69,
+			KEYWORD_DELETE = 70,
+			KEYWORD_RAISE = 71,
+			KEYWORD_IF = 72,
+			KEYWORD_ELSE = 73,
+			KEYWORD_SWITCH = 74,
+			KEYWORD_CASE = 75,
+			KEYWORD_DEFAULT = 76,
+			KEYWORD_WHILE = 77,
+			KEYWORD_FOR = 78,
+			KEYWORD_REVERSED = 79,
+			KEYWORD_TRY = 80,
+			KEYWORD_CATCH = 81,
+			KEYWORD_FINALLY = 82,
+			KEYWORD_CLASS = 83,
+			KEYWORD_ENUM = 84,
+			KEYWORD_FLAGENUM = 85,
+			KEYWORD_STRUCT = 86,
+			KEYWORD_PROP = 87,
+			KEYWORD_EVENT = 88,
+			KEYWORD_STATIC = 89,
+			KEYWORD_OVERRIDE = 90,
+			KEYWORD_USING = 91,
+			KEYWORD_NAMESPACE = 92,
+			KEYWORD_MODULE = 93,
+			KEYWORD_UNIT = 94,
+			NAME = 95,
+			ORDERED_NAME = 96,
+			FLOAT = 97,
+			INTEGER = 98,
+			STRING = 99,
+			FORMATSTRING = 100,
+			SPACE = 101,
+			COMMENT = 102,
 		};
 		class WfType;
 		class WfPredefinedType;
@@ -185,6 +187,7 @@ namespace vl
 		class WfTryStatement;
 		class WfBlockStatement;
 		class WfExpressionStatement;
+		class WfAttribute;
 		class WfDeclaration;
 		class WfNamespaceDeclaration;
 		class WfFunctionArgument;
@@ -980,6 +983,16 @@ namespace vl
 			static vl::Ptr<WfExpressionStatement> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
+		class WfAttribute : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfAttribute>
+		{
+		public:
+			vl::parsing::ParsingToken category;
+			vl::parsing::ParsingToken name;
+			vl::Ptr<WfExpression> value;
+
+			static vl::Ptr<WfAttribute> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
 		class WfDeclaration abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfDeclaration>
 		{
 		public:
@@ -1000,6 +1013,7 @@ namespace vl
 
 			virtual void Accept(WfDeclaration::IVisitor* visitor)=0;
 
+			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
 		};
 
@@ -1016,6 +1030,7 @@ namespace vl
 		class WfFunctionArgument : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfFunctionArgument>
 		{
 		public:
+			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
 			vl::Ptr<WfType> type;
 
@@ -1214,6 +1229,7 @@ namespace vl
 		class WfEnumItem : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfEnumItem>
 		{
 		public:
+			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
 			WfEnumItemKind kind;
 			vl::parsing::ParsingToken number;
@@ -1236,6 +1252,7 @@ namespace vl
 		class WfStructMember : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfStructMember>
 		{
 		public:
+			vl::collections::List<vl::Ptr<WfAttribute>> attributes;
 			vl::parsing::ParsingToken name;
 			vl::Ptr<WfType> type;
 
@@ -1423,6 +1440,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfTryStatement)
 			DECL_TYPE_INFO(vl::workflow::WfBlockStatement)
 			DECL_TYPE_INFO(vl::workflow::WfExpressionStatement)
+			DECL_TYPE_INFO(vl::workflow::WfAttribute)
 			DECL_TYPE_INFO(vl::workflow::WfDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfNamespaceDeclaration)
 			DECL_TYPE_INFO(vl::workflow::WfFunctionArgument)
@@ -1843,6 +1861,11 @@ namespace vl
 {
 	namespace workflow
 	{
+		/// <summary>Print a Workflow attribute.</summary>
+		/// <param name="attribute">The Workflow attribute.</param>
+		/// <param name="indent">The indentation.</param>
+		/// <param name="writer">The target writer.</param>
+		extern void			WfPrint(Ptr<WfAttribute> node, const WString& indent, parsing::ParsingWriter& writer);
 		/// <summary>Print a Workflow type.</summary>
 		/// <param name="node">The Workflow type.</param>
 		/// <param name="indent">The indentation.</param>
@@ -1868,7 +1891,12 @@ namespace vl
 		/// <param name="indent">The indentation.</param>
 		/// <param name="writer">The target writer.</param>
 		extern void			WfPrint(Ptr<WfModule> node, const WString& indent, parsing::ParsingWriter& writer);
-		
+
+		/// <summary>Print a Workflow attribute.</summary>
+		/// <param name="attribute">The Workflow attribute.</param>
+		/// <param name="indent">The indentation.</param>
+		/// <param name="writer">The target writer.</param>
+		extern void			WfPrint(Ptr<WfAttribute> node, const WString& indent, stream::TextWriter& writer);
 		/// <summary>Print a Workflow type.</summary>
 		/// <param name="node">The Workflow type.</param>
 		/// <param name="indent">The indentation.</param>
@@ -1959,6 +1987,7 @@ Scope
 				WfLexicalScopeManager*						ownerManager;				// nullable
 				Ptr<WfClassMember>							ownerClassMember;			// nullable
 				Ptr<parsing::ParsingTreeCustomBase>			ownerNode;					// nullable
+				parsing::ParsingTreeCustomBase*				ownerNodeSource = nullptr;	// nullable
 
 				Ptr<WfLexicalFunctionConfig>				functionConfig;
 				reflection::description::ITypeDescriptor*	typeOfThisExpr = nullptr;	// visible members to this scope
@@ -2023,6 +2052,9 @@ Scope Manager
 				static ResolveExpressionResult				Method(reflection::description::IMethodInfo* _methodInfo);
 				static ResolveExpressionResult				Constructor(reflection::description::IMethodInfo* _constructorInfo);
 				static ResolveExpressionResult				Event(reflection::description::IEventInfo* _eventInfo);
+
+				bool										operator==(const ResolveExpressionResult& result) const;
+				bool										operator!=(const ResolveExpressionResult& result) const;
 			};
 
 			struct WfLexicalCapture
@@ -2036,6 +2068,8 @@ Scope Manager
 				typedef reflection::description::ITypeDescriptor											ITypeDescriptor;
 				typedef reflection::description::IMemberInfo												IMemberInfo;
 				typedef reflection::description::IMethodInfo												IMethodInfo;
+				typedef reflection::description::ITypeInfo													ITypeInfo;
+				typedef reflection::description::Value														Value;
 
 				typedef collections::List<Ptr<WfModule>>													ModuleList;
 				typedef collections::List<WString>															ModuleCodeList;
@@ -2053,18 +2087,28 @@ Scope Manager
 				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
 
+				typedef collections::Pair<WString, WString>													AttributeKey;
+				typedef collections::Dictionary<AttributeKey, Ptr<ITypeInfo>>								AttributeTypeMap;
+				typedef collections::Dictionary<Ptr<WfAttribute>, Value>									AttributeValueMap;
+
 			protected:
 				ModuleList									modules;
 				ModuleCodeList								moduleCodes;
 				vint										usedCodeIndex = 0;
 
+				AttributeValueMap							attributeValues;				// cached value for attribute
+				Ptr<runtime::WfAssembly>					attributeAssembly;				// shared assembly for evaluating attribute value
+				Ptr<runtime::WfRuntimeGlobalContext>		attributeGlobalContext;			// shared shared context for evaluating attribute value
+
 			public:
 				Ptr<parsing::tabling::ParsingTable>			parsingTable;
-				ParsingErrorList							errors;
+				AttributeTypeMap							attributes;
 
-				Ptr<WfLexicalScopeName>						globalName;
-				NamespaceNameMap							namespaceNames;
-				TypeNameMap									typeNames;
+				ParsingErrorList							errors;							// compile errors
+
+				Ptr<WfLexicalScopeName>						globalName;						// root scope
+				NamespaceNameMap							namespaceNames;					// namespace to scope name map
+				TypeNameMap									typeNames;						// ITypeDescriptor* to scope name map
 
 				NodeScopeMap								nodeScopes;						// the nearest scope for a AST
 				ExpressionResolvingMap						expressionResolvings;			// the resolving result for the expression
@@ -2106,6 +2150,10 @@ Scope Manager
 				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
 				Ptr<WfLexicalSymbol>						GetDeclarationSymbol(WfLexicalScope* scope, WfDeclaration* node);
 				void										CreateLambdaCapture(parsing::ParsingTreeCustomBase* node, Ptr<WfLexicalCapture> capture = nullptr);
+
+				Ptr<WfAttribute>							GetAttribute(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name);
+				collections::LazyList<Ptr<WfAttribute>>		GetAttributes(collections::List<Ptr<WfAttribute>>& atts, const WString& category, const WString& name);
+				Value										GetAttributeValue(Ptr<WfAttribute> att);
 			};
 
 /***********************************************************************
@@ -2244,8 +2292,11 @@ Semantic Analyzing
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										ValidateStatementSemantic(WfLexicalScopeManager* manager, Ptr<WfStatement> statement);
 			extern void										ValidateExpressionSemantic(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results);
+			extern void										ValidateConstantExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
 			extern void										GetObservingDependency(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, WfObservingDependency& dependency);
 			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
+			extern Ptr<WfAttribute>							CopyAttribute(Ptr<WfAttribute> attribute);
+			extern void										CopyAttributes(collections::List<Ptr<WfAttribute>>& dst, collections::List<Ptr<WfAttribute>>& src);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
 			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration);
@@ -2429,6 +2480,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			WrongThisExpression(WfExpression* node);
 				static Ptr<parsing::ParsingError>			IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type);
+				static Ptr<parsing::ParsingError>			ExpressionIsNotConstant(WfExpression* node);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);
@@ -2475,6 +2527,8 @@ Error Messages
 				static Ptr<parsing::ParsingError>			StructContainsNonValueType(WfStructMember* node, WfStructDeclaration* owner);
 				static Ptr<parsing::ParsingError>			StructRecursivelyIncludeItself(WfStructDeclaration* node, const WString& path);
 				static Ptr<parsing::ParsingError>			DuplicatedStructMember(WfStructMember* node, WfStructDeclaration* owner);
+				static Ptr<parsing::ParsingError>			AttributeNotExists(WfAttribute* node);
+				static Ptr<parsing::ParsingError>			AttributeMissValue(WfAttribute* node);
 
 				// E: Module error
 				static Ptr<parsing::ParsingError>			WrongUsingPathWildCard(WfModuleUsingPath* node);
@@ -2541,6 +2595,8 @@ namespace vl
 		{
 			/*
 			Vczh Workflow Special Name:
+				__vwsn_not_exists__		: Represents all not supported code
+				__vwsn_temp_(#|_)		: Temporary variable
 				__vwsn_CATEGORY			: <CATEGORY>
 				__vwsn_CATEGORY_NAME	: <CATEGORY>NAME
 				__vwsno#_ASSEMBLY_*		: ordered lambda class name
@@ -2548,7 +2604,10 @@ namespace vl
 				__vwsnc#_ASSEMBLY_*		: anonymous interface class name
 				__vwsnthis_#			: captured this pointer in fields
 				__vwsnctor_*			: captured symbol in constructor arguments, assigned to "this->*"
-				__vwsnctorthis_#		: captured this pointer in constructor arguments assigned to "this->__vwsnthis_#'
+				__vwsnctorthis_#		: captured this pointer in constructor arguments assigned to "this->__vwsnthis_#"?
+				__vwsnt_#				: Temporary type
+				__vwsne_#				: Temporary variable (not for lambda)
+				__vwsnb_#				: Temporary block
 			*/
 
 			class WfCppConfig : public Object
@@ -2562,14 +2621,17 @@ namespace vl
 				{
 					using SymbolMap = collections::Dictionary<WString, Ptr<analyzer::WfLexicalSymbol>>;
 				public:
+					WString											lambdaClassName;
 					SymbolMap										symbols;
 					collections::List<ITypeDescriptor*>				thisTypes;				// nearer this pointer first
 				};
 
-			protected:
+			public:
 				regex::Regex										regexSplitName;
 				regex::Regex										regexSpecialName;
+				regex::Regex										regexTemplate;
 
+			protected:
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);
 				void												Collect();
 				void												Sort(collections::List<Ptr<WfStructDeclaration>>& structDecls);
@@ -2582,20 +2644,29 @@ namespace vl
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;
+
+				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForFiles;
+				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
+				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
+
 				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
 				collections::Dictionary<Ptr<WfExpression>, Ptr<ClosureInfo>>				closureInfos;
 
-				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName);
+				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace);
 				~WfCppConfig();
 
-				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> stat, const WString& prefix);
-				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix);
+				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfExpression> expr, const WString& prefix, ITypeInfo* expectedType);
+				void					WriteFunctionBody(stream::StreamWriter& writer, Ptr<WfStatement> stat, const WString& prefix, ITypeInfo* expectedType);
 
 				WString					ConvertName(const WString& name);
 				WString					ConvertFullName(const WString& fullName, WString delimiter = L"::");
+				WString					ConvertFunctionType(IMethodInfo* methodInfo, WString name = WString::Empty);
+				WString					ConvertFunctionType(ITypeInfo* typeInfo);
+				bool					IsSpecialGenericType(ITypeInfo* typeInfo);
+				WString					ConvertType(ITypeDescriptor* typeInfo, WString delimiter = L"::");
 				WString					ConvertType(ITypeInfo* typeInfo);
 				WString					ConvertArgumentType(ITypeInfo* typeInfo);
 				WString					DefaultValue(ITypeInfo* typeInfo);
@@ -2607,16 +2678,19 @@ namespace vl
 				WString					WriteNamespace(stream::StreamWriter& writer, const WString& fullName, collections::List<WString>& nss, WString& name);
 				void					WriteNamespaceEnd(stream::StreamWriter& writer, collections::List<WString>& nss);
 
-				void					WriteFunctionHeader(stream::StreamWriter& writer, collections::List<WString>& arguments, ITypeInfo* typeInfo, const WString& name, bool writeReturnType);
-				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfOrderedLambdaExpression> ordered, const WString& name, bool writeReturnType);
-				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType);
-				void					WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType);
-				void					WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType);
+				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, ITypeInfo* typeInfo, collections::List<WString>& arguments, const WString& name, bool writeReturnType);
+				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfOrderedLambdaExpression> ordered, const WString& name, bool writeReturnType);
+				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionExpression> funcExpr, const WString& name, bool writeReturnType);
+				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, Ptr<WfFunctionDeclaration> decl, const WString& name, bool writeReturnType);
+				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, collections::List<WString>& arguments, const WString& name, bool writeReturnType);
+				ITypeInfo*				WriteFunctionHeader(stream::StreamWriter& writer, IMethodInfo* methodInfo, const WString& name, bool writeReturnType);
 
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
+				void					WriteHeader_EnumOp(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Enum(stream::StreamWriter& writer, Ptr<WfEnumDeclaration> decl, collections::List<WString>& nss);
 
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
+				void					WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss);
 
 				void					WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure);
@@ -2630,11 +2704,26 @@ namespace vl
 				void					WriteHeader_ClassPreDecl(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_ClassPreDecl(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 				void					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix);
-				void					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
+				WString					WriteHeader_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
+				void					WriteHeader_TopLevelClass(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 				bool					WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss);
+				void					WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 
 				void					WriteHeader_Global(stream::StreamWriter& writer);
 				void					WriteCpp_Global(stream::StreamWriter& writer);
+
+				void					WriteHeader_Reflection(stream::StreamWriter& writer);
+				void					WriteCpp_Reflection(stream::StreamWriter& writer);
+
+				void					WritePushCompileOptions(stream::StreamWriter& writer);
+				void					WritePopCompileOptions(stream::StreamWriter& writer);
+				void					WriteCpp_PushMacros(stream::StreamWriter& writer);
+				void					WriteCpp_PopMacros(stream::StreamWriter& writer);
+
+				void					WriteHeader(stream::StreamWriter& writer, bool multiFile);
+				void					WriteCpp(stream::StreamWriter& writer, bool multiFile);
+				void					WriteSubHeader(stream::StreamWriter& writer, const WString& fileName);
+				void					WriteSubCpp(stream::StreamWriter& writer, const WString& fileName);
 			};
 
 /***********************************************************************
@@ -2650,10 +2739,55 @@ WfCppConfig::Collect
 WfCppConfig::Write
 ***********************************************************************/
 
-			extern void GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, const WString& prefix);
-			extern void GenerateStatement(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix);
-			extern void GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix);
-			extern bool GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, Ptr<WfClassMember> member, const WString& prefix);
+			class FunctionRecord : public Object
+			{
+			public:
+				vint					typeCounter = 0;
+				vint					exprCounter = 0;
+				vint					blockCounter = 0;
+			};
+
+			extern void					GenerateExpression(WfCppConfig* config, stream::StreamWriter& writer, Ptr<WfExpression> node, reflection::description::ITypeInfo* expectedType, bool useReturnValue = true);
+			extern void					GenerateStatement(WfCppConfig* config, Ptr<FunctionRecord> functionRecord, stream::StreamWriter& writer, Ptr<WfStatement> node, const WString& prefix, const WString& prefixDelta, reflection::description::ITypeInfo* returnType);
+			extern void					GenerateClassMemberDecl(WfCppConfig* config, stream::StreamWriter& writer, const WString& className, Ptr<WfClassMember> member, const WString& prefix, bool forClassExpr);
+			extern bool					GenerateClassMemberImpl(WfCppConfig* config, stream::StreamWriter& writer, const WString& classBaseName, const WString& className, const WString& classFullName, Ptr<WfClassMember> member, const WString& prefix);
+
+			extern void					ConvertType(WfCppConfig* config, stream::StreamWriter& writer, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, const Func<void()>& writeExpression, bool strongCast);
+
+/***********************************************************************
+GenerateCppFiles
+***********************************************************************/
+
+			enum class WfCppMultiFile
+			{
+				Enabled,
+				Disabled,
+				OnDemand,
+			};
+
+			class WfCppInput : public Object
+			{
+			public:
+				WfCppMultiFile									multiFile = WfCppMultiFile::Enabled;
+				WString											comment;
+				WString											headerGuardPrefix;
+				WString											assemblyName;
+				WString											assemblyNamespace;
+				WString											includeFileName;
+				WString											defaultFileName;
+				collections::List<WString>						extraIncludes;
+
+				WfCppInput(const WString& _assemblyName);
+			};
+
+			class WfCppOutput : public Object
+			{
+			public:
+				collections::Dictionary<WString, WString>		cppFiles;
+			};
+
+			extern Ptr<WfCppOutput>		GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager);
+			extern WString				MergeCppFileContent(const WString& dst, const WString& src);
 		}
 	}
 }

@@ -39,7 +39,7 @@ Serialization (Color)
 				return true;
 			}
 
-			IValueType::CompareResult TypedValueSerializerProvider<Color>::Compare(const presentation::Color& a, const presentation::Color& b)
+			IBoxedValue::CompareResult TypedValueSerializerProvider<Color>::Compare(const presentation::Color& a, const presentation::Color& b)
 			{
 				return TypedValueSerializerProvider<vuint32_t>::Compare(a.value, b.value);
 			}
@@ -65,7 +65,7 @@ Serialization (DocumentFontSize)
 				return true;
 			}
 
-			IValueType::CompareResult TypedValueSerializerProvider<DocumentFontSize>::Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b)
+			IBoxedValue::CompareResult TypedValueSerializerProvider<DocumentFontSize>::Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b)
 			{
 				return TypedValueSerializerProvider<WString>::Compare(a.ToString(), b.ToString());
 			}
@@ -91,7 +91,7 @@ Serialization (GlobalStringKey)
 				return true;
 			}
 
-			IValueType::CompareResult TypedValueSerializerProvider<GlobalStringKey>::Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b)
+			IBoxedValue::CompareResult TypedValueSerializerProvider<GlobalStringKey>::Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b)
 			{
 				return TypedValueSerializerProvider<WString>::Compare(a.ToString(), b.ToString());
 			}
