@@ -122,46 +122,6 @@ Instance Namespace
 			GlobalStringKey							className;
 		};
 
-		// Workflow:	<instance>.<name>
-		// C++:			<instance>->Get<name>()
-		//				<instance>->Set<name>()
-		class GuiInstanceProperty : public Object, public Description<GuiInstanceProperty>
-		{
-		public:
-			GlobalStringKey							name;
-			WString									typeName;
-			WString									value;
-		};
-		
-		// Workflow:	<instance>.<name>
-		// C++:			<instance>-><name>()
-		class GuiInstanceState : public Object, public Description<GuiInstanceState>
-		{
-		public:
-			GlobalStringKey							name;
-			WString									typeName;
-			WString									value;
-		};
-		
-		// Workflow:	<instance>.<name>
-		// C++:			<instance>->Get<name>()
-		class GuiInstanceComponent : public Object, public Description<GuiInstanceComponent>
-		{
-		public:
-			GlobalStringKey							name;
-			WString									typeName;
-			WString									expression;
-		};
-		
-		// Workflow:	<instance>.<name>
-		// C++:			<instance>-><name>
-		class GuiInstanceEvent : public Object, public Description<GuiInstanceComponent>
-		{
-		public:
-			GlobalStringKey							name;
-			WString									eventArgsClass;
-		};
-
 /***********************************************************************
 Instance Context
 ***********************************************************************/
@@ -180,10 +140,6 @@ Instance Context
 			};
 			typedef collections::Dictionary<GlobalStringKey, Ptr<NamespaceInfo>>		NamespaceMap;
 			typedef collections::List<Ptr<GuiInstanceParameter>>						ParameterList;
-			typedef collections::List<Ptr<GuiInstanceProperty>>							PropertyList;
-			typedef collections::List<Ptr<GuiInstanceState>>							StateList;
-			typedef collections::List<Ptr<GuiInstanceComponent>>						ComponentList;
-			typedef collections::List<Ptr<GuiInstanceEvent>>							EventList;
 			typedef collections::List<Ptr<GuiInstanceStyleContext>>						StyleContextList;
 
 			class ElementName : public Object
@@ -209,10 +165,7 @@ Instance Context
 			collections::List<WString>				stylePaths;
 
 			ParameterList							parameters;
-			PropertyList							properties;
-			StateList								states;
-			ComponentList							components;
-			EventList								events;
+			WString									memberScript;
 
 			bool									appliedStyles = false;
 			StyleContextList						styles;

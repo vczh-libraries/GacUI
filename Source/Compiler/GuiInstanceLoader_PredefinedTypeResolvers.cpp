@@ -439,7 +439,6 @@ Shared Script Type Resolver (Script)
 			, private IGuiResourceTypeResolver_Precompile
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
-			const wchar_t* Path_ViewModel = L"Workflow/ViewModel";
 			const wchar_t* Path_Shared = L"Workflow/Shared";
 		public:
 			WString GetType()override
@@ -478,8 +477,7 @@ Shared Script Type Resolver (Script)
 				{
 				case Workflow_Collect:
 					return PerResource;
-				case Workflow_CompileViewModel:
-				case Workflow_CompileShared:
+				case Workflow_Compile:
 					return PerPass;
 				default:
 					return NotSupported;
@@ -496,12 +494,7 @@ Shared Script Type Resolver (Script)
 						{
 							WString path;
 							GuiInstanceCompiledWorkflow::AssemblyType type = GuiInstanceCompiledWorkflow::Shared;
-							if (obj->language == L"Workflow-ViewModel")
-							{
-								path = Path_ViewModel;
-								type = GuiInstanceCompiledWorkflow::ViewModel;
-							}
-							else if (obj->language == L"Workflow")
+							if (obj->language == L"Workflow")
 							{
 								path = Path_Shared;
 							}
@@ -525,27 +518,10 @@ Shared Script Type Resolver (Script)
 			{
 				switch (context.passIndex)
 				{
-				case Workflow_CompileViewModel:
-				case Workflow_CompileShared:
+				case Workflow_Compile:
+					if (auto compiled = context.targetFolder->GetValueByPath(Path_Shared).Cast<GuiInstanceCompiledWorkflow>())
 					{
-						WString path;
-						if (context.passIndex == Workflow_CompileViewModel)
-						{
-							path = Path_ViewModel;
-						}
-						else if (context.passIndex == Workflow_CompileShared)
-						{
-							path = Path_Shared;
-						}
-						else
-						{
-							return;
-						}
-
-						if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
-						{
-							Workflow_GenerateAssembly(compiled, path, errors);
-						}
+						Workflow_GenerateAssembly(compiled, Path_Shared, errors);
 					}
 					break;
 				}

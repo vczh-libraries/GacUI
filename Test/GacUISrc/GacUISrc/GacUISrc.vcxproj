@@ -552,9 +552,6 @@
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstancePartialClass.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClInclude>

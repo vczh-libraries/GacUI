@@ -18,7 +18,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	int result = SetupWindowsDirect2DRenderer();
 #endif
 
-	ThreadLocalStorage::DisposeStorages();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif

@@ -324,22 +324,15 @@ Workflow_GenerateInstanceClass
 			}
 
 			ITypeDescriptor* ctorTd = nullptr;
-			Ptr<ITypeInfo> ctorType;
 			if (!beforePrecompile)
 			{
-				if ((ctorTd = description::GetTypeDescriptor(context->className + L"<Ctor>")))
-				{
-					auto elementType = MakePtr<TypeDescriptorTypeInfo>(ctorTd, TypeInfoHint::Normal);
-					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
-
-					ctorType = pointerType;
-				}
-				else
+				ctorTd = description::GetTypeDescriptor(context->className + L"Constructor");
+				if (!ctorTd)
 				{
 					errors.Add(
 						L"Precompile: Builder type \"" +
 						context->className +
-						L"<Ctor>\" does not exist.");
+						L"Constructor\" does not exist.");
 					return nullptr;
 				}
 			}
@@ -380,18 +373,18 @@ Workflow_GenerateInstanceClass
 				}
 			};
 
-			auto expressionParser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
-			auto parseExpression = [expressionParser, &errors](const WString& code, const WString& name)->Ptr<WfExpression>
+			auto moduleParser = GetParserManager()->GetParser<WfModule>(L"WORKFLOW-MODULE");
+			auto parseClassMembers = [=, &errors](const WString& code, const WString& name, List<Ptr<WfClassMember>>& members)
 			{
 				List<WString> parserErrors;
-				if (auto type = expressionParser->TypedParse(code, parserErrors))
+				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
+				if (auto module = moduleParser->TypedParse(wrappedCode, parserErrors))
 				{
-					return type;
+					CopyFrom(members, module->declarations[0].Cast<WfClassDeclaration>()->members);
 				}
 				else
 				{
 					errors.Add(L"Precompile: Failed to parse " + name + L": " + code);
-					return nullptr;
 				}
 			};
 
@@ -402,6 +395,7 @@ Workflow_GenerateInstanceClass
 				member->declaration = decl;
 				instanceClass->members.Add(member);
 			};
+
 			auto notImplemented = []()
 			{
 				auto block = MakePtr<WfBlockStatement>();
@@ -415,274 +409,46 @@ Workflow_GenerateInstanceClass
 				block->statements.Add(raiseStat);
 				return block;
 			};
-			auto getPropValue = [=, &errors](const WString& name, Ptr<WfType> type, const WString& value)->Ptr<WfExpression>
-			{
-				auto propInfo = contextTd->GetPropertyByName(name, false);
-				if (propInfo)
-				{
-					auto propTd = propInfo->GetReturn()->GetTypeDescriptor();
-					if ((propTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
-					{
-						if (value == L"")
-						{
-							auto defaultValue = propTd->GetValueType()->CreateDefault();
-							return Workflow_CreateValue(defaultValue, errors);
-						}
-						else
-						{
-							return Workflow_ParseTextValue(propTd, value, errors);
-						}
-					}
-					else
-					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
-
-						return nullExpr;
-					}
-				}
-				else
-				{
-					errors.Add(
-						L"Precompile: Cannot find property \"" +
-						name +
-						L"Precompile: in instance type \"" +
-						context->className +
-						L"\" does not exist.");
-					return nullptr;
-				}
-			};
 
 			if (!beforePrecompile)
 			{
-				{
-					auto decl = MakePtr<WfVariableDeclaration>();
-					addDecl(decl);
-
-					decl->name.value = L"<ctor>";
-					decl->type = GetTypeFromTypeInfo(ctorType.Obj());
-
-					auto nullExpr = MakePtr<WfLiteralExpression>();
-					nullExpr->value = WfLiteralValue::Null;
-					decl->expression = nullExpr;
-				}
-				FOREACH(GlobalStringKey, name, resolvingResult.referenceNames)
-				{
-					auto prop = ctorTd->GetPropertyByName(name.ToString(), false);
-
-					auto decl = MakePtr<WfVariableDeclaration>();
-					addDecl(decl);
-
-					decl->name.value = prop->GetName();
-					decl->type = GetTypeFromTypeInfo(prop->GetReturn());
-
-					auto nullExpr = MakePtr<WfLiteralExpression>();
-					nullExpr->value = WfLiteralValue::Null;
-					decl->expression = nullExpr;
-				}
+				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(ctorTd, TypeInfoHint::Normal);
+				auto type = GetTypeFromTypeInfo(typeInfo.Obj());
+				instanceClass->baseTypes.Add(type);
 			}
 
-			FOREACH(Ptr<GuiInstanceState>, state, context->states)
+			if (context->memberScript != L"")
 			{
-				if (auto type = parseType(state->typeName, L"state \"" + state->name.ToString() + L" of instance \"" + context->className + L"\""))
+				List<Ptr<WfClassMember>> members;
+				parseClassMembers(context->memberScript, L"members of instance \"" + context->className + L"\"", members);
+
+				if (beforePrecompile)
 				{
-					auto decl = MakePtr<WfVariableDeclaration>();
-					addDecl(decl);
-
-					decl->name.value = state->name.ToString();
-					decl->type = type;
-					if (!beforePrecompile)
+					List<Ptr<WfClassMember>> unprocessed;
+					CopyFrom(unprocessed, members);
+					for (vint i = 0; i < unprocessed.Count(); i++)
 					{
-						decl->expression = getPropValue(state->name.ToString(), type, state->value);
-					}
-					else
-					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
-
-						auto castObject = MakePtr<WfInferExpression>();
-						castObject->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
-						castObject->expression = nullExpr;
-
-						auto castType = MakePtr<WfTypeCastingExpression>();
-						castType->strategy = WfTypeCastingStrategy::Strong;
-						castType->type = CopyType(type);
-						castType->expression = castObject;
-
-						decl->expression = castType;
+						auto decl = unprocessed[i]->declaration;
+						if (auto funcDecl = decl.Cast<WfFunctionDeclaration>())
+						{
+							funcDecl->statement = notImplemented();
+						}
+						else if (auto ctorDecl = decl.Cast<WfConstructorDeclaration>())
+						{
+							ctorDecl->statement = notImplemented();
+						}
+						else if (auto dtorDecl = decl.Cast<WfDestructorDeclaration>())
+						{
+							dtorDecl->statement = notImplemented();
+						}
+						else if (auto classDecl = decl.Cast<WfClassDeclaration>())
+						{
+							CopyFrom(unprocessed, classDecl->members, true);
+						}
 					}
 				}
-			}
 
-			FOREACH(Ptr<GuiInstanceProperty>, prop, context->properties)
-			{
-				if (auto type = parseType(prop->typeName, L"property \"" + prop->name.ToString() + L" of instance \"" + context->className + L"\""))
-				{
-					if (!beforePrecompile)
-					{
-						auto decl = MakePtr<WfVariableDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = L"<property>" + prop->name.ToString();
-						decl->type = CopyType(type);
-						decl->expression = getPropValue(prop->name.ToString(), type, prop->value);
-					}
-					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
-						addDecl(decl);
-
-						decl->anonymity = WfFunctionAnonymity::Named;
-						decl->name.value = L"Get" + prop->name.ToString();
-						decl->returnType = CopyType(type);
-						if (!beforePrecompile)
-						{
-							auto block = MakePtr<WfBlockStatement>();
-							decl->statement = block;
-
-							auto ref = MakePtr<WfReferenceExpression>();
-							ref->name.value = L"<property>" + prop->name.ToString();
-
-							auto returnStat = MakePtr<WfReturnStatement>();
-							returnStat->expression = ref;
-							block->statements.Add(returnStat);
-						}
-						else
-						{
-							decl->statement = notImplemented();
-						}
-					}
-					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
-						addDecl(decl);
-
-						decl->anonymity = WfFunctionAnonymity::Named;
-						decl->name.value = L"Set" + prop->name.ToString();
-						{
-							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<value>";
-							argument->type = CopyType(type);
-							decl->arguments.Add(argument);
-						}
-						{
-							auto voidType = MakePtr<WfPredefinedType>();
-							voidType->name = WfPredefinedTypeName::Void;
-							decl->returnType = voidType;
-						}
-						if (!beforePrecompile)
-						{
-							auto block = MakePtr<WfBlockStatement>();
-							decl->statement = block;
-
-							auto ifStat = MakePtr<WfIfStatement>();
-							block->statements.Add(ifStat);
-							{
-								auto refProp = MakePtr<WfReferenceExpression>();
-								refProp->name.value = L"<property>" + prop->name.ToString();
-
-								auto refValue = MakePtr<WfReferenceExpression>();
-								refValue->name.value = L"<value>";
-
-								auto compExpr = MakePtr<WfBinaryExpression>();
-								compExpr->op = WfBinaryOperator::NE;
-								compExpr->first = refProp;
-								compExpr->second = refValue;
-
-								ifStat->expression = compExpr;
-							}
-
-							auto trueBlock = MakePtr<WfBlockStatement>();
-							ifStat->trueBranch = trueBlock;
-							{
-								auto refProp = MakePtr<WfReferenceExpression>();
-								refProp->name.value = L"<property>" + prop->name.ToString();
-
-								auto refValue = MakePtr<WfReferenceExpression>();
-								refValue->name.value = L"<value>";
-
-								auto assignExpr = MakePtr<WfBinaryExpression>();
-								assignExpr->op = WfBinaryOperator::Assign;
-								assignExpr->first = refProp;
-								assignExpr->second = refValue;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = assignExpr;
-
-								trueBlock->statements.Add(stat);
-							}
-							{
-								auto refEvent = MakePtr<WfReferenceExpression>();
-								refEvent->name.value = prop->name.ToString() + L"Changed";
-
-								auto call = MakePtr<WfCallExpression>();
-								call->function = refEvent;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = call;
-
-								trueBlock->statements.Add(stat);
-							}
-						}
-						else
-						{
-							decl->statement = notImplemented();
-						}
-					}
-					{
-						auto decl = MakePtr<WfEventDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = prop->name.ToString() + L"Changed";
-					}
-					{
-						auto decl = MakePtr<WfPropertyDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = prop->name.ToString();
-						decl->type = type;
-						decl->getter.value = L"Get" + prop->name.ToString();
-						decl->setter.value = L"Set" + prop->name.ToString();
-						decl->valueChangedEvent.value = prop->name.ToString() + L"Changed";
-					}
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceComponent>, component, context->components)
-			{
-				auto type = parseType(component->typeName, L"component \"" + component->name.ToString() + L" of instance \"" + context->className + L"\"");
-				auto expression = parseExpression(component->expression, L"component \"" + component->name.ToString() + L" of instance \"" + context->className + L"\"");
-
-				if (type && expression)
-				{
-					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
-						addDecl(decl);
-
-						decl->anonymity = WfFunctionAnonymity::Named;
-						decl->name.value = L"Get" + component->name.ToString();
-						decl->returnType = CopyType(type);
-						if (!beforePrecompile)
-						{
-							auto block = MakePtr<WfBlockStatement>();
-							decl->statement = block;
-
-							auto returnStat = MakePtr<WfReturnStatement>();
-							returnStat->expression = expression;
-							block->statements.Add(returnStat);
-						}
-						else
-						{
-							decl->statement = notImplemented();
-						}
-					}
-					{
-						auto decl = MakePtr<WfPropertyDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = component->name.ToString();
-						decl->type = type;
-						decl->getter.value = L"Get" + component->name.ToString();
-					}
-				}
+				CopyFrom(instanceClass->members, members, true);
 			}
 
 			auto ctor = MakePtr<WfConstructorDeclaration>();
@@ -721,63 +487,6 @@ Workflow_GenerateInstanceClass
 							auto nullExpr = MakePtr<WfLiteralExpression>();
 							nullExpr->value = WfLiteralValue::Null;
 							call->arguments.Add(nullExpr);
-						}
-					}
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceEvent>, ev, context->events)
-			{
-				if (ev->eventArgsClass == L"")
-				{
-					auto decl = MakePtr<WfEventDeclaration>();
-					addDecl(decl);
-					decl->name.value = ev->name.ToString();
-				}
-				else if (auto type = parseType(ev->eventArgsClass + L"*", L"event \"" + ev->name.ToString() + L" of instance \"" + context->className + L"\""))
-				{
-					{
-						auto decl = MakePtr<WfEventDeclaration>();
-						addDecl(decl);
-						decl->name.value = ev->name.ToString();
-						decl->arguments.Add(GetTypeFromTypeInfo(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo().Obj()));
-						decl->arguments.Add(type);
-					}
-					if (beforePrecompile)
-					{
-						auto sharedType = MakePtr<WfSharedPointerType>();
-						sharedType->element = CopyType(type.Cast<WfRawPointerType>()->element);
-						{
-							auto newExpr = MakePtr<WfNewClassExpression>();
-							newExpr->type = sharedType;
-
-							auto inferExpr = MakePtr<WfInferExpression>();
-							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiEventArgs>>::CreateTypeInfo().Obj());
-							inferExpr->expression = newExpr;
-
-							auto stat = MakePtr<WfExpressionStatement>();
-							stat->expression = inferExpr;
-							ctorBlock->statements.Add(stat);
-						}
-						{
-							auto nullExpr = MakePtr<WfLiteralExpression>();
-							nullExpr->value = WfLiteralValue::Null;
-
-							auto argument = MakePtr<WfInferExpression>();
-							argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo().Obj());
-							argument->expression = nullExpr;
-
-							auto newExpr = MakePtr<WfNewClassExpression>();
-							newExpr->type = CopyType(sharedType);
-							newExpr->arguments.Add(argument);
-
-							auto inferExpr = MakePtr<WfInferExpression>();
-							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiEventArgs>>::CreateTypeInfo().Obj());
-							inferExpr->expression = newExpr;
-
-							auto stat = MakePtr<WfExpressionStatement>();
-							stat->expression = inferExpr;
-							ctorBlock->statements.Add(stat);
 						}
 					}
 				}
@@ -928,25 +637,7 @@ Workflow_GenerateInstanceClass
 					ctorBlock->statements.Add(varStat);
 				}
 				{
-					auto newClassExpr = MakePtr<WfNewClassExpression>();
-					newClassExpr->type = GetTypeFromTypeInfo(ctorType.Obj());
-					
-					auto ctorRef = MakePtr<WfReferenceExpression>();
-					ctorRef->name.value = L"<ctor>";
-
-					auto assignExpr = MakePtr<WfBinaryExpression>();
-					assignExpr->op = WfBinaryOperator::Assign;
-					assignExpr->first = ctorRef;
-					assignExpr->second = newClassExpr;
-
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = assignExpr;
-
-					ctorBlock->statements.Add(stat);
-				}
-				{
-					auto ctorRef = MakePtr<WfReferenceExpression>();
-					ctorRef->name.value = L"<ctor>";
+					auto ctorRef = MakePtr<WfThisExpression>();
 
 					auto initRef = MakePtr<WfMemberExpression>();
 					initRef->parent = ctorRef;
@@ -969,28 +660,6 @@ Workflow_GenerateInstanceClass
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = callExpr;
-
-					ctorBlock->statements.Add(stat);
-				}
-				FOREACH(GlobalStringKey, name, resolvingResult.referenceNames)
-				{
-					auto propRef = MakePtr<WfReferenceExpression>();
-					propRef->name.value = name.ToString();
-
-					auto ctorRef = MakePtr<WfReferenceExpression>();
-					ctorRef->name.value = L"<ctor>";
-
-					auto ctorPropRef = MakePtr<WfMemberExpression>();
-					ctorPropRef->parent = ctorRef;
-					ctorPropRef->name.value =  name.ToString();
-
-					auto assignExpr = MakePtr<WfBinaryExpression>();
-					assignExpr->op = WfBinaryOperator::Assign;
-					assignExpr->first = propRef;
-					assignExpr->second = ctorPropRef;
-
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = assignExpr;
 
 					ctorBlock->statements.Add(stat);
 				}

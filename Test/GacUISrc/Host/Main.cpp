@@ -5,7 +5,7 @@
 #ifndef VCZH_DEBUG_NO_REFLECTION
 #include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
 #include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h"
-#include "..\..\..\Source\Reflection\GuiInstancePartialClass.h"
+#include "..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
 #endif
 #include <Windows.h>
 
@@ -33,7 +33,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	int result = SetupWindowsDirect2DRenderer();
 #endif
 
-	ThreadLocalStorage::DisposeStorages();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif

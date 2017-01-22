@@ -523,18 +523,17 @@ Resource Type Resolver
 			enum PassNames
 			{
 				Workflow_Collect					= 0,
-				Workflow_CompileViewModel			= 1,
-				Workflow_CompileShared				= 2,
-				Workflow_Max						= Workflow_CompileShared,
+				Workflow_Compile					= 1,
+				Workflow_Max						= Workflow_Compile,
 
-				Instance_CollectInstanceTypes		= 3,
-				Instance_ValidateDependency			= 4,
-				Instance_GenerateTemporaryClass		= 5,
-				Instance_CompileTemporaryClass		= 6,
-				Instance_GenerateInstanceCtor		= 7,
-				Instance_CompileInstanceCtor		= 8,
-				Instance_GenerateInstanceClass		= 9,
-				Instance_CompileInstanceClass		= 10,
+				Instance_CollectInstanceTypes		= 2,
+				Instance_ValidateDependency			= 3,
+				Instance_GenerateTemporaryClass		= 4,
+				Instance_CompileTemporaryClass		= 5,
+				Instance_GenerateInstanceCtor		= 6,
+				Instance_CompileInstanceCtor		= 7,
+				Instance_GenerateInstanceClass		= 8,
+				Instance_CompileInstanceClass		= 9,
 				Instance_Max						= Instance_CompileInstanceClass,
 			};
 

@@ -269,6 +269,7 @@ GuiPredefinedInstanceBindersPlugin
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-TYPE", &WfParseType);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-EXPRESSION", &WfParseExpression);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-STATEMENT", &WfParseStatement);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-DECLARATION", &WfParseDeclaration);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-MODULE", &WfParseModule);
 					manager->SetParsingTable(L"INSTANCE-QUERY", &GuiIqLoadTable);
 					manager->SetTableParser(L"INSTANCE-QUERY", L"INSTANCE-QUERY", &GuiIqParse);

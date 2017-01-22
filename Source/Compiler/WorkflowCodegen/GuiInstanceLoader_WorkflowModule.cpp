@@ -122,7 +122,7 @@ Workflow_InstallCtorClass
 		
 		Ptr<workflow::WfBlockStatement> Workflow_InstallCtorClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfModule> module)
 		{
-			auto ctorClass = Workflow_InstallClass(context->className + L"<Ctor>", module);
+			auto ctorClass = Workflow_InstallClass(context->className + L"Constructor", module);
 			Workflow_CreateVariablesForReferenceValues(ctorClass, resolvingResult);
 
 			auto thisParam = MakePtr<WfFunctionArgument>();

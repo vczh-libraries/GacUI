@@ -797,9 +797,6 @@
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h">
       <Filter>GacUI\Reflection</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\GuiInstancePartialClass.h">
-      <Filter>GacUI\Reflection</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Import\VlppWorkflowCompiler.h">
       <Filter>Import</Filter>
     </ClInclude>

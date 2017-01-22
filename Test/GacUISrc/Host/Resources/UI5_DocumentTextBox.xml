@@ -47,7 +47,11 @@ So as I pray, unlimited blade works.</Text>
 
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:x="demo::*">
-      <ref.State Name="flag" Type="bool"/>
+      <ref.Members>
+        <![CDATA[
+          var flag : bool = false;
+        ]]>
+      </ref.Members>
       <Window Text="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">

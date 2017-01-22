@@ -549,87 +549,9 @@ GuiInstanceContext
 							errors.Add(L"ref.Parameter requires the following attributes existing at the same time: Name, Class.");
 						}
 					}
-					else if (element->name.value == L"ref.Property")
+					else if (element->name.value == L"ref.Members")
 					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attType = XmlGetAttribute(element, L"Type");
-						auto attValue = XmlGetAttribute(element, L"Value");
-						if (attName && attType)
-						{
-							auto prop = MakePtr<GuiInstanceProperty>();
-							prop->name = GlobalStringKey::Get(attName->value.value);
-							prop->typeName = attType->value.value;
-							if (attValue)
-							{
-								prop->value = attValue->value.value;
-							}
-							context->properties.Add(prop);
-						}
-						else
-						{
-							errors.Add(L"ref.Property requires the following attributes existing at the same time: Name, Type.");
-						}
-					}
-					else if (element->name.value == L"ref.State")
-					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attType = XmlGetAttribute(element, L"Type");
-						auto attValue = XmlGetAttribute(element, L"Value");
-						if (attName && attType)
-						{
-							auto state = MakePtr<GuiInstanceState>();
-							state->name = GlobalStringKey::Get(attName->value.value);
-							state->typeName = attType->value.value;
-							if (attValue)
-							{
-								state->value = attValue->value.value;
-							}
-							context->states.Add(state);
-						}
-						else
-						{
-							errors.Add(L"ref.State requires the following attributes existing at the same time: Name, Type.");
-						}
-					}
-					else if (element->name.value == L"ref.Component")
-					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attType = XmlGetAttribute(element, L"Type");
-						auto attExpression = XmlGetAttribute(element, L"Expression");
-						if (attName && attType && attExpression)
-						{
-							auto component = MakePtr<GuiInstanceComponent>();
-							component->name = GlobalStringKey::Get(attName->value.value);
-							component->typeName = attType->value.value;
-							if (attExpression)
-							{
-								component->expression = attExpression->value.value;
-							}
-							context->components.Add(component);
-						}
-						else
-						{
-							errors.Add(L"ref.Component requires the following attributes existing at the same time: Name, Type, Expression.");
-						}
-					}
-					else if (element->name.value == L"ref.Event")
-					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attClass = XmlGetAttribute(element, L"EventArgsClass");
-						if (attName)
-						{
-							auto ev = MakePtr<GuiInstanceEvent>();
-							ev->name = GlobalStringKey::Get(attName->value.value);
-							if (attClass)
-							{
-								ev->eventArgsClass = attClass->value.value;
-							}
-							context->events.Add(ev);
-						}
-						else
-						{
-							errors.Add(L"ref.Event requires the following attributes existing at the same time: Name.");
-						}
+						context->memberScript = XmlGetValue(element);
 					}
 					else if (!context->instance)
 					{
@@ -699,96 +621,15 @@ GuiInstanceContext
 				xmlParameter->attributes.Add(attClass);
 			}
 
-			FOREACH(Ptr<GuiInstanceProperty>, prop, properties)
+			if (memberScript != L"")
 			{
-				auto xmlProperty = MakePtr<XmlElement>();
-				xmlProperty->name.value = L"ref.Property";
-				xmlInstance->subNodes.Add(xmlProperty);
+				auto xmlMembers = MakePtr<XmlElement>();
+				xmlMembers->name.value = L"ref.Members";
+				xmlInstance->subNodes.Add(xmlMembers);
 
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"Name";
-				attName->value.value = prop->name.ToString();
-				xmlProperty->attributes.Add(attName);
-
-				auto attType = MakePtr<XmlAttribute>();
-				attType->name.value = L"Type";
-				attType->value.value = prop->typeName;
-				xmlProperty->attributes.Add(attType);
-
-				if (prop->value != L"")
-				{
-					auto attValue = MakePtr<XmlAttribute>();
-					attValue->name.value = L"Value";
-					attValue->value.value = prop->value;
-					xmlProperty->attributes.Add(attType);
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceState>, state, states)
-			{
-				auto xmlState = MakePtr<XmlElement>();
-				xmlState->name.value = L"ref.State";
-				xmlInstance->subNodes.Add(xmlState);
-
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"Name";
-				attName->value.value = state->name.ToString();
-				xmlState->attributes.Add(attName);
-
-				auto attType = MakePtr<XmlAttribute>();
-				attType->name.value = L"Type";
-				attType->value.value = state->typeName;
-				xmlState->attributes.Add(attType);
-
-				if (state->value != L"")
-				{
-					auto attValue = MakePtr<XmlAttribute>();
-					attValue->name.value = L"Value";
-					attValue->value.value = state->value;
-					xmlState->attributes.Add(attValue);
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceComponent>, component, components)
-			{
-				auto xmlComponent = MakePtr<XmlElement>();
-				xmlComponent->name.value = L"ref.Component";
-				xmlInstance->subNodes.Add(xmlComponent);
-
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"Name";
-				attName->value.value = component->name.ToString();
-				xmlComponent->attributes.Add(attName);
-
-				auto attType = MakePtr<XmlAttribute>();
-				attType->name.value = L"Type";
-				attType->value.value = component->typeName;
-				xmlComponent->attributes.Add(attType);
-
-				auto attExpression = MakePtr<XmlAttribute>();
-				attExpression->name.value = L"Value";
-				attExpression->value.value = component->expression;
-				xmlComponent->attributes.Add(attExpression);
-			}
-
-			FOREACH(Ptr<GuiInstanceEvent>, ev, events)
-			{
-				auto xmlEvent = MakePtr<XmlElement>();
-				xmlEvent->name.value = L"ref.Event";
-				xmlInstance->subNodes.Add(xmlEvent);
-
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"Name";
-				attName->value.value = ev->name.ToString();
-				xmlEvent->attributes.Add(attName);
-
-				if (ev->eventArgsClass != L"")
-				{
-					auto attClass = MakePtr<XmlAttribute>();
-					attClass->name.value = L"EventArgsClass";
-					attClass->value.value = ev->eventArgsClass;
-					xmlEvent->attributes.Add(attClass);
-				}
+				auto text = MakePtr<XmlCData>();
+				text->content.value = memberScript;
+				xmlMembers->subNodes.Add(text);
 			}
 
 			if (stylePaths.Count() > 0)
