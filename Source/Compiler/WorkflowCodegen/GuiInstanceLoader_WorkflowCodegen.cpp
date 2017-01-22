@@ -727,12 +727,24 @@ GuiWorkflowSharedManagerPlugin
 				}
 				return workflowManager.Obj();
 			}
+
+			Ptr<WfLexicalScopeManager> TransferWorkflowManager()
+			{
+				auto result = workflowManager;
+				workflowManager = nullptr;
+				return result;
+			}
 		};
 		GUI_REGISTER_PLUGIN(GuiWorkflowSharedManagerPlugin)
 
 		WfLexicalScopeManager* Workflow_GetSharedManager()
 		{
 			return sharedManagerPlugin->GetWorkflowManager();
+		}
+
+		Ptr<WfLexicalScopeManager> Workflow_TransferSharedManager()
+		{
+			return sharedManagerPlugin->TransferWorkflowManager();
 		}
 	}
 }

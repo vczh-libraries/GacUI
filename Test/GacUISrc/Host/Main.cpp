@@ -123,6 +123,39 @@ void GuiMain_Resource()
 		CHECK_ERROR(errors.Count() == 0, L"Error");
 
 		{
+			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");
+			auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
+			{
+				WString text;
+				auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
+				FOREACH_INDEXER(WString, code, codeIndex, compiled->assembly->insAfterCodegen->moduleCodes)
+				{
+					text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
+					text += code + L"\r\n";
+				}
+				File(BINARY_FOLDER L"UI.txt").WriteAllText(text);
+			}
+			{
+				auto input = MakePtr<WfCppInput>(L"Demo");
+				input->comment = L"Source: Host.sln";
+				input->extraIncludes.Add(L"../../../../Source/GacUI.h");
+				auto output = GenerateCppFiles(input, compiled->metadata.Obj());
+				FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
+				{
+					WString code = output->cppFiles.Values()[index];
+					File file(L"../TestCppCodegen/Source/" + fileName);
+
+					if (file.Exists())
+					{
+						code = MergeCppFileContent(file.ReadAllText(), code);
+					}
+
+					file.WriteAllText(code, false, BomEncoder::Utf8);
+				}
+			}
+		}
+
+		{
 			FileStream fileStream(BINARY_FOLDER L"UI.bin", FileStream::WriteOnly);
 			resource->SavePrecompiledBinary(fileStream);
 		}
@@ -132,38 +165,6 @@ void GuiMain_Resource()
 			CHECK_ERROR(errors.Count() == 0, L"Error");
 		}
 		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::InstanceClass);
-
-		{
-			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");
-			auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
-
-			WString text;
-			auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
-			FOREACH_INDEXER(WString, code, codeIndex, compiled->assembly->insAfterCodegen->moduleCodes)
-			{
-				text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
-				text += code + L"\r\n";
-			}
-			File(BINARY_FOLDER L"UI.txt").WriteAllText(text);
-		}
-		{
-			auto input = MakePtr<WfCppInput>(L"Demo");
-			input->comment = L"Source: Host.sln";
-			input->extraIncludes.Add(L"../../../Source/GacUI.h");
-			auto output = GenerateCppFiles(input, Workflow_GetSharedManager());
-			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
-			{
-				WString code = output->cppFiles.Values()[index];
-				File file(L"../TestCppCodegen/Source/" + fileName);
-
-				if (file.Exists())
-				{
-					code = MergeCppFileContent(file.ReadAllText(), code);
-				}
-
-				file.WriteAllText(code, false, BomEncoder::Utf8);
-			}
-		}
 	}
 
 	// UI1 / UI3 / UI4 / UI5 / UI7 / UI8 / UI9

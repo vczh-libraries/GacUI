@@ -45,6 +45,7 @@ namespace vl
 			};
 		}
 		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager();
+		extern Ptr<workflow::analyzer::WfLexicalScopeManager>	Workflow_TransferSharedManager();
 		
 
 /***********************************************************************

@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCECOMPILEDWORKFLOW
 
 #include "../Resources/GuiResource.h"
-#include "../../Import/VlppWorkflow.h"
+#include "../../Import/VlppWorkflowCompiler.h"
 
 namespace vl
 {
@@ -31,15 +31,16 @@ namespace vl
 				TemporaryClass,
 			};
 			
-			collections::List<WString>						codes;
-			collections::List<Ptr<workflow::WfModule>>		modules;
-			Ptr<stream::MemoryStream>						binaryToLoad;
+			collections::List<WString>							codes;
+			collections::List<Ptr<workflow::WfModule>>			modules;
+			Ptr<workflow::analyzer::WfLexicalScopeManager>		metadata;
+			Ptr<stream::MemoryStream>							binaryToLoad;
 
-			AssemblyType									type = AssemblyType::Shared;
-			Ptr<workflow::runtime::WfAssembly>				assembly;
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
+			AssemblyType										type = AssemblyType::Shared;
+			Ptr<workflow::runtime::WfAssembly>					assembly;
+			Ptr<workflow::runtime::WfRuntimeGlobalContext>		context;
 
-			void											Initialize(bool initializeContext);
+			void												Initialize(bool initializeContext);
 		};
 	}
 }

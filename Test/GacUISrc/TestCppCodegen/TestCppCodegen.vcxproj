@@ -212,6 +212,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Source\Demo.cpp" />
+    <ClCompile Include="Source\MainWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Demo.h" />
+    <ClInclude Include="Source\DemoIncludes.h" />
+    <ClInclude Include="Source\MainWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

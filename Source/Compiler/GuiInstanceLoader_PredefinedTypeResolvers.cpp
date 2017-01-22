@@ -22,7 +22,7 @@ namespace vl
 
 		using namespace controls;
 
-		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, const WString& path, collections::List<WString>& errors)
+		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, const WString& path, collections::List<WString>& errors, bool keepMetadata)
 		{
 			if (!compiled->assembly)
 			{
@@ -127,10 +127,17 @@ namespace vl
 					}
 					errors.Add(L"<END>");
 				}
-					
-				compiled->codes.Clear();
-				compiled->modules.Clear();
-				manager->Clear(false, true);
+
+				if (keepMetadata)
+				{
+					compiled->metadata = Workflow_TransferSharedManager();
+				}
+				else
+				{
+					compiled->codes.Clear();
+					compiled->modules.Clear();
+					manager->Clear(false, true);
+				}
 			}
 		}
 
@@ -305,7 +312,7 @@ Instance Type Resolver (Instance)
 
 				if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
 				{
-					Workflow_GenerateAssembly(compiled, path, errors);
+					Workflow_GenerateAssembly(compiled, path, errors, (context.passIndex == Instance_CompileInstanceClass));
 				}
 				GetInstanceLoaderManager()->ClearReflectionCache();
 			}
@@ -498,7 +505,7 @@ Shared Script Type Resolver (Script)
 				case Workflow_Compile:
 					if (auto compiled = context.targetFolder->GetValueByPath(Path_Shared).Cast<GuiInstanceCompiledWorkflow>())
 					{
-						Workflow_GenerateAssembly(compiled, Path_Shared, errors);
+						Workflow_GenerateAssembly(compiled, Path_Shared, errors, false);
 					}
 					break;
 				}
