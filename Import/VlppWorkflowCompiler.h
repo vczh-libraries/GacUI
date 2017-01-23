@@ -2644,16 +2644,17 @@ namespace vl
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfEnumDeclaration>>			enumDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfStructDeclaration>>		structDecls;
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;
+				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
+				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 
 				collections::Group<WString, Ptr<WfClassDeclaration>>						topLevelClassDeclsForFiles;
 				collections::Dictionary<Ptr<WfDeclaration>, WString>						declFiles;
 				collections::Group<Ptr<WfDeclaration>, Ptr<WfDeclaration>>					declDependencies;
 
-				collections::List<Ptr<WfVariableDeclaration>>								varDecls;
-				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;
 				collections::Dictionary<Ptr<WfExpression>, WString>							lambdaExprs;
 				collections::Dictionary<Ptr<WfNewInterfaceExpression>, WString>				classExprs;
 				collections::Dictionary<Ptr<WfExpression>, Ptr<ClosureInfo>>				closureInfos;
+				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfExpression>>				classClosures;
 
 				WfCppConfig(analyzer::WfLexicalScopeManager* _manager, const WString& _assemblyName, const WString& _assemblyNamespace);
 				~WfCppConfig();
@@ -2693,6 +2694,7 @@ namespace vl
 				void					WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss);
 
+				void					WriteHeader_ClosurePreDecl(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteCpp_ClosureCtor(stream::StreamWriter& writer, Ptr<WfExpression> closure, const WString& name);
 				void					WriteCpp_ClosureCtorInitList(stream::StreamWriter& writer, Ptr<WfExpression> closure);
@@ -2730,10 +2732,10 @@ namespace vl
 WfCppConfig::Collect
 ***********************************************************************/
 
-			extern void CollectExpression(WfCppConfig* config, Ptr<WfExpression> node);
-			extern void CollectStatement(WfCppConfig* config, Ptr<WfStatement> node);
-			extern void CollectClassMember(WfCppConfig* config, Ptr<WfClassMember> node, Ptr<WfClassDeclaration> classDecl);
-			extern void CollectDeclaration(WfCppConfig* config, Ptr<WfDeclaration> node, Ptr<WfClassDeclaration> classDecl);
+			extern void CollectExpression(WfCppConfig* config, Ptr<WfExpression> node, Ptr<WfClassDeclaration> memberOfClass);
+			extern void CollectStatement(WfCppConfig* config, Ptr<WfStatement> node, Ptr<WfClassDeclaration> memberOfClass);
+			extern void CollectClassMember(WfCppConfig* config, Ptr<WfClassMember> node, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassDeclaration> memberOfClass);
+			extern void CollectDeclaration(WfCppConfig* config, Ptr<WfDeclaration> node, Ptr<WfClassDeclaration> classDecl, Ptr<WfClassDeclaration> memberOfClass);
 
 /***********************************************************************
 WfCppConfig::Write

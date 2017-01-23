@@ -153,6 +153,13 @@ Workflow_InstallCtorClass
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 			func->statement = block;
 
+			{
+				auto att = MakePtr<WfAttribute>();
+				att->category.value = L"cpp";
+				att->name.value = L"Protected";
+				func->attributes.Add(att);
+			}
+
 			auto member = MakePtr<WfClassMember>();
 			member->kind = WfClassMemberKind::Normal;
 			member->declaration = func;
@@ -169,6 +176,13 @@ Variable
 		{
 			auto var = MakePtr<WfVariableDeclaration>();
 			var->name.value = name.ToString();
+
+			{
+				auto att = MakePtr<WfAttribute>();
+				att->category.value = L"cpp";
+				att->name.value = L"Protected";
+				var->attributes.Add(att);
+			}
 
 			if (typeOverride)
 			{
