@@ -19677,7 +19677,7 @@ namespace vl
 					writer.WriteChar(L' ');
 					if (arguments.Count() == 0)
 					{
-						writer.WriteString(methodInfo->GetParameter(i)->GetName());
+						writer.WriteString(ConvertName(methodInfo->GetParameter(i)->GetName()));
 					}
 					else
 					{

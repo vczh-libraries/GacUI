@@ -452,6 +452,7 @@ Instance Type Resolver (Instance)
 				switch (context.passIndex)
 				{
 				case Instance_CompileInstanceTypes:
+					DELETE_ASSEMBLY(Path_Shared)
 					path = Path_TemporaryClass;
 					break;
 				case Instance_CompileEventHandlers:

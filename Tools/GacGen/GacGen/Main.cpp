@@ -232,7 +232,7 @@ void GuiMain()
 
 	if (config->cppOutput)
 	{
-		resource->RemoveFolder(L"Precompiled");
+		resource->GetFolder(L"Precompiled")->RemoveFolder(L"Workflow");
 		if (config->cppOutput->resource != L"")
 		{
 			OPEN_BINARY_FILE(L"Precompiled Binary Resource", config->cppOutput->resource);

@@ -1687,6 +1687,7 @@ GuiBindableDataEditor
 Helper Functions
 ***********************************************************************/
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			class GuiTemplateReflectableFactory : public Object, public virtual GuiTemplate::IFactory
 			{
 			protected:
@@ -1742,6 +1743,7 @@ Helper Functions
 					throw ArgumentException(message);
 				}
 			};
+#endif
 
 			void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
 			{
@@ -1769,6 +1771,7 @@ Helper Functions
 
 			Ptr<GuiTemplate::IFactory> CreateTemplateFactory(const WString& typeValues)
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				List<ITypeDescriptor*> types;
 				List<WString> typeNames;
 				SplitBySemicolon(typeValues, typeNames);
@@ -1780,6 +1783,9 @@ Helper Functions
 					);
 
 				return new GuiTemplateReflectableFactory(types);
+#else
+				CHECK_FAIL(L"CreateTemplateFactory(const WString&)#This function cannot be called without reflection enabled.");
+#endif
 			}
 		}
 	}

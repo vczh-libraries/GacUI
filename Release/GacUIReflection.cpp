@@ -3173,7 +3173,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSolidBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiSolidBorderElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>)
 
 				CLASS_MEMBER_PROPERTY_FAST(Color)
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
@@ -3181,7 +3181,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiRoundBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRoundBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiRoundBorderElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiRoundBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiRoundBorderElement>)
 				
 				CLASS_MEMBER_PROPERTY_FAST(Color)
 				CLASS_MEMBER_PROPERTY_FAST(Radius)
@@ -3189,7 +3189,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(Gui3DBorderElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<Gui3DBorderElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DBorderElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::Gui3DBorderElement>)
 				
 				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
 
@@ -3199,7 +3199,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(Gui3DSplitterElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DSplitterElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<Gui3DSplitterElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<Gui3DSplitterElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::Gui3DSplitterElement>)
 				
 				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
 
@@ -3216,7 +3216,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSolidBackgroundElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiSolidBackgroundElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>)
 				
 				CLASS_MEMBER_PROPERTY_FAST(Color)
 				CLASS_MEMBER_PROPERTY_FAST(Shape)
@@ -3224,7 +3224,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiGradientBackgroundElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiGradientBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiGradientBackgroundElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiGradientBackgroundElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiGradientBackgroundElement>)
 				
 				CLASS_MEMBER_METHOD(SetColors, {L"value1" _ L"value2"})
 
@@ -3242,7 +3242,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSolidLabelElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidLabelElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiSolidLabelElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiSolidLabelElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>)
 				
 				CLASS_MEMBER_METHOD(SetAlignments, {L"horizontal" _ L"vertical"})
 
@@ -3259,7 +3259,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiImageFrameElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiImageFrameElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiImageFrameElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiImageFrameElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>)
 
 				CLASS_MEMBER_METHOD(GetImage, NO_PARAMETER)
 				CLASS_MEMBER_METHOD_OVERLOAD(SetImage, {L"value"}, void(GuiImageFrameElement::*)(Ptr<INativeImage>))
@@ -3275,7 +3275,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiPolygonElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiPolygonElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiPolygonElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiPolygonElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiPolygonElement>)
 
 				CLASS_MEMBER_METHOD_RENAME(GetPoints, GetPointsArray, NO_PARAMETER);
 				CLASS_MEMBER_METHOD_RENAME(SetPoints, SetPointsArray, {L"points"});
@@ -3322,7 +3322,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiColorizedTextElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiColorizedTextElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiColorizedTextElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiColorizedTextElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiColorizedTextElement>)
 
 				CLASS_MEMBER_PROPERTY_FAST(Font)
 				CLASS_MEMBER_PROPERTY_FAST(PasswordChar)
@@ -3341,7 +3341,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiDocumentElement)
 				CLASS_MEMBER_BASE(IGuiGraphicsElement)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiDocumentElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<GuiDocumentElement>)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiDocumentElement>(), NO_PARAMETER, vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiDocumentElement>)
 
 				CLASS_MEMBER_PROPERTY_FAST(Document)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretBegin)

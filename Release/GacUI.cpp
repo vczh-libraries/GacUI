@@ -635,14 +635,18 @@ GuiApplicationMain
 				GetCurrentController()->InputService()->StartTimer();
 				GuiApplication app;
 				application=&app;
-				
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				GetGlobalTypeManager()->Load();
+#endif
 				GetPluginManager()->Load();
 				theme::SetCurrentTheme(theme.Obj());
 				GuiMain();
 				theme::SetCurrentTheme(0);
 				DestroyPluginManager();
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				DestroyGlobalTypeManager();
+#endif
 				ThreadLocalStorage::DisposeStorages();
 				FinalizeGlobalStorage();
 			}
@@ -4716,6 +4720,7 @@ namespace vl
 
 			Value ReadProperty(const Value& thisObject, const WString& propertyName)
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (!thisObject.IsNull() && propertyName != L"")
 				{
 					auto td = thisObject.GetTypeDescriptor();
@@ -4730,10 +4735,14 @@ namespace vl
 					}
 				}
 				return thisObject;
+#else
+				CHECK_FAIL(L"ReadProperty(const Value&, const WString&)#This function cannot be called without reflection enabled.");
+#endif
 			}
 
 			void WriteProperty(Value& thisObject, const WString& propertyName, const Value& newValue)
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (!thisObject.IsNull() && propertyName != L"")
 				{
 					auto td = thisObject.GetTypeDescriptor();
@@ -4743,10 +4752,14 @@ namespace vl
 						info->SetValue(thisObject, newValue);
 					}
 				}
+#else
+				CHECK_FAIL(L"WriteProperty(const Value&, const WString&, const Value&)#This function cannot be called without reflection enabled.");
+#endif
 			}
 
 			WString GetValueText(const Value& value)
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (auto td = value.GetTypeDescriptor())
 				{
 					if (auto st = td->GetSerializableType())
@@ -4758,6 +4771,9 @@ namespace vl
 					return L"<" + td->GetTypeName() + L">";
 				}
 				return L"";
+#else
+				CHECK_FAIL(L"GetValueText(const Value&)#This function cannot be called without reflection enabled.");
+#endif
 			}
 
 /***********************************************************************
@@ -4903,6 +4919,7 @@ GuiBindableTextList::ItemSource
 			
 			bool GuiBindableTextList::ItemSource::GetChecked(vint itemIndex)
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (itemSource)
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
@@ -4914,6 +4931,9 @@ GuiBindableTextList::ItemSource
 						}
 					}
 				}
+#else
+				CHECK_FAIL(L"GuiBindableTextList::ItemSource::GetChecked(vint)#This function cannot be called without reflection enabled.");
+#endif
 				return false;
 			}
 			
@@ -5396,6 +5416,7 @@ GuiBindableTreeView::ItemSourceNode
 
 			void GuiBindableTreeView::ItemSourceNode::PrepareChildren()
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (!childrenVirtualList)
 				{
 					auto value = ReadProperty(itemSource, rootProvider->childrenProperty);
@@ -5442,6 +5463,9 @@ GuiBindableTreeView::ItemSourceNode
 						children.Add(node);
 					}
 				}
+#else
+				CHECK_FAIL(L"GuiBindableTreeView::ItemSourceNode::PrepareChildren()#This function cannot be called without reflection enabled.");
+#endif
 			}
 
 			void GuiBindableTreeView::ItemSourceNode::UnprepareChildren()
@@ -26344,6 +26368,7 @@ GuiBindableDataEditor
 Helper Functions
 ***********************************************************************/
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 			class GuiTemplateReflectableFactory : public Object, public virtual GuiTemplate::IFactory
 			{
 			protected:
@@ -26399,6 +26424,7 @@ Helper Functions
 					throw ArgumentException(message);
 				}
 			};
+#endif
 
 			void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
 			{
@@ -26426,6 +26452,7 @@ Helper Functions
 
 			Ptr<GuiTemplate::IFactory> CreateTemplateFactory(const WString& typeValues)
 			{
+#ifndef VCZH_DEBUG_NO_REFLECTION
 				List<ITypeDescriptor*> types;
 				List<WString> typeNames;
 				SplitBySemicolon(typeValues, typeNames);
@@ -26437,6 +26464,9 @@ Helper Functions
 					);
 
 				return new GuiTemplateReflectableFactory(types);
+#else
+				CHECK_FAIL(L"CreateTemplateFactory(const WString&)#This function cannot be called without reflection enabled.");
+#endif
 			}
 		}
 	}
