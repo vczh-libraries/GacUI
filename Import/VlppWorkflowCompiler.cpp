@@ -17250,10 +17250,14 @@ WfGenerateExpressionVisitor
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{
+						auto firstResult = config->manager->expressionResolvings[node->first.Obj()];
+						auto secondResult = config->manager->expressionResolvings[node->second.Obj()];
+						auto mergedType = GetMergedType(firstResult.type, secondResult.type);
+
 						writer.WriteString(L"[&](){ try{ return ");
-						Call(node->first);
+						Call(node->first, mergedType.Obj());
 						writer.WriteString(L"; } catch(...){ return ");
-						Call(node->second);
+						Call(node->second, mergedType.Obj());
 						writer.WriteString(L"; } }()");
 					}
 					else
