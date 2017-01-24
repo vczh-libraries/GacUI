@@ -26,7 +26,7 @@ https://github.com/vczh-libraries
 #define USERIMPL(...)
 
 /***********************************************************************
-Global Variables and Functions
+Global Variables
 ***********************************************************************/
 
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Demo)
@@ -37,6 +37,10 @@ END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Demo)
 
 namespace vl_workflow_global
 {
+/***********************************************************************
+Closure Definitions
+***********************************************************************/
+
 	struct __vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
 	{
 		::demo::MainWindowConstructor* __vwsnthis_0;
@@ -127,15 +131,7 @@ namespace vl_workflow_global
 		bool StopListening() override;
 	};
 
-	::vl::presentation::FontProperties Demo::ChangeFontSize(::vl::presentation::FontProperties oldFont, ::vl::vint32_t deltaSize)
-	{
-		return [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = oldFont.fontFamily; __vwsn_temp__.size = (oldFont.size + deltaSize); __vwsn_temp__.antialias = true; return __vwsn_temp__; }();
-	}
-
-	Demo& Demo::Instance()
-	{
-		return Getvl_workflow_global_Demo().instance;
-	}
+	//-------------------------------------------------------------------
 
 	__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -146,6 +142,8 @@ namespace vl_workflow_global
 	{
 		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->OnMakeFontLarger)();
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -163,6 +161,8 @@ namespace vl_workflow_global
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_21)->SetEnabled(__vwsn_new_);
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
@@ -172,6 +172,8 @@ namespace vl_workflow_global
 	{
 		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->OnMakeFontSmaller)();
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -183,6 +185,8 @@ namespace vl_workflow_global
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->GetFont(), 5));
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
@@ -192,6 +196,8 @@ namespace vl_workflow_global
 	{
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->GetFont(), (- 5)));
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindow* __vwsnctor___vwsn_this_, ::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsn_this_(__vwsnctor___vwsn_this_)
@@ -203,6 +209,8 @@ namespace vl_workflow_global
 	{
 		return ::vl::__vwsn::This(__vwsn_this_)->buttonIDoNotKnow_Clicked(__vwsno_1, __vwsno_2);
 	}
+
+	//-------------------------------------------------------------------
 
 	__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
@@ -272,6 +280,8 @@ namespace vl_workflow_global
 		return false;
 	}
 
+	//-------------------------------------------------------------------
+
 	__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1)
 		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
 		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
@@ -300,6 +310,19 @@ namespace vl_workflow_global
 		return false;
 	}
 
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
+	::vl::presentation::FontProperties Demo::ChangeFontSize(::vl::presentation::FontProperties oldFont, ::vl::vint32_t deltaSize)
+	{
+		return [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = oldFont.fontFamily; __vwsn_temp__.size = (oldFont.size + deltaSize); __vwsn_temp__.antialias = true; return __vwsn_temp__; }();
+	}
+
+	Demo& Demo::Instance()
+	{
+		return Getvl_workflow_global_Demo().instance;
+	}
 }
 
 /***********************************************************************

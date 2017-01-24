@@ -18238,10 +18238,6 @@ namespace vl
 				}
 				WriteNamespaceEnd(writer, nss);
 
-				writer.WriteLine(L"/***********************************************************************");
-				writer.WriteLine(L"Global Variables and Functions");
-				writer.WriteLine(L"***********************************************************************/");
-				writer.WriteLine(L"");
 				WriteHeader_Global(writer);
 
 				if (!multiFile)
@@ -18263,10 +18259,6 @@ namespace vl
 				writer.WriteLine(L"");
 				WriteCpp_PushMacros(writer);
 
-				writer.WriteLine(L"");
-				writer.WriteLine(L"/***********************************************************************");
-				writer.WriteLine(L"Global Variables and Functions");
-				writer.WriteLine(L"***********************************************************************/");
 				writer.WriteLine(L"");
 				WriteCpp_Global(writer);
 				writer.WriteLine(L"");
@@ -19721,6 +19713,10 @@ namespace vl
 
 			void WfCppConfig::WriteHeader_Global(stream::StreamWriter& writer)
 			{
+				writer.WriteLine(L"/***********************************************************************");
+				writer.WriteLine(L"Global Variables and Functions");
+				writer.WriteLine(L"***********************************************************************/");
+				writer.WriteLine(L"");
 				writer.WriteLine(L"namespace " + assemblyNamespace);
 				writer.WriteLine(L"{");
 				writer.WriteLine(L"\tclass " + assemblyName);
@@ -19782,6 +19778,11 @@ namespace vl
 						})
 					);
 
+				writer.WriteLine(L"/***********************************************************************");
+				writer.WriteLine(L"Global Variables");
+				writer.WriteLine(L"***********************************************************************/");
+				writer.WriteLine(L"");
+
 				WString storageName = assemblyNamespace + L"_" + assemblyName;
 				writer.WriteLine(L"BEGIN_GLOBAL_STORAGE_CLASS(" + storageName + L")");
 				writer.WriteLine(L"\t" + assemblyNamespace + L"::" + assemblyName + L" instance;");
@@ -19841,45 +19842,61 @@ namespace vl
 				writer.WriteLine(assemblyNamespace);
 				writer.WriteLine(L"{");
 
-				FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+				if (reversedLambdaExprs.Count() + reversedClassExprs.Count() > 0)
 				{
-					WriteCpp_LambdaExprDecl(writer, expr);
-					writer.WriteLine(L"");
-				}
+					writer.WriteLine(L"/***********************************************************************");
+					writer.WriteLine(L"Closure Definitions");
+					writer.WriteLine(L"***********************************************************************/");
 
-				FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
-				{
-					WriteCpp_ClassExprDecl(writer, expr);
-					writer.WriteLine(L"");
+					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+					{
+						writer.WriteLine(L"");
+						WriteCpp_LambdaExprDecl(writer, expr);
+					}
+
+					FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+					{
+						writer.WriteLine(L"");
+						WriteCpp_ClassExprDecl(writer, expr);
+					}
+
+					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+					{
+						writer.WriteLine(L"");
+						writer.WriteLine(L"\t//-------------------------------------------------------------------");
+						writer.WriteLine(L"");
+						WriteCpp_LambdaExprImpl(writer, expr);
+					}
+
+					if (reversedClassExprs.Count() > 0)
+					{
+						writer.WriteLine(L"");
+						FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+						{
+							writer.WriteLine(L"\t//-------------------------------------------------------------------");
+							writer.WriteLine(L"");
+							WriteCpp_ClassExprImpl(writer, expr);
+						}
+					}
 				}
+				writer.WriteLine(L"/***********************************************************************");
+				writer.WriteLine(L"Global Functions");
+				writer.WriteLine(L"***********************************************************************/");
 
 				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
 				{
+					writer.WriteLine(L"");
 					writer.WriteString(L"\t");
 					auto returnType = WriteFunctionHeader(writer, decl, assemblyName + L"::" + ConvertName(decl->name.value), true);
 					writer.WriteLine(L"");
 					WriteFunctionBody(writer, decl->statement, L"\t", returnType);
-					writer.WriteLine(L"");
 				}
+
+				writer.WriteLine(L"");
 				writer.WriteLine(L"\t" + assemblyName + L"& " + assemblyName + L"::Instance()");
 				writer.WriteLine(L"\t{");
 				writer.WriteLine(L"\t\treturn Get" + storageName + L"().instance;");
 				writer.WriteLine(L"\t}");
-
-				FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
-				{
-					writer.WriteLine(L"");
-					WriteCpp_LambdaExprImpl(writer, expr);
-				}
-
-				if (reversedClassExprs.Count() > 0)
-				{
-					writer.WriteLine(L"");
-					FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
-					{
-						WriteCpp_ClassExprImpl(writer, expr);
-					}
-				}
 				writer.WriteLine(L"}");
 			}
 		}
