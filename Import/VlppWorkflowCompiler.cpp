@@ -14776,6 +14776,7 @@ WfCppConfig
 				auto td = typeInfo->GetTypeDescriptor();
 				bool constRef =
 					td == description::GetTypeDescriptor<WString>() ||
+					td == description::GetTypeDescriptor<Value>() ||
 					(
 						typeInfo->GetDecorator() == ITypeInfo::SharedPtr && typeInfo->GetElementType()->GetDecorator() == ITypeInfo::Generic &&
 						(

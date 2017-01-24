@@ -9379,7 +9379,7 @@ Interface Implementation Proxy
 			class IValueSubscription : public virtual IDescriptable, public Description<IValueSubscription>
 			{
 			public:
-				virtual Ptr<IValueListener>		Subscribe(const Func<void(Value)>& callback) = 0;
+				virtual Ptr<IValueListener>		Subscribe(const Func<void(const Value&)>& callback) = 0;
 				virtual bool					Update() = 0;
 				virtual bool					Close() = 0;
 			};
@@ -12010,7 +12010,8 @@ TypeInfoRetriver Helper Functions (BoxValue, UnboxValue)
 			template<typename T>
 			Value BoxValue(const T& object, ITypeDescriptor* typeDescriptor=0)
 			{
-				return ValueAccessor<T, TypeInfoRetriver<T>::Decorator>::BoxValue(object, typeDescriptor);
+				using Type = RemoveCVR<T>::Type;
+				return ValueAccessor<Type, TypeInfoRetriver<Type>::Decorator>::BoxValue(object, typeDescriptor);
 			}
 			
 			/// <summary>Unbox an reflectable object. Its type cannot be generic.</summary>
@@ -12022,7 +12023,8 @@ TypeInfoRetriver Helper Functions (BoxValue, UnboxValue)
 			template<typename T>
 			T UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor=0, const WString& valueName=L"value")
 			{
-				return ValueAccessor<T, TypeInfoRetriver<T>::Decorator>::UnboxValue(value, typeDescriptor, valueName);
+				using Type = RemoveCVR<T>::Type;
+				return ValueAccessor<Type, TypeInfoRetriver<Type>::Decorator>::UnboxValue(value, typeDescriptor, valueName);
 			}
 
 /***********************************************************************
@@ -18491,7 +18493,7 @@ Interface Implementation Proxy (Implement)
 			END_INTERFACE_PROXY(IValueListener)
 			
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueSubscription)
-				Ptr<IValueListener> Subscribe(const Func<void(Value)>& callback)override
+				Ptr<IValueListener> Subscribe(const Func<void(const Value&)>& callback)override
 				{
 					INVOKEGET_INTERFACE_PROXY(Subscribe, callback);
 				}
