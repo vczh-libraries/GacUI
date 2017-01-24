@@ -47,7 +47,7 @@ Serialization (Color)
 				return true;
 			}
 
-			IValueType::CompareResult TypedValueSerializerProvider<Color>::Compare(const presentation::Color& a, const presentation::Color& b)
+			IBoxedValue::CompareResult TypedValueSerializerProvider<Color>::Compare(const presentation::Color& a, const presentation::Color& b)
 			{
 				return TypedValueSerializerProvider<vuint32_t>::Compare(a.value, b.value);
 			}
@@ -73,7 +73,7 @@ Serialization (DocumentFontSize)
 				return true;
 			}
 
-			IValueType::CompareResult TypedValueSerializerProvider<DocumentFontSize>::Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b)
+			IBoxedValue::CompareResult TypedValueSerializerProvider<DocumentFontSize>::Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b)
 			{
 				return TypedValueSerializerProvider<WString>::Compare(a.ToString(), b.ToString());
 			}
@@ -99,7 +99,7 @@ Serialization (GlobalStringKey)
 				return true;
 			}
 
-			IValueType::CompareResult TypedValueSerializerProvider<GlobalStringKey>::Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b)
+			IBoxedValue::CompareResult TypedValueSerializerProvider<GlobalStringKey>::Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b)
 			{
 				return TypedValueSerializerProvider<WString>::Compare(a.ToString(), b.ToString());
 			}
@@ -644,6 +644,7 @@ GuiApplicationMain
 				DestroyPluginManager();
 				DestroyGlobalTypeManager();
 				ThreadLocalStorage::DisposeStorages();
+				FinalizeGlobalStorage();
 			}
 		}
 	}
@@ -24181,75 +24182,9 @@ namespace vl
 	{
 		namespace templates
 		{
-			using namespace description;
 			using namespace collections;
 			using namespace controls;
 			using namespace compositions;
-
-/***********************************************************************
-GuiTemplate::IFactory
-***********************************************************************/
-
-			class GuiTemplateReflectableFactory : public Object, public virtual GuiTemplate::IFactory
-			{
-			protected:
-				List<ITypeDescriptor*>			types;
-
-			public:
-				GuiTemplateReflectableFactory(const List<ITypeDescriptor*>& _types)
-				{
-					CopyFrom(types, _types);
-				}
-
-				GuiTemplate* CreateTemplate(const description::Value& viewModel)override
-				{
-					FOREACH(ITypeDescriptor*, type, types)
-					{
-						auto group = type->GetConstructorGroup();
-						vint count = group->GetMethodCount();
-						for (vint i = 0; i < count; i++)
-						{
-							auto ctor = group->GetMethod(i);
-							if (ctor->GetReturn()->GetDecorator() == ITypeInfo::RawPtr && ctor->GetParameterCount() <= 1)
-							{
-								Array<Value> arguments(ctor->GetParameterCount());
-								if (ctor->GetParameterCount() == 1)
-								{
-									if (!viewModel.CanConvertTo(ctor->GetParameter(0)->GetType()))
-									{
-										continue;
-									}
-									arguments[0] = viewModel;
-								}
-								return dynamic_cast<GuiTemplate*>(ctor->Invoke(Value(), arguments).GetRawPtr());
-							}
-						}
-					}
-					
-					WString message = L"Unable to create a template from types {";
-					FOREACH_INDEXER(ITypeDescriptor*, type, index, types)
-					{
-						if (index > 0) message += L", ";
-						message += type->GetTypeName();
-					}
-					message += L"} using view model: ";
-					if (viewModel.IsNull())
-					{
-						message += L"null.";
-					}
-					else
-					{
-						message += viewModel.GetTypeDescriptor()->GetTypeName() + L".";
-					}
-
-					throw ArgumentException(message);
-				}
-			};
-
-			Ptr<GuiTemplate::IFactory> GuiTemplate::IFactory::CreateTemplateFactory(const collections::List<description::ITypeDescriptor*>& types)
-			{
-				return new GuiTemplateReflectableFactory(types);
-			}
 
 /***********************************************************************
 GuiTemplate
@@ -26409,6 +26344,62 @@ GuiBindableDataEditor
 Helper Functions
 ***********************************************************************/
 
+			class GuiTemplateReflectableFactory : public Object, public virtual GuiTemplate::IFactory
+			{
+			protected:
+				List<ITypeDescriptor*>			types;
+
+			public:
+				GuiTemplateReflectableFactory(const List<ITypeDescriptor*>& _types)
+				{
+					CopyFrom(types, _types);
+				}
+
+				GuiTemplate* CreateTemplate(const description::Value& viewModel)override
+				{
+					FOREACH(ITypeDescriptor*, type, types)
+					{
+						auto group = type->GetConstructorGroup();
+						vint count = group->GetMethodCount();
+						for (vint i = 0; i < count; i++)
+						{
+							auto ctor = group->GetMethod(i);
+							if (ctor->GetReturn()->GetDecorator() == ITypeInfo::RawPtr && ctor->GetParameterCount() <= 1)
+							{
+								Array<Value> arguments(ctor->GetParameterCount());
+								if (ctor->GetParameterCount() == 1)
+								{
+									if (!viewModel.CanConvertTo(ctor->GetParameter(0)->GetType()))
+									{
+										continue;
+									}
+									arguments[0] = viewModel;
+								}
+								return dynamic_cast<GuiTemplate*>(ctor->Invoke(Value(), arguments).GetRawPtr());
+							}
+						}
+					}
+
+					WString message = L"Unable to create a template from types {";
+					FOREACH_INDEXER(ITypeDescriptor*, type, index, types)
+					{
+						if (index > 0) message += L", ";
+						message += type->GetTypeName();
+					}
+					message += L"} using view model: ";
+					if (viewModel.IsNull())
+					{
+						message += L"null.";
+					}
+					else
+					{
+						message += viewModel.GetTypeDescriptor()->GetTypeName() + L".";
+					}
+
+					throw ArgumentException(message);
+				}
+			};
+
 			void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
 			{
 				const wchar_t* attValue = input.Buffer();
@@ -26445,11 +26436,15 @@ Helper Functions
 						.Where([](ITypeDescriptor* type){return type != 0; })
 					);
 
-				return GuiTemplate::IFactory::CreateTemplateFactory(types);
+				return new GuiTemplateReflectableFactory(types);
 			}
 		}
 	}
 }
+
+#undef INITIALIZE_FACTORY_FROM_TEMPLATE
+#undef GET_FACTORY_FROM_TEMPLATE
+#undef GET_FACTORY_FROM_TEMPLATE_OPT
 
 /***********************************************************************
 CONTROLS\TEXTEDITORPACKAGE\GUIDOCUMENTVIEWER.CPP

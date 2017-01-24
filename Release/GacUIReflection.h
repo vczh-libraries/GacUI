@@ -4,6 +4,7 @@ DEVELOPER: Zihan Chen(vczh)
 ***********************************************************************/
 #include "Vlpp.h"
 #include "VlppWorkflow.h"
+#include "VlppWorkflowCompiler.h"
 #include "GacUI.h"
 
 /***********************************************************************
@@ -16,6 +17,10 @@ GacUI Reflection: Basic
 
 Interfaces:
 ***********************************************************************/
+
+#ifdef VCZH_DEBUG_NO_REFLECTION
+static_assert(false, "Don't use GacUIReflection.(h|cpp) if VCZH_DEBUG_NO_REFLECTION is defined.");
+#endif
 
 #ifndef VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONBASIC
@@ -2060,57 +2065,6 @@ Type Loader
 #endif
 
 /***********************************************************************
-GUIINSTANCECOMPILEDWORKFLOW.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Shared Script
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCECOMPILEDWORKFLOW
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCECOMPILEDWORKFLOW
-
-
-namespace vl
-{
-	namespace workflow
-	{
-		class WfModule;
-	}
-
-	namespace presentation
-	{
-		class GuiInstanceCompiledWorkflow : public Object, public Description<GuiInstanceCompiledWorkflow>
-		{
-		public:
-			enum AssemblyType
-			{
-				ViewModel,
-				Shared,
-				InstanceCtor,
-				InstanceClass,
-				TemporaryClass,
-			};
-			
-			collections::List<WString>						codes;
-			collections::List<Ptr<workflow::WfModule>>		modules;
-			Ptr<stream::MemoryStream>						binaryToLoad;
-
-			AssemblyType									type = AssemblyType::Shared;
-			Ptr<workflow::runtime::WfAssembly>				assembly;
-			Ptr<workflow::runtime::WfRuntimeGlobalContext>	context;
-
-			void											Initialize(bool initializeContext);
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
 TYPEDESCRIPTORS\GUIREFLECTIONEVENTS.H
 ***********************************************************************/
 /***********************************************************************
@@ -2155,43 +2109,6 @@ Type List
 GuiEventInfoImpl
 ***********************************************************************/
 
-			class GuiEventInfoCpp : public Object, public IEventInfo::ICpp
-			{
-			public:
-				WString								handlerType;
-				WString								attachTemplate;
-				WString								detachTemplate;
-				WString								invokeTemplate;
-
-				GuiEventInfoCpp()
-					:handlerType(L"::vl::Ptr<::vl::presentation::compositions::IGuiGraphicsEventHandler>", false)
-					, attachTemplate(L"$This->GetEventReceiver()->$Name.AttachLambda($Handler)", false)
-					, detachTemplate(L"$This->GetEventReceiver()->$Name.Detach($Handler)", false)
-					, invokeTemplate(L"$This->GetEventReceiver()->$Name.Execute($Arguments)", false)
-				{
-				}
-
-				const WString& GetHandlerType()override
-				{
-					return handlerType;
-				}
-
-				const WString& GetAttachTemplate()override
-				{
-					return attachTemplate;
-				}
-
-				const WString& GetDetachTemplate()override
-				{
-					return detachTemplate;
-				}
-
-				const WString& GetInvokeTemplate()override
-				{
-					return invokeTemplate;
-				}
-			};
-
 			template<typename T>
 			class GuiEventInfoImpl : public EventInfoImpl
 			{
@@ -2203,63 +2120,41 @@ GuiEventInfoImpl
 				typedef Func<GuiGraphicsEvent<T>*(DescriptableObject*, bool)>		EventRetriverFunction;
 
 				EventRetriverFunction				eventRetriver;
-				Ptr<GuiEventInfoCpp>				cpp;
 
-				void AttachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override
+				Ptr<IEventHandler> AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)override
 				{
-					if(thisObject)
-					{
-						if(EventHandlerImpl* handlerImpl=dynamic_cast<EventHandlerImpl*>(eventHandler))
+					GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, true);
+					auto func = [=](GuiGraphicsComposition* sender, T* arguments)
 						{
-							GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, true);
-							if(eventObject)
-							{
-								auto handler=eventObject->AttachLambda(
-									[=](GuiGraphicsComposition* sender, T& arguments)
-									{
-										Value senderObject = BoxValue<GuiGraphicsComposition*>(sender, Description<GuiGraphicsComposition>::GetAssociatedTypeDescriptor());
-										Value argumentsObject = BoxValue<T*>(&arguments, Description<T>::GetAssociatedTypeDescriptor());
+							Value senderObject = BoxValue<GuiGraphicsComposition*>(sender, Description<GuiGraphicsComposition>::GetAssociatedTypeDescriptor());
+							Value argumentsObject = BoxValue<T*>(arguments, Description<T>::GetAssociatedTypeDescriptor());
 
-										collections::Array<Value> eventArgs(2);
-										eventArgs[0] = senderObject;
-										eventArgs[1] = argumentsObject;
-										eventHandler->Invoke(Value::From(thisObject), eventArgs);
-									});
-								handlerImpl->SetDescriptableTag(handler);
-							}
-						}
-					}
+							auto eventArgs = IValueList::Create();
+							eventArgs->Add(senderObject);
+							eventArgs->Add(argumentsObject);
+							handler->Invoke(eventArgs);
+						};
+					return __vwsn::EventAttach(*eventObject, func);
 				}
 
-				void DetachInternal(DescriptableObject* thisObject, IEventHandler* eventHandler)override
+				bool DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)override
 				{
-					if(thisObject)
+					GuiGraphicsEvent<T>* eventObject = eventRetriver(thisObject, false);
+					if(eventObject)
 					{
-						if(EventHandlerImpl* handlerImpl=dynamic_cast<EventHandlerImpl*>(eventHandler))
-						{
-							GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
-							if(eventObject)
-							{
-								auto handler=handlerImpl->GetDescriptableTag().Cast<presentation::compositions::IGuiGraphicsEventHandler>();
-								if(handler)
-								{
-									eventObject->Detach(handler);
-								}
-							}
-						}
+						return __vwsn::EventDetach(*eventObject, handler);
 					}
+					return false;
 				}
 
-				void InvokeInternal(DescriptableObject* thisObject, collections::Array<Value>& arguments)override
+				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override
 				{
-					if(thisObject)
+					GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
+					if(eventObject)
 					{
-						GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
-						if(eventObject)
-						{
-							T* value=UnboxValue<T*>(arguments[1], Description<T>::GetAssociatedTypeDescriptor());
-							eventObject->Execute(*value);
-						}
+						auto sender = UnboxValue<GuiGraphicsComposition*>(arguments->Get(0), Description<GuiGraphicsComposition>::GetAssociatedTypeDescriptor());
+						auto value=UnboxValue<T*>(arguments->Get(1), Description<T>::GetAssociatedTypeDescriptor());
+						eventObject->ExecuteWithNewSender(*value, sender);
 					}
 				}
 
@@ -2272,7 +2167,6 @@ GuiEventInfoImpl
 				GuiEventInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, const EventRetriverFunction& _eventRetriver)
 					:EventInfoImpl(_ownerTypeDescriptor, _name)
 					, eventRetriver(_eventRetriver)
-					, cpp(MakePtr<GuiEventInfoCpp>())
 				{
 				}
 
@@ -2282,7 +2176,7 @@ GuiEventInfoImpl
 
 				ICpp* GetCpp()override
 				{
-					return cpp.Obj();
+					return nullptr;
 				}
 			};
 
@@ -2364,83 +2258,50 @@ Type Loader
 #endif
 
 /***********************************************************************
-GUIINSTANCEPARTIALCLASS.H
+GUIINSTANCECOMPILEDWORKFLOW.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
-GacUI Reflection: Instance Loader
+GacUI Reflection: Shared Script
 
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEPARTIALCLASS
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEPARTIALCLASS
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCECOMPILEDWORKFLOW
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCECOMPILEDWORKFLOW
 
 
 namespace vl
 {
+	namespace workflow
+	{
+		class WfModule;
+	}
+
 	namespace presentation
 	{
-		using namespace reflection;
-
-/***********************************************************************
-PartialClass
-***********************************************************************/
-
-		template<typename T>
-		class GuiInstancePartialClass
+		class GuiInstanceCompiledWorkflow : public Object, public Description<GuiInstanceCompiledWorkflow>
 		{
-			typedef reflection::description::Value			Value;
-		private:
-			WString											className;
-			Value											ctorInstance;
-
-		protected:
-			bool InitializeFromResource()
-			{
-				if (ctorInstance.IsNull())
-				{
-					auto rootInstance = Value::From(dynamic_cast<T*>(this));
-					auto resource = GetResourceManager()->GetResourceFromClassName(className);
-					auto ctorFullName = className + L"<Ctor>";
-					auto td = description::GetTypeDescriptor(ctorFullName);
-					if (!td) return false;
-
-					auto ctor = td->GetConstructorGroup()->GetMethod(0);
-					collections::Array<Value> arguments;
-					ctorInstance = ctor->Invoke(Value(), arguments);
-					
-					auto initialize = td->GetMethodGroupByName(L"<initialize-instance>", false)->GetMethod(0);
-					{
-						arguments.Resize(2);
-						auto resolver = MakePtr<GuiResourcePathResolver>(resource, resource->GetWorkingDirectory());
-						arguments[0] = rootInstance;
-						arguments[1] = Value::From(resolver.Obj());
-						initialize->Invoke(ctorInstance, arguments);
-					}
-					return true;
-				}
-				return false;
-			}
-
-			template<typename TControl>
-			void LoadInstanceReference(const WString& name, TControl*& reference)
-			{
-				reference = ctorInstance.GetProperty(name).GetRawPtr()->template SafeAggregationCast<TControl>();
-			}
 		public:
-			GuiInstancePartialClass(const WString& _className)
-				:className(_className)
+			enum AssemblyType
 			{
-			}
+				Shared,
+				InstanceClass,
+				TemporaryClass,
+			};
+			
+			collections::List<WString>							codes;
+			collections::List<Ptr<workflow::WfModule>>			modules;
+			Ptr<workflow::analyzer::WfLexicalScopeManager>		metadata;
+			Ptr<stream::MemoryStream>							binaryToLoad;
 
-			virtual ~GuiInstancePartialClass()
-			{
-			}
+			AssemblyType										type = AssemblyType::Shared;
+			Ptr<workflow::runtime::WfAssembly>					assembly;
+			Ptr<workflow::runtime::WfRuntimeGlobalContext>		context;
+
+			void												Initialize(bool initializeContext);
 		};
-
-#define GUI_INSTANCE_REFERENCE(NAME) LoadInstanceReference(L ## #NAME, this->NAME)
 	}
 }
 

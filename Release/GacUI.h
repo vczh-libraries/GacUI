@@ -3481,8 +3481,8 @@ Resource
 
 		enum class GuiResourceUsage
 		{
-			DevelopmentTool,
-			Application,
+			DataOnly,
+			InstanceClass,
 		};
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
@@ -3688,18 +3688,15 @@ Resource Type Resolver
 			enum PassNames
 			{
 				Workflow_Collect					= 0,
-				Workflow_CompileViewModel			= 1,
-				Workflow_CompileShared				= 2,
-				Workflow_Max						= Workflow_CompileShared,
+				Workflow_Compile					= 1,
+				Workflow_Max						= Workflow_Compile,
 
-				Instance_CollectInstanceTypes		= 3,
-				Instance_ValidateDependency			= 4,
-				Instance_GenerateTemporaryClass		= 5,
-				Instance_CompileTemporaryClass		= 6,
-				Instance_GenerateInstanceCtor		= 7,
-				Instance_CompileInstanceCtor		= 8,
-				Instance_GenerateInstanceClass		= 9,
-				Instance_CompileInstanceClass		= 10,
+				Instance_CollectInstanceTypes		= 2,
+				Instance_CompileInstanceTypes		= 3,
+				Instance_CollectEventHandlers		= 4,
+				Instance_CompileEventHandlers		= 5,
+				Instance_GenerateInstanceClass		= 6,
+				Instance_CompileInstanceClass		= 7,
 				Instance_Max						= Instance_CompileInstanceClass,
 			};
 
@@ -3748,7 +3745,7 @@ Resource Type Resolver
 		///			Pass 1: Script		(initialize shared scripts)
 		///			Pass 2: Script		(initialize instance scripts)
 		/// </summary>
-		class IGuiResourceTypeResolver_Initialize : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
+		class IGuiResourceTypeResolver_Initialize : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Initialize>
 		{
 		public:
 			/// <summary>Get the maximum pass index that the initializer needs.</summary>
@@ -5838,6 +5835,8 @@ Event
 				public:
 					Ptr<IGuiGraphicsEventHandler>	handler;
 				};
+
+				virtual bool IsAttached() = 0;
 			};
 
 			template<typename T>
@@ -5850,12 +5849,18 @@ Event
 				
 				class FunctionHandler : public Object, public IGuiGraphicsEventHandler
 				{
-				protected:
-					FunctionType			handler;
 				public:
+					bool					isAttached = true;
+					FunctionType			handler;
+
 					FunctionHandler(const FunctionType& _handler)
 						:handler(_handler)
 					{
+					}
+
+					bool IsAttached()override
+					{
+						return isAttached;
 					}
 
 					void Execute(GuiGraphicsComposition* sender, T& argument)
@@ -5954,6 +5959,8 @@ Event
 					{
 						if((*currentHandler)->handler == typedHandler)
 						{
+							(*currentHandler)->handler->isAttached = false;
+
 							auto next=(*currentHandler)->next;
 							(*currentHandler)=next;
 							return true;
@@ -6264,6 +6271,61 @@ Event Receiver
 				GuiNotifyEvent					clipboardNotify;
 			};
 		}
+	}
+
+	/***********************************************************************
+	Workflow to C++ Codegen Helpers
+	***********************************************************************/
+
+	namespace __vwsn
+	{
+		template<typename T>
+		struct EventHelper<presentation::compositions::GuiGraphicsEvent<T>>
+		{
+			using Event = presentation::compositions::GuiGraphicsEvent<T>;
+			using Sender = presentation::compositions::GuiGraphicsComposition;
+			using IGuiGraphicsEventHandler = presentation::compositions::IGuiGraphicsEventHandler;
+			using Handler = Func<void(Sender*, T*)>;
+
+			class EventHandlerImpl : public Object, public reflection::description::IEventHandler
+			{
+			public:
+				Ptr<IGuiGraphicsEventHandler> handler;
+
+				EventHandlerImpl(Ptr<IGuiGraphicsEventHandler> _handler)
+					:handler(_handler)
+				{
+				}
+
+				bool IsAttached()override
+				{
+					return handler->IsAttached();
+				}
+			};
+
+			static Ptr<reflection::description::IEventHandler> Attach(Event& e, Handler handler)
+			{
+				return MakePtr<EventHandlerImpl>(e.AttachLambda([=](Sender* sender, T& args)
+				{
+					handler(sender, &args);
+				}));
+			}
+
+			static bool Detach(Event& e, Ptr<reflection::description::IEventHandler> handler)
+			{
+				auto impl = handler.Cast<EventHandlerImpl>();
+				if (!impl) return false;
+				return e.Detach(impl->handler);
+			}
+
+			static auto Invoke(Event& e)
+			{
+				return [&](Sender* sender, T* args)
+				{
+					e.ExecuteWithNewSender(*args, sender);
+				};
+			}
+		};
 	}
 }
 
@@ -18066,8 +18128,6 @@ namespace vl
 					/// <returns>The created template.</returns>
 					/// <param name="viewModel">The view model for binding.</param>
 					virtual GuiTemplate*				CreateTemplate(const description::Value& viewModel) = 0;
-
-					static Ptr<IFactory>				CreateTemplateFactory(const collections::List<description::ITypeDescriptor*>& types);
 				};
 
 				/// <summary>Create a template.</summary>
@@ -19203,7 +19263,7 @@ IGuiResourceManager
 		class IGuiResourceManager : public IDescriptable, public Description<IGuiResourceManager>
 		{
 		public:
-			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::Application) = 0;
+			virtual bool								SetResource(const WString& name, Ptr<GuiResource> resource, GuiResourceUsage usage = GuiResourceUsage::DataOnly) = 0;
 			virtual Ptr<GuiResource>					GetResource(const WString& name) = 0;
 			virtual Ptr<GuiResource>					GetResourceFromClassName(const WString& classFullName) = 0;
 		};
@@ -19245,7 +19305,7 @@ Serialization
 				static presentation::Color GetDefaultValue();
 				static bool Serialize(const presentation::Color& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::Color& output);
-				static IValueType::CompareResult Compare(const presentation::Color& a, const presentation::Color& b);
+				static IBoxedValue::CompareResult Compare(const presentation::Color& a, const presentation::Color& b);
 			};
 
 			template<>
@@ -19254,7 +19314,7 @@ Serialization
 				static presentation::DocumentFontSize GetDefaultValue();
 				static bool Serialize(const presentation::DocumentFontSize& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::DocumentFontSize& output);
-				static IValueType::CompareResult Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b);
+				static IBoxedValue::CompareResult Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b);
 			};
 
 			template<>
@@ -19263,7 +19323,7 @@ Serialization
 				static presentation::GlobalStringKey GetDefaultValue();
 				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
-				static IValueType::CompareResult Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b);
+				static IBoxedValue::CompareResult Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b);
 			};
 
 /***********************************************************************

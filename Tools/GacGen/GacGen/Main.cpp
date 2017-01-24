@@ -37,44 +37,72 @@ void SaveErrors(FilePath errorFilePath, List<WString>& errors)
 		PrintErrorMessage(L"gacgen> Unable to write : " + errorFilePath.GetFullPath());
 	}
 }
-
-typedef Dictionary<WString, Ptr<GuiInstanceCompiledWorkflow>>	CompiledScriptMap;
-
-void CollectWorkflowScriptsInFolder(Ptr<GuiResourceFolder> folder, CompiledScriptMap& scripts)
+class Callback : public Object, public IGuiResourcePrecompileCallback
 {
-	FOREACH(Ptr<GuiResourceItem>, item, folder->GetItems())
+public:
+	vint lastPass = -1;
+
+	void PrintPass(vint passIndex)
 	{
-		auto compiled = item->GetContent().Cast<GuiInstanceCompiledWorkflow>();
-		if (compiled)
+		if (lastPass != passIndex)
 		{
-			scripts.Add(item->GetResourcePath(), compiled);
+			lastPass = passIndex;
+			switch (passIndex)
+			{
+			case IGuiResourceTypeResolver_Precompile::Workflow_Collect:
+				PrintInformationMessage(L"Pass: (1/8) Collect workflow scripts");
+				break;
+			case IGuiResourceTypeResolver_Precompile::Workflow_Compile:
+				PrintInformationMessage(L"Pass: (2/8) Compile view model scripts");
+				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_CollectInstanceTypes:
+				PrintInformationMessage(L"Pass: (3/8) Collect instances");
+				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_CompileInstanceTypes:
+				PrintInformationMessage(L"Pass: (4/8) Validate instances");
+				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_CollectEventHandlers:
+				PrintInformationMessage(L"Pass: (5/8) Generate instance type stubs");
+				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_CompileEventHandlers:
+				PrintInformationMessage(L"Pass: (6/8) Compile instance type stubs");
+				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceClass:
+				PrintInformationMessage(L"Pass: (7/8) Generate instance types");
+				break;
+			case IGuiResourceTypeResolver_Precompile::Instance_CompileInstanceClass:
+				PrintInformationMessage(L"Pass: (8/8) Compile instance types");
+				break;
+			}
 		}
 	}
-	FOREACH(Ptr<GuiResourceFolder>, subFolder, folder->GetFolders())
-	{
-		CollectWorkflowScriptsInFolder(subFolder, scripts);
-	}
-}
 
-void CollectWorkflowScripts(Ptr<GuiResource> resource, CompiledScriptMap& scripts)
-{
-	auto precompiledFolder = resource->GetFolder(L"Precompiled");
-	CollectWorkflowScriptsInFolder(precompiledFolder, scripts);
-}
+	void OnPerPass(vint passIndex)override
+	{
+		PrintPass(passIndex);
+	}
+
+	void OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource)override
+	{
+		PrintPass(passIndex);
+		PrintInformationMessage(L"    " + resource->GetResourcePath());
+	}
+};
 
 void GuiMain()
 {
 	Console::WriteLine(L"Vczh GacUI Resource Code Generator for C++");
+
 	if (arguments->Count() != 1)
 	{
 		PrintErrorMessage(L"GacGen.exe only accept 1 input file.");
 		return;
 	}
-
 	WString inputPath = arguments->Get(0);
 	
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath);
 	FilePath logFolderPath = inputPath + L".log";
+	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
 	FilePath errorFilePath = logFolderPath / L"Errors.txt";
 	{
 		Folder logFolder(logFolderPath);
@@ -119,217 +147,102 @@ void GuiMain()
 		}
 	}
 
-	Dictionary<WString, Ptr<WfClassDeclaration>> typeSchemas;
-	List<WString> typeSchemaOrder;
-	Dictionary<WString, Ptr<Instance>> instances;
-	Ptr<WfLexicalScopeManager> schemaManager;
+	PrintSuccessMessage(L"gacgen> Compiling...");
+	List<WString> errors;
+	Callback callback;
+	resource->Precompile(&callback, errors);
+	if (errors.Count() > 0)
 	{
-		Regex regexClassName(L"((<namespace>[^:]+)::)*(<type>[^:]+)");
-		Ptr<GuiResourcePathResolver> resolver = new GuiResourcePathResolver(resource, resource->GetWorkingDirectory());
-		SearchAllInstances(regexClassName, resolver, resource, instances);
+		SaveErrors(errorFilePath, errors);
+		return;
+	}
 
-		FOREACH(Ptr<Instance>, instance, instances.Values())
+	if(config->cppOutput)
+	{
+		auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");
+		auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
 		{
-			SearchAllEventHandlers(config, instances, instance, instance->eventHandlers);
+			WString text;
+			auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
+			FOREACH_INDEXER(WString, code, codeIndex, compiled->assembly->insAfterCodegen->moduleCodes)
+			{
+				text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
+				text += code + L"\r\n";
+			}
+			File(scriptFilePath).WriteAllText(text);
 		}
-
-		List<WString> schemaPaths;
-		List<Ptr<GuiInstanceSharedScript>> schemas;
-		Dictionary<vint, WString> schemaPathMap;
-		SearchAllSchemas(regexClassName, resource, schemaPaths, schemas);
-
-		if (schemas.Count() > 0)
 		{
-			if (!config->workflowTable)
+			auto input = MakePtr<WfCppInput>(config->cppOutput->name);
+			input->comment = L"Source: Host.sln";
+			input->defaultFileName = config->cppOutput->name + L"PartialClasses";
+			input->includeFileName = config->cppOutput->name;
+			if (config->cppOutput->normalInclude != L"")
 			{
-				config->workflowTable = WfLoadTable();
+				input->normalIncludes.Add(config->cppOutput->normalInclude);
 			}
-			schemaManager = new WfLexicalScopeManager(config->workflowTable);
-
-			FOREACH_INDEXER(Ptr<GuiInstanceSharedScript>, schema, schemaIndex, schemas)
+			if (config->cppOutput->reflectionInclude != L"")
 			{
-				vint codeIndex = schemaManager->AddModule(schema->code);
-				schemaPathMap.Add(codeIndex, schemaPaths[schemaIndex]);
+				input->reflectionIncludes.Add(config->cppOutput->reflectionInclude);
 			}
 
-			if (schemaManager->errors.Count() == 0)
+			FilePath sourceFolder = resource->GetWorkingDirectory() + config->cppOutput->sourceFolder;
+			Folder(sourceFolder).Create(true);
+			auto output = GenerateCppFiles(input, compiled->metadata.Obj());
+			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 			{
-				schemaManager->Rebuild(false);
-				if (schemaManager->errors.Count() == 0)
+				WString code = output->cppFiles.Values()[index];
+				File file(sourceFolder / fileName);
+
+				if (file.Exists())
 				{
-					List<Ptr<WfDeclaration>> decls;
-					CopyFrom(
-						decls,
-						From(schemaManager->GetModules())
-							.SelectMany([](Ptr<WfModule> module)
-							{
-								return LazyList<Ptr<WfDeclaration>>(module->declarations);
-							})
-						);
-					for (vint i = 0; i < decls.Count(); i++)
-					{
-						auto decl = decls[i];
-						if (auto nsDecl = decl.Cast<WfNamespaceDeclaration>())
-						{
-							CopyFrom(decls, nsDecl->declarations, true);
-						}
-						else if (auto classDecl = decl.Cast<WfClassDeclaration>())
-						{
-							if (classDecl->kind == WfClassKind::Interface)
-							{
-								auto td = schemaManager->declarationTypes[classDecl.Obj()];
-								auto typeName = td->GetTypeName();
-								typeSchemas.Add(typeName, classDecl);
-								typeSchemaOrder.Add(typeName);
-							}
-						}
-					}
+					code = MergeCppFileContent(file.ReadAllText(), code);
 				}
+				file.WriteAllText(code, false, BomEncoder::Utf8);
 			}
 		}
 	}
 
-	{
-		class Callback : public Object, public IGuiResourcePrecompileCallback
-		{
-		public:
-			vint lastPass = -1;
-
-			void PrintPass(vint passIndex)
-			{
-				if (lastPass != passIndex)
-				{
-					lastPass = passIndex;
-					switch (passIndex)
-					{
-					case IGuiResourceTypeResolver_Precompile::Workflow_Collect:
-						PrintInformationMessage(L"Pass: (1/11) Collect workflow scripts");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Workflow_CompileViewModel:
-						PrintInformationMessage(L"Pass: (2/11) Compile view model scripts");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Workflow_CompileShared:
-						PrintInformationMessage(L"Pass: (3/11) Compile shared scripts");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Instance_CollectInstanceTypes:
-						PrintInformationMessage(L"Pass: (4/11) Collect instances");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Instance_ValidateDependency:
-						PrintInformationMessage(L"Pass: (5/11) Validate instances");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Instance_GenerateTemporaryClass:
-						PrintInformationMessage(L"Pass: (6/11) Generate instance type stubs");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Instance_CompileTemporaryClass:
-						PrintInformationMessage(L"Pass: (7/11) Compile instance type stubs");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceCtor:
-						PrintInformationMessage(L"Pass: (8/11) Generate instance constructor types");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Instance_CompileInstanceCtor:
-						PrintInformationMessage(L"Pass: (9/11) Compile instance constructor types");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Instance_GenerateInstanceClass:
-						PrintInformationMessage(L"Pass: (10/11) Generate instance types");
-						break;
-					case IGuiResourceTypeResolver_Precompile::Instance_CompileInstanceClass:
-						PrintInformationMessage(L"Pass: (11/11) Compile instance types");
-						break;
-					}
-				}
-			}
-
-			void OnPerPass(vint passIndex)override
-			{
-				PrintPass(passIndex);
-			}
-
-			void OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource)override
-			{
-				PrintPass(passIndex);
-				PrintInformationMessage(L"    " + resource->GetResourcePath());
-			}
-		};
-
-		PrintSuccessMessage(L"gacgen> Compiling...");
-		List<WString> errors;
-		Callback callback;
-		resource->Precompile(&callback, errors);
-		if (errors.Count() > 0)
-		{
-			SaveErrors(errorFilePath, errors);
-			return;
-		}
-	}
-
-	GetResourceManager()->SetResource(L"GACGEN", resource, GuiResourceUsage::DevelopmentTool);
-
-	if (config->cppOutput)
-	{
-		filesystem::Folder(resource->GetWorkingDirectory() + config->cppOutput->output).Create(true);
-		FOREACH(Ptr<Instance>, instance, instances.Values())
-		{
-			if (instance->context->codeBehind)
-			{
-				WriteControlClassHeaderFile(config, instance);
-				WriteControlClassCppFile(config, instance);
-			}
-		}
-		WritePartialClassHeaderFile(config, schemaManager, typeSchemas, typeSchemaOrder, instances);
-		WritePartialClassCppFile(config, schemaManager, typeSchemas, typeSchemaOrder, instances);
-		WriteGlobalHeaderFile(config, instances);
-	}
+#define OPEN_BINARY_FILE(NAME, FILENAME) \
+			WString fileName = config->resource->GetWorkingDirectory() + FILENAME; \
+			Folder(FilePath(fileName).GetFolder()).Create(true); \
+			FileStream fileStream(fileName, FileStream::WriteOnly); \
+			if (!fileStream.IsAvailable()) \
+			{ \
+				PrintErrorMessage(L"error> Failed to generate " + fileName); \
+				return; \
+			} \
+			PrintSuccessMessage(L"gacgen> Generating " + fileName);
 
 	if (config->resOutput)
 	{
-		filesystem::Folder(resource->GetWorkingDirectory() + config->resOutput->output).Create(true);
-		if (config->resOutput->precompiledBinary != L"")
+		if (config->resOutput->resource != L"")
 		{
-			WString fileName = config->resOutput->output + config->resOutput->precompiledBinary;
-			OPEN_BINARY_FILE(L"Precompiled Binary Resource");
+			OPEN_BINARY_FILE(L"Precompiled Binary Resource", config->resOutput->resource);
 			resource->SavePrecompiledBinary(fileStream);
 		}
-		if (config->resOutput->precompiledCompressed != L"")
+		if (config->resOutput->compressed != L"")
 		{
-			WString fileName = config->resOutput->output + config->resOutput->precompiledCompressed;
-			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource");
+			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource", config->resOutput->compressed);
 			LzwEncoder encoder;
 			EncoderStream encoderStream(fileStream, encoder);
 			resource->SavePrecompiledBinary(encoderStream);
 		}
 	}
 
+	if (config->cppOutput)
 	{
-		PrintSuccessMessage(L"gacgen> Dumping workflow scripts ... : " + inputPath);
-		CompiledScriptMap scripts;
-		CollectWorkflowScripts(resource, scripts);
-
-		Group<WString, WString> paths;
-		FOREACH(WString, path, scripts.Keys())
+		resource->RemoveFolder(L"Precompiled");
+		if (config->resOutput->resource != L"")
 		{
-			auto pair = INVLOC.FindLast(path, L"/", Locale::None);
-			auto key = path.Right(path.Length() - pair.key - pair.value);
-			paths.Add(key, path);
+			OPEN_BINARY_FILE(L"Precompiled Binary Resource", config->resOutput->resource);
+			resource->SavePrecompiledBinary(fileStream);
 		}
-
-		FOREACH_INDEXER(WString, key, keyIndex, paths.Keys())
+		if (config->resOutput->compressed != L"")
 		{
-			auto& pathList = paths.GetByIndex(keyIndex);
-			FOREACH_INDEXER(WString, path, pathIndex, pathList)
-			{
-				auto compiled = scripts[path];
-				auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
-
-				WString text = path + L"\r\n";
-				FOREACH_INDEXER(WString, code, codeIndex, codes)
-				{
-					text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
-					text += code + L"\r\n";
-				}
-
-				auto fileName = logFolderPath / (pathList.Count() > 1 ? key + L"[" + itow(pathIndex) + L"].txt" : key + L".txt");
-				File(fileName).WriteAllText(text);
-			}
+			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource", config->resOutput->compressed);
+			LzwEncoder encoder;
+			EncoderStream encoderStream(fileStream, encoder);
+			resource->SavePrecompiledBinary(encoderStream);
 		}
 	}
 }

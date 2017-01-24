@@ -1328,6 +1328,7 @@ GuiPredefinedInstanceBindersPlugin
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-TYPE", &WfParseType);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-EXPRESSION", &WfParseExpression);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-STATEMENT", &WfParseStatement);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-DECLARATION", &WfParseDeclaration);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-MODULE", &WfParseModule);
 					manager->SetParsingTable(L"INSTANCE-QUERY", &GuiIqLoadTable);
 					manager->SetTableParser(L"INSTANCE-QUERY", L"INSTANCE-QUERY", &GuiIqParse);
@@ -1371,8 +1372,47 @@ namespace vl
 
 		using namespace controls;
 
-		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, const WString& path, collections::List<WString>& errors)
+		Ptr<GuiInstanceCompiledWorkflow> Workflow_GetModule(GuiResourcePrecompileContext& context, const WString& path)
 		{
+			return context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+		}
+
+		Ptr<GuiInstanceCompiledWorkflow> Workflow_EnsureModule(GuiResourcePrecompileContext& context, const WString& path, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
+		{
+			auto compiled = Workflow_GetModule(context, path);
+			if (!compiled)
+			{
+				compiled = new GuiInstanceCompiledWorkflow;
+				compiled->type = assemblyType;
+				context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
+			}
+			else
+			{
+				CHECK_ERROR(compiled->type == assemblyType, L"Workflow_EnsureModule(GuiResourcePrecompiledContext&, const WString&, GuiInstanceCompiledWorkflow::AssemblyType)#Unexpected assembly type.");
+			}
+			return compiled;
+		}
+
+		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
+		{
+			auto compiled = Workflow_EnsureModule(context, path, assemblyType);
+			compiled->modules.Add(module);
+		}
+
+		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, const WString& module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
+		{
+			auto compiled = Workflow_EnsureModule(context, path, assemblyType);
+			compiled->codes.Add(module);
+		}
+
+		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, collections::List<WString>& errors, bool keepMetadata)
+		{
+			auto compiled = Workflow_GetModule(context, path);
+			if (!compiled)
+			{
+				return;
+			}
+
 			if (!compiled->assembly)
 			{
 				List<WString> codes;
@@ -1395,37 +1435,32 @@ namespace vl
 					codes.Add(code);
 				};
 
-				if (compiled->modules.Count() > 0)
+				FOREACH_INDEXER(Ptr<WfModule>, module, index, compiled->modules)
 				{
-					FOREACH_INDEXER(Ptr<WfModule>, module, index, compiled->modules)
 					{
+						MemoryStream stream;
 						{
-							MemoryStream stream;
-							{
-								StreamWriter writer(stream);
-								auto recorder = MakePtr<ParsingUpdateLocationRecorder>();
-								ParsingWriter parsingWriter(writer, recorder, index);
-								WfPrint(module, L"", parsingWriter);
-							}
-							stream.SeekFromBegin(0);
-							{
-								StreamReader reader(stream);
-								addCode(reader);
-							}
+							StreamWriter writer(stream);
+							auto recorder = MakePtr<ParsingUpdateLocationRecorder>();
+							ParsingWriter parsingWriter(writer, recorder, index);
+							WfPrint(module, L"", parsingWriter);
 						}
-						manager->AddModule(module);
-					}
-				}
-				else
-				{
-					FOREACH(WString, code, compiled->codes)
-					{
+						stream.SeekFromBegin(0);
 						{
-							StringReader reader(code);
+							StreamReader reader(stream);
 							addCode(reader);
 						}
-						manager->AddModule(code);
 					}
+					manager->AddModule(module);
+				}
+
+				FOREACH(WString, code, compiled->codes)
+				{
+					{
+						StringReader reader(code);
+						addCode(reader);
+					}
+					manager->AddModule(code);
 				}
 
 				if (manager->errors.Count() == 0)
@@ -1476,12 +1511,134 @@ namespace vl
 					}
 					errors.Add(L"<END>");
 				}
-					
-				compiled->codes.Clear();
-				compiled->modules.Clear();
-				manager->Clear(false, true);
+
+				if (keepMetadata)
+				{
+					compiled->metadata = Workflow_TransferSharedManager();
+				}
+				else
+				{
+					manager->Clear(false, true);
+				}
 			}
 		}
+
+/***********************************************************************
+Shared Script Type Resolver (Script)
+***********************************************************************/
+
+#define Path_Shared				L"Workflow/Shared"
+#define Path_TemporaryClass		L"Workflow/TemporaryClass"
+#define Path_InstanceClass		L"Workflow/InstanceClass"
+
+		class GuiResourceSharedScriptTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Script";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return Workflow_Max;
+			}
+
+			PassSupport GetPassSupport(vint passIndex)override
+			{
+				switch (passIndex)
+				{
+				case Workflow_Collect:
+					return PerResource;
+				case Workflow_Compile:
+					return PerPass;
+				default:
+					return NotSupported;
+				}
+			}
+
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Workflow_Collect:
+				{
+					if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
+					{
+						if (obj->language == L"Workflow")
+						{
+							Workflow_AddModule(context, Path_Shared, obj->code, GuiInstanceCompiledWorkflow::Shared);
+						}
+					}
+				}
+				break;
+				}
+			}
+
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Workflow_Compile:
+					Workflow_GenerateAssembly(context, Path_Shared, errors, false);
+					break;
+				}
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
+			{
+				if (auto obj = resource.Cast<GuiInstanceSharedScript>())
+				{
+					return obj->SaveToXml();
+				}
+				return 0;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				if (xml)
+				{
+					auto schema = GuiInstanceSharedScript::LoadFromXml(xml, errors);
+					return schema;
+				}
+				return 0;
+			}
+		};
 
 /***********************************************************************
 Instance Type Resolver (Instance)
@@ -1493,9 +1650,6 @@ Instance Type Resolver (Instance)
 			, private IGuiResourceTypeResolver_Precompile
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
-			const wchar_t* Path_TemporaryClass = L"Workflow/TemporaryClass";
-			const wchar_t* Path_InstanceCtor = L"Workflow/InstanceCtor";
-			const wchar_t* Path_InstanceClass = L"Workflow/InstanceClass";
 		public:
 			WString GetType()override
 			{
@@ -1532,13 +1686,11 @@ Instance Type Resolver (Instance)
 				switch (passIndex)
 				{
 				case Instance_CollectInstanceTypes:
-				case Instance_GenerateTemporaryClass:
-				case Instance_GenerateInstanceCtor:
+				case Instance_CollectEventHandlers:
 				case Instance_GenerateInstanceClass:
 					return PerResource;
-				case Instance_ValidateDependency:
-				case Instance_CompileTemporaryClass:
-				case Instance_CompileInstanceCtor:
+				case Instance_CompileInstanceTypes:
+				case Instance_CompileEventHandlers:
 				case Instance_CompileInstanceClass:
 					return PerPass;
 				default:
@@ -1546,21 +1698,8 @@ Instance Type Resolver (Instance)
 				}
 			}
 
-			void AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
-			{
-				auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-				if (!compiled)
-				{
-					compiled = new GuiInstanceCompiledWorkflow;
-					compiled->type = assemblyType;
-					context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
-				}
-
-				compiled->modules.Add(module);
-			}
-
 #define ENSURE_ASSEMBLY_EXISTS(PATH)\
-			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
 			{\
 				if (!compiled->assembly)\
 				{\
@@ -1573,13 +1712,13 @@ Instance Type Resolver (Instance)
 			}\
 
 #define UNLOAD_ASSEMBLY(PATH)\
-			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
 			{\
 				compiled->context = nullptr;\
 			}\
 
 #define DELETE_ASSEMBLY(PATH)\
-			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
 			{\
 				compiled->context = nullptr;\
 				compiled->assembly = nullptr;\
@@ -1589,7 +1728,7 @@ Instance Type Resolver (Instance)
 			{
 				switch (context.passIndex)
 				{
-				case Instance_GenerateTemporaryClass:
+				case Instance_CollectEventHandlers:
 					ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 				case Instance_CollectInstanceTypes:
 					{
@@ -1597,9 +1736,11 @@ Instance Type Resolver (Instance)
 						{
 							obj->ApplyStyles(context.resolver, errors);
 
-							if (auto module = Workflow_GenerateInstanceClass(obj, *(types::ResolvingResult*)nullptr, errors, context.passIndex))
+							types::ResolvingResult resolvingResult;
+							resolvingResult.context = obj;
+							if (auto module = Workflow_GenerateInstanceClass(resolvingResult, errors, context.passIndex))
 							{
-								AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
+								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
 
 							if (context.passIndex == Instance_CollectInstanceTypes)
@@ -1615,34 +1756,38 @@ Instance Type Resolver (Instance)
 						}
 					}
 					break;
-				case Instance_GenerateInstanceCtor:
-					{
-						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
-						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
-						{
-							auto resolvingResult = MakePtr<types::ResolvingResult>();
-							if (auto module = Workflow_PrecompileInstanceContext(obj, *resolvingResult.Obj(), errors))
-							{
-								context.additionalProperties.Add(obj, resolvingResult);
-								AddModule(context, Path_InstanceCtor, module, GuiInstanceCompiledWorkflow::InstanceCtor);
-								AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass);
-							}
-						}
-					}
-					break;
 				case Instance_GenerateInstanceClass:
 					{
-						ENSURE_ASSEMBLY_EXISTS(Path_InstanceCtor)
 						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
-							vint index = context.additionalProperties.Keys().IndexOf(obj.Obj());
-							if (index != -1)
+							vint previousErrorCount = errors.Count();
+							if (obj->className == L"")
 							{
-								auto resolvingResult = context.additionalProperties.Values()[index].Cast<types::ResolvingResult>();
-								if (auto module = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, context.passIndex))
+								errors.Add(
+									L"Precompile: Instance  \"" +
+									(obj->instance->typeNamespace == GlobalStringKey::Empty
+										? obj->instance->typeName.ToString()
+										: obj->instance->typeNamespace.ToString() + L":" + obj->instance->typeName.ToString()
+										) +
+									L"\" should have the class name specified in the ref.Class attribute.");
+							}
+
+							types::ResolvingResult resolvingResult;
+							resolvingResult.context = obj;
+							resolvingResult.rootTypeDescriptor = Workflow_CollectReferences(resolvingResult, errors);
+							resolvingResult.moduleForValidate = Workflow_CreateModuleWithUsings(obj);
+							resolvingResult.moduleContent = Workflow_InstallCtorClass(resolvingResult, resolvingResult.moduleForValidate);
+
+							if (errors.Count() == previousErrorCount)
+							{
+								if (auto ctorModule = Workflow_PrecompileInstanceContext(resolvingResult, errors))
 								{
-									AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass);
+									if (auto instanceModule = Workflow_GenerateInstanceClass(resolvingResult, errors, context.passIndex))
+									{
+										Workflow_AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass);
+										Workflow_AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass);
+									}
 								}
 							}
 						}
@@ -1656,18 +1801,14 @@ Instance Type Resolver (Instance)
 				WString path;
 				switch (context.passIndex)
 				{
-				case Instance_ValidateDependency:
+				case Instance_CompileInstanceTypes:
 					path = Path_TemporaryClass;
 					break;
-				case Instance_CompileTemporaryClass:
+				case Instance_CompileEventHandlers:
 					DELETE_ASSEMBLY(Path_TemporaryClass)
 					path = Path_TemporaryClass;
 					break;
-				case Instance_CompileInstanceCtor:
-					path = Path_InstanceCtor;
-					break;
 				case Instance_CompileInstanceClass:
-					UNLOAD_ASSEMBLY(Path_InstanceCtor)
 					UNLOAD_ASSEMBLY(Path_TemporaryClass)
 					path = Path_InstanceClass;
 					break;
@@ -1675,9 +1816,26 @@ Instance Type Resolver (Instance)
 					return;
 				}
 
-				if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
+				auto sharedCompiled = Workflow_GetModule(context, Path_Shared);
+				auto compiled = Workflow_GetModule(context, path);
+				if (sharedCompiled && compiled)
 				{
-					Workflow_GenerateAssembly(compiled, path, errors);
+					CopyFrom(compiled->codes, sharedCompiled->codes);
+				}
+
+				switch (context.passIndex)
+				{
+				case Instance_CompileInstanceTypes:
+					Workflow_GenerateAssembly(context, path, errors, false);
+					compiled->modules.Clear();
+					break;
+				case Instance_CompileEventHandlers:
+					Workflow_GenerateAssembly(context, path, errors, false);
+					break;
+				case Instance_CompileInstanceClass:
+					Workflow_GenerateAssembly(context, path, errors, true);
+					break;
+				default:;
 				}
 				GetInstanceLoaderManager()->ClearReflectionCache();
 			}
@@ -1716,6 +1874,10 @@ Instance Type Resolver (Instance)
 				return 0;
 			}
 		};
+
+#undef Path_Shared
+#undef Path_TemporaryClass
+#undef Path_InstanceClass
 
 /***********************************************************************
 Instance Style Type Resolver (InstanceStyle)
@@ -1773,159 +1935,6 @@ Instance Style Type Resolver (InstanceStyle)
 				{
 					auto context = GuiInstanceStyleContext::LoadFromXml(xml, errors);
 					return context;
-				}
-				return 0;
-			}
-		};
-
-/***********************************************************************
-Shared Script Type Resolver (Script)
-***********************************************************************/
-
-		class GuiResourceSharedScriptTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_Precompile
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-			const wchar_t* Path_ViewModel = L"Workflow/ViewModel";
-			const wchar_t* Path_Shared = L"Workflow/Shared";
-		public:
-			WString GetType()override
-			{
-				return L"Script";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return false;
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			vint GetMaxPassIndex()override
-			{
-				return Workflow_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
-			{
-				switch (passIndex)
-				{
-				case Workflow_Collect:
-					return PerResource;
-				case Workflow_CompileViewModel:
-				case Workflow_CompileShared:
-					return PerPass;
-				default:
-					return NotSupported;
-				}
-			}
-
-			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
-			{
-				switch (context.passIndex)
-				{
-				case Workflow_Collect:
-					{
-						if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
-						{
-							WString path;
-							GuiInstanceCompiledWorkflow::AssemblyType type = GuiInstanceCompiledWorkflow::Shared;
-							if (obj->language == L"Workflow-ViewModel")
-							{
-								path = Path_ViewModel;
-								type = GuiInstanceCompiledWorkflow::ViewModel;
-							}
-							else if (obj->language == L"Workflow")
-							{
-								path = Path_Shared;
-							}
-						
-							auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-							if (!compiled)
-							{
-								compiled = new GuiInstanceCompiledWorkflow;
-								compiled->type = type;
-								context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
-							}
-
-							compiled->codes.Add(obj->code);
-						}
-					}
-					break;
-				}
-			}
-
-			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
-			{
-				switch (context.passIndex)
-				{
-				case Workflow_CompileViewModel:
-				case Workflow_CompileShared:
-					{
-						WString path;
-						if (context.passIndex == Workflow_CompileViewModel)
-						{
-							path = Path_ViewModel;
-						}
-						else if (context.passIndex == Workflow_CompileShared)
-						{
-							path = Path_Shared;
-						}
-						else
-						{
-							return;
-						}
-
-						if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
-						{
-							Workflow_GenerateAssembly(compiled, path, errors);
-						}
-					}
-					break;
-				}
-			}
-
-			IGuiResourceTypeResolver_Precompile* Precompile()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
-			{
-				if (auto obj = resource.Cast<GuiInstanceSharedScript>())
-				{
-					return obj->SaveToXml();
-				}
-				return 0;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
-				if (xml)
-				{
-					auto schema = GuiInstanceSharedScript::LoadFromXml(xml, errors);
-					return schema;
 				}
 				return 0;
 			}
@@ -2511,87 +2520,9 @@ GuiInstanceContext
 							errors.Add(L"ref.Parameter requires the following attributes existing at the same time: Name, Class.");
 						}
 					}
-					else if (element->name.value == L"ref.Property")
+					else if (element->name.value == L"ref.Members")
 					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attType = XmlGetAttribute(element, L"Type");
-						auto attValue = XmlGetAttribute(element, L"Value");
-						if (attName && attType)
-						{
-							auto prop = MakePtr<GuiInstanceProperty>();
-							prop->name = GlobalStringKey::Get(attName->value.value);
-							prop->typeName = attType->value.value;
-							if (attValue)
-							{
-								prop->value = attValue->value.value;
-							}
-							context->properties.Add(prop);
-						}
-						else
-						{
-							errors.Add(L"ref.Property requires the following attributes existing at the same time: Name, Type.");
-						}
-					}
-					else if (element->name.value == L"ref.State")
-					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attType = XmlGetAttribute(element, L"Type");
-						auto attValue = XmlGetAttribute(element, L"Value");
-						if (attName && attType)
-						{
-							auto state = MakePtr<GuiInstanceState>();
-							state->name = GlobalStringKey::Get(attName->value.value);
-							state->typeName = attType->value.value;
-							if (attValue)
-							{
-								state->value = attValue->value.value;
-							}
-							context->states.Add(state);
-						}
-						else
-						{
-							errors.Add(L"ref.State requires the following attributes existing at the same time: Name, Type.");
-						}
-					}
-					else if (element->name.value == L"ref.Component")
-					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attType = XmlGetAttribute(element, L"Type");
-						auto attExpression = XmlGetAttribute(element, L"Expression");
-						if (attName && attType && attExpression)
-						{
-							auto component = MakePtr<GuiInstanceComponent>();
-							component->name = GlobalStringKey::Get(attName->value.value);
-							component->typeName = attType->value.value;
-							if (attExpression)
-							{
-								component->expression = attExpression->value.value;
-							}
-							context->components.Add(component);
-						}
-						else
-						{
-							errors.Add(L"ref.Component requires the following attributes existing at the same time: Name, Type, Expression.");
-						}
-					}
-					else if (element->name.value == L"ref.Event")
-					{
-						auto attName = XmlGetAttribute(element, L"Name");
-						auto attClass = XmlGetAttribute(element, L"EventArgsClass");
-						if (attName)
-						{
-							auto ev = MakePtr<GuiInstanceEvent>();
-							ev->name = GlobalStringKey::Get(attName->value.value);
-							if (attClass)
-							{
-								ev->eventArgsClass = attClass->value.value;
-							}
-							context->events.Add(ev);
-						}
-						else
-						{
-							errors.Add(L"ref.Event requires the following attributes existing at the same time: Name.");
-						}
+						context->memberScript = XmlGetValue(element);
 					}
 					else if (!context->instance)
 					{
@@ -2661,96 +2592,15 @@ GuiInstanceContext
 				xmlParameter->attributes.Add(attClass);
 			}
 
-			FOREACH(Ptr<GuiInstanceProperty>, prop, properties)
+			if (memberScript != L"")
 			{
-				auto xmlProperty = MakePtr<XmlElement>();
-				xmlProperty->name.value = L"ref.Property";
-				xmlInstance->subNodes.Add(xmlProperty);
+				auto xmlMembers = MakePtr<XmlElement>();
+				xmlMembers->name.value = L"ref.Members";
+				xmlInstance->subNodes.Add(xmlMembers);
 
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"Name";
-				attName->value.value = prop->name.ToString();
-				xmlProperty->attributes.Add(attName);
-
-				auto attType = MakePtr<XmlAttribute>();
-				attType->name.value = L"Type";
-				attType->value.value = prop->typeName;
-				xmlProperty->attributes.Add(attType);
-
-				if (prop->value != L"")
-				{
-					auto attValue = MakePtr<XmlAttribute>();
-					attValue->name.value = L"Value";
-					attValue->value.value = prop->value;
-					xmlProperty->attributes.Add(attType);
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceState>, state, states)
-			{
-				auto xmlState = MakePtr<XmlElement>();
-				xmlState->name.value = L"ref.State";
-				xmlInstance->subNodes.Add(xmlState);
-
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"Name";
-				attName->value.value = state->name.ToString();
-				xmlState->attributes.Add(attName);
-
-				auto attType = MakePtr<XmlAttribute>();
-				attType->name.value = L"Type";
-				attType->value.value = state->typeName;
-				xmlState->attributes.Add(attType);
-
-				if (state->value != L"")
-				{
-					auto attValue = MakePtr<XmlAttribute>();
-					attValue->name.value = L"Value";
-					attValue->value.value = state->value;
-					xmlState->attributes.Add(attValue);
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceComponent>, component, components)
-			{
-				auto xmlComponent = MakePtr<XmlElement>();
-				xmlComponent->name.value = L"ref.Component";
-				xmlInstance->subNodes.Add(xmlComponent);
-
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"Name";
-				attName->value.value = component->name.ToString();
-				xmlComponent->attributes.Add(attName);
-
-				auto attType = MakePtr<XmlAttribute>();
-				attType->name.value = L"Type";
-				attType->value.value = component->typeName;
-				xmlComponent->attributes.Add(attType);
-
-				auto attExpression = MakePtr<XmlAttribute>();
-				attExpression->name.value = L"Value";
-				attExpression->value.value = component->expression;
-				xmlComponent->attributes.Add(attExpression);
-			}
-
-			FOREACH(Ptr<GuiInstanceEvent>, ev, events)
-			{
-				auto xmlEvent = MakePtr<XmlElement>();
-				xmlEvent->name.value = L"ref.Event";
-				xmlInstance->subNodes.Add(xmlEvent);
-
-				auto attName = MakePtr<XmlAttribute>();
-				attName->name.value = L"Name";
-				attName->value.value = ev->name.ToString();
-				xmlEvent->attributes.Add(attName);
-
-				if (ev->eventArgsClass != L"")
-				{
-					auto attClass = MakePtr<XmlAttribute>();
-					attClass->name.value = L"EventArgsClass";
-					attClass->value.value = ev->eventArgsClass;
-					xmlEvent->attributes.Add(attClass);
-				}
+				auto text = MakePtr<XmlCData>();
+				text->content.value = memberScript;
+				xmlMembers->subNodes.Add(text);
 			}
 
 			if (stylePaths.Count() > 0)
@@ -6069,17 +5919,17 @@ L"\r\n" L"\t;"
 SerializedTable
 ***********************************************************************/
 
-const vint parserBufferLength = 5804; // 27819 bytes before compressing
+const vint parserBufferLength = 5782; // 27819 bytes before compressing
 const vint parserBufferBlock = 1024;
-const vint parserBufferRemain = 684;
+const vint parserBufferRemain = 662;
 const vint parserBufferRows = 6;
 const char* parserBuffer[] = {
 "\x00\x00\x81\x81\x84\x02\x81\x80\x07\x82\x00\x87\x80\x83\x21\x33\x3B\x31\x30\x64\x65\x11\x35\x35\x32\x39\x3D\x7F\x18\x99\x98\x8A\x85\x84\x8C\x28\x39\x69\x6D\x21\x36\x83\x8D\x8B\x8A\x8D\x19\x85\x08\x80\x0A\x90\x81\x92\x8B\x28\x99\x88\x0B\x93\x98\x83\x29\x32\x74\x2F\xA7\x91\x9B\x03\x94\x8E\x81\x1C\x8C\x8E\x90\x82\x8C\x8A\x8B\x96\x05\xC8\xA3\x28\x39\x34\x34\x33\x98\x1B\xBE\x81\x82\xAF\x81\x8A\x9C\x03\x2B\xD8\x80\x90\x33\x95\x32\x36\x3A\x50\xFF\x7F\x86\x81\x87\x8D\x91\x91\x79\x3A\x8D\x0B\x9B\xB0\x81\x30\x3A\x74\x20\xA2\x35\x34\x3D\x32\x27\x30\x6D\x65\x21\xA3\xB9\x85\xB0\x90\x91\x24\xC6\xB9\x33\x0B\x94\xC2\xB6\xB8\x72\xF4\xB6\xB8\xB5\x37\x24\x38\x3A\x69\x6F\x2E\x3B\xB2\xA8\x82\xB2\xC0\x69\x82\xFD\x88\x8B\xC8\x03\xA5\xA6\x64\x0E\xD0\xD2\xC4\xC8\x86\x8F\xBF\x68\xEA\xAC\xA1\x82\x3D\x32\x33\x8A\x5E\xE3\x0B\xD9\xB5\xD5\x8E\xBF\xB3\x81\xA6\xB5\x85\x8B\xDC\x39\x3C\x38\xB3\xFA\x90\xBC\xB0\x07\xD0\xDD\xCC\x26\x8E\x2B\x8A\xE0\x86\xDC\xE1\xBB\x79\xA2\xD1\xD3\xC0\xAB\xDE\x81\xDD\x37\xB9\x82\xC8\xA2\x80\xA6\x33\x34\x72\x73\x20\xB5\xE4\x99\x81\xEC\x9D\x02\x2B\xA9\xE0\x8F\x30\x39\xB0\xEB\x01\xD8\xF8\x97\xA9\xA9\x83\x39\x32\x63\x12\xCF\xB0\xA1\x0B\x97\x17\x95\xFD\x6B\x42\x83\x4A\x61\x61\x53\x80\x81\x05\xB1\x47\x80\x42\x09\x8A\x8B\x82\x40\x0D\xA8\x40\x7C\x40\xBB\x49\x1E\x10\x11\x49\x12\x15\x13\x10\x54\x04\x48\x42\x87\x00\x2F\x02\x8B\x7F\x08\xB1\x4A\x55\x41\x27\x98\x8A\x84\x87\xEB\x45\x4D\x8A\x88\x01\x25\x88\x48\x88\x02\x60\x8E\x11\x10\x4D\x05\x15\x07\x4A\x3B\x80\x4B\x15\x18\x2D\x3A\x11\x11\x0B\x5A\x1F\x1D\x17\x8F\x41\x83\x9A\x14\x0C\x2D\x39\x0D\x16\x0A\x2D\x90\x84\x78\x42\xBB\x57\x19\x10\x13\x44\x03\x11\x12\x14\x44\x11\x91\x43\x8B\x2A\x03\x02\x8E\x46\x34\x83\x41\x43\x13\x50\x05\x1E\x12\x97\x00\x6F\x88\x09\x99\x00\x61\x5C\x75\x40\x48\x43\x1C\x13\x13\x53\x05\x1C\x98\x00\x2F\xA9\x03\x9D\x9C\x50\x62\x98\x42\xA0\x00\x18\x1F\x12\x14\x7B\xAF\x8E\x17\x89\x52\xB1\x49\x03\x4A\x8F\x80\x46\x84\x15\x45\x12\x19\x9C\x8B\xEA\x41\x4F\x0A\x0A\x07\x23\x99\x4B\x4A\x48\x55\x1E\x11\x12\x4F\x2B\x99\xA4\x40\x2F\x2B\x03\x84\x00\x61\x51\xA5\x42\xAB\x53\x15\x12\x13\x14\x54\x12\x11\x10\x87\x31\x88\x49\xAC\x00\x2D\x2E\xAD\xA0\x4A\xBE\x81\x4E\xA9\x10\x54\x35\xA9\x12\x10\x55\x14\xAB\xAE\x40\xBB\x80\x1A\x02\xA7\x18\x7F\x9C\x4B\x54\x4F\x37\x9E\x13\xB2\x01\x7B\xAA\x0D\x67\xBF\x9A\x44\xA2\x40\x84\x84\x1F\x10\x15\xD8\x80\x4B\xAE\x0B\xC4\x61\x55\xBB\xB4\x08\x48\x53\x14\x14\xB7\x85\x1F\xB5\x40\x84\xAF\x03\x1F\x0A\x6D\x45\x41\x58\x89\x05\x52\x0B\x4A\xBF\x2E\x57\x68\x59\x10\x88\x69\x13\x5D\x5D\x64\x1C\x0B\x4A\xC2\x01\xE8\x66\x44\xC1\x71\x46\xCA\x60\x19\x2E\x12\x1F\x1B\x1B\x74\x13\x14\x1F\x48\x74\x17\x0B\x4A\xC7\x00\x40\x10\x08\x09\x3C\x11\x12\xC3\xC3\x05\xC7\xC5\x18\x19\x3E\x00\xCD\xBD\x40\x26\xCE\xC9\x1C\xC4\x89\x48\xC8\x07\x4A\x37\xCD\xC7\x70\xCD\x12\xC8\xCE\x0A\xC6\x1C\xD6\x0B\x4A\xD0\x21\xE0\x05\xCB\xC9\x33\xE9\xC3\xC5\xCB\xFF\xB0\xC8\xD0\xCF\x2A\xE4\x14\x07\x4A\x53\xFA\xC8\x64\xD4\x13\xEE\x02\x0C\x1D\x2B\x5C\xD0\x43\xD1\x32\xD8\xD8\xC2\x0F\x3A\x20\x02\x08\x10\x67\xE0\x0B\x14\x08\x37\xB9\x80\x09\xD9\x6F\x51\xCA\xC8\x74\x65\x20\x0D\x16\xD9\x3A\x22\x00\x09\x08\x31\xC7\x76\x12\x1C\x61\x27\x19\x5F\x57\x20\x37\x19\x18\x1D\x68\x20\x0B\x1C\x08\x71\xF5\xC1\x72\x74\x92\x60\x0D\x0E\xD9\x53\x00\x73\x19\x1A\xDF\x6B\xCA\xDD\x1F\x10\x2B\x4D\xE6\xD5\x68\x7F\xD1\xE3\xE0\x74\x2E\xC2\x42\xCB\x7D\xD8\x62\xEA\xE0\x5E\x74\x1E\x09\x0C\xA9\x2B\x41\xEF\xD7\xA9\xE1\xE0\xE0\xEB\x5F\x64\xD0\x08\x0A\xBB\xEC\xD8\x8D\x11\x6F\xE0\x0E\x71\x70\x85\xC7\xE9\xE3\xE2\xC3\xF4\xD0\xE6\x1B\x92\xD4\xE6\xE4\xE6\x69\x1A\xE0\x09\x1F\x20\x29\x00\x08\x1F\xBD\xE2\x0A\x0A\xDE\x86\xC8\xEA\xE2\xF0\xBF\x4F\xEF\x63\x74\xCD\xE2\x01\x12\x1B\x79\x1B\xE5\xF5\xF5\x22\xEB\xD2\x0A\x0B\x7A\xED\xD0\xF1\xD9\xAD\x6F\x6D\x6A\x1B\xB2\x74\xD6\xDC\xE3\x73\x20\x08\xD2\x4E\x9F\x65\x21\x00\xB5\x76\x23\xD5\x64\x76\x74\x01\x28\x74\xD2\x06\x8D\x74\xAD\x73\x75\x20\x0F\x80\x6E\xDF\x37\x74\x74\xDD\x7C\x74\x77\xF2\x61\x79\xF2\x0C\x35\x78\xEF\x48\x79\x7C\xCA\x63\x7D\xE4\x13\x72\x05\xCA\x78\x38\x7A\xD2\x74\x7A\xF5\x58\x7C\x76\xED\x5C\x7E\x78\xDF\x7B\x81\x74\x22\x8C\x78\x12\xA7\x79\x7D\xD3\x6B\x7D\x0A\x6D\x76\x6C\xF8\x7E\x76\x6D\xF4\x6E\x34\x6C\x78\x74\x79",
-"\xBB\x4D\x26\x7F\x32\x7A\x24\x02\x80\x2A\x81\xB0\x4A\x68\x61\x55\x65\x21\x14\x84\x89\x68\xB9\x59\x6C\x06\x5E\x65\x21\x16\x92\x87\x6B\x27\xAB\x62\x77\x67\x7A\x6F\xDA\x19\x80\x6E\x2F\xBA\x7F\x6E\x22\x19\x6E\xC8\x7C\x6B\x80\x0A\xAD\x75\x83\xC7\x6C\x72\x19\x8C\x3B\x79\xF2\x66\x87\x72\x99\x64\x0F\xE6\x4B\x80\x01\x26\xBB\x66\x8B\x52\x74\x6A\xD3\x4E\x86\x8A\x9F\x73\x01\x8B\x02\x3B\x88\x15\xE2\x6F\x8B\xB2\x61\x8A\x6D\x3F\x93\x7E\x1C\x85\x95\x88\x91\x69\x8A\x6F\x6C\x92\x64\x03\x84\x7D\x7B\x38\x8D\x75\x67\xE2\x63\x35\x0D\xCE\x77\x85\x3C\x9B\x71\x80\x02\x23\x81\x1B\xA3\x7D\x74\x3E\xBE\x8A\x75\x6E\x9F\x2A\x0B\x33\x0F\x80\x81\x11\x84\x8A\x9B\x94\x0E\x05\xBD\x74\x8C\xF0\x4F\x3C\x83\x9D\x91\x84\x08\xF4\x84\x86\x3B\x8F\x7E\x94\x39\x8B\x85\xF6\x5B\x70\x8E\x61\xBF\x93\x86\xA2\x85\x7F\x0D\xEA\x76\x7A\xEB\x6E\x78\x7E\x22\x7D\x95\xFD\x43\x89\x7E\x0E\x86\x8D\x7F\xFF\x62\x32\x2B\x83\x9F\x8E\x4A\x81\x90\x21\x53\x8F\x68\x20\xAF\x73\x19\x95\x2D\x9C\x76\xEA\x86\x9E\xEE\x19\x93\x82\x56\x9F\x2A\x64\xC1\x8B\x73\x27\xF3\x64\x99\x68\xB6\x80\x7D\x9B\x6D\x02\x02\x5C\x83\x60\x40\xA0\x88\x6D\x90\x9D\x97\x3E\x8A\x37\x8C\xBC\x58\x90\x97\xB1\x94\x0C\x3E\xB0\x8A\x9F\x39\x90\x9C\x7C\x24\x97\x8C\x0A\xFA\x83\x7A\x54\x81\x22\x95\x9A\x91\xA1\xCE\x05\x23\xA4\x88\xB6\x9E\x75\x16\x78\x61\x11\x6E\x04\x0D\x1E\x45\x26\xA5\x24\x66\xA4\xEE\x3A\x90\x04\x20\x1E\xA0\x20\x20\xB5\x9F\x4C\xE3\x90\x75\x02\x91\xA6\x05\x35\x15\x95\x40\x37\x9B\x95\x99\xBB\x90\x83\xBF\x7A\x83\x30\xF9\x2D\x99\x0F\x8F\x9D\x31\xC5\x99\xA3\x31\xD1\x7C\xA2\x15\x97\x7B\x99\x2F\x9E\x82\x2F\xA1\x98\xA2\xB3\x53\x99\x99\xEB\x77\x99\xFC\x49\xA1\x88\xFB\x71\x35\x88\xFC\x68\x8B\x71\x3A\x20\x08\x9E\x80\x03\x91\x80\x9A\x03\x4A\x72\xAD\xA7\x2A\x8E\x74\x62\x29\xB4\x0F\x4A\xE4\x00\x65\x82\x3D\xA9\xA6\xF1\x97\xAE\x0F\x35\xAB\x55\xDD\x14\x8F\x59\x08\x28\xB3\x5B\xC8\x63\x96\x5B\x2B\x26\xB1\xF0\x92\x67\x2E\xA2\x0F\x05\xAC\xB1\x8F\x33\x4E\x35\x8C\x09\xC4\x00\x3C\xFC\x34\x0C\x9A\x7B\x70\xAE\x39\xC0\x02\xA0\x82\x96\x20\x8C\x28\x0F\xA2\x60\x79\xA6\x6D\x14\x27\x6D\xB4\x54\x93\xB2\x88\x16\xBF\x7A\xCC\xA1\x31\xAA\x66\x69\x08\x4B\x9D\xB3\x0D\xCF\xA0\xAC\x9E\x5D\x83\xB5\x61\xE4\x98\x33\x9B\x80\x01\xA7\x98\x35\x63\xC5\x7A\xAC\xA5\x7C\x42\x21\x5F\x80\xB2\xB1\x4D\x8C\x51\x21\x13\x7A\x20\x06\xC3\xAE\x26\x60\x30\x0F\x75\x28\x2B\x26\xBB\xB4\x7B\xBB\x3C\xD4\x84\xB5\x81\x97\xBA\x77\xD7\xA1\x78\x57\x77\x74\x0E\x10\x14\x89\x78\xB6\xA9\xAC\x55\x44\x2C\xAC\xEA\x80\x26\xBA\xDB\xB9\xBB\x5B\xDB\xB3\x97\x1D\x2B\x26\xBF\xE1\xA6\x24\x0C\x68\xBB\xBA\xF5\x9D\x2C\x70\xEF\xA5\x6D\x7C\xC7\x83\xBE\xAB\x02\x30\x08\xF6\xA0\x00\x7E\x82\xCA\xBF\xEB\x9A\x68\xC0\x05\x38\xC1\xC9\x62\xB5\x6D\xF4\xA5\x6B\xBD\xAD\x62\x65\x82\xA0\x0B\xC1\xFE\x4D\xC5\x28\x26\x31\xC3\x84\x96\x20\x06\xE6\x05\x26\xC5\x16\xD9\xAF\x5E\xDC\x51\x21\xCE\x31\xA2\xBC\xD3\xB5\x3E\x76\xA6\x21\x07\x0A\xC2\x31\x06\x2E\x14\x06\x2F\x2B\x23\xC9\x00\xD6\x21\x06\x04\xDC\xC5\xF0\x5F\x31\x3D\xF6\xAE\x86\xBD\x05\xC5\x6F\x7D\x79\x3C\xA5\xB4\xA7\x3A\x30\x4D\xA0\x05\x7B\x65\x7A\xB7\xBA\x21\x3E\xB3\x9B\x65\xBF\x86\xBC\xC9\xC9\x23\xCB\xC8\x3C\xE2\x26\x6E\x17\x7A\x6E\xC2\x10\x13\xCA\x3F\x56\xD3\x3C\x96\xF9\x9A\xCA\x38\x25\x7D\x08\x78\x03\x0C\x1B\x75\x03\x0F\x34\x36\x0D\x31\x72\x01\xCC\x6C\xBF\xC3\xBD\xED\x90\xC2\xC7\xFB\xBC\xC6\x8F\xBC\xC3\x96\x55\x2B\x26\xD1\x46\xD9\x0C\x92\x9D\xCF\xC7\x33\xCD\xCE\x6C\xCC\x8D\xCF\x9B\xD5\xC7\x89\x2B\xE6\x23\xA2\x5A\xBB\xC8\x09\xDD\xC5\x23\x29\xFE\xB5\x0F\x83\xC4\xCC\xA5\xCA\xC5\x6C\x26\xE9\xCA\x04\x6B\xD0\xCA\x80\xC1\x7B\xD2\x32\x31\xCA\x3B\x9F\xD9\xCA\xA8\xE6\x68\xCE\x3D\xFC\xCE\xCF\x80\xDB\x71\x85\xC8\x6A\xB0\x81\x0A\xB4\x8A\xAF\x75\x13\x4A\x4A\xD1\xB3\xE3\x32\xB1\x6D\x74\xD6\xB6\x66\xE6\x6C\xB3\xD6\x3D\xB0\xB4\xC0\xA5\xA2\x39\xB0\xB8\x68\xD9\x95\xB0\xD4\x97\xAC\x29\x66\xB8\xB2\x04\xDD\xA4\x0C\xB7\xA7\xCB\x7D\xB6\xA8\x66\x9D\x61\xF2\x65\xD8\x01\x27\xD8\x63\xB2\x0F\x03\x95\x35\xDD\xD9\x98\x28\xB5\xDA\x7C\x6B\xB5\xE5\xAD\xB2\x04\x2A\xD0\x66\x60\x32\x0B\xD0\x8B\x32\x01\xC8\xB8\x0B\x25\xC2\x91\xD2\x07\x32\xF9\x0A\x06\x96\xCF\xD5\x0B\x6C\xC5\xD2\x29\xF8\x38\xCE\x9D\xD2\xCE\x49\x3A\xD6\xCF\x8C\xB5\x0A\x0C\xE2\x20\x73\xB5\xD3\x72\xCC\x9D\x0D\xE3\xD5\x06\xF1\xE2\x93\xAB\x04\xE2\x56",
-"\xEE\xCF\xE2\x9C\xDD\x7E\xA7\x96\x2C\xE3\xF2\x55\x0E\x0D\xD3\x22\xD2\x79\x83\xE5\xD0\x1E\xC7\xD0\x21\x2B\xCF\xE1\xC1\x8F\xE3\x96\x52\x2B\x26\xE8\x0C\xEE\xE0\xC4\xAD\xD8\xCD\x95\xED\xE6\xCC\x16\xF4\xCA\xAD\x99\xE8\xD6\x8B\x20\xDF\x7B\xBB\xC2\x07\xCD\xB9\xE3\x7B\x54\xC6\xE2\xE9\x2A\xE6\x6F\xC4\xB2\xD0\xEB\x97\xD2\xEF\xD6\x6C\xB5\xE6\xC7\xA0\xE1\x2F\x30\x23\xE5\x0F\x01\xFB\xC7\x91\xC3\xE0\xC9\x18\x10\xD5\x20\x77\xE3\xCF\x91\x8E\xE1\x06\x95\xD6\x91\xD3\x51\xC6\xEC\xC6\xB2\xEA\xE2\x9A\xF4\xC9\xEB\xA4\xDF\xCB\xDB\xDE\xE2\xD2\xBE\xFE\xEA\xCD\x4F\xF9\x0C\x0C\x34\xD0\xE7\xA9\xC4\xF5\xEA\x79\x0A\xEC\xAF\xF9\xCB\xCF\x3E\xFF\xCF\x09\x81\xD3\x79\xDC\x89\xD7\xC8\x17\xC2\x20\xC6\x3F\xCA\xBA\x4A\xAC\xA4\xC6\x80\x36\xC2\xEF\x8D\xF9\xC4\xD0\x82\xE6\x24\x82\xE5\x3A\xEE\x44\xF1\x04\xD2\x85\x2B\xF6\xD8\xE7\xE4\xEC\x0F\xEF\xF2\x08\x2C\xE0\xF9\xBE\xD1\xEB\xF0\x20\x13\xE5\xE6\x87\xFD\xE2\xB3\x5B\xEA\x32\x01\xBB\xE5\xED\xE0\xEC\xE9\x26\xD6\x93\xEC\x3A\x26\xFA\xE0\xB1\xE9\xF9\xC2\xCB\xFC\xA2\x75\xD6\x8F\xC7\xA1\xEE\xED\x53\xE3\xF6\xE4\xA6\xE1\x20\xEA\xB5\xFA\xF4\xE6\xA4\x0D\xF5\x00\x0F\xF6\xC9\x83\xB0\x09\x60\x40\x26\x55\x3A\x39\xAC\xFC\x9D\x39\xFF\xE5\xAF\x76\xA5\x02\x1E\x52\xB0\x79\x57\x3D\x76\x70\x3F\x78\x22\xB4\x73\x77\xB7\x74\x7A\x92\x6A\x35\x77\x72\x10\x79\x79\x7D\x8E\x75\x7D\xAF\x6B\x66\x22\x61\x78\xB5\x68\x76\x73\x60\x7E\x59\x7D\x6B\x9D\x70\x6C\xA0\x71\x7D\xB0\x73\x69\xC5\x71\x76\x2E\x47\x81\xB3\x67\x7C\xDC\x7A\x7C\x9A\x75\x6E\x5F\x15\x6A\x60\x62\x7A\x88\x66\x72\x43\x77\x70\x32\x0B\x7B\x02\x1D\x7B\xF3\x78\x72\xC1\x74\x81\x4E\x63\x71\x28\x85\x76\x19\x84\x75\x3A\x1D\x82\x53\x03\x7E\x6D\x7B\x78\xD2\x7F\x75\x3C\x8B\x74\x20\x0E\x6A\x4E\x71\x84\x92\x64\x79\x67\x74\x84\x1B\x81\x6A\xCD\x7A\x75\x38\x70\x7D\xD3\x3E\x6E\xC7\x10\x6F\x00\x12\x6F\x32\x31\x64\xF7\x65\x10\x65\x86\x5A\x79\x0A\x6F\xA1\x5D\x6F\x18\x36\x49\xAE\x56\x7F\x00\x08\x7F\x6C\x84\x07\x01\x25\x10\x75\x8D\x7F\x18\x3D\x7E\x7B\x59\x7E\x00\x1E\x62\x37\x66\x12\x04\x84\x58\x0B\x84\x45\x6E\x58\x6C\x79\x50\x34\x72\x04\x07\xCE\x51\x10\xF9\x22\x32\xD1\x5E\x6C\x5E\x88\x19\x7C\x80\x00\x30\x6C\x58\x88\x84\x07\xC4\x1C\x11\x22\x38\x86\x3E\x07\x7E\x03\x76\x5C\x03\x43\x70\xED\x77\x89\xFB\x71\x10\x8E\x8E\x7B\x9D\x83\x83\x03\x79\x89\x09\x84\x74\x97\x80\x86\x00\x0A\x58\x9B\x83\x7F\x70\x82\x87\x80\x8B\x5C\x86\x15\x10\xB9\x88\x87\x28\x5B\x5C\x97\x83\x89\x2E\x67\x8A\xBC\x8E\x03\xB5\x8D\x8A\x79\x5F\x00\x2B\x18\x8C\xB8\x79\x57\x3F\x3B\x31\x89\x8B\x88\x00\x1D\x88\x46\x33\x8C\xA0\x84\x5C\xB6\x37\x52\x74\x55\x10\xD9\x82\x53\xA4\x33\x8A\xCE\x84\x07\x00\x81\x10\x2E\x52\x8C\x45\x55\x41\xD5\x85\x57\xB9\x44\x34\x05\x1A\x8E\xDC\x8D\x40\x97\x81\x45\x02\x11\x45\xB3\x85\x8E\xAD\x39\x8A\xB3\x78\x7B\x30\x07\x8E\x0C\x8C\x5D\x87\x8F\x8D\xA5\x85\x34\x7F\x8C\x62\xF6\x88\x80\xF8\x8C\x8A\xF8\x8D\x8C\x1C\x30\x8B\xB2\x83\x8D\xE2\x5E\x89\x3C\x6A\x8F\xD9\x7E\x8D\x1C\x3F\x8F\x00\x02\x8C\x84\x6E\x90\x47\x66\x90\x0C\x80\x64\xAF\x8B\x12\x0B\x93\x82\x4C\x38\x10\xAF\x4A\x6D\x77\x50\x8F\x01\x19\x4E\x84\x47\x57\x40\x5F\x4E\x05\x1C\x92\x68\x8C\x48\x2C\x3E\x48\x08\x53\x46\x64\x53\x49\x8E\x3D\x50\x97\x41\x5A\xF4\x8C\x49\xE0\x7B\x50\x75\x11\x42\xFE\x44\x4A\x78\x44\x55\x3A\x7F\x92\x06\x55\x36\xEB\x69\x07\xB9\x49\x65\x3E\x9C\x55\x23\x4E\x55\x00\x54\x72\x10\x9B\x93\xA5\x3D\x34\xE8\x8F\x53\x34\x02\x54\x00\x14\x54\x21\x57\x52\x47\x51\x49\x4A\x5F\x54\x59\x62\x43\x50\x51\x94\x25\x43\x55\x29\x4B\x3E\x2C\x48\x69\xB4\x5E\x54\x4E\x93\x4A\xE6\x31\x95\x56\x56\x4D\x3D\x43\x56\x40\x40\x02\xDB\x47\x3F\xDD\x4C\x54\xDF\x4A\x56\x98\x1C\x56\x9D\x22\x92\x56\x9B\x58\x29\x90\x4A\x64\x0A\x91\xE1\x46\x12\x0F\x2D\x2D\x32\x13\x88\x48\x38\x98\x49\x42\x18\x02\x21\x02\xD0\x2F\x0F\x18\x9F\x70\xD2\x28\x14\x3A\x12\x20\x23\x05\x99\xC5\x8B\x8C\xCB\x59\x99\xAD\x82\x20\x25\x05\x99\x53\x9D\x95\x33\x50\x99\x6B\x52\x99\x2B\x17\x02\x95\x97\x99\x30\x02\x9A\xB8\x72\x20\x29\x0F\x9A\xAA\x8C\x63\xB2\x9C\x80\x02\x2B\x02\x95\x9F\x01\xF3\x2C\x2A\xEB\x2F\x0F\x02\x2B\x2E\x8B\x95\x9C\xC6\x90\x21\xC1\x91\x61\xBF\x97\x9C\x7C\x20\x2A\x2B\x14\x9C\xC6\x95\x88\x81\x56\x98\xD0\x94\x25\x0B\x84\x96\x02\x27\x9A\x3A\x54\x3A\xFF\x01\x9C\x81\x95\x10\x70\x2C\x9C\xEB\x22\x2D\xD5\x9B\x98\xD2\x95\x98\x51\x3C\x20",
-"\xC1\x93\x89\x7B\x2C\x9C\xC6\x9D\x9D\x04\x23\x7A\xEE\x96\x2E\xCF\x96\x9C\xD0\x80\x00\xF9\x2D\x94\x74\x32\x20\xE7\x95\x4E\x77\x52\x20\xF0\x9C\x20\xCA\x89\x14\xF3\x95\x9C\x01\xAA\x2F\xEB\x20\x87\xC7\x9D\x9E\xC6\x9A\x9A\x7F\x9C\x9A\x08\x1A\x9D\xB0\x47\x52\xE1\x92\x20\xC0\x81\x10\x64\x9B\x3C\x9F\x90\x00\x1A\x59\x47\x12\xA7\x8D\x33\x5F\x0F\x7B\x22\xA2\x0B\x82\x10\x70\x87\xA0\xCC\x2B\x12\x19\x04\x20\x09\xA5\x19\x08\xAE\xA2\x02\x1E\x01\x2C\xAB\x1A\x08\x12\xA3\xEA\x9B\x12\xDF\x92\x10\x1D\x03\xA3\x89\x5B\x12\x3B\xA7\xA3\x1F\x22\x48\x40\xA4\xA0\xE8\x4C\xA3\xBC\x1C\x23\xF5\x9D\x2E\xCE\x95\xA0\x7D\x16\x1A\xB7\x1F\xA0\x8A\x9E\x39\x52\xA7\x95\x14\xA6\x9C\x17\xAD\x1C\x4B\x55\x96\xD3\x1B\xA1\x1D\xA4\x55\x1F\xAE\x53\x27\x51\x61\xD2\x27\x9C\x5F\xAA\x94\x11\x5B\x9C\x4C\xA9\x40\x83\x92\x5A\x77\x55\xA1\x85\x1F\xA6\x87\x14\x49\x40\x9B\xA5\x90\x26\x1E\x68\x94\x06\xFD\x91\x5C\x77\x54\xA2\xD6\x98\x10\x27\xAB\x2E\xEB\x20\x02\x46\xA6\xA2\x30\xA1\x10\x28\xAC\x88\x2B\x16\xA3\x2F\xAD\xA3\x08\x1F\xA3\x8B\xA6\x1B\x35\xA3\xA8\x01\x19\xA3\x01\x1E\xA8\xC8\x9B\x12\xE1\x96\x92\x71\x23\x9E\x42\xAF\xA8\xD7\x18\xA4\xBA\x29\xA4\x44\xAC\xA4\x0E\xA9\x1A\x10\xA2\x40\x53\xA4\x98\xDB\x9D\x3A\x6E\xA8\x10\x57\xA0\x00\x19\xA4\x43\x5C\xA7\xA7\x65\xA9\x4B\x11\x65\x9E\x0F\x25\xAB\x67\xA9\xA6\x03\x29\xA7\x24\x96\x98\xAD\xAA\x8B\x70\xA0\x00\xFA\x9D\x4F\xD3\x1B\x9C\x84\x27\x43\xBE\xAC\x6E\xFF\x9F\x20\x87\xA1\x27\xC6\x54\xA9\xF4\x93\xA4\x02\x11\x61\xB0\x83\x9C\x98\xA6\xA5\xCB\x18\xA1\x59\xAA\xA1\x75\xA6\x13\xB4\xA9\xAA\xED\x8F\x15\xC0\x92\xA9\xF7\x7C\xAB\x0C\xA5\x9C\xA5\xA9\x1B\x16\x19\x9D\xE2\xA4\x95\xC1\xA7\x7A\xDB\xA8\xA5\x4F\x5B\x3C\xC8\xA1\x10\x37\x4A\xAB\x27\x5C\xA7\xFA\x2B\x27\xAB\x2F\xA7\x4B\xA2\x45\xE6\xA0\x00\xAB\x21\x8E\x9B\xA4\xA3\x05\x1A\xA8\x97\xAE\xA7\x85\xA7\xB0\x08\x12\xAD\x00\x06\xA9\x86\xAB\x2E\xB0\x82\xB1\x0E\xB5\x10\x81\xA3\xB0\xC4\x1A\xB0\x13\xB9\xAD\x45\xA1\xAA\x4A\xA1\xB2\xA4\xAE\xA2\x89\x9D\xAE\xA9\xA9\x4A\xD6\x80\xA6\x33\x51\xAF\xEA\x73\xAF\xB0\xAD\xAD\x34\x47\xAF\x00\x19\xAF\xEF\xA8\x9A\xA4\x32\xA6\xBC\xAA\xAF\x33\x58\xA6\xBC\xAB\xAC\x76\x50\xAC\xC6\x99\x8B\x02\x19\x8B\xC5\xA7\x51\x92\x13\xAB\xA5\x44\x55\x3E\xB0\x93\xFC\xAF\xA9\x0C\xB4\xAD\x66\x2F\xB1\x9E\xA4\x27\x9D\xAB\xB0\x47\xA8\x10\x06\xB5\xAE\x20\xB5\x10\x1B\x03\xB0\x70\x89\x2E\xEB\x2B\xB1\x03\xB7\x9F\x1C\xB7\xB1\x02\x10\xB1\x16\xBA\xB5\x05\x15\xB1\xA2\xA9\xA2\x22\xB5\xA0\xEB\xA8\x1C\x26\xB1\xA1\x35\xBB\xAA\x5F\x1C\xB2\x7D\x8E\xB2\xB1\xA2\x4A\x32\xB0\x00\x34\xB4\xB7\x54\xA3\x53\xB7\xA9\xB3\x75\xB3\xA1\x3B\xBC\xAB\xFC\x9B\xA6\xD3\x91\x35\x78\xB0\x00\x42\xB1\x10\x44\xB6\x51\x5A\xA2\x19\x7D\xBA\xAC\x8A\xB8\x9E\x13\x3B\x98\xCF\xAC\x2A\xD1\xAD\xB6\x1D\xB7\x8F\x6B\xB6\x9C\xEB\x2D\xB8\xAF\xAB\xB7\xC7\xAB\x12\xC9\xA8\x3E\x3A\xB4\x3A\x50\xB1\x27\xCA\x98\xAE\x01\xBD\x1D\x3D\xB7\xB9\xFE\x94\x9D\xC6\x9A\x5F\xD8\x97\xB2\x1F\x59\xB2\x66\xAB\xAF\xDE\x9E\xB1\x4C\xAC\xA9\x6F\xB3\x9F\x4B\xB0\x48\x88\xBB\xB9\xFF\x03\xA0\xB2\xB8\xB8\x9A\xB9\x9C\x1E\x9C\xAB\x80\xA6\x9F\x08\xB9\x97\x67\x5B\x9F\xBA\xB8\x53\xBC\xB9\x4B\x0B\x28\xBC\xEB\x20\x7F\xC7\xB1\x9C\x7B\x24\x1C\xD8\xA2\xB5\x02\x1B\x27\x11\x6A\xA9\xCC\x95\xBC\xE6\x4C\xB3\x69\xA1\x89\x68\x1C\xBC\x03\xBB\xB9\x0A\xA2\xBA\xBC\xA1\xB7\x9B\x97\xBD\xC7\x59\xBD\x11\x5D\xB4\x86\xAE\xAF\xF4\xB3\xBC\x00\x1D\xB8\x02\x26\xBF\xA7\xA8\xB2\x80\xBA\xAA\x86\xB7\xB3\xB1\xB3\x9F\xAB\xBD\x3A\xEC\xBC\xA4\xEA\xBD\xA6\x41\xB3\xAC\x45\xB3\xB9\x6E\x08\xB4\x43\x9B\x32\x11\xC6\x98\xFC\xB4\x21\xFF\xB8\xB1\xC0\xB0\xB7\x24\xB1\x99\x51\xA7\xC0\x06\xC8\xC0\x20\xAA\xC0\x5B\xB5\xA0\x0D\xCF\x15\x0F\xC5\xA0\x1B\xCC\xB8\x13\xC8\x10\x91\xB2\xA7\xC6\xA4\xB9\xA8\xB8\xAF\xE8\x31\xC3\x99\xB0\xBF\x53\xB6\xB6\x88\xAE\xC3\xFD\xB4\x20\x7B\x23\x89\xE3\xB5\x10\x2A\x07\x2A\x04\x98\xC4\xBC\xAE\xBE\x16\x1F\xC2\xF3\x90\x9B\x1D\xC0\x00\xCA\xBB\x20\xEB\x26\x5C\xE6\xB8\xBF\xC7\x9E\xC4\x79\x08\xAB\x54\xB2\xB2\xB6\x52\x20\xB0\x92\xC4\x56\xB5\xC6\x01\x15\x87\x42\xC3\xC5\x53\xCC\x47\x11\x6B\xB9\xEB\x2B\xA2\xAD\xB1\x87\x0D\xBA\xB6\x40\x19\xA8\x63\xB6\xC7\x71\xC8\xB6\x03\xBC\xB6\x2B\xC1\x10\x2C\x0A\xC4\xD5\xAB\x12\x7F\xC9\xA6\xB0\x90\xC5\xEE\x97\x99\x31\x03\xC5\x8F\xB7\x5F\x03\xBB\x2E\x5D\xB1\xC7\x5F\xB7\xC7\x91\xA1\xC7\x62",
-"\xB9\xC7\x3E\xAB\xC7\x97\xCD\xC7\x00\x19\xB6\x59\xCD\xA8\xBC\xA0\x9B\x5E\xCC\xC8\xA0\xB5\x6B\x62\xC7\x9B\x47\x68\xBC\xCB\x96\x5C\xCB\x9B\xB9\x99\xA3\xB0\x05\xB3\xB0\xD2\x28\xBE\x02\x2B\x27\x10\xB9\xC4\x84\xC6\xCA\x92\x71\xCA\x12\x68\x68\x20\x64\xAE\x88\x61\xC8\xF8\x86\xA0\xC1\x9B\x2E\x68\xC3\x9F\xBA\xC3\xC0\x2E\xA7\x62\xF7\xB0\xBA\xC0\xCB\x8F\x6A\xCB\x27\x6C\xCD\xC8\x2B\x1F\xC8\x3F\xC2\xC7\x4E\xA1\xC7\x64\xBA\xB1\x78\xC5\xCD\x7A\xC1\xC7\x7C\xC0\xC2\x08\x13\xC8\x05\x16\xC8\x03\x2A\x91\xCA\xC5\xC0\xD5\x58\xCB\x30\x01\x61\xE2\xC5\xA0\x85\xC4\xC6\xA2\xCB\xC4\xD9\x7A\xC8\xBF\xCF\xB9\xE0\xC5\x10\x82\xA4\xC9\xDB\xC6\xC6\xD1\x8B\xCF\xF6\xC4\xA8\xD7\xCC\xCD\x99\xC5\xCD\xDF\xCE\xB6\x05\x19\xB6\xE4\xC8\xCC\x01\xD7\xCE\x25\xCB\xC4\xCD\xC7\x5D\x11\x69\xB6\xC7\x90\xCA\xC6\x93\x7A\xA4\xC5\xCF\xF1\xC3\xCF\xC1\x99\xCA\x39\xC1\xC7\xAD\xC1\xC7\xB1\xCE\xCA\xA0\xAB\x98\x09\xD3\xC7\x41\x1D\x10\x55\x18\x62\x73\xBE\xD0\xE9\xC8\x8F\xB5\xCF\xC9\xEA\xCA\xCB\xA3\x7D\xCB\x88\x4D\xCC\x0F\xDB\x5D\xCC\x98\xBC\x1F\xDC\xA4\x7B\x22\x2D\xC6\x53\xD1\xEA\xCD\xB8\x14\x92\x6D\x34\x4A\x5F\xE6\x68\x6E\x5C\xC8\xBC\x21\xD9\xA6\x3D\xDA\xC5\x15\xD1\xD4\xC6\x93\xD4\xE2\x67\x5B\xA2\x43\x7A\xD5\x6E\x59\x5C\xC0\xC4\x71\x2F\xCA\x69\xA2\xBC\xA8\xA7\xCB\xA0\xB7\x5D\xF0\xBC\xBD\x2A\xA0\xCF\xAC\x23\xA2\x7B\x2A\x8E\x35\x22\xCD\x08\x19\xCF\xD5\xC1\xC9\xFA\xC3\xC9\xD5\xC9\xCD\x9A\xC0\x00\x24\x00\xC8\x2D\xD5\x10\x77\xD0\xD6\xF2\xCF\x63\x25\xD5\x9C\x97\x92\x03\x53\xCD\x57\x6B\xD1\xC7\x8E\xCE\xB5\x73\xCB\xB9\x95\xC3\xD7\xFE\xC3\xAD\x09\xB8\xD7\xF1\xC1\xA3\x30\xD1\xD6\x3F\x62\xD3\x88\x67\xD1\xCC\xC9\xD7\x26\x78\xCA\x38\x30\xD9\x74\xC1\x6F\x03\xDC\xCF\x00\x0D\xCD\x8B\x94\xCB\x82\xC3\xD9\x7D\xDC\x63\xBA\xC9\x9B\x50\x85\xCA\x94\xDC\x63\xC2\xC3\xB0\x70\xC4\xC6\xCF\xC3\x34\x21\xCF\xCF\xD9\x2B\x12\x6E\xD2\xDA\x70\xD5\xCD\x8B\xD2\xDA\x74\xD7\xCF\x02\x1B\xD7\x2E\x28\xD1\x76\xD8\xDA\x37\xDC\x63\x7F\xDB\x98\x81\xD3\xD8\xB7\xDA\xD5\x00\x07\xD8\x90\xC9\xD8\x61\xBD\xD8\x9F\xDD\xCF\x72\xD6\xD0\x92\xD8\x10\x9D\xCF\xD8\x7C\xD9\xDC\x47\x66\xD9\xA3\xC5\x79\xAE\xD9\xDA\x06\x7C\xD9\x08\x13\x52\xE5\xB3\xB0\xA4\xD2\xDA\x05\xDB\x20\xA6\xD1\xCE\xC8\xDA\xD9\x95\xD6\x9C\xAC\xDD\x74\xE5\xD0\xDE\x92\x63\x9F\xC8\xBF\xBA\x69\xAB\x9C\x4B\xDC\xA4\x5C\xC4\x9E\xB3\xB2\x98\x75\x50\x93\xBA\xC8\xBB\x59\xAE\xAE\x07\xC3\xAE\x60\x1F\xBB\x41\xAC\xD4\x0B\xC0\x10\xB2\xC7\xBB\x8E\x92\x33\x04\xE9\xA6\x3C\xC8\x30\x71\xCF\x0F\xEC\x90\xBD\x13\xE0\x00\x15\xE5\x9C\x59\xD5\xCD\xFF\x0B\xD3\xEE\xC1\xE2\x59\xBB\xC5\x17\xE7\x1C\xD2\x26\x02\xBC\xAB\xA1\xBC\x82\x2D\xC4\xD9\xE2\xAF\xD6\x70\xD2\x2D\xCE\x51\xC8\xCB\x31\x02\x2D\xB6\xCC\xA4\xB0\x92\xD4\x2B\x1D\x19\x44\xD2\x4A\x46\xDB\x5B\xD6\x64\x07\x49\xD1\x9C\x01\xE6\xE3\xA3\xA1\x80\x4D\xCD\xE2\x98\x1F\xE2\x31\xEF\xAD\x0C\x89\x57\x34\xE3\xDF\x19\xD3\x70\x39\xEA\xE5\xBB\xC8\x7B\x3D\xEB\x12\x3F\xEE\xE4\xFA\xD0\x03\x42\xEC\x19\x01\x15\xE4\xD3\x16\xD5\x48\xD2\xE5\xEF\xB7\xDD\xAC\x2C\xD5\x4C\xA9\x9B\x50\xED\xBE\x6E\xE7\x14\x2B\x10\xE3\x69\xA2\xE3\x73\x89\xE5\xDF\xD4\xDF\xB5\x7D\xE5\x7F\xEB\xE5\xB8\x92\xE6\x5E\xE1\x74\x30\x03\x20\x64\xD8\x10\xD4\xC9\xC6\xE0\xBB\x30\x9E\xDE\xC6\xBA\xD8\xD8\x01\xDA\xDD\x01\x1A\xE7\xC5\xD9\xD9\x00\x18\xE9\x64\xE0\xE8\x06\x7B\xDC\x0F\x2C\xE7\xB7\x88\x31\xE8\xDA\x8D\x91\xE5\xDD\xD9\xD8\xDB\xD8\xDE\xDD\xA5\xD8\xA3\x2B\x15\xE3\x3B\xE7\xE3\x0F\x7B\xDA\x01\xBD\xDA\xC6\xD1\x74\x32\x01\xDB\x71\xCD\xE8\x3E\xC8\xBC\x7B\x2C\x30\x99\xE5\xCD\x19\xB3\xDD\x95\xE9\xDB\x08\x1C\xE9\x5F\x26\xDC\xC8\xE7\xC8\xB8\xC2\x03\xA0\xEB\x20\xA2\xE6\x11\x79\x55\xEA\x02\x19\x8D\xEB\xD1\xD7\xAC\xE0\xDC\xD6\xD3\xCB\xAE\xE8\x10\xB0\xEC\xEC\xB2\xE2\x03\xB4\xE2\xB2\xB6\xEA\xE9\x5F\xEC\x80\xB9\xEC\xDF\x10\xE7\xD0\xB0\xB6\xE7\x7D\xAC\xA1\xDE\x79\xDF\x9E\xE2\x69\x8D\xB9\x28\x01\x1D\x1E\x1B\xA9\x78\xA6\x68\xC8\xD0\xDF\x0F\xEF\xDE\x9E\xE9\xAB\x98\xFA\x5A\x7C\xF2\xE4\xE8\x47\x65\xEF\x4A\xCD\x1E\x14\x9E\x81\xBF\x6F\x79\x72\x0C\xEF\x66\xDA\xEA\xAC\x2F\xDB\xF3\x91\xF0\x0F\x23\xF0\xF1\xE7\xEB\xAD\x82\x03\x08\xFC\xDD\xF7\xE0\x07\xB9\x9F\x7C\x6E\x0D\xDC\xC1\x91\xDC\x05\xA6\xF1\x0B\x28\xF1\x98\x75\xF0\xE7\xE6\x72\x1D\xF1\xEC\xF8\xE6\xE5\x47\x8C\x76\x22\x74\x07\x81\xDC\xA4\x8B\xE8\xCF\x66\xDE\xEB\xF6\x6F\xC1\x75\xE1",
-"\xEC\x36\xD2\x8E\x55\xEF\xB4\x57\xEB\x5C\xCF\xE7\x20\x25\xE7\x9C\x3A\xD5\xB5\xF3\x90\xE0\xA1\xD1\xEB\xE6\xD2\x69\x3E\xE7\xE8\xAD\x86\xE6\x51\xD3\xE4\x69\xE3\xD5\xCB\x37\xE4\xE7\x69\xE4\x4B\xE4\x20\x4D\xED\xF4\x21\xE2\xD1\x4F\xD2\xEB\x61\xE8\x10\x63\xE0\xF5\x65\xE7\xE6\x05\x14\xE4\x5A\xF4\x43\x6C\xEE\xF5\x77\xE9\x07\xFD\xE2\xE7\x27\xF3\xF6\x54\xF0\xE6\x53\xF3\xE8\x2D\xF8\xD3\xDB\xB1\x9C\x28\xE3\x9F\xE1\x92\x2D\x65\xBC\x9C\x81\xD2\xE8\x40\xEC\xE3\x7B\xF9\xF8\xB2\xE6\xF5\xC5\x92\xD5\xA0\x1B\xF5\x0B\x87\xD4\x72\xFF\xEE\x54\x4A\xD4\x4C\xFE\x9E\x83\xFB\xED\x65\xF1\xF5\x32\x08\xF8\x9D\xE6\xF0\x52\xF6\xE8\x7C\xF8\xE8\x6C\xF2\x10\x6E\xF1\xF9\x70\xF8\x68\x57\xDD\x5B\x25\xE8\xBC\x76\xF2\xF6\x00\xC0\x00\x85\xF0\xD4\xE1\xE0\xFA\x6A\xF3\xEF\x67\xFC\xC4\xA5\xF5\xF5\x39\xD1\x9C\xBD\xD1\xF1\x05\xA8\xBC\x02\x22\x02\xC2\xFE\x9E\x4B\xF4\xBE\xC6\xCF\xDC\x03\x20\xF9\xE3\x66\xE4\x93\xF8\xE4\x58\xD3\xF7\x98\xFA\xFC\xEE\x93\xBA\x57\xF8\xE6\x00\x1A\xE6\x92\x11\xF7\xD3\xF6\xF9\x48\x35\xF7\x23\xD7\xFC\xFD\xE2\x20\xDF\xE4\xFE\x07\x29\xFC\x02\xB9\xA6\x9B\xFE\xED\x79\xF8\xEE\xB8\xF0\xEE\x51\xFB\xFB\x02\x19\xF6\xF2\xFB\xF6\xD9\xFD\xF6\x59\xFA\xFA\xD0\xFF\xEE\x94\xFF\xFD\x57\x58\x85\x70\x08\x26\x79\xF9\x4C\x4D\xFB\x7A\x6B\xEF\x7E\xE4\x31\x7E\xC3\x7A\xF8\x24\x7C\xE3\x71\x7A\x8E\x7B\x31\x4E\x7E\xAA\x6B\xE6\x2C\x7D\x9B\x60\x7F\x32\x1A\xFC\x58\x5A\x5E\x5E\xF4\x6E\x7D\xEF\x78\x3D\x9F\x7F\xB4\x5F\x81\x8D\x4B\xF8\x21\x7D\xDF\x62\x30\x00\x51\x38\x42\x11\x65\x78\xFE\x0A\x74\xE0\x65\x80\xC7\x4C\xCE\x57\x75\xA1\x7F\x2A\x46\x45\x68\x4F\x75\x09\x84\xCB\x62\x81\x07\x8A\xDF\x74\x7D\x40\x16\x7F\x0C\x85\xF1\x67\x7D\x1A\x3B\xFF\x4F\x7F\x74\x1C\x7A\x17\x81\x00\x97\x7C\x02\x86\xFD\x4C\x4E\x0C\x9B\x74\x34\x80\xA0\x45\x7A\x8C\x1E\xE7\x3C\x83\xBC\x61\x81\xF2\x6B\x04\x99\x3F\x12\x89\xFB\x22\x7D\x04\x8F\x10\x13\x83\x79\x1E\x7E\xD7\x73\xF7\x1A\x83\x4B\x3C\x55\x07\x82\x20\x2C\x81\xE3\x41\xED\x79\x00\x96\x78\x81\x5A\x82\x07\x99\x82\x2B\x82\xFA\x3E\x80\x40\x00\x82\xB6\x78\x02\xA9\x80\x02\x12\x20\x28\x01\x0B\x8A\x7A\xCE\x5B\x50\x20\x71\xBA\x62\x20\x0A\x73\x53\x2C\x70\x5F\x6A\x00\xBD\x5D\x10\x5B\xEE\x05\x6F\x1F\x84\x7E\x0E\x87\x0F\xA9\x7F\x17\x8D\x04\x8B\x51\x88\x78\x83\x9D\x78\xFF\x4F\x7C\xAC\x7B\xFD\x6F\x79\xFF\x61\x80\xFF\x7C\x0C\x98\x81\xE3\x05\xFD\x6B\x7C\x4F\x77\x84\x39\x82\xC0\x03\x82\xD7\x35\x04\x94\x81\xF7\x76\x80\x95\x7A\x09\xA1\x7E\x38\x7F\x0F\x31\x7F\xF5\x68\x85\x71\x80\x05\xB1\x5E\x01\x1A\xE3\x12\x85\xFC\x41\x7C\xEE\x4D\x03\x85\x09\x5E\x81\x04\xF3\x7C\x17\x97\x7F\xF3\x77\x0B\x8B\x11\x30\x85\xD4\x51\x7D\xD7\x60\x80\x4E\x5A\x11\xA5\x85\x78\x4C\x01\xA1\x70\x31\x99\x83\x3D\x87\x18\x85\x86\x4D\x82\x01\x9C\x86\x67\x1E\x84\x15\x80\x74\x6D\x7C\x25\x75\x06\xB4\x86\x2D\x8C\x4E\x4D\x6B\x0E\xA6\x81\xA0\x36\x07\x80\x00\x26\x80\x6C\xEA\x66\x17\x80\x08",
+"\xBB\x4D\x26\x7F\x32\x7A\x24\x02\x80\x2A\x81\xB0\x4A\x68\x61\x55\x65\x21\x14\x84\x89\x68\xB9\x59\x6C\x06\x5E\x65\x21\x16\x92\x87\x6B\x27\xAB\x62\x77\x67\x7A\x6F\xDA\x19\x80\x6E\x2F\xBA\x7D\x0B\x22\x62\x05\xDE\x7B\x64\x8A\x06\x84\x75\x7B\xC7\x6C\x72\x19\x8C\x3B\x79\xF2\x66\x87\x72\x99\x64\x0F\xE6\x4B\x80\x01\x26\xBB\x66\x8B\x52\x74\x6A\xD3\x4E\x86\x8A\x9F\x75\x01\x8B\x02\x3B\x88\x15\xE2\x6F\x8B\xB2\x61\x8A\x6D\x3F\x93\x7E\x1C\x85\x95\x88\xBC\x69\x6C\x6F\x0B\x94\x81\xEB\x1D\x81\x8F\xC6\x7D\x62\x7C\xA3\x35\x86\xF3\x27\x89\x8F\xCD\x41\x82\x20\x03\x99\x93\xE8\x2D\x7C\x8E\x3F\xAA\x72\x93\x5F\x2E\x07\x0C\x0F\x82\x21\x08\xAD\x88\x96\x74\x16\x81\xEF\x64\x80\x7D\xE7\x1C\x80\x8E\x31\x80\x84\x1D\xB4\x86\x8F\xE7\x65\x91\x87\x2B\x99\x7B\xF6\x1C\x91\x98\x5F\xB3\x81\x94\xE5\x77\x86\xFA\x56\x76\x7A\xF7\x70\x7A\x64\xBC\x95\x7F\x10\xF9\x7C\x82\x23\xBD\x7F\x7F\x82\x2D\x97\x20\xFF\x84\x93\x40\x88\x23\x8A\x4F\x60\x93\xEB\x43\x1B\x24\x76\xB4\x71\x9D\xE5\x9A\x74\x26\xB2\x6E\x8C\x3A\x22\x60\x98\x8B\x7E\x93\xDC\x43\x90\x9A\x1B\xA8\x7B\x73\x0D\x0A\x00\x17\x83\x60\x90\x30\xA8\x68\x92\xBC\x9A\x9E\x62\x67\x86\x92\x36\xAA\x90\x77\xF6\x8C\x99\x3E\xF3\x8F\x98\xF2\x64\x87\x8E\x28\x9A\x8F\xF4\x27\x91\x21\x54\xB4\x98\x97\x39\x65\x21\x48\xB7\x9B\x95\x58\x96\x60\x63\x45\x0E\x0C\x19\x3D\x45\x20\x96\xA4\x64\xA4\x10\xBE\x04\x08\x40\x0C\xA2\x80\x1E\xA3\x82\x25\xA5\x75\xD3\x20\x75\x80\x5C\xAE\x05\x06\xB4\x81\x22\x2D\x8F\xA5\x83\xB2\x57\x81\x92\x1A\x82\x99\x5E\x12\xAD\x96\x50\x96\xA3\x94\x78\x91\x7A\x46\xAA\x87\x7A\x65\xAF\x86\x83\x4D\xA1\x85\x3F\xE6\x62\x9A\x64\xAB\x7E\x9A\xF1\x7F\x75\xF0\x5A\x97\x7E\x6E\x8B\xAE\x9B\x48\x87\x3A\x4E\x40\x02\x9C\x9E\x95\x8E\x71\x64\x1A\x03\x4A\x72\xAE\xAC\x46\x94\x67\xA4\x74\x09\xA4\x19\x20\x65\x20\xBE\xAF\xA0\x9E\x70\xB2\xA4\x10\x2B\x5B\x36\x2A\x8F\x58\x21\x87\xA0\x00\x15\xB2\x96\x17\x95\x0D\xB7\x9D\x32\x7A\x96\x08\x2F\x07\xAB\x38\x9F\x36\x29\x75\x84\x84\x11\x60\x38\x3E\x3A\x13\x9E\xA1\x84\x90\xAC\x10\x01\xA3\xA0\x8B\x20\x88\x05\x7A\x7C\x6E\x60\x78\xA6\x6D\x14\x27\x6C\xB4\x54\x92\xB2\x88\x15\xBF\x7B\xCB\xA1\x34\x98\x24\x89\x0A\x4A\x9C\xB3\x0C\xCF\x9E\xAB\x9E\xE4\x82\xB4\x61\xE3\x98\x33\x9A\x80\x07\xA6\x98\x35\x63\xC5\x79\xAA\xA5\x7C\x42\x21\x5F\x7F\xB1\xB3\x4C\x8C\x51\x21\x13\x7A\x20\x06\xC3\xAE\x26\x60\x30\x02\x97\x28\x2B\x26\xBB\xB4\x7B\xBA\xEE\x57\xB1\x78\xAE\x37\x7C\x0E\x20\x14\x89\xF0\x36\xBC\x7E\x10\x14\x2C\x28\x6B\xB0\xB6\x78\xE5\x60\xB8\xCC\x00\x0C\xBA\x00\x36\xBB\x76\xD9\xBA\xB1\xED\x9A\x6B\x07\x2B\x20\xC1\x78\xA6\x20\x07\xF1\x9B\xBD\xBC\x5D\x24\x72\x7A\xE5\x6C\xBD\x23\xAF\xBE\x2A\x82\x37\xBD\x7D\x5A\xB4\xC0\xFE\x97\xBF\x75\x02\xC5\x21\x86\xA5\x63\xBF\xF4\x87\xC5\x6C\xE6\xAD\x76\xC8\x0B\xC0\x05\x06\xFD\x7F\xC1\x45\x26\x24\x7E\x80\x0A\xBE\x02\xCC\x3D\x20\x2F\xD7\xC0\x5E\xFA\xAC\x5B\x80\x1D\x37\xA5\xE2\xB3\xBB\x84\xFD\xB6\x25\x18\x16\xC2\x30\x31\x0E\x04\x0D\x3E\x1B\x24\x22\xC3\xC6\x22\x31\x06\xC1\x8F\xC1\x7F\x3B\xF0\x28\xBE\x85\x1E\xC4\xC1\xF0\x77\x39\x3E\x95\xAD\xBF\x3C\x82\x2C\xA9\x7B\x65\x7A\xB7\xBA\x21\x3D\xB3\x9B\x63\xB6\x40\xBA\x29\xC8\xFA\x97\xBA\xCC\x1C\xDD\xC6\x92\xC8\xCC\xC8\xF0\x22\x3E\x6C\x5E\x1A\x6C\x79\xE5\x64\xCA\xFD\x17\xCB\x3E\x59\xD8\x9C\x08\x5B\xC4\x85\x22\x38\x0B\x0C\x6C\x15\x0F\x1C\x69\x06\x0F\xC6\x32\x09\xCC\x2B\xCD\xC4\x92\xBF\xCD\xC6\x59\xAA\x13\x25\x8F\xC7\xC9\x1E\x65\xC1\xCA\x36\xE5\x6D\xC9\x6F\xD0\xCB\x9C\xA0\x05\xCE\x2B\xC7\x88\xCB\x26\x37\x9C\x0C\x8B\x7C\xCE\xB3\x5D\xCD\x22\x54\xDE\xB5\x1F\x72\xBA\xCD\xB2\x64\xCD\xCD\x4E\xD0\xCE\x9C\x9F\xCC\xD2\xFC\x36\xCF\xD3\x78\xC1\xD6\x96\xF0\x05\x7C\x3F\xC0\xD2\xD0\x84\xC6\xD3\xE6\x16\xC8\x69\xC4\x82\x21\xB1\x8B\xB1\x05\x25\x2B\x2B\xD8\xC8\x87\x3A\xB6\x69\x7A\xCE\x6D\x99\xB6\x6D\xCD\xAD\x35\xB7\x9F\xB5\xBC\x41\xE5\x90\xB6\xA4\x72\xB4\xB2\xA2\xD8\xAB\xB4\xB8\xB6\xD5\xDD\x97\xDA\xD5\xEB\x7A\xD8\xCA\x65\x94\xD8\x99\x46\xD9\x20\xC8\xC8\x6A\xD6\x1F\x0B\x24\x7A\xCE\xD8\x33\xA7\xB7\x92\x4E\x2C\xB2\x04\xD7\x89\xD0\x66\x82\x32\x04\xA3\x96\x22\x06\x21\xF8\x13\x25\x07\xF2\xD2\x0C\x6B\xC9\x0E\x19\x30\xD1\xD3\x2D\x13\xD7\x92\xF4\xC6\xD6\x4F\xFD\x78\xD4\x16\x3B\xD6\x1D\xF5\x02\x0C\xF1\x00\x70\xDB\xD3\x68\xCE\x4E\x0B\xE6\xCC\x20\xE2\xE1\xE0\x0C\xEE\xE3\xA5\xEE\xCF\xC9\x15",
+"\x12\xE6\xD2\xB5\xD5\xC8\x19\x77\xCA\x3A\x93\x1A\xE4\x84\x55\x0E\x0F\x74\x08\xDB\xC7\x91\xC3\xE5\xE1\xB2\x84\x17\x4A\x42\xEA\xE1\x94\xCF\xE7\xC9\x11\xF5\xD3\xA4\xD3\xC5\xE3\x99\xF8\xD5\xE6\x16\x21\xDD\x1C\xA5\xD5\x84\x8E\xDE\xE1\x0C\x20\xEB\xD7\x98\xA8\xEE\xD5\x80\xC7\xEE\x6C\x2E\xEA\xE9\x0C\x4C\xE2\xE6\x9A\xEB\xAF\xE6\x66\x79\xE7\xCE\xD3\x7F\xDE\x0A\xCB\xD5\x3C\x6E\xF3\xD3\xEB\x11\xD5\x20\xBA\xE9\xC8\xC9\x0C\xE3\xEF\xCA\xCE\xC9\x8D\x38\xCA\xE8\x06\x64\xF7\xD7\xC5\xB9\xD9\xE2\x3D\xD4\xEE\xD7\x81\xC3\xD1\xA1\xCF\x07\xD1\xE9\x6C\xD0\xEF\x5D\xF3\xE0\x08\x18\xD1\xA2\x4D\xF4\xD5\xD3\x4E\xE3\xF0\xD4\xF9\x08\xEC\x11\x27\xD7\xCB\x59\xED\xEC\x8F\xC8\xCF\xC4\x81\x31\xC0\xC8\xCA\xA8\xA6\x4A\xB5\xC0\x21\x1B\xF7\xEB\xD2\x82\xA2\xF6\xCF\xF0\xE3\xF4\xA0\xF1\x04\xE8\x05\x38\xF7\xEB\xA4\xEA\xE8\x95\xD3\xF4\xE5\x69\x89\xEB\xAB\x94\xE5\xED\xA7\xFA\x25\xF3\x53\x16\xE9\x5C\x58\xEA\xD5\xC7\xCD\xE6\xE8\x7B\xE2\x3D\x1A\xE1\xE3\xF9\x98\xC2\xF0\x04\x18\xFC\xF2\xE1\xBC\xD8\xE6\x9D\xD2\x33\x73\xB2\xE1\xE1\xE9\x81\x27\xF4\x93\x05\xE3\xC6\xAB\xEB\x26\xEB\xA3\xE2\xB1\x60\x40\x26\x55\xFB\xCB\xB8\xEB\x80\x0D\x33\xF8\xD8\x67\x75\x2C\xA2\x20\x4B\xAF\xF8\xAE\x79\xA3\xE2\xC2\x08\x1A\x68\x93\x6F\x73\x41\x62\x03\x74\x72\x10\x76\x74\x66\x79\x7F\x75\x2E\x43\x62\x97\x7D\x74\x66\x79\x67\xA3\x6B\x67\xDC\x75\x6E\x5E\x69\x6A\x00\x5B\x75\xAD\x62\x76\x0C\x81\x67\x0E\x82\x65\xC4\x77\x7D\xD9\x7D\x79\x88\x70\x6C\x8B\x7D\x78\x7D\x01\x7E\xE6\x7F\x73\x05\x72\x03\xB8\x72\x10\xBA\x7C\x7E\x91\x74\x70\x0C\x81\x71\x1F\x80\x73\x98\x71\x81\x36\x7B\x7D\x1B\x7D\x71\xCB\x79\x75\xCE\x7C\x7B\x23\x7C\x80\x2E\x77\x83\x4B\x71\x82\x16\x78\x7D\x84\x7A\x7D\x13\x84\x75\x6A\x7F\x7D\xD3\x3D\x6E\xC7\x1F\x6E\x00\x11\x6F\x32\x32\x64\xF6\x65\x10\x59\x85\x5A\x79\x09\x6F\x6C\x4B\x5A\xCB\x59\x46\xAE\x5E\x7E\x00\x00\x7F\x60\x88\x31\x01\x25\x10\x69\x86\x7F\xAE\x38\x7E\x64\x03\x7E\x00\x1F\x62\x38\x66\x12\xFD\x73\x53\x52\x88\x19\x6D\x5A\x58\xF2\x68\x57\x40\x32\x07\x74\x0E\x5C\x01\x19\x2F\x22\x31\x5D\xCF\x67\x87\x68\x10\x87\x00\x01\x63\xF2\x6D\x87\x74\x04\x1C\x1C\x12\x32\x5C\x8E\x03\x2A\x86\x11\x30\x06\x5C\x03\x4E\x5F\x7C\x8B\x31\x7E\x83\x7F\x9D\x13\x88\xAF\x75\x60\x93\x89\x07\x30\x0E\x88\x00\x74\x60\x3F\x3A\x89\x74\x04\x85\x00\x09\x58\x90\x87\x5D\x92\x8D\x73\x01\x76\x89\xA5\x84\x70\xA9\x79\x31\xA8\x8C\x89\x01\x1E\x89\xEC\x71\x8A\x32\x04\x8A\x71\x75\x70\x8C\x8A\x8A\xAC\x86\x34\xEC\x72\x8B\x6E\x55\x4F\x74\x55\x10\xC9\x80\x53\xA4\x35\x8B\x8C\x89\x7F\x01\x1C\x52\xBA\x84\x54\xAD\x3E\x03\xC6\x8A\x87\x1F\x59\x53\x44\x35\x10\xDB\x8C\x8C\x0D\x4C\x88\x51\x42\x10\x51\x4D\x8A\xD4\x89\x3B\x64\x86\x86\x74\x8B\x5C\x86\x15\x10\xEB\x8C\x86\xCE\x88\x8A\x88\x8F\x62\xBA\x87\x86\xB9\x47\x8E\xB3\x89\x07\x78\x5F\x00\x2B\x1A\x8F\x71\x78\x57\xA7\x8C\x31\x80\x80\x10\x82\x84\x8C\xF4\x8F\x8A\x01\x87\x8F\x31\x07\x8D\x64\x6F\x8E\x1C\x38\x8B\x45\x33\x87\x78\x71\x8A\x31\x0E\x8B\xB5\x71\x64\xC1\x8B\x12\xC3\x8F\x7A\x49\x69\x87\x8B\x40\x48\xE1\x81\x10\xE8\x41\x5A\x9F\x44\x31\x33\x0E\x4E\x05\x16\x92\x5C\x86\x57\xFE\x75\x8E\xE8\x5A\x67\x0A\x55\x17\x5A\x5F\x54\xE6\x3F\x4F\x21\x7D\x6D\x22\x91\x35\x06\x52\x46\x48\x55\x46\x94\x4C\x50\x6A\x49\x5A\xDE\x8F\x46\x13\x8F\x92\x4E\x53\x42\x50\x59\x51\x61\x6A\x90\x2C\x9C\x91\x2C\x92\x64\x41\x50\x10\x43\x59\x8D\x31\x56\x54\xBB\x42\x56\x65\x32\x43\x75\x3A\x67\x58\x94\x6D\x25\x46\x4C\x52\x5F\x59\x2C\x46\x36\xCB\x4A\x95\x4A\x5D\x18\xE4\x63\x93\x38\x44\x55\xD5\x4D\x43\x61\x50\x44\x20\x04\x56\xB1\x15\x49\x47\x40\x4E\xA1\x6D\x29\x08\x1C\x94\x37\x93\x31\x14\x94\x97\x16\x1F\x20\xDD\x22\x13\xB4\x74\x45\x7B\x99\x44\x82\x12\x20\x21\x00\x2D\xFF\x01\x8A\x30\x02\x2D\x48\x1A\x13\x02\x23\x02\x88\x9C\x8B\x8C\x97\x8F\x02\x25\x02\x88\x9A\x94\x52\x94\x3A\x83\x9A\x56\x85\x9B\x12\x27\x08\x98\xF6\x8D\x8F\xCB\x53\x99\x71\x72\x20\x29\x01\x99\xB0\x8D\x63\xA4\x95\x7B\x02\x2B\x02\x88\x9F\x01\xF3\x2C\x2A\xEB\x2F\x0F\x02\x2B\x2E\x7E\x97\x9B\xB8\x90\x21\xB3\x9B\x62\xB1\x99\x9B\x7C\x20\x2A\x2B\x16\x9B\xB8\x98\x97\xC1\x53\x92\xC2\x94\x25\xB4\x78\x95\x02\x28\x99\x38\x50\x51\xFF\x03\x9B\x76\x95\x10\x70\x2E\x9B\xEB\x22\x2D\xC7\x9E\x97\xC4\x9D\x45\xE5\x4C\x20\xB3\x98\x88\x7B\x2E\x9B\xB8\x9F\x9C\x04\x2B\x62\xD2\x29\x9B\xEB\x27\x9D\xCF\x5B\x1A",
+"\x87\x1D\x93\x8C\x12\x20\xD9\x9B\x6D\x70\x52\x20\xE2\x9C\x20\xFC\x88\x22\xE0\x91\x9E\xB3\x9B\x2E\x64\x89\x9B\xDF\x98\x9B\x9B\x98\x19\x8E\x9E\x39\x02\xA7\x8C\xB8\x43\x9D\x02\x21\x8F\x01\x1B\x95\x34\x41\x9A\x00\x08\x51\x79\x4C\x9C\xAF\x49\x53\xFF\x0B\x27\x13\xA4\x7B\x02\x14\x86\xF3\x95\x10\xAA\x8D\x01\x04\x2A\x9F\x95\x1A\x2F\xEB\x24\x1C\x1E\x0D\xA1\xEA\x95\x10\x23\xAC\x9D\x2B\x11\x9D\x02\x1C\xA1\x28\xAF\x21\x82\x4D\xA2\x49\x1F\xA2\x20\xA6\xA1\xD1\x84\xA2\xBA\x2B\x12\x20\x01\x9C\x3B\x6D\x1D\xF7\x90\x14\x1F\xAC\x97\x79\x0B\x9C\x03\xA8\x8D\xCD\x94\x3A\x06\xAB\x1C\x48\xAD\x1C\x65\x9B\x3C\x0C\xAE\xA0\x52\x50\xA1\xB6\x39\x53\xA2\x7D\xA3\x50\xAD\x53\x39\x5D\x9B\x3D\xA7\x3A\x3B\x54\xA4\xDA\x90\x57\x47\xA8\x10\xEB\x82\x10\xEB\x84\x94\x31\x92\x19\x4D\xAE\x95\x2B\x3F\x9E\xEB\x60\x57\x15\xA8\x9C\x08\x18\xA1\xEB\x23\x9D\x1F\x91\x27\xD5\x92\xA3\xBA\x94\xA3\x00\x10\x8D\x74\xAA\xA3\x08\x1B\x01\x36\xAF\x2A\x1F\xA7\xA7\xA6\x1B\x12\x27\xA3\xA3\x08\x11\x90\x00\x05\xA8\x82\xA5\x10\x2A\xA1\x10\x2C\xA6\xA8\x1A\xAB\x12\x8F\xAC\x2C\x7C\xA1\xA3\x59\xA5\x1C\x3F\xA4\x98\x26\x12\xA4\x08\x18\x5C\x51\xA0\x51\x5F\xA0\x63\x49\xA0\x00\x0A\xA1\x4A\x67\xA4\x4A\x4F\xA3\xA4\x41\x94\x07\x2B\x68\x9E\x0B\x25\xA5\x79\x05\x4F\x58\xA7\xA9\x7D\x4B\xA5\x1D\x95\x4E\xA1\xA2\xA6\x85\x11\x10\x64\xAC\x4F\xD3\x1D\x9B\x84\x27\x43\x6A\xAF\x56\x23\x9E\x97\x19\xA0\x21\xC6\x5D\xA8\xE6\x2F\xA7\x02\x1B\x62\xAA\x85\x9B\x2B\x19\xAB\xE4\x73\xAA\xA5\xA3\x1D\xA7\xA1\x55\x2B\x30\xAB\xF5\x42\x9B\xCC\xA2\x2C\xB4\xAD\x9F\xB7\x9F\x9F\xA9\x1D\x99\x9D\xAA\xAA\x2C\x92\xAD\x71\x84\xAD\x4B\xA4\x43\xC0\xA1\x10\x37\x4A\xAD\xB8\x4D\xA6\xFA\x2B\x27\xAB\x20\xA7\x95\xA2\x10\x7E\xA0\xA3\x17\xA1\xA8\x01\x17\xAC\x64\x18\x10\x8A\xAD\xAF\xEB\x28\xA8\x01\xBB\xA7\x08\x1A\xAC\x00\x03\xA9\x02\xB8\x91\x92\xAD\xAD\x00\x12\xA7\x0E\xBC\x2E\x52\x41\xB1\xAB\x2A\xA7\x00\x0B\x2E\xE4\x94\xAB\xE2\xA9\x1B\x7D\x93\xA4\xA8\x44\x5C\x9F\xA6\xA4\xB8\x98\xA0\x4A\xAE\x4C\x66\x91\x4A\xED\xA0\x10\xEF\xA6\xAE\x99\x9D\x3A\x53\xA7\x9F\xF0\xA7\xA5\xB4\xAE\x9E\xB6\xA0\x58\x23\x98\xAE\x00\x01\xA6\x01\x13\xA6\x14\x57\xB2\xD6\xA0\x29\xE6\x18\xA6\x64\x03\xAC\x76\x52\xAF\xD7\x10\xB4\xFA\xA1\x88\x84\xA1\xB1\x08\xBA\xB0\x06\xB1\xA9\x08\x1E\xB4\xDC\xA7\xA3\x08\x19\xA3\x49\xBD\x17\x00\xB1\xB1\x64\x89\x2E\x71\xA6\xA7\x0B\xBD\x2E\x5E\xBF\xB4\x47\xB8\x10\x16\xB7\x9E\xC0\x97\xA9\x1B\xB8\x1C\x1D\xB5\xAE\x6C\xBC\xA5\x21\xBD\x3A\x38\xB4\xB2\xA4\xAB\xAE\x28\xBB\x12\xC1\xA8\x3E\x31\xB0\x51\xAD\xA4\xAB\x79\xB4\x3A\xB3\xA7\xA9\x44\xB0\x48\x38\xBA\xB3\x00\x1C\xB3\xEC\x95\x51\x92\x19\xB2\x00\x02\xAC\x35\xB9\x97\x08\x36\xAC\xB3\x99\xAC\xF7\xAF\xB5\xF6\x98\x58\xB8\x9D\xB5\xB7\x92\xB7\xD5\xA9\xB8\x76\xBE\xAE\x78\xBC\xB2\x45\xAD\x3A\xF8\x94\x20\xF5\x9D\xAC\x33\xB7\x9B\xFE\xA1\x27\xBC\x9F\xAD\x67\xB5\xB9\x59\xA1\xB8\xE5\x4E\xAA\x14\x29\x9C\x65\x9C\xA9\x02\x40\xB2\x56\xAE\x9C\xD0\x91\xAD\xB4\xA5\xA7\x07\x90\xB8\x8D\xB5\x9C\x51\x33\xBA\x0C\x2E\xAC\xBD\xB3\xB9\x07\x28\xA8\xF9\x20\x97\x44\x44\x37\xB6\xBF\xB1\x04\xA9\x53\x0B\x29\xBA\x53\xB5\x10\xF3\x73\xB3\xD4\xB6\xB4\xFF\xAE\x97\xEB\x23\xA7\xBF\x9F\xBB\x13\xB0\xBC\x77\x98\xBB\xC4\xA1\x35\x7F\xB9\xA5\x86\x8B\xB6\xA7\xBB\xA8\xEC\xBE\xAD\x97\xA2\xBB\x03\x29\xB6\x01\xAD\xB6\xD0\xBE\xB6\xB9\xB4\x3A\xDA\xB1\x27\xF4\xA7\xB9\x3B\xA6\x26\x68\xB9\xA9\x9C\x9B\xA9\x1E\xBD\x51\xE4\xB5\x4F\x2F\xB0\x9E\x7D\xBD\x3A\xE7\xBD\xA3\xB0\xBE\xA5\xB8\x94\xB8\x39\xBC\xAB\x3D\xBC\xA4\x48\xBD\xA0\x42\xBD\xC0\x23\x99\xBF\x00\x0B\x2A\xD0\xA4\xB5\xD2\x9A\xB1\x00\xC0\xA0\xE4\xA7\xBB\x6D\xBB\xAA\x7B\xB7\xA9\x09\xCF\x15\x0B\xC7\x9F\x18\xC1\x35\x83\xBB\xAB\xEB\x9E\x38\x65\xAE\x06\x8A\xBC\xB8\xE3\xB5\x57\x80\x4B\xBE\x57\xB5\xBD\xE9\x9A\xC3\xFD\xA4\xA1\x7B\x28\x88\x1D\xC5\x10\x24\x07\x2A\xAE\xB2\x10\x45\xC7\xA9\xE9\xB9\x07\x2B\xC0\x9E\x8A\x9A\xC1\xA5\xBB\x20\xEB\x26\x5C\x7B\x2B\x62\xC6\x59\x9B\x4B\xC0\xBF\xAB\x96\x5B\x02\x2A\x98\x3E\xCD\xBE\x62\xB1\x10\x69\x8E\xC3\x1A\xCA\xC1\x7C\x4B\x62\xD4\xBB\xB5\x11\xBB\x2E\xF9\xA0\xA9\x3E\xA9\xB5\x3B\xC4\xB0\x4C\xBD\xB0\x3B\xCB\xA1\xC8\xB0\x00\x2C\x06\xC4\xA6\xB8\x10\x79\xC7\xA9\x8A\x9D\xC4\xBE\x92\x91\x1A\xC0\xC1\x68\xC6\xB6\x7D\xA1\xB1\x22\xA1\xB1\x72\xCB\xC3\x6A\xCB\xC3\x4D\xB1\xB1\x76\xCE\xC1\x2B\xAA\xC7\xD5",
+"\x54\xC7\x59\xAA\x98\xF0\xB2\x7A\x98\x7D\xC5\xA9\x98\x64\xD9\xBD\x9B\xC6\x5D\x9B\xD4\xB0\xB1\x3B\xC2\x2D\xDE\xB4\xBD\x15\xB8\x9B\x7B\x28\xB0\x49\xC7\xC9\x9D\xC2\x8A\x99\xCB\x63\x21\x6F\x15\x9C\xC0\xBE\xD7\x58\xBA\xF9\x90\x20\xC7\xBF\xBF\x83\xAB\x10\x0D\x15\x15\x29\x6A\xBE\x7B\xCE\xBA\xD7\x55\xC6\x7B\x27\xC6\x6B\xCB\x12\x19\x0A\xB5\xFC\xA1\xC6\x58\xB6\xA2\x8A\xCB\xB4\x8E\xC6\xC9\x60\xCB\x8A\xD4\xC9\x2D\x2B\x1D\xC7\x05\x10\xC8\x02\x24\x91\x28\x63\xBF\x47\xC5\xC9\x71\x70\x03\x2B\x6A\xCD\x3D\xAF\xC7\x5F\xC9\x5F\xAF\xC1\x03\x83\xCD\xBF\xCE\xC7\xB1\xCA\xCC\xCC\xBD\xCE\xC6\xDB\xB2\x10\x05\xBC\xC3\x4A\xB0\xC7\xF4\xC0\x10\x8F\xC5\xC7\xD7\xCB\xAC\x51\xBD\xB9\xBC\xC6\x1B\xBE\xC3\x14\x10\x62\xC0\xE0\xB3\xCC\xD7\x5B\x62\x52\xB9\x9B\x98\xC8\x9B\x9A\xCD\x74\xB5\xC4\xCC\x40\x6F\xC9\x03\xC0\x10\xA2\xCB\x2E\xA9\xCB\xC3\xA4\xCB\xCF\x12\xB2\x8E\xB8\x9C\xCD\xCD\xC8\xA9\x05\xD0\xCC\xE0\xC3\xCC\x0A\xDB\x5D\xAC\xC4\xAB\x0F\xD7\x9B\xA2\x73\xCB\x88\x48\xD2\xE2\xC5\x7B\x30\x0E\x9B\xD9\xBD\xD1\x3D\xAB\x27\xD2\x27\xC5\x10\xDF\xCA\x30\x08\xB3\x0E\x9E\x19\x4C\x18\x59\x34\x4C\x5F\xBA\x54\x06\xBC\x54\x07\x4B\xC9\xBD\xA6\xCC\xBA\x60\xB4\xBF\xF7\x9A\x98\x40\xDA\x7E\x01\x13\x6E\xA1\x42\x7A\xD6\x6D\x59\x4B\xCF\xCE\xFF\x0B\xD1\x59\xAE\xBB\x24\xCE\xCA\xB6\xCB\x5D\xEB\xB9\xBD\xEB\x2B\xCC\xE9\xC6\xCC\x43\x3C\xBB\x3B\xCC\xC6\xF2\xC4\xD0\x1E\xD9\xC8\x71\xC2\xCD\x05\x1B\x2E\x26\x04\xC9\xEA\xC8\x10\x77\xDE\xC7\xEB\xC2\xD2\x2E\xDF\xCA\x32\x0A\xC1\x7C\x55\x23\xC9\xC7\xC8\x8C\xC3\xD2\xD4\xB2\xD7\x1E\xDB\xC8\x75\xD4\xD7\x02\x15\xC5\x8E\xD1\xD5\xEB\xC1\xCB\xE0\xBB\xC9\xEE\xCC\x62\xF7\x81\xD8\xB3\x9D\x9B\x21\x5F\xD8\x73\xC1\xD0\xFE\xC0\xDA\x7E\x9B\xCA\xD9\xCC\xD2\x93\xD8\x9B\xAB\x94\x79\x13\xD9\xD2\x3D\x68\xCB\x11\xB8\xD6\x5F\xCA\xD6\x08\x1B\x8D\x84\xDD\xD6\x38\xAF\xD6\x6F\xC1\xD7\x91\xDF\xCE\x8C\xD4\xA9\x7A\xD8\xD7\x98\xDF\xDB\x7C\xD3\xD6\x3D\x6E\xD7\x7E\x9C\x8B\x82\xDC\xD6\x1E\xDE\xD6\x87\xD3\xCF\xD5\xCA\xD8\xD5\xCD\xDB\xD8\xCA\xCF\x9E\xD9\xD0\x01\x17\xCF\x0E\xD7\xDA\x7F\xD5\xD9\x12\xD7\xD9\x02\x8A\xD9\x04\x2C\xD9\xC0\xD4\xBD\xFD\xCE\xD1\x91\xC3\xDA\x29\xA5\xDA\xC3\xD4\xD1\x3D\x6A\xC5\xAD\xBA\xDA\xDE\xD8\x90\xF7\x99\xBD\xAB\xB7\xA9\xBD\x9D\xD4\x4A\xC1\x98\x48\x36\x9D\xB4\xAD\xC2\x13\x30\xBF\xFC\x5A\x9C\x17\xD7\x5C\x05\xC1\xAF\xBB\xBE\xA2\x97\xAA\xD3\x61\xBE\x9B\x4B\xCC\xDF\xE2\xBF\x32\x38\xCB\x9D\x1E\xDF\x0F\xDE\x9B\xCB\x96\xA1\xBE\xE8\xBA\xDF\x32\x3B\xC3\xFF\x08\xD3\x92\xDF\xD4\x2D\x54\xAB\x0D\xEB\x12\x2A\x04\xAB\x0C\xAC\x86\xD2\x2B\xD7\x62\xDC\xDE\x04\x72\x2D\xE6\xCF\xE1\x2C\xE3\x69\xD2\x2D\xCA\xE7\xCE\xD3\x53\xDC\x19\x55\xD3\xD4\xB7\x51\x4A\x46\xD6\x6E\x5A\xDA\xE1\xC7\x1C\xD4\x0B\xE9\xDD\x20\xEA\x7F\x22\xE0\xE4\x98\x12\x2D\x25\xE7\xA9\x27\xE4\x8F\x29\xE6\xDA\xC4\xDD\xE2\xEA\xDB\xE2\xAC\xD8\x64\x33\xE0\xE5\x31\xEF\xD3\xB8\x91\xD4\x56\xD3\x1D\x58\xD9\xD4\x5B\xD8\xCF\x71\x2E\xD5\x3D\xAB\x9A\x46\xE9\xDF\x6E\xA6\xBF\x79\x0A\xE4\x26\xE5\xC1\x28\xEB\x12\x2A\xE5\xE3\x51\xED\x70\x2E\xE8\xE5\x55\xE2\xE3\x2B\x14\xE3\x30\xE7\xE7\x35\xD2\x9F\xB9\xC6\xD8\xB1\xD3\x9B\x7B\x2C\x30\x2E\x25\xD8\x05\x16\xB5\x1E\xDD\xC8\x8D\xD8\x10\x4B\xE5\xE8\xD6\xD0\x10\x8D\xE2\xE7\x31\xE2\x03\xC6\xDF\x20\x4D\xE9\x8E\x18\x36\xD1\x08\x19\x8C\xD5\xDA\xDB\xD4\xD4\xB9\x3D\xC0\xCD\xB7\x94\xDA\xC2\xD4\xE5\x33\xD3\x72\xEE\xD0\xE2\xF0\xDF\xE8\xC1\xD5\x7B\x32\x0E\xDA\x3B\xCD\xC6\x64\xC2\xE8\x0B\x33\xDE\x86\xC7\xE8\xB8\xD5\xCF\xD3\xD5\x10\x91\xEF\x25\x97\xDD\xEB\x4E\xC0\xD8\x95\xEB\x20\x97\xE6\x11\x78\x5A\xE9\xCA\x86\xEB\x23\xD7\xCF\xD4\xB2\xDD\x07\x24\xEA\x05\x11\xE7\x7B\xE7\xEA\x01\x79\xEA\x17\xEB\xEA\xE1\xC9\xD7\xAE\xED\xA3\xD9\xB5\xDE\x39\xD7\xE4\x69\xE9\x7D\xAB\xD4\xED\x3D\x68\xB3\x89\x21\x10\xED\x1C\xA0\x9F\x79\x6A\x12\x9C\xD5\xE7\xDF\xED\x68\xEC\x1B\xE6\x1B\x84\xE3\xEA\xED\x64\x66\xEE\x46\xCD\x1E\x41\xD5\x82\x8A\x76\x68\xED\xE9\xCE\xD5\xC2\x16\xBB\xDE\x9B\xE0\xAE\x97\xFC\x52\xEE\xF1\xDF\x8B\xF8\xE8\x10\x2D\x2D\x1E\xAB\x9F\x84\x6E\x08\xDC\xB3\x9E\xEC\x04\xF0\xEE\xF2\xE6\x13\xF4\xE9\xF0\xAE\xEB\xF0\x8E\xE0\x00\xE9\xE5\xC1\xC9\x7E\x83\x1F\x7C\xAA\x80\xD9\xA5\x66\xD7\xDB\x69\xD4\xEB\x08\x19\x85\x0F\x2B\x2E\x16\xB0\xD9\x64\xBD\xE6\x6F\xA7\x8F\x78\x53\xEC\x07\x21\xE6\xB9\x97\xD3\x43\xE1\xD2\xAD\xB3\xC9\xEB\xD7",
+"\xE7\x31\x07\xE5\x3F\xF4\xEE\x94\x87\xE3\xD6\xB9\xE3\xA0\x1B\x3C\x3D\xE8\xD4\xE7\x6B\xD4\xB3\x98\xDF\x59\xA7\xDF\xFF\xC1\xC8\xEB\xC2\xF4\xA6\xE6\xEF\xDB\x56\xF4\x02\x1D\x19\x5D\xE2\x19\x5F\xED\xF4\x48\xE8\x16\x5C\xD4\xE6\xF7\x9A\xE0\xA2\xD2\xE9\x40\xF6\xF5\x68\xF4\xF4\xA2\x8F\x20\x3A\xF7\x4E\xB4\xA3\x9D\xD2\x28\xDD\x3D\xD3\xE7\x32\x05\xE7\x43\xF8\xF5\xAA\x99\xE7\x76\xEC\xF6\x5A\xE7\x9B\x5C\xEA\xE3\x4A\xF4\x7B\x47\xD0\xE6\x61\xF0\x13\x4F\xFB\xF3\xB7\x92\xF7\x03\xF4\xE4\x93\xE8\xF7\x57\xFD\xEA\x64\x6A\xF6\xD3\xEA\xF7\x45\xFB\xE5\x54\xD0\x10\x5D\xF1\xF1\x3B\x69\xD5\xBD\x51\xE6\xD9\xB4\xF6\xE0\x92\xF5\x9F\xE1\xEC\x76\xF0\xF9\x6B\xF6\xF9\x78\xE8\x10\x7A\xE6\xFA\x59\xE6\xD3\xB3\x9A\xE8\x00\xF6\xF2\xB3\x92\x20\x22\x03\xFB\xF3\xD3\x9B\x1E\xE0\x9E\x98\xBE\x97\x81\xF9\xF4\x45\xD4\xF8\x3E\xEF\xF9\x87\xF7\x11\x89\xF0\xF7\xEF\xBA\xDC\x0F\x2F\xFB\x44\xD7\xD5\x9D\xF6\xF8\x69\xE4\x45\x63\xFC\x23\xB8\xFC\xE1\x02\x2D\xFA\xD5\xF3\xBD\xBA\xFA\xF8\xE8\xD5\xE4\x01\x18\xFD\x8E\xFC\xE7\x5A\xF6\x63\x48\xFD\xFC\xD3\x1B\xF4\xD0\xF7\xF1\x6A\xE2\xE4\xC8\xF9\xA5\x66\xF4\xC4\x7D\xFA\xFA\x7F\xFE\xFB\x99\xF2\xD4\xC0\xFE\xFC\xE0\xBE\xF9\x4A\xD5\xFC\xD3\xF1\xF3\xC9\xFE\xFD\x00\x08\xFC\x75\x7B\xD7\x71\xB1\x34\x4C\x9C\x79\x7E\x39\x7B\xFB\x6D\x7F\x1E\x5C\xF8\x25\x75\xEA\x72\x7C\x01\x38\xF5\x55\x7C\x08\x8B\xF7\x2C\x7D\xFC\x74\x80\x97\x78\xF0\x75\x7F\xCD\x78\xFE\x60\x79\xF4\x68\x1A\xEC\x78\xC3\x4C\x81\x9E\x71\x10\x52\x76\xEB\x77\x73\x77\x7B\xCA\x4F\x80\x01\x41\xF4\x7C\x79\xDE\x78\x80\xA2\x43\xFC\x6D\x3D\xF2\x7B\xE3\x5E\x73\xF3\x7E\x80\xEA\x7A\xFA\x62\x72\x56\x12\xFA\x3E\x4C\xE9\x71\x76\x17\x87\xBB\x52\x81\x13\x8C\xF6\x2D\x82\x05\x8F\x81\x02\x45\xCF\x56\x7F\x95\x08\x02\x08\x80\xEC\x63\x4F\x02\x6F\xAB\x77\x62\x01\x11\xE0\x35\x5F\x80\x7E\x54\xF7\x5D\x75\x1D\x76\xE5\x78\x00\xD9\x5E\x80\x00\x76\x4E\x86\xCF\x44\x11\xDD\x7E\x9B\x66\x71\x40\x00\x83\xB9\x4D\xD8\x78\x47\xD1\x47\x00\xC8\x81\x66\x63\x82\x54\x7B\xCE\x46\x82\xF8\x7E\x06\xE3\x66\x0C\x94\x3F\x34\x83\xF0\x69\x73\xC2\x78\x03\xE3\x5B\xFA\x67\x7E\x22\x87\x3E\x66\x82\x48\x72\xF3\x00\x56\x68\x58\x18\x4F\x75\x0E\xAE\x74\x38\x81\xFE\x45\x80\xE5\x64\x82\xF2\x7F\x0E\x9C\x7A\xC1\x74\x43\x5F\x7B\x8F\x7F\x80\x1B\x73\x07\x9D\x6A\xEA\x77\xA9\x0D\x80\xAF\x65\x84\xFB\x57\x10\xB4\x03\x44\x81\xF9\x42\x82\x0A\x93\x80\x2C\x87\x11\xB1\x82\x02\x8B\x04\xFC\x61\x18\x90\x5C\x63\x84\xFB\x4F\x11\x1F\x82\x10\x2F\x70\x24\x90\x81\x73\x80\x89\x41\x83\x7B\x43\xFF\x4B\x7F\x06\x94\x84\x3C\x72\xF8\x4C\x7B\x4B\x89\x03\xA0\x80\x20\x80\x69\xF6\x6C\x04\x80\x08\x5B\x8B\x0A\xE9\x7A\x0B\x85\x85\xBC\x82\x12\xB9\x83\x4A\x87\x03\xC4\x86\x1F\x9A\x81\xA1\x7C\x13\xAE\x7E\x65\x88\xC7\x3B\x85\xDC\x39\x85\xDF\x7E\x1B\xB4\x69\x57\x81\x10\x00",
 };
 
 		void GuiIqGetParserBuffer(vl::stream::MemoryStream& stream)
@@ -6323,8 +6173,8 @@ namespace vl
 			using namespace vl::presentation;
 
 #define PARSING_TOKEN_FIELD(NAME)\
-			CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(get_##NAME, NO_PARAMETER, vl::WString(ClassType::*)(), [](ClassType* node) { return node->NAME.value; }, L"*")\
-			CLASS_MEMBER_EXTERNALMETHOD_INVOKETEMPLATE(set_##NAME, { L"value" }, void(ClassType::*)(const vl::WString&), [](ClassType* node, const vl::WString& value) { node->NAME.value = value; }, L"*")\
+			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(get_##NAME, NO_PARAMETER, vl::WString(ClassType::*)(), [](ClassType* node) { return node->NAME.value; }, L"*", L"*")\
+			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(set_##NAME, { L"value" }, void(ClassType::*)(const vl::WString&), [](ClassType* node, const vl::WString& value) { node->NAME.value = value; }, L"*", L"*")\
 			CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE(NAME, get_##NAME, set_##NAME, L"$This->$Name.value")\
 
 			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery, presentation::GuiIqQuery)
@@ -6467,7 +6317,7 @@ FindInstanceLoadingSource
 				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
 				{
 					auto fullName = GlobalStringKey::Get(ns->prefix + ctor->typeName.ToString() + ns->postfix);
-					if(auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
+					if (auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
 					{
 						return InstanceLoadingSource(loader, fullName);
 					}
@@ -6480,19 +6330,16 @@ FindInstanceLoadingSource
 Workflow_ValidateStatement
 ***********************************************************************/
 
-		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
+		bool Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
 			bool failed = false;
-
-			if (!resolvingResult.moduleForValidate)
-			{
-				resolvingResult.moduleForValidate = Workflow_CreateModuleWithUsings(context);
-				resolvingResult.moduleContent = Workflow_InstallCtorClass(context, resolvingResult, rootTypeDescriptor, resolvingResult.moduleForValidate);
-			}
-			resolvingResult.moduleContent->statements.Add(statement);
-
 			Workflow_GetSharedManager()->Clear(true, true);
 			Workflow_GetSharedManager()->AddModule(resolvingResult.moduleForValidate);
+			FOREACH(WString, sharedModule, resolvingResult.sharedModules)
+			{
+				Workflow_GetSharedManager()->AddModule(sharedModule);
+			}
+
 			Workflow_GetSharedManager()->Rebuild(true);
 			if (Workflow_GetSharedManager()->errors.Count() > 0)
 			{
@@ -6509,46 +6356,18 @@ Workflow_ValidateStatement
 		}
 
 /***********************************************************************
-Workflow_PrecompileInstanceContext (Passes)
-***********************************************************************/
-
-		extern ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
-		extern void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
-		extern void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
-
-/***********************************************************************
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
+		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
-			vint previousErrorCount = errors.Count();
-			ITypeDescriptor* rootTypeDescriptor = 0;
-			if (context->className == L"")
+			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context);
 			{
-				errors.Add(
-					L"Precompile: Instance  \"" +
-					(context->instance->typeNamespace == GlobalStringKey::Empty
-						? context->instance->typeName.ToString()
-						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
-						) +
-					L"\" should have the class name specified in the ref.Class attribute.");
+				auto block = Workflow_InstallCtorClass(resolvingResult, module);
+				Workflow_GenerateCreating(resolvingResult, block, errors);
+				Workflow_GenerateBindings(resolvingResult, block, errors);
 			}
-
-			rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
-
-			if (errors.Count() == previousErrorCount)
-			{
-				auto module = Workflow_CreateModuleWithUsings(context);
-				{
-					auto block = Workflow_InstallCtorClass(context, resolvingResult, rootTypeDescriptor, module);
-					Workflow_GenerateCreating(context, resolvingResult, rootTypeDescriptor, block, errors);
-					Workflow_GenerateBindings(context, resolvingResult, rootTypeDescriptor, block, errors);
-				}
-				return module;
-			}
-
-			return nullptr;
+			return module;
 		}
 
 /***********************************************************************
@@ -6656,9 +6475,24 @@ WorkflowEventNamesVisitor
 							decl->name.value = handler->value;
 
 							{
+								auto att = MakePtr<WfAttribute>();
+								att->category.value = L"cpp";
+								att->name.value = L"Protected";
+
+								decl->attributes.Add(att);
+							}
+							{
+								auto att = MakePtr<WfAttribute>();
+								att->category.value = L"cpp";
+								att->name.value = L"UserImpl";
+
+								decl->attributes.Add(att);
+							}
+
+							{
 								auto block = MakePtr<WfBlockStatement>();
 								decl->statement = block;
-								
+
 								auto stringExpr = MakePtr<WfStringExpression>();
 								stringExpr->value.value = L"Not Implemented: " + handler->value;
 
@@ -6725,7 +6559,7 @@ WorkflowEventNamesVisitor
 Workflow_GenerateInstanceClass
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex)
 		{
 			bool beforePrecompile = false;
 			bool needEventHandler = false;
@@ -6735,7 +6569,7 @@ Workflow_GenerateInstanceClass
 				beforePrecompile = true;
 				needEventHandler = false;
 				break;
-			case IGuiResourceTypeResolver_Precompile::Instance_GenerateTemporaryClass:
+			case IGuiResourceTypeResolver_Precompile::Instance_CollectEventHandlers:
 				beforePrecompile = true;
 				needEventHandler = true;
 				break;
@@ -6745,6 +6579,7 @@ Workflow_GenerateInstanceClass
 				break;
 			}
 
+			auto context = resolvingResult.context;
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
 			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 			if (!baseTd)
@@ -6761,46 +6596,43 @@ Workflow_GenerateInstanceClass
 				return nullptr;
 			}
 
-			ITypeDescriptor* ctorTd = nullptr;
-			Ptr<ITypeInfo> ctorType;
-			if (!beforePrecompile)
-			{
-				if ((ctorTd = description::GetTypeDescriptor(context->className + L"<Ctor>")))
-				{
-					auto elementType = MakePtr<TypeDescriptorTypeInfo>(ctorTd, TypeInfoHint::Normal);
-					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
-
-					ctorType = pointerType;
-				}
-				else
-				{
-					errors.Add(
-						L"Precompile: Builder type \"" +
-						context->className +
-						L"<Ctor>\" does not exist.");
-					return nullptr;
-				}
-			}
-
-			ITypeDescriptor* contextTd = nullptr;
-			if (!beforePrecompile)
-			{
-				if (!(contextTd = description::GetTypeDescriptor(context->className)))
-				{
-					errors.Add(
-						L"Precompile: Instance type \"" +
-						context->className +
-						L"\" does not exist.");
-					return nullptr;
-				}
-			}
-
 			auto module = Workflow_CreateModuleWithUsings(context);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
 				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
 				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
 				instanceClass->baseTypes.Add(baseType);
+
+				if (context->codeBehind)
+				{
+					auto value = MakePtr<WfStringExpression>();
+					value->value.value = instanceClass->name.value;
+
+					auto att = MakePtr<WfAttribute>();
+					att->category.value = L"cpp";
+					att->name.value = L"File";
+					att->value = value;
+
+					instanceClass->attributes.Add(att);
+				}
+			}
+			if (!beforePrecompile)
+			{
+				auto baseType = MakePtr<WfReferenceType>();
+				baseType->name.value = instanceClass->name.value + L"Constructor";
+				instanceClass->baseTypes.Add(baseType);
+
+				{
+					auto value = MakePtr<WfTypeOfTypeExpression>();
+					value->type = CopyType(baseType);
+
+					auto att = MakePtr<WfAttribute>();
+					att->category.value = L"cpp";
+					att->name.value = L"Friend";
+					att->value = value;
+
+					instanceClass->attributes.Add(att);
+				}
 			}
 
 			auto typeParser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
@@ -6818,18 +6650,18 @@ Workflow_GenerateInstanceClass
 				}
 			};
 
-			auto expressionParser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
-			auto parseExpression = [expressionParser, &errors](const WString& code, const WString& name)->Ptr<WfExpression>
+			auto moduleParser = GetParserManager()->GetParser<WfModule>(L"WORKFLOW-MODULE");
+			auto parseClassMembers = [=, &errors](const WString& code, const WString& name, List<Ptr<WfClassMember>>& members)
 			{
 				List<WString> parserErrors;
-				if (auto type = expressionParser->TypedParse(code, parserErrors))
+				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
+				if (auto module = moduleParser->TypedParse(wrappedCode, parserErrors))
 				{
-					return type;
+					CopyFrom(members, module->declarations[0].Cast<WfClassDeclaration>()->members);
 				}
 				else
 				{
 					errors.Add(L"Precompile: Failed to parse " + name + L": " + code);
-					return nullptr;
 				}
 			};
 
@@ -6840,6 +6672,7 @@ Workflow_GenerateInstanceClass
 				member->declaration = decl;
 				instanceClass->members.Add(member);
 			};
+
 			auto notImplemented = []()
 			{
 				auto block = MakePtr<WfBlockStatement>();
@@ -6853,274 +6686,39 @@ Workflow_GenerateInstanceClass
 				block->statements.Add(raiseStat);
 				return block;
 			};
-			auto getPropValue = [=, &errors](const WString& name, Ptr<WfType> type, const WString& value)->Ptr<WfExpression>
+
+			if (context->memberScript != L"")
 			{
-				auto propInfo = contextTd->GetPropertyByName(name, false);
-				if (propInfo)
-				{
-					auto propTd = propInfo->GetReturn()->GetTypeDescriptor();
-					if ((propTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
-					{
-						if (value == L"")
-						{
-							auto defaultValue = propTd->GetValueType()->CreateDefault();
-							return Workflow_CreateValue(defaultValue, errors);
-						}
-						else
-						{
-							return Workflow_ParseTextValue(propTd, value, errors);
-						}
-					}
-					else
-					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
+				List<Ptr<WfClassMember>> members;
+				parseClassMembers(context->memberScript, L"members of instance \"" + context->className + L"\"", members);
 
-						return nullExpr;
+				if (beforePrecompile)
+				{
+					List<Ptr<WfClassMember>> unprocessed;
+					CopyFrom(unprocessed, members);
+					for (vint i = 0; i < unprocessed.Count(); i++)
+					{
+						auto decl = unprocessed[i]->declaration;
+						if (auto funcDecl = decl.Cast<WfFunctionDeclaration>())
+						{
+							funcDecl->statement = notImplemented();
+						}
+						else if (auto ctorDecl = decl.Cast<WfConstructorDeclaration>())
+						{
+							ctorDecl->statement = notImplemented();
+						}
+						else if (auto dtorDecl = decl.Cast<WfDestructorDeclaration>())
+						{
+							dtorDecl->statement = notImplemented();
+						}
+						else if (auto classDecl = decl.Cast<WfClassDeclaration>())
+						{
+							CopyFrom(unprocessed, classDecl->members, true);
+						}
 					}
 				}
-				else
-				{
-					errors.Add(
-						L"Precompile: Cannot find property \"" +
-						name +
-						L"Precompile: in instance type \"" +
-						context->className +
-						L"\" does not exist.");
-					return nullptr;
-				}
-			};
 
-			if (!beforePrecompile)
-			{
-				{
-					auto decl = MakePtr<WfVariableDeclaration>();
-					addDecl(decl);
-
-					decl->name.value = L"<ctor>";
-					decl->type = GetTypeFromTypeInfo(ctorType.Obj());
-
-					auto nullExpr = MakePtr<WfLiteralExpression>();
-					nullExpr->value = WfLiteralValue::Null;
-					decl->expression = nullExpr;
-				}
-				FOREACH(GlobalStringKey, name, resolvingResult.referenceNames)
-				{
-					auto prop = ctorTd->GetPropertyByName(name.ToString(), false);
-
-					auto decl = MakePtr<WfVariableDeclaration>();
-					addDecl(decl);
-
-					decl->name.value = prop->GetName();
-					decl->type = GetTypeFromTypeInfo(prop->GetReturn());
-
-					auto nullExpr = MakePtr<WfLiteralExpression>();
-					nullExpr->value = WfLiteralValue::Null;
-					decl->expression = nullExpr;
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceState>, state, context->states)
-			{
-				if (auto type = parseType(state->typeName, L"state \"" + state->name.ToString() + L" of instance \"" + context->className + L"\""))
-				{
-					auto decl = MakePtr<WfVariableDeclaration>();
-					addDecl(decl);
-
-					decl->name.value = state->name.ToString();
-					decl->type = type;
-					if (!beforePrecompile)
-					{
-						decl->expression = getPropValue(state->name.ToString(), type, state->value);
-					}
-					else
-					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
-
-						auto castObject = MakePtr<WfInferExpression>();
-						castObject->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
-						castObject->expression = nullExpr;
-
-						auto castType = MakePtr<WfTypeCastingExpression>();
-						castType->strategy = WfTypeCastingStrategy::Strong;
-						castType->type = CopyType(type);
-						castType->expression = castObject;
-
-						decl->expression = castType;
-					}
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceProperty>, prop, context->properties)
-			{
-				if (auto type = parseType(prop->typeName, L"property \"" + prop->name.ToString() + L" of instance \"" + context->className + L"\""))
-				{
-					if (!beforePrecompile)
-					{
-						auto decl = MakePtr<WfVariableDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = L"<property>" + prop->name.ToString();
-						decl->type = CopyType(type);
-						decl->expression = getPropValue(prop->name.ToString(), type, prop->value);
-					}
-					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
-						addDecl(decl);
-
-						decl->anonymity = WfFunctionAnonymity::Named;
-						decl->name.value = L"Get" + prop->name.ToString();
-						decl->returnType = CopyType(type);
-						if (!beforePrecompile)
-						{
-							auto block = MakePtr<WfBlockStatement>();
-							decl->statement = block;
-
-							auto ref = MakePtr<WfReferenceExpression>();
-							ref->name.value = L"<property>" + prop->name.ToString();
-
-							auto returnStat = MakePtr<WfReturnStatement>();
-							returnStat->expression = ref;
-							block->statements.Add(returnStat);
-						}
-						else
-						{
-							decl->statement = notImplemented();
-						}
-					}
-					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
-						addDecl(decl);
-
-						decl->anonymity = WfFunctionAnonymity::Named;
-						decl->name.value = L"Set" + prop->name.ToString();
-						{
-							auto argument = MakePtr<WfFunctionArgument>();
-							argument->name.value = L"<value>";
-							argument->type = CopyType(type);
-							decl->arguments.Add(argument);
-						}
-						{
-							auto voidType = MakePtr<WfPredefinedType>();
-							voidType->name = WfPredefinedTypeName::Void;
-							decl->returnType = voidType;
-						}
-						if (!beforePrecompile)
-						{
-							auto block = MakePtr<WfBlockStatement>();
-							decl->statement = block;
-
-							auto ifStat = MakePtr<WfIfStatement>();
-							block->statements.Add(ifStat);
-							{
-								auto refProp = MakePtr<WfReferenceExpression>();
-								refProp->name.value = L"<property>" + prop->name.ToString();
-
-								auto refValue = MakePtr<WfReferenceExpression>();
-								refValue->name.value = L"<value>";
-
-								auto compExpr = MakePtr<WfBinaryExpression>();
-								compExpr->op = WfBinaryOperator::NE;
-								compExpr->first = refProp;
-								compExpr->second = refValue;
-
-								ifStat->expression = compExpr;
-							}
-
-							auto trueBlock = MakePtr<WfBlockStatement>();
-							ifStat->trueBranch = trueBlock;
-							{
-								auto refProp = MakePtr<WfReferenceExpression>();
-								refProp->name.value = L"<property>" + prop->name.ToString();
-
-								auto refValue = MakePtr<WfReferenceExpression>();
-								refValue->name.value = L"<value>";
-
-								auto assignExpr = MakePtr<WfBinaryExpression>();
-								assignExpr->op = WfBinaryOperator::Assign;
-								assignExpr->first = refProp;
-								assignExpr->second = refValue;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = assignExpr;
-
-								trueBlock->statements.Add(stat);
-							}
-							{
-								auto refEvent = MakePtr<WfReferenceExpression>();
-								refEvent->name.value = prop->name.ToString() + L"Changed";
-
-								auto call = MakePtr<WfCallExpression>();
-								call->function = refEvent;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = call;
-
-								trueBlock->statements.Add(stat);
-							}
-						}
-						else
-						{
-							decl->statement = notImplemented();
-						}
-					}
-					{
-						auto decl = MakePtr<WfEventDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = prop->name.ToString() + L"Changed";
-					}
-					{
-						auto decl = MakePtr<WfPropertyDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = prop->name.ToString();
-						decl->type = type;
-						decl->getter.value = L"Get" + prop->name.ToString();
-						decl->setter.value = L"Set" + prop->name.ToString();
-						decl->valueChangedEvent.value = prop->name.ToString() + L"Changed";
-					}
-				}
-			}
-
-			FOREACH(Ptr<GuiInstanceComponent>, component, context->components)
-			{
-				auto type = parseType(component->typeName, L"component \"" + component->name.ToString() + L" of instance \"" + context->className + L"\"");
-				auto expression = parseExpression(component->expression, L"component \"" + component->name.ToString() + L" of instance \"" + context->className + L"\"");
-
-				if (type && expression)
-				{
-					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
-						addDecl(decl);
-
-						decl->anonymity = WfFunctionAnonymity::Named;
-						decl->name.value = L"Get" + component->name.ToString();
-						decl->returnType = CopyType(type);
-						if (!beforePrecompile)
-						{
-							auto block = MakePtr<WfBlockStatement>();
-							decl->statement = block;
-
-							auto returnStat = MakePtr<WfReturnStatement>();
-							returnStat->expression = expression;
-							block->statements.Add(returnStat);
-						}
-						else
-						{
-							decl->statement = notImplemented();
-						}
-					}
-					{
-						auto decl = MakePtr<WfPropertyDeclaration>();
-						addDecl(decl);
-
-						decl->name.value = component->name.ToString();
-						decl->type = type;
-						decl->getter.value = L"Get" + component->name.ToString();
-					}
-				}
+				CopyFrom(instanceClass->members, members, true);
 			}
 
 			auto ctor = MakePtr<WfConstructorDeclaration>();
@@ -7164,63 +6762,6 @@ Workflow_GenerateInstanceClass
 				}
 			}
 
-			FOREACH(Ptr<GuiInstanceEvent>, ev, context->events)
-			{
-				if (ev->eventArgsClass == L"")
-				{
-					auto decl = MakePtr<WfEventDeclaration>();
-					addDecl(decl);
-					decl->name.value = ev->name.ToString();
-				}
-				else if (auto type = parseType(ev->eventArgsClass + L"*", L"event \"" + ev->name.ToString() + L" of instance \"" + context->className + L"\""))
-				{
-					{
-						auto decl = MakePtr<WfEventDeclaration>();
-						addDecl(decl);
-						decl->name.value = ev->name.ToString();
-						decl->arguments.Add(GetTypeFromTypeInfo(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo().Obj()));
-						decl->arguments.Add(type);
-					}
-					if (beforePrecompile)
-					{
-						auto sharedType = MakePtr<WfSharedPointerType>();
-						sharedType->element = CopyType(type.Cast<WfRawPointerType>()->element);
-						{
-							auto newExpr = MakePtr<WfNewClassExpression>();
-							newExpr->type = sharedType;
-
-							auto inferExpr = MakePtr<WfInferExpression>();
-							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiEventArgs>>::CreateTypeInfo().Obj());
-							inferExpr->expression = newExpr;
-
-							auto stat = MakePtr<WfExpressionStatement>();
-							stat->expression = inferExpr;
-							ctorBlock->statements.Add(stat);
-						}
-						{
-							auto nullExpr = MakePtr<WfLiteralExpression>();
-							nullExpr->value = WfLiteralValue::Null;
-
-							auto argument = MakePtr<WfInferExpression>();
-							argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo().Obj());
-							argument->expression = nullExpr;
-
-							auto newExpr = MakePtr<WfNewClassExpression>();
-							newExpr->type = CopyType(sharedType);
-							newExpr->arguments.Add(argument);
-
-							auto inferExpr = MakePtr<WfInferExpression>();
-							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiEventArgs>>::CreateTypeInfo().Obj());
-							inferExpr->expression = newExpr;
-
-							auto stat = MakePtr<WfExpressionStatement>();
-							stat->expression = inferExpr;
-							ctorBlock->statements.Add(stat);
-						}
-					}
-				}
-			}
-
 			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
 			{
 				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\""))
@@ -7232,7 +6773,7 @@ Workflow_GenerateInstanceClass
 
 						decl->name.value = L"<parameter>" + param->name.ToString();
 						decl->type = CopyType(type);
-						
+
 						auto nullExpr = MakePtr<WfLiteralExpression>();
 						nullExpr->value = WfLiteralValue::Null;
 						decl->expression = nullExpr;
@@ -7366,32 +6907,14 @@ Workflow_GenerateInstanceClass
 					ctorBlock->statements.Add(varStat);
 				}
 				{
-					auto newClassExpr = MakePtr<WfNewClassExpression>();
-					newClassExpr->type = GetTypeFromTypeInfo(ctorType.Obj());
-					
-					auto ctorRef = MakePtr<WfReferenceExpression>();
-					ctorRef->name.value = L"<ctor>";
-
-					auto assignExpr = MakePtr<WfBinaryExpression>();
-					assignExpr->op = WfBinaryOperator::Assign;
-					assignExpr->first = ctorRef;
-					assignExpr->second = newClassExpr;
-
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = assignExpr;
-
-					ctorBlock->statements.Add(stat);
-				}
-				{
-					auto ctorRef = MakePtr<WfReferenceExpression>();
-					ctorRef->name.value = L"<ctor>";
+					auto ctorRef = MakePtr<WfThisExpression>();
 
 					auto initRef = MakePtr<WfMemberExpression>();
 					initRef->parent = ctorRef;
 					initRef->name.value = L"<initialize-instance>";
 
 					auto refThis = MakePtr<WfThisExpression>();
-					
+
 					auto resolverRef = MakePtr<WfReferenceExpression>();
 					resolverRef->name.value = L"<resolver>";
 
@@ -7407,28 +6930,6 @@ Workflow_GenerateInstanceClass
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = callExpr;
-
-					ctorBlock->statements.Add(stat);
-				}
-				FOREACH(GlobalStringKey, name, resolvingResult.referenceNames)
-				{
-					auto propRef = MakePtr<WfReferenceExpression>();
-					propRef->name.value = name.ToString();
-
-					auto ctorRef = MakePtr<WfReferenceExpression>();
-					ctorRef->name.value = L"<ctor>";
-
-					auto ctorPropRef = MakePtr<WfMemberExpression>();
-					ctorPropRef->parent = ctorRef;
-					ctorPropRef->name.value =  name.ToString();
-
-					auto assignExpr = MakePtr<WfBinaryExpression>();
-					assignExpr->op = WfBinaryOperator::Assign;
-					assignExpr->first = propRef;
-					assignExpr->second = ctorPropRef;
-
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = assignExpr;
 
 					ctorBlock->statements.Add(stat);
 				}
@@ -7496,12 +6997,24 @@ GuiWorkflowSharedManagerPlugin
 				}
 				return workflowManager.Obj();
 			}
+
+			Ptr<WfLexicalScopeManager> TransferWorkflowManager()
+			{
+				auto result = workflowManager;
+				workflowManager = nullptr;
+				return result;
+			}
 		};
 		GUI_REGISTER_PLUGIN(GuiWorkflowSharedManagerPlugin)
 
 		WfLexicalScopeManager* Workflow_GetSharedManager()
 		{
 			return sharedManagerPlugin->GetWorkflowManager();
+		}
+
+		Ptr<WfLexicalScopeManager> Workflow_TransferSharedManager()
+		{
+			return sharedManagerPlugin->TransferWorkflowManager();
 		}
 	}
 }
@@ -7525,7 +7038,6 @@ WorkflowReferenceNamesVisitor
 		class WorkflowReferenceNamesVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
-			Ptr<GuiInstanceContext>				context;
 			types::ResolvingResult&				resolvingResult;
 			vint&								generatedNameCount;
 			types::ErrorList&					errors;
@@ -7534,9 +7046,8 @@ WorkflowReferenceNamesVisitor
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 			vint								selectedPropertyTypeInfo = -1;
 
-			WorkflowReferenceNamesVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, types::ErrorList& _errors)
-				:context(_context)
-				, resolvingResult(_resolvingResult)
+			WorkflowReferenceNamesVisitor(types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, types::ErrorList& _errors)
+				:resolvingResult(_resolvingResult)
 				, candidatePropertyTypeInfos(_candidatePropertyTypeInfos)
 				, generatedNameCount(_generatedNameCount)
 				, errors(_errors)
@@ -7692,7 +7203,7 @@ WorkflowReferenceNamesVisitor
 						{
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
-								WorkflowReferenceNamesVisitor visitor(context, resolvingResult, possibleInfos, generatedNameCount, errors);
+								WorkflowReferenceNamesVisitor visitor(resolvingResult, possibleInfos, generatedNameCount, errors);
 								value->Accept(&visitor);
 							}
 						}
@@ -7702,7 +7213,7 @@ WorkflowReferenceNamesVisitor
 							{
 								auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
 
-								WorkflowReferenceNamesVisitor visitor(context, resolvingResult, possibleInfos, generatedNameCount, errors);
+								WorkflowReferenceNamesVisitor visitor(resolvingResult, possibleInfos, generatedNameCount, errors);
 								auto td = possibleInfos[0].info->acceptableTypes[0];
 								visitor.selectedPropertyTypeInfo = 0;
 								visitor.resolvedTypeInfo.typeDescriptor = td;
@@ -7806,7 +7317,7 @@ WorkflowReferenceNamesVisitor
 						.Distinct()
 					);
 
-				if (context->instance.Obj() != repr)
+				if (resolvingResult.context->instance.Obj() != repr)
 				{
 					List<GlobalStringKey> ctorProps;
 					loader->GetConstructorParameters(resolvedTypeInfo, ctorProps);
@@ -7884,9 +7395,9 @@ WorkflowReferenceNamesVisitor
 			{
 				bool found = false;
 
-				if (repr == context->instance.Obj())
+				if (repr == resolvingResult.context->instance.Obj())
 				{
-					auto fullName = GlobalStringKey::Get(context->className);
+					auto fullName = GlobalStringKey::Get(resolvingResult.context->className);
 					auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName);
 					if (td)
 					{
@@ -7898,7 +7409,7 @@ WorkflowReferenceNamesVisitor
 
 				if (!found)
 				{
-					auto source = FindInstanceLoadingSource(context, repr);
+					auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 					resolvedTypeInfo.typeName = source.typeName;
 					resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 				}
@@ -7976,7 +7487,7 @@ WorkflowReferenceNamesVisitor
 							}
 						}
 
-						if (context->instance.Obj() != repr)
+						if (resolvingResult.context->instance.Obj() != repr)
 						{
 							auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
 							while (loader)
@@ -7989,7 +7500,7 @@ WorkflowReferenceNamesVisitor
 							}
 							if (loader)
 							{
-								if (repr == context->instance.Obj())
+								if (repr == resolvingResult.context->instance.Obj())
 								{
 									List<GlobalStringKey> propertyNames;
 									loader->GetConstructorParameters(resolvedTypeInfo, propertyNames);
@@ -8027,9 +7538,9 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
-		ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
+		ITypeDescriptor* Workflow_CollectReferences(types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
-			FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 			{
 				auto type = GetTypeDescriptor(parameter->className.ToString());
 				if (!type)
@@ -8059,8 +7570,8 @@ WorkflowReferenceNamesVisitor
 			
 			List<types::PropertyResolving> infos;
 			vint generatedNameCount = 0;
-			WorkflowReferenceNamesVisitor visitor(context, resolvingResult, infos, generatedNameCount, errors);
-			context->instance->Accept(&visitor);
+			WorkflowReferenceNamesVisitor visitor(resolvingResult, infos, generatedNameCount, errors);
+			resolvingResult.context->instance->Accept(&visitor);
 			return visitor.resolvedTypeInfo.typeDescriptor;
 		}
 	}
@@ -8085,16 +7596,12 @@ WorkflowGenerateBindingVisitor
 		class WorkflowGenerateBindingVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
-			Ptr<GuiInstanceContext>				context;
 			types::ResolvingResult&				resolvingResult;
-			description::ITypeDescriptor*		rootTypeDescriptor;
 			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
 			
-			WorkflowGenerateBindingVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
-				:context(_context)
-				, resolvingResult(_resolvingResult)
-				, rootTypeDescriptor(_rootTypeDescriptor)
+			WorkflowGenerateBindingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
+				:resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, statements(_statements)
 			{
@@ -8131,7 +7638,7 @@ WorkflowGenerateBindingVisitor
 									{
 										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, propertyResolving.loader, propertyResolving.propertyInfo, propertyResolving.info, expressionCode, errors))
 										{
-											if (Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, expressionCode, statement))
+											if (Workflow_ValidateStatement(resolvingResult, errors, expressionCode, statement))
 											{
 												statements->statements.Add(statement);	
 											}
@@ -8193,7 +7700,7 @@ WorkflowGenerateBindingVisitor
 
 							if (statement)
 							{
-								if (Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, handler->value, statement))
+								if (Workflow_ValidateStatement(resolvingResult, errors, handler->value, statement))
 								{
 									statements->statements.Add(statement);
 								}
@@ -8209,10 +7716,10 @@ WorkflowGenerateBindingVisitor
 			}
 		};
 
-		void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
+		void Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
 		{
-			WorkflowGenerateBindingVisitor visitor(context, resolvingResult, rootTypeDescriptor, statements, errors);
-			context->instance->Accept(&visitor);
+			WorkflowGenerateBindingVisitor visitor(resolvingResult, statements, errors);
+			resolvingResult.context->instance->Accept(&visitor);
 		}
 	}
 }
@@ -8237,16 +7744,12 @@ WorkflowGenerateCreatingVisitor
 		class WorkflowGenerateCreatingVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
-			Ptr<GuiInstanceContext>				context;
 			types::ResolvingResult&				resolvingResult;
-			description::ITypeDescriptor*		rootTypeDescriptor;
 			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
 			
-			WorkflowGenerateCreatingVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
-				:context(_context)
-				, resolvingResult(_resolvingResult)
-				, rootTypeDescriptor(_rootTypeDescriptor)
+			WorkflowGenerateCreatingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
+				:resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, statements(_statements)
 			{
@@ -8291,7 +7794,7 @@ WorkflowGenerateCreatingVisitor
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = argumentInfo.expression;
-					Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, textValue, stat);
+					Workflow_ValidateStatement(resolvingResult, errors, textValue, stat);
 				}
 				else
 				{
@@ -8464,9 +7967,9 @@ WorkflowGenerateCreatingVisitor
 			void Visit(GuiConstructorRepr* repr)override
 			{
 				IGuiInstanceLoader::TypeInfo ctorTypeInfo;
-				if (context->instance.Obj() == repr)
+				if (resolvingResult.context->instance.Obj() == repr)
 				{
-					auto source = FindInstanceLoadingSource(context, repr);
+					auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 					ctorTypeInfo.typeName = source.typeName;
 					ctorTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 				}
@@ -8485,7 +7988,7 @@ WorkflowGenerateCreatingVisitor
 					ctorLoader = GetInstanceLoaderManager()->GetParentLoader(ctorLoader);
 				}
 
-				if (context->instance.Obj() == repr)
+				if (resolvingResult.context->instance.Obj() == repr)
 				{
 					resolvingResult.rootLoader = ctorLoader;
 					resolvingResult.rootTypeInfo = ctorTypeInfo;
@@ -8508,7 +8011,7 @@ WorkflowGenerateCreatingVisitor
 
 						statements->statements.Add(stat);
 					}
-					FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+					FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 					{
 						auto refInstance = MakePtr<WfReferenceExpression>();
 						refInstance->name.value = parameter->name.ToString();
@@ -8550,10 +8053,10 @@ WorkflowGenerateCreatingVisitor
 			}
 		};
 
-		void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
+		void Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
 		{
-			WorkflowGenerateCreatingVisitor visitor(context, resolvingResult, rootTypeDescriptor, statements, errors);
-			context->instance->Accept(&visitor);
+			WorkflowGenerateCreatingVisitor visitor(resolvingResult, statements, errors);
+			resolvingResult.context->instance->Accept(&visitor);
 		}
 	}
 }
@@ -9211,15 +8714,15 @@ Workflow_InstallClass
 Workflow_InstallCtorClass
 ***********************************************************************/
 		
-		Ptr<workflow::WfBlockStatement> Workflow_InstallCtorClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfModule> module)
+		Ptr<workflow::WfBlockStatement> Workflow_InstallCtorClass(types::ResolvingResult& resolvingResult, Ptr<workflow::WfModule> module)
 		{
-			auto ctorClass = Workflow_InstallClass(context->className + L"<Ctor>", module);
+			auto ctorClass = Workflow_InstallClass(resolvingResult.context->className + L"Constructor", module);
 			Workflow_CreateVariablesForReferenceValues(ctorClass, resolvingResult);
 
 			auto thisParam = MakePtr<WfFunctionArgument>();
 			thisParam->name.value = L"<this>";
 			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(rootTypeDescriptor, TypeInfoHint::Normal);
+				auto elementType = MakePtr<TypeDescriptorTypeInfo>(resolvingResult.rootTypeDescriptor, TypeInfoHint::Normal);
 				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 				thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
@@ -9244,6 +8747,13 @@ Workflow_InstallCtorClass
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 			func->statement = block;
 
+			{
+				auto att = MakePtr<WfAttribute>();
+				att->category.value = L"cpp";
+				att->name.value = L"Protected";
+				func->attributes.Add(att);
+			}
+
 			auto member = MakePtr<WfClassMember>();
 			member->kind = WfClassMemberKind::Normal;
 			member->declaration = func;
@@ -9260,6 +8770,13 @@ Variable
 		{
 			auto var = MakePtr<WfVariableDeclaration>();
 			var->name.value = name.ToString();
+
+			{
+				auto att = MakePtr<WfAttribute>();
+				att->category.value = L"cpp";
+				att->name.value = L"Protected";
+				var->attributes.Add(att);
+			}
 
 			if (typeOverride)
 			{
@@ -9408,81 +8925,6 @@ Converter
 				infer->expression = valueExpr;
 
 				return infer;
-			}
-			else
-			{
-				CHECK_FAIL(L"vl::presentation::Workflow_ParseTextValue(ITypeDescriptor*, const WString&, types::ErrorList&)#This is not a value type.");
-			}
-		}
-
-		Ptr<workflow::WfExpression> Workflow_CreateValue(const description::Value& value, types::ErrorList& errors)
-		{
-			auto typeDescriptor = value.GetTypeDescriptor();
-			if (typeDescriptor == nullptr)
-			{
-				auto nullExpr = MakePtr<WfLiteralExpression>();
-				nullExpr->value = WfLiteralValue::Null;
-				return nullExpr;
-			}
-			else if (typeDescriptor == description::GetTypeDescriptor<WString>())
-			{
-				auto str = MakePtr<WfStringExpression>();
-				str->value.value = UnboxValue<WString>(value);
-				return str;
-			}
-			else if (auto st = typeDescriptor->GetSerializableType())
-			{
-				auto str = MakePtr<WfStringExpression>();
-				st->Serialize(value, str->value.value);
-
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
-
-				auto cast = MakePtr<WfTypeCastingExpression>();
-				cast->type = GetTypeFromTypeInfo(type.Obj());
-				cast->strategy = WfTypeCastingStrategy::Strong;
-				cast->expression = str;
-
-				return cast;
-			}
-			else if (typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-			{
-				auto ctorExpr = MakePtr<WfConstructorExpression>();
-				vint count = typeDescriptor->GetPropertyCount();
-				for (vint i = 0; i < count; i++)
-				{
-					auto prop = typeDescriptor->GetProperty(i);
-
-					auto keyExpr = MakePtr<WfReferenceExpression>();
-					keyExpr->name.value = prop->GetName();
-
-					auto argument = MakePtr<WfConstructorArgument>();
-					argument->key = keyExpr;
-					argument->value = Workflow_CreateValue(prop->GetValue(value), errors);
-
-					ctorExpr->arguments.Add(argument);
-				}
-
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
-
-				auto infer = MakePtr<WfInferExpression>();
-				infer->type = GetTypeFromTypeInfo(type.Obj());
-				infer->expression = ctorExpr;
-
-				return infer;
-			}
-			else if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
-			{
-				auto valueExpr = MakePtr<WfIntegerExpression>();
-				valueExpr->value.value = u64tow(typeDescriptor->GetEnumType()->FromEnum(value));
-
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
-
-				auto cast = MakePtr<WfTypeCastingExpression>();
-				cast->type = GetTypeFromTypeInfo(type.Obj());
-				cast->strategy = WfTypeCastingStrategy::Strong;
-				cast->expression = valueExpr;
-
-				return cast;
 			}
 			else
 			{

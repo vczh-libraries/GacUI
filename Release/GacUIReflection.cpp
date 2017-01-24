@@ -64,7 +64,7 @@ Compiled Workflow Type Resolver (Workflow)
 
 			vint GetMaxPassIndex()override
 			{
-				return 3;
+				return 2;
 			}
 
 			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context)override
@@ -74,31 +74,18 @@ Compiled Workflow Type Resolver (Workflow)
 					switch (context.passIndex)
 					{
 					case 0:
-						if (compiled->type == GuiInstanceCompiledWorkflow::ViewModel)
+						if (compiled->type == GuiInstanceCompiledWorkflow::Shared)
 						{
-							if (context.usage == GuiResourceUsage::DevelopmentTool)
+							if (context.usage == GuiResourceUsage::InstanceClass)
 							{
 								compiled->Initialize(true);
 							}
 						}
 						break;
 					case 1:
-						if (compiled->type == GuiInstanceCompiledWorkflow::Shared)
+						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceClass)
 						{
-							compiled->Initialize(true);
-						}
-						break;
-					case 2:
-						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceCtor)
-						{
-							if (context.usage == GuiResourceUsage::Application)
-							{
-								compiled->Initialize(true);
-							}
-						}
-						else if (compiled->type == GuiInstanceCompiledWorkflow::InstanceClass)
-						{
-							if (context.usage == GuiResourceUsage::DevelopmentTool)
+							if (context.usage == GuiResourceUsage::InstanceClass)
 							{
 								compiled->Initialize(true);
 							}
@@ -740,8 +727,8 @@ Type Declaration
 			END_CLASS_MEMBER(GuiResourcePathResolver)
 
 			BEGIN_ENUM_ITEM(GuiResourceUsage)
-				ENUM_CLASS_ITEM(DevelopmentTool)
-				ENUM_CLASS_ITEM(Application)
+				ENUM_CLASS_ITEM(DataOnly)
+				ENUM_CLASS_ITEM(InstanceClass)
 			END_ENUM_ITEM(GuiResourceUsage)
 
 				BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiResourceManager)
@@ -3655,8 +3642,6 @@ Type Declaration
 			END_CLASS_MEMBER(GuiTemplate)
 			
 			BEGIN_INTERFACE_MEMBER(GuiTemplate::IFactory)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiTemplate::IFactory>(const List<ITypeDescriptor*>&), { L"types" }, vl::presentation::templates::GuiTemplate::IFactory::CreateTemplateFactory)
-
 				CLASS_MEMBER_METHOD(CreateTemplate, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiTemplate::IFactory)
 

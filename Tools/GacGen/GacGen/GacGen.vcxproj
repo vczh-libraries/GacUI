@@ -115,16 +115,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="CodegenControlClass.cpp" />
-    <ClCompile Include="CodegenControlClassContent.cpp" />
-    <ClCompile Include="CodegenEventHandlers.cpp" />
-    <ClCompile Include="CodegenGlobalHeader.cpp" />
-    <ClCompile Include="CodegenPartialClass.cpp" />
-    <ClCompile Include="CodegenUtility.cpp" />
-    <ClCompile Include="GacGenObjectModel.cpp" />
-    <ClCompile Include="GacGenSearch.cpp" />
-    <ClCompile Include="GacGenTypeTransformation.cpp" />
-    <ClCompile Include="GacGenUtility.cpp" />
+    <ClCompile Include="GacGen.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

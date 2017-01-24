@@ -298,46 +298,6 @@ Instance Namespace
 			GlobalStringKey							className;
 		};
 
-		// Workflow:	<instance>.<name>
-		// C++:			<instance>->Get<name>()
-		//				<instance>->Set<name>()
-		class GuiInstanceProperty : public Object, public Description<GuiInstanceProperty>
-		{
-		public:
-			GlobalStringKey							name;
-			WString									typeName;
-			WString									value;
-		};
-		
-		// Workflow:	<instance>.<name>
-		// C++:			<instance>-><name>()
-		class GuiInstanceState : public Object, public Description<GuiInstanceState>
-		{
-		public:
-			GlobalStringKey							name;
-			WString									typeName;
-			WString									value;
-		};
-		
-		// Workflow:	<instance>.<name>
-		// C++:			<instance>->Get<name>()
-		class GuiInstanceComponent : public Object, public Description<GuiInstanceComponent>
-		{
-		public:
-			GlobalStringKey							name;
-			WString									typeName;
-			WString									expression;
-		};
-		
-		// Workflow:	<instance>.<name>
-		// C++:			<instance>-><name>
-		class GuiInstanceEvent : public Object, public Description<GuiInstanceComponent>
-		{
-		public:
-			GlobalStringKey							name;
-			WString									eventArgsClass;
-		};
-
 /***********************************************************************
 Instance Context
 ***********************************************************************/
@@ -356,10 +316,6 @@ Instance Context
 			};
 			typedef collections::Dictionary<GlobalStringKey, Ptr<NamespaceInfo>>		NamespaceMap;
 			typedef collections::List<Ptr<GuiInstanceParameter>>						ParameterList;
-			typedef collections::List<Ptr<GuiInstanceProperty>>							PropertyList;
-			typedef collections::List<Ptr<GuiInstanceState>>							StateList;
-			typedef collections::List<Ptr<GuiInstanceComponent>>						ComponentList;
-			typedef collections::List<Ptr<GuiInstanceEvent>>							EventList;
 			typedef collections::List<Ptr<GuiInstanceStyleContext>>						StyleContextList;
 
 			class ElementName : public Object
@@ -385,10 +341,7 @@ Instance Context
 			collections::List<WString>				stylePaths;
 
 			ParameterList							parameters;
-			PropertyList							properties;
-			StateList								states;
-			ComponentList							components;
-			EventList								events;
+			WString									memberScript;
 
 			bool									appliedStyles = false;
 			StyleContextList						styles;
@@ -441,6 +394,10 @@ GacUI Reflection: Instance Loader
 
 Interfaces:
 ***********************************************************************/
+
+#ifdef VCZH_DEBUG_NO_REFLECTION
+static_assert(false, "Don't use GacUICompiler.(h|cpp) if VCZH_DEBUG_NO_REFLECTION is defined.");
+#endif
 
 #ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOADER
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOADER
@@ -786,6 +743,10 @@ namespace vl
 
 			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
+				Ptr<GuiInstanceContext>							context;
+				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;
+				collections::List<WString>						sharedModules;
+
 				Ptr<workflow::WfModule>							moduleForValidate;
 				Ptr<workflow::WfBlockStatement>					moduleContent;
 
@@ -800,6 +761,7 @@ namespace vl
 			};
 		}
 		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager();
+		extern Ptr<workflow::analyzer::WfLexicalScopeManager>	Workflow_TransferSharedManager();
 		
 
 /***********************************************************************
@@ -810,7 +772,6 @@ WorkflowCompiler (Parser)
 		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, types::ErrorList& errors);
 		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, types::ErrorList& errors);
-		extern Ptr<workflow::WfExpression>						Workflow_CreateValue(const description::Value& value, types::ErrorList& errors);
 
 /***********************************************************************
 WorkflowCompiler (Installation)
@@ -829,7 +790,7 @@ WorkflowCompiler (Compile)
 
 		extern Ptr<workflow::WfModule>							Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context);
 		extern Ptr<workflow::WfClassDeclaration>				Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module);
-		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfModule> module);
+		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(types::ResolvingResult& resolvingResult, Ptr<workflow::WfModule> module);
 
 		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride);
 		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult);
@@ -865,10 +826,14 @@ WorkflowCompiler (Compile)
 			}
 		};
 
+		extern description::ITypeDescriptor*					Workflow_CollectReferences(types::ResolvingResult& resolvingResult, types::ErrorList& errors);
+		extern void												Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, types::ErrorList& errors);
+		extern void												Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, types::ErrorList& errors);
+
 		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
-		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
-		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
-		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex);
+		extern bool												Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
+		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, types::ErrorList& errors);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex);
 	}
 }
 
