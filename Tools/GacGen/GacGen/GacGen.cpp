@@ -67,9 +67,9 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Cpp/"))
 	{
 		auto out = MakePtr<CodegenConfig::CppOutput>();
-		LoadConfigString(folder, L"Resource", out->resource, true);
-		LoadConfigString(folder, L"Compressed", out->compressed, true);
-		LoadConfigString(folder, L"SourceFolder", out->sourceFolder, true);
+		LoadConfigString(folder, L"Resource", out->resource);
+		LoadConfigString(folder, L"Compressed", out->compressed);
+		LoadConfigString(folder, L"SourceFolder", out->sourceFolder);
 		LoadConfigString(folder, L"NormalInclude", out->normalInclude);
 		LoadConfigString(folder, L"ReflectionInclude", out->reflectionInclude);
 		LoadConfigString(folder, L"Name", out->name);
@@ -85,8 +85,8 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Res/"))
 	{
 		auto out = MakePtr<CodegenConfig::ResOutput>();
-		LoadConfigString(folder, L"Resource", out->resource, true);
-		LoadConfigString(folder, L"Compressed", out->compressed, true);
+		LoadConfigString(folder, L"Resource", out->resource);
+		LoadConfigString(folder, L"Compressed", out->compressed);
 
 		config->resOutput = out;
 	}

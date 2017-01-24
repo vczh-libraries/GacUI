@@ -57,7 +57,7 @@ public:
 	Ptr<ResOutput>								resOutput;
 
 	static WString								NormalizeFolder(const WString& folder);
-	static bool									LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, WString& value, bool optional = false);
+	static bool									LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, WString& value, bool optional = true);
 	static Ptr<CodegenConfig>					LoadConfig(Ptr<GuiResource> resource);
 };
 

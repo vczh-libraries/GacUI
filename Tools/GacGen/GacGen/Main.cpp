@@ -173,7 +173,7 @@ void GuiMain()
 		}
 		{
 			auto input = MakePtr<WfCppInput>(config->cppOutput->name);
-			input->comment = L"Source: Host.sln";
+			input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
 			input->defaultFileName = config->cppOutput->name + L"PartialClasses";
 			input->includeFileName = config->cppOutput->name;
 			if (config->cppOutput->normalInclude != L"")
@@ -190,6 +190,7 @@ void GuiMain()
 			auto output = GenerateCppFiles(input, compiled->metadata.Obj());
 			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 			{
+				PrintSuccessMessage(L"gacgen> Generating " + fileName);
 				WString code = output->cppFiles.Values()[index];
 				File file(sourceFolder / fileName);
 
@@ -232,14 +233,14 @@ void GuiMain()
 	if (config->cppOutput)
 	{
 		resource->RemoveFolder(L"Precompiled");
-		if (config->resOutput->resource != L"")
+		if (config->cppOutput->resource != L"")
 		{
-			OPEN_BINARY_FILE(L"Precompiled Binary Resource", config->resOutput->resource);
+			OPEN_BINARY_FILE(L"Precompiled Binary Resource", config->cppOutput->resource);
 			resource->SavePrecompiledBinary(fileStream);
 		}
-		if (config->resOutput->compressed != L"")
+		if (config->cppOutput->compressed != L"")
 		{
-			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource", config->resOutput->compressed);
+			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource", config->cppOutput->compressed);
 			LzwEncoder encoder;
 			EncoderStream encoderStream(fileStream, encoder);
 			resource->SavePrecompiledBinary(encoderStream);
