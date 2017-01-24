@@ -43,7 +43,8 @@ namespace demo
 	USERIMPL(/* ::demo::MainWindow */)
 	void MainWindow::buttonIDoNotKnow_Clicked(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
 	{
-		throw ::vl::Exception(L"You should implement this function.");
+		auto dialogService = vl::presentation::GetCurrentController()->DialogService();
+		dialogService->ShowMessageBox(GetNativeWindow(), L"This is a user-defined event handler!", GetText());
 	}
 
 	MainWindow::MainWindow()
