@@ -31,6 +31,15 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
+	void MainWindow::UpdateFont(::vl::presentation::FontProperties newFont)
+	{
+		::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxS)->SetFont(newFont);
+		::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxM)->SetFont(newFont);
+		::vl::__vwsn::This(::vl::__vwsn::This(this)->documentTextBox)->SetFont(newFont);
+		::vl::__vwsn::This(::vl::__vwsn::This(this)->documentViewer)->SetFont(newFont);
+		::vl::__vwsn::This(::vl::__vwsn::This(this)->documentLabel)->SetFont(newFont);
+	}
+
 	USERIMPL(/* ::demo::MainWindow */)
 	void MainWindow::buttonIDoNotKnow_Clicked(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
 	{

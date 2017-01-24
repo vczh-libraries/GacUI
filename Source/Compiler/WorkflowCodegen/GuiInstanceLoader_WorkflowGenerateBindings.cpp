@@ -17,16 +17,12 @@ WorkflowGenerateBindingVisitor
 		class WorkflowGenerateBindingVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
-			Ptr<GuiInstanceContext>				context;
 			types::ResolvingResult&				resolvingResult;
-			description::ITypeDescriptor*		rootTypeDescriptor;
 			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
 			
-			WorkflowGenerateBindingVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
-				:context(_context)
-				, resolvingResult(_resolvingResult)
-				, rootTypeDescriptor(_rootTypeDescriptor)
+			WorkflowGenerateBindingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
+				:resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, statements(_statements)
 			{
@@ -63,7 +59,7 @@ WorkflowGenerateBindingVisitor
 									{
 										if (auto statement = binder->GenerateInstallStatement(repr->instanceName, instancePropertyInfo, propertyResolving.loader, propertyResolving.propertyInfo, propertyResolving.info, expressionCode, errors))
 										{
-											if (Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, expressionCode, statement))
+											if (Workflow_ValidateStatement(resolvingResult, errors, expressionCode, statement))
 											{
 												statements->statements.Add(statement);	
 											}
@@ -125,7 +121,7 @@ WorkflowGenerateBindingVisitor
 
 							if (statement)
 							{
-								if (Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, handler->value, statement))
+								if (Workflow_ValidateStatement(resolvingResult, errors, handler->value, statement))
 								{
 									statements->statements.Add(statement);
 								}
@@ -141,10 +137,10 @@ WorkflowGenerateBindingVisitor
 			}
 		};
 
-		void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
+		void Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
 		{
-			WorkflowGenerateBindingVisitor visitor(context, resolvingResult, rootTypeDescriptor, statements, errors);
-			context->instance->Accept(&visitor);
+			WorkflowGenerateBindingVisitor visitor(resolvingResult, statements, errors);
+			resolvingResult.context->instance->Accept(&visitor);
 		}
 	}
 }

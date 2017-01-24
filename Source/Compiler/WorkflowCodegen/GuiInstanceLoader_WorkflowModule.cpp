@@ -120,15 +120,15 @@ Workflow_InstallClass
 Workflow_InstallCtorClass
 ***********************************************************************/
 		
-		Ptr<workflow::WfBlockStatement> Workflow_InstallCtorClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfModule> module)
+		Ptr<workflow::WfBlockStatement> Workflow_InstallCtorClass(types::ResolvingResult& resolvingResult, Ptr<workflow::WfModule> module)
 		{
-			auto ctorClass = Workflow_InstallClass(context->className + L"Constructor", module);
+			auto ctorClass = Workflow_InstallClass(resolvingResult.context->className + L"Constructor", module);
 			Workflow_CreateVariablesForReferenceValues(ctorClass, resolvingResult);
 
 			auto thisParam = MakePtr<WfFunctionArgument>();
 			thisParam->name.value = L"<this>";
 			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(rootTypeDescriptor, TypeInfoHint::Normal);
+				auto elementType = MakePtr<TypeDescriptorTypeInfo>(resolvingResult.rootTypeDescriptor, TypeInfoHint::Normal);
 				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
 
 				thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());

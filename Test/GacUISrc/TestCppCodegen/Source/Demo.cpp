@@ -127,6 +127,11 @@ namespace vl_workflow_global
 		bool StopListening() override;
 	};
 
+	::vl::presentation::FontProperties Demo::ChangeFontSize(::vl::presentation::FontProperties oldFont, ::vl::vint32_t deltaSize)
+	{
+		return [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = oldFont.fontFamily; __vwsn_temp__.size = (oldFont.size + deltaSize); __vwsn_temp__.antialias = true; return __vwsn_temp__; }();
+	}
+
 	Demo& Demo::Instance()
 	{
 		return Getvl_workflow_global_Demo().instance;
@@ -175,15 +180,7 @@ namespace vl_workflow_global
 
 	void __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()() const
 	{
-		{
-			auto oldFont = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->GetFont();
-			auto newFont = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = oldFont.fontFamily; __vwsn_temp__.size = (oldFont.size + 5); __vwsn_temp__.antialias = true; return __vwsn_temp__; }();
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->SetFont(newFont);
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxM)->SetFont(newFont);
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->documentTextBox)->SetFont(newFont);
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->documentViewer)->SetFont(newFont);
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->documentLabel)->SetFont(newFont);
-		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->GetFont(), 5));
 	}
 
 	__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
@@ -193,15 +190,7 @@ namespace vl_workflow_global
 
 	void __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()() const
 	{
-		{
-			auto oldFont = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->GetFont();
-			auto newFont = [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = oldFont.fontFamily; __vwsn_temp__.size = (oldFont.size - 5); __vwsn_temp__.antialias = true; return __vwsn_temp__; }();
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->SetFont(newFont);
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxM)->SetFont(newFont);
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->documentTextBox)->SetFont(newFont);
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->documentViewer)->SetFont(newFont);
-			::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->documentLabel)->SetFont(newFont);
-		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->GetFont(), (- 5)));
 	}
 
 	__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindow* __vwsnctor___vwsn_this_, ::demo::MainWindowConstructor* __vwsnctorthis_0)
@@ -669,6 +658,7 @@ namespace vl
 
 #define _ ,
 			BEGIN_CLASS_MEMBER(::demo::MainWindow)
+				CLASS_MEMBER_METHOD(UpdateFont, { L"newFont" })
 				CLASS_MEMBER_METHOD(buttonIDoNotKnow_Clicked, { L"sender" _ L"arguments" })
 				CLASS_MEMBER_EVENT(OnMakeFontLarger)
 				CLASS_MEMBER_EVENT(OnMakeFontSmaller)

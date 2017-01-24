@@ -105,6 +105,8 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::presentation::FontProperties ChangeFontSize(::vl::presentation::FontProperties oldFont, ::vl::vint32_t deltaSize);
+
 		static Demo& Instance();
 	};
 }

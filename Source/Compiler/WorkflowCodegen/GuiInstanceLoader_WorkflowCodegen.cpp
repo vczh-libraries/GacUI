@@ -42,19 +42,16 @@ FindInstanceLoadingSource
 Workflow_ValidateStatement
 ***********************************************************************/
 
-		bool Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
+		bool Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
 			bool failed = false;
-
-			if (!resolvingResult.moduleForValidate)
-			{
-				resolvingResult.moduleForValidate = Workflow_CreateModuleWithUsings(context);
-				resolvingResult.moduleContent = Workflow_InstallCtorClass(context, resolvingResult, rootTypeDescriptor, resolvingResult.moduleForValidate);
-			}
-			resolvingResult.moduleContent->statements.Add(statement);
-
 			Workflow_GetSharedManager()->Clear(true, true);
 			Workflow_GetSharedManager()->AddModule(resolvingResult.moduleForValidate);
+			FOREACH(WString, sharedModule, resolvingResult.sharedModules)
+			{
+				Workflow_GetSharedManager()->AddModule(sharedModule);
+			}
+
 			Workflow_GetSharedManager()->Rebuild(true);
 			if (Workflow_GetSharedManager()->errors.Count() > 0)
 			{
@@ -71,46 +68,18 @@ Workflow_ValidateStatement
 		}
 
 /***********************************************************************
-Workflow_PrecompileInstanceContext (Passes)
-***********************************************************************/
-
-		extern ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
-		extern void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
-		extern void Workflow_GenerateBindings(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors);
-
-/***********************************************************************
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
+		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
-			vint previousErrorCount = errors.Count();
-			ITypeDescriptor* rootTypeDescriptor = 0;
-			if (context->className == L"")
+			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context);
 			{
-				errors.Add(
-					L"Precompile: Instance  \"" +
-					(context->instance->typeNamespace == GlobalStringKey::Empty
-						? context->instance->typeName.ToString()
-						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
-						) +
-					L"\" should have the class name specified in the ref.Class attribute.");
+				auto block = Workflow_InstallCtorClass(resolvingResult, module);
+				Workflow_GenerateCreating(resolvingResult, block, errors);
+				Workflow_GenerateBindings(resolvingResult, block, errors);
 			}
-
-			rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
-
-			if (errors.Count() == previousErrorCount)
-			{
-				auto module = Workflow_CreateModuleWithUsings(context);
-				{
-					auto block = Workflow_InstallCtorClass(context, resolvingResult, rootTypeDescriptor, module);
-					Workflow_GenerateCreating(context, resolvingResult, rootTypeDescriptor, block, errors);
-					Workflow_GenerateBindings(context, resolvingResult, rootTypeDescriptor, block, errors);
-				}
-				return module;
-			}
-
-			return nullptr;
+			return module;
 		}
 
 /***********************************************************************
@@ -302,7 +271,7 @@ WorkflowEventNamesVisitor
 Workflow_GenerateInstanceClass
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex)
 		{
 			bool beforePrecompile = false;
 			bool needEventHandler = false;
@@ -322,6 +291,7 @@ Workflow_GenerateInstanceClass
 				break;
 			}
 
+			auto context = resolvingResult.context;
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
 			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 			if (!baseTd)

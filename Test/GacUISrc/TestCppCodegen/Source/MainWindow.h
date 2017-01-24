@@ -39,11 +39,13 @@ namespace demo
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif
-	public:
+	protected:
 		bool flag = false;
+	public:
 		::vl::Event<void()> OnMakeFontLarger;
 		::vl::Event<void()> OnMakeFontSmaller;
 	protected:
+		void UpdateFont(::vl::presentation::FontProperties newFont);
 		void buttonIDoNotKnow_Clicked(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments);
 	public:
 		MainWindow();

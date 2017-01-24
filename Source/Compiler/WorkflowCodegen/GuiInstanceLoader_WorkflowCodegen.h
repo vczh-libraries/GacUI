@@ -31,6 +31,10 @@ namespace vl
 
 			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
+				Ptr<GuiInstanceContext>							context;
+				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;
+				collections::List<WString>						sharedModules;
+
 				Ptr<workflow::WfModule>							moduleForValidate;
 				Ptr<workflow::WfBlockStatement>					moduleContent;
 
@@ -74,7 +78,7 @@ WorkflowCompiler (Compile)
 
 		extern Ptr<workflow::WfModule>							Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context);
 		extern Ptr<workflow::WfClassDeclaration>				Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module);
-		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<workflow::WfModule> module);
+		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(types::ResolvingResult& resolvingResult, Ptr<workflow::WfModule> module);
 
 		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride);
 		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult);
@@ -110,10 +114,14 @@ WorkflowCompiler (Compile)
 			}
 		};
 
+		extern description::ITypeDescriptor*					Workflow_CollectReferences(types::ResolvingResult& resolvingResult, types::ErrorList& errors);
+		extern void												Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, types::ErrorList& errors);
+		extern void												Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, types::ErrorList& errors);
+
 		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
-		extern bool												Workflow_ValidateStatement(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
-		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors);
-		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex);
+		extern bool												Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
+		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, types::ErrorList& errors);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex);
 	}
 }
 

@@ -17,7 +17,6 @@ WorkflowReferenceNamesVisitor
 		class WorkflowReferenceNamesVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
-			Ptr<GuiInstanceContext>				context;
 			types::ResolvingResult&				resolvingResult;
 			vint&								generatedNameCount;
 			types::ErrorList&					errors;
@@ -26,9 +25,8 @@ WorkflowReferenceNamesVisitor
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 			vint								selectedPropertyTypeInfo = -1;
 
-			WorkflowReferenceNamesVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, types::ErrorList& _errors)
-				:context(_context)
-				, resolvingResult(_resolvingResult)
+			WorkflowReferenceNamesVisitor(types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, types::ErrorList& _errors)
+				:resolvingResult(_resolvingResult)
 				, candidatePropertyTypeInfos(_candidatePropertyTypeInfos)
 				, generatedNameCount(_generatedNameCount)
 				, errors(_errors)
@@ -184,7 +182,7 @@ WorkflowReferenceNamesVisitor
 						{
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
-								WorkflowReferenceNamesVisitor visitor(context, resolvingResult, possibleInfos, generatedNameCount, errors);
+								WorkflowReferenceNamesVisitor visitor(resolvingResult, possibleInfos, generatedNameCount, errors);
 								value->Accept(&visitor);
 							}
 						}
@@ -194,7 +192,7 @@ WorkflowReferenceNamesVisitor
 							{
 								auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
 
-								WorkflowReferenceNamesVisitor visitor(context, resolvingResult, possibleInfos, generatedNameCount, errors);
+								WorkflowReferenceNamesVisitor visitor(resolvingResult, possibleInfos, generatedNameCount, errors);
 								auto td = possibleInfos[0].info->acceptableTypes[0];
 								visitor.selectedPropertyTypeInfo = 0;
 								visitor.resolvedTypeInfo.typeDescriptor = td;
@@ -298,7 +296,7 @@ WorkflowReferenceNamesVisitor
 						.Distinct()
 					);
 
-				if (context->instance.Obj() != repr)
+				if (resolvingResult.context->instance.Obj() != repr)
 				{
 					List<GlobalStringKey> ctorProps;
 					loader->GetConstructorParameters(resolvedTypeInfo, ctorProps);
@@ -376,9 +374,9 @@ WorkflowReferenceNamesVisitor
 			{
 				bool found = false;
 
-				if (repr == context->instance.Obj())
+				if (repr == resolvingResult.context->instance.Obj())
 				{
-					auto fullName = GlobalStringKey::Get(context->className);
+					auto fullName = GlobalStringKey::Get(resolvingResult.context->className);
 					auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName);
 					if (td)
 					{
@@ -390,7 +388,7 @@ WorkflowReferenceNamesVisitor
 
 				if (!found)
 				{
-					auto source = FindInstanceLoadingSource(context, repr);
+					auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 					resolvedTypeInfo.typeName = source.typeName;
 					resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 				}
@@ -468,7 +466,7 @@ WorkflowReferenceNamesVisitor
 							}
 						}
 
-						if (context->instance.Obj() != repr)
+						if (resolvingResult.context->instance.Obj() != repr)
 						{
 							auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
 							while (loader)
@@ -481,7 +479,7 @@ WorkflowReferenceNamesVisitor
 							}
 							if (loader)
 							{
-								if (repr == context->instance.Obj())
+								if (repr == resolvingResult.context->instance.Obj())
 								{
 									List<GlobalStringKey> propertyNames;
 									loader->GetConstructorParameters(resolvedTypeInfo, propertyNames);
@@ -519,9 +517,9 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
-		ITypeDescriptor* Workflow_CollectReferences(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, types::ErrorList& errors)
+		ITypeDescriptor* Workflow_CollectReferences(types::ResolvingResult& resolvingResult, types::ErrorList& errors)
 		{
-			FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 			{
 				auto type = GetTypeDescriptor(parameter->className.ToString());
 				if (!type)
@@ -551,8 +549,8 @@ WorkflowReferenceNamesVisitor
 			
 			List<types::PropertyResolving> infos;
 			vint generatedNameCount = 0;
-			WorkflowReferenceNamesVisitor visitor(context, resolvingResult, infos, generatedNameCount, errors);
-			context->instance->Accept(&visitor);
+			WorkflowReferenceNamesVisitor visitor(resolvingResult, infos, generatedNameCount, errors);
+			resolvingResult.context->instance->Accept(&visitor);
 			return visitor.resolvedTypeInfo.typeDescriptor;
 		}
 	}

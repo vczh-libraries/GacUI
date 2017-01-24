@@ -45,43 +45,52 @@ So as I pray, unlimited blade works.</Text>
     </Doc>
   </Doc>
 
+  <Script name="FontHelper">
+    <Workflow>
+      <![CDATA[
+        module fontHelper;
+        using presentation::*;
+        
+        func ChangeFontSize(oldFont : FontProperties, deltaSize : int) : FontProperties
+        {
+          return {fontFamily:oldFont.fontFamily size:(oldFont.size + deltaSize) antialias:true};
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:x="demo::*">
       <ref.Members>
         <![CDATA[
+          @cpp:Protected
           var flag : bool = false;
           
           event OnMakeFontLarger();
           event OnMakeFontSmaller();
+          
+          @cpp:Protected
+          func UpdateFont(newFont : FontProperties) : void
+          {
+            textBoxS.Font = newFont;
+            textBoxM.Font = newFont;
+            documentTextBox.Font = newFont;
+            documentViewer.Font = newFont;
+            documentLabel.Font = newFont;
+          }
         ]]>
       </ref.Members>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <ev.OnMakeFontLarger-eval>
           <![CDATA[
-              {
-                var oldFont = textBoxS.Font;
-                var newFont = {fontFamily:oldFont.fontFamily size:(oldFont.size + 5) antialias:true} of FontProperties;
-                textBoxS.Font = newFont;
-                textBoxM.Font = newFont;
-                documentTextBox.Font = newFont;
-                documentViewer.Font = newFont;
-                documentLabel.Font = newFont;
-              }
-            ]]>
+            self.UpdateFont(ChangeFontSize(textBoxS.Font, 5));
+          ]]>
         </ev.OnMakeFontLarger-eval>
         <ev.OnMakeFontSmaller-eval>
           <![CDATA[
-              {
-                var oldFont = textBoxS.Font;
-                var newFont = {fontFamily:oldFont.fontFamily size:(oldFont.size - 5) antialias:true} of FontProperties;
-                textBoxS.Font = newFont;
-                textBoxM.Font = newFont;
-                documentTextBox.Font = newFont;
-                documentViewer.Font = newFont;
-                documentLabel.Font = newFont;
-              }
-            ]]>
+            self.UpdateFont(ChangeFontSize(textBoxS.Font, -5));
+          ]]>
         </ev.OnMakeFontSmaller-eval>
         
         <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">

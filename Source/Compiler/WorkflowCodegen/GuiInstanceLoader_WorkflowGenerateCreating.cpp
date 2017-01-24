@@ -18,16 +18,12 @@ WorkflowGenerateCreatingVisitor
 		class WorkflowGenerateCreatingVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
-			Ptr<GuiInstanceContext>				context;
 			types::ResolvingResult&				resolvingResult;
-			description::ITypeDescriptor*		rootTypeDescriptor;
 			Ptr<WfBlockStatement>				statements;
 			types::ErrorList&					errors;
 			
-			WorkflowGenerateCreatingVisitor(Ptr<GuiInstanceContext> _context, types::ResolvingResult& _resolvingResult, description::ITypeDescriptor* _rootTypeDescriptor, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
-				:context(_context)
-				, resolvingResult(_resolvingResult)
-				, rootTypeDescriptor(_rootTypeDescriptor)
+			WorkflowGenerateCreatingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
+				:resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, statements(_statements)
 			{
@@ -72,7 +68,7 @@ WorkflowGenerateCreatingVisitor
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = argumentInfo.expression;
-					Workflow_ValidateStatement(context, resolvingResult, rootTypeDescriptor, errors, textValue, stat);
+					Workflow_ValidateStatement(resolvingResult, errors, textValue, stat);
 				}
 				else
 				{
@@ -245,9 +241,9 @@ WorkflowGenerateCreatingVisitor
 			void Visit(GuiConstructorRepr* repr)override
 			{
 				IGuiInstanceLoader::TypeInfo ctorTypeInfo;
-				if (context->instance.Obj() == repr)
+				if (resolvingResult.context->instance.Obj() == repr)
 				{
-					auto source = FindInstanceLoadingSource(context, repr);
+					auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 					ctorTypeInfo.typeName = source.typeName;
 					ctorTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 				}
@@ -266,7 +262,7 @@ WorkflowGenerateCreatingVisitor
 					ctorLoader = GetInstanceLoaderManager()->GetParentLoader(ctorLoader);
 				}
 
-				if (context->instance.Obj() == repr)
+				if (resolvingResult.context->instance.Obj() == repr)
 				{
 					resolvingResult.rootLoader = ctorLoader;
 					resolvingResult.rootTypeInfo = ctorTypeInfo;
@@ -289,7 +285,7 @@ WorkflowGenerateCreatingVisitor
 
 						statements->statements.Add(stat);
 					}
-					FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+					FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 					{
 						auto refInstance = MakePtr<WfReferenceExpression>();
 						refInstance->name.value = parameter->name.ToString();
@@ -331,10 +327,10 @@ WorkflowGenerateCreatingVisitor
 			}
 		};
 
-		void Workflow_GenerateCreating(Ptr<GuiInstanceContext> context, types::ResolvingResult& resolvingResult, description::ITypeDescriptor* rootTypeDescriptor, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
+		void Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
 		{
-			WorkflowGenerateCreatingVisitor visitor(context, resolvingResult, rootTypeDescriptor, statements, errors);
-			context->instance->Accept(&visitor);
+			WorkflowGenerateCreatingVisitor visitor(resolvingResult, statements, errors);
+			resolvingResult.context->instance->Accept(&visitor);
 		}
 	}
 }

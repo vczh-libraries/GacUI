@@ -22,8 +22,47 @@ namespace vl
 
 		using namespace controls;
 
-		void Workflow_GenerateAssembly(Ptr<GuiInstanceCompiledWorkflow> compiled, const WString& path, collections::List<WString>& errors, bool keepMetadata)
+		Ptr<GuiInstanceCompiledWorkflow> Workflow_GetModule(GuiResourcePrecompileContext& context, const WString& path)
 		{
+			return context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
+		}
+
+		Ptr<GuiInstanceCompiledWorkflow> Workflow_EnsureModule(GuiResourcePrecompileContext& context, const WString& path, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
+		{
+			auto compiled = Workflow_GetModule(context, path);
+			if (!compiled)
+			{
+				compiled = new GuiInstanceCompiledWorkflow;
+				compiled->type = assemblyType;
+				context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
+			}
+			else
+			{
+				CHECK_ERROR(compiled->type == assemblyType, L"Workflow_EnsureModule(GuiResourcePrecompiledContext&, const WString&, GuiInstanceCompiledWorkflow::AssemblyType)#Unexpected assembly type.");
+			}
+			return compiled;
+		}
+
+		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
+		{
+			auto compiled = Workflow_EnsureModule(context, path, assemblyType);
+			compiled->modules.Add(module);
+		}
+
+		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, const WString& module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
+		{
+			auto compiled = Workflow_EnsureModule(context, path, assemblyType);
+			compiled->codes.Add(module);
+		}
+
+		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, collections::List<WString>& errors, bool keepMetadata)
+		{
+			auto compiled = Workflow_GetModule(context, path);
+			if (!compiled)
+			{
+				return;
+			}
+
 			if (!compiled->assembly)
 			{
 				List<WString> codes;
@@ -46,37 +85,32 @@ namespace vl
 					codes.Add(code);
 				};
 
-				if (compiled->modules.Count() > 0)
+				FOREACH_INDEXER(Ptr<WfModule>, module, index, compiled->modules)
 				{
-					FOREACH_INDEXER(Ptr<WfModule>, module, index, compiled->modules)
 					{
+						MemoryStream stream;
 						{
-							MemoryStream stream;
-							{
-								StreamWriter writer(stream);
-								auto recorder = MakePtr<ParsingUpdateLocationRecorder>();
-								ParsingWriter parsingWriter(writer, recorder, index);
-								WfPrint(module, L"", parsingWriter);
-							}
-							stream.SeekFromBegin(0);
-							{
-								StreamReader reader(stream);
-								addCode(reader);
-							}
+							StreamWriter writer(stream);
+							auto recorder = MakePtr<ParsingUpdateLocationRecorder>();
+							ParsingWriter parsingWriter(writer, recorder, index);
+							WfPrint(module, L"", parsingWriter);
 						}
-						manager->AddModule(module);
-					}
-				}
-				else
-				{
-					FOREACH(WString, code, compiled->codes)
-					{
+						stream.SeekFromBegin(0);
 						{
-							StringReader reader(code);
+							StreamReader reader(stream);
 							addCode(reader);
 						}
-						manager->AddModule(code);
 					}
+					manager->AddModule(module);
+				}
+
+				FOREACH(WString, code, compiled->codes)
+				{
+					{
+						StringReader reader(code);
+						addCode(reader);
+					}
+					manager->AddModule(code);
 				}
 
 				if (manager->errors.Count() == 0)
@@ -134,12 +168,127 @@ namespace vl
 				}
 				else
 				{
-					compiled->codes.Clear();
-					compiled->modules.Clear();
 					manager->Clear(false, true);
 				}
 			}
 		}
+
+/***********************************************************************
+Shared Script Type Resolver (Script)
+***********************************************************************/
+
+#define Path_Shared				L"Workflow/Shared"
+#define Path_TemporaryClass		L"Workflow/TemporaryClass"
+#define Path_InstanceClass		L"Workflow/InstanceClass"
+
+		class GuiResourceSharedScriptTypeResolver
+			: public Object
+			, public IGuiResourceTypeResolver
+			, private IGuiResourceTypeResolver_Precompile
+			, private IGuiResourceTypeResolver_IndirectLoad
+		{
+		public:
+			WString GetType()override
+			{
+				return L"Script";
+			}
+
+			bool XmlSerializable()override
+			{
+				return true;
+			}
+
+			bool StreamSerializable()override
+			{
+				return false;
+			}
+
+			WString GetPreloadType()override
+			{
+				return L"Xml";
+			}
+
+			bool IsDelayLoad()override
+			{
+				return false;
+			}
+
+			vint GetMaxPassIndex()override
+			{
+				return Workflow_Max;
+			}
+
+			PassSupport GetPassSupport(vint passIndex)override
+			{
+				switch (passIndex)
+				{
+				case Workflow_Collect:
+					return PerResource;
+				case Workflow_Compile:
+					return PerPass;
+				default:
+					return NotSupported;
+				}
+			}
+
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Workflow_Collect:
+				{
+					if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
+					{
+						if (obj->language == L"Workflow")
+						{
+							Workflow_AddModule(context, Path_Shared, obj->code, GuiInstanceCompiledWorkflow::Shared);
+						}
+					}
+				}
+				break;
+				}
+			}
+
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			{
+				switch (context.passIndex)
+				{
+				case Workflow_Compile:
+					Workflow_GenerateAssembly(context, Path_Shared, errors, false);
+					break;
+				}
+			}
+
+			IGuiResourceTypeResolver_Precompile* Precompile()override
+			{
+				return this;
+			}
+
+			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
+			{
+				return this;
+			}
+
+			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
+			{
+				if (auto obj = resource.Cast<GuiInstanceSharedScript>())
+				{
+					return obj->SaveToXml();
+				}
+				return 0;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			{
+				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				if (xml)
+				{
+					auto schema = GuiInstanceSharedScript::LoadFromXml(xml, errors);
+					return schema;
+				}
+				return 0;
+			}
+		};
 
 /***********************************************************************
 Instance Type Resolver (Instance)
@@ -151,8 +300,6 @@ Instance Type Resolver (Instance)
 			, private IGuiResourceTypeResolver_Precompile
 			, private IGuiResourceTypeResolver_IndirectLoad
 		{
-			const wchar_t* Path_TemporaryClass = L"Workflow/TemporaryClass";
-			const wchar_t* Path_InstanceClass = L"Workflow/InstanceClass";
 		public:
 			WString GetType()override
 			{
@@ -201,21 +348,8 @@ Instance Type Resolver (Instance)
 				}
 			}
 
-			void AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
-			{
-				auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-				if (!compiled)
-				{
-					compiled = new GuiInstanceCompiledWorkflow;
-					compiled->type = assemblyType;
-					context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
-				}
-
-				compiled->modules.Add(module);
-			}
-
 #define ENSURE_ASSEMBLY_EXISTS(PATH)\
-			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
 			{\
 				if (!compiled->assembly)\
 				{\
@@ -228,13 +362,13 @@ Instance Type Resolver (Instance)
 			}\
 
 #define UNLOAD_ASSEMBLY(PATH)\
-			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
 			{\
 				compiled->context = nullptr;\
 			}\
 
 #define DELETE_ASSEMBLY(PATH)\
-			if (auto compiled = context.targetFolder->GetValueByPath(PATH).Cast<GuiInstanceCompiledWorkflow>())\
+			if (auto compiled = Workflow_GetModule(context, PATH))\
 			{\
 				compiled->context = nullptr;\
 				compiled->assembly = nullptr;\
@@ -252,9 +386,11 @@ Instance Type Resolver (Instance)
 						{
 							obj->ApplyStyles(context.resolver, errors);
 
-							if (auto module = Workflow_GenerateInstanceClass(obj, *(types::ResolvingResult*)nullptr, errors, context.passIndex))
+							types::ResolvingResult resolvingResult;
+							resolvingResult.context = obj;
+							if (auto module = Workflow_GenerateInstanceClass(resolvingResult, errors, context.passIndex))
 							{
-								AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
+								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
 
 							if (context.passIndex == Instance_CollectInstanceTypes)
@@ -275,13 +411,33 @@ Instance Type Resolver (Instance)
 						ENSURE_ASSEMBLY_EXISTS(Path_TemporaryClass)
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
-							auto resolvingResult = MakePtr<types::ResolvingResult>();
-							if (auto ctorModule = Workflow_PrecompileInstanceContext(obj, *resolvingResult.Obj(), errors))
+							vint previousErrorCount = errors.Count();
+							if (obj->className == L"")
 							{
-								if (auto instanceModule = Workflow_GenerateInstanceClass(obj, *resolvingResult.Obj(), errors, context.passIndex))
+								errors.Add(
+									L"Precompile: Instance  \"" +
+									(obj->instance->typeNamespace == GlobalStringKey::Empty
+										? obj->instance->typeName.ToString()
+										: obj->instance->typeNamespace.ToString() + L":" + obj->instance->typeName.ToString()
+										) +
+									L"\" should have the class name specified in the ref.Class attribute.");
+							}
+
+							types::ResolvingResult resolvingResult;
+							resolvingResult.context = obj;
+							resolvingResult.rootTypeDescriptor = Workflow_CollectReferences(resolvingResult, errors);
+							resolvingResult.moduleForValidate = Workflow_CreateModuleWithUsings(obj);
+							resolvingResult.moduleContent = Workflow_InstallCtorClass(resolvingResult, resolvingResult.moduleForValidate);
+
+							if (errors.Count() == previousErrorCount)
+							{
+								if (auto ctorModule = Workflow_PrecompileInstanceContext(resolvingResult, errors))
 								{
-									AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass);
-									AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass);
+									if (auto instanceModule = Workflow_GenerateInstanceClass(resolvingResult, errors, context.passIndex))
+									{
+										Workflow_AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass);
+										Workflow_AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass);
+									}
 								}
 							}
 						}
@@ -310,9 +466,26 @@ Instance Type Resolver (Instance)
 					return;
 				}
 
-				if (auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>())
+				auto sharedCompiled = Workflow_GetModule(context, Path_Shared);
+				auto compiled = Workflow_GetModule(context, path);
+				if (sharedCompiled && compiled)
 				{
-					Workflow_GenerateAssembly(compiled, path, errors, (context.passIndex == Instance_CompileInstanceClass));
+					CopyFrom(compiled->codes, sharedCompiled->codes);
+				}
+
+				switch (context.passIndex)
+				{
+				case Instance_CompileInstanceTypes:
+					Workflow_GenerateAssembly(context, path, errors, false);
+					compiled->modules.Clear();
+					break;
+				case Instance_CompileEventHandlers:
+					Workflow_GenerateAssembly(context, path, errors, false);
+					break;
+				case Instance_CompileInstanceClass:
+					Workflow_GenerateAssembly(context, path, errors, true);
+					break;
+				default:;
 				}
 				GetInstanceLoaderManager()->ClearReflectionCache();
 			}
@@ -351,6 +524,10 @@ Instance Type Resolver (Instance)
 				return 0;
 			}
 		};
+
+#undef Path_Shared
+#undef Path_TemporaryClass
+#undef Path_InstanceClass
 
 /***********************************************************************
 Instance Style Type Resolver (InstanceStyle)
@@ -408,135 +585,6 @@ Instance Style Type Resolver (InstanceStyle)
 				{
 					auto context = GuiInstanceStyleContext::LoadFromXml(xml, errors);
 					return context;
-				}
-				return 0;
-			}
-		};
-
-/***********************************************************************
-Shared Script Type Resolver (Script)
-***********************************************************************/
-
-		class GuiResourceSharedScriptTypeResolver
-			: public Object
-			, public IGuiResourceTypeResolver
-			, private IGuiResourceTypeResolver_Precompile
-			, private IGuiResourceTypeResolver_IndirectLoad
-		{
-			const wchar_t* Path_Shared = L"Workflow/Shared";
-		public:
-			WString GetType()override
-			{
-				return L"Script";
-			}
-
-			bool XmlSerializable()override
-			{
-				return true;
-			}
-
-			bool StreamSerializable()override
-			{
-				return false;
-			}
-
-			WString GetPreloadType()override
-			{
-				return L"Xml";
-			}
-
-			bool IsDelayLoad()override
-			{
-				return false;
-			}
-
-			vint GetMaxPassIndex()override
-			{
-				return Workflow_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
-			{
-				switch (passIndex)
-				{
-				case Workflow_Collect:
-					return PerResource;
-				case Workflow_Compile:
-					return PerPass;
-				default:
-					return NotSupported;
-				}
-			}
-
-			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
-			{
-				switch (context.passIndex)
-				{
-				case Workflow_Collect:
-					{
-						if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
-						{
-							WString path;
-							GuiInstanceCompiledWorkflow::AssemblyType type = GuiInstanceCompiledWorkflow::Shared;
-							if (obj->language == L"Workflow")
-							{
-								path = Path_Shared;
-							}
-						
-							auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
-							if (!compiled)
-							{
-								compiled = new GuiInstanceCompiledWorkflow;
-								compiled->type = type;
-								context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
-							}
-
-							compiled->codes.Add(obj->code);
-						}
-					}
-					break;
-				}
-			}
-
-			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
-			{
-				switch (context.passIndex)
-				{
-				case Workflow_Compile:
-					if (auto compiled = context.targetFolder->GetValueByPath(Path_Shared).Cast<GuiInstanceCompiledWorkflow>())
-					{
-						Workflow_GenerateAssembly(compiled, Path_Shared, errors, false);
-					}
-					break;
-				}
-			}
-
-			IGuiResourceTypeResolver_Precompile* Precompile()override
-			{
-				return this;
-			}
-
-			IGuiResourceTypeResolver_IndirectLoad* IndirectLoad()override
-			{
-				return this;
-			}
-
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
-			{
-				if (auto obj = resource.Cast<GuiInstanceSharedScript>())
-				{
-					return obj->SaveToXml();
-				}
-				return 0;
-			}
-
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
-			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
-				if (xml)
-				{
-					auto schema = GuiInstanceSharedScript::LoadFromXml(xml, errors);
-					return schema;
 				}
 				return 0;
 			}
