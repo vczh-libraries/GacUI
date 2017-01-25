@@ -1350,6 +1350,16 @@ Native Window Services
 			virtual bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)=0;
 		};
 
+		inline INativeDialogService::FileDialogOptions operator|(INativeDialogService::FileDialogOptions a, INativeDialogService::FileDialogOptions b)
+		{
+			return static_cast<INativeDialogService::FileDialogOptions>(static_cast<vuint64_t>(a) | static_cast<vuint64_t>(b));
+		}
+
+		inline INativeDialogService::FileDialogOptions operator&(INativeDialogService::FileDialogOptions a, INativeDialogService::FileDialogOptions b)
+		{
+			return static_cast<INativeDialogService::FileDialogOptions>(static_cast<vuint64_t>(a) & static_cast<vuint64_t>(b));
+		}
+
 /***********************************************************************
 Native Window Controller
 ***********************************************************************/
