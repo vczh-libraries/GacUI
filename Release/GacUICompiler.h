@@ -1077,6 +1077,17 @@ GuiVrtualTypeInstanceLoader
 							}
 						}
 
+						if (!stopControlTemplateTd)
+						{
+							auto value = MakePtr<WfStringExpression>();
+							value->value.value = L"Cannot find a matched control template to create.";
+
+							auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+							raiseStat->expression = value;
+
+							block->statements.Add(raiseStat);
+						}
+
 						auto member = MakePtr<WfClassMember>();
 						member->kind = WfClassMemberKind::Override;
 						member->declaration = funcCreateTemplate;

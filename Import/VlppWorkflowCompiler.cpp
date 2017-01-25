@@ -16047,6 +16047,20 @@ Expression Helpers
 								return;
 							}
 						}
+						else
+						{
+							if ((fromType->GetTypeDescriptor() == tdVe && fromType->GetElementType()->GetDecorator() == ITypeInfo::Generic)
+								|| fromType->GetHint() == TypeInfoHint::NativeCollectionReference
+								)
+							{
+								writer.WriteString(L"::vl::__vwsn::UnboxCollection<");
+								writer.WriteString(config->ConvertType(tdVe));
+								writer.WriteString(L">(");
+								writeExpression();
+								writer.WriteString(L")");
+								return;
+							}
+						}
 					}
 
 					switch (fromType->GetDecorator())
