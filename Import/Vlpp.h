@@ -8947,7 +8947,7 @@ ITypeDescriptor (type)
 				List,
 				SortedList,
 				Dictionary,
-				Unknown,
+				NativeCollectionReference,
 			};
 
 			class ITypeInfo : public virtual IDescriptable, public Description<ITypeInfo>
@@ -11833,64 +11833,6 @@ TypeFlagTester
 			};
 
 /***********************************************************************
-TypeHintTester
-***********************************************************************/
-
-			template<typename T>
-			struct TypeHintTester
-			{
-				static const TypeInfoHint								Result = TypeInfoHint::Normal;
-			};
-
-			template<typename T>
-			struct TypeHintTester<T*>
-			{
-				static const TypeInfoHint								Result = TypeHintTester<T>::Result;
-			};
-
-			template<typename T>
-			struct TypeHintTester<T&>
-			{
-				static const TypeInfoHint								Result = TypeHintTester<T>::Result;
-			};
-
-			template<typename T>
-			struct TypeHintTester<const T>
-			{
-				static const TypeInfoHint								Result = TypeHintTester<T>::Result;
-			};
-
-			template<typename T>
-			struct TypeHintTester<collections::LazyList<T>>
-			{
-				static const TypeInfoHint								Result = TypeInfoHint::LazyList;
-			};
-
-			template<typename T>
-			struct TypeHintTester<collections::Array<T>>
-			{
-				static const TypeInfoHint								Result = TypeInfoHint::Array;
-			};
-
-			template<typename T>
-			struct TypeHintTester<collections::List<T>>
-			{
-				static const TypeInfoHint								Result = TypeInfoHint::List;
-			};
-
-			template<typename T>
-			struct TypeHintTester<collections::SortedList<T>>
-			{
-				static const TypeInfoHint								Result = TypeInfoHint::SortedList;
-			};
-
-			template<typename K, typename V>
-			struct TypeHintTester<collections::Dictionary<K, V>>
-			{
-				static const TypeInfoHint								Result = TypeInfoHint::Dictionary;
-			};
-
-/***********************************************************************
 TypeFlagSelector
 ***********************************************************************/
 
@@ -11957,6 +11899,85 @@ TypeFlagSelector
 					| (vint)TypeFlagTester<T, TypeFlags::DictionaryType>::Result
 					)
 					>::Result;
+			};
+
+/***********************************************************************
+TypeHintTester
+***********************************************************************/
+
+			template<typename T>
+			struct TypeHintTester
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::Normal;
+			};
+
+			template<TypeFlags Flags>
+			struct TypeHintTesterForReference
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::NativeCollectionReference;
+			};
+
+			template<>
+			struct TypeHintTesterForReference<TypeFlags::NonGenericType>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::Normal;
+			};
+
+			template<>
+			struct TypeHintTesterForReference<TypeFlags::FunctionType>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::Normal;
+			};
+
+			template<typename T>
+			struct TypeHintTester<T*>
+			{
+				static const TypeInfoHint								Result = TypeHintTester<T>::Result;
+			};
+
+			template<typename T>
+			struct TypeHintTester<T&>
+			{
+				static const TypeInfoHint								Result = TypeHintTester<T>::Result == TypeInfoHint::Normal
+																					? TypeHintTesterForReference<TypeFlagSelector<T&>::Result>::Result
+																					: TypeHintTester<T>::Result
+																					;
+			};
+
+			template<typename T>
+			struct TypeHintTester<const T>
+			{
+				static const TypeInfoHint								Result = TypeHintTester<T>::Result;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::LazyList<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::LazyList;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::Array<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::Array;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::List<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::List;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::SortedList<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::SortedList;
+			};
+
+			template<typename K, typename V>
+			struct TypeHintTester<collections::Dictionary<K, V>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::Dictionary;
 			};
 
 /***********************************************************************
@@ -13308,6 +13329,15 @@ namespace vl
 		bool InSet(const T& value, Ptr<reflection::description::IValueReadonlyList> collection)
 		{
 			return InSet<T>(value, reflection::description::GetLazyList<T>(collection));
+		}
+
+		template<typename T, typename U>
+		Ptr<T> UnboxCollection(U& value)
+		{
+			auto boxedValue = reflection::description::BoxParameter<U>(value);
+			Ptr<T> result;
+			reflection::description::UnboxParameter<Ptr<T>>(boxedValue, result);
+			return result;
 		}
 
 		struct CreateList

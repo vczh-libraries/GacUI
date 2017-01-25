@@ -9635,15 +9635,7 @@ CreateTypeInfoFromType
 					{
 						if (scopeName->typeDescriptor)
 						{
-							auto hint = TypeInfoHint::Normal;
-							if (scopeName->typeDescriptor == description::GetTypeDescriptor<IValueReadonlyList>() ||
-								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueList>() || 
-								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueReadonlyDictionary>() || 
-								scopeName->typeDescriptor == description::GetTypeDescriptor<IValueDictionary>())
-							{
-								hint = TypeInfoHint::Unknown;
-							}
-							result = MakePtr<TypeDescriptorTypeInfo>(scopeName->typeDescriptor, hint);
+							result = MakePtr<TypeDescriptorTypeInfo>(scopeName->typeDescriptor, TypeInfoHint::Normal);
 						}
 						else
 						{
@@ -11949,7 +11941,7 @@ ValidateSemantic(Expression)
 							manager->errors.Add(WfErrors::RangeShouldBeInteger(node, elementType.Obj()));
 						}
 
-						auto enumerableType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueEnumerable>(), TypeInfoHint::Unknown);
+						auto enumerableType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueEnumerable>(), TypeInfoHint::Normal);
 						auto genericType = MakePtr<GenericTypeInfo>(enumerableType);
 						genericType->AddGenericArgument(elementType);
 
@@ -12094,7 +12086,7 @@ ValidateSemantic(Expression)
 						{
 							if (keyType && valueType)
 							{
-								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueDictionary>(), TypeInfoHint::Unknown);
+								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueDictionary>(), TypeInfoHint::Normal);
 								auto genericType = MakePtr<GenericTypeInfo>(classType);
 								genericType->AddGenericArgument(keyType);
 								genericType->AddGenericArgument(valueType);
@@ -12107,7 +12099,7 @@ ValidateSemantic(Expression)
 						{
 							if (keyType)
 							{
-								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), TypeInfoHint::Unknown);
+								auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), TypeInfoHint::Normal);
 								auto genericType = MakePtr<GenericTypeInfo>(classType);
 								genericType->AddGenericArgument(keyType);
 
@@ -16503,18 +16495,19 @@ WfGenerateExpressionVisitor
 				template<typename TReturnValue>
 				void WriteReturnValue(ITypeInfo* type, const TReturnValue& returnValueCallback, bool castReturnValue)
 				{
-					if (castReturnValue && IsCppRefGenericType(type))
+					if (castReturnValue)
 					{
-						writer.WriteString(L"[&](){ decltype(auto) __vwsn_temp__ = ");
-						returnValueCallback();
-						writer.WriteString(L"; return ::vl::__vwsn::Unbox<");
-						writer.WriteString(config->ConvertType(type));
-						writer.WriteString(L">(::vl::reflection::description::BoxParameter<decltype(__vwsn_temp__)>(__vwsn_temp__)); }()");
+						if (IsCppRefGenericType(type) || type->GetHint() == TypeInfoHint::NativeCollectionReference)
+						{
+							writer.WriteString(L"::vl::__vwsn::UnboxCollection<");
+							writer.WriteString(config->ConvertType(type->GetTypeDescriptor()));
+							writer.WriteString(L">(");
+							returnValueCallback();
+							writer.WriteString(L")");
+							return;
+						}
 					}
-					else
-					{
-						returnValueCallback();
-					}
+					returnValueCallback();
 				}
 
 				template<typename TType, typename TInvoke, typename TArgument, typename TInfo>
@@ -16922,6 +16915,10 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfMemberExpression* node)override
 				{
+					if (node->name.value == L"MyList")
+					{
+						int a = 0;
+					}
 					auto result = config->manager->expressionResolvings[node];
 					auto parentResult = config->manager->expressionResolvings[node->parent.Obj()];
 					WriteReferenceTemplate(result,
@@ -18626,6 +18623,7 @@ MergeCppFile
 			void ProcessCppContent(const WString& code, const TCallback& callback)
 			{
 				vint state = NORMAL;
+				vint counter = 0;
 
 				StringReader reader(code);
 				while (!reader.IsEnd())
@@ -18667,9 +18665,20 @@ MergeCppFile
 							}
 							break;
 						case WAIT_CLOSE:
-							if (content == L"}")
+							if (content == L"{")
 							{
-								state = NORMAL;
+								counter++;
+							}
+							else if (content == L"}")
+							{
+								if (counter == 0)
+								{
+									state = NORMAL;
+								}
+								else
+								{
+									counter--;
+								}
 							}
 							break;
 						}
