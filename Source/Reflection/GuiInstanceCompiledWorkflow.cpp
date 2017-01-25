@@ -57,7 +57,7 @@ Compiled Workflow Type Resolver (Workflow)
 
 			vint GetMaxPassIndex()override
 			{
-				return 2;
+				return 1;
 			}
 
 			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context)override
@@ -67,15 +67,6 @@ Compiled Workflow Type Resolver (Workflow)
 					switch (context.passIndex)
 					{
 					case 0:
-						if (compiled->type == GuiInstanceCompiledWorkflow::Shared)
-						{
-							if (context.usage == GuiResourceUsage::InstanceClass)
-							{
-								compiled->Initialize(true);
-							}
-						}
-						break;
-					case 1:
 						if (compiled->type == GuiInstanceCompiledWorkflow::InstanceClass)
 						{
 							if (context.usage == GuiResourceUsage::InstanceClass)
@@ -107,7 +98,7 @@ Compiled Workflow Type Resolver (Workflow)
 					vint type = (vint)obj->type;
 					writer << type;
 
-					if (obj->type != GuiInstanceCompiledWorkflow::TemporaryClass)
+					if (obj->type == GuiInstanceCompiledWorkflow::InstanceClass)
 					{
 						MemoryStream memoryStream;
 						obj->assembly->Serialize(memoryStream);
@@ -125,7 +116,7 @@ Compiled Workflow Type Resolver (Workflow)
 				
 				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
-				if (obj->type != GuiInstanceCompiledWorkflow::TemporaryClass)
+				if (obj->type == GuiInstanceCompiledWorkflow::InstanceClass)
 				{
 					auto memoryStream = MakePtr<MemoryStream>();
 					reader << (IStream&)*memoryStream.Obj();

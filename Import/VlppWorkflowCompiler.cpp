@@ -15728,6 +15728,13 @@ WfCollectClassMemberVisitor
 
 				void Visit(WfConstructorDeclaration* node)override
 				{
+					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					{
+						FOREACH(Ptr<WfExpression>, argument, call->arguments)
+						{
+							CollectExpression(config, argument, memberOfClass);
+						}
+					}
 					CollectStatement(config, node->statement, memberOfClass);
 				}
 
