@@ -2695,12 +2695,12 @@ namespace vl
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss);
 
 				void					WriteHeader_ClosurePreDecl(stream::StreamWriter& writer, Ptr<WfExpression> closure);
-				void					WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure);
+				void					WriteHeader_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
+				void					WriteHeader_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda);
+				bool					WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure);
 				void					WriteCpp_ClosureCtor(stream::StreamWriter& writer, Ptr<WfExpression> closure, const WString& name);
 				void					WriteCpp_ClosureCtorInitList(stream::StreamWriter& writer, Ptr<WfExpression> closure);
-				void					WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
 				void					WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda);
-				void					WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda);
 				void					WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda);
 
 				void					WriteHeader_ClassPreDecl(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, const WString& name, const WString& prefix);
@@ -2711,6 +2711,7 @@ namespace vl
 				bool					WriteCpp_ClassMember(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, Ptr<WfClassMember> member, collections::List<WString>& nss);
 				void					WriteCpp_Class(stream::StreamWriter& writer, Ptr<WfClassDeclaration> decl, collections::List<WString>& nss);
 
+				void					SortClosure(collections::Dictionary<WString, Ptr<WfExpression>>& reversedLambdaExprs, collections::Dictionary<WString, Ptr<WfNewInterfaceExpression>>& reversedClassExprs);
 				void					WriteHeader_Global(stream::StreamWriter& writer);
 				void					WriteCpp_Global(stream::StreamWriter& writer);
 

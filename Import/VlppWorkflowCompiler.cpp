@@ -18196,27 +18196,30 @@ namespace vl
 				WritePushCompileOptions(writer);
 				writer.WriteLine(L"");
 
-				if (closureInfos.Count() > 0)
 				{
-					Dictionary<WString, Ptr<WfExpression>> reversedClosures;
-					CopyFrom(
-						reversedClosures,
-						From(closureInfos)
-							.Select([](Pair<Ptr<WfExpression>, Ptr<ClosureInfo>> pair)
-							{
-								return Pair<WString, Ptr<WfExpression>>(pair.value->lambdaClassName, pair.key);
-							})
-						);
-
-					writer.WriteString(L"namespace ");
-					writer.WriteLine(assemblyNamespace);
-					writer.WriteLine(L"{");
-					FOREACH(Ptr<WfExpression>, closure, reversedClosures.Values())
+					Dictionary<WString, Ptr<WfExpression>> reversedLambdaExprs;
+					Dictionary<WString, Ptr<WfNewInterfaceExpression>> reversedClassExprs;
+					SortClosure(reversedLambdaExprs, reversedClassExprs);
+					
+					if (reversedLambdaExprs.Count() + reversedClassExprs.Count() > 0)
 					{
-						WriteHeader_ClosurePreDecl(writer, closure);
+						writer.WriteString(L"namespace ");
+						writer.WriteLine(assemblyNamespace);
+						writer.WriteLine(L"{");
+
+						FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+						{
+							WriteHeader_ClosurePreDecl(writer, expr);
+						}
+
+						FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+						{
+							WriteHeader_ClosurePreDecl(writer, expr);
+						}
+
+						writer.WriteLine(L"}");
+						writer.WriteLine(L"");
 					}
-					writer.WriteLine(L"}");
-					writer.WriteLine(L"");
 				}
 
 				List<WString> nss;
@@ -19754,8 +19757,33 @@ namespace vl
 			using namespace reflection;
 			using namespace reflection::description;
 
+			void WfCppConfig::SortClosure(Dictionary<WString, Ptr<WfExpression>>& reversedLambdaExprs, Dictionary<WString, Ptr<WfNewInterfaceExpression>>& reversedClassExprs)
+			{
+				CopyFrom(
+					reversedLambdaExprs,
+					From(lambdaExprs)
+						.Select([](Pair<Ptr<WfExpression>, WString> pair)
+						{
+							return Pair<WString, Ptr<WfExpression>>(pair.value, pair.key);
+						})
+					);
+
+				CopyFrom(
+					reversedClassExprs,
+					From(classExprs)
+						.Select([](Pair<Ptr<WfNewInterfaceExpression>, WString> pair)
+						{
+							return Pair<WString, Ptr<WfNewInterfaceExpression>>(pair.value, pair.key);
+						})
+					);
+			}
+
 			void WfCppConfig::WriteHeader_Global(stream::StreamWriter& writer)
 			{
+				Dictionary<WString, Ptr<WfExpression>> reversedLambdaExprs;
+				Dictionary<WString, Ptr<WfNewInterfaceExpression>> reversedClassExprs;
+				SortClosure(reversedLambdaExprs, reversedClassExprs);
+
 				writer.WriteLine(L"/***********************************************************************");
 				writer.WriteLine(L"Global Variables and Functions");
 				writer.WriteLine(L"***********************************************************************/");
@@ -19796,30 +19824,35 @@ namespace vl
 				writer.WriteLine(L"");
 				writer.WriteLine(L"\t\tstatic " + assemblyName + L"& Instance();");
 				writer.WriteLine(L"\t};");
+
+				if (reversedLambdaExprs.Count() + reversedClassExprs.Count() > 0)
+				{
+					writer.WriteLine(L"");
+					writer.WriteLine(L"/***********************************************************************");
+					writer.WriteLine(L"Closures");
+					writer.WriteLine(L"***********************************************************************/");
+
+					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+					{
+						writer.WriteLine(L"");
+						WriteHeader_LambdaExprDecl(writer, expr);
+					}
+
+					FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+					{
+						writer.WriteLine(L"");
+						WriteHeader_ClassExprDecl(writer, expr);
+					}
+				}
+
 				writer.WriteLine(L"}");
 			}
 
 			void WfCppConfig::WriteCpp_Global(stream::StreamWriter& writer)
 			{
 				Dictionary<WString, Ptr<WfExpression>> reversedLambdaExprs;
-				CopyFrom(
-					reversedLambdaExprs,
-					From(lambdaExprs)
-						.Select([](Pair<Ptr<WfExpression>, WString> pair)
-						{
-							return Pair<WString, Ptr<WfExpression>>(pair.value, pair.key);
-						})
-					);
-
 				Dictionary<WString, Ptr<WfNewInterfaceExpression>> reversedClassExprs;
-				CopyFrom(
-					reversedClassExprs,
-					From(classExprs)
-						.Select([](Pair<Ptr<WfNewInterfaceExpression>, WString> pair)
-						{
-							return Pair<WString, Ptr<WfNewInterfaceExpression>>(pair.value, pair.key);
-						})
-					);
+				SortClosure(reversedLambdaExprs, reversedClassExprs);
 
 				writer.WriteLine(L"/***********************************************************************");
 				writer.WriteLine(L"Global Variables");
@@ -19885,23 +19918,31 @@ namespace vl
 				writer.WriteLine(assemblyNamespace);
 				writer.WriteLine(L"{");
 
+				writer.WriteLine(L"/***********************************************************************");
+				writer.WriteLine(L"Global Functions");
+				writer.WriteLine(L"***********************************************************************/");
+
+				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
+				{
+					writer.WriteLine(L"");
+					writer.WriteString(L"\t");
+					auto returnType = WriteFunctionHeader(writer, decl, assemblyName + L"::" + ConvertName(decl->name.value), true);
+					writer.WriteLine(L"");
+					WriteFunctionBody(writer, decl->statement, L"\t", returnType);
+				}
+
+				writer.WriteLine(L"");
+				writer.WriteLine(L"\t" + assemblyName + L"& " + assemblyName + L"::Instance()");
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\t\treturn Get" + storageName + L"().instance;");
+				writer.WriteLine(L"\t}");
+
 				if (reversedLambdaExprs.Count() + reversedClassExprs.Count() > 0)
 				{
+					writer.WriteLine(L"");
 					writer.WriteLine(L"/***********************************************************************");
-					writer.WriteLine(L"Closure Definitions");
+					writer.WriteLine(L"Closures");
 					writer.WriteLine(L"***********************************************************************/");
-
-					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
-					{
-						writer.WriteLine(L"");
-						WriteCpp_LambdaExprDecl(writer, expr);
-					}
-
-					FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
-					{
-						writer.WriteLine(L"");
-						WriteCpp_ClassExprDecl(writer, expr);
-					}
 
 					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
 					{
@@ -19922,24 +19963,7 @@ namespace vl
 						}
 					}
 				}
-				writer.WriteLine(L"/***********************************************************************");
-				writer.WriteLine(L"Global Functions");
-				writer.WriteLine(L"***********************************************************************/");
 
-				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
-				{
-					writer.WriteLine(L"");
-					writer.WriteString(L"\t");
-					auto returnType = WriteFunctionHeader(writer, decl, assemblyName + L"::" + ConvertName(decl->name.value), true);
-					writer.WriteLine(L"");
-					WriteFunctionBody(writer, decl->statement, L"\t", returnType);
-				}
-
-				writer.WriteLine(L"");
-				writer.WriteLine(L"\t" + assemblyName + L"& " + assemblyName + L"::Instance()");
-				writer.WriteLine(L"\t{");
-				writer.WriteLine(L"\t\treturn Get" + storageName + L"().instance;");
-				writer.WriteLine(L"\t}");
 				writer.WriteLine(L"}");
 			}
 		}
@@ -20138,7 +20162,76 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L";");
 			}
 
-			void WfCppConfig::WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure)
+			void WfCppConfig::WriteHeader_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
+			{
+				if (auto ordered = lambda.Cast<WfOrderedLambdaExpression>())
+				{
+					auto name = lambdaExprs[lambda.Obj()];
+					writer.WriteLine(L"\tstruct " + name);
+					writer.WriteLine(L"\t{");
+
+					if (WriteCpp_ClosureMembers(writer, lambda))
+					{
+						writer.WriteLine(L"");
+					}
+					writer.WriteString(L"\t\t");
+					WriteCpp_ClosureCtor(writer, lambda, name);
+					writer.WriteLine(L";");
+					writer.WriteLine(L"");
+
+					writer.WriteString(L"\t\t");
+					WriteFunctionHeader(writer, ordered, L"operator()", true);
+					writer.WriteLine(L" const;");
+					writer.WriteLine(L"\t};");
+				}
+				else if (auto funcExpr = lambda.Cast<WfFunctionExpression>())
+				{
+					auto name = lambdaExprs[lambda.Obj()];
+					writer.WriteLine(L"\tstruct " + name);
+					writer.WriteLine(L"\t{");
+
+					if (WriteCpp_ClosureMembers(writer, lambda))
+					{
+						writer.WriteLine(L"");
+					}
+					writer.WriteString(L"\t\t");
+					WriteCpp_ClosureCtor(writer, lambda, name);
+					writer.WriteLine(L";");
+					writer.WriteLine(L"");
+
+					writer.WriteString(L"\t\t");
+					WriteFunctionHeader(writer, funcExpr, L"operator()", true);
+					writer.WriteLine(L" const;");
+					writer.WriteLine(L"\t};");
+				}
+			}
+
+			void WfCppConfig::WriteHeader_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
+			{
+				auto result = manager->expressionResolvings[lambda.Obj()];
+				auto td = result.constructorInfo->GetOwnerTypeDescriptor();
+				auto name = classExprs[lambda.Obj()];
+				writer.WriteLine(L"\tclass " + name + L" : public ::vl::Object, public virtual " + ConvertType(td));
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\tpublic:");
+
+				if (WriteCpp_ClosureMembers(writer, lambda))
+				{
+					writer.WriteLine(L"");
+				}
+				writer.WriteString(L"\t\t");
+				WriteCpp_ClosureCtor(writer, lambda, name);
+				writer.WriteLine(L";");
+				writer.WriteLine(L"");
+
+				FOREACH(Ptr<WfClassMember>, member, lambda->members)
+				{
+					GenerateClassMemberDecl(this, writer, name, member, L"\t\t", true);
+				}
+				writer.WriteLine(L"\t};");
+			}
+
+			bool WfCppConfig::WriteCpp_ClosureMembers(stream::StreamWriter& writer, Ptr<WfExpression> closure)
 			{
 				auto info = closureInfos[closure.Obj()];
 
@@ -20161,6 +20254,8 @@ WfCppConfig::WriteCpp
 					writer.WriteString(L"__vwsnthis_" + itow(index));
 					writer.WriteLine(L";");
 				}
+
+				return info->symbols.Count() + info->thisTypes.Count() > 0;
 			}
 
 			void WfCppConfig::WriteCpp_ClosureCtor(stream::StreamWriter& writer, Ptr<WfExpression> closure, const WString& name)
@@ -20232,46 +20327,6 @@ WfCppConfig::WriteCpp
 				}
 			}
 
-			void WfCppConfig::WriteCpp_LambdaExprDecl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
-			{
-				if (auto ordered = lambda.Cast<WfOrderedLambdaExpression>())
-				{
-					auto name = lambdaExprs[lambda.Obj()];
-					writer.WriteLine(L"\tstruct " + name);
-					writer.WriteLine(L"\t{");
-
-					WriteCpp_ClosureMembers(writer, lambda);
-					writer.WriteLine(L"");
-					writer.WriteString(L"\t\t");
-					WriteCpp_ClosureCtor(writer, lambda, name);
-					writer.WriteLine(L";");
-					writer.WriteLine(L"");
-
-					writer.WriteString(L"\t\t");
-					WriteFunctionHeader(writer, ordered, L"operator()", true);
-					writer.WriteLine(L" const;");
-					writer.WriteLine(L"\t};");
-				}
-				else if (auto funcExpr = lambda.Cast<WfFunctionExpression>())
-				{
-					auto name = lambdaExprs[lambda.Obj()];
-					writer.WriteLine(L"\tstruct " + name);
-					writer.WriteLine(L"\t{");
-
-					WriteCpp_ClosureMembers(writer, lambda);
-					writer.WriteLine(L"");
-					writer.WriteString(L"\t\t");
-					WriteCpp_ClosureCtor(writer, lambda, name);
-					writer.WriteLine(L";");
-					writer.WriteLine(L"");
-
-					writer.WriteString(L"\t\t");
-					WriteFunctionHeader(writer, funcExpr, L"operator()", true);
-					writer.WriteLine(L" const;");
-					writer.WriteLine(L"\t};");
-				}
-			}
-
 			void WfCppConfig::WriteCpp_LambdaExprImpl(stream::StreamWriter& writer, Ptr<WfExpression> lambda)
 			{
 				if (auto ordered = lambda.Cast<WfOrderedLambdaExpression>())
@@ -20310,29 +20365,6 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L" const");
 					WriteFunctionBody(writer, funcExpr->function->statement, L"\t", returnType);
 				}
-			}
-
-			void WfCppConfig::WriteCpp_ClassExprDecl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
-			{
-				auto result = manager->expressionResolvings[lambda.Obj()];
-				auto td = result.constructorInfo->GetOwnerTypeDescriptor();
-				auto name = classExprs[lambda.Obj()];
-				writer.WriteLine(L"\tclass " + name + L" : public ::vl::Object, public virtual " + ConvertType(td));
-				writer.WriteLine(L"\t{");
-				writer.WriteLine(L"\tpublic:");
-
-				WriteCpp_ClosureMembers(writer, lambda);
-				writer.WriteLine(L"");
-				writer.WriteString(L"\t\t");
-				WriteCpp_ClosureCtor(writer, lambda, name);
-				writer.WriteLine(L";");
-				writer.WriteLine(L"");
-
-				FOREACH(Ptr<WfClassMember>, member, lambda->members)
-				{
-					GenerateClassMemberDecl(this, writer, name, member, L"\t\t", true);
-				}
-				writer.WriteLine(L"\t};");
 			}
 
 			void WfCppConfig::WriteCpp_ClassExprImpl(stream::StreamWriter& writer, Ptr<WfNewInterfaceExpression> lambda)
