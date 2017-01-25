@@ -106,7 +106,7 @@ void GuiMain_Resource()
 	}
 	{
 		List<WString> errors;
-		auto resource = GuiResource::LoadFromXml(LR"(Resources/UI5_DocumentTextBox.xml)", errors);
+		auto resource = GuiResource::LoadFromXml(LR"(Resources/UI2_Properties.xml)", errors);
 		resource->Precompile(nullptr, errors);
 
 		{
@@ -170,11 +170,11 @@ void GuiMain_Resource()
 	}
 
 	// UI1 / UI3 / UI4 / UI5 / UI7 / UI8 / UI9
-	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
 	// UI2
-	// auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
-	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
+	auto viewModel = Value::InvokeStatic(L"ViewModelBuilder", L"Build");
+	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow", (Value_xs(), viewModel)));
 
 	// UI6
 	// auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));

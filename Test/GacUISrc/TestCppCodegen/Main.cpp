@@ -19,7 +19,7 @@ void GuiMain()
 		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DataOnly);
 	}
 
-	demo::MainWindow window;
+	demo::MainWindow window(ViewModelBuilder::Build());
 	window.ForceCalculateSizeImmediately();
 	window.MoveToScreenCenter();
 	GetApplication()->Run(&window);

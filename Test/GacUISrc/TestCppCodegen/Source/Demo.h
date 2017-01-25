@@ -29,72 +29,388 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	class __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc13_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc37_Demo_ViewModelBuilder_Build__IViewModel;
+	class __vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	struct __vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 	struct __vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 	struct __vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
-	struct __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
-	struct __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
-	struct __vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
 }
 
 namespace demo
 {
 	class MainWindowConstructor;
 	class MainWindow;
+}
+namespace darkskin
+{
+	class ButtonTemplateConstructor;
+	class ButtonTemplate;
+	class LabelTemplateConstructor;
+	class LabelTemplate;
+	class SinglelineTextBoxTemplateConstructor;
+	class SinglelineTextBoxTemplate;
+	class TooltipTemplateConstructor;
+	class TooltipTemplate;
+	class WindowTemplateConstructor;
+	class WindowTemplate;
+}
+class IViewModel;
+class MyEventArgs;
+class ViewModelBuilder;
 
+namespace demo
+{
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
-		::demo::MainWindow* self = static_cast<::demo::MainWindow*>(nullptr);
-		::vl::presentation::controls::GuiSinglelineTextBox* textBoxS = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
-		::vl::presentation::controls::GuiMultilineTextBox* textBoxM = static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr);
-		::vl::presentation::controls::GuiDocumentLabel* documentTextBox = static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr);
-		::vl::presentation::controls::GuiDocumentViewer* documentViewer = static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr);
-		::vl::presentation::controls::GuiDocumentLabel* documentLabel = static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_2 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::Ptr<::IViewModel> ViewModel = ::vl::Ptr<::IViewModel>();
+		::vl::presentation::controls::GuiSinglelineTextBox* textBoxA = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		::vl::presentation::controls::GuiSinglelineTextBox* textBoxB = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		::demo::MainWindow* __vwsn_precompile_0 = static_cast<::demo::MainWindow*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_4 = static_cast<::vl::presentation::controls::GuiLabel*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_9 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_8 = static_cast<::vl::presentation::controls::GuiLabel*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_12 = static_cast<::vl::presentation::controls::GuiLabel*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_13 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_precompile_14 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::IViewModel> __vwsn_precompile_16 = ::vl::Ptr<::IViewModel>();
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_18 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_19 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_20 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_21 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_22 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_23 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		MainWindowConstructor();
 	};
 
 }
+namespace darkskin
+{
+	class ButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ButtonTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ButtonTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::ButtonTemplate* self = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		void __vwsn_initialize_instance_(::darkskin::ButtonTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
+	public:
+		ButtonTemplateConstructor();
+	};
+
+	class ButtonTemplate : public ::vl::presentation::templates::GuiButtonTemplate, public ::darkskin::ButtonTemplateConstructor, public ::vl::reflection::Description<ButtonTemplate>
+	{
+		friend class ::darkskin::ButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ButtonTemplate>;
+#endif
+	public:
+		ButtonTemplate();
+		~ButtonTemplate();
+	};
+
+	class LabelTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<LabelTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::LabelTemplate* self = static_cast<::darkskin::LabelTemplate*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		void __vwsn_initialize_instance_(::darkskin::LabelTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
+	public:
+		LabelTemplateConstructor();
+	};
+
+	class LabelTemplate : public ::vl::presentation::templates::GuiLabelTemplate, public ::darkskin::LabelTemplateConstructor, public ::vl::reflection::Description<LabelTemplate>
+	{
+		friend class ::darkskin::LabelTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<LabelTemplate>;
+#endif
+	public:
+		LabelTemplate();
+		~LabelTemplate();
+	};
+
+	class SinglelineTextBoxTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<SinglelineTextBoxTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::SinglelineTextBoxTemplate* self = static_cast<::darkskin::SinglelineTextBoxTemplate*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		void __vwsn_initialize_instance_(::darkskin::SinglelineTextBoxTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
+	public:
+		SinglelineTextBoxTemplateConstructor();
+	};
+
+	class SinglelineTextBoxTemplate : public ::vl::presentation::templates::GuiSinglelineTextBoxTemplate, public ::darkskin::SinglelineTextBoxTemplateConstructor, public ::vl::reflection::Description<SinglelineTextBoxTemplate>
+	{
+		friend class ::darkskin::SinglelineTextBoxTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SinglelineTextBoxTemplate>;
+#endif
+	public:
+		SinglelineTextBoxTemplate();
+		~SinglelineTextBoxTemplate();
+	};
+
+	class TooltipTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<TooltipTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TooltipTemplateConstructor>;
+#endif
+	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::darkskin::TooltipTemplate* __vwsn_precompile_0 = static_cast<::darkskin::TooltipTemplate*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		void __vwsn_initialize_instance_(::darkskin::TooltipTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
+	public:
+		TooltipTemplateConstructor();
+	};
+
+	class TooltipTemplate : public ::vl::presentation::templates::GuiWindowTemplate, public ::darkskin::TooltipTemplateConstructor, public ::vl::reflection::Description<TooltipTemplate>
+	{
+		friend class ::darkskin::TooltipTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TooltipTemplate>;
+#endif
+	public:
+		TooltipTemplate();
+		~TooltipTemplate();
+	};
+
+	class WindowTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<WindowTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<WindowTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::WindowTemplate* self = static_cast<::darkskin::WindowTemplate*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* container = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_13 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_14 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_15 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_16 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_18 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_19 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_21 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_23 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_24 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		void __vwsn_initialize_instance_(::darkskin::WindowTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
+	public:
+		WindowTemplateConstructor();
+	};
+
+	class WindowTemplate : public ::vl::presentation::templates::GuiWindowTemplate, public ::darkskin::WindowTemplateConstructor, public ::vl::reflection::Description<WindowTemplate>
+	{
+		friend class ::darkskin::WindowTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<WindowTemplate>;
+#endif
+	public:
+		WindowTemplate();
+		~WindowTemplate();
+	};
+
+}
+class IViewModel : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IViewModel>
+{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IViewModel>;
+#endif
+public:
+	virtual ::vl::vint32_t GetX() = 0;
+	virtual void SetX(::vl::vint32_t value) = 0;
+	virtual ::vl::vint32_t GetY() = 0;
+	virtual void SetY(::vl::vint32_t value) = 0;
+	virtual ::vl::vint32_t GetZ() = 0;
+	::vl::Event<void()> ZChanged;
+};
+
+class MyEventArgs : public ::vl::presentation::compositions::GuiEventArgs, public ::vl::reflection::Description<MyEventArgs>
+{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyEventArgs>;
+#endif
+public:
+	MyEventArgs();
+	MyEventArgs(::vl::presentation::compositions::GuiGraphicsComposition* composition);
+};
+
+class ViewModelBuilder : public ::vl::Object, public ::vl::reflection::Description<ViewModelBuilder>
+{
+	friend class ::vl_workflow_global::__vwsnc37_Demo_ViewModelBuilder_Build__IViewModel;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ViewModelBuilder>;
+#endif
+public:
+	static ::vl::Ptr<::IViewModel> Build();
+	ViewModelBuilder();
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -104,8 +420,6 @@ namespace vl_workflow_global
 	class Demo
 	{
 	public:
-
-		::vl::presentation::FontProperties ChangeFontSize(::vl::presentation::FontProperties oldFont, ::vl::vint32_t deltaSize);
 
 		static Demo& Instance();
 	};

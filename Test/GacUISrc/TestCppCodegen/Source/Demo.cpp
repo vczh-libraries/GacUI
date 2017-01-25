@@ -41,13 +41,49 @@ namespace vl_workflow_global
 Closure Definitions
 ***********************************************************************/
 
+	struct __vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__
+	{
+		::darkskin::LabelTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__
+	{
+		::darkskin::LabelTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
+	{
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__
+	{
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
 	struct __vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
 	{
 		::demo::MainWindowConstructor* __vwsnthis_0;
 
 		__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
@@ -65,43 +101,84 @@ Closure Definitions
 
 		__vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	struct __vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()() const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	struct __vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__
 	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()() const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	struct __vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__
 	{
-		::demo::MainWindow* __vwsn_this_;
-		::demo::MainWindowConstructor* __vwsnthis_0;
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
 
-		__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindow* __vwsnctor___vwsn_this_, ::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* __vwsno_1, ::vl::presentation::compositions::GuiEventArgs* __vwsno_2) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	class __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	struct __vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__
+	{
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__
+	{
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__
+	{
+		::darkskin::LabelTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	class __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::demo::MainWindowConstructor* __vwsnthis_1;
+
+		__vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -116,7 +193,7 @@ Closure Definitions
 		bool Close() override;
 	};
 
-	class __vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	class __vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
 	public:
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
@@ -124,12 +201,615 @@ Closure Definitions
 		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
 		::demo::MainWindowConstructor* __vwsnthis_1;
 
-		__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1);
+		__vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1);
 
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
 		bool GetStopped() override;
 		bool StopListening() override;
 	};
+
+	class __vwsnc13_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+
+		__vwsnc13_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory();
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::ButtonTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::darkskin::ButtonTemplate* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::ButtonTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::darkskin::ButtonTemplate* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::ButtonTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::ButtonTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::darkskin::ButtonTemplate* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::ButtonTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::ButtonTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::LabelTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::LabelTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::LabelTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::LabelTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::LabelTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::LabelTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::darkskin::LabelTemplate* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::LabelTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::LabelTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::LabelTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::LabelTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::LabelTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::LabelTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::WindowTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::WindowTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+
+		::darkskin::WindowTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::WindowTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc37_Demo_ViewModelBuilder_Build__IViewModel : public ::vl::Object, public virtual ::IViewModel
+	{
+	public:
+
+		__vwsnc37_Demo_ViewModelBuilder_Build__IViewModel();
+
+		::vl::vint32_t x = 0;
+		::vl::vint32_t y = 0;
+		::vl::vint32_t GetX() override;
+		void SetX(::vl::vint32_t value) override;
+		::vl::vint32_t GetY() override;
+		void SetY(::vl::vint32_t value) override;
+		::vl::vint32_t GetZ() override;
+	};
+
+	class __vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::Ptr<::IViewModel> __vwsn_bind_cache_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::demo::MainWindowConstructor* __vwsnthis_1;
+
+		__vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	//-------------------------------------------------------------------
+
+	__vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0.Obj())->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_16)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_16)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_23.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_23.Obj())->SetText(__vwsn_new_);
+	}
 
 	//-------------------------------------------------------------------
 
@@ -138,9 +818,15 @@ Closure Definitions
 	{
 	}
 
-	void __vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->OnMakeFontLarger)();
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_14)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_14)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -152,13 +838,13 @@ Closure Definitions
 
 	void __vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_21)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_16.Obj())->GetX();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_21)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_16.Obj())->SetX(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -168,51 +854,158 @@ Closure Definitions
 	{
 	}
 
-	void __vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->OnMakeFontSmaller)();
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_16.Obj())->GetY();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_16.Obj())->SetY(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()() const
+	void __vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->GetFont(), 5));
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()() const
+	void __vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textBoxS)->GetFont(), (- 5)));
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_2.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_2.Obj())->SetColor(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindow* __vwsnctor___vwsn_this_, ::demo::MainWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
+	__vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_4.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_4.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_4.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_4.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::__vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_4.Obj())->GetFont();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::FontProperties>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_4.Obj())->SetFont(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::__vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0.Obj())->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0.Obj())->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
 		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
 	{
 	}
 
-	void __vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* __vwsno_1, ::vl::presentation::compositions::GuiEventArgs* __vwsno_2) const
+	::vl::reflection::description::IValueSubscription* __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
 	{
-		return ::vl::__vwsn::This(__vwsn_this_)->buttonIDoNotKnow_Clicked(__vwsno_1, __vwsno_2);
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0)
+	__vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
@@ -222,9 +1015,9 @@ Closure Definitions
 		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
-	void __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont().size > 5);
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText()); } catch(...){ return 0; } }();
 		using __vwsnt_0 = ::vl::reflection::description::Value;
 		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
 		{
@@ -232,18 +1025,18 @@ Closure Definitions
 		}
 	}
 
-	void __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	void __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
-		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->textBoxS);
-		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->textBoxB);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -251,12 +1044,12 @@ Closure Definitions
 			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
 		}
 		auto __vwsn_subscription_ = this;
-		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
 		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
 		return __vwsn_listener_shared_;
 	}
 
-	bool __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -266,12 +1059,12 @@ Closure Definitions
 		return false;
 	}
 
-	bool __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
 			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
@@ -282,7 +1075,7 @@ Closure Definitions
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1)
+	__vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1)
 		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
 		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
 		, __vwsnthis_0(__vwsnctorthis_0)
@@ -290,17 +1083,17 @@ Closure Definitions
 	{
 	}
 
-	::vl::reflection::description::IValueSubscription* __vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	::vl::reflection::description::IValueSubscription* __vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
 	{
 		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
 	}
 
-	bool __vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	bool __vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
 	{
 		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
 	}
 
-	bool __vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	bool __vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
 		{
@@ -310,14 +1103,1417 @@ Closure Definitions
 		return false;
 	}
 
+	//-------------------------------------------------------------------
+
+	__vwsnc13_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc13_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory()
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc13_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiWindowTemplate*>(new ::darkskin::WindowTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_cache_1 = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#252526", false) : ((state == ::vl::presentation::controls::GuiButton::ControlState::Active) ? ::vl::WString(L"#54545C", false) : ((state == ::vl::presentation::controls::GuiButton::ControlState::Pressed) ? ::vl::WString(L"#007ACC", false) : ::vl::WString(L"#3F3F46", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StateChanged, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, __vwsn_bind_handler_1_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::darkskin::ButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc15_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_cache_1 = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#434346", false) : ((state == ::vl::presentation::controls::GuiButton::ControlState::Active) ? ::vl::WString(L"#6A6A75", false) : ((state == ::vl::presentation::controls::GuiButton::ControlState::Pressed) ? ::vl::WString(L"#1C97EA", false) : ::vl::WString(L"#54545C", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StateChanged, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, __vwsn_bind_handler_1_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::darkskin::ButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc17_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc19_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiLabelTemplate*>(new ::darkskin::LabelTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_cache_1 = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>([&](auto state){ return ((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ((state == ::vl::presentation::controls::GuiButton::ControlState::Active) ? ::vl::WString(L"#F1F1F1", false) : ((state == ::vl::presentation::controls::GuiButton::ControlState::Pressed) ? ::vl::WString(L"#FFFFFF", false) : ::vl::WString(L"#F1F1F1", false)))); }(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetState()));
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StateChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StateChanged, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, __vwsn_bind_handler_1_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::darkskin::ButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc21_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::ButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::ButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::ButtonTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc23_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::LabelTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::LabelTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::LabelTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc25_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::LabelTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_cache_1 = static_cast<::darkskin::LabelTemplate*>(nullptr);
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Parse<::vl::presentation::Color>(((! ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetVisuallyEnabled()) ? ::vl::WString(L"#6D6D6D", false) : ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextColor())));
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_cache_1 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextColorChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+		(__vwsn_bind_handler_1_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextColorChanged, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->VisuallyEnabledChanged, __vwsn_bind_handler_1_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::LabelTemplate*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::darkskin::LabelTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::LabelTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc27_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::LabelTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::LabelTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont();
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::LabelTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::LabelTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc29_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiSinglelineTextBoxTemplate*>(new ::darkskin::SinglelineTextBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::WindowTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetMaximized() ? ::vl::WString(L" 1 ", false) : ::vl::WString(L" 2 ", false));
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->MaximizedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->MaximizedChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::WindowTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::darkskin::WindowTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::darkskin::WindowTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc37_Demo_ViewModelBuilder_Build__IViewModel::__vwsnc37_Demo_ViewModelBuilder_Build__IViewModel()
+	{
+		this->x = 0;
+		this->y = 0;
+	}
+
+	::vl::vint32_t __vwsnc37_Demo_ViewModelBuilder_Build__IViewModel::GetX()
+	{
+		return x;
+	}
+
+	void __vwsnc37_Demo_ViewModelBuilder_Build__IViewModel::SetX(::vl::vint32_t value)
+	{
+		if ((x != value))
+		{
+			(x = value);
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->ZChanged)();
+		}
+	}
+
+	::vl::vint32_t __vwsnc37_Demo_ViewModelBuilder_Build__IViewModel::GetY()
+	{
+		return y;
+	}
+
+	void __vwsnc37_Demo_ViewModelBuilder_Build__IViewModel::SetY(::vl::vint32_t value)
+	{
+		if ((y != value))
+		{
+			(y = value);
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->ZChanged)();
+		}
+	}
+
+	::vl::vint32_t __vwsnc37_Demo_ViewModelBuilder_Build__IViewModel::GetZ()
+	{
+		return (x + y);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiLabelTemplate*>(new ::darkskin::LabelTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiSinglelineTextBoxTemplate*>(new ::darkskin::SinglelineTextBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiLabelTemplate*>(new ::darkskin::LabelTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiSinglelineTextBoxTemplate*>(new ::darkskin::SinglelineTextBoxTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = ::vl::Ptr<::IViewModel>();
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetZ());
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->ViewModel);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ZChanged, ::vl::Func<void()>(::vl::__vwsn::This(this), &__vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->ZChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::IViewModel>());
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText()); } catch(...){ return 0; } }();
+		using __vwsnt_0 = ::vl::reflection::description::Value;
+		FOREACH(__vwsnt_0, __vwsn_bind_callback_, ::vl::reflection::description::GetLazyList<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->GetValues()))
+		{
+			::vl::__vwsn::Unbox<::vl::Func<void(const ::vl::reflection::description::Value&)>>(__vwsn_bind_callback_)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		}
+	}
+
+	void __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	{
+		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->textBoxA);
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
+		}
+		auto __vwsn_subscription_ = this;
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
+		return __vwsn_listener_shared_;
+	}
+
+	bool __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
+			return true;
+		}
+		return false;
+	}
+
 /***********************************************************************
 Global Functions
 ***********************************************************************/
-
-	::vl::presentation::FontProperties Demo::ChangeFontSize(::vl::presentation::FontProperties oldFont, ::vl::vint32_t deltaSize)
-	{
-		return [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = oldFont.fontFamily; __vwsn_temp__.size = (oldFont.size + deltaSize); __vwsn_temp__.antialias = true; return __vwsn_temp__; }();
-	}
 
 	Demo& Demo::Instance()
 	{
@@ -333,325 +2529,186 @@ namespace demo
 {
 	void MainWindowConstructor::__vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
 	{
-		(::vl::__vwsn::This(this)->self = __vwsn_this_);
-		(::vl::__vwsn::This(this)->__vwsn_precompile_24 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetBoundsComposition());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = __vwsn_this_);
+		(::vl::__vwsn::This(this)->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_17 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 480; __vwsn_temp__.y = 320; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 480; __vwsn_temp__.y = 320; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 480; __vwsn_temp__.y = 320; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 480; __vwsn_temp__.y = 320; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_16 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetViewModel());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetText(::vl::WString(L"MainWindow", false));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetText(::vl::WString(L"MainWindow", false));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowsAndColumns(2, 4);
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(2, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(3, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetRowsAndColumns(4, 3);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetRowOption(2, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetRowOption(3, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetColumnOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = 200; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetColumnOption(2, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiCellComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetSite(0, 0, 1, 4);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetSite(0, 0, 1, 1);
 		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTabStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiTab(__vwsn_controlStyle_));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_17 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = new ::vl::presentation::controls::GuiTabPage());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetText(::vl::WString(L"TextBox", false));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiTableComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetRowsAndColumns(2, 1);
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiLabelTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiLabel(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetText(::vl::WString(L"A =", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_3));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_2));
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->SetSite(0, 0, 1, 1);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->SetSite(0, 1, 1, 1);
 		}
 		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextBoxStyle();
-			(::vl::__vwsn::This(this)->textBoxS = new ::vl::presentation::controls::GuiSinglelineTextBox(__vwsn_controlStyle_));
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiSinglelineTextBoxTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->textBoxA = new ::vl::presentation::controls::GuiSinglelineTextBox(__vwsn_controlStyle_));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxS)->GetBoundsComposition());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxA)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = 20; return __vwsn_temp__; }());
+		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxS)->SetText(::vl::WString(L"Archer", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxA)->SetText(::vl::WString(L"1", false));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxS)->GetBoundsComposition())));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxA)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_5)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_5));
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiCellComposition());
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->SetSite(1, 0, 1, 1);
 		}
 		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMultilineTextBoxStyle();
-			(::vl::__vwsn::This(this)->textBoxM = new ::vl::presentation::controls::GuiMultilineTextBox(__vwsn_controlStyle_));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_8 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxM)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiLabelTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_8 = new ::vl::presentation::controls::GuiLabel(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxM)->GetBoundsComposition())));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->SetText(::vl::WString(L"B =", false));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_7)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetContainerComposition())->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_4)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_7));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_9 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9)->SetSite(1, 1, 1, 1);
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->CreatePage(::vl::__vwsn::This(this)->__vwsn_precompile_3, -1);
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiSinglelineTextBoxTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->textBoxB = new ::vl::presentation::controls::GuiSinglelineTextBox(__vwsn_controlStyle_));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiTabPage());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_10 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxB)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9)->SetText(::vl::WString(L"Document", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = 20; return __vwsn_temp__; }());
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_10 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxB)->SetText(::vl::WString(L"2", false));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetRowsAndColumns(2, 2);
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 0.5; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetColumnOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 0.5; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxB)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_9));
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiCellComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->SetSite(0, 0, 1, 2);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->SetSite(2, 0, 1, 1);
 		}
 		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentTextBoxStyle();
-			(::vl::__vwsn::This(this)->documentTextBox = new ::vl::presentation::controls::GuiDocumentLabel(__vwsn_controlStyle_));
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiLabelTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_12 = new ::vl::presentation::controls::GuiLabel(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->documentTextBox)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_12 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->documentTextBox)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetText(::vl::WString(L"A + B =", false));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->documentTextBox)->SetText(::vl::WString(L"Archer", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->documentTextBox)->GetBoundsComposition())));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_11)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_11));
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_13 = new ::vl::presentation::compositions::GuiCellComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->SetSite(1, 0, 1, 1);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->SetSite(2, 1, 1, 1);
 		}
 		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentViewerStyle();
-			(::vl::__vwsn::This(this)->documentViewer = new ::vl::presentation::controls::GuiDocumentViewer(__vwsn_controlStyle_));
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiSinglelineTextBoxTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_14 = new ::vl::presentation::controls::GuiSinglelineTextBox(__vwsn_controlStyle_));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_15 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.y = 20; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->documentViewer)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_14 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->documentViewer)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->documentViewer)->GetBoundsComposition())));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_13)));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiCellComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->SetSite(1, 1, 1, 1);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_13));
 		}
 		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentLabelStyle();
-			(::vl::__vwsn::This(this)->documentLabel = new ::vl::presentation::controls::GuiDocumentLabel(__vwsn_controlStyle_));
+			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->documentLabel)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_16 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->documentLabel)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->documentLabel)->GetBoundsComposition())));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_15)));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9)->GetContainerComposition())->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_10)));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->CreatePage(::vl::__vwsn::This(this)->__vwsn_precompile_9, -1);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->GetBoundsComposition())));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_1)));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_18 = new ::vl::presentation::compositions::GuiCellComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->SetSite(1, 0, 1, 1);
-		}
-		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->SetText(::vl::WString(L"Make Font Larger", false));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->GetBoundsComposition())));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_18)));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_20 = new ::vl::presentation::compositions::GuiCellComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20)->SetSite(1, 1, 1, 1);
-		}
-		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_21 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->SetText(::vl::WString(L"Make Font Smaller", false));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->GetBoundsComposition())));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_20)));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_22 = new ::vl::presentation::compositions::GuiCellComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22)->SetSite(1, 2, 1, 1);
-		}
-		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_23 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23)->SetText(::vl::WString(L"I don\'t know", false));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23)->GetBoundsComposition())));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_22)));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(::vl::__vwsn::Ensure(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0)));
-		}
-		{
-			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_resolver_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"Text", false));
-			if ((! static_cast<bool>(__vwsn_resource_item_)))
-			{
-				throw ::vl::Exception(::vl::WString(L"Resource \"res://Text\" does not exist.", false));
-			}
-			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiTextData>(__vwsn_resource_item_.Obj());
-			if ((! static_cast<bool>(__vwsn_resource_value_)))
-			{
-				throw ::vl::Exception(::vl::WString(L"Resource \"res://Text\" cannot be read as type \"presentation::GuiTextData\".", false));
-			}
-			{
-				::vl::__vwsn::This(::vl::__vwsn::This(this)->textBoxM)->SetText(::vl::__vwsn::This(__vwsn_resource_value_.Obj())->GetText());
-			}
-		}
-		{
-			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_resolver_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"DocFixed", false));
-			if ((! static_cast<bool>(__vwsn_resource_item_)))
-			{
-				throw ::vl::Exception(::vl::WString(L"Resource \"res://DocFixed\" does not exist.", false));
-			}
-			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(__vwsn_resource_item_.Obj());
-			if ((! static_cast<bool>(__vwsn_resource_value_)))
-			{
-				throw ::vl::Exception(::vl::WString(L"Resource \"res://DocFixed\" cannot be read as type \"presentation::DocumentModel\".", false));
-			}
-			{
-				::vl::__vwsn::This(::vl::__vwsn::This(this)->documentViewer)->SetDocument(__vwsn_resource_value_);
-			}
-		}
-		{
-			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_resolver_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"DocRelative", false));
-			if ((! static_cast<bool>(__vwsn_resource_item_)))
-			{
-				throw ::vl::Exception(::vl::WString(L"Resource \"res://DocRelative\" does not exist.", false));
-			}
-			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(__vwsn_resource_item_.Obj());
-			if ((! static_cast<bool>(__vwsn_resource_value_)))
-			{
-				throw ::vl::Exception(::vl::WString(L"Resource \"res://DocRelative\" cannot be read as type \"presentation::DocumentModel\".", false));
-			}
-			{
-				::vl::__vwsn::This(::vl::__vwsn::This(this)->documentLabel)->SetDocument(__vwsn_resource_value_);
-			}
-		}
-		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
 			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->Clicked, __vwsn_event_handler_);
-		}
-		{
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23)->Clicked, LAMBDA(::vl_workflow_global::__vwsno4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(__vwsn_this_, this)));
-		}
-		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->OnMakeFontLarger, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->OnMakeFontSmaller, __vwsn_event_handler_);
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
 		}
 	}
 
@@ -659,7 +2716,651 @@ namespace demo
 	{
 	}
 
+/***********************************************************************
+Class (::darkskin::ButtonTemplateConstructor)
+***********************************************************************/
+
 }
+namespace darkskin
+{
+	void ButtonTemplateConstructor::__vwsn_initialize_instance_(::darkskin::ButtonTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
+	{
+		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_2));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 3; __vwsn_temp__.top = 1; __vwsn_temp__.right = 3; __vwsn_temp__.bottom = 1; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_4));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_3));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf4_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf5_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf6_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc20_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf7_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf8_Demo_darkskin_ButtonTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+	}
+
+	ButtonTemplateConstructor::ButtonTemplateConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::darkskin::ButtonTemplate)
+***********************************************************************/
+
+	ButtonTemplate::ButtonTemplate()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::ButtonTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this, ::vl::__vwsn::Ensure(static_cast<::vl::presentation::GuiResourcePathResolver*>(__vwsn_resolver_.Obj())));
+	}
+
+	ButtonTemplate::~ButtonTemplate()
+	{
+		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
+Class (::darkskin::LabelTemplateConstructor)
+***********************************************************************/
+
+	void LabelTemplateConstructor::__vwsn_initialize_instance_(::darkskin::LabelTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
+	{
+		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetDefaultTextColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#F1F1F1", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc24_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf9_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc26_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf10_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc28_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf11_Demo_darkskin_LabelTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+	}
+
+	LabelTemplateConstructor::LabelTemplateConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::darkskin::LabelTemplate)
+***********************************************************************/
+
+	LabelTemplate::LabelTemplate()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::LabelTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this, ::vl::__vwsn::Ensure(static_cast<::vl::presentation::GuiResourcePathResolver*>(__vwsn_resolver_.Obj())));
+	}
+
+	LabelTemplate::~LabelTemplate()
+	{
+		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
+Class (::darkskin::SinglelineTextBoxTemplateConstructor)
+***********************************************************************/
+
+	void SinglelineTextBoxTemplateConstructor::__vwsn_initialize_instance_(::darkskin::SinglelineTextBoxTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
+	{
+		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#00000000", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#252526", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
+		}
+		(::vl::__vwsn::This(this)->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->container)->SetInternalMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 1; __vwsn_temp__.top = 1; __vwsn_temp__.right = 1; __vwsn_temp__.bottom = 1; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#3F3F46", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->container)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->container));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->container));
+		}
+	}
+
+	SinglelineTextBoxTemplateConstructor::SinglelineTextBoxTemplateConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::darkskin::SinglelineTextBoxTemplate)
+***********************************************************************/
+
+	SinglelineTextBoxTemplate::SinglelineTextBoxTemplate()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::SinglelineTextBoxTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this, ::vl::__vwsn::Ensure(static_cast<::vl::presentation::GuiResourcePathResolver*>(__vwsn_resolver_.Obj())));
+	}
+
+	SinglelineTextBoxTemplate::~SinglelineTextBoxTemplate()
+	{
+		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
+Class (::darkskin::TooltipTemplateConstructor)
+***********************************************************************/
+
+	void TooltipTemplateConstructor::__vwsn_initialize_instance_(::darkskin::TooltipTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
+	{
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = __vwsn_this_);
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#017ACC", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_3));
+		}
+		(::vl::__vwsn::This(this)->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 1; __vwsn_temp__.top = 1; __vwsn_temp__.right = 1; __vwsn_temp__.bottom = 1; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->container));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_2));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->container));
+		}
+	}
+
+	TooltipTemplateConstructor::TooltipTemplateConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::darkskin::TooltipTemplate)
+***********************************************************************/
+
+	TooltipTemplate::TooltipTemplate()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::TooltipTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this, ::vl::__vwsn::Ensure(static_cast<::vl::presentation::GuiResourcePathResolver*>(__vwsn_resolver_.Obj())));
+	}
+
+	TooltipTemplate::~TooltipTemplate()
+	{
+		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
+Class (::darkskin::WindowTemplateConstructor)
+***********************************************************************/
+
+	void WindowTemplateConstructor::__vwsn_initialize_instance_(::darkskin::WindowTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
+	{
+		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetTooltipTemplate(::vl::WString(L"darkskin::TooltipTemplate", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetCustomizedBorder(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetTitleBarOption(::vl::presentation::templates::BoolOption::AlwaysTrue);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetIconVisibleOption(::vl::presentation::templates::BoolOption::AlwaysTrue);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetSizeBoxOption(::vl::presentation::templates::BoolOption::AlwaysTrue);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetBorderOption(::vl::presentation::templates::BoolOption::AlwaysTrue);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetMinimizedBoxOption(::vl::presentation::templates::BoolOption::AlwaysTrue);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetMaximizedBoxOption(::vl::presentation::templates::BoolOption::AlwaysTrue);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#2D2D30", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBorderElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#017ACC", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_2));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetRowsAndColumns(4, 6);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = 8; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetRowOption(2, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetRowOption(3, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = 8; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = 8; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetColumnOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetColumnOption(2, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetColumnOption(3, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetColumnOption(4, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetColumnOption(5, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = 8; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::BorderLeftTop);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetSite(0, 0, 1, 1);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_4));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::BorderRightTop);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->SetSite(0, 5, 1, 1);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_5));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::BorderLeftBottom);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetSite(3, 0, 1, 1);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_6));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::BorderRightBottom);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->SetSite(3, 5, 1, 1);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_7));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_8 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::BorderLeft);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->SetSite(1, 0, 2, 1);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_8));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_9 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::BorderRight);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9)->SetSite(1, 5, 2, 1);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_9));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_10 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::BorderTop);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetSite(0, 1, 1, 4);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_10));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::BorderBottom);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->SetSite(3, 1, 1, 4);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_11));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::ButtonMinimum);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetSite(1, 2, 1, 1);
+		}
+		{
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc30_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = 16; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_14 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 1; __vwsn_temp__.top = 1; __vwsn_temp__.right = 1; __vwsn_temp__.bottom = 1; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->SetText(::vl::WString(L" 0 ", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_12));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::ButtonMaximum);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->SetSite(1, 3, 1, 1);
+		}
+		{
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc31_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = 16; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_17 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 1; __vwsn_temp__.top = 1; __vwsn_temp__.right = 1; __vwsn_temp__.bottom = 1; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_15));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_18 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::ButtonClose);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->SetSite(1, 4, 1, 1);
+		}
+		{
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc32_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Webdings", false); __vwsn_temp__.size = 16; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_20 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 1; __vwsn_temp__.top = 1; __vwsn_temp__.right = 1; __vwsn_temp__.bottom = 1; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->SetText(::vl::WString(L" r ", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_18));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_21 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::Title);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->SetSite(1, 1, 1, 1);
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_22 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 5; __vwsn_temp__.top = 5; __vwsn_temp__.right = 5; __vwsn_temp__.bottom = 5; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_23 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidLabelElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::WString(L"Segoe WP SemiLight", false); __vwsn_temp__.size = 14; __vwsn_temp__.antialias = true; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#999999", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_23));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_22));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_21));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_24 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->SetAssociatedHitTestResult(::vl::presentation::INativeWindowListener::HitTestResult::Client);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->SetSite(2, 1, 1, 4);
+		}
+		(::vl::__vwsn::This(this)->container = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->container)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->container)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->container));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_24));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_3));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetContainerComposition(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->container));
+		}
+	}
+
+	WindowTemplateConstructor::WindowTemplateConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::darkskin::WindowTemplate)
+***********************************************************************/
+
+	WindowTemplate::WindowTemplate()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::WindowTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this, ::vl::__vwsn::Ensure(static_cast<::vl::presentation::GuiResourcePathResolver*>(__vwsn_resolver_.Obj())));
+	}
+
+	WindowTemplate::~WindowTemplate()
+	{
+		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
+Class (::IViewModel)
+***********************************************************************/
+
+}
+/***********************************************************************
+Class (::MyEventArgs)
+***********************************************************************/
+
+MyEventArgs::MyEventArgs()
+{
+}
+
+MyEventArgs::MyEventArgs(::vl::presentation::compositions::GuiGraphicsComposition* composition)
+{
+	(::vl::__vwsn::This(this)->compositionSource = composition);
+	(::vl::__vwsn::This(this)->eventSource = composition);
+}
+
+/***********************************************************************
+Class (::ViewModelBuilder)
+***********************************************************************/
+
+::vl::Ptr<::IViewModel> ViewModelBuilder::Build()
+{
+	return ::vl::Ptr<::IViewModel>(new ::vl_workflow_global::__vwsnc37_Demo_ViewModelBuilder_Build__IViewModel());
+}
+
+ViewModelBuilder::ViewModelBuilder()
+{
+}
+
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME
 #undef GLOBAL_OBJ
@@ -676,19 +3377,104 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(::demo::MainWindow)
-			IMPL_CPP_TYPE_INFO(::demo::MainWindowConstructor)
+			IMPL_CPP_TYPE_INFO(IViewModel)
+			IMPL_CPP_TYPE_INFO(MyEventArgs)
+			IMPL_CPP_TYPE_INFO(ViewModelBuilder)
+			IMPL_CPP_TYPE_INFO(darkskin::ButtonTemplate)
+			IMPL_CPP_TYPE_INFO(darkskin::ButtonTemplateConstructor)
+			IMPL_CPP_TYPE_INFO(darkskin::LabelTemplate)
+			IMPL_CPP_TYPE_INFO(darkskin::LabelTemplateConstructor)
+			IMPL_CPP_TYPE_INFO(darkskin::SinglelineTextBoxTemplate)
+			IMPL_CPP_TYPE_INFO(darkskin::SinglelineTextBoxTemplateConstructor)
+			IMPL_CPP_TYPE_INFO(darkskin::TooltipTemplate)
+			IMPL_CPP_TYPE_INFO(darkskin::TooltipTemplateConstructor)
+			IMPL_CPP_TYPE_INFO(darkskin::WindowTemplate)
+			IMPL_CPP_TYPE_INFO(darkskin::WindowTemplateConstructor)
+			IMPL_CPP_TYPE_INFO(demo::MainWindow)
+			IMPL_CPP_TYPE_INFO(demo::MainWindowConstructor)
 
 #define _ ,
-			BEGIN_CLASS_MEMBER(::demo::MainWindow)
-				CLASS_MEMBER_METHOD(UpdateFont, { L"newFont" })
-				CLASS_MEMBER_METHOD(buttonIDoNotKnow_Clicked, { L"sender" _ L"arguments" })
-				CLASS_MEMBER_EVENT(OnMakeFontLarger)
-				CLASS_MEMBER_EVENT(OnMakeFontSmaller)
-				CLASS_MEMBER_FIELD(flag)
-			END_CLASS_MEMBER(::demo::MainWindow)
+			BEGIN_INTERFACE_MEMBER(::IViewModel)
+				CLASS_MEMBER_METHOD(GetX, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetY, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetZ, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetX, { L"value" })
+				CLASS_MEMBER_METHOD(SetY, { L"value" })
+				CLASS_MEMBER_EVENT(ZChanged)
+				CLASS_MEMBER_PROPERTY(X, GetX, SetX)
+				CLASS_MEMBER_PROPERTY(Y, GetY, SetY)
+				CLASS_MEMBER_PROPERTY_READONLY(Z, GetZ)
+			END_INTERFACE_MEMBER(::IViewModel)
 
-			BEGIN_CLASS_MEMBER(::demo::MainWindowConstructor)
+			BEGIN_CLASS_MEMBER(::MyEventArgs)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::MyEventArgs>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::MyEventArgs>(::vl::presentation::compositions::GuiGraphicsComposition*), { L"composition" })
+			END_CLASS_MEMBER(::MyEventArgs)
+
+			BEGIN_CLASS_MEMBER(::ViewModelBuilder)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::ViewModelBuilder>(), NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(Build, NO_PARAMETER)
+			END_CLASS_MEMBER(::ViewModelBuilder)
+
+			BEGIN_CLASS_MEMBER(::darkskin::ButtonTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(::darkskin::ButtonTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::darkskin::ButtonTemplate)
+
+			BEGIN_CLASS_MEMBER(::darkskin::ButtonTemplateConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::ButtonTemplateConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" _ L"__vwsn_resolver_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
+				CLASS_MEMBER_FIELD(self)
+			END_CLASS_MEMBER(::darkskin::ButtonTemplateConstructor)
+
+			BEGIN_CLASS_MEMBER(::darkskin::LabelTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(::darkskin::LabelTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::darkskin::LabelTemplate)
+
+			BEGIN_CLASS_MEMBER(::darkskin::LabelTemplateConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::LabelTemplateConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" _ L"__vwsn_resolver_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(self)
+			END_CLASS_MEMBER(::darkskin::LabelTemplateConstructor)
+
+			BEGIN_CLASS_MEMBER(::darkskin::SinglelineTextBoxTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(::darkskin::SinglelineTextBoxTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::darkskin::SinglelineTextBoxTemplate)
+
+			BEGIN_CLASS_MEMBER(::darkskin::SinglelineTextBoxTemplateConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::SinglelineTextBoxTemplateConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" _ L"__vwsn_resolver_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(container)
+				CLASS_MEMBER_FIELD(self)
+			END_CLASS_MEMBER(::darkskin::SinglelineTextBoxTemplateConstructor)
+
+			BEGIN_CLASS_MEMBER(::darkskin::TooltipTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TooltipTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::darkskin::TooltipTemplate)
+
+			BEGIN_CLASS_MEMBER(::darkskin::TooltipTemplateConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::TooltipTemplateConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" _ L"__vwsn_resolver_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(container)
+			END_CLASS_MEMBER(::darkskin::TooltipTemplateConstructor)
+
+			BEGIN_CLASS_MEMBER(::darkskin::WindowTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(::darkskin::WindowTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::darkskin::WindowTemplate)
+
+			BEGIN_CLASS_MEMBER(::darkskin::WindowTemplateConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::WindowTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" _ L"__vwsn_resolver_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
@@ -715,12 +3501,41 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
-				CLASS_MEMBER_FIELD(documentLabel)
-				CLASS_MEMBER_FIELD(documentTextBox)
-				CLASS_MEMBER_FIELD(documentViewer)
+				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
-				CLASS_MEMBER_FIELD(textBoxM)
-				CLASS_MEMBER_FIELD(textBoxS)
+			END_CLASS_MEMBER(::darkskin::WindowTemplateConstructor)
+
+			BEGIN_CLASS_MEMBER(::demo::MainWindow)
+				CLASS_MEMBER_CONSTRUCTOR(::demo::MainWindow*(::vl::Ptr<::IViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
+				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
+				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)
+			END_CLASS_MEMBER(::demo::MainWindow)
+
+			BEGIN_CLASS_MEMBER(::demo::MainWindowConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::MainWindowConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" _ L"__vwsn_resolver_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_11)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_12)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_13)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_14)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_15)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_16)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_17)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(ViewModel)
+				CLASS_MEMBER_FIELD(textBoxA)
+				CLASS_MEMBER_FIELD(textBoxB)
 			END_CLASS_MEMBER(::demo::MainWindowConstructor)
 
 #undef _
@@ -729,6 +3544,19 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
+					ADD_TYPE_INFO(::IViewModel)
+					ADD_TYPE_INFO(::MyEventArgs)
+					ADD_TYPE_INFO(::ViewModelBuilder)
+					ADD_TYPE_INFO(::darkskin::ButtonTemplate)
+					ADD_TYPE_INFO(::darkskin::ButtonTemplateConstructor)
+					ADD_TYPE_INFO(::darkskin::LabelTemplate)
+					ADD_TYPE_INFO(::darkskin::LabelTemplateConstructor)
+					ADD_TYPE_INFO(::darkskin::SinglelineTextBoxTemplate)
+					ADD_TYPE_INFO(::darkskin::SinglelineTextBoxTemplateConstructor)
+					ADD_TYPE_INFO(::darkskin::TooltipTemplate)
+					ADD_TYPE_INFO(::darkskin::TooltipTemplateConstructor)
+					ADD_TYPE_INFO(::darkskin::WindowTemplate)
+					ADD_TYPE_INFO(::darkskin::WindowTemplateConstructor)
 					ADD_TYPE_INFO(::demo::MainWindow)
 					ADD_TYPE_INFO(::demo::MainWindowConstructor)
 				}

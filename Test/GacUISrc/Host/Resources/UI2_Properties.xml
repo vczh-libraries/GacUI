@@ -1,6 +1,6 @@
 <Resource>
-  <Script name="ViewModelScript">
-    <Workflow-ViewModel>
+  <Script name="SharedScript">
+    <Workflow>
       <![CDATA[
         module script;
         
@@ -33,14 +33,6 @@
             eventSource = composition;
           }
         }
-      ]]>
-    </Workflow-ViewModel>
-  </Script>
-
-  <Script name="SharedScript">
-    <Workflow>
-      <![CDATA[
-        module script;
         
         class ViewModelBuilder
         {
@@ -64,21 +56,9 @@
   </Script>
   
   <Instance name="MainWindowResource">
-    <Instance ref.Class="demo::MainWindow">
-      <ref.State Name="intState" Type="int"/>
-      <ref.State Name="boolState" Type="bool" Value="false"/>
-      <ref.State Name="objectState" Type="IViewModel^"/>
-      <ref.Property Name="IntProp" Type="int"/>
-      <ref.Property Name="BoolProp" Type="bool" Value="false"/>
-      <ref.Property Name="ObjectProp" Type="IViewModel^"/>
-      <ref.Component Name="IntComp" Type="int" Expression="1"/>
-      <ref.Component Name="BoolComp" Type="bool" Expression="true"/>
-      <ref.Component Name="ObjectComp" Type="IViewModel^" Expression="ViewModel"/>
+    <Instance ref.Class="demo::MainWindow" ref.Styles="res://DarkSkin/Apply" >
       <ref.Parameter Name="ViewModel" Class="IViewModel"/>
-      <ref.Event Name="EventA"/>
-      <ref.Event Name="EventB" EventArgsClass="EventArgs"/>
-      <ref.Event Name="EventC" EventArgsClass="MyEventArgs"/>
-      <Window Text="MainWindow" ClientSize="x:480 y:320" ControlTemplate="darkskin::WindowTemplate">
+      <Window Text="MainWindow" ClientSize="x:480 y:320">
         <att.ViewModel-set X-bind="(cast int textBoxA.Text) ?? 0" Y-bind="(cast int textBoxB.Text) ?? 0"/>
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
 
@@ -96,11 +76,13 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Label Text="A ="/>
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <Label Text="A ="/>
+            </Table>
           </Cell>
           <Cell Site="row:0 column:1">
             <SinglelineTextBox ref.Name="textBoxA" Text="1">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:24"/>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:20"/>
             </SinglelineTextBox>
           </Cell>
 
@@ -109,7 +91,7 @@
           </Cell>
           <Cell Site="row:1 column:1">
             <SinglelineTextBox ref.Name="textBoxB" Text="2">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:24"/>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:20"/>
             </SinglelineTextBox>
           </Cell>
 
@@ -118,7 +100,7 @@
           </Cell>
           <Cell Site="row:2 column:1">
             <SinglelineTextBox Text-bind="ViewModel.Z">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:24"/>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="y:20"/>
             </SinglelineTextBox>
           </Cell>
         </Table>
@@ -127,12 +109,17 @@
   </Instance>
 
   <Folder name="DarkSkin">
+    <InstanceStyle name="Apply">
+      <Styles>
+        <Style ref.Path="//Window" ControlTemplate="darkskin::WindowTemplate"/>
+        <Style ref.Path="//Label" ControlTemplate="darkskin::LabelTemplate"/>
+        <Style ref.Path="//SinglelineTextBox" ControlTemplate="darkskin::SinglelineTextBoxTemplate"/>
+      </Styles>
+    </InstanceStyle>
+    
     <InstanceStyle name="Style">
       <Styles>
         <Style ref.Path="(//Bounds + //Table)" MinSizeLimitation="LimitToElementAndChildren"/>
-        <Style ref.Path="(//SideAligned + //PartialView)/*">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        </Style>
         <Style ref.Path="//*.buttonBackground">
           <att.Color-bind>
             <![CDATA[
@@ -172,6 +159,36 @@
       </Styles>
     </InstanceStyle>
 
+    <Instance name="LabelTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::LabelTemplate" ref.Styles="res://DarkSkin/Style">
+        <LabelTemplate ref.Name="self" DefaultTextColor="#F1F1F1" MinSizeLimitation="LimitToElementAndChildren">
+          <SolidLabel Text-bind="self.Text" Font-bind="self.Font">
+            <att.Color-bind>
+              <![CDATA[
+              cast Color (
+                not self.VisuallyEnabled ? "#6D6D6D" :
+                self.TextColor
+              )
+            ]]>
+            </att.Color-bind>
+          </SolidLabel>
+        </LabelTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="SinglelineTextBoxTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::SinglelineTextBoxTemplate" ref.Styles="res://DarkSkin/Style">
+        <SinglelineTextBoxTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <att.TextColor>normal:{text:(cast Color "#FFFFFF") background:(cast Color "#00000000")} selectedFocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")} selectedUnfocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")}</att.TextColor>
+          <att.CaretColor>#FFFFFF</att.CaretColor>
+          <SolidBackground Color="#252526"/>
+          <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+            <SolidBorder Color="#3F3F46"/>
+          </Bounds>
+        </SinglelineTextBoxTemplate>
+      </Instance>
+    </Instance>
+
     <Instance name="ButtonTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="darkskin::ButtonTemplate" ref.Styles="res://DarkSkin/Style">
         <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
@@ -183,6 +200,18 @@
             <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Bounds>
         </ButtonTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="TooltipTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="darkskin::TooltipTemplate" ref.Styles="res://DarkSkin/Style">
+        <WindowTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+          <SolidBackground Color="#2D2D30"/>
+          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <SolidBorder Color="#017ACC"/>
+            <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+          </Bounds>
+        </WindowTemplate>
       </Instance>
     </Instance>
 
