@@ -42,7 +42,7 @@ GuiEventInfoImpl
 ***********************************************************************/
 
 			template<typename T>
-			class GuiEventInfoImpl : public EventInfoImpl
+			class GuiEventInfoImpl : public EventInfoImpl, private IEventInfo::ICpp
 			{
 				using GuiGraphicsComposition = presentation::compositions::GuiGraphicsComposition;
 
@@ -95,10 +95,18 @@ GuiEventInfoImpl
 					return TypeInfoRetriver<Func<void(GuiGraphicsComposition*, T*)>>::CreateTypeInfo();
 				}
 
+			protected:
+				bool								isCompositionEvent;
+				
+				static WString						attachTemplate;
+				static WString						detachTemplate;
+				static WString						invokeTemplate;
+
 			public:
-				GuiEventInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, const EventRetriverFunction& _eventRetriver)
+				GuiEventInfoImpl(ITypeDescriptor* _ownerTypeDescriptor, const WString& _name, const EventRetriverFunction& _eventRetriver, bool _isCompositionEvent)
 					:EventInfoImpl(_ownerTypeDescriptor, _name)
 					, eventRetriver(_eventRetriver)
+					, isCompositionEvent(_isCompositionEvent)
 				{
 				}
 
@@ -108,9 +116,31 @@ GuiEventInfoImpl
 
 				ICpp* GetCpp()override
 				{
-					return nullptr;
+					return isCompositionEvent ? this : nullptr;
+				}
+
+				const WString& GetAttachTemplate()override
+				{
+					return attachTemplate;
+				}
+
+				const WString& GetDetachTemplate()override
+				{
+					return detachTemplate;
+				}
+
+				const WString& GetInvokeTemplate()override
+				{
+					return invokeTemplate;
 				}
 			};
+
+			template<typename T>
+			WString GuiEventInfoImpl<T>::attachTemplate(L"::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)", false);
+			template<typename T>
+			WString GuiEventInfoImpl<T>::detachTemplate(L"::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)", false);
+			template<typename T>
+			WString GuiEventInfoImpl<T>::invokeTemplate(L"::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)", false);
 
 			template<typename T>
 			struct GuiEventArgumentTypeRetriver
@@ -135,7 +165,8 @@ Macros
 					L ## #EVENTNAME,\
 					[](DescriptableObject* thisObject, bool addEventHandler){\
 						return &thisObject->SafeAggregationCast<ClassType>()->EVENTNAME;\
-					}\
+					},\
+					false\
 				)\
 			);\
 
@@ -151,7 +182,8 @@ Macros
 							return (GuiGraphicsEvent<GuiEventArgumentTypeRetriver<decltype(&GuiGraphicsEventReceiver::EVENTNAME)>::Type>*)0;\
 						}\
 						return &composition->GetEventReceiver()->EVENTNAME;\
-					}\
+					},\
+					true\
 				)\
 			);\
 
