@@ -6,6 +6,7 @@
 using namespace vl;
 using namespace vl::collections;
 using namespace vl::stream;
+using namespace vl::reflection::description;
 using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace demo;
@@ -19,6 +20,7 @@ void GuiMain()
 		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DataOnly);
 	}
 
+	LoadDemoTypes();
 	demo::MainWindow window(ViewModelBuilder::Build());
 	window.ForceCalculateSizeImmediately();
 	window.MoveToScreenCenter();

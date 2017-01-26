@@ -37,7 +37,7 @@ namespace demo
 	}
 
 	MainWindow::MainWindow(::vl::Ptr<::IViewModel> __vwsn_ctor_parameter_ViewModel)
-		: ::vl::presentation::controls::GuiWindow(static_cast<::vl::presentation::controls::GuiWindow::IStyleController*>(new ::vl::presentation::templates::GuiWindowTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc13_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory()))))
+		: ::vl::presentation::controls::GuiWindow(static_cast<::vl::presentation::controls::GuiWindow::IStyleController*>(new ::vl::presentation::templates::GuiWindowTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc16_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory()))))
 	{
 		(::vl::__vwsn::This(this)->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::MainWindow", false));

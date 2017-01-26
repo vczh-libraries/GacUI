@@ -1719,7 +1719,7 @@ Helper Functions
 									}
 									arguments[0] = viewModel;
 								}
-								return dynamic_cast<GuiTemplate*>(ctor->Invoke(Value(), arguments).GetRawPtr());
+								return ctor->Invoke(Value(), arguments).GetRawPtr()->SafeAggregationCast<GuiTemplate>();
 							}
 						}
 					}

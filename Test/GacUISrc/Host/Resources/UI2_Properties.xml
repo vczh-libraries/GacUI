@@ -77,7 +77,11 @@
 
           <Cell Site="row:0 column:0">
             <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-              <Label Text="A ="/>
+              <Label Text="A =">
+                <att.TooltipControl>
+                  <Label Text="Input the first number. Text in incorrect format will be treated as 0."/>
+                </att.TooltipControl>
+              </Label>
             </Table>
           </Cell>
           <Cell Site="row:0 column:1">
@@ -87,7 +91,11 @@
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <Label Text="B ="/>
+            <Label Text="B =">
+              <att.TooltipControl>
+                <Label Text="Input the second number. Text in incorrect format will be treated as 0."/>
+              </att.TooltipControl>
+            </Label>
           </Cell>
           <Cell Site="row:1 column:1">
             <SinglelineTextBox ref.Name="textBoxB" Text="2">
@@ -96,7 +104,11 @@
           </Cell>
 
           <Cell Site="row:2 column:0">
-            <Label Text="A + B ="/>
+            <Label Text="A + B =">
+              <att.TooltipControl>
+                <Label Text="This is the sum of the two numbers above."/>
+              </att.TooltipControl>
+            </Label>
           </Cell>
           <Cell Site="row:2 column:1">
             <SinglelineTextBox Text-bind="ViewModel.Z">

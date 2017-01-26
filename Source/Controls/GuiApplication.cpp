@@ -421,22 +421,27 @@ GuiApplicationMain
 				}
 
 				GetCurrentController()->InputService()->StartTimer();
-				GuiApplication app;
-				application=&app;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				GetGlobalTypeManager()->Load();
 #endif
 				GetPluginManager()->Load();
 				theme::SetCurrentTheme(theme.Obj());
-				GuiMain();
+
+				{
+					GuiApplication app;
+					application = &app;
+					GuiMain();
+				}
+				application = nullptr;
+
 				theme::SetCurrentTheme(0);
 				DestroyPluginManager();
+				ThreadLocalStorage::DisposeStorages();
+				FinalizeGlobalStorage();
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				DestroyGlobalTypeManager();
 #endif
-				ThreadLocalStorage::DisposeStorages();
-				FinalizeGlobalStorage();
 			}
 		}
 	}
