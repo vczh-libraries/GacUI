@@ -285,6 +285,15 @@ WorkflowGenerateCreatingVisitor
 
 						statements->statements.Add(stat);
 					}
+
+					if (resolvingResult.rootCtorArguments.Count() > 0)
+					{
+						if (auto stat = ctorLoader->InitializeRootInstance(ctorTypeInfo, repr->instanceName, resolvingResult.rootCtorArguments, errors))
+						{
+							statements->statements.Add(stat);
+						}
+					}
+
 					FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 					{
 						auto refInstance = MakePtr<WfReferenceExpression>();

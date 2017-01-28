@@ -191,6 +191,7 @@ GuiPredefinedInstanceLoadersPlugin
 			extern void LoadListControls(IGuiInstanceLoaderManager* manager);
 			extern void LoadDocumentControls(IGuiInstanceLoaderManager* manager);
 			extern void LoadCompositions(IGuiInstanceLoaderManager* manager);
+			extern void LoadTemplates(IGuiInstanceLoaderManager* manager);
 
 			class GuiPredefinedInstanceLoadersPlugin : public Object, public IGuiPlugin
 			{
@@ -299,6 +300,7 @@ GuiPredefinedInstanceLoadersPlugin
 					LoadListControls(manager);
 					LoadDocumentControls(manager);
 					LoadCompositions(manager);
+					LoadTemplates(manager);
 
 	#undef ADD_VIRTUAL_TYPE_LOADER
 	#undef ADD_TEMPLATE_CONTROL

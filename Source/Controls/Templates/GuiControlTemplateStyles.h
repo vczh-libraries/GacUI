@@ -112,8 +112,6 @@ Control Template
 			protected:
 				GuiWindowTemplate*												controlTemplate;
 				controls::GuiWindow*											window;
-				Ptr<GuiTemplate::IFactory>										tooltipTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										shortcutKeyTemplateFactory;
 
 			public:
 				GuiWindowTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
@@ -174,7 +172,6 @@ Control Template
 				, public Description<GuiToolstripButtonTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										subMenuTemplateFactory;
 				GuiToolstripButtonTemplate*										controlTemplate;
 
 			public:
@@ -229,9 +226,6 @@ Control Template
 				, public Description<GuiDatePickerTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										dateButtonTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										dateTextListTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										dateComboBoxTemplateFactory;
 				GuiDatePickerTemplate*											controlTemplate;
 
 			public:
@@ -252,7 +246,6 @@ Control Template
 				, public Description<GuiDateComboBoxTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										datePickerTemplateFactory;
 				GuiDateComboBoxTemplate*										controlTemplate;
 
 			public:
@@ -287,8 +280,6 @@ Control Template
 				, public Description<GuiScrollViewTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										hScrollTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										vScrollTemplateFactory;
 				GuiScrollViewTemplate*											controlTemplate;
 				
 			public:
@@ -336,8 +327,6 @@ Control Template
 				, public Description<GuiTextListTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										backgroundTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										bulletTemplateFactory;
 				GuiTextListTemplate*											controlTemplate;
 				
 				class ItemStyleProvider
@@ -370,8 +359,6 @@ Control Template
 				, public Description<GuiListViewTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										backgroundTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										columnHeaderTemplateFactory;
 				GuiListViewTemplate*											controlTemplate;
 				
 			public:
@@ -391,8 +378,6 @@ Control Template
 				, public Description<GuiTreeViewTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										backgroundTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										expandingDecoratorTemplateFactory;
 				GuiTreeViewTemplate*											controlTemplate;
 				
 			public:
@@ -410,10 +395,6 @@ Control Template
 				, public Description<GuiTabTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										headerTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										dropdownTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										menuTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										menuItemTemplateFactory;
 				GuiTabTemplate*													controlTemplate;
 				
 				compositions::GuiTableComposition*								tabBoundsComposition;
@@ -695,7 +676,6 @@ Helper Functions
 ***********************************************************************/
 
 			extern void												SplitBySemicolon(const WString& input, collections::List<WString>& fragments);
-			extern Ptr<GuiTemplate::IFactory>						CreateTemplateFactory(const WString& typeValues);
 
 #pragma warning(pop)
 		}

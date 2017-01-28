@@ -1486,8 +1486,8 @@ Closures
 	::vl::presentation::templates::GuiTemplate* __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
 	{
 		{
-			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
-			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiTemplate*>(new ::darkskin::TooltipTemplate());
+			return __vwsn_template_;
 		}
 	}
 
@@ -1523,7 +1523,22 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory::CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_)
+	{
+		{
+			auto __vwsn_template_ = static_cast<::vl::presentation::templates::GuiButtonTemplate*>(new ::darkskin::ButtonTemplate());
+			return static_cast<::vl::presentation::templates::GuiTemplate*>(__vwsn_template_);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::darkskin::WindowTemplate*>(nullptr);
@@ -1533,7 +1548,7 @@ Closures
 		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
-	void __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetMaximized() ? ::vl::WString(L" 1 ", false) : ::vl::WString(L" 2 ", false));
 		using __vwsnt_0 = ::vl::reflection::description::Value;
@@ -1543,18 +1558,18 @@ Closures
 		}
 	}
 
-	void __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	void __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
 		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
-		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->MaximizedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->MaximizedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -1562,12 +1577,12 @@ Closures
 			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
 		}
 		auto __vwsn_subscription_ = this;
-		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
 		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
 		return __vwsn_listener_shared_;
 	}
 
-	bool __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -1577,7 +1592,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -1593,7 +1608,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1)
+	__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1)
 		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
 		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
 		, __vwsnthis_0(__vwsnctorthis_0)
@@ -1601,17 +1616,17 @@ Closures
 	{
 	}
 
-	::vl::reflection::description::IValueSubscription* __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	::vl::reflection::description::IValueSubscription* __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
 	{
 		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
 	}
 
-	bool __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	bool __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
 	{
 		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
 	}
 
-	bool __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	bool __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
 	{
 		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
 		{
@@ -1623,7 +1638,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::darkskin::WindowTemplate*>(nullptr);
@@ -1633,7 +1648,7 @@ Closures
 		this->__vwsn_bind_listeners_ = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
-	void __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
 		using __vwsnt_0 = ::vl::reflection::description::Value;
@@ -1643,18 +1658,18 @@ Closures
 		}
 	}
 
-	void __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
+	void __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_initialize_()
 	{
 		(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
-		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+		(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
+	::vl::Ptr<::vl::reflection::description::IValueListener> __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_)
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -1662,12 +1677,12 @@ Closures
 			::vl::__vwsn::This(this)->__vwsn_bind_initialize_();
 		}
 		auto __vwsn_subscription_ = this;
-		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
+		auto __vwsn_listener_shared_ = ::vl::Ptr<::vl::reflection::description::IValueListener>(new ::vl_workflow_global::__vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(__vwsn_bind_listeners_, __vwsn_subscription_, this, __vwsnthis_0));
 		::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Set(::vl::__vwsn::Box(__vwsn_listener_shared_), ::vl::__vwsn::Box(__vwsn_bind_callback_));
 		return __vwsn_listener_shared_;
 	}
 
-	bool __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -1677,7 +1692,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -1686,36 +1701,6 @@ Closures
 			(__vwsn_bind_cache_0 = static_cast<::darkskin::WindowTemplate*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			::vl::__vwsn::This(__vwsn_bind_listeners_.Obj())->Clear();
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1)
-		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
-		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
-		, __vwsnthis_0(__vwsnctorthis_0)
-		, __vwsnthis_1(__vwsnctorthis_1)
-	{
-	}
-
-	::vl::reflection::description::IValueSubscription* __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
-	{
-		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
-	}
-
-	bool __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
-	{
-		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
-	}
-
-	bool __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
 			return true;
 		}
 		return false;
@@ -1738,18 +1723,48 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc40_Demo_ViewModelBuilder_Build__IViewModel::__vwsnc40_Demo_ViewModelBuilder_Build__IViewModel()
+	__vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::__vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1)
+		:__vwsn_bind_listeners_(__vwsnctor___vwsn_bind_listeners_)
+		, __vwsn_subscription_(__vwsnctor___vwsn_subscription_)
+		, __vwsnthis_0(__vwsnctorthis_0)
+		, __vwsnthis_1(__vwsnctorthis_1)
+	{
+	}
+
+	::vl::reflection::description::IValueSubscription* __vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetSubscription()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_subscription_;
+	}
+
+	bool __vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::GetStopped()
+	{
+		return (! ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)));
+	}
+
+	bool __vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener::StopListening()
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(this)))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_bind_listeners_.Obj())->Remove(::vl::__vwsn::Box(this));
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc41_Demo_ViewModelBuilder_Build__IViewModel::__vwsnc41_Demo_ViewModelBuilder_Build__IViewModel()
 	{
 		this->x = 0;
 		this->y = 0;
 	}
 
-	::vl::vint32_t __vwsnc40_Demo_ViewModelBuilder_Build__IViewModel::GetX()
+	::vl::vint32_t __vwsnc41_Demo_ViewModelBuilder_Build__IViewModel::GetX()
 	{
 		return x;
 	}
 
-	void __vwsnc40_Demo_ViewModelBuilder_Build__IViewModel::SetX(::vl::vint32_t value)
+	void __vwsnc41_Demo_ViewModelBuilder_Build__IViewModel::SetX(::vl::vint32_t value)
 	{
 		if ((x != value))
 		{
@@ -1758,12 +1773,12 @@ Closures
 		}
 	}
 
-	::vl::vint32_t __vwsnc40_Demo_ViewModelBuilder_Build__IViewModel::GetY()
+	::vl::vint32_t __vwsnc41_Demo_ViewModelBuilder_Build__IViewModel::GetY()
 	{
 		return y;
 	}
 
-	void __vwsnc40_Demo_ViewModelBuilder_Build__IViewModel::SetY(::vl::vint32_t value)
+	void __vwsnc41_Demo_ViewModelBuilder_Build__IViewModel::SetY(::vl::vint32_t value)
 	{
 		if ((y != value))
 		{
@@ -1772,7 +1787,7 @@ Closures
 		}
 	}
 
-	::vl::vint32_t __vwsnc40_Demo_ViewModelBuilder_Build__IViewModel::GetZ()
+	::vl::vint32_t __vwsnc41_Demo_ViewModelBuilder_Build__IViewModel::GetZ()
 	{
 		return (x + y);
 	}
@@ -2391,7 +2406,7 @@ Class (::darkskin::WindowTemplateConstructor)
 	{
 		(::vl::__vwsn::This(this)->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetTooltipTemplate(::vl::WString(L"darkskin::TooltipTemplate", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetTooltipTemplate(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetCustomizedBorder(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
@@ -2546,7 +2561,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetSite(1, 2, 1, 1);
 		}
 		{
-			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
 			(::vl::__vwsn::This(this)->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
@@ -2573,7 +2588,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->SetSite(1, 3, 1, 1);
 		}
 		{
-			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
 			(::vl::__vwsn::This(this)->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
@@ -2597,7 +2612,7 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->SetSite(1, 4, 1, 1);
 		}
 		{
-			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
+			auto __vwsn_controlStyle_ = new ::vl::presentation::templates::GuiButtonTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(this)));
 			(::vl::__vwsn::This(this)->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
@@ -2673,12 +2688,12 @@ Class (::darkskin::WindowTemplateConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
 			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
+			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
 			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
 		}
@@ -2732,7 +2747,7 @@ Class (::ViewModelBuilder)
 
 ::vl::Ptr<::IViewModel> ViewModelBuilder::Build()
 {
-	return ::vl::Ptr<::IViewModel>(new ::vl_workflow_global::__vwsnc40_Demo_ViewModelBuilder_Build__IViewModel());
+	return ::vl::Ptr<::IViewModel>(new ::vl_workflow_global::__vwsnc41_Demo_ViewModelBuilder_Build__IViewModel());
 }
 
 ViewModelBuilder::ViewModelBuilder()

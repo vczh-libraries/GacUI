@@ -16929,10 +16929,6 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfMemberExpression* node)override
 				{
-					if (node->name.value == L"MyList")
-					{
-						int a = 0;
-					}
 					auto result = config->manager->expressionResolvings[node];
 					auto parentResult = config->manager->expressionResolvings[node->parent.Obj()];
 					WriteReferenceTemplate(result,

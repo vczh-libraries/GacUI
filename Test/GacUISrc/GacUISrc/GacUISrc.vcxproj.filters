@@ -471,6 +471,9 @@
     <ClCompile Include="..\..\..\Source\GacUIReflectionHelper.cpp">
       <Filter>GacUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Templates.cpp">
+      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">

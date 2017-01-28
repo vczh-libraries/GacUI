@@ -124,7 +124,8 @@ Instance Loader
 			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
 
 			virtual bool									CanCreate(const TypeInfo& typeInfo);
-			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
 			virtual Ptr<workflow::WfStatement>				CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
 			virtual Ptr<workflow::WfStatement>				AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
 			virtual Ptr<workflow::WfExpression>				GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors);

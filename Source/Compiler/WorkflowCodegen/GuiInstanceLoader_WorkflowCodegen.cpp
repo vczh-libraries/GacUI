@@ -445,15 +445,7 @@ Workflow_GenerateInstanceClass
 				{
 					if (!beforePrecompile)
 					{
-						Ptr<WfExpression> controlTemplate;
-						{
-							vint index = resolvingResult.rootCtorArguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-							if (index != -1)
-							{
-								controlTemplate = resolvingResult.rootCtorArguments.GetByIndex(index)[0].expression;
-							}
-						}
-						if (auto call = resolvingResult.rootLoader->CreateRootInstance(resolvingResult.rootTypeInfo, controlTemplate, errors))
+						if (auto call = resolvingResult.rootLoader->CreateRootInstance(resolvingResult.rootTypeInfo, resolvingResult.rootCtorArguments, errors))
 						{
 							ctor->baseConstructorCalls.Add(call);
 						}

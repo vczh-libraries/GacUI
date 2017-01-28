@@ -269,6 +269,7 @@
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Tab.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Templates.cpp" />
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Toolstrip.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClCompile>

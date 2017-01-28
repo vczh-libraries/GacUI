@@ -70,12 +70,13 @@ namespace vl_workflow_global
 	class __vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 	class __vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 	class __vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
-	class __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
-	class __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
-	class __vwsnc40_Demo_ViewModelBuilder_Build__IViewModel;
+	class __vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc41_Demo_ViewModelBuilder_Build__IViewModel;
 	class __vwsnc4_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 	class __vwsnc5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 	class __vwsnc6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
@@ -322,10 +323,11 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 		friend class ::vl_workflow_global::__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 		friend class ::vl_workflow_global::__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
-		friend class ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
-		friend class ::vl_workflow_global::__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
 		friend struct ::vl_workflow_global::__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -370,10 +372,11 @@ namespace darkskin
 		friend class ::vl_workflow_global::__vwsnc33_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 		friend class ::vl_workflow_global::__vwsnc34_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 		friend class ::vl_workflow_global::__vwsnc35_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
-		friend class ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
-		friend class ::vl_workflow_global::__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
 		friend struct ::vl_workflow_global::__vwsnf12_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf13_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -411,7 +414,7 @@ public:
 
 class ViewModelBuilder : public ::vl::Object, public ::vl::reflection::Description<ViewModelBuilder>
 {
-	friend class ::vl_workflow_global::__vwsnc40_Demo_ViewModelBuilder_Build__IViewModel;
+	friend class ::vl_workflow_global::__vwsnc41_Demo_ViewModelBuilder_Build__IViewModel;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ViewModelBuilder>;
 #endif
@@ -1009,12 +1012,22 @@ Closures
 		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
 	};
 
-	class __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
 	{
 	public:
 		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc36_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
 		::darkskin::WindowTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -1029,7 +1042,7 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	class __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
 	public:
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
@@ -1037,19 +1050,19 @@ Closures
 		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
 		::darkskin::WindowTemplateConstructor* __vwsnthis_1;
 
-		__vwsnc37_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1);
+		__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1);
 
 		::vl::reflection::description::IValueSubscription* GetSubscription() override;
 		bool GetStopped() override;
 		bool StopListening() override;
 	};
 
-	class __vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::darkskin::WindowTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc38_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
+		__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::WindowTemplateConstructor* __vwsnctorthis_0);
 
 		::darkskin::WindowTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -1062,21 +1075,6 @@ Closures
 		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
 		bool Update() override;
 		bool Close() override;
-	};
-
-	class __vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
-	{
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
-		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
-		::darkskin::WindowTemplateConstructor* __vwsnthis_1;
-
-		__vwsnc39_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1);
-
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
 	};
 
 	class __vwsnc3_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
@@ -1089,10 +1087,25 @@ Closures
 		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
 	};
 
-	class __vwsnc40_Demo_ViewModelBuilder_Build__IViewModel : public ::vl::Object, public virtual ::IViewModel
+	class __vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
 	{
 	public:
-		__vwsnc40_Demo_ViewModelBuilder_Build__IViewModel();
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::darkskin::WindowTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc40_Demo_darkskin_WindowTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::darkskin::WindowTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc41_Demo_ViewModelBuilder_Build__IViewModel : public ::vl::Object, public virtual ::IViewModel
+	{
+	public:
+		__vwsnc41_Demo_ViewModelBuilder_Build__IViewModel();
 
 		::vl::vint32_t x = 0;
 		::vl::vint32_t y = 0;
