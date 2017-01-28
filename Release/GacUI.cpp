@@ -633,22 +633,27 @@ GuiApplicationMain
 				}
 
 				GetCurrentController()->InputService()->StartTimer();
-				GuiApplication app;
-				application=&app;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				GetGlobalTypeManager()->Load();
 #endif
 				GetPluginManager()->Load();
 				theme::SetCurrentTheme(theme.Obj());
-				GuiMain();
+
+				{
+					GuiApplication app;
+					application = &app;
+					GuiMain();
+				}
+				application = nullptr;
+
 				theme::SetCurrentTheme(0);
 				DestroyPluginManager();
+				ThreadLocalStorage::DisposeStorages();
+				FinalizeGlobalStorage();
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				DestroyGlobalTypeManager();
 #endif
-				ThreadLocalStorage::DisposeStorages();
-				FinalizeGlobalStorage();
 			}
 		}
 	}
@@ -24694,25 +24699,15 @@ namespace vl
 			using namespace reflection::description;
 			using namespace collections;
 
-#define INITIALIZE_FACTORY_FROM_TEMPLATE(VARIABLE, PROPERTY)\
-	controlTemplate->PROPERTY##Changed.AttachLambda([this](GuiGraphicsComposition*, GuiEventArgs&)\
-	{\
-		this->VARIABLE = 0;\
-	});\
+#define GET_FACTORY_FROM_TEMPLATE(TEMPLATE, PROPERTY)\
+	return new TEMPLATE##_StyleProvider(controlTemplate->Get##PROPERTY());\
 
-#define GET_FACTORY_FROM_TEMPLATE(TEMPLATE, VARIABLE, PROPERTY)\
-	if (!this->VARIABLE)\
+#define GET_FACTORY_FROM_TEMPLATE_OPT(TEMPLATE, PROPERTY)\
+	if (controlTemplate->Get##PROPERTY() == nullptr)\
 	{\
-		this->VARIABLE = CreateTemplateFactory(controlTemplate->Get##PROPERTY());\
+		return nullptr;\
 	}\
-	return new TEMPLATE##_StyleProvider(this->VARIABLE);\
-
-#define GET_FACTORY_FROM_TEMPLATE_OPT(TEMPLATE, VARIABLE, PROPERTY)\
-	if (controlTemplate->Get##PROPERTY() == L"")\
-	{\
-		return 0;\
-	}\
-	GET_FACTORY_FROM_TEMPLATE(TEMPLATE, VARIABLE, PROPERTY)\
+	GET_FACTORY_FROM_TEMPLATE(TEMPLATE, PROPERTY)\
 
 /***********************************************************************
 GuiControlTemplate_StyleProvider
@@ -24880,8 +24875,6 @@ GuiWindowTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiWindowTemplate_StyleProvider::GuiWindowTemplate_StyleProvider()#An instance of GuiWindowTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(tooltipTemplateFactory, TooltipTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(shortcutKeyTemplateFactory, ShortcutKeyTemplate);
 			}
 
 			GuiWindowTemplate_StyleProvider::~GuiWindowTemplate_StyleProvider()
@@ -24987,12 +24980,12 @@ GuiWindowTemplate_StyleProvider
 
 			controls::GuiWindow::IStyleController* GuiWindowTemplate_StyleProvider::CreateTooltipStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE_OPT(GuiWindowTemplate, tooltipTemplateFactory, TooltipTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiWindowTemplate, TooltipTemplate);
 			}
 
 			controls::GuiLabel::IStyleController* GuiWindowTemplate_StyleProvider::CreateShortcutKeyStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE_OPT(GuiLabelTemplate, shortcutKeyTemplateFactory, ShortcutKeyTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiLabelTemplate, ShortcutKeyTemplate);
 			}
 
 #undef WINDOW_TEMPLATE_GET
@@ -25053,7 +25046,6 @@ GuiToolstripButtonTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiButtonTemplate_StyleProvider::GuiButtonTemplate_StyleProvider()#An instance of GuiToolstripButtonTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(subMenuTemplateFactory, SubMenuTemplate);
 			}
 
 			GuiToolstripButtonTemplate_StyleProvider::~GuiToolstripButtonTemplate_StyleProvider()
@@ -25062,7 +25054,7 @@ GuiToolstripButtonTemplate_StyleProvider
 				
 			controls::GuiMenu::IStyleController* GuiToolstripButtonTemplate_StyleProvider::CreateSubMenuStyleController()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiMenuTemplate, subMenuTemplateFactory, SubMenuTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiMenuTemplate, SubMenuTemplate);
 			}
 
 			void GuiToolstripButtonTemplate_StyleProvider::SetSubMenuExisting(bool value)
@@ -25154,9 +25146,6 @@ GuiDatePickerTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiDatePickerTemplate_StyleProvider::GuiDatePickerTemplate_StyleProvider()#An instance of GuiDatePickerTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(dateButtonTemplateFactory, DateButtonTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(dateTextListTemplateFactory, DateTextListTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(dateComboBoxTemplateFactory, DateComboBoxTemplate);
 			}
 
 			GuiDatePickerTemplate_StyleProvider::~GuiDatePickerTemplate_StyleProvider()
@@ -25166,12 +25155,12 @@ GuiDatePickerTemplate_StyleProvider
 
 			controls::GuiSelectableButton::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateDateButtonStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, dateButtonTemplateFactory, DateButtonTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, DateButtonTemplate);
 			}
 
 			GuiTextListTemplate_StyleProvider* GuiDatePickerTemplate_StyleProvider::CreateTextListStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiTextListTemplate, dateTextListTemplateFactory, DateTextListTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiTextListTemplate, DateTextListTemplate);
 			}
 
 			controls::GuiTextList* GuiDatePickerTemplate_StyleProvider::CreateTextList()
@@ -25182,7 +25171,7 @@ GuiDatePickerTemplate_StyleProvider
 
 			controls::GuiComboBoxListControl::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateComboBoxStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiComboBoxTemplate, dateComboBoxTemplateFactory, DateComboBoxTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiComboBoxTemplate, DateComboBoxTemplate);
 			}
 
 			Color GuiDatePickerTemplate_StyleProvider::GetBackgroundColor()
@@ -25211,7 +25200,6 @@ GuiDateComboBoxTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiDateComboBoxTemplate_StyleProvider::GuiDateComboBoxTemplate_StyleProvider()#An instance of GuiDateComboBoxTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(datePickerTemplateFactory, DatePickerTemplate);
 			}
 
 			GuiDateComboBoxTemplate_StyleProvider::~GuiDateComboBoxTemplate_StyleProvider()
@@ -25225,7 +25213,7 @@ GuiDateComboBoxTemplate_StyleProvider
 
 			controls::GuiDatePicker::IStyleProvider* GuiDateComboBoxTemplate_StyleProvider::CreateDatePickerStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiDatePickerTemplate, datePickerTemplateFactory, DatePickerTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiDatePickerTemplate, DatePickerTemplate);
 			}
 
 /***********************************************************************
@@ -25276,8 +25264,6 @@ GuiScrollViewTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiScrollViewTemplate_StyleProvider::GuiScrollViewTemplate_StyleProvider()#An instance of GuiScrollViewTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(hScrollTemplateFactory, HScrollTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(vScrollTemplateFactory, VScrollTemplate);
 			}
 
 			GuiScrollViewTemplate_StyleProvider::~GuiScrollViewTemplate_StyleProvider()
@@ -25286,12 +25272,12 @@ GuiScrollViewTemplate_StyleProvider
 				
 			controls::GuiScroll::IStyleController* GuiScrollViewTemplate_StyleProvider::CreateHorizontalScrollStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiScrollTemplate, hScrollTemplateFactory, HScrollTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiScrollTemplate, HScrollTemplate);
 			}
 
 			controls::GuiScroll::IStyleController* GuiScrollViewTemplate_StyleProvider::CreateVerticalScrollStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiScrollTemplate, vScrollTemplateFactory, VScrollTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiScrollTemplate, VScrollTemplate);
 			}
 
 			vint GuiScrollViewTemplate_StyleProvider::GetDefaultScrollSize()
@@ -25387,8 +25373,6 @@ GuiTextListTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiTextListTemplate_StyleProvider::GuiTextListTemplate_StyleProvider()#An instance of GuiTextListTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(backgroundTemplateFactory, BackgroundTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(bulletTemplateFactory, BulletTemplate);
 			}
 
 			GuiTextListTemplate_StyleProvider::~GuiTextListTemplate_StyleProvider()
@@ -25397,7 +25381,7 @@ GuiTextListTemplate_StyleProvider
 
 			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateItemBackground()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, backgroundTemplateFactory, BackgroundTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, BackgroundTemplate);
 			}
 
 			Color GuiTextListTemplate_StyleProvider::GetTextColor()
@@ -25412,7 +25396,7 @@ GuiTextListTemplate_StyleProvider
 
 			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateBulletStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, bulletTemplateFactory, BulletTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, BulletTemplate);
 			}
 
 /***********************************************************************
@@ -25426,8 +25410,6 @@ GuiListViewTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiListViewTemplate_StyleProvider::GuiListViewTemplate_StyleProvider()#An instance of GuiListViewTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(backgroundTemplateFactory, BackgroundTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(columnHeaderTemplateFactory, ColumnHeaderTemplate);
 			}
 
 			GuiListViewTemplate_StyleProvider::~GuiListViewTemplate_StyleProvider()
@@ -25436,12 +25418,12 @@ GuiListViewTemplate_StyleProvider
 				
 			controls::GuiSelectableButton::IStyleController* GuiListViewTemplate_StyleProvider::CreateItemBackground()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, backgroundTemplateFactory, BackgroundTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, BackgroundTemplate);
 			}
 
 			controls::GuiListViewColumnHeader::IStyleController* GuiListViewTemplate_StyleProvider::CreateColumnStyle()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiListViewColumnHeaderTemplate, columnHeaderTemplateFactory, ColumnHeaderTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiListViewColumnHeaderTemplate, ColumnHeaderTemplate);
 			}
 
 			Color GuiListViewTemplate_StyleProvider::GetPrimaryTextColor()
@@ -25470,8 +25452,6 @@ GuiTreeViewTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiTreeViewTemplate_StyleProvider::GuiTreeViewTemplate_StyleProvider()#An instance of GuiTreeViewTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(backgroundTemplateFactory, BackgroundTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(expandingDecoratorTemplateFactory, ExpandingDecoratorTemplate);
 			}
 
 			GuiTreeViewTemplate_StyleProvider::~GuiTreeViewTemplate_StyleProvider()
@@ -25480,12 +25460,12 @@ GuiTreeViewTemplate_StyleProvider
 				
 			controls::GuiSelectableButton::IStyleController* GuiTreeViewTemplate_StyleProvider::CreateItemBackground()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, backgroundTemplateFactory, BackgroundTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, BackgroundTemplate);
 			}
 
 			controls::GuiSelectableButton::IStyleController* GuiTreeViewTemplate_StyleProvider::CreateItemExpandingDecorator()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, expandingDecoratorTemplateFactory, ExpandingDecoratorTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, ExpandingDecoratorTemplate);
 			}
 
 			Color GuiTreeViewTemplate_StyleProvider::GetTextColor()
@@ -25633,22 +25613,22 @@ GuiTabTemplate_StyleProvider
 
 			controls::GuiSelectableButton::IStyleController* GuiTabTemplate_StyleProvider::CreateHeaderTemplate()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, headerTemplateFactory, HeaderTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, HeaderTemplate);
 			}
 
 			controls::GuiButton::IStyleController* GuiTabTemplate_StyleProvider::CreateDropdownTemplate()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiButtonTemplate, dropdownTemplateFactory, DropdownTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiButtonTemplate, DropdownTemplate);
 			}
 
 			controls::GuiMenu::IStyleController* GuiTabTemplate_StyleProvider::CreateMenuTemplate()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiMenuTemplate, menuTemplateFactory, MenuTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiMenuTemplate, MenuTemplate);
 			}
 
 			controls::GuiToolstripButton::IStyleController* GuiTabTemplate_StyleProvider::CreateMenuItemTemplate()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiToolstripButtonTemplate, menuItemTemplateFactory, MenuItemTemplate);
+				GET_FACTORY_FROM_TEMPLATE(GuiToolstripButtonTemplate, MenuItemTemplate);
 			}
 
 			GuiTabTemplate_StyleProvider::GuiTabTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
@@ -25658,10 +25638,6 @@ GuiTabTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiTabTemplate_StyleProvider::GuiTabTemplate_StyleProvider()#An instance of GuiTabTemplate is expected.");
 				}
-				INITIALIZE_FACTORY_FROM_TEMPLATE(headerTemplateFactory, HeaderTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(dropdownTemplateFactory, DropdownTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(menuTemplateFactory, MenuTemplate);
-				INITIALIZE_FACTORY_FROM_TEMPLATE(menuItemTemplateFactory, MenuItemTemplate);
 				Initialize();
 			}
 
@@ -26368,64 +26344,6 @@ GuiBindableDataEditor
 Helper Functions
 ***********************************************************************/
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
-			class GuiTemplateReflectableFactory : public Object, public virtual GuiTemplate::IFactory
-			{
-			protected:
-				List<ITypeDescriptor*>			types;
-
-			public:
-				GuiTemplateReflectableFactory(const List<ITypeDescriptor*>& _types)
-				{
-					CopyFrom(types, _types);
-				}
-
-				GuiTemplate* CreateTemplate(const description::Value& viewModel)override
-				{
-					FOREACH(ITypeDescriptor*, type, types)
-					{
-						auto group = type->GetConstructorGroup();
-						vint count = group->GetMethodCount();
-						for (vint i = 0; i < count; i++)
-						{
-							auto ctor = group->GetMethod(i);
-							if (ctor->GetReturn()->GetDecorator() == ITypeInfo::RawPtr && ctor->GetParameterCount() <= 1)
-							{
-								Array<Value> arguments(ctor->GetParameterCount());
-								if (ctor->GetParameterCount() == 1)
-								{
-									if (!viewModel.CanConvertTo(ctor->GetParameter(0)->GetType()))
-									{
-										continue;
-									}
-									arguments[0] = viewModel;
-								}
-								return dynamic_cast<GuiTemplate*>(ctor->Invoke(Value(), arguments).GetRawPtr());
-							}
-						}
-					}
-
-					WString message = L"Unable to create a template from types {";
-					FOREACH_INDEXER(ITypeDescriptor*, type, index, types)
-					{
-						if (index > 0) message += L", ";
-						message += type->GetTypeName();
-					}
-					message += L"} using view model: ";
-					if (viewModel.IsNull())
-					{
-						message += L"null.";
-					}
-					else
-					{
-						message += viewModel.GetTypeDescriptor()->GetTypeName() + L".";
-					}
-
-					throw ArgumentException(message);
-				}
-			};
-#endif
-
 			void SplitBySemicolon(const WString& input, collections::List<WString>& fragments)
 			{
 				const wchar_t* attValue = input.Buffer();
@@ -26449,30 +26367,10 @@ Helper Functions
 					fragments.Add(pattern);
 				}
 			}
-
-			Ptr<GuiTemplate::IFactory> CreateTemplateFactory(const WString& typeValues)
-			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				List<ITypeDescriptor*> types;
-				List<WString> typeNames;
-				SplitBySemicolon(typeValues, typeNames);
-				CopyFrom(
-					types,
-					From(typeNames)
-						.Select<ITypeDescriptor*(*)(const WString&)>(&description::GetTypeDescriptor)
-						.Where([](ITypeDescriptor* type){return type != 0; })
-					);
-
-				return new GuiTemplateReflectableFactory(types);
-#else
-				CHECK_FAIL(L"CreateTemplateFactory(const WString&)#This function cannot be called without reflection enabled.");
-#endif
-			}
 		}
 	}
 }
 
-#undef INITIALIZE_FACTORY_FROM_TEMPLATE
 #undef GET_FACTORY_FROM_TEMPLATE
 #undef GET_FACTORY_FROM_TEMPLATE_OPT
 

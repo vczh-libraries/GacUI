@@ -18242,8 +18242,8 @@ Control Template
 				F(GuiWindowTemplate, bool, TitleBar)\
 				F(GuiWindowTemplate, bool, CustomizedBorder)\
 				F(GuiWindowTemplate, bool, Maximized)\
-				F(GuiWindowTemplate, WString, TooltipTemplate)\
-				F(GuiWindowTemplate, WString, ShortcutKeyTemplate)
+				F(GuiWindowTemplate, Ptr<GuiTemplate::IFactory>, TooltipTemplate)\
+				F(GuiWindowTemplate, Ptr<GuiTemplate::IFactory>, ShortcutKeyTemplate)
 
 				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -18279,7 +18279,7 @@ Control Template
 				~GuiToolstripButtonTemplate();
 
 #define GuiToolstripButtonTemplate_PROPERTIES(F)\
-				F(GuiToolstripButtonTemplate, WString, SubMenuTemplate)\
+				F(GuiToolstripButtonTemplate, Ptr<GuiTemplate::IFactory>, SubMenuTemplate)\
 				F(GuiToolstripButtonTemplate, bool, SubMenuExisting)\
 				F(GuiToolstripButtonTemplate, bool, SubMenuOpening)\
 				F(GuiToolstripButtonTemplate, controls::GuiButton*, SubMenuHost)\
@@ -18321,9 +18321,9 @@ Control Template
 				~GuiDatePickerTemplate();
 
 #define GuiDatePickerTemplate_PROPERTIES(F)\
-				F(GuiDatePickerTemplate, WString, DateButtonTemplate)\
-				F(GuiDatePickerTemplate, WString, DateTextListTemplate)\
-				F(GuiDatePickerTemplate, WString, DateComboBoxTemplate)\
+				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateButtonTemplate)\
+				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateTextListTemplate)\
+				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateComboBoxTemplate)\
 				F(GuiDatePickerTemplate, Color, BackgroundColor)\
 				F(GuiDatePickerTemplate, Color, PrimaryTextColor)\
 				F(GuiDatePickerTemplate, Color, SecondaryTextColor)\
@@ -18338,7 +18338,7 @@ Control Template
 				~GuiDateComboBoxTemplate();
 
 #define GuiDateComboBoxTemplate_PROPERTIES(F)\
-				F(GuiDateComboBoxTemplate, WString, DatePickerTemplate)\
+				F(GuiDateComboBoxTemplate, Ptr<GuiTemplate::IFactory>, DatePickerTemplate)\
 
 				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -18365,8 +18365,8 @@ Control Template
 				~GuiScrollViewTemplate();
 
 #define GuiScrollViewTemplate_PROPERTIES(F)\
-				F(GuiScrollViewTemplate, WString, HScrollTemplate)\
-				F(GuiScrollViewTemplate, WString, VScrollTemplate)\
+				F(GuiScrollViewTemplate, Ptr<GuiTemplate::IFactory>, HScrollTemplate)\
+				F(GuiScrollViewTemplate, Ptr<GuiTemplate::IFactory>, VScrollTemplate)\
 				F(GuiScrollViewTemplate, vint, DefaultScrollSize)\
 
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -18404,8 +18404,8 @@ Control Template
 				~GuiTextListTemplate();
 
 #define GuiTextListTemplate_PROPERTIES(F)\
-				F(GuiTextListTemplate, WString, BackgroundTemplate)\
-				F(GuiTextListTemplate, WString, BulletTemplate)\
+				F(GuiTextListTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
+				F(GuiTextListTemplate, Ptr<GuiTemplate::IFactory>, BulletTemplate)\
 				F(GuiTextListTemplate, Color, TextColor)\
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -18418,8 +18418,8 @@ Control Template
 				~GuiListViewTemplate();
 
 #define GuiListViewTemplate_PROPERTIES(F)\
-				F(GuiListViewTemplate, WString, BackgroundTemplate)\
-				F(GuiListViewTemplate, WString, ColumnHeaderTemplate)\
+				F(GuiListViewTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
+				F(GuiListViewTemplate, Ptr<GuiTemplate::IFactory>, ColumnHeaderTemplate)\
 				F(GuiListViewTemplate, Color, PrimaryTextColor)\
 				F(GuiListViewTemplate, Color, SecondaryTextColor)\
 				F(GuiListViewTemplate, Color, ItemSeparatorColor)\
@@ -18434,8 +18434,8 @@ Control Template
 				~GuiTreeViewTemplate();
 
 #define GuiTreeViewTemplate_PROPERTIES(F)\
-				F(GuiTreeViewTemplate, WString, BackgroundTemplate)\
-				F(GuiTreeViewTemplate, WString, ExpandingDecoratorTemplate)\
+				F(GuiTreeViewTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
+				F(GuiTreeViewTemplate, Ptr<GuiTemplate::IFactory>, ExpandingDecoratorTemplate)\
 				F(GuiTreeViewTemplate, Color, TextColor)\
 
 				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -18448,10 +18448,10 @@ Control Template
 				~GuiTabTemplate();
 
 #define GuiTabTemplate_PROPERTIES(F)\
-				F(GuiTabTemplate, WString, HeaderTemplate)\
-				F(GuiTabTemplate, WString, DropdownTemplate)\
-				F(GuiTabTemplate, WString, MenuTemplate)\
-				F(GuiTabTemplate, WString, MenuItemTemplate)\
+				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, HeaderTemplate)\
+				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, DropdownTemplate)\
+				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, MenuTemplate)\
+				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, MenuItemTemplate)\
 				F(GuiTabTemplate, vint, HeaderPadding)\
 				F(GuiTabTemplate, compositions::GuiGraphicsComposition*, HeaderComposition)\
 
@@ -18647,8 +18647,6 @@ Control Template
 			protected:
 				GuiWindowTemplate*												controlTemplate;
 				controls::GuiWindow*											window;
-				Ptr<GuiTemplate::IFactory>										tooltipTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										shortcutKeyTemplateFactory;
 
 			public:
 				GuiWindowTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
@@ -18709,7 +18707,6 @@ Control Template
 				, public Description<GuiToolstripButtonTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										subMenuTemplateFactory;
 				GuiToolstripButtonTemplate*										controlTemplate;
 
 			public:
@@ -18764,9 +18761,6 @@ Control Template
 				, public Description<GuiDatePickerTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										dateButtonTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										dateTextListTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										dateComboBoxTemplateFactory;
 				GuiDatePickerTemplate*											controlTemplate;
 
 			public:
@@ -18787,7 +18781,6 @@ Control Template
 				, public Description<GuiDateComboBoxTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										datePickerTemplateFactory;
 				GuiDateComboBoxTemplate*										controlTemplate;
 
 			public:
@@ -18822,8 +18815,6 @@ Control Template
 				, public Description<GuiScrollViewTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										hScrollTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										vScrollTemplateFactory;
 				GuiScrollViewTemplate*											controlTemplate;
 				
 			public:
@@ -18871,8 +18862,6 @@ Control Template
 				, public Description<GuiTextListTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										backgroundTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										bulletTemplateFactory;
 				GuiTextListTemplate*											controlTemplate;
 				
 				class ItemStyleProvider
@@ -18905,8 +18894,6 @@ Control Template
 				, public Description<GuiListViewTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										backgroundTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										columnHeaderTemplateFactory;
 				GuiListViewTemplate*											controlTemplate;
 				
 			public:
@@ -18926,8 +18913,6 @@ Control Template
 				, public Description<GuiTreeViewTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										backgroundTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										expandingDecoratorTemplateFactory;
 				GuiTreeViewTemplate*											controlTemplate;
 				
 			public:
@@ -18945,10 +18930,6 @@ Control Template
 				, public Description<GuiTabTemplate_StyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>										headerTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										dropdownTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										menuTemplateFactory;
-				Ptr<GuiTemplate::IFactory>										menuItemTemplateFactory;
 				GuiTabTemplate*													controlTemplate;
 				
 				compositions::GuiTableComposition*								tabBoundsComposition;
@@ -19230,7 +19211,6 @@ Helper Functions
 ***********************************************************************/
 
 			extern void												SplitBySemicolon(const WString& input, collections::List<WString>& fragments);
-			extern Ptr<GuiTemplate::IFactory>						CreateTemplateFactory(const WString& typeValues);
 
 #pragma warning(pop)
 		}

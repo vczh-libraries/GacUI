@@ -509,7 +509,8 @@ Instance Loader
 			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
 
 			virtual bool									CanCreate(const TypeInfo& typeInfo);
-			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
 			virtual Ptr<workflow::WfStatement>				CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
 			virtual Ptr<workflow::WfStatement>				AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
 			virtual Ptr<workflow::WfExpression>				GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors);
@@ -1136,7 +1137,7 @@ GuiVrtualTypeInstanceLoader
 					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
 					if (!controlTemplateNameExpr)
 					{
-						errors.Add(L"Precompile: The value of contructor parameter \"" + propertyName + L"\" of type \"" + controlTypeInfo.typeName.ToString() + L"\" should be a constant representing the control template type name.");
+						errors.Add(L"Precompile: The value of contructor parameter \"" + propertyName + L"\" of type \"" + controlTypeInfo.typeName.ToString() + L"\" should be a constant representing control template type names.");
 						return;
 					}
 
@@ -1235,21 +1236,22 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
-				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors)override
+				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto controlType = TypeInfoRetriver<TControl>::CreateTypeInfo();
-
-					if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors))
+					auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+					if (index != -1)
 					{
-						auto createControl = MakePtr<WfBaseConstructorCall>();
-						createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-						createControl->arguments.Add(createStyleExpr);
-						return createControl;
+						auto controlTemplate = arguments.GetByIndex(index)[0].expression;
+						if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors))
+						{
+							auto createControl = MakePtr<WfBaseConstructorCall>();
+							createControl->type = GetTypeFromTypeInfo(controlType.Obj());
+							createControl->arguments.Add(createStyleExpr);
+							return createControl;
+						}
 					}
-					else
-					{
-						return nullptr;
-					}
+					return nullptr;
 				}
 
 				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
