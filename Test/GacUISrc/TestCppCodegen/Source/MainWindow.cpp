@@ -31,15 +31,9 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
-	::vl::Ptr<::IViewModel> MainWindow::GetViewModel()
+	MainWindow::MainWindow()
+		: ::vl::presentation::controls::GuiWindow(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateWindowStyle())
 	{
-		return ::vl::__vwsn::This(this)->__vwsn_parameter_ViewModel;
-	}
-
-	MainWindow::MainWindow(::vl::Ptr<::IViewModel> __vwsn_ctor_parameter_ViewModel)
-		: ::vl::presentation::controls::GuiWindow(static_cast<::vl::presentation::controls::GuiWindow::IStyleController*>(new ::vl::presentation::templates::GuiWindowTemplate_StyleProvider(::vl::Ptr<::vl::presentation::templates::GuiTemplate::IFactory>(new ::vl_workflow_global::__vwsnc16_Demo_demo_MainWindow___vl_presentation_templates_GuiTemplate_IFactory()))))
-	{
-		(::vl::__vwsn::This(this)->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::MainWindow", false));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this, ::vl::__vwsn::Ensure(static_cast<::vl::presentation::GuiResourcePathResolver*>(__vwsn_resolver_.Obj())));

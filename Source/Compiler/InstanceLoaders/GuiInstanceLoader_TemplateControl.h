@@ -368,8 +368,17 @@ GuiVrtualTypeInstanceLoader
 					return typeName == typeInfo.typeName;
 				}
 
-				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors)
+				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)
 				{
+					Ptr<WfExpression> controlTemplate;
+					{
+						auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+						if (index != -1)
+						{
+							controlTemplate = arguments.GetByIndex(index)[0].expression;
+						}
+					}
+
 					if (controlTemplate)
 					{
 						if (auto controlTemplateTd = GetControlTemplateType(controlTemplate, typeInfo, errors))
@@ -396,18 +405,12 @@ GuiVrtualTypeInstanceLoader
 
 				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					auto controlType = TypeInfoRetriver<TControl>::CreateTypeInfo();
-					auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (index != -1)
+					if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, arguments, errors))
 					{
-						auto controlTemplate = arguments.GetByIndex(index)[0].expression;
-						if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors))
-						{
-							auto createControl = MakePtr<WfBaseConstructorCall>();
-							createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-							createControl->arguments.Add(createStyleExpr);
-							return createControl;
-						}
+						auto createControl = MakePtr<WfBaseConstructorCall>();
+						createControl->type = GetTypeFromTypeInfo(TypeInfoRetriver<TControl>::CreateTypeInfo().Obj());
+						createControl->arguments.Add(createStyleExpr);
+						return createControl;
 					}
 					return nullptr;
 				}
@@ -417,17 +420,10 @@ GuiVrtualTypeInstanceLoader
 					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
 					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
 
-					Ptr<WfExpression> createStyleExpr;
+					auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, arguments, errors);
+					if (!createStyleExpr)
 					{
-						Ptr<WfExpression> controlTemplate;
-						if (indexControlTemplate != -1)
-						{
-							controlTemplate = arguments.GetByIndex(indexControlTemplate)[0].expression;
-						}
-						if (!(createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors)))
-						{
-							return nullptr;
-						}
+						return nullptr;
 					}
 				
 					auto block = MakePtr<WfBlockStatement>();

@@ -1,6 +1,6 @@
 <Resource>
   <Script>
-    <Workflow-ViewModel>
+    <Workflow>
       <![CDATA[
         module viewmodel;
         
@@ -54,7 +54,7 @@
           }
         }
       ]]>
-    </Workflow-ViewModel>
+    </Workflow>
   </Script>
   
   <Instance name="MainWindowResource">
@@ -120,9 +120,31 @@
   </Instance>
 
   <Instance name="ColorBomboItemTemplateResource">
-    <Instance ref.Class="demo::ColorBomboItemTemplate">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ColorBomboItemTemplate">
       <ref.Parameter Name="Source" Class="demo::ColorItem"/>
-      <ref.Property Name="TextColor" Type="Color"/>
+      <ref.Members>
+        <![CDATA[
+          @cpp:Protected
+          var textColor : Color = cast Color "#000000";
+          event TextColorChanged();
+          
+          func GetTextColor() : Color
+          {
+            return textColor;
+          }
+          
+          func SetTextColor(value : Color) : void
+          {
+            if (textColor != value)
+            {
+              textColor = value;
+              TextColorChanged();
+            }
+          }
+          
+          prop TextColor : Color {GetTextColor, SetTextColor : TextColorChanged}
+        ]]>
+      </ref.Members>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
@@ -149,7 +171,7 @@
   </Instance>
 
   <Instance name="ColorListItemTemplateResource">
-    <Instance ref.Class="demo::ColorListItemTemplate" xmlns:x="demo::*">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ColorListItemTemplate" xmlns:x="demo::*">
       <ref.Parameter Name="Source" Class="demo::ColorItem"/>
       <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <x:ColorBomboItemTemplate Source-eval="Source" Font-bind="self.Font" TextColor-bind="self.TextColor" AlignmentToParent="left:6 top:6 right:6 bottom:6"/>

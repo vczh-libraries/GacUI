@@ -21,7 +21,7 @@ void GuiMain()
 	}
 
 	LoadDemoTypes();
-	demo::MainWindow window(ViewModelBuilder::Build());
+	demo::MainWindow window;
 	window.ForceCalculateSizeImmediately();
 	window.MoveToScreenCenter();
 	GetApplication()->Run(&window);

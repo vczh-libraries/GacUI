@@ -24,44 +24,13 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::IViewModel)
-			DECL_TYPE_INFO(::MyEventArgs)
-			DECL_TYPE_INFO(::ViewModelBuilder)
-			DECL_TYPE_INFO(::darkskin::ButtonTemplate)
-			DECL_TYPE_INFO(::darkskin::ButtonTemplateConstructor)
-			DECL_TYPE_INFO(::darkskin::LabelTemplate)
-			DECL_TYPE_INFO(::darkskin::LabelTemplateConstructor)
-			DECL_TYPE_INFO(::darkskin::SinglelineTextBoxTemplate)
-			DECL_TYPE_INFO(::darkskin::SinglelineTextBoxTemplateConstructor)
-			DECL_TYPE_INFO(::darkskin::TooltipTemplate)
-			DECL_TYPE_INFO(::darkskin::TooltipTemplateConstructor)
-			DECL_TYPE_INFO(::darkskin::WindowTemplate)
-			DECL_TYPE_INFO(::darkskin::WindowTemplateConstructor)
+			DECL_TYPE_INFO(::demo::ColorBomboItemTemplate)
+			DECL_TYPE_INFO(::demo::ColorBomboItemTemplateConstructor)
+			DECL_TYPE_INFO(::demo::ColorItem)
+			DECL_TYPE_INFO(::demo::ColorListItemTemplate)
+			DECL_TYPE_INFO(::demo::ColorListItemTemplateConstructor)
 			DECL_TYPE_INFO(::demo::MainWindow)
 			DECL_TYPE_INFO(::demo::MainWindowConstructor)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::IViewModel)
-				::vl::vint32_t GetX() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetX);
-				}
-				::vl::vint32_t GetY() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetY);
-				}
-				::vl::vint32_t GetZ() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetZ);
-				}
-				void SetX(::vl::vint32_t value) override
-				{
-					INVOKE_INTERFACE_PROXY(SetX, value);
-				}
-				void SetY(::vl::vint32_t value) override
-				{
-					INVOKE_INTERFACE_PROXY(SetY, value);
-				}
-			END_INTERFACE_PROXY(::IViewModel)
 #endif
 
 			extern bool LoadDemoTypes();
