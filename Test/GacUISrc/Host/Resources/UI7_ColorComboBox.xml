@@ -59,7 +59,7 @@
   
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow">
-      <Window Text="MainWindow" ClientSize="x:480 y:320">
+      <Window Text-format="C1=$(comboFew.Text), C2=$(comboMany.Text), L1=$(listFew.SelectedItemText), L2=$(listMany.SelectedItemText)" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
@@ -72,7 +72,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <ComboBox SelectedIndex-eval="0">
+            <ComboBox ref.Name="comboFew" SelectedIndex-eval="0">
               <att.ItemTemplate>demo::ColorBomboItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
@@ -85,7 +85,7 @@
             </ComboBox>
           </Cell>
           <Cell Site="row:0 column:1">
-            <ComboBox SelectedIndex-eval="0">
+            <ComboBox ref.Name="comboMany" SelectedIndex-eval="0">
               <att.ItemTemplate>demo::ColorBomboItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
@@ -99,7 +99,7 @@
           </Cell>
 
           <Cell Site="row:1 column:0">
-            <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+            <BindableTextList ref.Name="listFew" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.TextProperty>name</att.TextProperty>
               <att.ItemSource-eval>demo::ColorItem::GetFewItems()</att.ItemSource-eval>
               <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
@@ -107,7 +107,7 @@
             </BindableTextList>
           </Cell>
           <Cell Site="row:1 column:1">
-            <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+            <BindableTextList ref.Name="listMany" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
               <att.TextProperty>name</att.TextProperty>
               <att.ItemSource-eval>demo::ColorItem::GetManyItems()</att.ItemSource-eval>
               <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>

@@ -432,6 +432,7 @@ Selectable List Control
 				vint											selectedItemIndexStart;
 				vint											selectedItemIndexEnd;
 
+				void											NotifySelectionChanged();
 				void											OnItemModified(vint start, vint count, vint newCount)override;
 				void											OnStyleInstalled(vint itemIndex, IItemStyleController* style)override;
 				void											OnStyleUninstalled(IItemStyleController* style)override;
