@@ -683,7 +683,7 @@ GuiBindableDataColumnInstanceLoader
 
 								auto refVisualizerFactory = MakePtr<WfMemberExpression>();
 								refVisualizerFactory->parent = refContainer;
-								refVisualizerFactory->name.value = L"Visualizer";
+								refVisualizerFactory->name.value = L"VisualizerFactory";
 									
 								auto refLastFactory = MakePtr<WfMemberExpression>();
 								refLastFactory->parent = refContainer;
