@@ -470,7 +470,7 @@ GuiInstanceContext
 						L"presentation::controls::tree::*;"
 						L"presentation::elements::*;"
 						L"presentation::elements::Gui*;"
-						L"presentation::elements::text*;"
+						L"presentation::elements::text::*;"
 						L"presentation::compositions::*;"
 						L"presentation::templates::*";
 					namespaceAttributes.Add(att);
