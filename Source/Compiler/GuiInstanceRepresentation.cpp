@@ -304,7 +304,7 @@ GuiInstanceContext
 					{
 						if(name->IsEventElementName())
 						{
-							// collect a value as a new attribute setter
+							// collect a value as an event setter
 							if (eventHandlers.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
 								errors.Add(L"Duplicated event name \"" + name->name + L"\".");
