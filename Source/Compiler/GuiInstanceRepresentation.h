@@ -77,9 +77,11 @@ Instance Representation
 			
 			typedef collections::Dictionary<GlobalStringKey, Ptr<SetterValue>>			SetteValuerMap;
 			typedef collections::Dictionary<GlobalStringKey, Ptr<EventValue>>			EventHandlerMap;
+			typedef collections::Dictionary<GlobalStringKey, WString>					EnvironmentVariableMap;
 		public:
 			SetteValuerMap							setters;					// empty key means default property
 			EventHandlerMap							eventHandlers;
+			EnvironmentVariableMap					environmentVariables;
 			GlobalStringKey							instanceName;
 
 			void									Accept(IVisitor* visitor)override{visitor->Visit(this);}
@@ -150,12 +152,13 @@ Instance Context
 				WString								name;
 				WString								binding;
 
-				bool IsCtorName(){ return category==L"" && name!=L"" && binding==L""; }
-				bool IsReferenceAttributeName(){ return namespaceName==L"" && category==L"ref" && name!=L"" && binding==L""; }
-				bool IsPropertyAttributeName(){ return namespaceName==L"" && category==L"" && name!=L""; }
-				bool IsPropertyElementName(){ return namespaceName==L"" && category==L"att" && name!=L""; }
-				bool IsEventAttributeName(){ return namespaceName==L"" && category==L"ev" && name!=L""; }
-				bool IsEventElementName(){ return namespaceName==L"" && category==L"ev" && name!=L""; }
+				bool IsCtorName() { return category == L"" && name != L"" && binding == L""; }
+				bool IsReferenceAttributeName() { return namespaceName == L"" && category == L"ref" && name != L"" && binding == L""; }
+				bool IsEnvironmentAttributeName() { return namespaceName == L"" && category == L"env" && name != L""; }
+				bool IsPropertyAttributeName() { return namespaceName == L"" && category == L"" && name != L""; }
+				bool IsPropertyElementName() { return namespaceName == L"" && category == L"att" && name != L""; }
+				bool IsEventAttributeName() { return namespaceName == L"" && category == L"ev" && name != L""; }
+				bool IsEventElementName() { return namespaceName == L"" && category == L"ev" && name != L""; }
 			};
 		public:
 			Ptr<GuiConstructorRepr>					instance;

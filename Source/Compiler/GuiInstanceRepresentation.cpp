@@ -265,7 +265,7 @@ GuiInstanceContext
 							// collect a value as a new attribute setter
 							if (setters.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(L"Duplicated attribute name \"" + name->name + L"\".");
+								errors.Add(L"Duplicated property \"" + name->name + L"\".");
 							}
 							else
 							{
@@ -311,7 +311,7 @@ GuiInstanceContext
 							// collect a value as an event setter
 							if (eventHandlers.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(L"Duplicated event name \"" + name->name + L"\".");
+								errors.Add(L"Duplicated event \"" + name->name + L"\".");
 							}
 							else
 							{
@@ -357,12 +357,24 @@ GuiInstanceContext
 								setter->instanceName = GlobalStringKey::Get(att->value.value);
 							}
 						}
+						else if (name->IsEnvironmentAttributeName())
+						{
+							// collect environment variables
+							if (setter->environmentVariables.Keys().Contains(GlobalStringKey::Get(name->name)))
+							{
+								errors.Add(L"Duplicated environment variable \"" + name->name + L"\".");
+							}
+							else
+							{
+								setter->environmentVariables.Add(GlobalStringKey::Get(name->name), att->value.value);
+							}
+						}
 						else if(name->IsPropertyAttributeName())
 						{
 							// collect attributes setters
 							if (setter->setters.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(L"Duplicated attribute name \"" + name->name + L"\".");
+								errors.Add(L"Duplicated property \"" + name->name + L"\".");
 							}
 							else
 							{
@@ -378,7 +390,11 @@ GuiInstanceContext
 						else if (name->IsEventAttributeName())
 						{
 							// collect event setters
-							if (!setter->eventHandlers.Keys().Contains(GlobalStringKey::Get(name->name)))
+							if (setter->eventHandlers.Keys().Contains(GlobalStringKey::Get(name->name)))
+							{
+								errors.Add(L"Duplicated event \"" + name->name + L"\".");
+							}
+							else
 							{
 								auto value = MakePtr<GuiAttSetterRepr::EventValue>();
 								value->binding = GlobalStringKey::Get(name->binding);

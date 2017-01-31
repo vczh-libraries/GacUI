@@ -181,6 +181,15 @@ ApplyStyle
 					dst->eventHandlers.Add(eventName, srcValue);
 				}
 			}
+
+			FOREACH_INDEXER(GlobalStringKey, varName, srcIndex, src->environmentVariables.Keys())
+			{
+				if (!dst->environmentVariables.Keys().Contains(varName))
+				{
+					auto srcValue = src->environmentVariables.Values()[srcIndex];
+					dst->environmentVariables.Add(varName, srcValue);
+				}
+			}
 		}
 
 		void ApplyStyle(Ptr<GuiInstanceStyle> style, Ptr<GuiConstructorRepr> ctor)
