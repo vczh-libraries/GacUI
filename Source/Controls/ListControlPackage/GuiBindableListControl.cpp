@@ -43,7 +43,7 @@ namespace vl
 			template<typename T>
 			T ReadProperty(const Value& thisObject, const ItemProperty<T>& propertyName)
 			{
-				if (propertyName)
+				if (!thisObject.IsNull() && propertyName)
 				{
 					return propertyName(thisObject);
 				}
@@ -57,7 +57,7 @@ namespace vl
 			T ReadProperty(const Value& thisObject, const WritableItemProperty<T>& propertyName)
 			{
 				auto defaultValue = DefaultValueOf<T>::Get();
-				if (propertyName)
+				if (!thisObject.IsNull() && propertyName)
 				{
 					return propertyName(thisObject, defaultValue, false);
 				}
@@ -70,7 +70,7 @@ namespace vl
 			template<typename T>
 			void WriteProperty(const Value& thisObject, const WritableItemProperty<T>& propertyName, const T& value)
 			{
-				if (propertyName)
+				if (!thisObject.IsNull() && propertyName)
 				{
 					propertyName(thisObject, value, true);
 				}
