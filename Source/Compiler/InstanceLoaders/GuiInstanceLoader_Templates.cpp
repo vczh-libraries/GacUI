@@ -121,14 +121,14 @@ GuiTemplateInstanceLoader
 						block->statements.Add(assignStat);
 					}
 
-					if (auto stat = InitializeRootInstance(typeInfo, variableName, arguments, errors))
+					if (auto stat = InitializeRootInstance(resolvingResult, typeInfo, variableName, arguments, errors))
 					{
 						CopyFrom(block->statements, stat.Cast<WfBlockStatement>()->statements, true);
 					}
 					return block;
 				}
 
-				Ptr<workflow::WfStatement> InitializeRootInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+				Ptr<workflow::WfStatement> InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					if (arguments.Count() > 0)
 					{
