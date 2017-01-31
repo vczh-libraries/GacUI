@@ -1741,6 +1741,7 @@ Type Declaration
 
 				CLASS_MEMBER_METHOD(GetCellValue, { L"row" })
 				CLASS_MEMBER_METHOD(SetCellValue, { L"row" _ L"value" })
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ValueProperty)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
 			END_CLASS_MEMBER(BindableDataColumn)

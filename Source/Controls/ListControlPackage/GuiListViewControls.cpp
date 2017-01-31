@@ -1553,12 +1553,12 @@ ListViewColumn
 					NotifyUpdate();
 				}
 
-				const WString& ListViewColumn::GetTextProperty()
+				ItemProperty<WString> ListViewColumn::GetTextProperty()
 				{
 					return textProperty;
 				}
 
-				void ListViewColumn::SetTextProperty(const WString& value)
+				void ListViewColumn::SetTextProperty(const ItemProperty<WString>& value)
 				{
 					textProperty = value;
 					NotifyUpdate();

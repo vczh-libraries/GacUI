@@ -39,8 +39,8 @@ GuiBindableTextList
 					Ptr<description::IValueReadonlyList>			itemSource;
 
 				public:
-					WString											textProperty;
-					WString											checkedProperty;
+					ItemProperty<WString>							textProperty;
+					WritableItemProperty<bool>						checkedProperty;
 
 				public:
 					ItemSource();
@@ -98,17 +98,17 @@ GuiBindableTextList
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
 				/// <returns>The text property name.</returns>
-				const WString&										GetTextProperty();
+				ItemProperty<WString>								GetTextProperty();
 				/// <summary>Set the text property name to get the item text from an item.</summary>
 				/// <param name="value">The text property name.</param>
-				void												SetTextProperty(const WString& value);
+				void												SetTextProperty(const ItemProperty<WString>& value);
 				
 				/// <summary>Get the checked property name to get the check state from an item.</summary>
 				/// <returns>The checked property name.</returns>
-				const WString&										GetCheckedProperty();
+				WritableItemProperty<bool>							GetCheckedProperty();
 				/// <summary>Set the checked property name to get the check state from an item.</summary>
 				/// <param name="value">The checked property name.</param>
-				void												SetCheckedProperty(const WString& value);
+				void												SetCheckedProperty(const WritableItemProperty<bool>& value);
 
 				/// <summary>Get the selected item.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
@@ -139,8 +139,8 @@ GuiBindableListView
 					Ptr<description::IValueReadonlyList>			itemSource;
 
 				public:
-					WString											largeImageProperty;
-					WString											smallImageProperty;
+					ItemProperty<Ptr<GuiImageData>>					largeImageProperty;
+					ItemProperty<Ptr<GuiImageData>>					smallImageProperty;
 
 				public:
 					ItemSource();
@@ -226,17 +226,17 @@ GuiBindableListView
 				
 				/// <summary>Get the large image property name to get the large image from an item.</summary>
 				/// <returns>The large image property name.</returns>
-				const WString&										GetLargeImageProperty();
+				ItemProperty<Ptr<GuiImageData>>						GetLargeImageProperty();
 				/// <summary>Set the large image property name to get the large image from an item.</summary>
 				/// <param name="value">The large image property name.</param>
-				void												SetLargeImageProperty(const WString& value);
+				void												SetLargeImageProperty(const ItemProperty<Ptr<GuiImageData>>& value);
 				
 				/// <summary>Get the small image property name to get the small image from an item.</summary>
 				/// <returns>The small image property name.</returns>
-				const WString&										GetSmallImageProperty();
+				ItemProperty<Ptr<GuiImageData>>						GetSmallImageProperty();
 				/// <summary>Set the small image property name to get the small image from an item.</summary>
 				/// <param name="value">The small image property name.</param>
-				void												SetSmallImageProperty(const WString& value);
+				void												SetSmallImageProperty(const ItemProperty<Ptr<GuiImageData>>& value);
 
 				/// <summary>Get the selected item.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
@@ -250,6 +250,7 @@ GuiBindableTreeView
 			/// <summary>A bindable Tree view control.</summary>
 			class GuiBindableTreeView : public GuiVirtualTreeView, public Description<GuiBindableTreeView>
 			{
+				using IValueEnumerable = reflection::description::IValueEnumerable;
 			protected:
 				class ItemSource;
 
@@ -300,9 +301,9 @@ GuiBindableTreeView
 				{
 					friend class ItemSourceNode;
 				public:
-					WString											textProperty;
-					WString											imageProperty;
-					WString											childrenProperty;
+					ItemProperty<WString>							textProperty;
+					ItemProperty<Ptr<GuiImageData>>					imageProperty;
+					ItemProperty<Ptr<IValueEnumerable>>				childrenProperty;
 					Ptr<ItemSourceNode>								rootNode;
 
 				public:
@@ -359,24 +360,24 @@ GuiBindableTreeView
 				
 				/// <summary>Get the text property name to get the item text from an item.</summary>
 				/// <returns>The text property name.</returns>
-				const WString&										GetTextProperty();
+				ItemProperty<WString>								GetTextProperty();
 				/// <summary>Set the text property name to get the item text from an item.</summary>
 				/// <param name="value">The text property name.</param>
-				void												SetTextProperty(const WString& value);
+				void												SetTextProperty(const ItemProperty<WString>& value);
 				
 				/// <summary>Get the image property name to get the image from an item.</summary>
 				/// <returns>The image property name.</returns>
-				const WString&										GetImageProperty();
+				ItemProperty<Ptr<GuiImageData>>						GetImageProperty();
 				/// <summary>Set the image property name to get the image from an item.</summary>
 				/// <param name="value">The image property name.</param>
-				void												SetImageProperty(const WString& value);
+				void												SetImageProperty(const ItemProperty<Ptr<GuiImageData>>& value);
 				
 				/// <summary>Get the children property name to get the children from an item.</summary>
 				/// <returns>The children property name.</returns>
-				const WString&										GetChildrenProperty();
+				ItemProperty<Ptr<IValueEnumerable>>					GetChildrenProperty();
 				/// <summary>Set the children property name to get the children from an item.</summary>
 				/// <param name="value">The children property name.</param>
-				void												SetChildrenProperty(const WString& value);
+				void												SetChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value);
 
 				/// <summary>Get the selected item.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
@@ -395,9 +396,12 @@ GuiBindableDataGrid
 				class BindableDataColumn : public StructuredColummProviderBase, public Description<BindableDataColumn>
 				{
 					friend class BindableDataProvider;
+
+					using Value = reflection::description::Value;
 				protected:
 					BindableDataProvider*							dataProvider;
-					WString											valueProperty;
+					ItemProperty<WString>							textProperty;
+					WritableItemProperty<Value>						valueProperty;
 
 				public:
 					BindableDataColumn();
@@ -405,6 +409,7 @@ GuiBindableDataGrid
 				
 					/// <summary>Value property name changed event.</summary>
 					compositions::GuiNotifyEvent					ValuePropertyChanged;
+					compositions::GuiNotifyEvent					TextPropertyChanged;
 
 					void											SaveCellData(vint row, IDataEditor* dataEditor)override;
 					WString											GetCellText(vint row)override;
@@ -417,13 +422,20 @@ GuiBindableDataGrid
 					/// <param name="row">The row index of the item.</param>
 					/// <param name="value">The value property name.</param>
 					void											SetCellValue(vint row, description::Value value);
+
+					/// <summary>Get the text property name to get the cell text from an item.</summary>
+					/// <returns>The text property name.</returns>
+					ItemProperty<WString>							GetTextProperty();
+					/// <summary>Set the text property name to get the cell text from an item.</summary>
+					/// <param name="value">The text property name.</param>
+					void											SetTextProperty(const ItemProperty<WString>& value);
 				
 					/// <summary>Get the value property name to get the cell value from an item.</summary>
 					/// <returns>The value property name.</returns>
-					const WString&									GetValueProperty();
-					/// <summary>Set the value property name to get the cell value to an item.</summary>
+					WritableItemProperty<Value>						GetValueProperty();
+					/// <summary>Set the value property name to get the cell value from an item.</summary>
 					/// <param name="value">The value property name.</param>
-					void											SetValueProperty(const WString& value);
+					void											SetValueProperty(const WritableItemProperty<Value>& value);
 					
 					/// <summary>Get the view model context which will be used as a view model to create visualizers and editors.</summary>
 					/// <returns>The value model context.</returns>

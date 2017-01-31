@@ -20,6 +20,12 @@ namespace vl
 		{
 			class GuiListViewBase;
 
+			template<typename T>
+			using ItemProperty = Func<T(const reflection::description::Value&)>;
+
+			template<typename T>
+			using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
+
 			namespace list
 			{
 
@@ -752,7 +758,7 @@ ListView
 				protected:
 					ListViewColumns*								owner;
 					WString											text;
-					WString											textProperty;
+					ItemProperty<WString>							textProperty;
 					vint											size;
 					GuiMenu*										dropdownPopup;
 					GuiListViewColumnHeader::ColumnSortingState		sortingState;
@@ -772,10 +778,10 @@ ListView
 					void											SetText(const WString& value);
 					/// <summary>Get the text property of this item.</summary>
 					/// <returns>The text property of this item.</returns>
-					const WString&									GetTextProperty();
+					ItemProperty<WString>							GetTextProperty();
 					/// <summary>Set the text property of this item.</summary>
 					/// <param name="value">The text property of this item.</param>
-					void											SetTextProperty(const WString& value);
+					void											SetTextProperty(const ItemProperty<WString>& value);
 					/// <summary>Get the size of this item.</summary>
 					/// <returns>The size of this item.</returns>
 					vint											GetSize();
