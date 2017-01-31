@@ -28,24 +28,26 @@ namespace vl
 			typedef collections::Dictionary<GlobalStringKey, Ptr<description::ITypeInfo>>		TypeOverrideMap;
 			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
+			typedef collections::Group<GlobalStringKey, WString>								EnvironmentVariableGroup;
 
 			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
-				Ptr<GuiInstanceContext>							context;
-				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;
-				collections::List<WString>						sharedModules;
+				Ptr<GuiInstanceContext>							context;						// compiling context
+				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;	// type of the context
+				collections::List<WString>						sharedModules;					// code of all shared workflow scripts
+				EnvironmentVariableGroup						envVars;						// current environment variable value stacks
 
-				Ptr<workflow::WfModule>							moduleForValidate;
-				Ptr<workflow::WfBlockStatement>					moduleContent;
+				Ptr<workflow::WfModule>							moduleForValidate;				// module skeleton for validating statements
+				Ptr<workflow::WfBlockStatement>					moduleContent;					// placeholder in moduleForValidate for validating statements
 
-				collections::List<GlobalStringKey>				referenceNames;
+				collections::List<GlobalStringKey>				referenceNames;					// all reference names
 				IGuiInstanceLoader::ArgumentMap					rootCtorArguments;
 				IGuiInstanceLoader*								rootLoader = nullptr;
 				IGuiInstanceLoader::TypeInfo					rootTypeInfo;
 
-				VariableTypeInfoMap								typeInfos;
-				TypeOverrideMap									typeOverrides;
-				PropertyResolvingMap							propertyResolvings;
+				VariableTypeInfoMap								typeInfos;						// type of references
+				TypeOverrideMap									typeOverrides;					// extra type information of references
+				PropertyResolvingMap							propertyResolvings;				// information of property values which are calling constructors
 			};
 		}
 		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager();
@@ -122,6 +124,21 @@ WorkflowCompiler (Compile)
 		extern bool												Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
 		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, types::ErrorList& errors);
 		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex);
+
+#define WORKFLOW_ENVIRONMENT_VARIABLE_ADD\
+		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
+		{\
+			auto value = repr->environmentVariables.Values()[index];\
+			resolvingResult.envVars.Add(envVar, value);\
+		}\
+
+#define WORKFLOW_ENVIRONMENT_VARIABLE_REMOVE\
+		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
+		{\
+			auto value = repr->environmentVariables.Values()[index];\
+			resolvingResult.envVars.Remove(envVar, value);\
+		}\
+
 	}
 }
 

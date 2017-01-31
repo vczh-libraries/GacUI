@@ -92,6 +92,8 @@ WorkflowGenerateCreatingVisitor
 				
 				if (reprTypeInfo.typeDescriptor && (reprTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 				{
+					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
+
 					Group<GlobalStringKey, IGuiInstanceLoader*> usedProps;
 					FOREACH(GlobalStringKey, prop, From(repr->setters.Keys()).Reverse())
 					{
@@ -193,6 +195,8 @@ WorkflowGenerateCreatingVisitor
 							}
 						}
 					}
+
+					WORKFLOW_ENVIRONMENT_VARIABLE_REMOVE
 				}
 			}
 
@@ -200,6 +204,9 @@ WorkflowGenerateCreatingVisitor
 			{
 				List<GlobalStringKey> ctorProps;
 				loader->GetConstructorParameters(typeInfo, ctorProps);
+
+				WORKFLOW_ENVIRONMENT_VARIABLE_ADD
+
 				FOREACH(GlobalStringKey, prop, ctorProps)
 				{
 					auto index = repr->setters.Keys().IndexOf(prop);
@@ -236,6 +243,8 @@ WorkflowGenerateCreatingVisitor
 						}
 					}
 				}
+
+				WORKFLOW_ENVIRONMENT_VARIABLE_REMOVE
 			}
 
 			void Visit(GuiConstructorRepr* repr)override

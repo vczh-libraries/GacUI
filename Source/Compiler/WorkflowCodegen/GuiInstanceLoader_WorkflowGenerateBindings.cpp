@@ -42,6 +42,8 @@ WorkflowGenerateBindingVisitor
 				
 				if (reprTypeInfo.typeDescriptor && (reprTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 				{
+					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
+
 					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 					{
 						auto propertyName = repr->setters.Keys()[index];
@@ -84,50 +86,52 @@ WorkflowGenerateBindingVisitor
 							}
 						}
 					}
-				}
 
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
-				{
-					if (reprTypeInfo.typeDescriptor)
+					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
 					{
-						GlobalStringKey propertyName = repr->eventHandlers.Keys()[index];
-						auto td = reprTypeInfo.typeDescriptor;
-						auto eventInfo = td->GetEventByName(propertyName.ToString(), true);
-
-						if (!eventInfo)
+						if (reprTypeInfo.typeDescriptor)
 						{
-							errors.Add(L"Precompile: Event \"" + propertyName.ToString() + L"\" cannot be found in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
-						}
-						else
-						{
-							Ptr<WfStatement> statement;
+							GlobalStringKey propertyName = repr->eventHandlers.Keys()[index];
+							auto td = reprTypeInfo.typeDescriptor;
+							auto eventInfo = td->GetEventByName(propertyName.ToString(), true);
 
-							if (handler->binding == GlobalStringKey::Empty)
+							if (!eventInfo)
 							{
-								statement = Workflow_InstallEvent(repr->instanceName, eventInfo, handler->value);
+								errors.Add(L"Precompile: Event \"" + propertyName.ToString() + L"\" cannot be found in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
 							}
 							else
 							{
-								auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
-								if (binder)
+								Ptr<WfStatement> statement;
+
+								if (handler->binding == GlobalStringKey::Empty)
 								{
-									statement = binder->GenerateInstallStatement(repr->instanceName, eventInfo, handler->value, errors);
+									statement = Workflow_InstallEvent(repr->instanceName, eventInfo, handler->value);
 								}
 								else
 								{
-									errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"-" + handler->binding.ToString() + L"\" cannot be found.");
+									auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
+									if (binder)
+									{
+										statement = binder->GenerateInstallStatement(repr->instanceName, eventInfo, handler->value, errors);
+									}
+									else
+									{
+										errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"-" + handler->binding.ToString() + L"\" cannot be found.");
+									}
 								}
-							}
 
-							if (statement)
-							{
-								if (Workflow_ValidateStatement(resolvingResult, errors, handler->value, statement))
+								if (statement)
 								{
-									statements->statements.Add(statement);
+									if (Workflow_ValidateStatement(resolvingResult, errors, handler->value, statement))
+									{
+										statements->statements.Add(statement);
+									}
 								}
 							}
 						}
 					}
+
+					WORKFLOW_ENVIRONMENT_VARIABLE_REMOVE
 				}
 			}
 
