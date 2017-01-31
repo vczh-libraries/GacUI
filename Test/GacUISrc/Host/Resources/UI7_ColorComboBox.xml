@@ -10,6 +10,7 @@
         {
           class ColorItem
           {
+            var checked : bool = false;
             var name : string = "";
             var color : Color = (cast Color "#000000");
             
@@ -61,7 +62,7 @@
     <Instance ref.Class="demo::MainWindow">
       <Window Text-format="C1=$(comboFew.Text), C2=$(comboMany.Text), L1=$(listFew.SelectedItemText), L2=$(listMany.SelectedItemText)" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0" env.ItemType="demo::ColorItem^" env.ItemName="ITEM">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -77,7 +78,8 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
                 <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.TextProperty>name</att.TextProperty>
+                  <att.TextProperty>ITEM.name</att.TextProperty>
+                  <att.CheckedProperty>ITEM.checked</att.CheckedProperty>
                   <att.ItemSource-eval>demo::ColorItem::GetFewItems()</att.ItemSource-eval>
                   <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
                 </BindableTextList>
@@ -90,7 +92,7 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
                 <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.TextProperty>name</att.TextProperty>
+                  <att.TextProperty>ITEM.name</att.TextProperty>
                   <att.ItemSource-eval>demo::ColorItem::GetManyItems()</att.ItemSource-eval>
                   <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
                 </BindableTextList>
@@ -100,7 +102,7 @@
 
           <Cell Site="row:1 column:0">
             <BindableTextList ref.Name="listFew" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-              <att.TextProperty>name</att.TextProperty>
+              <att.TextProperty>ITEM.name</att.TextProperty>
               <att.ItemSource-eval>demo::ColorItem::GetFewItems()</att.ItemSource-eval>
               <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
@@ -108,7 +110,7 @@
           </Cell>
           <Cell Site="row:1 column:1">
             <BindableTextList ref.Name="listMany" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-              <att.TextProperty>name</att.TextProperty>
+              <att.TextProperty>ITEM.name</att.TextProperty>
               <att.ItemSource-eval>demo::ColorItem::GetManyItems()</att.ItemSource-eval>
               <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>

@@ -233,6 +233,10 @@ GuiInstanceContext
 								values.Add(ctor);
 							}
 						}
+						else if (!name->IsPropertyElementName() && !name->IsEventElementName())
+						{
+							errors.Add(L"Unknown element name: \"" + element->name.value + L"\".");
+						}
 					}
 				}
 			}
@@ -381,6 +385,10 @@ GuiInstanceContext
 								value->value = att->value.value;
 								setter->eventHandlers.Add(GlobalStringKey::Get(name->name), value);
 							}
+						}
+						else
+						{
+							errors.Add(L"Unknown attribute name: \"" + att->name.value + L"\".");
 						}
 					}
 				}
