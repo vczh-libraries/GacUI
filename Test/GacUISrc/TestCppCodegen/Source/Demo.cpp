@@ -52,6 +52,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
+	__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
 	__vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__::__vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__(::demo::ColorBomboItemTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
@@ -129,15 +147,69 @@ Closures
 	{
 	}
 
-	void __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	bool __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::ColorItem>>(__vwsn_item_);
+		if (__vwsn_update_)
 		{
-			return;
+			(::vl::__vwsn::This(item.Obj())->checked = __vwsn_value_);
 		}
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->SetText(__vwsn_new_);
+		else
+		{
+			return ::vl::__vwsn::This(item.Obj())->checked;
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::WString __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::ColorItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->name;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::WString __vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::ColorItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->name;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::WString __vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::ColorItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->name;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::WString __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto THE_ITEM_VALUE = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::ColorItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(THE_ITEM_VALUE.Obj())->name;
 	}
 
 	//-------------------------------------------------------------------
@@ -1003,7 +1075,10 @@ Class (::demo::MainWindowConstructor)
 			(::vl::__vwsn::This(this)->__vwsn_precompile_3 = new ::vl::presentation::controls::GuiBindableTextList(__vwsn_controlStyle_, ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextListItemStyle()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetTextProperty(::vl::WString(L"name", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetCheckedProperty(LAMBDA(::vl_workflow_global::__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
@@ -1040,7 +1115,7 @@ Class (::demo::MainWindowConstructor)
 			(::vl::__vwsn::This(this)->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiBindableTextList(__vwsn_controlStyle_, ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextListItemStyle()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetTextProperty(::vl::WString(L"name", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
@@ -1077,7 +1152,7 @@ Class (::demo::MainWindowConstructor)
 			(::vl::__vwsn::This(this)->listFew = new ::vl::presentation::controls::GuiBindableTextList(__vwsn_controlStyle_, ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextListItemStyle()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->listFew)->SetTextProperty(::vl::WString(L"name", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->listFew)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->listFew)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
@@ -1107,7 +1182,7 @@ Class (::demo::MainWindowConstructor)
 			(::vl::__vwsn::This(this)->listMany = new ::vl::presentation::controls::GuiBindableTextList(__vwsn_controlStyle_, ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextListItemStyle()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->listMany)->SetTextProperty(::vl::WString(L"name", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->listMany)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->listMany)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
@@ -1151,7 +1226,7 @@ Class (::demo::MainWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
-			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Subscribe(LAMBDA(::vl_workflow_global::__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->Update();
 		}
 	}
@@ -1234,6 +1309,7 @@ namespace vl
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::ColorItem>(const ::vl::WString&, const ::vl::WString&), { L"_name" _ L"_color" })
 				CLASS_MEMBER_STATIC_METHOD(GetFewItems, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(GetManyItems, NO_PARAMETER)
+				CLASS_MEMBER_FIELD(checked)
 				CLASS_MEMBER_FIELD(color)
 				CLASS_MEMBER_FIELD(name)
 			END_CLASS_MEMBER(::demo::ColorItem)

@@ -452,13 +452,13 @@ Workflow_GenerateEventHandler
 			{
 				{
 					auto arg = MakePtr<WfFunctionArgument>();
-					arg->name.value = L"SENDER";
+					arg->name.value = L"sender";
 					arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(1));
 					func->arguments.Add(arg);
 				}
 				{
 					auto arg = MakePtr<WfFunctionArgument>();
-					arg->name.value = L"ARGS";
+					arg->name.value = L"arguments";
 					arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(2));
 					func->arguments.Add(arg);
 				}
@@ -469,7 +469,7 @@ Workflow_GenerateEventHandler
 				for (vint i = 0; i < count; i++)
 				{
 					auto arg = MakePtr<WfFunctionArgument>();
-					arg->name.value = L"ARG" + itow(i + 1);
+					arg->name.value = L"arg" + itow(i + 1);
 					arg->type = GetTypeFromTypeInfo(type.Obj());
 					func->arguments.Add(arg);
 				}

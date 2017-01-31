@@ -62,7 +62,7 @@
     <Instance ref.Class="demo::MainWindow">
       <Window Text-format="C1=$(comboFew.Text), C2=$(comboMany.Text), L1=$(listFew.SelectedItemText), L2=$(listMany.SelectedItemText)" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0" env.ItemType="demo::ColorItem^" env.ItemName="ITEM">
+        <Table CellPadding="3" AlignmentToParent="left:0 top:0 right:0 bottom:0" env.ItemType="demo::ColorItem^">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -78,8 +78,8 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
                 <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.TextProperty>ITEM.name</att.TextProperty>
-                  <att.CheckedProperty>ITEM.checked</att.CheckedProperty>
+                  <att.TextProperty>name</att.TextProperty>
+                  <att.CheckedProperty>checked</att.CheckedProperty>
                   <att.ItemSource-eval>demo::ColorItem::GetFewItems()</att.ItemSource-eval>
                   <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
                 </BindableTextList>
@@ -92,7 +92,7 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
                 <BindableTextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.TextProperty>ITEM.name</att.TextProperty>
+                  <att.TextProperty>name</att.TextProperty>
                   <att.ItemSource-eval>demo::ColorItem::GetManyItems()</att.ItemSource-eval>
                   <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
                 </BindableTextList>
@@ -102,15 +102,15 @@
 
           <Cell Site="row:1 column:0">
             <BindableTextList ref.Name="listFew" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-              <att.TextProperty>ITEM.name</att.TextProperty>
+              <att.TextProperty>item.name</att.TextProperty>
               <att.ItemSource-eval>demo::ColorItem::GetFewItems()</att.ItemSource-eval>
               <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </BindableTextList>
           </Cell>
           <Cell Site="row:1 column:1">
-            <BindableTextList ref.Name="listMany" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-              <att.TextProperty>ITEM.name</att.TextProperty>
+            <BindableTextList ref.Name="listMany" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false" env.ItemName="THE_ITEM_VALUE">
+              <att.TextProperty>THE_ITEM_VALUE.name</att.TextProperty>
               <att.ItemSource-eval>demo::ColorItem::GetManyItems()</att.ItemSource-eval>
               <att.ItemTemplate>demo::ColorListItemTemplate</att.ItemTemplate>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>

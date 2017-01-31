@@ -694,15 +694,180 @@ GuiDefaultInstanceLoader
 							break;
 						case GuiInstancePropertyInfo::SupportAssign:
 							{
+								auto propertyValueExpression = arguments.GetByIndex(index)[0].expression;
+
 								if (IsItemPropertyName(propertyType.f1))
 								{
-									if (IsItemPropertyType(propertyType.f1->GetReturn()))
+									bool isItemProperty = IsItemPropertyType(propertyType.f1->GetReturn());
+									bool isWritableItemProperty = IsWritableItemPropertyType(propertyType.f1->GetReturn());
+
+									if (isItemProperty || isWritableItemProperty)
 									{
-										break;
-									}
-									else if (IsWritableItemPropertyType(propertyType.f1->GetReturn()))
-									{
-										break;
+										auto propertyDescription = propertyValueExpression.Cast<WfStringExpression>()->value.value;
+										Ptr<WfExpression> propertyExpression;
+										{
+											auto typeParser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
+											List<WString> parserErrors;
+											propertyExpression = typeParser->TypedParse(propertyDescription, parserErrors);
+											if (!propertyExpression)
+											{
+												errors.Add(L"Precompile: Failed to parse the value of property \"" + propertyType.f1->GetName() + L"\": " + propertyDescription);
+												break;
+											}
+										};
+
+										vint indexItemType = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemType"));
+										if (indexItemType == -1)
+										{
+											auto error
+												= L"Precompile: env.ItemType must be specified before assigning \""
+												+ propertyDescription
+												+ L"\" to property \""
+												+ propertyType.f1->GetName()
+												+ L"\" of type \""
+												+ propertyType.f1->GetOwnerTypeDescriptor()->GetTypeName()
+												+ L"\".";
+											errors.Add(error);
+											break;
+										}
+
+										Ptr<WfType> itemType;
+										{
+											auto typeParser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
+											const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
+											auto code = values[values.Count() - 1];
+
+											List<WString> parserErrors;
+											itemType = typeParser->TypedParse(code, parserErrors);
+											if (!itemType)
+											{
+												errors.Add(L"Precompile: Failed to parse the value of env.ItemType: " + code);
+												break;
+											}
+										};
+
+										vint indexItemName = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemName"));
+										WString itemName(L"item", false);
+										if (indexItemName != -1)
+										{
+											const auto& values = resolvingResult.envVars.GetByIndex(indexItemName);
+											itemName = values[values.Count() - 1];
+										}
+
+										if (auto refExpr = propertyExpression.Cast<WfReferenceExpression>())
+										{
+											if (refExpr->name.value != itemName)
+											{
+												auto refItem = MakePtr<WfReferenceExpression>();
+												refItem->name.value = itemName;
+
+												auto member = MakePtr<WfMemberExpression>();
+												member->parent = refItem;
+												member->name.value = refExpr->name.value;
+
+												propertyExpression = member;
+											}
+										}
+
+										auto funcDecl = MakePtr<WfFunctionDeclaration>();
+										funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
+										{
+											auto genericType = propertyType.f1->GetReturn()->GetElementType();
+											funcDecl->returnType = GetTypeFromTypeInfo(genericType->GetGenericArgument(0));
+											{
+												auto argument = MakePtr<WfFunctionArgument>();
+												argument->name.value = L"<item>";
+												argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(1));
+												funcDecl->arguments.Add(argument);
+											}
+
+											if (isWritableItemProperty)
+											{
+												{
+													auto argument = MakePtr<WfFunctionArgument>();
+													argument->name.value = L"<value>";
+													argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(2));
+													funcDecl->arguments.Add(argument);
+												}
+												{
+													auto argument = MakePtr<WfFunctionArgument>();
+													argument->name.value = L"<update>";
+													argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(3));
+													funcDecl->arguments.Add(argument);
+												}
+											}
+										}
+
+										auto funcBlock = MakePtr<WfBlockStatement>();
+										funcDecl->statement = funcBlock;
+
+										{
+											auto refItem = MakePtr<WfReferenceExpression>();
+											refItem->name.value = L"<item>";
+
+											auto refCast = MakePtr<WfTypeCastingExpression>();
+											refCast->strategy = WfTypeCastingStrategy::Strong;
+											refCast->type = itemType;
+											refCast->expression = refItem;
+
+											auto varDecl = MakePtr<WfVariableDeclaration>();
+											varDecl->name.value = itemName;
+											varDecl->expression = refCast;
+
+											auto varStat = MakePtr<WfVariableStatement>();
+											varStat->variable = varDecl;
+											funcBlock->statements.Add(varStat);
+										}
+
+										Ptr<WfReturnStatement> returnStat;
+										{
+											returnStat = MakePtr<WfReturnStatement>();
+											returnStat->expression = propertyExpression;
+										}
+
+										if (isItemProperty)
+										{
+											funcBlock->statements.Add(returnStat);
+										}
+										else if (isWritableItemProperty)
+										{
+											auto ifStat = MakePtr<WfIfStatement>();
+											funcBlock->statements.Add(ifStat);
+											{
+												auto refUpdate = MakePtr<WfReferenceExpression>();
+												refUpdate->name.value = L"<update>";
+
+												ifStat->expression = refUpdate;
+											}
+											{
+												auto block = MakePtr<WfBlockStatement>();
+												ifStat->trueBranch = block;
+
+												{
+													auto refValue = MakePtr<WfReferenceExpression>();
+													refValue->name.value = L"<value>";
+
+													auto assignExpr = MakePtr<WfBinaryExpression>();
+													assignExpr->op = WfBinaryOperator::Assign;
+													assignExpr->first = CopyExpression(propertyExpression);
+													assignExpr->second = refValue;
+
+													auto stat = MakePtr<WfExpressionStatement>();
+													stat->expression = assignExpr;
+													block->statements.Add(stat);
+												}
+											}
+											{
+												auto block = MakePtr<WfBlockStatement>();
+												ifStat->falseBranch = block;
+
+												block->statements.Add(returnStat);
+											}
+										}
+
+										auto funcExpr = MakePtr<WfFunctionExpression>();
+										funcExpr->function = funcDecl;
+										propertyValueExpression = funcExpr;
 									}
 								}
 
@@ -716,7 +881,7 @@ GuiDefaultInstanceLoader
 								auto assign = MakePtr<WfBinaryExpression>();
 								assign->op = WfBinaryOperator::Assign;
 								assign->first = refProp;
-								assign->second = arguments.GetByIndex(index)[0].expression;
+								assign->second = propertyValueExpression;
 
 								auto stat = MakePtr<WfExpressionStatement>();
 								stat->expression = assign;

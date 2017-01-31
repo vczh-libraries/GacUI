@@ -29,11 +29,16 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
+	struct __vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 	struct __vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf3_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf4_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__;
 	struct __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 	class __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 	class __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 	class __vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
@@ -159,7 +164,12 @@ namespace demo
 		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc16_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
 		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
@@ -192,6 +202,7 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorItem>;
 #endif
 	public:
+		bool checked = false;
 		::vl::WString name = ::vl::WString(L"", false);
 		::vl::presentation::Color color = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#000000", false));
 		ColorItem(const ::vl::WString& _name, const ::vl::WString& _color);
@@ -216,6 +227,15 @@ namespace vl_workflow_global
 /***********************************************************************
 Closures
 ***********************************************************************/
+
+	struct __vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
 
 	struct __vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__
 	{
@@ -259,7 +279,43 @@ Closures
 
 		__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		bool operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const;
+	};
+
+	struct __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	class __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
