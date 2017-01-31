@@ -253,9 +253,11 @@ Instance Representation
 			
 			typedef collections::Dictionary<GlobalStringKey, Ptr<SetterValue>>			SetteValuerMap;
 			typedef collections::Dictionary<GlobalStringKey, Ptr<EventValue>>			EventHandlerMap;
+			typedef collections::Dictionary<GlobalStringKey, WString>					EnvironmentVariableMap;
 		public:
 			SetteValuerMap							setters;					// empty key means default property
 			EventHandlerMap							eventHandlers;
+			EnvironmentVariableMap					environmentVariables;
 			GlobalStringKey							instanceName;
 
 			void									Accept(IVisitor* visitor)override{visitor->Visit(this);}
@@ -326,12 +328,13 @@ Instance Context
 				WString								name;
 				WString								binding;
 
-				bool IsCtorName(){ return category==L"" && name!=L"" && binding==L""; }
-				bool IsReferenceAttributeName(){ return namespaceName==L"" && category==L"ref" && name!=L"" && binding==L""; }
-				bool IsPropertyAttributeName(){ return namespaceName==L"" && category==L"" && name!=L""; }
-				bool IsPropertyElementName(){ return namespaceName==L"" && category==L"att" && name!=L""; }
-				bool IsEventAttributeName(){ return namespaceName==L"" && category==L"ev" && name!=L""; }
-				bool IsEventElementName(){ return namespaceName==L"" && category==L"ev" && name!=L""; }
+				bool IsCtorName() { return category == L"" && name != L"" && binding == L""; }
+				bool IsReferenceAttributeName() { return namespaceName == L"" && category == L"ref" && name != L"" && binding == L""; }
+				bool IsEnvironmentAttributeName() { return namespaceName == L"" && category == L"env" && name != L""; }
+				bool IsPropertyAttributeName() { return namespaceName == L"" && category == L"" && name != L""; }
+				bool IsPropertyElementName() { return namespaceName == L"" && category == L"att" && name != L""; }
+				bool IsEventAttributeName() { return namespaceName == L"" && category == L"ev" && name != L""; }
+				bool IsEventElementName() { return namespaceName == L"" && category == L"ev" && name != L""; }
 			};
 		public:
 			Ptr<GuiConstructorRepr>					instance;
@@ -408,6 +411,11 @@ namespace vl
 	namespace presentation
 	{
 		using namespace reflection;
+
+		namespace types
+		{
+			struct ResolvingResult;
+		}
 
 /***********************************************************************
 Instance Loader
@@ -509,11 +517,11 @@ Instance Loader
 			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
 
 			virtual bool									CanCreate(const TypeInfo& typeInfo);
-			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors);
-			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
-			virtual Ptr<workflow::WfStatement>				CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
-			virtual Ptr<workflow::WfStatement>				AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
-			virtual Ptr<workflow::WfExpression>				GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfStatement>				CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfStatement>				AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors);
+			virtual Ptr<workflow::WfExpression>				GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors);
 		};
 
 /***********************************************************************
@@ -526,15 +534,15 @@ Instance Binder
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							ApplicableToConstructorArgument() = 0;
 			virtual bool							RequirePropertyExist() = 0;
-			virtual Ptr<workflow::WfExpression>		GenerateConstructorArgument(IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors) = 0;
-			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors) = 0;
+			virtual Ptr<workflow::WfExpression>		GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors) = 0;
+			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, collections::List<WString>& errors) = 0;
 		};
 
 		class IGuiInstanceEventBinder : public IDescriptable, public Description<IGuiInstanceEventBinder>
 		{
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
-			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors) = 0;
+			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, collections::List<WString>& errors) = 0;
 		};
 
 /***********************************************************************
@@ -741,24 +749,26 @@ namespace vl
 			typedef collections::Dictionary<GlobalStringKey, Ptr<description::ITypeInfo>>		TypeOverrideMap;
 			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
 			typedef collections::List<WString>													ErrorList;
+			typedef collections::Group<GlobalStringKey, WString>								EnvironmentVariableGroup;
 
 			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
-				Ptr<GuiInstanceContext>							context;
-				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;
-				collections::List<WString>						sharedModules;
+				Ptr<GuiInstanceContext>							context;						// compiling context
+				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;	// type of the context
+				collections::List<WString>						sharedModules;					// code of all shared workflow scripts
+				EnvironmentVariableGroup						envVars;						// current environment variable value stacks
 
-				Ptr<workflow::WfModule>							moduleForValidate;
-				Ptr<workflow::WfBlockStatement>					moduleContent;
+				Ptr<workflow::WfModule>							moduleForValidate;				// module skeleton for validating statements
+				Ptr<workflow::WfBlockStatement>					moduleContent;					// placeholder in moduleForValidate for validating statements
 
-				collections::List<GlobalStringKey>				referenceNames;
+				collections::List<GlobalStringKey>				referenceNames;					// all reference names
 				IGuiInstanceLoader::ArgumentMap					rootCtorArguments;
 				IGuiInstanceLoader*								rootLoader = nullptr;
 				IGuiInstanceLoader::TypeInfo					rootTypeInfo;
 
-				VariableTypeInfoMap								typeInfos;
-				TypeOverrideMap									typeOverrides;
-				PropertyResolvingMap							propertyResolvings;
+				VariableTypeInfoMap								typeInfos;						// type of references
+				TypeOverrideMap									typeOverrides;					// extra type information of references
+				PropertyResolvingMap							propertyResolvings;				// information of property values which are calling constructors
 			};
 		}
 		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager();
@@ -778,12 +788,12 @@ WorkflowCompiler (Parser)
 WorkflowCompiler (Installation)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, collections::List<WString>& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, collections::List<WString>& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, collections::List<WString>& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, collections::List<WString>& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
 		extern Ptr<workflow::WfFunctionDeclaration>				Workflow_GenerateEventHandler(description::IEventInfo* eventInfo);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
 
 /***********************************************************************
 WorkflowCompiler (Compile)
@@ -835,6 +845,21 @@ WorkflowCompiler (Compile)
 		extern bool												Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
 		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, types::ErrorList& errors);
 		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex);
+
+#define WORKFLOW_ENVIRONMENT_VARIABLE_ADD\
+		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
+		{\
+			auto value = repr->environmentVariables.Values()[index];\
+			resolvingResult.envVars.Add(envVar, value);\
+		}\
+
+#define WORKFLOW_ENVIRONMENT_VARIABLE_REMOVE\
+		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
+		{\
+			auto value = repr->environmentVariables.Values()[index];\
+			resolvingResult.envVars.Remove(envVar, value);\
+		}\
+
 	}
 }
 
@@ -1210,8 +1235,17 @@ GuiVrtualTypeInstanceLoader
 					return typeName == typeInfo.typeName;
 				}
 
-				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(const TypeInfo& typeInfo, Ptr<workflow::WfExpression> controlTemplate, collections::List<WString>& errors)
+				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)
 				{
+					Ptr<WfExpression> controlTemplate;
+					{
+						auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+						if (index != -1)
+						{
+							controlTemplate = arguments.GetByIndex(index)[0].expression;
+						}
+					}
+
 					if (controlTemplate)
 					{
 						if (auto controlTemplateTd = GetControlTemplateType(controlTemplate, typeInfo, errors))
@@ -1236,40 +1270,27 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
-				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
-					auto controlType = TypeInfoRetriver<TControl>::CreateTypeInfo();
-					auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (index != -1)
+					if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, arguments, errors))
 					{
-						auto controlTemplate = arguments.GetByIndex(index)[0].expression;
-						if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors))
-						{
-							auto createControl = MakePtr<WfBaseConstructorCall>();
-							createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-							createControl->arguments.Add(createStyleExpr);
-							return createControl;
-						}
+						auto createControl = MakePtr<WfBaseConstructorCall>();
+						createControl->type = GetTypeFromTypeInfo(TypeInfoRetriver<TControl>::CreateTypeInfo().Obj());
+						createControl->arguments.Add(createStyleExpr);
+						return createControl;
 					}
 					return nullptr;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
 					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
 
-					Ptr<WfExpression> createStyleExpr;
+					auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, arguments, errors);
+					if (!createStyleExpr)
 					{
-						Ptr<WfExpression> controlTemplate;
-						if (indexControlTemplate != -1)
-						{
-							controlTemplate = arguments.GetByIndex(indexControlTemplate)[0].expression;
-						}
-						if (!(createStyleExpr = CreateInstance_ControlTemplate(typeInfo, controlTemplate, errors)))
-						{
-							return nullptr;
-						}
+						return nullptr;
 					}
 				
 					auto block = MakePtr<WfBlockStatement>();

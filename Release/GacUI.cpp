@@ -4723,62 +4723,67 @@ namespace vl
 			using namespace reflection::description;
 			using namespace templates;
 
-			Value ReadProperty(const Value& thisObject, const WString& propertyName)
+			template<typename T>
+			struct DefaultValueOf
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (!thisObject.IsNull() && propertyName != L"")
+				static T Get()
 				{
-					auto td = thisObject.GetTypeDescriptor();
-					auto info = td->GetPropertyByName(propertyName, true);
-					if (info && info->IsReadable())
-					{
-						return info->GetValue(thisObject);
-					}
-					else
-					{
-						return Value();
-					}
+					return TypedValueSerializerProvider<T>::GetDefaultValue();
 				}
-				return thisObject;
-#else
-				CHECK_FAIL(L"ReadProperty(const Value&, const WString&)#This function cannot be called without reflection enabled.");
-#endif
+			};
+
+			template<typename T>
+			struct DefaultValueOf<Ptr<T>>
+			{
+				static Ptr<T> Get()
+				{
+					return nullptr;
+				}
+			};
+
+			template<>
+			struct DefaultValueOf<Value>
+			{
+				static Value Get()
+				{
+					return Value();
+				}
+			};
+
+			template<typename T>
+			T ReadProperty(const Value& thisObject, const ItemProperty<T>& propertyName)
+			{
+				if (propertyName)
+				{
+					return propertyName(thisObject);
+				}
+				else
+				{
+					return DefaultValueOf<T>::Get();
+				}
 			}
 
-			void WriteProperty(Value& thisObject, const WString& propertyName, const Value& newValue)
+			template<typename T>
+			T ReadProperty(const Value& thisObject, const WritableItemProperty<T>& propertyName)
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (!thisObject.IsNull() && propertyName != L"")
+				auto defaultValue = DefaultValueOf<T>::Get();
+				if (propertyName)
 				{
-					auto td = thisObject.GetTypeDescriptor();
-					auto info = td->GetPropertyByName(propertyName, true);
-					if (info && info->IsWritable())
-					{
-						info->SetValue(thisObject, newValue);
-					}
+					return propertyName(thisObject, defaultValue, false);
 				}
-#else
-				CHECK_FAIL(L"WriteProperty(const Value&, const WString&, const Value&)#This function cannot be called without reflection enabled.");
-#endif
+				else
+				{
+					return defaultValue;
+				}
 			}
 
-			WString GetValueText(const Value& value)
+			template<typename T>
+			void WriteProperty(const Value& thisObject, const WritableItemProperty<T>& propertyName, const T& value)
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
-				if (auto td = value.GetTypeDescriptor())
+				if (propertyName)
 				{
-					if (auto st = td->GetSerializableType())
-					{
-						WString result;
-						st->Serialize(value, result);
-						return result;
-					}
-					return L"<" + td->GetTypeName() + L">";
+					propertyName(thisObject, value, true);
 				}
-				return L"";
-#else
-				CHECK_FAIL(L"GetValueText(const Value&)#This function cannot be called without reflection enabled.");
-#endif
 			}
 
 /***********************************************************************
@@ -4916,7 +4921,7 @@ GuiBindableTextList::ItemSource
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
 					{
-						return GetValueText(ReadProperty(itemSource->Get(itemIndex), textProperty));
+						return ReadProperty(itemSource->Get(itemIndex), textProperty);
 					}
 				}
 				return L"";
@@ -4924,21 +4929,13 @@ GuiBindableTextList::ItemSource
 			
 			bool GuiBindableTextList::ItemSource::GetChecked(vint itemIndex)
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (itemSource)
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
 					{
-						auto value = ReadProperty(itemSource->Get(itemIndex), checkedProperty);
-						if (value.GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
-						{
-							return UnboxValue<bool>(value);
-						}
+						return ReadProperty(itemSource->Get(itemIndex), checkedProperty);
 					}
 				}
-#else
-				CHECK_FAIL(L"GuiBindableTextList::ItemSource::GetChecked(vint)#This function cannot be called without reflection enabled.");
-#endif
 				return false;
 			}
 			
@@ -4949,7 +4946,7 @@ GuiBindableTextList::ItemSource
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
 					{
 						auto thisValue = itemSource->Get(itemIndex);
-						WriteProperty(thisValue, checkedProperty, BoxValue(value));
+						WriteProperty(thisValue, checkedProperty, value);
 					}
 				}
 			}
@@ -4981,12 +4978,12 @@ GuiBindableTextList
 				itemSource->SetItemSource(_itemSource);
 			}
 
-			const WString& GuiBindableTextList::GetTextProperty()
+			ItemProperty<WString> GuiBindableTextList::GetTextProperty()
 			{
 				return itemSource->textProperty;
 			}
 
-			void GuiBindableTextList::SetTextProperty(const WString& value)
+			void GuiBindableTextList::SetTextProperty(const ItemProperty<WString>& value)
 			{
 				if (itemSource->textProperty != value)
 				{
@@ -4996,12 +4993,12 @@ GuiBindableTextList
 				}
 			}
 
-			const WString& GuiBindableTextList::GetCheckedProperty()
+			WritableItemProperty<bool> GuiBindableTextList::GetCheckedProperty()
 			{
 				return itemSource->checkedProperty;
 			}
 
-			void GuiBindableTextList::SetCheckedProperty(const WString& value)
+			void GuiBindableTextList::SetCheckedProperty(const WritableItemProperty<bool>& value)
 			{
 				if (itemSource->checkedProperty != value)
 				{
@@ -5197,8 +5194,7 @@ GuiBindableListView::ItemSource
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
 					{
-						auto value = ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
-						return value.GetSharedPtr().Cast<GuiImageData>();
+						return ReadProperty(itemSource->Get(itemIndex), smallImageProperty);
 					}
 				}
 				return nullptr;
@@ -5210,8 +5206,7 @@ GuiBindableListView::ItemSource
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
 					{
-						auto value = ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
-						return value.GetSharedPtr().Cast<GuiImageData>();
+						return ReadProperty(itemSource->Get(itemIndex), largeImageProperty);
 					}
 				}
 				return nullptr;
@@ -5223,7 +5218,7 @@ GuiBindableListView::ItemSource
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && columns.Count()>0)
 					{
-						return GetValueText(ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty()));
+						return ReadProperty(itemSource->Get(itemIndex), columns[0]->GetTextProperty());
 					}
 				}
 				return L"";
@@ -5235,7 +5230,7 @@ GuiBindableListView::ItemSource
 				{
 					if (0 <= itemIndex && itemIndex < itemSource->GetCount() && 0 <= index && index < columns.Count() - 1)
 					{
-						return GetValueText(ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty()));
+						return ReadProperty(itemSource->Get(itemIndex), columns[index + 1]->GetTextProperty());
 					}
 				}
 				return L"";
@@ -5378,12 +5373,12 @@ GuiBindableListView
 				itemSource->SetItemSource(_itemSource);
 			}
 
-			const WString& GuiBindableListView::GetLargeImageProperty()
+			ItemProperty<Ptr<GuiImageData>> GuiBindableListView::GetLargeImageProperty()
 			{
 				return itemSource->largeImageProperty;
 			}
 
-			void GuiBindableListView::SetLargeImageProperty(const WString& value)
+			void GuiBindableListView::SetLargeImageProperty(const ItemProperty<Ptr<GuiImageData>>& value)
 			{
 				if (itemSource->largeImageProperty != value)
 				{
@@ -5393,12 +5388,12 @@ GuiBindableListView
 				}
 			}
 
-			const WString& GuiBindableListView::GetSmallImageProperty()
+			ItemProperty<Ptr<GuiImageData>> GuiBindableListView::GetSmallImageProperty()
 			{
 				return itemSource->smallImageProperty;
 			}
 
-			void GuiBindableListView::SetSmallImageProperty(const WString& value)
+			void GuiBindableListView::SetSmallImageProperty(const ItemProperty<Ptr<GuiImageData>>& value)
 			{
 				if (itemSource->smallImageProperty != value)
 				{
@@ -5421,15 +5416,12 @@ GuiBindableTreeView::ItemSourceNode
 
 			void GuiBindableTreeView::ItemSourceNode::PrepareChildren()
 			{
-#ifndef VCZH_DEBUG_NO_REFLECTION
 				if (!childrenVirtualList)
 				{
-					auto value = ReadProperty(itemSource, rootProvider->childrenProperty);
-					if (auto td = value.GetTypeDescriptor())
+					if (auto value = ReadProperty(itemSource, rootProvider->childrenProperty))
 					{
-						if (td->CanConvertTo(description::GetTypeDescriptor<IValueObservableList>()))
+						if (auto ol = value.Cast<IValueObservableList>())
 						{
-							auto ol = UnboxValue<Ptr<IValueObservableList>>(value);
 							itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 							{
 								callback->OnBeforeItemModified(this, start, oldCount, newCount);
@@ -5444,14 +5436,13 @@ GuiBindableTreeView::ItemSourceNode
 							});
 							childrenVirtualList = ol;
 						}
-						else if (td->CanConvertTo(description::GetTypeDescriptor<IValueReadonlyList>()))
+						else if (auto rl = value.Cast<IValueReadonlyList>())
 						{
-							childrenVirtualList = UnboxValue<Ptr<IValueReadonlyList>>(value);
+							childrenVirtualList = rl;
 						}
-						else if (td->CanConvertTo(description::GetTypeDescriptor<IValueEnumerable>()))
+						else
 						{
-							auto e = UnboxValue<Ptr<IValueEnumerable>>(value);
-							childrenVirtualList = IValueList::Create(GetLazyList<Value>(e));
+							childrenVirtualList = IValueList::Create(GetLazyList<Value>(value));
 						}
 					}
 
@@ -5468,9 +5459,6 @@ GuiBindableTreeView::ItemSourceNode
 						children.Add(node);
 					}
 				}
-#else
-				CHECK_FAIL(L"GuiBindableTreeView::ItemSourceNode::PrepareChildren()#This function cannot be called without reflection enabled.");
-#endif
 			}
 
 			void GuiBindableTreeView::ItemSourceNode::UnprepareChildren()
@@ -5680,8 +5668,7 @@ GuiBindableTreeView::ItemSource
 			{
 				if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
 				{
-					auto value = ReadProperty(itemSourceNode->GetItemSource(), imageProperty);
-					return value.GetSharedPtr().Cast<GuiImageData>();
+					return ReadProperty(itemSourceNode->GetItemSource(), imageProperty);
 				}
 				return nullptr;
 			}
@@ -5690,7 +5677,7 @@ GuiBindableTreeView::ItemSource
 			{
 				if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
 				{
-					return GetValueText(ReadProperty(itemSourceNode->GetItemSource(), textProperty));
+					return ReadProperty(itemSourceNode->GetItemSource(), textProperty);
 				}
 				return L"";
 			}
@@ -5723,12 +5710,12 @@ GuiBindableTreeView
 				itemSource->SetItemSource(_itemSource);
 			}
 
-			const WString& GuiBindableTreeView::GetTextProperty()
+			ItemProperty<WString> GuiBindableTreeView::GetTextProperty()
 			{
 				return itemSource->textProperty;
 			}
 
-			void GuiBindableTreeView::SetTextProperty(const WString& value)
+			void GuiBindableTreeView::SetTextProperty(const ItemProperty<WString>& value)
 			{
 				if (itemSource->textProperty != value)
 				{
@@ -5738,12 +5725,12 @@ GuiBindableTreeView
 				}
 			}
 
-			const WString& GuiBindableTreeView::GetImageProperty()
+			ItemProperty<Ptr<GuiImageData>> GuiBindableTreeView::GetImageProperty()
 			{
 				return itemSource->imageProperty;
 			}
 
-			void GuiBindableTreeView::SetImageProperty(const WString& value)
+			void GuiBindableTreeView::SetImageProperty(const ItemProperty<Ptr<GuiImageData>>& value)
 			{
 				if (itemSource->imageProperty != value)
 				{
@@ -5753,12 +5740,12 @@ GuiBindableTreeView
 				}
 			}
 
-			const WString& GuiBindableTreeView::GetChildrenProperty()
+			ItemProperty<Ptr<IValueEnumerable>> GuiBindableTreeView::GetChildrenProperty()
 			{
 				return itemSource->childrenProperty;
 			}
 
-			void GuiBindableTreeView::SetChildrenProperty(const WString& value)
+			void GuiBindableTreeView::SetChildrenProperty(const ItemProperty<Ptr<IValueEnumerable>>& value)
 			{
 				if (itemSource->childrenProperty != value)
 				{
@@ -5814,7 +5801,14 @@ GuiBindableDataColumn
 
 				WString BindableDataColumn::GetCellText(vint row)
 				{
-					return GetValueText(GetCellValue(row));
+					if (dataProvider->itemSource)
+					{
+						if (0 <= row && row < dataProvider->itemSource->GetCount())
+						{
+							return ReadProperty(dataProvider->itemSource->Get(row), textProperty);
+						}
+					}
+					return L"";
 				}
 
 				description::Value BindableDataColumn::GetCellValue(vint row)
@@ -5840,13 +5834,32 @@ GuiBindableDataColumn
 						}
 					}
 				}
+				
+				ItemProperty<WString> BindableDataColumn::GetTextProperty()
+				{
+					return textProperty;
+				}
 
-				const WString& BindableDataColumn::GetValueProperty()
+				void BindableDataColumn::SetTextProperty(const ItemProperty<WString>& value)
+				{
+					if (textProperty != value)
+					{
+						textProperty = value;
+						if (commandExecutor)
+						{
+							commandExecutor->OnDataProviderColumnChanged();
+						}
+						compositions::GuiEventArgs arguments;
+						TextPropertyChanged.Execute(arguments);
+					}
+				}
+
+				WritableItemProperty<Value> BindableDataColumn::GetValueProperty()
 				{
 					return valueProperty;
 				}
 
-				void BindableDataColumn::SetValueProperty(const WString& value)
+				void BindableDataColumn::SetValueProperty(const WritableItemProperty<Value>& value)
 				{
 					if (valueProperty != value)
 					{
@@ -9307,6 +9320,11 @@ GuiListControl
 GuiSelectableListControl
 ***********************************************************************/
 
+			void GuiSelectableListControl::NotifySelectionChanged()
+			{
+				SelectionChanged.Execute(GetNotifyEventArguments());
+			}
+
 			void GuiSelectableListControl::OnItemModified(vint start, vint count, vint newCount)
 			{
 				GuiListControl::OnItemModified(start, count, newCount);
@@ -9493,7 +9511,7 @@ GuiSelectableListControl
 						}
 						selectedItems.Add(itemIndex);
 						OnItemSelectionChanged(itemIndex, value);
-						SelectionChanged.Execute(GetNotifyEventArguments());
+						NotifySelectionChanged();
 					}
 				}
 				else
@@ -9501,7 +9519,7 @@ GuiSelectableListControl
 					if(selectedItems.Remove(itemIndex))
 					{
 						OnItemSelectionChanged(itemIndex, value);
-						SelectionChanged.Execute(GetNotifyEventArguments());
+						NotifySelectionChanged();
 					}
 				}
 			}
@@ -9531,7 +9549,7 @@ GuiSelectableListControl
 						}
 						selectedItemIndexEnd=itemIndex;
 						SetMultipleItemsSelectedSilently(selectedItemIndexStart, selectedItemIndexEnd, true);
-						SelectionChanged.Execute(GetNotifyEventArguments());
+						NotifySelectionChanged();
 					}
 					else
 					{
@@ -9547,7 +9565,7 @@ GuiSelectableListControl
 								selectedItems.RemoveAt(index);
 							}
 							OnItemSelectionChanged(itemIndex, index==-1);
-							SelectionChanged.Execute(GetNotifyEventArguments());
+							NotifySelectionChanged();
 						}
 						else
 						{
@@ -9555,7 +9573,7 @@ GuiSelectableListControl
 							OnItemSelectionCleared();
 							selectedItems.Add(itemIndex);
 							OnItemSelectionChanged(itemIndex, true);
-							SelectionChanged.Execute(GetNotifyEventArguments());
+							NotifySelectionChanged();
 						}
 						selectedItemIndexStart=itemIndex;
 						selectedItemIndexEnd=itemIndex;
@@ -9622,7 +9640,7 @@ GuiSelectableListControl
 				{
 					selectedItems.Clear();
 					OnItemSelectionCleared();
-					SelectionChanged.Execute(GetNotifyEventArguments());
+					NotifySelectionChanged();
 				}
 			}
 
@@ -12266,12 +12284,12 @@ ListViewColumn
 					NotifyUpdate();
 				}
 
-				const WString& ListViewColumn::GetTextProperty()
+				ItemProperty<WString> ListViewColumn::GetTextProperty()
 				{
 					return textProperty;
 				}
 
-				void ListViewColumn::SetTextProperty(const WString& value)
+				void ListViewColumn::SetTextProperty(const ItemProperty<WString>& value)
 				{
 					textProperty = value;
 					NotifyUpdate();
