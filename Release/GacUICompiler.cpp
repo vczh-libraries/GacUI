@@ -5607,10 +5607,6 @@ GuiTemplateInstanceLoader
 				{
 					List<ITypeDescriptor*> tds;
 					tds.Add(typeInfo.typeDescriptor);
-					if (typeInfo.typeDescriptor == description::GetTypeDescriptor<GuiToolstripButtonTemplate>())
-					{
-						int a = 0;
-					}
 
 					for (vint i = 0; i < tds.Count(); i++)
 					{
