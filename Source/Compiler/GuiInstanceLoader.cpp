@@ -445,6 +445,59 @@ GuiDefaultInstanceLoader
 					}
 				}
 			}
+			
+			bool IsItemPropertyName(IPropertyInfo* prop)
+			{
+				auto name = prop->GetName();
+				return name.Length() >= 8 && name.Right(8) == L"Property";
+			}
+
+			bool IsItemPropertyType(ITypeInfo* propType)
+			{
+				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					auto genericType = propType->GetElementType();
+					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 2)
+					{
+						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+						{
+							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
+							{
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+			bool IsWritableItemPropertyType(ITypeInfo* propType)
+			{
+				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					auto genericType = propType->GetElementType();
+					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 4)
+					{
+						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+						{
+							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>()
+								&& genericType->GetGenericArgument(3)->GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
+							{
+								if (IsSameType(genericType->GetGenericArgument(0), genericType->GetGenericArgument(2)))
+								{
+									return true;
+								}
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+			bool IsItemProperty(IPropertyInfo* prop)
+			{
+				return prop && IsItemPropertyName(prop) && (IsItemPropertyType(prop->GetReturn()) || IsWritableItemPropertyType(prop->GetReturn()));
+			}
 
 			PropertyType GetPropertyTypeCached(const PropertyInfo& propertyInfo)
 			{
@@ -473,15 +526,22 @@ GuiDefaultInstanceLoader
 							}
 						}
 
-						if (FillPropertyInfo(result, propType))
+						IPropertyInfo* prop = propertyInfo.typeInfo.typeDescriptor->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
+						if (IsItemProperty(prop))
 						{
-							IPropertyInfo* prop = propertyInfo.typeInfo.typeDescriptor->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
-							PropertyType value(result, prop);
-							propertyTypes.Add(key, value);
-							return value;
+							result->acceptableTypes.Add(description::GetTypeDescriptor<WString>());
 						}
+						else if (!FillPropertyInfo(result, propType))
+						{
+							goto UNSUPPORTED;
+						}
+
+						PropertyType value(result, prop);
+						propertyTypes.Add(key, value);
+						return value;
 					}
 					
+				UNSUPPORTED:
 					PropertyType value(GuiInstancePropertyInfo::Unsupported(), 0);
 					propertyTypes.Add(key, value);
 					return value;
@@ -634,6 +694,18 @@ GuiDefaultInstanceLoader
 							break;
 						case GuiInstancePropertyInfo::SupportAssign:
 							{
+								if (IsItemPropertyName(propertyType.f1))
+								{
+									if (IsItemPropertyType(propertyType.f1->GetReturn()))
+									{
+										break;
+									}
+									else if (IsWritableItemPropertyType(propertyType.f1->GetReturn()))
+									{
+										break;
+									}
+								}
+
 								auto refValue = MakePtr<WfReferenceExpression>();
 								refValue->name.value = variableName.ToString();
 
