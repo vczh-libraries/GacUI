@@ -153,6 +153,7 @@ Closures
 		if (__vwsn_update_)
 		{
 			(::vl::__vwsn::This(item.Obj())->checked = __vwsn_value_);
+			return false;
 		}
 		else
 		{
