@@ -106,29 +106,29 @@ IGuiInstanceLoader
 			return false;
 		}
 
-		Ptr<workflow::WfBaseConstructorCall> IGuiInstanceLoader::CreateRootInstance(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)
+		Ptr<workflow::WfBaseConstructorCall> IGuiInstanceLoader::CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)
 		{
-			CHECK_FAIL(L"IGuiInstanceLoader::CreateControlTemplateArgument(const TypeInfo&, Ptr<workflow::WfExpression>, collections::List<WString>&)#This function is not implemented.");
+			CHECK_FAIL(L"IGuiInstanceLoader::CreateControlTemplateArgument(types::ResolvingResult&, const TypeInfo&, Ptr<workflow::WfExpression>, collections::List<WString>&)#This function is not implemented.");
 		}
 
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::InitializeRootInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
 		{
 			return nullptr;
 		}
 
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
 		{
-			CHECK_FAIL(L"IGuiInstanceLoader::CreateInstance(const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
+			CHECK_FAIL(L"IGuiInstanceLoader::CreateInstance(types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
 		}
 
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
 		{
-			CHECK_FAIL(L"IGuiInstanceLoader::AssignParameters(const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
+			CHECK_FAIL(L"IGuiInstanceLoader::AssignParameters(types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
 		}
 
-		Ptr<workflow::WfExpression> IGuiInstanceLoader::GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
+		Ptr<workflow::WfExpression> IGuiInstanceLoader::GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
 		{
-			CHECK_FAIL(L"IGuiInstanceLoader::GetParameter(const PropertyInfo&, GlobalStringKey, collections::List<WString>&)#This function is not implemented.");
+			CHECK_FAIL(L"IGuiInstanceLoader::GetParameter(types::ResolvingResult&, const PropertyInfo&, GlobalStringKey, collections::List<WString>&)#This function is not implemented.");
 		}
 
 /***********************************************************************
@@ -506,7 +506,7 @@ GuiDefaultInstanceLoader
 					GetInstanceConstructor(typeInfo.typeDescriptor) != nullptr;
 			}
 
-			Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
 				CTOR_PARAM_PREFIX
 				auto defaultCtor = GetDefaultConstructor(typeInfo.typeDescriptor);
@@ -552,7 +552,7 @@ GuiDefaultInstanceLoader
 				return stat;
 			}
 
-			Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 			{
 				auto block = MakePtr<WfBlockStatement>();
 
@@ -664,7 +664,7 @@ GuiDefaultInstanceLoader
 				return nullptr;
 			}
 
-			Ptr<workflow::WfExpression> GetParameter(const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)override
+			Ptr<workflow::WfExpression> GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)override
 			{
 				auto refValue = MakePtr<WfReferenceExpression>();
 				refValue->name.value = variableName.ToString();

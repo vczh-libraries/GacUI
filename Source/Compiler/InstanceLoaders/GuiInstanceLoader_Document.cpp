@@ -69,7 +69,7 @@ GuiDocumentItemInstanceLoader
 					return typeName == typeInfo.typeName;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
@@ -97,7 +97,7 @@ GuiDocumentItemInstanceLoader
 					return nullptr;
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -182,7 +182,7 @@ GuiDocumentViewerInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -214,7 +214,7 @@ GuiDocumentViewerInstanceLoader
 					{
 						return block;
 					}
-					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
+					return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -247,7 +247,7 @@ GuiDocumentLabelInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -279,7 +279,7 @@ GuiDocumentLabelInstanceLoader
 					{
 						return block;
 					}
-					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
+					return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE

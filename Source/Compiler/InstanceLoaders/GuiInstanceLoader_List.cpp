@@ -78,7 +78,7 @@ GuiSelectableListControlInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -137,7 +137,7 @@ GuiVirtualTreeViewInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -213,7 +213,7 @@ GuiComboBoxInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -507,7 +507,7 @@ GuiTreeViewInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -544,7 +544,7 @@ GuiTreeViewInstanceLoader
 					{
 						return block;
 					}
-					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
+					return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -630,7 +630,7 @@ GuiBindableDataColumnInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -815,7 +815,7 @@ GuiBindableDataGridInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -844,7 +844,7 @@ GuiBindableDataGridInstanceLoader
 					{
 						return block;
 					}
-					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
+					return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -907,7 +907,7 @@ GuiTreeNodeInstanceLoader
 					return typeInfo.typeName == GetTypeName();
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
@@ -933,7 +933,7 @@ GuiTreeNodeInstanceLoader
 					return nullptr;
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 

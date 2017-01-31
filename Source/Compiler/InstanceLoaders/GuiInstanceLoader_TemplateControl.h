@@ -403,7 +403,7 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
-				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, arguments, errors))
 					{
@@ -415,7 +415,7 @@ GuiVrtualTypeInstanceLoader
 					return nullptr;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
 					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);

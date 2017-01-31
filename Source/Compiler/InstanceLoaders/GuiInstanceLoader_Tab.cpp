@@ -37,7 +37,7 @@ GuiTabInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -83,7 +83,7 @@ GuiTabInstanceLoader
 					{
 						return block;
 					}
-					return BASE_TYPE::AssignParameters(typeInfo, variableName, arguments, errors);
+					return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -125,7 +125,7 @@ GuiTabPageInstanceLoader
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 

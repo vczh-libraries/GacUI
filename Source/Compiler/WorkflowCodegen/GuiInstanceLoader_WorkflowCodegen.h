@@ -67,12 +67,12 @@ WorkflowCompiler (Parser)
 WorkflowCompiler (Installation)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, collections::List<WString>& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, collections::List<WString>& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, collections::List<WString>& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, collections::List<WString>& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
 		extern Ptr<workflow::WfFunctionDeclaration>				Workflow_GenerateEventHandler(description::IEventInfo* eventInfo);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
 
 /***********************************************************************
 WorkflowCompiler (Compile)

@@ -18,7 +18,7 @@ namespace vl
 Workflow_InstallBindProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, collections::List<WString>& errors)
+		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, collections::List<WString>& errors)
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
@@ -175,7 +175,7 @@ Workflow_InstallBindProperty
 					arguments.Add(prop.propertyName, argumentInfo);
 				}
 
-				if (auto stat = loader->AssignParameters(prop.typeInfo, variableName, arguments, errors))
+				if (auto stat = loader->AssignParameters(resolvingResult, prop.typeInfo, variableName, arguments, errors))
 				{
 					subBlock->statements.Add(stat);
 				}
@@ -187,7 +187,7 @@ Workflow_InstallBindProperty
 Workflow_InstallBindProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallBindProperty(GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression)
+		Ptr<workflow::WfStatement> Workflow_InstallBindProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression)
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
@@ -345,7 +345,7 @@ Workflow_InstallBindProperty
 Workflow_InstallEvalProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvalProperty(GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, collections::List<WString>& errors)
+		Ptr<workflow::WfStatement> Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, collections::List<WString>& errors)
 		{
 			IGuiInstanceLoader::ArgumentMap arguments;
 			{
@@ -355,14 +355,14 @@ Workflow_InstallEvalProperty
 				arguments.Add(prop.propertyName, argumentInfo);
 			}
 
-			return loader->AssignParameters(prop.typeInfo, variableName, arguments, errors);
+			return loader->AssignParameters(resolvingResult, prop.typeInfo, variableName, arguments, errors);
 		}
 
 /***********************************************************************
 Workflow_InstallEvent
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName)
+		Ptr<workflow::WfStatement> Workflow_InstallEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName)
 		{
 			vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
 
@@ -482,7 +482,7 @@ Workflow_GenerateEventHandler
 Workflow_InstallEvalEvent
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvalEvent(GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement)
+		Ptr<workflow::WfStatement> Workflow_InstallEvalEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement)
 		{
 			auto func = Workflow_GenerateEventHandler(eventInfo);
 						

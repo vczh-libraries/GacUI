@@ -445,7 +445,7 @@ Workflow_GenerateInstanceClass
 				{
 					if (!beforePrecompile)
 					{
-						if (auto call = resolvingResult.rootLoader->CreateRootInstance(resolvingResult.rootTypeInfo, resolvingResult.rootCtorArguments, errors))
+						if (auto call = resolvingResult.rootLoader->CreateRootInstance(resolvingResult, resolvingResult.rootTypeInfo, resolvingResult.rootCtorArguments, errors))
 						{
 							ctor->baseConstructorCalls.Add(call);
 						}

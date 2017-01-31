@@ -104,7 +104,7 @@ WorkflowGenerateCreatingVisitor
 							auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
 							auto info = resolvingResult.propertyResolvings[setTarget];
 							vint errorCount = errors.Count();
-							if (auto expr = info.loader->GetParameter(propInfo, repr->instanceName, errors))
+							if (auto expr = info.loader->GetParameter(resolvingResult, propInfo, repr->instanceName, errors))
 							{
 								auto refInstance = MakePtr<WfReferenceExpression>();
 								refInstance->name.value = setTarget->instanceName.ToString();
@@ -142,7 +142,7 @@ WorkflowGenerateCreatingVisitor
 										vint errorCount = errors.Count();
 										IGuiInstanceLoader::ArgumentMap arguments;
 										arguments.Add(prop, GetArgumentInfo(value.Obj()));
-										if (auto stat = info.loader->AssignParameters(reprTypeInfo, repr->instanceName, arguments, errors))
+										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, errors))
 										{
 											statements->statements.Add(stat);
 										}
@@ -176,7 +176,7 @@ WorkflowGenerateCreatingVisitor
 										}
 
 										vint errorCount = errors.Count();
-										if (auto stat = info.loader->AssignParameters(reprTypeInfo, repr->instanceName, arguments, errors))
+										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, errors))
 										{
 											statements->statements.Add(stat);
 										}
@@ -229,7 +229,7 @@ WorkflowGenerateCreatingVisitor
 							auto propInfo = IGuiInstanceLoader::PropertyInfo(typeInfo, prop);
 							auto resolvedPropInfo = loader->GetPropertyType(propInfo);
 							auto value = setter->values[0].Cast<GuiTextRepr>();
-							if (auto expression = binder->GenerateConstructorArgument(loader, propInfo, resolvedPropInfo, value->text, errors))
+							if (auto expression = binder->GenerateConstructorArgument(resolvingResult, loader, propInfo, resolvedPropInfo, value->text, errors))
 							{
 								IGuiInstanceLoader::ArgumentInfo argument;
 								argument.expression = expression;
@@ -297,7 +297,7 @@ WorkflowGenerateCreatingVisitor
 
 					if (resolvingResult.rootCtorArguments.Count() > 0)
 					{
-						if (auto stat = ctorLoader->InitializeRootInstance(ctorTypeInfo, repr->instanceName, resolvingResult.rootCtorArguments, errors))
+						if (auto stat = ctorLoader->InitializeRootInstance(resolvingResult, ctorTypeInfo, repr->instanceName, resolvingResult.rootCtorArguments, errors))
 						{
 							statements->statements.Add(stat);
 						}
@@ -332,7 +332,7 @@ WorkflowGenerateCreatingVisitor
 					FillCtorArguments(repr, ctorLoader, ctorTypeInfo, arguments);
 
 					vint errorCount = errors.Count();
-					if (auto ctorStats = ctorLoader->CreateInstance(ctorTypeInfo, repr->instanceName, arguments, errors))
+					if (auto ctorStats = ctorLoader->CreateInstance(resolvingResult, ctorTypeInfo, repr->instanceName, arguments, errors))
 					{
 						statements->statements.Add(ctorStats);
 					}
