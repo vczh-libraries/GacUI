@@ -114,7 +114,7 @@ GuiEventInfoImpl
 				{
 				}
 
-				ICpp* GetCpp()override
+				IEventInfo::ICpp* GetCpp()override
 				{
 					return isCompositionEvent ? this : nullptr;
 				}
