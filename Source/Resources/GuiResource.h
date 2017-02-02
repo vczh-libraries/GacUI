@@ -167,7 +167,7 @@ Resource Structure
 			/// <summary>Get the name of this resource node.</summary>
 			/// <returns>The name of this resource node .</returns>
 			const WString&							GetName();
-			/// <summary>Get the resource path of this resource node. When saving the resource, if the path is not empty, the path will be serialized instead of the content.</summary>
+			/// <summary>Get the resource path of this resource node</summary>
 			/// <returns>The resource path of this resource node .</returns>
 			WString									GetResourcePath();
 			/// <summary>Get the file content path of this resource node. When saving the resource, if the path is not empty, the path will be serialized instead of the content.</summary>
