@@ -282,6 +282,31 @@ GuiResourceNodeBase
 		}
 
 /***********************************************************************
+GuiResourceError
+***********************************************************************/
+
+		GuiResourceError::GuiResourceError()
+		{
+		}
+
+		GuiResourceError::GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message)
+			:resourcePath(node->GetResourcePath())
+			, position(_position)
+			, message(_message)
+		{
+			auto current = node.Obj();
+			while (current)
+			{
+				if (current->GetFileContentPath() != L"")
+				{
+					fileContentPath = current->GetFileContentPath();
+					break;
+				}
+				current = current->GetParent();
+			}
+		}
+
+/***********************************************************************
 GuiResourceItem
 ***********************************************************************/
 
@@ -333,7 +358,7 @@ GuiResourceItem
 GuiResourceFolder
 ***********************************************************************/
 
-		void GuiResourceFolder::LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, collections::List<WString>& errors)
+		void GuiResourceFolder::LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, GuiResourceError::List& errors)
 		{
 			ClearItems();
 			ClearFolders();
@@ -601,7 +626,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors)
+		void GuiResourceFolder::LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, GuiResourceError::List& errors)
 		{
 			vint count = 0;
 			reader << count;

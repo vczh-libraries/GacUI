@@ -27,7 +27,6 @@ namespace vl
 			typedef collections::Dictionary<GlobalStringKey, IGuiInstanceLoader::TypeInfo>		VariableTypeInfoMap;
 			typedef collections::Dictionary<GlobalStringKey, Ptr<description::ITypeInfo>>		TypeOverrideMap;
 			typedef collections::Dictionary<GuiValueRepr*, PropertyResolving>					PropertyResolvingMap;
-			typedef collections::List<WString>													ErrorList;
 			typedef collections::Group<GlobalStringKey, WString>								EnvironmentVariableGroup;
 
 			struct ResolvingResult : public Object, public Description<ResolvingResult>

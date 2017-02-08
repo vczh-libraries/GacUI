@@ -535,8 +535,6 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiResource)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiResource>(), NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiResource>(const WString&, List<WString>&), {L"filePath" _ L"errors"}, vl::presentation::GuiResource::LoadFromXml);
-
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(WorkingDirectory)
 
 				CLASS_MEMBER_METHOD(GetDocumentByPath, {L"path"})

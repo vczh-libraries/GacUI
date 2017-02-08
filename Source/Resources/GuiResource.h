@@ -178,6 +178,20 @@ Resource Structure
 			void									SetFileContentPath(const WString& value);
 		};
 
+		struct GuiResourceError
+		{
+		public:
+			using List = collections::List<GuiResourceError>;
+
+			WString									resourcePath;
+			WString									fileContentPath;
+			parsing::ParsingTextPos					position;
+			WString									message;
+
+			GuiResourceError();
+			GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message);
+		};
+
 		class DocumentModel;
 		class GuiResourcePathResolver;
 		struct GuiResourcePrecompileContext;
@@ -244,10 +258,10 @@ Resource Structure
 			ItemMap									items;
 			FolderMap								folders;
 
-			void									LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, collections::List<WString>& errors);
+			void									LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, GuiResourceError::List& errors);
 			void									SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent);
 			void									CollectTypeNames(collections::List<WString>& typeNames);
-			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
+			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, GuiResourceError::List& errors);
 			void									SaveResourceFolderToBinary(stream::internal::ContextFreeWriter& writer, collections::List<WString>& typeNames);
 			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors);
 			void									InitializeResourceFolder(GuiResourceInitializeContext& context);
