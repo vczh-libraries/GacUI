@@ -19,9 +19,9 @@ WorkflowGenerateBindingVisitor
 		public:
 			types::ResolvingResult&				resolvingResult;
 			Ptr<WfBlockStatement>				statements;
-			types::ErrorList&					errors;
+			GuiResourceError::List&					errors;
 			
-			WorkflowGenerateBindingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
+			WorkflowGenerateBindingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
 				:resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, statements(_statements)
@@ -141,7 +141,7 @@ WorkflowGenerateBindingVisitor
 			}
 		};
 
-		void Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
+		void Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, GuiResourceError::List& errors)
 		{
 			WorkflowGenerateBindingVisitor visitor(resolvingResult, statements, errors);
 			resolvingResult.context->instance->Accept(&visitor);

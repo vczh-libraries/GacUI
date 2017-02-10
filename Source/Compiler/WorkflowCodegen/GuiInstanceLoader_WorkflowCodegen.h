@@ -57,10 +57,10 @@ namespace vl
 WorkflowCompiler (Parser)
 ***********************************************************************/
 		
-		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression(const WString& code, types::ErrorList& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, types::ErrorList& errors);
+		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression(const WString& code, GuiResourceError::List& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, GuiResourceError::List& errors);
 		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
-		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, types::ErrorList& errors);
+		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, GuiResourceError::List& errors);
 
 /***********************************************************************
 WorkflowCompiler (Installation)
@@ -115,14 +115,14 @@ WorkflowCompiler (Compile)
 			}
 		};
 
-		extern description::ITypeDescriptor*					Workflow_CollectReferences(types::ResolvingResult& resolvingResult, types::ErrorList& errors);
-		extern void												Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, types::ErrorList& errors);
-		extern void												Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, types::ErrorList& errors);
+		extern description::ITypeDescriptor*					Workflow_CollectReferences(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
+		extern void												Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
+		extern void												Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 
 		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
-		extern bool												Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement);
-		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, types::ErrorList& errors);
-		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex);
+		extern bool												Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, const WString& code, Ptr<workflow::WfStatement> statement);
+		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex);
 
 #define WORKFLOW_ENVIRONMENT_VARIABLE_ADD\
 		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\

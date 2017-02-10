@@ -42,7 +42,7 @@ FindInstanceLoadingSource
 Workflow_ValidateStatement
 ***********************************************************************/
 
-		bool Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, types::ErrorList& errors, const WString& code, Ptr<workflow::WfStatement> statement)
+		bool Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, const WString& code, Ptr<workflow::WfStatement> statement)
 		{
 			bool failed = false;
 			Workflow_GetSharedManager()->Clear(true, true);
@@ -71,7 +71,7 @@ Workflow_ValidateStatement
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, types::ErrorList& errors)
+		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
 			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context);
 			{
@@ -91,10 +91,10 @@ WorkflowEventNamesVisitor
 		public:
 			Ptr<GuiInstanceContext>				context;
 			Ptr<WfClassDeclaration>				instanceClass;
-			types::ErrorList&					errors;
+			GuiResourceError::List&					errors;
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 
-			WorkflowEventNamesVisitor(Ptr<GuiInstanceContext> _context, Ptr<WfClassDeclaration> _instanceClass, types::ErrorList& _errors)
+			WorkflowEventNamesVisitor(Ptr<GuiInstanceContext> _context, Ptr<WfClassDeclaration> _instanceClass, GuiResourceError::List& _errors)
 				:context(_context)
 				, instanceClass(_instanceClass)
 				, errors(_errors)
@@ -271,7 +271,7 @@ WorkflowEventNamesVisitor
 Workflow_GenerateInstanceClass
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, types::ErrorList& errors, vint passIndex)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
 		{
 			bool beforePrecompile = false;
 			bool needEventHandler = false;

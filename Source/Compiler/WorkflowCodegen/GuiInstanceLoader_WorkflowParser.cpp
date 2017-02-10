@@ -13,13 +13,13 @@ namespace vl
 Parser
 ***********************************************************************/
 
-		Ptr<workflow::WfExpression> Workflow_ParseExpression(const WString& code, types::ErrorList& errors)
+		Ptr<workflow::WfExpression> Workflow_ParseExpression(const WString& code, GuiResourceError::List& errors)
 		{
 			auto parser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
 			return parser->TypedParse(code, errors);
 		}
 
-		Ptr<workflow::WfStatement> Workflow_ParseStatement(const WString& code, types::ErrorList& errors)
+		Ptr<workflow::WfStatement> Workflow_ParseStatement(const WString& code, GuiResourceError::List& errors)
 		{
 			auto parser = GetParserManager()->GetParser<WfStatement>(L"WORKFLOW-STATEMENT");
 			return parser->TypedParse(code, errors);
@@ -45,7 +45,7 @@ Workflow_ModuleToString
 Converter
 ***********************************************************************/
 
-		Ptr<workflow::WfExpression> Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, types::ErrorList& errors)
+		Ptr<workflow::WfExpression> Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, GuiResourceError::List& errors)
 		{
 			if (typeDescriptor == description::GetTypeDescriptor<WString>())
 			{
@@ -91,7 +91,7 @@ Converter
 			}
 			else
 			{
-				CHECK_FAIL(L"vl::presentation::Workflow_ParseTextValue(ITypeDescriptor*, const WString&, types::ErrorList&)#This is not a value type.");
+				CHECK_FAIL(L"vl::presentation::Workflow_ParseTextValue(ITypeDescriptor*, const WString&, GuiResourceError::List&)#This is not a value type.");
 			}
 		}
 	}

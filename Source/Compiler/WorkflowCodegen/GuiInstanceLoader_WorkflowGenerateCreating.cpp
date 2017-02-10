@@ -20,9 +20,9 @@ WorkflowGenerateCreatingVisitor
 		public:
 			types::ResolvingResult&				resolvingResult;
 			Ptr<WfBlockStatement>				statements;
-			types::ErrorList&					errors;
+			GuiResourceError::List&					errors;
 			
-			WorkflowGenerateCreatingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, types::ErrorList& _errors)
+			WorkflowGenerateCreatingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
 				:resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, statements(_statements)
@@ -345,7 +345,7 @@ WorkflowGenerateCreatingVisitor
 			}
 		};
 
-		void Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, types::ErrorList& errors)
+		void Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, GuiResourceError::List& errors)
 		{
 			WorkflowGenerateCreatingVisitor visitor(resolvingResult, statements, errors);
 			resolvingResult.context->instance->Accept(&visitor);

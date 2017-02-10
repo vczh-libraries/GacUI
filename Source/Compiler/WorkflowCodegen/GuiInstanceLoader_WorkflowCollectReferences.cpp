@@ -19,13 +19,13 @@ WorkflowReferenceNamesVisitor
 		public:
 			types::ResolvingResult&				resolvingResult;
 			vint&								generatedNameCount;
-			types::ErrorList&					errors;
+			GuiResourceError::List&					errors;
 
 			List<types::PropertyResolving>&		candidatePropertyTypeInfos;
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 			vint								selectedPropertyTypeInfo = -1;
 
-			WorkflowReferenceNamesVisitor(types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, types::ErrorList& _errors)
+			WorkflowReferenceNamesVisitor(types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, GuiResourceError::List& _errors)
 				:resolvingResult(_resolvingResult)
 				, candidatePropertyTypeInfos(_candidatePropertyTypeInfos)
 				, generatedNameCount(_generatedNameCount)
@@ -517,7 +517,7 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
-		ITypeDescriptor* Workflow_CollectReferences(types::ResolvingResult& resolvingResult, types::ErrorList& errors)
+		ITypeDescriptor* Workflow_CollectReferences(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
 			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 			{
