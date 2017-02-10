@@ -29,14 +29,14 @@ Parser
 			/// <returns>The parsed object. Returns null if failed to parse.</returns>
 			/// <param name="text">The text.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<Object>						Parse(const WString& text, collections::List<WString>& errors)=0;
+			virtual Ptr<Object>						Parse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)=0;
 		};
 
 		template<typename T>
 		class IGuiParser : public IGuiGeneralParser
 		{
 		public:
-			virtual Ptr<T>							TypedParse(const WString& text, collections::List<WString>& errors)=0;
+			virtual Ptr<T>							TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)=0;
 
 			Ptr<Object> Parse(const WString& text, collections::List<WString>& errors)override
 			{
@@ -106,7 +106,7 @@ Strong Typed Table Parser
 			{
 			}
 
-			Ptr<T> TypedParse(const WString& text, collections::List<WString>& errors)override
+			Ptr<T> TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
 			{
 				if(!table)
 				{
@@ -114,25 +114,9 @@ Strong Typed Table Parser
 				}
 				if(table)
 				{
-					collections::List<Ptr<parsing::ParsingError>> parsingErrors;
-					auto result = function(text, table, parsingErrors, -1);
-					if (!result)
-					{
-						errors.Add(L"Failed to parse the following input as format \"" + name + L"\":");
-						errors.Add(text);
-					}
-					for (vint i = 0; i < parsingErrors.Count(); i++)
-					{
-						auto error = parsingErrors[i];
-						errors.Add(
-							L"Format: " + name +
-							L", Row: " + itow(error->codeRange.start.row + 1) +
-							L", Column: " + itow(error->codeRange.start.column + 1) +
-							L", Message: " + error->errorMessage);
-					}
-					return result;
+					return function(text, table, errors, -1);
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 

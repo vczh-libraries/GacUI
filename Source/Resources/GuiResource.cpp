@@ -8,6 +8,7 @@ namespace vl
 	{
 		using namespace controls;
 		using namespace collections;
+		using namespace parsing;
 		using namespace parsing::tabling;
 		using namespace parsing::xml;
 		using namespace parsing::json;
@@ -16,11 +17,11 @@ namespace vl
 
 		WString GetFolderPath(const WString& filePath)
 		{
-			for(vint i=filePath.Length()-1;i>=0;i--)
+			for (vint i = filePath.Length() - 1; i >= 0; i--)
 			{
-				if(filePath[i]==L'\\' || filePath[i]==L'/')
+				if (filePath[i] == L'\\' || filePath[i] == L'/')
 				{
-					return filePath.Sub(0, i+1);
+					return filePath.Sub(0, i + 1);
 				}
 			}
 			return L"";
@@ -28,11 +29,11 @@ namespace vl
 
 		WString GetFileName(const WString& filePath)
 		{
-			for(vint i=filePath.Length()-1;i>=0;i--)
+			for (vint i = filePath.Length() - 1; i >= 0; i--)
 			{
-				if(filePath[i]==L'\\' || filePath[i]==L'/')
+				if (filePath[i] == L'\\' || filePath[i] == L'/')
 				{
-					return filePath.Sub(i+1, filePath.Length()-i-1);
+					return filePath.Sub(i + 1, filePath.Length() - i - 1);
 				}
 			}
 			return filePath;
@@ -46,12 +47,12 @@ namespace vl
 
 		bool LoadTextFromStream(stream::IStream& stream, WString& text)
 		{
-			if(stream.IsAvailable())
+			if (stream.IsAvailable())
 			{
 				stream::BomDecoder decoder;
 				stream::DecoderStream decoderStream(stream, decoder);
 				stream::StreamReader reader(decoderStream);
-				text=reader.ReadToEnd();
+				text = reader.ReadToEnd();
 				return true;
 			}
 			return false;
@@ -59,11 +60,11 @@ namespace vl
 
 		bool IsResourceUrl(const WString& text, WString& protocol, WString& path)
 		{
-			Pair<vint, vint> index=INVLOC.FindFirst(text, L"://", Locale::None);
-			if(index.key!=-1)
+			Pair<vint, vint> index = INVLOC.FindFirst(text, L"://", Locale::None);
+			if (index.key != -1)
 			{
-				protocol=INVLOC.ToLower(text.Sub(0, index.key));
-				path=text.Sub(index.key+index.value, text.Length()-index.key-index.value);
+				protocol = INVLOC.ToLower(text.Sub(0, index.key));
+				path = text.Sub(index.key + index.value, text.Length() - index.key - index.value);
 				return true;
 			}
 			else
@@ -150,7 +151,7 @@ GlobalStringKey
 				GlobalStringKey::_ControlTemplate = GlobalStringKey::Get(L"ControlTemplate");
 				GlobalStringKey::_ItemTemplate = GlobalStringKey::Get(L"ItemTemplate");
 			}
-		}* globalStringKeyManager = 0;
+		}*globalStringKeyManager = 0;
 
 		GlobalStringKey GlobalStringKey::Get(const WString& string)
 		{
@@ -193,7 +194,7 @@ GuiImageData
 		}
 
 		GuiImageData::GuiImageData(Ptr<INativeImage> _image, vint _frameIndex, const WString& _filePath)
-			:image(_image)
+			: image(_image)
 			, frameIndex(_frameIndex)
 			, filePath(_filePath)
 		{
@@ -285,14 +286,7 @@ GuiResourceNodeBase
 GuiResourceError
 ***********************************************************************/
 
-		GuiResourceError::GuiResourceError()
-		{
-		}
-
-		GuiResourceError::GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message)
-			:resourcePath(node->GetResourcePath())
-			, position(_position)
-			, message(_message)
+		void GuiResourceError::Initialize(Ptr<GuiResourceNodeBase> node)
 		{
 			auto current = node.Obj();
 			while (current)
@@ -304,6 +298,38 @@ GuiResourceError
 				}
 				current = current->GetParent();
 			}
+		}
+
+		GuiResourceError::GuiResourceError()
+		{
+		}
+
+		GuiResourceError::GuiResourceError(parsing::ParsingTextPos _position, const WString& _message)
+			:position(_position)
+			, message(_message)
+		{
+		}
+
+		GuiResourceError::GuiResourceError(const WString& _fileContentPath, parsing::ParsingTextPos _position, const WString& _message)
+			:fileContentPath(_fileContentPath)
+			, position(_position)
+			, message(_message)
+		{
+		}
+
+		GuiResourceError::GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message)
+			:resourcePath(node->GetResourcePath())
+			, position(_position)
+			, message(_message)
+		{
+			Initialize(node);
+		}
+
+		GuiResourceError::GuiResourceError(Ptr<GuiResourceNodeBase> node, const WString& _message)
+			:resourcePath(node->GetResourcePath())
+			, message(_message)
+		{
+			Initialize(node);
 		}
 
 /***********************************************************************
@@ -781,7 +807,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors)
+		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
@@ -982,7 +1008,7 @@ GuiResourceFolder
 GuiResource
 ***********************************************************************/
 
-		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors)
+		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, GuiResourceError::List& errors)
 		{
 			FOREACH(DelayLoading, delay, delayLoadings)
 			{
@@ -990,20 +1016,28 @@ GuiResource
 				WString folder = delay.workingDirectory;
 				Ptr<GuiResourceItem> item = delay.preloadResource;
 
-				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(type);
-				auto indirectLoad = typeResolver->IndirectLoad();
-				if (!indirectLoad)
+				if (auto typeResolver = GetResourceResolverManager()->GetTypeResolver(type))
 				{
-					errors.Add(L"Unknown resource type \"" + type + L"\".");
-				}
-				else if (item->GetContent())
-				{
-					Ptr<GuiResourcePathResolver> pathResolver = new GuiResourcePathResolver(resource, folder);
-					Ptr<DescriptableObject> resource = indirectLoad->ResolveResource(item->GetContent(), pathResolver, errors);
-					if(resource)
+					if (auto indirectLoad = typeResolver->IndirectLoad())
 					{
-						item->SetContent(typeResolver->GetType(), resource);
+						if (item->GetContent())
+						{
+							Ptr<GuiResourcePathResolver> pathResolver = new GuiResourcePathResolver(resource, folder);
+							Ptr<DescriptableObject> resource = indirectLoad->ResolveResource(item->GetContent(), pathResolver, errors);
+							if (resource)
+							{
+								item->SetContent(typeResolver->GetType(), resource);
+							}
+						}
 					}
+					else
+					{
+						errors.Add(GuiResourceError(item, L"Resource type \"" + type + L"\" does not support indirect loading."));
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError(item, L"Unknown resource type \"" + type + L"\"."));
 				}
 			}
 		}
@@ -1021,7 +1055,7 @@ GuiResource
 			return workingDirectory;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, collections::List<WString>& errors)
+		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, GuiResourceError::List& errors)
 		{
 			Ptr<GuiResource> resource = new GuiResource;
 			resource->workingDirectory = workingDirectory;
@@ -1032,7 +1066,7 @@ GuiResource
 			return resource;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadFromXml(const WString& filePath, collections::List<WString>& errors)
+		Ptr<GuiResource> GuiResource::LoadFromXml(const WString& filePath, GuiResourceError::List& errors)
 		{
 			Ptr<XmlDocument> xml;
 			if(auto parser=GetParserManager()->GetParser<XmlDocument>(L"XML"))
@@ -1040,11 +1074,16 @@ GuiResource
 				WString text;
 				if(LoadTextFile(filePath, text))
 				{
-					xml = parser->TypedParse(text, errors);
+					List<Ptr<ParsingError>> parsingErrors;
+					xml = parser->TypedParse(text, parsingErrors);
+					FOREACH(Ptr<ParsingError>, error, parsingErrors)
+					{
+						errors.Add(GuiResourceError(filePath, error->codeRange.start, error->errorMessage));
+					}
 				}
 				else
 				{
-					errors.Add(L"Failed to load file \"" + filePath + L"\".");
+					errors.Add(GuiResourceError(filePath, ParsingTextPos(), L"Failed to load file \"" + filePath + L"\"."));
 				}
 			}
 			if(xml)
@@ -1065,7 +1104,7 @@ GuiResource
 			return doc;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream, collections::List<WString>& errors)
+		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream, GuiResourceError::List& errors)
 		{
 			stream::internal::ContextFreeReader reader(stream);
 			auto resource = MakePtr<GuiResource>();
@@ -1090,11 +1129,11 @@ GuiResource
 			SaveResourceFolderToBinary(writer, typeNames);
 		}
 
-		void GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors)
+		void GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
 			if (GetFolder(L"Precompiled"))
 			{
-				errors.Add(L"A precompiled resource cannot be compiled again.");
+				errors.Add(GuiResourceError(this, L"A precompiled resource cannot be compiled again."));
 				return;
 			}
 
