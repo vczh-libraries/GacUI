@@ -363,7 +363,7 @@ Resource
 			/// <param name="xml">The xml document.</param>
 			/// <param name="workingDirectory">The working directory for loading image files.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<GuiResource>					LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, GuiResourceError::List& errors);
+			static Ptr<GuiResource>					LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors);
 
 			/// <summary>Load a resource from an xml file. If the xml file refers other files, they will be loaded as well.</summary>
 			/// <returns>The loaded resource.</returns>

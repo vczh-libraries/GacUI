@@ -38,7 +38,7 @@ Parser
 		public:
 			virtual Ptr<T>							TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)=0;
 
-			Ptr<Object> Parse(const WString& text, collections::List<WString>& errors)override
+			Ptr<Object> Parse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
 			{
 				return TypedParse(text, errors);
 			}

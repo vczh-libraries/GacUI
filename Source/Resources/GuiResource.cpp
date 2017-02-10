@@ -391,48 +391,49 @@ GuiResourceFolder
 			FOREACH(Ptr<XmlElement>, element, XmlGetElements(folderXml))
 			{
 				WString name;
-				if(Ptr<XmlAttribute> nameAtt=XmlGetAttribute(element, L"name"))
+				if (Ptr<XmlAttribute> nameAtt = XmlGetAttribute(element, L"name"))
 				{
-					name=nameAtt->value.value;
+					name = nameAtt->value.value;
 				}
-				if(element->name.value==L"Folder")
+				if (element->name.value == L"Folder")
 				{
 					if (name == L"")
 					{
-						errors.Add(L"A resource folder should have a name.");
-						errors.Add(
-							L"Format: RESOURCE, Row: " + itow(element->codeRange.start.row + 1) +
-							L", Column: " + itow(element->codeRange.start.column + 1) +
-							L", Message: A resource folder should have a name.");
+						errors.Add(GuiResourceError(this, element->codeRange.start, L"A resource folder should have a name."));
 					}
 					else
 					{
-						Ptr<GuiResourceFolder> folder=new GuiResourceFolder;
-						if(AddFolder(name, folder))
+						Ptr<GuiResourceFolder> folder = new GuiResourceFolder;
+						if (AddFolder(name, folder))
 						{
-							WString newContainingFolder=containingFolder;
-							Ptr<XmlElement> newFolderXml=element;
-							if(Ptr<XmlAttribute> contentAtt=XmlGetAttribute(element, L"content"))
+							WString newContainingFolder = containingFolder;
+							Ptr<XmlElement> newFolderXml = element;
+							if (Ptr<XmlAttribute> contentAtt = XmlGetAttribute(element, L"content"))
 							{
-								if(contentAtt->value.value==L"Link")
+								if (contentAtt->value.value == L"Link")
 								{
 									folder->SetFileContentPath(XmlGetValue(element));
 									WString filePath = containingFolder + folder->GetFileContentPath();
 									WString text;
-									if(LoadTextFile(filePath, text))
+									if (LoadTextFile(filePath, text))
 									{
-										if(auto parser=GetParserManager()->GetParser<XmlDocument>(L"XML"))
+										if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 										{
-											if(auto xml=parser->TypedParse(text, errors))
+											List<Ptr<ParsingError>> parsingErrors;
+											if (auto xml = parser->TypedParse(text, parsingErrors))
 											{
-												newContainingFolder=GetFolderPath(filePath);
-												newFolderXml=xml->rootElement;
+												newContainingFolder = GetFolderPath(filePath);
+												newFolderXml = xml->rootElement;
+											}
+											FOREACH(Ptr<ParsingError>, error, parsingErrors)
+											{
+												errors.Add(GuiResourceError(filePath, error->codeRange.start, error->errorMessage));
 											}
 										}
 									}
 									else
 									{
-										errors.Add(L"Failed to load file \"" + filePath + L"\".");
+										errors.Add(GuiResourceError(this, element->codeRange.start, L"Failed to load file \"" + filePath + L"\"."));
 									}
 								}
 							}
@@ -440,35 +441,35 @@ GuiResourceFolder
 						}
 						else
 						{
-							errors.Add(L"Duplicated resource folder name \"" + name + L"\".");
+							errors.Add(GuiResourceError(this, element->codeRange.start, L"Duplicated resource folder name \"" + name + L"\"."));
 						}
 					}
 				}
-				else if(element->name.value.Length() <= 3 || element->name.value.Sub(0, 4) != L"ref.")
+				else if (element->name.value.Length() <= 3 || element->name.value.Sub(0, 4) != L"ref.")
 				{
 					WString relativeFilePath;
 					WString filePath;
-					if(Ptr<XmlAttribute> contentAtt=XmlGetAttribute(element, L"content"))
+					if (Ptr<XmlAttribute> contentAtt = XmlGetAttribute(element, L"content"))
 					{
-						if(contentAtt->value.value==L"File")
+						if (contentAtt->value.value == L"File")
 						{
 							relativeFilePath = XmlGetValue(element);
 							filePath = containingFolder + relativeFilePath;
-							if(name==L"")
+							if (name == L"")
 							{
-								name=GetFileName(filePath);
+								name = GetFileName(filePath);
 							}
 						}
 					}
 
 					Ptr<GuiResourceItem> item = new GuiResourceItem;
-					if(AddItem(name, item))
+					if (AddItem(name, item))
 					{
 						WString type = element->name.value;
 						IGuiResourceTypeResolver* typeResolver = GetResourceResolverManager()->GetTypeResolver(type);
 						IGuiResourceTypeResolver* preloadResolver = typeResolver;
 
-						if(typeResolver)
+						if (typeResolver)
 						{
 							if (!typeResolver->DirectLoadXml())
 							{
@@ -478,17 +479,17 @@ GuiResourceFolder
 									preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
 									if (!preloadResolver)
 									{
-										errors.Add(L"Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\".");
+										errors.Add(GuiResourceError(this, element->codeRange.start, L"Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 									}
 								}
 							}
 						}
 						else
 						{
-							errors.Add(L"Unknown resource type \"" + type + L"\".");
+							errors.Add(GuiResourceError(this, element->codeRange.start, L"Unknown resource type \"" + type + L"\"."));
 						}
 
-						if(typeResolver && preloadResolver)
+						if (typeResolver && preloadResolver)
 						{
 							if (auto directLoad = preloadResolver->DirectLoadXml())
 							{
@@ -508,7 +509,7 @@ GuiResourceFolder
 								{
 									if (auto indirectLoad = typeResolver->IndirectLoad())
 									{
-										if(indirectLoad->IsDelayLoad())
+										if (indirectLoad->IsDelayLoad())
 										{
 											DelayLoading delayLoading;
 											delayLoading.type = type;
@@ -516,7 +517,7 @@ GuiResourceFolder
 											delayLoading.preloadResource = item;
 											delayLoadings.Add(delayLoading);
 										}
-										else if(resource)
+										else if (resource)
 										{
 											resource = indirectLoad->ResolveResource(resource, 0, errors);
 											itemType = typeResolver->GetType();
@@ -525,25 +526,25 @@ GuiResourceFolder
 									else
 									{
 										resource = 0;
-										errors.Add(L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type.");
+										errors.Add(GuiResourceError(this, element->codeRange.start, L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
 									}
 								}
 								item->SetContent(itemType, resource);
 							}
 							else
 							{
-								errors.Add(L"Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type.");
+								errors.Add(GuiResourceError(this, element->codeRange.start, L"Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 							}
 						}
 
-						if(!item->GetContent())
+						if (!item->GetContent())
 						{
 							RemoveItem(name);
 						}
 					}
 					else
 					{
-						errors.Add(L"Duplicated resource item name \"" + name + L"\".");
+						errors.Add(GuiResourceError(this, element->codeRange.start, L"Duplicated resource item name \"" + name + L"\"."));
 					}
 				}
 			}
@@ -680,14 +681,14 @@ GuiResourceFolder
 								preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
 								if (!preloadResolver)
 								{
-									errors.Add(L"Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\".");
+									errors.Add(GuiResourceError(item, L"Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 								}
 							}
 						}
 					}
 					else
 					{
-						errors.Add(L"Unknown resource type \"" + type + L"\".");
+						errors.Add(GuiResourceError(item, L"Unknown resource type \"" + type + L"\"."));
 					}
 
 					if(typeResolver && preloadResolver)
@@ -710,21 +711,21 @@ GuiResourceFolder
 									}
 									else if(resource)
 									{
-										resource = indirectLoad->ResolveResource(resource, 0, errors);
+										resource = indirectLoad->ResolveResource(resource, nullptr, errors);
 										itemType = typeResolver->GetType();
 									}
 								}
 								else
 								{
 									resource = 0;
-									errors.Add(L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type.");
+									errors.Add(GuiResourceError(item, L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
 								}
 							}
 							item->SetContent(itemType, resource);
 						}
 						else
 						{
-							errors.Add(L"Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type.");
+							errors.Add(GuiResourceError(item, L"Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 						}
 					}
 
@@ -735,7 +736,7 @@ GuiResourceFolder
 				}
 				else
 				{
-					errors.Add(L"Duplicated resource item name \"" + name + L"\".");
+					errors.Add(GuiResourceError(this, L"Duplicated resource item name \"" + name + L"\"."));
 				}
 			}
 
@@ -1032,7 +1033,7 @@ GuiResource
 					}
 					else
 					{
-						errors.Add(GuiResourceError(item, L"Resource type \"" + type + L"\" does not support indirect loading."));
+						errors.Add(GuiResourceError(item, L"Resource type \"" + type + L"\" is not a indirect load resource type."));
 					}
 				}
 				else
@@ -1055,9 +1056,10 @@ GuiResource
 			return workingDirectory;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, GuiResourceError::List& errors)
+		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
 		{
 			Ptr<GuiResource> resource = new GuiResource;
+			resource->SetFileContentPath(filePath);
 			resource->workingDirectory = workingDirectory;
 			DelayLoadingList delayLoadings;
 			resource->LoadResourceFolderFromXml(delayLoadings, resource->workingDirectory, xml->rootElement, errors);
@@ -1088,7 +1090,7 @@ GuiResource
 			}
 			if(xml)
 			{
-				return LoadFromXml(xml, GetFolderPath(filePath), errors);
+				return LoadFromXml(xml, filePath, GetFolderPath(filePath), errors);
 			}
 			return 0;
 		}
