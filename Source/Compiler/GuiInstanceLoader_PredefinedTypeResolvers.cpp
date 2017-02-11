@@ -55,7 +55,7 @@ namespace vl
 			compiled->codes.Add(module);
 		}
 
-		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, collections::List<WString>& errors, bool keepMetadata)
+		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, GuiResourceError::List& errors, bool keepMetadata)
 		{
 			auto compiled = Workflow_GetModule(context, path);
 			if (!compiled)
