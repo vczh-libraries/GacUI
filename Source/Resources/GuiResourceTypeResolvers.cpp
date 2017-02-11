@@ -50,65 +50,39 @@ Image Type Resolver (Image)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<GuiImageData>())
-				{
-					FileStream fileStream(obj->GetFilePath(), FileStream::ReadOnly);
-					if (fileStream.IsAvailable())
-					{
-						auto xmlContent = MakePtr<XmlCData>();
-						xmlContent->content.value = BinaryToHex(fileStream);
-
-						auto xmlImage = MakePtr<XmlElement>();
-						xmlImage->name.value = L"Image";
-						xmlImage->subNodes.Add(xmlContent);
-						return xmlImage;
-					}
-				}
-				return 0;
+				return nullptr;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				auto obj = resource.Cast<GuiImageData>();
+				auto obj = content.Cast<GuiImageData>();
 				stream::internal::ContextFreeWriter writer(stream);
-				FileStream fileStream(obj->GetFilePath(), FileStream::ReadOnly);
+				FileStream fileStream(resource->GetFileAbsolutePath(), FileStream::ReadOnly);
 				writer << (stream::IStream&)fileStream;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<parsing::xml::XmlElement> element, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
-				MemoryStream stream;
-				HexToBinary(stream, XmlGetValue(element));
-				stream.SeekFromBegin(0);
-				auto image = GetCurrentController()->ImageService()->CreateImageFromStream(stream);
-				if (image)
+				errors.Add(GuiResourceError(resource, L"Image should load from file."));
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
+			{
+				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(path);
+				if(image)
 				{
 					return new GuiImageData(image, 0);
 				}
 				else
 				{
-					errors.Add(L"Failed to load an image from binary data in xml.");
+					errors.Add(GuiResourceError(resource, L"Failed to load file \"" + path + L"\"."));
 					return 0;
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResource(const WString& path, collections::List<WString>& errors)override
-			{
-				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(path);
-				if(image)
-				{
-					return new GuiImageData(image, 0, path);
-				}
-				else
-				{
-					errors.Add(L"Failed to load file \"" + path + L"\".");
-					return 0;
-				}
-			}
-
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
 				stream::internal::ContextFreeReader reader(stream);
 				MemoryStream memoryStream;
@@ -121,7 +95,7 @@ Image Type Resolver (Image)
 				}
 				else
 				{
-					errors.Add(L"Failed to load an image from binary data in a stream.");
+					errors.Add(GuiResourceError(resource, L"Failed to load an image from binary data in a stream."));
 					return 0;
 				}
 			}
@@ -163,9 +137,9 @@ Text Type Resolver (Text)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<GuiTextData>())
+				if (auto obj = content.Cast<GuiTextData>())
 				{
 					auto xmlContent = MakePtr<XmlText>();
 					xmlContent->content.value = obj->GetText();
@@ -179,20 +153,20 @@ Text Type Resolver (Text)
 				return 0;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				auto obj = resource.Cast<GuiTextData>();
+				auto obj = content.Cast<GuiTextData>();
 				stream::internal::ContextFreeWriter writer(stream);
 				WString text = obj->GetText();
 				writer << text;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<parsing::xml::XmlElement> element, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				return new GuiTextData(XmlGetValue(element));
 			}
 
-			Ptr<DescriptableObject> ResolveResource(const WString& path, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
 			{
 				WString text;
 				if(LoadTextFile(path, text))
@@ -201,12 +175,12 @@ Text Type Resolver (Text)
 				}
 				else
 				{
-					errors.Add(L"Failed to load file \"" + path + L"\".");
+					errors.Add(GuiResourceError(resource, L"Failed to load file \"" + path + L"\"."));
 					return 0;
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
 				stream::internal::ContextFreeReader reader(stream);
 				WString text;
@@ -251,21 +225,21 @@ Xml Type Resolver (Xml)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<XmlDocument>())
+				if (auto obj = content.Cast<XmlDocument>())
 				{
 					auto xmlXml = MakePtr<XmlElement>();
 					xmlXml->name.value = L"Xml";
 					xmlXml->subNodes.Add(obj->rootElement);
 					return xmlXml;
 				}
-				return 0;
+				return nullptr;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				auto obj = resource.Cast<XmlDocument>();
+				auto obj = content.Cast<XmlDocument>();
 				MemoryStream buffer;
 				{
 					StreamWriter writer(buffer);
@@ -281,7 +255,7 @@ Xml Type Resolver (Xml)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<parsing::xml::XmlElement> element, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				Ptr<XmlElement> root = XmlGetElements(element).First(0);
 				if(root)
@@ -290,34 +264,49 @@ Xml Type Resolver (Xml)
 					xml->rootElement=root;
 					return xml;
 				}
-				return 0;
+				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(const WString& path, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
 			{
-				if(auto parser=GetParserManager()->GetParser<XmlDocument>(L"XML"))
+				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 				{
 					WString text;
-					if(LoadTextFile(path, text))
+					if (LoadTextFile(path, text))
 					{
-						return parser->TypedParse(text, errors);
+						List<Ptr<ParsingError>> parsingErrors;
+						auto xml = parser->TypedParse(text, parsingErrors);
+						FOREACH(Ptr<ParsingError>, error, parsingErrors)
+						{
+							errors.Add(GuiResourceError(resource, error->codeRange.start, error->errorMessage));
+						}
+						return xml;
 					}
 					else
 					{
-						errors.Add(L"Failed to load file \"" + path + L"\".");
+						errors.Add(GuiResourceError(resource, L"Failed to load file \"" + path + L"\"."));
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
-				stream::internal::ContextFreeReader reader(stream);
-				WString text;
-				reader << text;
+				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
+				{
+					stream::internal::ContextFreeReader reader(stream);
+					WString text;
+					reader << text;
 
-				auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
-				return parser->TypedParse(text, errors);
+					List<Ptr<ParsingError>> parsingErrors;
+					auto xml = parser->TypedParse(text, parsingErrors);
+					FOREACH(Ptr<ParsingError>, error, parsingErrors)
+					{
+						errors.Add(GuiResourceError(resource, error->codeRange.start, error->errorMessage));
+					}
+					return xml;
+				}
+				return nullptr;
 			}
 		};
 
@@ -361,24 +350,23 @@ Doc Type Resolver (Doc)
 				return this;
 			}
 
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<DocumentModel>())
+				if (auto obj = content.Cast<DocumentModel>())
 				{
 					return obj->SaveToXml();
 				}
-				return 0;
+				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
-				if(xml)
+				if(auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
-					Ptr<DocumentModel> model=DocumentModel::LoadFromXml(xml, resolver, errors);
+					Ptr<DocumentModel> model = DocumentModel::LoadFromXml(xml, resolver, errors);
 					return model;
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 

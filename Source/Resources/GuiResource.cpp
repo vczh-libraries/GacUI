@@ -193,10 +193,9 @@ GuiImageData
 		{
 		}
 
-		GuiImageData::GuiImageData(Ptr<INativeImage> _image, vint _frameIndex, const WString& _filePath)
+		GuiImageData::GuiImageData(Ptr<INativeImage> _image, vint _frameIndex)
 			: image(_image)
 			, frameIndex(_frameIndex)
-			, filePath(_filePath)
 		{
 		}
 
@@ -212,11 +211,6 @@ GuiImageData
 		vint GuiImageData::GetFrameIndex()
 		{
 			return frameIndex;
-		}
-
-		const WString& GuiImageData::GetFilePath()
-		{
-			return filePath;
 		}
 
 /***********************************************************************
@@ -272,9 +266,15 @@ GuiResourceNodeBase
 			return fileContentPath;
 		}
 
-		void GuiResourceNodeBase::SetFileContentPath(const WString& value)
+		const WString& GuiResourceNodeBase::GetFileAbsolutePath()
 		{
-			fileContentPath = value;
+			return fileAbsolutePath;
+		}
+
+		void GuiResourceNodeBase::SetFileContentPath(const WString& content, const WString& absolute)
+		{
+			fileContentPath = content;
+			fileAbsolutePath = absolute;
 		}
 
 		GuiResourceFolder* GuiResourceNodeBase::GetParent()
@@ -288,12 +288,14 @@ GuiResourceError
 
 		void GuiResourceError::Initialize(Ptr<GuiResourceNodeBase> node)
 		{
+			resourcePath = node->GetResourcePath();
+
 			auto current = node.Obj();
 			while (current)
 			{
 				if (current->GetFileContentPath() != L"")
 				{
-					fileContentPath = current->GetFileContentPath();
+					filePath = current->GetFileAbsolutePath();
 					break;
 				}
 				current = current->GetParent();
@@ -310,24 +312,22 @@ GuiResourceError
 		{
 		}
 
-		GuiResourceError::GuiResourceError(const WString& _fileContentPath, parsing::ParsingTextPos _position, const WString& _message)
-			:fileContentPath(_fileContentPath)
+		GuiResourceError::GuiResourceError(const WString& _filePath, parsing::ParsingTextPos _position, const WString& _message)
+			: filePath(_filePath)
 			, position(_position)
 			, message(_message)
 		{
 		}
 
 		GuiResourceError::GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message)
-			:resourcePath(node->GetResourcePath())
-			, position(_position)
+			:position(_position)
 			, message(_message)
 		{
 			Initialize(node);
 		}
 
 		GuiResourceError::GuiResourceError(Ptr<GuiResourceNodeBase> node, const WString& _message)
-			:resourcePath(node->GetResourcePath())
-			, message(_message)
+			:message(_message)
 		{
 			Initialize(node);
 		}
@@ -412,28 +412,30 @@ GuiResourceFolder
 							{
 								if (contentAtt->value.value == L"Link")
 								{
-									folder->SetFileContentPath(XmlGetValue(element));
-									WString filePath = containingFolder + folder->GetFileContentPath();
+									auto fileContentPath = XmlGetValue(element);
+									auto fileAbsolutePath = containingFolder + fileContentPath;
+									folder->SetFileContentPath(fileContentPath, fileAbsolutePath);
+
 									WString text;
-									if (LoadTextFile(filePath, text))
+									if (LoadTextFile(fileAbsolutePath, text))
 									{
 										if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 										{
 											List<Ptr<ParsingError>> parsingErrors;
 											if (auto xml = parser->TypedParse(text, parsingErrors))
 											{
-												newContainingFolder = GetFolderPath(filePath);
+												newContainingFolder = GetFolderPath(fileAbsolutePath);
 												newFolderXml = xml->rootElement;
 											}
 											FOREACH(Ptr<ParsingError>, error, parsingErrors)
 											{
-												errors.Add(GuiResourceError(filePath, error->codeRange.start, error->errorMessage));
+												errors.Add(GuiResourceError(fileAbsolutePath, error->codeRange.start, error->errorMessage));
 											}
 										}
 									}
 									else
 									{
-										errors.Add(GuiResourceError(this, element->codeRange.start, L"Failed to load file \"" + filePath + L"\"."));
+										errors.Add(GuiResourceError(this, element->codeRange.start, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
 									}
 								}
 							}
@@ -447,17 +449,17 @@ GuiResourceFolder
 				}
 				else if (element->name.value.Length() <= 3 || element->name.value.Sub(0, 4) != L"ref.")
 				{
-					WString relativeFilePath;
-					WString filePath;
+					WString fileContentPath;
+					WString fileAbsolutePath;
 					if (Ptr<XmlAttribute> contentAtt = XmlGetAttribute(element, L"content"))
 					{
 						if (contentAtt->value.value == L"File")
 						{
-							relativeFilePath = XmlGetValue(element);
-							filePath = containingFolder + relativeFilePath;
+							fileContentPath = XmlGetValue(element);
+							fileAbsolutePath = containingFolder + fileContentPath;
 							if (name == L"")
 							{
-								name = GetFileName(filePath);
+								name = GetFileName(fileAbsolutePath);
 							}
 						}
 					}
@@ -495,14 +497,14 @@ GuiResourceFolder
 							{
 								{
 									Ptr<DescriptableObject> resource;
-									if (filePath == L"")
+									if (fileAbsolutePath == L"")
 									{
-										resource = directLoad->ResolveResource(element, errors);
+										resource = directLoad->ResolveResource(item, element, errors);
 									}
 									else
 									{
-										item->SetFileContentPath(relativeFilePath);
-										resource = directLoad->ResolveResource(filePath, errors);
+										item->SetFileContentPath(fileContentPath, fileAbsolutePath);
+										resource = directLoad->ResolveResource(item, fileAbsolutePath, errors);
 									}
 									item->SetContent(preloadResolver->GetType(), resource);
 								}
@@ -697,7 +699,7 @@ GuiResourceFolder
 						if (auto directLoad = preloadResolver->DirectLoadStream())
 						{
 							{
-								auto resource = directLoad->ResolveResourcePrecompiled(reader.input, errors);
+								auto resource = directLoad->ResolveResourcePrecompiled(item, reader.input, errors);
 								item->SetContent(preloadResolver->GetType(), resource);
 							}
 
@@ -1062,7 +1064,7 @@ GuiResource
 		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
 		{
 			Ptr<GuiResource> resource = new GuiResource;
-			resource->SetFileContentPath(filePath);
+			resource->SetFileContentPath(filePath, filePath);
 			resource->workingDirectory = workingDirectory;
 			DelayLoadingList delayLoadings;
 			resource->LoadResourceFolderFromXml(delayLoadings, resource->workingDirectory, xml->rootElement, errors);

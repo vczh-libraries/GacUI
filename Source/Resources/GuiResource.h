@@ -99,7 +99,6 @@ Resource Image
 		protected:
 			Ptr<INativeImage>				image;
 			vint							frameIndex;
-			WString							filePath;
 
 		public:
 			/// <summary>Create an empty image data.</summary>
@@ -108,7 +107,7 @@ Resource Image
 			/// <param name="_image">The specified image.</param>
 			/// <param name="_frameIndex">The specified frame index.</param>
 			/// <param name="_filePath">The file path of the image. This parameter is only for metadata, it will not affect the content of the image.</param>
-			GuiImageData(Ptr<INativeImage> _image, vint _frameIndex, const WString& _filePath = L"");
+			GuiImageData(Ptr<INativeImage> _image, vint _frameIndex);
 			~GuiImageData();
 
 			/// <summary>Get the specified image.</summary>
@@ -117,9 +116,6 @@ Resource Image
 			/// <summary>Get the specified frame index.</summary>
 			/// <returns>The specified frame index.</returns>
 			vint							GetFrameIndex();
-			/// <summary>Get the file path.</summary>
-			/// <returns>The file path.</returns>
-			const WString&					GetFilePath();
 		};
 
 /***********************************************************************
@@ -156,6 +152,7 @@ Resource Structure
 			GuiResourceFolder*						parent;
 			WString									name;
 			WString									fileContentPath;
+			WString									fileAbsolutePath;
 			
 		public:
 			GuiResourceNodeBase();
@@ -173,9 +170,12 @@ Resource Structure
 			/// <summary>Get the file content path of this resource node. When saving the resource, if the path is not empty, the path will be serialized instead of the content.</summary>
 			/// <returns>The file content path of this resource node .</returns>
 			const WString&							GetFileContentPath();
+			/// <summary>Get the absolute file content path of this resource node. This path points to an existing file containing the content.</summary>
+			/// <returns>The file absolute path of this resource node .</returns>
+			const WString&							GetFileAbsolutePath();
 			/// <summary>Set the file content path of this resource node.</summary>
 			/// <param name="value">The file content path of this resource node .</param>
-			void									SetFileContentPath(const WString& value);
+			void									SetFileContentPath(const WString& content, const WString& absolute);
 		};
 
 		struct GuiResourceError
@@ -187,13 +187,13 @@ Resource Structure
 			using List = collections::List<GuiResourceError>;
 
 			WString									resourcePath;
-			WString									fileContentPath;
+			WString									filePath;
 			parsing::ParsingTextPos					position;
 			WString									message;
 
 			GuiResourceError();
 			GuiResourceError(parsing::ParsingTextPos _position, const WString& _message);
-			GuiResourceError(const WString& _fileContentPath, parsing::ParsingTextPos _position, const WString& _message);
+			GuiResourceError(const WString& _filepath, parsing::ParsingTextPos _position, const WString& _message);
 			GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message);
 			GuiResourceError(Ptr<GuiResourceNodeBase> node, const WString& _message);
 
@@ -627,13 +627,13 @@ Resource Type Resolver
 			/// <returns>The resource.</returns>
 			/// <param name="element">The xml element.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors) = 0;
 
 			/// <summary>Load a resource for a type from a file.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="path">The file path.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResource(const WString& path, GuiResourceError::List& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource without a preload type.</summary>
@@ -649,7 +649,7 @@ Resource Type Resolver
 			/// <returns>The resource.</returns>
 			/// <param name="stream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(stream::IStream& stream, GuiResourceError::List& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource with a preload type.</summary>
