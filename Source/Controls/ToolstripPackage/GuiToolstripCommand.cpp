@@ -11,6 +11,7 @@ namespace vl
 			using namespace collections;
 			using namespace compositions;
 			using namespace regex;
+			using namespace parsing;
 
 /***********************************************************************
 GuiToolstripCommand
@@ -57,7 +58,7 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::BuildShortcut(const WString& builderText)
 			{
-				List<WString> errors;
+				List<Ptr<ParsingError>> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
 				if (Ptr<ShortcutBuilder> builder = parser->TypedParse(builderText, errors))
 				{
@@ -205,12 +206,12 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				{
 				}
 
-				Ptr<ShortcutBuilder> TypedParse(const WString& text, collections::List<WString>& errors)override
+				Ptr<ShortcutBuilder> TypedParse(const WString& text, collections::List<Ptr<ParsingError>>& errors)override
 				{
 					Ptr<RegexMatch> match=regexShortcut.MatchHead(text);
 					if (match && match->Result().Length() != text.Length())
 					{
-						errors.Add(L"Failed to parse a shortcut \"" + text + L"\".");
+						errors.Add(new ParsingError(L"Failed to parse a shortcut \"" + text + L"\"."));
 						return 0;
 					}
 

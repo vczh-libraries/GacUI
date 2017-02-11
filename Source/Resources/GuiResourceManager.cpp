@@ -39,16 +39,16 @@ Class Name Record (ClassNameRecord)
 				return this;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				if (auto obj = resource.Cast<GuiResourceClassNameRecord>())
+				if (auto obj = content.Cast<GuiResourceClassNameRecord>())
 				{
 					internal::ContextFreeWriter writer(stream);
 					writer << obj->classNames;
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
 				internal::ContextFreeReader reader(stream);
 
