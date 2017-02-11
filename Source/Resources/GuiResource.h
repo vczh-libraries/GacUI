@@ -378,6 +378,11 @@ Resource
 			/// <param name="stream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
 			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream, GuiResourceError::List& errors);
+
+			/// <summary>Load a precompiled resource from a stream. This function will hit an assert if there are errors.</summary>
+			/// <returns>The loaded resource.</returns>
+			/// <param name="stream">The stream.</param>
+			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream);
 			
 			/// <summary>Save the precompiled resource to a stream.</summary>
 			/// <param name="stream">The stream.</param>

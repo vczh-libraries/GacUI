@@ -48,7 +48,6 @@ void UnitTestInGuiMain()
 		a4 = a3 = a2 = a1 = 0; // all released
 	}
 	{
-		List<WString> errors;
 		auto parser = GetParserManager()->GetParser<GuiIqQuery>(L"INSTANCE-QUERY");
 		ASSERT(parser);
 
@@ -95,6 +94,7 @@ void UnitTestInGuiMain()
 
 		for (auto queryCode : queries)
 		{
+			List<Ptr<parsing::ParsingError>> errors;
 			auto query = parser->TypedParse(queryCode, errors);
 			ASSERT(query);
 			ASSERT(errors.Count() == 0);

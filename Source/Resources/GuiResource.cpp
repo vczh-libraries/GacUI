@@ -1126,6 +1126,14 @@ GuiResource
 			return resource;
 		}
 
+		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream)
+		{
+			GuiResourceError::List errors;
+			auto resource = LoadPrecompiledBinary(stream, errors);
+			CHECK_ERROR(errors.Count() == 0, L"GuiResource::LoadPrecompiledBinary(IStream&)#There are errors.");
+			return resource;
+		}
+
 		void GuiResource::SavePrecompiledBinary(stream::IStream& stream)
 		{
 			stream::internal::ContextFreeWriter writer(stream);

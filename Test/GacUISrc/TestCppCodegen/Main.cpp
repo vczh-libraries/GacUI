@@ -14,9 +14,8 @@ using namespace demo;
 void GuiMain()
 {
 	{
-		List<WString> errors;
 		FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
-		auto resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
+		auto resource = GuiResource::LoadPrecompiledBinary(fileStream);
 		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DataOnly);
 	}
 
