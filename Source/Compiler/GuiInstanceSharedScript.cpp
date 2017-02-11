@@ -10,12 +10,20 @@ namespace vl
 GuiInstanceSharedScript
 ***********************************************************************/
 
-		Ptr<GuiInstanceSharedScript> GuiInstanceSharedScript::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, collections::List<WString>& errors)
+		Ptr<GuiInstanceSharedScript> GuiInstanceSharedScript::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
-			auto script = MakePtr<GuiInstanceSharedScript>();
-			script->language = xml->rootElement->name.value;
-			script->code = XmlGetValue(xml->rootElement);
-			return script;
+			if (xml->rootElement->subNodes.Count() == 1)
+			{
+				if (auto cdata = xml->rootElement->subNodes[0].Cast<XmlCData>())
+				{
+					auto script = MakePtr<GuiInstanceSharedScript>();
+					script->language = xml->rootElement->name.value;
+					script->code = cdata->content.value;
+					return script;
+				}
+			}
+			errors.Add(GuiResourceError(resource, xml->rootElement->codeRange.start, L"Script should be contained in a CDATA section."));
+			return nullptr;
 		}
 
 		Ptr<parsing::xml::XmlElement> GuiInstanceSharedScript::SaveToXml()

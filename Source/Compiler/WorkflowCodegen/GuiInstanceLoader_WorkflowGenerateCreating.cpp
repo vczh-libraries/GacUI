@@ -20,7 +20,7 @@ WorkflowGenerateCreatingVisitor
 		public:
 			types::ResolvingResult&				resolvingResult;
 			Ptr<WfBlockStatement>				statements;
-			GuiResourceError::List&					errors;
+			GuiResourceError::List&				errors;
 			
 			WorkflowGenerateCreatingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
 				:resolvingResult(_resolvingResult)

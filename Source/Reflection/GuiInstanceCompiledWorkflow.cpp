@@ -89,9 +89,9 @@ Compiled Workflow Type Resolver (Workflow)
 				return this;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				if (auto obj = resource.Cast<GuiInstanceCompiledWorkflow>())
+				if (auto obj = content.Cast<GuiInstanceCompiledWorkflow>())
 				{
 					internal::ContextFreeWriter writer(stream);
 
@@ -107,7 +107,7 @@ Compiled Workflow Type Resolver (Workflow)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
 				internal::ContextFreeReader reader(stream);
 

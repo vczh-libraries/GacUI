@@ -13,13 +13,13 @@ namespace vl
 Parser
 ***********************************************************************/
 
-		Ptr<workflow::WfExpression> Workflow_ParseExpression(const WString& code, GuiResourceError::List& errors)
+		Ptr<workflow::WfExpression> Workflow_ParseExpression(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors)
 		{
 			auto parser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
 			return parser->TypedParse(code, errors);
 		}
 
-		Ptr<workflow::WfStatement> Workflow_ParseStatement(const WString& code, GuiResourceError::List& errors)
+		Ptr<workflow::WfStatement> Workflow_ParseStatement(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors)
 		{
 			auto parser = GetParserManager()->GetParser<WfStatement>(L"WORKFLOW-STATEMENT");
 			return parser->TypedParse(code, errors);
@@ -45,7 +45,7 @@ Workflow_ModuleToString
 Converter
 ***********************************************************************/
 
-		Ptr<workflow::WfExpression> Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, GuiResourceError::List& errors)
+		Ptr<workflow::WfExpression> Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, collections::List<Ptr<parsing::ParsingError>>& errors)
 		{
 			if (typeDescriptor == description::GetTypeDescriptor<WString>())
 			{

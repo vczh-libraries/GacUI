@@ -231,7 +231,7 @@ Shared Script Type Resolver (Script)
 				}
 			}
 
-			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
 				switch (context.passIndex)
 				{
@@ -249,7 +249,7 @@ Shared Script Type Resolver (Script)
 				}
 			}
 
-			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
 				switch (context.passIndex)
 				{
@@ -269,21 +269,21 @@ Shared Script Type Resolver (Script)
 				return this;
 			}
 
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<GuiInstanceSharedScript>())
+				if (auto obj = content.Cast<GuiInstanceSharedScript>())
 				{
 					return obj->SaveToXml();
 				}
-				return 0;
+				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
 				if (xml)
 				{
-					auto schema = GuiInstanceSharedScript::LoadFromXml(xml, errors);
+					auto schema = GuiInstanceSharedScript::LoadFromXml(resource, xml, errors);
 					return schema;
 				}
 				return 0;
@@ -374,7 +374,7 @@ Instance Type Resolver (Instance)
 				compiled->assembly = nullptr;\
 			}\
 
-			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			void PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
 				switch (context.passIndex)
 				{
@@ -446,7 +446,7 @@ Instance Type Resolver (Instance)
 				}
 			}
 
-			void PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors)override
+			void PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors)override
 			{
 				WString path;
 				switch (context.passIndex)
@@ -505,21 +505,21 @@ Instance Type Resolver (Instance)
 				return this;
 			}
 
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<GuiInstanceContext>())
+				if (auto obj = content.Cast<GuiInstanceContext>())
 				{
 					return obj->SaveToXml();
 				}
 				return 0;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
 				if (xml)
 				{
-					Ptr<GuiInstanceContext> context = GuiInstanceContext::LoadFromXml(xml, errors);
+					Ptr<GuiInstanceContext> context = GuiInstanceContext::LoadFromXml(resource, xml, errors);
 					return context;
 				}
 				return 0;
@@ -570,21 +570,21 @@ Instance Style Type Resolver (InstanceStyle)
 				return this;
 			}
 
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<GuiInstanceStyleContext>())
+				if (auto obj = content.Cast<GuiInstanceStyleContext>())
 				{
 					return obj->SaveToXml();
 				}
 				return 0;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
+				Ptr<XmlDocument> xml = resource->GetContent().Cast<XmlDocument>();
 				if (xml)
 				{
-					auto context = GuiInstanceStyleContext::LoadFromXml(xml, errors);
+					auto context = GuiInstanceStyleContext::LoadFromXml(resource, xml, errors);
 					return context;
 				}
 				return 0;
