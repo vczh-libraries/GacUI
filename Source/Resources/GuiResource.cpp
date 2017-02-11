@@ -332,6 +332,44 @@ GuiResourceError
 			Initialize(node);
 		}
 
+		template<typename TCallback>
+		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, const TCallback& callback)
+		{
+			FOREACH(Ptr<ParsingError>, error, parsingErrors)
+			{
+				auto pos = error->codeRange.start;
+				if (pos.row < 0 || pos.column < 0)
+				{
+					pos = offset;
+				}
+				else
+				{
+					if (pos.row == 0)
+					{
+						pos.column += offset.column;
+					}
+					pos.row += offset.row;
+				}
+				errors.Add(callback(pos, error->errorMessage));
+			}
+		}
+
+		void GuiResourceError::Transform(Ptr<GuiResourceNodeBase> node, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset)
+		{
+			TransformErrors(errors, parsingErrors, offset, [&](ParsingTextPos pos, const WString& message)
+			{
+				return GuiResourceError(node, pos, message);
+			});
+		}
+
+		void GuiResourceError::Transform(const WString& filepath, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset)
+		{
+			TransformErrors(errors, parsingErrors, offset, [&](ParsingTextPos pos, const WString& message)
+			{
+				return GuiResourceError(filepath, pos, message);
+			});
+		}
+
 /***********************************************************************
 GuiResourceItem
 ***********************************************************************/
@@ -427,10 +465,7 @@ GuiResourceFolder
 												newContainingFolder = GetFolderPath(fileAbsolutePath);
 												newFolderXml = xml->rootElement;
 											}
-											FOREACH(Ptr<ParsingError>, error, parsingErrors)
-											{
-												errors.Add(GuiResourceError(fileAbsolutePath, error->codeRange.start, error->errorMessage));
-											}
+											GuiResourceError::Transform(fileAbsolutePath, errors, parsingErrors);
 										}
 									}
 									else
@@ -1083,10 +1118,7 @@ GuiResource
 				{
 					List<Ptr<ParsingError>> parsingErrors;
 					xml = parser->TypedParse(text, parsingErrors);
-					FOREACH(Ptr<ParsingError>, error, parsingErrors)
-					{
-						errors.Add(GuiResourceError(filePath, error->codeRange.start, error->errorMessage));
-					}
+					GuiResourceError::Transform(filePath, errors, parsingErrors);
 				}
 				else
 				{

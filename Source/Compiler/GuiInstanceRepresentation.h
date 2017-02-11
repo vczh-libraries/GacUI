@@ -173,12 +173,12 @@ Instance Context
 			bool									appliedStyles = false;
 			StyleContextList						styles;
 
-			static void								CollectDefaultAttributes(GuiAttSetterRepr::ValueList& values, Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
-			static void								CollectAttributes(GuiAttSetterRepr::SetteValuerMap& setters, Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
-			static void								CollectEvents(GuiAttSetterRepr::EventHandlerMap& eventHandlers, Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
-			static void								FillAttSetter(Ptr<GuiAttSetterRepr> setter, Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
-			static Ptr<GuiConstructorRepr>			LoadCtor(Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
-			static Ptr<GuiInstanceContext>			LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, collections::List<WString>& errors);
+			static void								CollectDefaultAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::ValueList& values, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static void								CollectAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::SetteValuerMap& setters, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static void								CollectEvents(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::EventHandlerMap& eventHandlers, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static void								FillAttSetter(Ptr<GuiResourceItem> resource, Ptr<GuiAttSetterRepr> setter, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static Ptr<GuiConstructorRepr>			LoadCtor(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static Ptr<GuiInstanceContext>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlDocument>			SaveToXml();
 			bool									ApplyStyles(Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors);
 		};
@@ -193,7 +193,7 @@ Instance Style Context
 			Ptr<GuiIqQuery>							query;
 			Ptr<GuiAttSetterRepr>					setter;
 
-			static Ptr<GuiInstanceStyle>			LoadFromXml(Ptr<parsing::xml::XmlElement> xml, collections::List<WString>& errors);
+			static Ptr<GuiInstanceStyle>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlElement>			SaveToXml();
 		};
 
@@ -203,7 +203,7 @@ Instance Style Context
 		public:
 			StyleList								styles;
 
-			static Ptr<GuiInstanceStyleContext>		LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, collections::List<WString>& errors);
+			static Ptr<GuiInstanceStyleContext>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlDocument>			SaveToXml();
 		};
 	}

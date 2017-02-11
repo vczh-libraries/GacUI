@@ -277,10 +277,7 @@ Xml Type Resolver (Xml)
 					{
 						List<Ptr<ParsingError>> parsingErrors;
 						auto xml = parser->TypedParse(text, parsingErrors);
-						FOREACH(Ptr<ParsingError>, error, parsingErrors)
-						{
-							errors.Add(GuiResourceError(resource, error->codeRange.start, error->errorMessage));
-						}
+						GuiResourceError::Transform(resource, errors, parsingErrors);
 						return xml;
 					}
 					else
@@ -301,10 +298,7 @@ Xml Type Resolver (Xml)
 
 					List<Ptr<ParsingError>> parsingErrors;
 					auto xml = parser->TypedParse(text, parsingErrors);
-					FOREACH(Ptr<ParsingError>, error, parsingErrors)
-					{
-						errors.Add(GuiResourceError(resource, error->codeRange.start, error->errorMessage));
-					}
+					GuiResourceError::Transform(resource, errors, parsingErrors);
 					return xml;
 				}
 				return nullptr;
