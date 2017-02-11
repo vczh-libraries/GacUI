@@ -22,22 +22,22 @@ document_operation_visitors::SerializeRunVisitor
 			public:
 				SerializeRunVisitor(DocumentModel* _model, Ptr<XmlElement> _parent)
 					:model(_model)
-					,parent(_parent)
+					, parent(_parent)
 				{
 				}
 
 				void VisitContainer(Ptr<XmlElement> replacedParent, DocumentContainerRun* run)
 				{
-					if(replacedParent)
+					if (replacedParent)
 					{
 						parent->subNodes.Add(replacedParent);
-						Ptr<XmlElement> oldParent=parent;
-						parent=replacedParent;
+						Ptr<XmlElement> oldParent = parent;
+						parent = replacedParent;
 						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
 						{
 							subRun->Accept(this);
 						}
-						parent=oldParent;
+						parent = oldParent;
 					}
 					else
 					{
@@ -50,7 +50,7 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentTextRun* run)override
 				{
-					if(run->text!=L"")
+					if (run->text != L"")
 					{
 						auto writer = XmlElementWriter(parent).Element(L"nop");
 						auto begin = run->text.Buffer();
@@ -101,113 +101,113 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentStylePropertiesRun* run)override
 				{
-					Ptr<DocumentStyleProperties> sp=run->style;
-					Ptr<XmlElement> oldParent=parent;
-					if(sp->face || sp->size || sp->color)
+					Ptr<DocumentStyleProperties> sp = run->style;
+					Ptr<XmlElement> oldParent = parent;
+					if (sp->face || sp->size || sp->color)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=L"font";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = L"font";
 						parent->subNodes.Add(element);
 
 						XmlElementWriter writer(element);
-						if(sp->face)
+						if (sp->face)
 						{
 							writer.Attribute(L"face", sp->face.Value());
 						}
-						if(sp->size)
+						if (sp->size)
 						{
 							writer.Attribute(L"size", sp->size.Value().ToString());
 						}
-						if(sp->color)
+						if (sp->color)
 						{
 							writer.Attribute(L"color", sp->color.Value().ToString());
 						}
-						if(sp->backgroundColor)
+						if (sp->backgroundColor)
 						{
 							writer.Attribute(L"bkcolor", sp->backgroundColor.Value().ToString());
 						}
-						parent=element;
+						parent = element;
 					}
-					if(sp->bold)
+					if (sp->bold)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=sp->bold.Value()?L"b":L"b-";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = sp->bold.Value() ? L"b" : L"b-";
 						parent->subNodes.Add(element);
-						parent=element;
+						parent = element;
 					}
-					if(sp->italic)
+					if (sp->italic)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=sp->italic.Value()?L"i":L"i-";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = sp->italic.Value() ? L"i" : L"i-";
 						parent->subNodes.Add(element);
-						parent=element;
+						parent = element;
 					}
-					if(sp->underline)
+					if (sp->underline)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=sp->underline.Value()?L"u":L"u-";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = sp->underline.Value() ? L"u" : L"u-";
 						parent->subNodes.Add(element);
-						parent=element;
+						parent = element;
 					}
-					if(sp->strikeline)
+					if (sp->strikeline)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=sp->strikeline.Value()?L"s":L"s-";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = sp->strikeline.Value() ? L"s" : L"s-";
 						parent->subNodes.Add(element);
-						parent=element;
+						parent = element;
 					}
-					if(sp->antialias || sp->verticalAntialias)
+					if (sp->antialias || sp->verticalAntialias)
 					{
-						bool ha=sp->antialias?sp->antialias.Value():true;
-						bool va=sp->verticalAntialias?sp->verticalAntialias.Value():false;
-						if(!ha)
+						bool ha = sp->antialias ? sp->antialias.Value() : true;
+						bool va = sp->verticalAntialias ? sp->verticalAntialias.Value() : false;
+						if (!ha)
 						{
-							Ptr<XmlElement> element=new XmlElement;
-							element->name.value=L"ha";
+							Ptr<XmlElement> element = new XmlElement;
+							element->name.value = L"ha";
 							parent->subNodes.Add(element);
-							parent=element;
+							parent = element;
 						}
-						else if(!va)
+						else if (!va)
 						{
-							Ptr<XmlElement> element=new XmlElement;
-							element->name.value=L"va";
+							Ptr<XmlElement> element = new XmlElement;
+							element->name.value = L"va";
 							parent->subNodes.Add(element);
-							parent=element;
+							parent = element;
 						}
 						else
 						{
-							Ptr<XmlElement> element=new XmlElement;
-							element->name.value=L"na";
+							Ptr<XmlElement> element = new XmlElement;
+							element->name.value = L"na";
 							parent->subNodes.Add(element);
-							parent=element;
+							parent = element;
 						}
 					}
 					VisitContainer(0, run);
-					parent=oldParent;
+					parent = oldParent;
 				}
 
 				void Visit(DocumentStyleApplicationRun* run)override
 				{
-					Ptr<XmlElement> element=new XmlElement;
-					element->name.value=L"div";
+					Ptr<XmlElement> element = new XmlElement;
+					element->name.value = L"div";
 					XmlElementWriter(element).Attribute(L"style", run->styleName);
 					VisitContainer(element, run);
 				}
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
-					Ptr<XmlElement> element=new XmlElement;
-					element->name.value=L"a";
+					Ptr<XmlElement> element = new XmlElement;
+					element->name.value = L"a";
 					XmlElementWriter writer(element);
-					if(run->normalStyleName!=L"#NormalLink")
+					if (run->normalStyleName != L"#NormalLink")
 					{
 						writer.Attribute(L"normal", run->normalStyleName);
 					}
-					if(run->activeStyleName!=L"#ActiveLink")
+					if (run->activeStyleName != L"#ActiveLink")
 					{
 						writer.Attribute(L"active", run->activeStyleName);
 					}
-					if(run->reference!=L"")
+					if (run->reference != L"")
 					{
 						writer.Attribute(L"href", run->reference);
 					}
@@ -238,13 +238,13 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentParagraphRun* run)override
 				{
-					Ptr<XmlElement> element=new XmlElement;
-					element->name.value=L"p";
+					Ptr<XmlElement> element = new XmlElement;
+					element->name.value = L"p";
 
 					XmlElementWriter writer(element);
 					if (run->alignment)
 					{
-						switch(run->alignment.Value())
+						switch (run->alignment.Value())
 						{
 						case Alignment::Left:
 							writer.Attribute(L"align", L"Left");
@@ -334,21 +334,6 @@ DocumentModel
 				}
 			}
 			return xml;
-		}
-
-		bool DocumentModel::SaveToXml(const WString& filePath)
-		{
-			Ptr<XmlDocument> xml=SaveToXml();
-			if(xml)
-			{
-				stream::FileStream fileStream(filePath, stream::FileStream::WriteOnly);
-				stream::BomEncoder encoder(stream::BomEncoder::Utf16);
-				stream::EncoderStream encoderStream(fileStream, encoder);
-				stream::StreamWriter writer(encoderStream);
-				XmlPrint(xml, writer);
-				return true;
-			}
-			return false;
 		}
 	}
 }

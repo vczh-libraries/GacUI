@@ -60,7 +60,6 @@ External Functions
 			extern Ptr<presentation::INativeImage>							INativeImage_Constructor(const WString& path);
 			extern presentation::INativeCursor*								INativeCursor_Constructor1();
 			extern presentation::INativeCursor*								INativeCursor_Constructor2(presentation::INativeCursor::SystemCursorType type);
-			extern Ptr<presentation::DocumentModel>							DocumentModel_Constructor(const WString& path);
 
 			template<typename T>
 			Ptr<T> Element_Constructor()

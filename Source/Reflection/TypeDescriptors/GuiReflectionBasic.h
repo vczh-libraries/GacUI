@@ -83,6 +83,7 @@ Type List
 			F(presentation::DocumentStyle)\
 			F(presentation::DocumentModel)\
 			F(presentation::GuiResourceNodeBase)\
+			F(presentation::GuiResourceError)\
 			F(presentation::GuiResourceItem)\
 			F(presentation::GuiResourceFolder)\
 			F(presentation::GuiResource)\

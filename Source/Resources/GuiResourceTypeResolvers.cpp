@@ -66,6 +66,7 @@ Image Type Resolver (Image)
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				errors.Add(GuiResourceError(resource, L"Image should load from file."));
+				return nullptr;
 			}
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
@@ -363,7 +364,7 @@ Doc Type Resolver (Doc)
 			{
 				if(auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
-					Ptr<DocumentModel> model = DocumentModel::LoadFromXml(xml, resolver, errors);
+					Ptr<DocumentModel> model = DocumentModel::LoadFromXml(resource, xml, resolver, errors);
 					return model;
 				}
 				return nullptr;

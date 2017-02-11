@@ -364,29 +364,11 @@ Rich Content Document (model)
 			/// <param name="xml">The xml document.</param>
 			/// <param name="resolver">A document resolver to resolve symbols in non-embedded objects like image.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<DocumentModel>		LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors);
-
-			/// <summary>Load a document model from an xml.</summary>
-			/// <returns>The loaded document model.</returns>
-			/// <param name="xml">The xml document.</param>
-			/// <param name="workingDirectory">The working directory for loading image files.</param>
-			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<DocumentModel>		LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, collections::List<WString>& errors);
-
-			/// <summary>Load a document model from an xml.</summary>
-			/// <returns>The loaded document model.</returns>
-			/// <param name="filePath">The file path of the xml document.</param>
-			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<DocumentModel>		LoadFromXml(const WString& filePath, collections::List<WString>& errors);
+			static Ptr<DocumentModel>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors);
 
 			/// <summary>Save a document model to an xml.</summary>
 			/// <returns>The saved xml document.</returns>
 			Ptr<parsing::xml::XmlDocument>	SaveToXml();
-			
-			/// <summary>Save a document model to an xml.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="filePath">The file path of the xml document.</param>
-			bool							SaveToXml(const WString& filePath);
 		};
 	}
 }

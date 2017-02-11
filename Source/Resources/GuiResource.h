@@ -196,8 +196,6 @@ Resource Structure
 			GuiResourceError(const WString& _filepath, parsing::ParsingTextPos _position, const WString& _message);
 			GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message);
 			GuiResourceError(Ptr<GuiResourceNodeBase> node, const WString& _message);
-
-
 		};
 
 		class DocumentModel;

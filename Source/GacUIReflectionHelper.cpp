@@ -120,24 +120,6 @@ External Functions (Basic)
 				return GetCurrentController()->ResourceService()->GetSystemCursor(type);
 			}
 
-			Ptr<DocumentModel> DocumentModel_Constructor(const WString& path)
-			{
-				FileStream fileStream(path, FileStream::ReadOnly);
-				if (!fileStream.IsAvailable()) return 0;
-
-				BomDecoder decoder;
-				DecoderStream decoderStream(fileStream, decoder);
-				StreamReader reader(decoderStream);
-				WString xmlText = reader.ReadToEnd();
-
-				Ptr<ParsingTable> table = XmlLoadTable();
-				Ptr<XmlDocument> xml = XmlParseDocument(xmlText, table);
-				if (!xml) return 0;
-
-				List<WString> errors;
-				return DocumentModel::LoadFromXml(xml, GetFolderPath(path), errors);
-			}
-
 /***********************************************************************
 External Functions (Elements)
 ***********************************************************************/
