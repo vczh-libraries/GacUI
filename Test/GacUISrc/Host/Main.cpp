@@ -105,7 +105,7 @@ void GuiMain_Resource()
 		LogTypeManager(writer);
 	}
 	{
-		List<WString> errors;
+		List<GuiResourceError> errors;
 		auto resource = GuiResource::LoadFromXml(LR"(Resources/UI7_ColorComboBox.xml)", errors);
 		resource->Precompile(nullptr, errors);
 
@@ -115,9 +115,10 @@ void GuiMain_Resource()
 			EncoderStream encoderStream(fileStream, encoder);
 			StreamWriter writer(encoderStream);
 
-			FOREACH(WString, error, errors)
+			FOREACH(GuiResourceError, error, errors)
 			{
-				writer.WriteLine(error);
+				writer.WriteLine(error.resourcePath + L"(" + error.filePath + L":" + itow(error.position.row) + L"," + itow(error.position.column) + L")");
+				writer.WriteLine(L"\t" + error.message);
 			}
 		}
 		CHECK_ERROR(errors.Count() == 0, L"Error");
