@@ -621,7 +621,7 @@ Resource Type Resolver
 			/// <summary>Serialize a resource to an xml element. This function is called if this type resolver does not have a preload type.</summary>
 			/// <returns>The serialized xml element.</returns>
 			/// <param name="resource">The resource.</param>
-			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<DescriptableObject> resource) = 0;
+			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type inside an xml element.</summary>
 			/// <returns>The resource.</returns>
@@ -643,7 +643,7 @@ Resource Type Resolver
 			/// <summary>Serialize a precompiled resource to a stream.</summary>
 			/// <param name="resource">The resource.</param>
 			/// <param name="stream">The stream.</param>
-			virtual void										SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream) = 0;
+			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream) = 0;
 
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The resource.</returns>
@@ -666,14 +666,14 @@ Resource Type Resolver
 			/// <summary>Serialize a resource to a resource in preload type.</summary>
 			/// <returns>The serialized resource.</returns>
 			/// <param name="resource">The resource.</param>
-			virtual Ptr<DescriptableObject>						Serialize(Ptr<DescriptableObject> resource) = 0;
+			virtual Ptr<DescriptableObject>						Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type from a resource loaded by the preload type resolver.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="resource">The resource.</param>
 			/// <param name="resolver">The path resolver. This is only for delay load resource.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors) = 0;
 		};
 
 /***********************************************************************

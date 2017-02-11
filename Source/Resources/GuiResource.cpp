@@ -493,16 +493,18 @@ GuiResourceFolder
 						{
 							if (auto directLoad = preloadResolver->DirectLoadXml())
 							{
-								Ptr<DescriptableObject> resource;
-								WString itemType = preloadResolver->GetType();
-								if (filePath == L"")
 								{
-									resource = directLoad->ResolveResource(element, errors);
-								}
-								else
-								{
-									item->SetFileContentPath(relativeFilePath);
-									resource = directLoad->ResolveResource(filePath, errors);
+									Ptr<DescriptableObject> resource;
+									if (filePath == L"")
+									{
+										resource = directLoad->ResolveResource(element, errors);
+									}
+									else
+									{
+										item->SetFileContentPath(relativeFilePath);
+										resource = directLoad->ResolveResource(filePath, errors);
+									}
+									item->SetContent(preloadResolver->GetType(), resource);
 								}
 
 								if (typeResolver != preloadResolver)
@@ -517,19 +519,18 @@ GuiResourceFolder
 											delayLoading.preloadResource = item;
 											delayLoadings.Add(delayLoading);
 										}
-										else if (resource)
+										else if (item->GetContent())
 										{
-											resource = indirectLoad->ResolveResource(resource, 0, errors);
-											itemType = typeResolver->GetType();
+											auto resource = indirectLoad->ResolveResource(item, 0, errors);
+											item->SetContent(typeResolver->GetType(), resource);
 										}
 									}
 									else
 									{
-										resource = 0;
+										item->SetContent(typeResolver->GetType(), nullptr);
 										errors.Add(GuiResourceError(this, element->codeRange.start, L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
 									}
 								}
-								item->SetContent(itemType, resource);
 							}
 							else
 							{
@@ -567,7 +568,7 @@ GuiResourceFolder
 
 						if (auto directLoad = resolver->DirectLoadXml())
 						{
-							xmlElement = directLoad->Serialize(item->GetContent());
+							xmlElement = directLoad->Serialize(item, item->GetContent());
 						}
 						else if (auto indirectLoad = resolver->IndirectLoad())
 						{
@@ -575,9 +576,9 @@ GuiResourceFolder
 							{
 								if (auto directLoad = preloadResolver->DirectLoadXml())
 								{
-									if (auto resource = indirectLoad->Serialize(item->GetContent()))
+									if (auto resource = indirectLoad->Serialize(item, item->GetContent()))
 									{
-										xmlElement = directLoad->Serialize(resource);
+										xmlElement = directLoad->Serialize(item, resource);
 										xmlElement->name.value = resolver->GetType();
 									}
 								}
@@ -695,8 +696,10 @@ GuiResourceFolder
 					{
 						if (auto directLoad = preloadResolver->DirectLoadStream())
 						{
-							WString itemType = preloadResolver->GetType();
-							auto resource = directLoad->ResolveResourcePrecompiled(reader.input, errors);
+							{
+								auto resource = directLoad->ResolveResourcePrecompiled(reader.input, errors);
+								item->SetContent(preloadResolver->GetType(), resource);
+							}
 
 							if (typeResolver != preloadResolver)
 							{
@@ -709,19 +712,18 @@ GuiResourceFolder
 										delayLoading.preloadResource = item;
 										delayLoadings.Add(delayLoading);
 									}
-									else if(resource)
+									else if(item->GetContent())
 									{
-										resource = indirectLoad->ResolveResource(resource, nullptr, errors);
-										itemType = typeResolver->GetType();
+										auto resource = indirectLoad->ResolveResource(item, nullptr, errors);
+										item->SetContent(typeResolver->GetType(), resource);
 									}
 								}
 								else
 								{
-									resource = 0;
+									item->SetContent(typeResolver->GetType(), nullptr);
 									errors.Add(GuiResourceError(item, L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
 								}
 							}
-							item->SetContent(itemType, resource);
 						}
 						else
 						{
@@ -754,7 +756,7 @@ GuiResourceFolder
 
 		void GuiResourceFolder::SaveResourceFolderToBinary(stream::internal::ContextFreeWriter& writer, collections::List<WString>& typeNames)
 		{
-			typedef Tuple<vint, WString, IGuiResourceTypeResolver_DirectLoadStream*, Ptr<DescriptableObject>> ItemTuple;
+			typedef Tuple<vint, WString, IGuiResourceTypeResolver_DirectLoadStream*, Ptr<GuiResourceItem>, Ptr<DescriptableObject>> ItemTuple;
 			List<ItemTuple> itemTuples;
 
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
@@ -767,7 +769,7 @@ GuiResourceFolder
 				
 					if (auto directLoad = resolver->DirectLoadStream())
 					{
-						itemTuples.Add(ItemTuple(typeName, name, directLoad, item->GetContent()));
+						itemTuples.Add(ItemTuple(typeName, name, directLoad, item, item->GetContent()));
 					}
 					else if (auto indirectLoad = resolver->IndirectLoad())
 					{
@@ -775,9 +777,9 @@ GuiResourceFolder
 						{
 							if (auto directLoad = preloadResolver->DirectLoadStream())
 							{
-								if (auto resource = indirectLoad->Serialize(item->GetContent()))
+								if (auto resource = indirectLoad->Serialize(item, item->GetContent()))
 								{
-									itemTuples.Add(ItemTuple(typeName, name, directLoad, resource));
+									itemTuples.Add(ItemTuple(typeName, name, directLoad, item, resource));
 								}
 							}
 						}
@@ -795,7 +797,8 @@ GuiResourceFolder
 
 				auto directLoad = item.f2;
 				auto resource = item.f3;
-				directLoad->SerializePrecompiled(resource, writer.output);
+				auto content = item.f4;
+				directLoad->SerializePrecompiled(resource, content, writer.output);
 			}
 
 			count = folders.Count();
@@ -1024,7 +1027,7 @@ GuiResource
 						if (item->GetContent())
 						{
 							Ptr<GuiResourcePathResolver> pathResolver = new GuiResourcePathResolver(resource, folder);
-							Ptr<DescriptableObject> resource = indirectLoad->ResolveResource(item->GetContent(), pathResolver, errors);
+							Ptr<DescriptableObject> resource = indirectLoad->ResolveResource(item, pathResolver, errors);
 							if (resource)
 							{
 								item->SetContent(typeResolver->GetType(), resource);
