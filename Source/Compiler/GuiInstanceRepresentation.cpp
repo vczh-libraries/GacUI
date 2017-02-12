@@ -145,9 +145,23 @@ GuiAttSetterRepr
 					}
 					xml->subNodes.Add(xmlEvent);
 
-					auto xmlText = MakePtr<XmlText>();
+					auto xmlText = MakePtr<XmlCData>();
 					xmlText->content.value = value->value;
 					xmlEvent->subNodes.Add(xmlText);
+				}
+
+				for (vint i = 0; i < environmentVariables.Count(); i++)
+				{
+					auto key = environmentVariables.Keys()[i];
+					auto value = environmentVariables.Values()[i];
+
+					auto xmlEnvVar = MakePtr<XmlElement>();
+					xmlEnvVar->name.value = L"env." + key.ToString();
+					xml->subNodes.Add(xmlEnvVar);
+
+					auto xmlText = MakePtr<XmlText>();
+					xmlText->content.value = value->value;
+					xmlEnvVar->subNodes.Add(xmlText);
 				}
 			}
 		}
@@ -209,12 +223,15 @@ GuiInstanceContext
 					{
 						Ptr<GuiTextRepr> value = new GuiTextRepr;
 						value->text = text->content.value;
+						value->tagPosition = text->content.codeRange.start;
 						values.Add(value);
 					}
 					else if (Ptr<XmlCData> text = xml->subNodes[0].Cast<XmlCData>())
 					{
 						Ptr<GuiTextRepr> value = new GuiTextRepr;
 						value->text = text->content.value;
+						value->tagPosition = text->content.codeRange.start;
+						value->tagPosition.column += 9; // <![CDATA[
 						values.Add(value);
 					}
 				}
@@ -277,6 +294,7 @@ GuiInstanceContext
 							{
 								Ptr<GuiAttSetterRepr::SetterValue> sv = new GuiAttSetterRepr::SetterValue;
 								sv->binding = GlobalStringKey::Get(name->binding);
+								sv->attPosition = element->codeRange.start;
 
 								if (name->binding == L"set")
 								{
@@ -332,15 +350,28 @@ GuiInstanceContext
 										auto value = MakePtr<GuiAttSetterRepr::EventValue>();
 										value->binding = GlobalStringKey::Get(name->binding);
 										value->value = text->content.value;
+										value->attPosition = element->codeRange.start;
+										value->valuePosition = text->content.codeRange.start;
 										eventHandlers.Add(GlobalStringKey::Get(name->name), value);
+										if (text->content.codeRange.start.row != text->content.codeRange.end.row)
+										{
+											errors.Add(GuiResourceError(resource, element->codeRange.start, L"Multiple lines script should be contained in a CDATA section."));
+										}
 									}
 									else if (Ptr<XmlCData> text = element->subNodes[0].Cast<XmlCData>())
 									{
 										auto value = MakePtr<GuiAttSetterRepr::EventValue>();
 										value->binding = GlobalStringKey::Get(name->binding);
 										value->value = text->content.value;
+										value->attPosition = element->codeRange.start;
+										value->valuePosition = text->content.codeRange.start;
+										value->valuePosition.column += 9; // <![CDATA[
 										eventHandlers.Add(GlobalStringKey::Get(name->name), value);
 									}
+								}
+								else
+								{
+									errors.Add(GuiResourceError(resource, element->codeRange.start, L"Event script should be contained in a text or CDATA section."));
 								}
 							}
 						}
@@ -353,6 +384,8 @@ GuiInstanceContext
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
+				setter->tagPosition = xml->codeRange.start;
+
 				// collect attributes as setters
 				FOREACH(Ptr<XmlAttribute>, att, xml->attributes)
 				{
@@ -378,7 +411,10 @@ GuiInstanceContext
 							}
 							else
 							{
-								setter->environmentVariables.Add(GlobalStringKey::Get(name->name), att->value.value);
+								auto value = MakePtr<GuiAttSetterRepr::EnvVarValue>();
+								value->value = att->value.value;
+								value->attPosition = att->codeRange.start;
+								setter->environmentVariables.Add(GlobalStringKey::Get(name->name), value);
 							}
 						}
 						else if (name->IsPropertyAttributeName())
@@ -390,8 +426,9 @@ GuiInstanceContext
 							}
 							else
 							{
-								Ptr<GuiAttSetterRepr::SetterValue> sv = new GuiAttSetterRepr::SetterValue;
+								auto sv = MakePtr<GuiAttSetterRepr::SetterValue>();
 								sv->binding = GlobalStringKey::Get(name->binding);
+								sv->attPosition = att->codeRange.start;
 								setter->setters.Add(GlobalStringKey::Get(name->name), sv);
 
 								Ptr<GuiTextRepr> value = new GuiTextRepr;
@@ -411,6 +448,8 @@ GuiInstanceContext
 								auto value = MakePtr<GuiAttSetterRepr::EventValue>();
 								value->binding = GlobalStringKey::Get(name->binding);
 								value->value = att->value.value;
+								value->attPosition = att->codeRange.start;
+								value->valuePosition = att->value.codeRange.start;
 								setter->eventHandlers.Add(GlobalStringKey::Get(name->name), value);
 							}
 						}
@@ -473,6 +512,8 @@ GuiInstanceContext
 		Ptr<GuiInstanceContext> GuiInstanceContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			Ptr<GuiInstanceContext> context = new GuiInstanceContext;
+			context->tagPosition = xml->rootElement->codeRange.start;
+
 			if (xml->rootElement->name.value == L"Instance")
 			{
 				if (auto codeBehindAttr = XmlGetAttribute(xml->rootElement, L"ref.CodeBehind"))
@@ -484,12 +525,14 @@ GuiInstanceContext
 				if (auto classAttr = XmlGetAttribute(xml->rootElement, L"ref.Class"))
 				{
 					context->className = classAttr->value.value;
+					context->classPosition = classAttr->codeRange.start;
 				}
 
 				// load style names
 				if (auto styleAttr = XmlGetAttribute(xml->rootElement, L"ref.Styles"))
 				{
 					SplitBySemicolon(styleAttr->value.value, context->stylePaths);
+					context->stylePosition = styleAttr->codeRange.start;
 				}
 
 				// load namespaces
@@ -545,6 +588,7 @@ GuiInstanceContext
 						{
 							info = new NamespaceInfo;
 							info->name = ns;
+							info->attPosition = att->codeRange.start;
 							context->namespaces.Add(ns, info);
 						}
 						else
@@ -586,6 +630,7 @@ GuiInstanceContext
 							auto parameter = MakePtr<GuiInstanceParameter>();
 							parameter->name = GlobalStringKey::Get(attName->value.value);
 							parameter->className = GlobalStringKey::Get(attClass->value.value);
+							parameter->tagPosition = element->codeRange.start;
 							context->parameters.Add(parameter);
 						}
 						else
@@ -595,7 +640,18 @@ GuiInstanceContext
 					}
 					else if (element->name.value == L"ref.Members")
 					{
-						context->memberScript = XmlGetValue(element);
+						if (element->subNodes.Count() == 1)
+						{
+							if (auto cdata = element->subNodes[0].Cast<XmlCData>())
+							{
+								context->memberScript = cdata->content.value;
+								context->memberPosition = cdata->codeRange.start;
+								context->memberPosition.column += 9; // <![CDATA[
+								goto MEMBERSCRIPT_SUCCESS;
+							}
+						}
+						errors.Add(GuiResourceError(resource, element->codeRange.start, L"Script should be contained in a CDATA section."));
+					MEMBERSCRIPT_SUCCESS:;
 					}
 					else if (!context->instance)
 					{

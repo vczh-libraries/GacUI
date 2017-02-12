@@ -19,6 +19,8 @@ GuiInstanceSharedScript
 					auto script = MakePtr<GuiInstanceSharedScript>();
 					script->language = xml->rootElement->name.value;
 					script->code = cdata->content.value;
+					script->codePosition = cdata->codeRange.start;
+					script->codePosition.column += 9; // <![CDATA[
 					return script;
 				}
 			}
