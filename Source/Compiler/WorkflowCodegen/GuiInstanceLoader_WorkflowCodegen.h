@@ -64,9 +64,9 @@ WorkflowCompiler (Parser)
 WorkflowCompiler (Installation)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceError::List& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, GuiResourceError::List& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
 		extern Ptr<workflow::WfFunctionDeclaration>				Workflow_GenerateEventHandler(description::IEventInfo* eventInfo);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
@@ -124,15 +124,15 @@ WorkflowCompiler (Compile)
 #define WORKFLOW_ENVIRONMENT_VARIABLE_ADD\
 		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
 		{\
-			auto value = repr->environmentVariables.Values()[index]->value;\
+			auto value = repr->environmentVariables.Values()[index];\
 			resolvingResult.envVars.Add(envVar, value);\
 		}\
 
 #define WORKFLOW_ENVIRONMENT_VARIABLE_REMOVE\
 		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
 		{\
-			auto value = repr->environmentVariables.Values()[index]->value;\
-			resolvingResult.envVars.Remove(envVar, value);\
+			auto value = repr->environmentVariables.Values()[index];\
+			resolvingResult.envVars.Remove(envVar, value.Obj());\
 		}\
 
 	}

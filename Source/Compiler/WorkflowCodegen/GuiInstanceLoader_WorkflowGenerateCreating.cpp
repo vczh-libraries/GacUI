@@ -108,7 +108,7 @@ WorkflowGenerateCreatingVisitor
 							auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
 							auto info = resolvingResult.propertyResolvings[setTarget];
 							vint errorCount = errors.Count();
-							if (auto expr = info.loader->GetParameter(resolvingResult, propInfo, repr->instanceName, errors))
+							if (auto expr = info.loader->GetParameter(resolvingResult, propInfo, repr->instanceName, setter->attPosition, errors))
 							{
 								auto refInstance = MakePtr<WfReferenceExpression>();
 								refInstance->name.value = setTarget->instanceName.ToString();
@@ -151,7 +151,7 @@ WorkflowGenerateCreatingVisitor
 										vint errorCount = errors.Count();
 										IGuiInstanceLoader::ArgumentMap arguments;
 										arguments.Add(prop, GetArgumentInfo(value.Obj()));
-										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, errors))
+										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, setter->attPosition, errors))
 										{
 											statements->statements.Add(stat);
 										}
@@ -190,7 +190,7 @@ WorkflowGenerateCreatingVisitor
 										}
 
 										vint errorCount = errors.Count();
-										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, errors))
+										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, setter->attPosition, errors))
 										{
 											statements->statements.Add(stat);
 										}
@@ -354,7 +354,7 @@ WorkflowGenerateCreatingVisitor
 					FillCtorArguments(repr, ctorLoader, ctorTypeInfo, arguments);
 
 					vint errorCount = errors.Count();
-					if (auto ctorStats = ctorLoader->CreateInstance(resolvingResult, ctorTypeInfo, repr->instanceName, arguments, errors))
+					if (auto ctorStats = ctorLoader->CreateInstance(resolvingResult, ctorTypeInfo, repr->instanceName, arguments, repr->tagPosition, errors))
 					{
 						statements->statements.Add(ctorStats);
 					}

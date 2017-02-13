@@ -337,7 +337,7 @@ GuiResourceError
 		{
 			if (offset.row < 0 || offset.column < 0)
 			{
-				offset.row = ParsingTextPos(0, 0);
+				offset = ParsingTextPos(0, 0);
 			}
 
 			FOREACH(Ptr<ParsingError>, error, parsingErrors)

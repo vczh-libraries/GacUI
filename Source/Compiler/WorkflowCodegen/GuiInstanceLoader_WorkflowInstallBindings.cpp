@@ -18,7 +18,7 @@ namespace vl
 Workflow_InstallBindProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceError::List& errors)
+		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
@@ -175,7 +175,7 @@ Workflow_InstallBindProperty
 					arguments.Add(prop.propertyName, argumentInfo);
 				}
 
-				if (auto stat = loader->AssignParameters(resolvingResult, prop.typeInfo, variableName, arguments, errors))
+				if (auto stat = loader->AssignParameters(resolvingResult, prop.typeInfo, variableName, arguments, attPosition, errors))
 				{
 					subBlock->statements.Add(stat);
 				}
@@ -345,7 +345,7 @@ Workflow_InstallBindProperty
 Workflow_InstallEvalProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, GuiResourceError::List& errors)
+		Ptr<workflow::WfStatement> Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)
 		{
 			IGuiInstanceLoader::ArgumentMap arguments;
 			{
@@ -355,7 +355,7 @@ Workflow_InstallEvalProperty
 				arguments.Add(prop.propertyName, argumentInfo);
 			}
 
-			return loader->AssignParameters(resolvingResult, prop.typeInfo, variableName, arguments, errors);
+			return loader->AssignParameters(resolvingResult, prop.typeInfo, variableName, arguments, attPosition, errors);
 		}
 
 /***********************************************************************
