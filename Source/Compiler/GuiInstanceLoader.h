@@ -116,6 +116,7 @@ Instance Loader
 			{
 				Ptr<workflow::WfExpression>			expression;
 				description::ITypeDescriptor*		type;
+				parsing::ParsingTextPos				valuePosition;
 			};
 
 			typedef collections::Group<GlobalStringKey, ArgumentInfo>	ArgumentMap;
@@ -131,9 +132,9 @@ Instance Loader
 			virtual bool									CanCreate(const TypeInfo& typeInfo);
 			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors);
 			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfStatement>				CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfStatement>				AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfExpression>				GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfStatement>				CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos tagPosition, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfStatement>				AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfExpression>				GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors);
 		};
 
 /***********************************************************************

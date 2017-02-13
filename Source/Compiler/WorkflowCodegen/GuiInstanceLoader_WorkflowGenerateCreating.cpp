@@ -35,6 +35,7 @@ WorkflowGenerateCreatingVisitor
 				ITypeDescriptor* td = nullptr;
 				bool serializable = false;
 				WString textValue;
+				ParsingTextPos textValuePosition;
 				GuiConstructorRepr* ctor = nullptr;
 
 				if (auto text = dynamic_cast<GuiTextRepr*>(repr))
@@ -42,6 +43,7 @@ WorkflowGenerateCreatingVisitor
 					td = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
 					serializable = true;
 					textValue = text->text;
+					textValuePosition = text->tagPosition;
 				}
 				else if ((ctor = dynamic_cast<GuiConstructorRepr*>(repr)))
 				{
@@ -56,7 +58,9 @@ WorkflowGenerateCreatingVisitor
 					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
 					{
 						serializable = true;
-						textValue = ctor->setters.Values()[0]->values[0].Cast<GuiTextRepr>()->text;
+						auto value = ctor->setters.Values()[0]->values[0].Cast<GuiTextRepr>();
+						textValue = value->text;
+						textValuePosition = value->tagPosition;
 					}
 				}
 
@@ -67,7 +71,8 @@ WorkflowGenerateCreatingVisitor
 				{
 					List<Ptr<ParsingError>> parsingErrors;
 					argumentInfo.expression = Workflow_ParseTextValue(td, textValue, parsingErrors);
-					GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, repr->tagPosition);
+					argumentInfo.valuePosition = textValuePosition;
+					GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, textValuePosition);
 				}
 				else
 				{
@@ -243,7 +248,7 @@ WorkflowGenerateCreatingVisitor
 							auto propInfo = IGuiInstanceLoader::PropertyInfo(typeInfo, prop);
 							auto resolvedPropInfo = loader->GetPropertyType(propInfo);
 							auto value = setter->values[0].Cast<GuiTextRepr>();
-							if (auto expression = binder->GenerateConstructorArgument(resolvingResult, loader, propInfo, resolvedPropInfo, value->text, errors))
+							if (auto expression = binder->GenerateConstructorArgument(resolvingResult, loader, propInfo, resolvedPropInfo, value->text, value->tagPosition, errors))
 							{
 								IGuiInstanceLoader::ArgumentInfo argument;
 								argument.expression = expression;

@@ -1,5 +1,6 @@
 #include "../GuiInstanceLoader.h"
 #include "../GuiInstanceHelperTypes.h"
+#include "../WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 #include "../../Reflection/TypeDescriptors/GuiReflectionTemplates.h"
 
 #ifndef VCZH_PRESENTATION_REFLECTION_INSTANCELOADERS_GUIINSTANCELOADER_TEMPLATECONTROL
@@ -46,15 +47,15 @@ GuiVrtualTypeInstanceLoader
 				ArgumentFunctionType						argumentFunction;
 				InitFunctionType							initFunction;
 
-				virtual void PrepareAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)
+				virtual void PrepareAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfBlockStatement> block)
 				{
 				}
 
-				virtual void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfNewClassExpression> createControl)
+				virtual void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)
 				{
 				}
 
-				virtual void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors, Ptr<WfBlockStatement> block)
+				virtual void PrepareAdditionalArgumentsAfterCreation(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfBlockStatement> block)
 				{
 				}
 			public:
@@ -111,7 +112,7 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
-				static Ptr<WfExpression> CreateTemplateFactory(List<ITypeDescriptor*>& controlTemplateTds, collections::List<WString>& errors)
+				static Ptr<WfExpression> CreateTemplateFactory(List<ITypeDescriptor*>& controlTemplateTds, GuiResourceError::List& errors)
 				{
 					auto templateType = TypeInfoRetriver<TTemplate*>::CreateTypeInfo();
 					auto factoryType = TypeInfoRetriver<Ptr<GuiTemplate::IFactory>>::CreateTypeInfo();
@@ -257,14 +258,14 @@ GuiVrtualTypeInstanceLoader
 					return refFactory;
 				}
 
-				static Ptr<WfExpression> CreateTemplateFactory(ITypeDescriptor* controlTemplateTd, collections::List<WString>& errors)
+				static Ptr<WfExpression> CreateTemplateFactory(ITypeDescriptor* controlTemplateTd, GuiResourceError::List& errors)
 				{
 					List<ITypeDescriptor*> controlTemplateTds;
 					controlTemplateTds.Add(controlTemplateTd);
 					return CreateTemplateFactory(controlTemplateTds, errors);
 				}
 
-				static ITypeDescriptor* GetControlTemplateType(Ptr<WfExpression> argument, const TypeInfo& controlTypeInfo, collections::List<WString>& errors)
+				static ITypeDescriptor* GetControlTemplateType(Ptr<WfExpression> argument, const TypeInfo& controlTypeInfo, GuiResourceError::List& errors)
 				{
 					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
 					if (!controlTemplateNameExpr)
@@ -290,7 +291,7 @@ GuiVrtualTypeInstanceLoader
 					return controlTemplateTd;
 				}
 
-				static void GetItemTemplateType(Ptr<WfExpression> argument, List<ITypeDescriptor*>& tds, const TypeInfo& controlTypeInfo, const WString& propertyName, collections::List<WString>& errors)
+				static void GetItemTemplateType(Ptr<WfExpression> argument, List<ITypeDescriptor*>& tds, const TypeInfo& controlTypeInfo, const WString& propertyName, GuiResourceError::List& errors)
 				{
 					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
 					if (!controlTemplateNameExpr)
@@ -368,7 +369,7 @@ GuiVrtualTypeInstanceLoader
 					return typeName == typeInfo.typeName;
 				}
 
-				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)
+				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
 				{
 					Ptr<WfExpression> controlTemplate;
 					{
@@ -403,7 +404,7 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
-				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)override
 				{
 					if (auto createStyleExpr = CreateInstance_ControlTemplate(typeInfo, arguments, errors))
 					{
@@ -415,7 +416,7 @@ GuiVrtualTypeInstanceLoader
 					return nullptr;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors)override
 				{
 					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
 					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);

@@ -335,6 +335,11 @@ GuiResourceError
 		template<typename TCallback>
 		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, const TCallback& callback)
 		{
+			if (offset.row < 0 || offset.column < 0)
+			{
+				offset.row = ParsingTextPos(0, 0);
+			}
+
 			FOREACH(Ptr<ParsingError>, error, parsingErrors)
 			{
 				auto pos = error->codeRange.start;

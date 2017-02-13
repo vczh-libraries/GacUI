@@ -96,7 +96,7 @@ GuiTemplateInstanceLoader
 					return false;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos tagPosition, GuiResourceError::List& errors)override
 				{
 					if (!CanCreate(typeInfo))
 					{
@@ -128,7 +128,7 @@ GuiTemplateInstanceLoader
 					return block;
 				}
 
-				Ptr<workflow::WfStatement> InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors)override
 				{
 					if (arguments.Count() > 0)
 					{

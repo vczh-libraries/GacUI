@@ -84,6 +84,7 @@ Instance Representation
 			{
 				WString								value;
 				parsing::ParsingTextPos				attPosition;
+				parsing::ParsingTextPos				valuePosition;
 			};
 			
 			typedef collections::Dictionary<GlobalStringKey, Ptr<SetterValue>>			SetteValuerMap;

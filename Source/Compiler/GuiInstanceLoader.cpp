@@ -106,27 +106,27 @@ IGuiInstanceLoader
 			return false;
 		}
 
-		Ptr<workflow::WfBaseConstructorCall> IGuiInstanceLoader::CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, collections::List<WString>& errors)
+		Ptr<workflow::WfBaseConstructorCall> IGuiInstanceLoader::CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
 		{
 			CHECK_FAIL(L"IGuiInstanceLoader::CreateControlTemplateArgument(types::ResolvingResult&, const TypeInfo&, Ptr<workflow::WfExpression>, collections::List<WString>&)#This function is not implemented.");
 		}
 
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors)
 		{
 			return nullptr;
 		}
 
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos tagPosition, GuiResourceError::List& errors)
 		{
 			CHECK_FAIL(L"IGuiInstanceLoader::CreateInstance(types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
 		}
 
-		Ptr<workflow::WfStatement> IGuiInstanceLoader::AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)
+		Ptr<workflow::WfStatement> IGuiInstanceLoader::AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)
 		{
 			CHECK_FAIL(L"IGuiInstanceLoader::AssignParameters(types::ResolvingResult&, const TypeInfo&, GlobalStringKey, ArgumentMap&, collections::List<WString>&)#This function is not implemented.");
 		}
 
-		Ptr<workflow::WfExpression> IGuiInstanceLoader::GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)
+		Ptr<workflow::WfExpression> IGuiInstanceLoader::GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)
 		{
 			CHECK_FAIL(L"IGuiInstanceLoader::GetParameter(types::ResolvingResult&, const PropertyInfo&, GlobalStringKey, collections::List<WString>&)#This function is not implemented.");
 		}
@@ -146,12 +146,12 @@ GuiInstanceContext::ElementName Parser
 			{
 			}
 
-			Ptr<ElementName> TypedParse(const WString& text, collections::List<WString>& errors)override
+			Ptr<ElementName> TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
 			{
 				Ptr<RegexMatch> match = regexElementName.MatchHead(text);
 				if (!match || match->Result().Length() != text.Length())
 				{
-					errors.Add(L"Failed to parse an element name \"" + text + L"\".");
+					errors.Add(MakePtr<ParsingError>(L"Failed to parse an element name \"" + text + L"\"."));
 					return 0;
 				}
 
@@ -566,7 +566,7 @@ GuiDefaultInstanceLoader
 					GetInstanceConstructor(typeInfo.typeDescriptor) != nullptr;
 			}
 
-			Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos tagPosition, GuiResourceError::List& errors)override
 			{
 				CTOR_PARAM_PREFIX
 				auto defaultCtor = GetDefaultConstructor(typeInfo.typeDescriptor);
@@ -612,7 +612,7 @@ GuiDefaultInstanceLoader
 				return stat;
 			}
 
-			Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+			Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)override
 			{
 				auto block = MakePtr<WfBlockStatement>();
 
@@ -694,7 +694,8 @@ GuiDefaultInstanceLoader
 							break;
 						case GuiInstancePropertyInfo::SupportAssign:
 							{
-								auto propertyValueExpression = arguments.GetByIndex(index)[0].expression;
+								auto& propertyValue = arguments.GetByIndex(index)[0];
+								auto propertyValueExpression = propertyValue.expression;
 
 								if (IsItemPropertyName(propertyType.f1))
 								{
@@ -707,11 +708,11 @@ GuiDefaultInstanceLoader
 										Ptr<WfExpression> propertyExpression;
 										{
 											auto typeParser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
-											List<WString> parserErrors;
-											propertyExpression = typeParser->TypedParse(propertyDescription, parserErrors);
+											List<Ptr<ParsingError>> parsingErrors;
+											propertyExpression = typeParser->TypedParse(propertyDescription, parsingErrors);
+											GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, propertyValue.valuePosition);
 											if (!propertyExpression)
 											{
-												errors.Add(L"Precompile: Failed to parse the value of property \"" + propertyType.f1->GetName() + L"\": " + propertyDescription);
 												break;
 											}
 										};
@@ -727,7 +728,7 @@ GuiDefaultInstanceLoader
 												+ L"\" of type \""
 												+ propertyType.f1->GetOwnerTypeDescriptor()->GetTypeName()
 												+ L"\".";
-											errors.Add(error);
+											errors.Add(GuiResourceError(resolvingResult.resource, attPosition, error));
 											break;
 										}
 
@@ -735,13 +736,13 @@ GuiDefaultInstanceLoader
 										{
 											auto typeParser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
 											const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
-											auto code = values[values.Count() - 1];
+											auto itemTypeValue = values[values.Count() - 1];
 
-											List<WString> parserErrors;
-											itemType = typeParser->TypedParse(code, parserErrors);
+											List<Ptr<ParsingError>> parsingErrors;
+											itemType = typeParser->TypedParse(itemTypeValue->value, parsingErrors);
+											GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, itemTypeValue->valuePosition);
 											if (!itemType)
 											{
-												errors.Add(L"Precompile: Failed to parse the value of env.ItemType: " + code);
 												break;
 											}
 										};
@@ -751,7 +752,7 @@ GuiDefaultInstanceLoader
 										if (indexItemName != -1)
 										{
 											const auto& values = resolvingResult.envVars.GetByIndex(indexItemName);
-											itemName = values[values.Count() - 1];
+											itemName = values[values.Count() - 1]->value;
 										}
 
 										if (auto refExpr = propertyExpression.Cast<WfReferenceExpression>())
@@ -940,7 +941,12 @@ GuiDefaultInstanceLoader
 							}
 							break;
 						default:
-							errors.Add(L"Precompile: Property \"" + prop.ToString() + L"\" of type \"" + typeInfo.typeName.ToString() + L"\" is not assignable.");
+							errors.Add(GuiResourceError(resolvingResult.resource, attPosition,
+								L"Precompile: Property \"" +
+								prop.ToString() +
+								L"\" of type \"" +
+								typeInfo.typeName.ToString() +
+								L"\" is not assignable."));
 						}
 					}
 				}
@@ -952,7 +958,7 @@ GuiDefaultInstanceLoader
 				return nullptr;
 			}
 
-			Ptr<workflow::WfExpression> GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)override
+			Ptr<workflow::WfExpression> GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)override
 			{
 				auto refValue = MakePtr<WfReferenceExpression>();
 				refValue->name.value = variableName.ToString();

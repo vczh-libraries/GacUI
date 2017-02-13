@@ -414,6 +414,7 @@ GuiInstanceContext
 								auto value = MakePtr<GuiAttSetterRepr::EnvVarValue>();
 								value->value = att->value.value;
 								value->attPosition = att->codeRange.start;
+								value->valuePosition = att->value.codeRange.start;
 								setter->environmentVariables.Add(GlobalStringKey::Get(name->name), value);
 							}
 						}

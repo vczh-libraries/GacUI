@@ -8,7 +8,7 @@ namespace vl
 	{
 		namespace instance_loaders
 		{
-			Ptr<workflow::WfStatement> AddControlToToolstrip(GlobalStringKey variableName, IGuiInstanceLoader::ArgumentMap& arguments, collections::List<WString>& errors)
+			Ptr<workflow::WfStatement> AddControlToToolstrip(GlobalStringKey variableName, IGuiInstanceLoader::ArgumentMap& arguments, GuiResourceError::List& errors)
 			{
 				auto block = MakePtr<WfBlockStatement>();
 
@@ -92,7 +92,7 @@ GuiToolstripMenuInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)override
 				{
 					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
 					{
@@ -100,7 +100,7 @@ GuiToolstripMenuInstanceLoader
 					}
 					else
 					{
-						return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
+						return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
 					}
 				}
 			};
@@ -134,7 +134,7 @@ GuiToolstripMenuBarInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)override
 				{
 					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
 					{
@@ -142,7 +142,7 @@ GuiToolstripMenuBarInstanceLoader
 					}
 					else
 					{
-						return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
+						return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
 					}
 				}
 			};
@@ -176,7 +176,7 @@ GuiToolstripToolBarInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, collections::List<WString>& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)override
 				{
 					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
 					{
@@ -184,7 +184,7 @@ GuiToolstripToolBarInstanceLoader
 					}
 					else
 					{
-						return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
+						return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
 					}
 				}
 			};
@@ -222,7 +222,7 @@ GuiToolstripButtonInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfExpression> GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, collections::List<WString>& errors)override
+				Ptr<workflow::WfExpression> GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)override
 				{
 					if (propertyInfo.propertyName == _SubMenu)
 					{
@@ -238,7 +238,7 @@ GuiToolstripButtonInstanceLoader
 
 						return call;
 					}
-					return BASE_TYPE::GetParameter(resolvingResult, propertyInfo, variableName, errors);
+					return BASE_TYPE::GetParameter(resolvingResult, propertyInfo, variableName, attPosition, errors);
 				}
 			};
 #undef BASE_TYPE
