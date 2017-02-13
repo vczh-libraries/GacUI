@@ -31,13 +31,11 @@ namespace vl
 
 			struct ResolvingResult : public Object, public Description<ResolvingResult>
 			{
+				Ptr<GuiResourceItem>							resource;						// compiling resource
 				Ptr<GuiInstanceContext>							context;						// compiling context
 				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;	// type of the context
 				collections::List<WString>						sharedModules;					// code of all shared workflow scripts
 				EnvironmentVariableGroup						envVars;						// current environment variable value stacks
-
-				Ptr<workflow::WfModule>							moduleForValidate;				// module skeleton for validating statements
-				Ptr<workflow::WfBlockStatement>					moduleContent;					// placeholder in moduleForValidate for validating statements
 
 				collections::List<GlobalStringKey>				referenceNames;					// all reference names
 				IGuiInstanceLoader::ArgumentMap					rootCtorArguments;
@@ -120,7 +118,6 @@ WorkflowCompiler (Compile)
 		extern void												Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 
 		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
-		extern bool												Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, const WString& code, Ptr<workflow::WfStatement> statement);
 		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
 		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex);
 

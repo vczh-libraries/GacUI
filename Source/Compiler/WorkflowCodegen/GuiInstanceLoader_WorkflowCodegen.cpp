@@ -39,35 +39,6 @@ FindInstanceLoadingSource
 		}
 
 /***********************************************************************
-Workflow_ValidateStatement
-***********************************************************************/
-
-		bool Workflow_ValidateStatement(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, const WString& code, Ptr<workflow::WfStatement> statement)
-		{
-			bool failed = false;
-			Workflow_GetSharedManager()->Clear(true, true);
-			Workflow_GetSharedManager()->AddModule(resolvingResult.moduleForValidate);
-			FOREACH(WString, sharedModule, resolvingResult.sharedModules)
-			{
-				Workflow_GetSharedManager()->AddModule(sharedModule);
-			}
-
-			Workflow_GetSharedManager()->Rebuild(true);
-			if (Workflow_GetSharedManager()->errors.Count() > 0)
-			{
-				errors.Add(L"Failed to analyze the workflow code \"" + code + L"\".");
-				FOREACH(Ptr<parsing::ParsingError>, error, Workflow_GetSharedManager()->errors)
-				{
-					errors.Add(L"    " + error->errorMessage);
-				}
-				failed = true;
-			}
-
-			resolvingResult.moduleContent->statements.Remove(statement.Obj());
-			return !failed;
-		}
-
-/***********************************************************************
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 

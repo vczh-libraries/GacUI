@@ -384,9 +384,10 @@ Instance Type Resolver (Instance)
 					{
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
-							obj->ApplyStyles(context.resolver, errors);
+							obj->ApplyStyles(resource, context.resolver, errors);
 
 							types::ResolvingResult resolvingResult;
+							resolvingResult.resource = resource;
 							resolvingResult.context = obj;
 							if (auto module = Workflow_GenerateInstanceClass(resolvingResult, errors, context.passIndex))
 							{
@@ -414,20 +415,19 @@ Instance Type Resolver (Instance)
 							vint previousErrorCount = errors.Count();
 							if (obj->className == L"")
 							{
-								errors.Add(
+								errors.Add(GuiResourceError(resource, obj->classPosition,
 									L"Precompile: Instance  \"" +
 									(obj->instance->typeNamespace == GlobalStringKey::Empty
 										? obj->instance->typeName.ToString()
 										: obj->instance->typeNamespace.ToString() + L":" + obj->instance->typeName.ToString()
 										) +
-									L"\" should have the class name specified in the ref.Class attribute.");
+									L"\" should have the class name specified in the ref.Class attribute."));
 							}
 
 							types::ResolvingResult resolvingResult;
+							resolvingResult.resource = resource;
 							resolvingResult.context = obj;
 							resolvingResult.rootTypeDescriptor = Workflow_CollectReferences(resolvingResult, errors);
-							resolvingResult.moduleForValidate = Workflow_CreateModuleWithUsings(obj);
-							resolvingResult.moduleContent = Workflow_InstallCtorClass(resolvingResult, resolvingResult.moduleForValidate);
 
 							if (errors.Count() == previousErrorCount)
 							{

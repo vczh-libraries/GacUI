@@ -198,7 +198,7 @@ Instance Context
 			static Ptr<GuiConstructorRepr>			LoadCtor(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
 			static Ptr<GuiInstanceContext>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlDocument>			SaveToXml();
-			bool									ApplyStyles(Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors);
+			bool									ApplyStyles(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors);
 		};
 
 /***********************************************************************

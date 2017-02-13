@@ -755,7 +755,7 @@ GuiInstanceContext
 			return doc;
 		}
 
-		bool GuiInstanceContext::ApplyStyles(Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)
+		bool GuiInstanceContext::ApplyStyles(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)
 		{
 			if (!appliedStyles)
 			{
@@ -773,12 +773,12 @@ GuiInstanceContext
 						}
 						else
 						{
-							errors.Add(L"Failed to find the style referred in attribute \"ref.Styles\": \"" + uri + L"\".");
+							errors.Add(GuiResourceError(resource, stylePosition, L"Failed to find the style referred in attribute \"ref.Styles\": \"" + uri + L"\"."));
 						}
 					}
 					else
 					{
-						errors.Add(L"Invalid path in attribute \"ref.Styles\": \"" + uri + L"\".");
+						errors.Add(GuiResourceError(resource, stylePosition, L"Invalid path in attribute \"ref.Styles\": \"" + uri + L"\"."));
 					}
 				}
 
