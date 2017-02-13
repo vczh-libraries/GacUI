@@ -7,6 +7,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
+		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace reflection::description;
@@ -64,11 +65,9 @@ WorkflowGenerateCreatingVisitor
 
 				if (serializable)
 				{
-					argumentInfo.expression = Workflow_ParseTextValue(td, textValue, errors);
-
-					auto stat = MakePtr<WfExpressionStatement>();
-					stat->expression = argumentInfo.expression;
-					Workflow_ValidateStatement(resolvingResult, errors, textValue, stat);
+					List<Ptr<ParsingError>> parsingErrors;
+					argumentInfo.expression = Workflow_ParseTextValue(td, textValue, parsingErrors);
+					GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, repr->tagPosition);
 				}
 				else
 				{
@@ -121,7 +120,12 @@ WorkflowGenerateCreatingVisitor
 							}
 							else if (errorCount == errors.Count())
 							{
-								errors.Add(L"Precompile: Something is wrong when retriving the property \"" + prop.ToString() + L"\" from an instance of type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+								errors.Add(GuiResourceError(resolvingResult.resource, setTarget->tagPosition,
+									L"Precompile: Something is wrong when retriving the property \"" +
+									prop.ToString() +
+									L"\" from an instance of type \"" +
+									reprTypeInfo.typeName.ToString() +
+									L"\"."));
 							}
 							setTarget->Accept(this);
 						}
@@ -148,7 +152,12 @@ WorkflowGenerateCreatingVisitor
 										}
 										else if (errorCount == errors.Count())
 										{
-											errors.Add(L"Precompile: Something is wrong when assigning to property " + prop.ToString() + L" to an instance of type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+											errors.Add(GuiResourceError(resolvingResult.resource, value->tagPosition,
+												L"Precompile: Something is wrong when assigning to property " +
+												prop.ToString() +
+												L" to an instance of type \"" +
+												reprTypeInfo.typeName.ToString() +
+												L"\"."));
 										}
 									}
 									else if (!usedProps.Contains(prop, info.loader))
@@ -188,7 +197,12 @@ WorkflowGenerateCreatingVisitor
 												if (propIndex > 0)propNames += L", ";
 												propNames += L"\"" + pairedProp.ToString() + L"\"";
 											}
-											errors.Add(L"Precompile: Something is wrong when assigning to properties " + propNames + L" to an instance of type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+											errors.Add(GuiResourceError(resolvingResult.resource, value->tagPosition,
+												L"Precompile: Something is wrong when assigning to properties " +
+												propNames +
+												L" to an instance of type \"" +
+												reprTypeInfo.typeName.ToString() +
+												L"\"."));
 										}
 									}
 								}
@@ -239,7 +253,10 @@ WorkflowGenerateCreatingVisitor
 						}
 						else
 						{
-							errors.Add(L"Precompile: The appropriate IGuiInstanceBinder of binding \"-" + setter->binding.ToString() + L"\" cannot be found.");
+							errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+								L"Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
+								setter->binding.ToString() +
+								L"\" cannot be found."));
 						}
 					}
 				}
@@ -338,7 +355,10 @@ WorkflowGenerateCreatingVisitor
 					}
 					else if (errorCount == errors.Count())
 					{
-						errors.Add(L"Precompile: Something is wrong when creating an instance of type \"" + ctorTypeInfo.typeName.ToString() + L"\".");
+						errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+							L"Precompile: Something is wrong when creating an instance of type \"" +
+							ctorTypeInfo.typeName.ToString() +
+							L"\"."));
 					}
 				}
 				Visit((GuiAttSetterRepr*)repr);

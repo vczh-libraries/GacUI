@@ -19,7 +19,7 @@ WorkflowGenerateBindingVisitor
 		public:
 			types::ResolvingResult&				resolvingResult;
 			Ptr<WfBlockStatement>				statements;
-			GuiResourceError::List&					errors;
+			GuiResourceError::List&				errors;
 			
 			WorkflowGenerateBindingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
 				:resolvingResult(_resolvingResult)
@@ -59,23 +59,38 @@ WorkflowGenerateBindingVisitor
 
 									if (instancePropertyInfo || !binder->RequirePropertyExist())
 									{
-										if (auto statement = binder->GenerateInstallStatement(resolvingResult, repr->instanceName, instancePropertyInfo, propertyResolving.loader, propertyResolving.propertyInfo, propertyResolving.info, expressionCode, errors))
+										if (auto statement = binder->GenerateInstallStatement(
+											resolvingResult,
+											repr->instanceName,
+											instancePropertyInfo,
+											propertyResolving.loader,
+											propertyResolving.propertyInfo,
+											propertyResolving.info,
+											expressionCode,
+											errors))
 										{
-											if (Workflow_ValidateStatement(resolvingResult, errors, expressionCode, statement))
-											{
-												statements->statements.Add(statement);	
-											}
+											statements->statements.Add(statement);
 										}
 									}
 									else
 									{
-										errors.Add(L"Precompile: Binder \"" + setter->binding.ToString() + L"\" requires property \"" + propertyName.ToString() + L"\" to physically appear in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+										errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+											L"Precompile: Binder \"" +
+											setter->binding.ToString() +
+											L"\" requires property \"" +
+											propertyName.ToString() +
+											L"\" to physically appear in type \"" +
+											reprTypeInfo.typeName.ToString() +
+											L"\"."));
 									}
 								}
 							}
 							else
 							{
-								errors.Add(L"Precompile: The appropriate IGuiInstanceBinder of binding \"-" + setter->binding.ToString() + L"\" cannot be found.");
+								errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+									L"Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
+									setter->binding.ToString() +
+									L"\" cannot be found."));
 							}
 						}
 						else
@@ -97,7 +112,12 @@ WorkflowGenerateBindingVisitor
 
 							if (!eventInfo)
 							{
-								errors.Add(L"Precompile: Event \"" + propertyName.ToString() + L"\" cannot be found in type \"" + reprTypeInfo.typeName.ToString() + L"\".");
+								errors.Add(GuiResourceError(resolvingResult.resource, handler->attPosition,
+									L"Precompile: Event \"" +
+									propertyName.ToString() +
+									L"\" cannot be found in type \"" +
+									reprTypeInfo.typeName.ToString() +
+									L"\"."));
 							}
 							else
 							{
@@ -116,16 +136,16 @@ WorkflowGenerateBindingVisitor
 									}
 									else
 									{
-										errors.Add(L"The appropriate IGuiInstanceEventBinder of binding \"-" + handler->binding.ToString() + L"\" cannot be found.");
+										errors.Add(GuiResourceError(resolvingResult.resource, handler->attPosition,
+											L"The appropriate IGuiInstanceEventBinder of binding \"-" +
+											handler->binding.ToString() +
+											L"\" cannot be found."));
 									}
 								}
 
 								if (statement)
 								{
-									if (Workflow_ValidateStatement(resolvingResult, errors, handler->value, statement))
-									{
-										statements->statements.Add(statement);
-									}
+									statements->statements.Add(statement);
 								}
 							}
 						}

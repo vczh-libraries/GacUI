@@ -7,6 +7,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace workflow::runtime;
@@ -60,13 +61,13 @@ WorkflowEventNamesVisitor
 		class WorkflowEventNamesVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
-			Ptr<GuiInstanceContext>				context;
+			types::ResolvingResult&				resolvingResult;
 			Ptr<WfClassDeclaration>				instanceClass;
-			GuiResourceError::List&					errors;
+			GuiResourceError::List&				errors;
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 
-			WorkflowEventNamesVisitor(Ptr<GuiInstanceContext> _context, Ptr<WfClassDeclaration> _instanceClass, GuiResourceError::List& _errors)
-				:context(_context)
+			WorkflowEventNamesVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfClassDeclaration> _instanceClass, GuiResourceError::List& _errors)
+				:resolvingResult(_resolvingResult)
 				, instanceClass(_instanceClass)
 				, errors(_errors)
 			{
@@ -96,7 +97,7 @@ WorkflowEventNamesVisitor
 							{
 								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
 								{
-									errors.Add(errorPrefix + L" is not supported.");
+									errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" is not supported."));
 									goto SKIP_SET;
 								}
 								else
@@ -108,7 +109,7 @@ WorkflowEventNamesVisitor
 									}
 									else
 									{
-										errors.Add(errorPrefix + L" does not support the \"-set\" binding.");
+										errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" does not support the \"-set\" binding."));
 										goto SKIP_SET;
 									}
 								}
@@ -133,7 +134,7 @@ WorkflowEventNamesVisitor
 						}
 						else
 						{
-							errors.Add(errorPrefix + L" does not exist.");
+							errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" does not exist."));
 						}
 					SKIP_SET:;
 					}
@@ -191,7 +192,12 @@ WorkflowEventNamesVisitor
 						}
 						else
 						{
-							errors.Add(L"Precompile: Event \"" + propertyName.ToString() + L"\" cannot be found in type \"" + resolvedTypeInfo.typeName.ToString() + L"\".");
+							errors.Add(GuiResourceError(resolvingResult.resource, handler->attPosition,
+								L"Precompile: Event \"" +
+								propertyName.ToString() +
+								L"\" cannot be found in type \"" +
+								resolvedTypeInfo.typeName.ToString() +
+								L"\"."));
 						}
 					}
 				}
@@ -201,6 +207,7 @@ WorkflowEventNamesVisitor
 			{
 				IGuiInstanceLoader::TypeInfo reprTypeInfo;
 
+				auto context = resolvingResult.context;
 				if (repr == context->instance.Obj())
 				{
 					auto fullName = GlobalStringKey::Get(context->className);
@@ -227,13 +234,13 @@ WorkflowEventNamesVisitor
 				}
 				else
 				{
-					errors.Add(
+					errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
 						L"Precompile: Failed to find type \"" +
 						(repr->typeNamespace == GlobalStringKey::Empty
 							? repr->typeName.ToString()
 							: repr->typeNamespace.ToString() + L":" + repr->typeName.ToString()
 							) +
-						L"\".");
+						L"\"."));
 				}
 			}
 		};
@@ -267,7 +274,7 @@ Workflow_GenerateInstanceClass
 			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 			if (!baseTd)
 			{
-				errors.Add(
+				errors.Add(GuiResourceError(resolvingResult.resource, context->instance->tagPosition,
 					L"Precompile: Failed to find type \"" +
 					(context->instance->typeNamespace == GlobalStringKey::Empty
 						? context->instance->typeName.ToString()
@@ -275,7 +282,7 @@ Workflow_GenerateInstanceClass
 						) +
 					L" for instance type \"" +
 					context->className +
-					L"\".");
+					L"\"."));
 				return nullptr;
 			}
 
@@ -319,24 +326,24 @@ Workflow_GenerateInstanceClass
 			}
 
 			auto typeParser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
-			auto parseType = [typeParser, &errors](const WString& code, const WString& name)->Ptr<WfType>
+			auto parseType = [&](const WString& code, const WString& name, ParsingTextPos position)->Ptr<WfType>
 			{
-				List<WString> parserErrors;
+				List<Ptr<ParsingError>> parserErrors;
 				if (auto type = typeParser->TypedParse(code, parserErrors))
 				{
 					return type;
 				}
 				else
 				{
-					errors.Add(L"Precompile: Failed to parse " + name + L": " + code);
+					GuiResourceError::Transform(resolvingResult.resource, errors, parserErrors, position);
 					return nullptr;
 				}
 			};
 
 			auto moduleParser = GetParserManager()->GetParser<WfModule>(L"WORKFLOW-MODULE");
-			auto parseClassMembers = [=, &errors](const WString& code, const WString& name, List<Ptr<WfClassMember>>& members)
+			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfClassMember>>& members, ParsingTextPos position)
 			{
-				List<WString> parserErrors;
+				List<Ptr<ParsingError>> parserErrors;
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
 				if (auto module = moduleParser->TypedParse(wrappedCode, parserErrors))
 				{
@@ -344,7 +351,18 @@ Workflow_GenerateInstanceClass
 				}
 				else
 				{
-					errors.Add(L"Precompile: Failed to parse " + name + L": " + code);
+					FOREACH(Ptr<ParsingError>, error, parserErrors)
+					{
+						if (error->codeRange.start.row > 0)
+						{
+							error->codeRange.start.row--;
+						}
+						else
+						{
+							error->codeRange = ParsingTextRange();
+						}
+					}
+					GuiResourceError::Transform(resolvingResult.resource, errors, parserErrors, position);
 				}
 			};
 
@@ -373,7 +391,7 @@ Workflow_GenerateInstanceClass
 			if (context->memberScript != L"")
 			{
 				List<Ptr<WfClassMember>> members;
-				parseClassMembers(context->memberScript, L"members of instance \"" + context->className + L"\"", members);
+				parseClassMembers(context->memberScript, L"members of instance \"" + context->className + L"\"", members, context->memberPosition);
 
 				if (beforePrecompile)
 				{
@@ -439,7 +457,7 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
 			{
-				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\""))
+				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\"", param->tagPosition))
 				{
 					if (!beforePrecompile)
 					{
@@ -514,7 +532,7 @@ Workflow_GenerateInstanceClass
 
 			if (needEventHandler)
 			{
-				WorkflowEventNamesVisitor visitor(context, instanceClass, errors);
+				WorkflowEventNamesVisitor visitor(resolvingResult, instanceClass, errors);
 				context->instance->Accept(&visitor);
 			}
 			addDecl(ctor);

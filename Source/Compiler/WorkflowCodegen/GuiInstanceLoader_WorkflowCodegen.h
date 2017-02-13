@@ -124,14 +124,14 @@ WorkflowCompiler (Compile)
 #define WORKFLOW_ENVIRONMENT_VARIABLE_ADD\
 		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
 		{\
-			auto value = repr->environmentVariables.Values()[index];\
+			auto value = repr->environmentVariables.Values()[index]->value;\
 			resolvingResult.envVars.Add(envVar, value);\
 		}\
 
 #define WORKFLOW_ENVIRONMENT_VARIABLE_REMOVE\
 		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
 		{\
-			auto value = repr->environmentVariables.Values()[index];\
+			auto value = repr->environmentVariables.Values()[index]->value;\
 			resolvingResult.envVars.Remove(envVar, value);\
 		}\
 
