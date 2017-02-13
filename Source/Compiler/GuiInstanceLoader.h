@@ -116,7 +116,8 @@ Instance Loader
 			{
 				Ptr<workflow::WfExpression>			expression;
 				description::ITypeDescriptor*		type;
-				parsing::ParsingTextPos				valuePosition;
+				parsing::ParsingTextPos				attPosition;
+				parsing::ParsingTextPos				valuePosition;				// only apply to text value
 			};
 
 			typedef collections::Group<GlobalStringKey, ArgumentInfo>	ArgumentMap;

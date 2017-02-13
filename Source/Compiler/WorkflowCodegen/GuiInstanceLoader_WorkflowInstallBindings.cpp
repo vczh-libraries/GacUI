@@ -172,6 +172,7 @@ Workflow_InstallBindProperty
 					IGuiInstanceLoader::ArgumentInfo argumentInfo;
 					argumentInfo.type = td;
 					argumentInfo.expression = evalExpression;
+					argumentInfo.attPosition = attPosition;
 					arguments.Add(prop.propertyName, argumentInfo);
 				}
 
@@ -352,6 +353,7 @@ Workflow_InstallEvalProperty
 				IGuiInstanceLoader::ArgumentInfo argumentInfo;
 				argumentInfo.type = propInfo->acceptableTypes[0];
 				argumentInfo.expression = evalExpression;
+				argumentInfo.attPosition = attPosition;
 				arguments.Add(prop.propertyName, argumentInfo);
 			}
 

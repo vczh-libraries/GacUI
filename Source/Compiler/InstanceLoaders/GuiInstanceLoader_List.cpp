@@ -10,15 +10,15 @@ namespace vl
 		{
 
 			template<typename IItemTemplateStyle, typename ITemplate>
-			Ptr<WfStatement> CreateSetControlTemplateStyle(GlobalStringKey variableName, Ptr<WfExpression> argument, const IGuiInstanceLoader::TypeInfo& controlTypeInfo, const WString& propertyName, GuiResourceError::List& errors)
+			Ptr<WfStatement> CreateSetControlTemplateStyle(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, Ptr<WfExpression> argument, const IGuiInstanceLoader::TypeInfo& controlTypeInfo, const WString& propertyName, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)
 			{
 				using Helper = GuiTemplateControlInstanceLoader<Value, Value, ITemplate>;
 				List<ITypeDescriptor*> controlTemplateTds;
-				Helper::GetItemTemplateType(argument, controlTemplateTds, controlTypeInfo, GlobalStringKey::_ItemTemplate.ToString(), errors);
+				Helper::GetItemTemplateType(resolvingResult, argument, controlTemplateTds, controlTypeInfo, GlobalStringKey::_ItemTemplate.ToString(), attPosition, errors);
 
 				if (controlTemplateTds.Count() > 0)
 				{
-					auto refFactory = Helper::CreateTemplateFactory(controlTemplateTds, errors);
+					auto refFactory = Helper::CreateTemplateFactory(resolvingResult, controlTemplateTds, attPosition, errors);
 					auto createStyle = MakePtr<WfNewClassExpression>();
 					createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IItemTemplateStyle>>::CreateTypeInfo().Obj());
 					createStyle->arguments.Add(refFactory);
@@ -87,7 +87,7 @@ GuiSelectableListControlInstanceLoader
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::_ItemTemplate)
 						{
-							if (auto stat = CreateSetControlTemplateStyle<GuiTextListItemTemplate_ItemStyleProvider, GuiTextListItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", errors))
+							if (auto stat = CreateSetControlTemplateStyle<GuiTextListItemTemplate_ItemStyleProvider, GuiTextListItemTemplate>(resolvingResult, variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", attPosition, errors))
 							{
 								block->statements.Add(stat);
 							}
@@ -146,7 +146,7 @@ GuiVirtualTreeViewInstanceLoader
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::_ItemTemplate)
 						{
-							if (auto stat = CreateSetControlTemplateStyle<GuiTreeItemTemplate_ItemStyleProvider, GuiTreeItemTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"NodeStyleProvider", errors))
+							if (auto stat = CreateSetControlTemplateStyle<GuiTreeItemTemplate_ItemStyleProvider, GuiTreeItemTemplate>(resolvingResult, variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"NodeStyleProvider", attPosition, errors))
 							{
 								block->statements.Add(stat);
 							}
@@ -171,7 +171,7 @@ GuiComboBoxInstanceLoader
 			protected:
 				GlobalStringKey						_ListControl;
 
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
 				{
 					vint indexListControl = arguments.Keys().IndexOf(_ListControl);
 					if (indexListControl != -1)
@@ -222,7 +222,7 @@ GuiComboBoxInstanceLoader
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::_ItemTemplate)
 						{
-							if (auto stat = CreateSetControlTemplateStyle<GuiControlTemplate_ItemStyleProvider, GuiControlTemplate>(variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", errors))
+							if (auto stat = CreateSetControlTemplateStyle<GuiControlTemplate_ItemStyleProvider, GuiControlTemplate>(resolvingResult, variableName, arguments.GetByIndex(index)[0].expression, typeInfo, L"StyleProvider", attPosition, errors))
 							{
 								block->statements.Add(stat);
 							}
@@ -249,7 +249,7 @@ GuiListViewInstanceLoader
 			protected:
 				GlobalStringKey		_View, _IconSize;
 
-				void PrepareAdditionalArgumentsAfterCreation(const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfBlockStatement> block)override
+				void PrepareAdditionalArgumentsAfterCreation(types::ResolvingResult& resolvingResult, const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfBlockStatement> block)override
 				{
 					auto view = ListViewViewType::Detail;
 					Ptr<WfExpression> iconSize;
@@ -257,8 +257,8 @@ GuiListViewInstanceLoader
 						vint indexView = arguments.Keys().IndexOf(_View);
 						if (indexView != -1)
 						{
-							auto viewExpr = arguments.GetByIndex(indexView)[0].expression;
-							if (auto inferExpr = viewExpr.template Cast<WfInferExpression>())
+							auto viewArgument = arguments.GetByIndex(indexView)[0];
+							if (auto inferExpr = viewArgument.expression.template Cast<WfInferExpression>())
 							{
 								if (auto refExpr = inferExpr->expression.template Cast<WfReferenceExpression>())
 								{
@@ -274,7 +274,10 @@ GuiListViewInstanceLoader
 								}
 							}
 						ILLEGAL_VIEW_PROPERTY:
-							errors.Add(L"Precompile: The value of property \"View\" of type \"" + typeInfo.typeName.ToString() + L"\" is not in a right format.");
+							errors.Add(GuiResourceError(resolvingResult.resource, viewArgument.attPosition,
+								L"Precompile: The value of property \"View\" of type \"" +
+								typeInfo.typeName.ToString() +
+								L"\" is not in a right format."));
 						FINISH_VIEW_PROPERTY:;
 						}
 
@@ -426,7 +429,7 @@ GuiTreeViewInstanceLoader
 				bool				bindable;
 				GlobalStringKey		_Nodes, _IconSize;
 
-				void PrepareAdditionalArgumentsAfterCreation(const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfBlockStatement> block)override
+				void PrepareAdditionalArgumentsAfterCreation(types::ResolvingResult& resolvingResult, const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfBlockStatement> block)override
 				{
 					vint indexIconSize = arguments.Keys().IndexOf(_IconSize);
 					if (indexIconSize != -1)
@@ -507,7 +510,7 @@ GuiTreeViewInstanceLoader
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
 
-				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, GuiResourceError::List& errors)override
+				Ptr<workflow::WfStatement> AssignParameters(types::ResolvingResult& resolvingResult, const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, parsing::ParsingTextPos attPosition, GuiResourceError::List& errors)override
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
@@ -544,7 +547,7 @@ GuiTreeViewInstanceLoader
 					{
 						return block;
 					}
-					return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, errors);
+					return BASE_TYPE::AssignParameters(resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
 				}
 			};
 #undef BASE_TYPE
@@ -640,13 +643,13 @@ GuiBindableDataColumnInstanceLoader
 						{
 							using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiGridVisualizerTemplate>;
 							List<ITypeDescriptor*> controlTemplateTds;
-							Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
+							Helper::GetItemTemplateType(resolvingResult, arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), attPosition, errors);
 
 							if (controlTemplateTds.Count() > 0)
 							{
 								FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
 								{
-									auto refFactory = Helper::CreateTemplateFactory(controlTemplateTd, errors);
+									auto refFactory = Helper::CreateTemplateFactory(resolvingResult, controlTemplateTd, attPosition, errors);
 									auto createStyle = MakePtr<WfNewClassExpression>();
 									if (index == 0)
 									{
@@ -703,11 +706,11 @@ GuiBindableDataColumnInstanceLoader
 						{
 							using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiGridEditorTemplate>;
 							List<ITypeDescriptor*> controlTemplateTds;
-							Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), errors);
+							Helper::GetItemTemplateType(resolvingResult, arguments.GetByIndex(index)[0].expression, controlTemplateTds, typeInfo, _EditorTemplate.ToString(), attPosition, errors);
 
 							if (controlTemplateTds.Count() > 0)
 							{
-								auto refFactory = Helper::CreateTemplateFactory(controlTemplateTds, errors);
+								auto refFactory = Helper::CreateTemplateFactory(resolvingResult, controlTemplateTds, attPosition, errors);
 								auto createStyle = MakePtr<WfNewClassExpression>();
 								createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataEditor::Factory>>::CreateTypeInfo().Obj());
 								createStyle->arguments.Add(refFactory);
@@ -756,7 +759,7 @@ GuiBindableDataGridInstanceLoader
 				GlobalStringKey		_ViewModelContext;
 				GlobalStringKey		_Columns;
 				
-				void AddAdditionalArguments(const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
 				{
 					auto indexViewModelContext = arguments.Keys().IndexOf(_ViewModelContext);
 					if (indexViewModelContext == -1)

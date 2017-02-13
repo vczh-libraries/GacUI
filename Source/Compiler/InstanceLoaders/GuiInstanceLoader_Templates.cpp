@@ -138,8 +138,9 @@ GuiTemplateInstanceLoader
 						FOREACH_INDEXER(GlobalStringKey, propKey, index, arguments.Keys())
 						{
 							List<ITypeDescriptor*> tds;
-							Helper::GetItemTemplateType(arguments.GetByIndex(index)[0].expression, tds, typeInfo, propKey.ToString(), errors);
-							auto refFactory = Helper::CreateTemplateFactory(tds, errors);
+							auto argument = arguments.GetByIndex(index)[0];
+							Helper::GetItemTemplateType(resolvingResult, argument.expression, tds, typeInfo, propKey.ToString(), argument.attPosition, errors);
+							auto refFactory = Helper::CreateTemplateFactory(resolvingResult, tds, argument.attPosition, errors);
 
 							auto refVariable = MakePtr<WfReferenceExpression>();
 							refVariable->name.value = variableName.ToString();

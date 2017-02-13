@@ -53,7 +53,7 @@ GuiResourceInstanceBinder (uri)
 				}
 				else
 				{
-					return Workflow_InstallUriProperty(resolvingResult, variableName, loader, prop, propInfo, protocol, path, errors);
+					return Workflow_InstallUriProperty(resolvingResult, variableName, loader, prop, propInfo, protocol, path, position, errors);
 				}
 			}
 		};
@@ -89,7 +89,7 @@ GuiReferenceInstanceBinder (ref)
 			{
 				auto expression = MakePtr<WfReferenceExpression>();
 				expression->name.value = code;
-				return Workflow_InstallEvalProperty(resolvingResult, variableName, loader, prop, propInfo, expression, errors);
+				return Workflow_InstallEvalProperty(resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
 			}
 		};
 
@@ -131,7 +131,7 @@ GuiEvalInstanceBinder (eval)
 
 				if (expression)
 				{
-					return Workflow_InstallEvalProperty(resolvingResult, variableName, loader, prop, propInfo, expression, errors);
+					return Workflow_InstallEvalProperty(resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
 				}
 				return nullptr;
 			}

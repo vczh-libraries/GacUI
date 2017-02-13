@@ -30,7 +30,7 @@ WorkflowGenerateCreatingVisitor
 			{
 			}
 
-			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(GuiValueRepr* repr)
+			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(parsing::ParsingTextPos attPosition, GuiValueRepr* repr)
 			{
 				ITypeDescriptor* td = nullptr;
 				bool serializable = false;
@@ -66,6 +66,7 @@ WorkflowGenerateCreatingVisitor
 
 				IGuiInstanceLoader::ArgumentInfo argumentInfo;
 				argumentInfo.type = td;
+				argumentInfo.attPosition = attPosition;
 
 				if (serializable)
 				{
@@ -150,7 +151,7 @@ WorkflowGenerateCreatingVisitor
 
 										vint errorCount = errors.Count();
 										IGuiInstanceLoader::ArgumentMap arguments;
-										arguments.Add(prop, GetArgumentInfo(value.Obj()));
+										arguments.Add(prop, GetArgumentInfo(setter->attPosition, value.Obj()));
 										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, setter->attPosition, errors))
 										{
 											statements->statements.Add(stat);
@@ -184,7 +185,7 @@ WorkflowGenerateCreatingVisitor
 												auto pairedInfo = resolvingResult.propertyResolvings[pairedValue.Obj()];
 												if (pairedInfo.loader == info.loader)
 												{
-													arguments.Add(pairedProp, GetArgumentInfo(pairedValue.Obj()));
+													arguments.Add(pairedProp, GetArgumentInfo(pairedSetter->attPosition, pairedValue.Obj()));
 												}
 											}
 										}
@@ -236,7 +237,7 @@ WorkflowGenerateCreatingVisitor
 						{
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
-								auto argument = GetArgumentInfo(value.Obj());
+								auto argument = GetArgumentInfo(setter->attPosition, value.Obj());
 								if (argument.type && argument.expression)
 								{
 									arguments.Add(prop, argument);
@@ -253,6 +254,7 @@ WorkflowGenerateCreatingVisitor
 								IGuiInstanceLoader::ArgumentInfo argument;
 								argument.expression = expression;
 								argument.type = resolvedPropInfo->acceptableTypes[0];
+								argument.attPosition = setter->attPosition;
 								arguments.Add(prop, argument);
 							}
 						}
