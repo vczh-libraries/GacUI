@@ -67,6 +67,7 @@ WorkflowGenerateBindingVisitor
 											propertyResolving.propertyInfo,
 											propertyResolving.info,
 											expressionCode,
+											setter->values[0]->tagPosition,
 											errors))
 										{
 											statements->statements.Add(statement);
@@ -132,7 +133,7 @@ WorkflowGenerateBindingVisitor
 									auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
 									if (binder)
 									{
-										statement = binder->GenerateInstallStatement(resolvingResult, repr->instanceName, eventInfo, handler->value, errors);
+										statement = binder->GenerateInstallStatement(resolvingResult, repr->instanceName, eventInfo, handler->value, handler->valuePosition, errors);
 									}
 									else
 									{
