@@ -1222,11 +1222,12 @@ GuiResource
 						}
 					}
 				}
+				if (errors.Count() > 0)
+				{
+					return;
+				}
 			}
-			if (errors.Count() == 0)
-			{
-				AddFolder(L"Precompiled", context.targetFolder);
-			}
+			AddFolder(L"Precompiled", context.targetFolder);
 		}
 
 		void GuiResource::Initialize(GuiResourceUsage usage)

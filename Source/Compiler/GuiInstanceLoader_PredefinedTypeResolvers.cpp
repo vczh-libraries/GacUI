@@ -125,6 +125,8 @@ namespace vl
 				}
 				else
 				{
+					CHECK_FAIL(L"Temporary assert");
+					/*
 					errors.Add(L"Failed to compile workflow scripts in: " + path);
 
 					using ErrorGroup = Pair<vint, LazyList<Ptr<ParsingError>>>;
@@ -160,6 +162,7 @@ namespace vl
 						}
 					}
 					errors.Add(L"<END>");
+					*/
 				}
 
 				if (keepMetadata)
