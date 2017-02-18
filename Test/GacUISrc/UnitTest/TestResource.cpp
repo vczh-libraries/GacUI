@@ -41,6 +41,15 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 		{
 			output.Add(error.resourcePath + L" # " + FilePath(GetTestResourcePath()).GetRelativePathFor(error.filePath));
 		}
+
+		WString prefix = L"Failed to load file \"";
+		WString postfix = L"\".";
+		if (INVLOC.StartsWith(error.message, prefix, Locale::Normalization::None) && INVLOC.EndsWith(error.message, postfix, Locale::Normalization::None))
+		{
+			auto path = error.message.Sub(prefix.Length(), error.message.Length() - prefix.Length() - postfix.Length());
+			path = FilePath(GetTestResourcePath()).GetRelativePathFor(path);
+			error.message = prefix + path + postfix;
+		}
 		output.Add(L"(" + itow(error.position.row) + L", " + itow(error.position.column) + L"): " + error.message);
 	}
 
@@ -104,4 +113,9 @@ TEST_CASE(TestResource_NotExists)
 TEST_CASE(TestResource_WrongSyntax)
 {
 	LoadResource(L"Resource.WrongSyntax.xml", true);
+}
+
+TEST_CASE(TestResource_WrongSyntax2)
+{
+	LoadResource(L"Resource.WrongSyntax2.xml", true);
 }
