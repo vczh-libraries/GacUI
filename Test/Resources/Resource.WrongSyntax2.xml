@@ -4,7 +4,8 @@
     <Script name="Script" content="File">Resource.WrongSyntax.xml</Script>
     <Instance name="Instance" content="File">Resource.WrongSyntax.xml</Instance>
     <InstanceStyle name="InstanceStyle" content="File">Resource.WrongSyntax.xml</InstanceStyle>
-    <Text name="Script">Duplicated</Text>
+    <Text name="Text">Duplicated</Text>
+    <Text name="Text">Duplicated</Text>
   </Folder>
   <Folder name="Instances"></Folder>
   <Folder></Folder>

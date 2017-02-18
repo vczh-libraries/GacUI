@@ -1,9 +1,11 @@
  # .\Resource.WrongSyntax.xml
 (0, 1): Error happened during parsing.
  # .\Resource.WrongSyntax2.xml
-(8, 2): Duplicated resource folder name "Instances".
-(9, 2): A resource folder should have a name.
-(11, 2): Unknown resource type "Unknown".
+(9, 2): Duplicated resource folder name "Instances".
+(10, 2): A resource folder should have a name.
+(12, 2): Unknown resource type "Unknown".
+Instances # .\Resource.WrongSyntax2.xml
+(7, 4): Duplicated resource item name "Text".
 Instances/Instance # .\Resource.WrongSyntax.xml
 (0, 1): Error happened during parsing.
 Instances/InstanceStyle # .\Resource.WrongSyntax.xml
@@ -11,7 +13,7 @@ Instances/InstanceStyle # .\Resource.WrongSyntax.xml
 Instances/Script # .\Resource.WrongSyntax.xml
 (0, 1): Error happened during parsing.
 NotExistsCollection # .\Resource.WrongSyntax2.xml
-(13, 4): Failed to load file ".\Resource.NotExists.xml".
+(14, 4): Failed to load file ".\Resource.NotExists.xml".
 NotExistsCollection/Image # .\Resource.NotExists.xml
 (-2, -2): Failed to load file ".\Resource.NotExists.xml".
 NotExistsCollection/Instance # .\Resource.NotExists.xml
