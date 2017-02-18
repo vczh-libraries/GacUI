@@ -53,7 +53,7 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 		output.Add(L"(" + itow(error.position.row) + L", " + itow(error.position.column) + L"): " + error.message);
 	}
 
-	File(outputPath).WriteAllLines(output);
+	File(outputPath).WriteAllLines(output, false, BomEncoder::Utf8);
 
 	List<WString> baseline;
 	File(baselinePath).ReadAllLines(baseline);
