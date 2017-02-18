@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TestResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GacUISrc\GacUISrc.vcxproj">

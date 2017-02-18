@@ -114,7 +114,13 @@ Strong Typed Table Parser
 				}
 				if(table)
 				{
-					return function(text, table, errors, -1);
+					collections::List<Ptr<parsing::ParsingError>> parsingErrors;
+					auto result = function(text, table, parsingErrors, -1);
+					if (parsingErrors.Count() > 0)
+					{
+						errors.Add(parsingErrors[0]);
+					}
+					return result;
 				}
 				return nullptr;
 			}
