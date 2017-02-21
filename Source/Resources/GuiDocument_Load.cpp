@@ -130,6 +130,10 @@ document_operation_visitors::DeserializeNodeVisitor
 
 							container->runs.Add(run);
 						}
+						else
+						{
+							errors.Add(GuiResourceError(resource, node->codeRange.start, L"Attribute \"source\" is missing in <img>."));
+						}
 					}
 					else if (node->name.value == L"object")
 					{
@@ -285,7 +289,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					{
 						if (node->name.value != L"nop")
 						{
-							errors.Add(GuiResourceError(resource, node->name.codeRange.start, L"Unknown tag in document resource \"" + node->name.value + L"\"."));
+							errors.Add(GuiResourceError(resource, node->codeRange.start, L"Unknown element in <p> \"" + node->name.value + L"\"."));
 						}
 						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
 						{
@@ -314,7 +318,7 @@ document_operation_visitors::DeserializeNodeVisitor
 				}
 			};
 
-			Ptr<DocumentStyle> ParseDocumentStyle(Ptr<XmlElement> styleElement)
+			Ptr<DocumentStyle> ParseDocumentStyle(Ptr<GuiResourceItem> resource, Ptr<XmlElement> styleElement, GuiResourceError::List& errors)
 			{
 				Ptr<DocumentStyle> style=new DocumentStyle;
 
@@ -379,6 +383,10 @@ document_operation_visitors::DeserializeNodeVisitor
 							sp->verticalAntialias=true;
 						}
 					}
+					else
+					{
+						errors.Add(GuiResourceError(resource, att->codeRange.start, L"Unknown element in <Style> \"" + att->name.value + L"\"."));
+					}
 				}
 
 				return style;
@@ -392,66 +400,101 @@ DocumentModel
 
 		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)
 		{
-			Ptr<DocumentModel> model=new DocumentModel;
-			if(xml->rootElement->name.value==L"Doc")
+			Ptr<DocumentModel> model = new DocumentModel;
+			if (xml->rootElement->name.value == L"Doc")
 			{
-				if(Ptr<XmlElement> styles=XmlGetElement(xml->rootElement, L"Styles"))
+				FOREACH(Ptr<XmlElement>, partElement, XmlGetElements(xml->rootElement))
 				{
-					FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(styles, L"Style"))
-					if (Ptr<XmlAttribute> name = XmlGetAttribute(styleElement, L"name"))
+					if (partElement->name.value == L"Styles")
 					{
-						auto style = ParseDocumentStyle(styleElement);
-						auto styleName = name->value.value;
-						if(!model->styles.Keys().Contains(styleName))
+						FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(partElement))
 						{
-							model->styles.Add(styleName, style);
-							if (styleName.Length() > 9 && styleName.Right(9) == L"-Override")
+							if (styleElement->name.value == L"Style")
 							{
-								auto overridedStyle = MakePtr<DocumentStyle>();
-								overridedStyle->styles = new DocumentStyleProperties;
-								MergeStyle(overridedStyle->styles, style->styles);
-
-								styleName = styleName.Left(styleName.Length() - 9);
-								auto index = model->styles.Keys().IndexOf(styleName);
-								if (index == -1)
+								if (Ptr<XmlAttribute> name = XmlGetAttribute(styleElement, L"name"))
 								{
-									model->styles.Add(styleName, overridedStyle);
+									auto style = ParseDocumentStyle(resource, styleElement, errors);
+									auto styleName = name->value.value;
+									if (!model->styles.Keys().Contains(styleName))
+									{
+										model->styles.Add(styleName, style);
+										if (styleName.Length() > 9 && styleName.Right(9) == L"-Override")
+										{
+											auto overridedStyle = MakePtr<DocumentStyle>();
+											overridedStyle->styles = new DocumentStyleProperties;
+											MergeStyle(overridedStyle->styles, style->styles);
+
+											styleName = styleName.Left(styleName.Length() - 9);
+											auto index = model->styles.Keys().IndexOf(styleName);
+											if (index == -1)
+											{
+												model->styles.Add(styleName, overridedStyle);
+											}
+											else
+											{
+												auto originalStyle = model->styles.Values()[index];
+												MergeStyle(overridedStyle->styles, originalStyle->styles);
+												originalStyle->styles = overridedStyle->styles;
+											}
+										}
+									}
 								}
 								else
 								{
-									auto originalStyle = model->styles.Values()[index];
-									MergeStyle(overridedStyle->styles, originalStyle->styles);
-									originalStyle->styles = overridedStyle->styles;
+									errors.Add(GuiResourceError(resource, styleElement->codeRange.start, L"Attribute \"name\" is missing in <Style>."));
 								}
 							}
+							else
+							{
+								errors.Add(GuiResourceError(resource, styleElement->codeRange.start, L"Unknown element in <Styles> \"" + styleElement->name.value + L"\"."));
+							}
 						}
 					}
-				}
-				if(Ptr<XmlElement> content=XmlGetElement(xml->rootElement, L"Content"))
-				{
-					FOREACH_INDEXER(Ptr<XmlElement>, p, i, XmlGetElements(content, L"p"))
+					else if (partElement->name.value == L"Content")
 					{
-						Ptr<DocumentParagraphRun> paragraph=new DocumentParagraphRun;
-						if(Ptr<XmlAttribute> att=XmlGetAttribute(p, L"align"))
+						FOREACH_INDEXER(Ptr<XmlElement>, p, i, XmlGetElements(partElement))
 						{
-							if(att->value.value==L"Left")
+							if (p->name.value == L"p")
 							{
-								paragraph->alignment=Alignment::Left;
+								Ptr<DocumentParagraphRun> paragraph = new DocumentParagraphRun;
+								if (Ptr<XmlAttribute> att = XmlGetAttribute(p, L"align"))
+								{
+									if (att->value.value == L"Left")
+									{
+										paragraph->alignment = Alignment::Left;
+									}
+									else if (att->value.value == L"Center")
+									{
+										paragraph->alignment = Alignment::Center;
+									}
+									else if (att->value.value == L"Right")
+									{
+										paragraph->alignment = Alignment::Right;
+									}
+									else
+									{
+										errors.Add(GuiResourceError(resource, att->value.codeRange.start, L"Unknown value in align attribute \"" + att->value.value + L"\"."));
+									}
+								}
+								model->paragraphs.Add(paragraph);
+								DeserializeNodeVisitor visitor(model, paragraph, i, resource, resolver, errors);
+								p->Accept(&visitor);
 							}
-							else if(att->value.value==L"Center")
+							else
 							{
-								paragraph->alignment=Alignment::Center;
-							}
-							else if(att->value.value==L"Right")
-							{
-								paragraph->alignment=Alignment::Right;
+								errors.Add(GuiResourceError(resource, p->codeRange.start, L"Unknown element in <Content> \"" + p->name.value + L"\"."));
 							}
 						}
-						model->paragraphs.Add(paragraph);
-						DeserializeNodeVisitor visitor(model, paragraph, i, resource, resolver, errors);
-						p->Accept(&visitor);
+					}
+					else
+					{
+						errors.Add(GuiResourceError(resource, partElement->codeRange.start, L"Unknown element in <Doc> \"" + partElement->name.value + L"\"."));
 					}
 				}
+			}
+			else
+			{
+				errors.Add(GuiResourceError(resource, xml->rootElement->codeRange.start, L"The root element of document should be \"Doc\"."));
 			}
 			return model;
 		}

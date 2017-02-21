@@ -119,3 +119,8 @@ TEST_CASE(TestResource_WrongSyntax2)
 {
 	LoadResource(L"Resource.WrongSyntax2.xml", true);
 }
+
+TEST_CASE(TestResource_WrongDoc)
+{
+	LoadResource(L"Resource.WrongDoc.xml", true);
+}

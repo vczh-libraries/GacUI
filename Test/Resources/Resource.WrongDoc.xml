@@ -1,0 +1,27 @@
+<Resource>
+  <Doc name="Doc1">
+    <Unknown/>
+  </Doc>
+  <Doc name="Doc2">
+    <Doc>
+      <Styles>
+        <Style/>
+        <Style name="">
+          <Unknown/>
+        </Style>
+        <Unknown/>
+      </Styles>
+      <Content>
+        <p Unknown="" align="Unknown">
+          <img/>
+          <img source="" Unknown=""/>
+          <font Unknown=""/>
+          <object/>
+          <Unknown/>
+        </p>
+        <Unknown/>
+      </Content>
+      <Unknown/>
+    </Doc>
+  </Doc>
+</Resource>

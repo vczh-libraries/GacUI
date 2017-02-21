@@ -1,0 +1,14 @@
+Doc1 # .\Resource.WrongDoc.xml
+(2, 4): The root element of document should be "Doc".
+Doc2 # .\Resource.WrongDoc.xml
+(7, 8): Attribute "name" is missing in <Style>.
+(9, 10): Unknown element in <Style> "Unknown".
+(11, 8): Unknown element in <Styles> "Unknown".
+(14, 28): Unknown value in align attribute "Unknown".
+(15, 10): Attribute "source" is missing in <img>.
+(16, 25): Unknown attribute in <img> "Unknown".
+(17, 16): Unknown attribute in <font> "Unknown".
+(18, 10): The "name" attribute in <object> is missing.
+(19, 10): Unknown element in <p> "Unknown".
+(21, 8): Unknown element in <Content> "Unknown".
+(23, 6): Unknown element in <Doc> "Unknown".
