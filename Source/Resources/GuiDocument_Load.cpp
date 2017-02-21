@@ -124,7 +124,7 @@ document_operation_visitors::DeserializeNodeVisitor
 								}
 								else if (att->name.value != L"source")
 								{
-									errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Unknown attribute in <img> \"" + att->name.value + L"\"."));
+									errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Unknown attribute in <img>: \"" + att->name.value + L"\"."));
 								}
 							}
 
@@ -176,7 +176,7 @@ document_operation_visitors::DeserializeNodeVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Unknown attribute in <font> \"" + att->name.value + L"\"."));
+								errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Unknown attribute in <font>: \"" + att->name.value + L"\"."));
 							}
 						}
 						container->runs.Add(run);
@@ -289,7 +289,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					{
 						if (node->name.value != L"nop")
 						{
-							errors.Add(GuiResourceError(resource, node->codeRange.start, L"Unknown element in <p> \"" + node->name.value + L"\"."));
+							errors.Add(GuiResourceError(resource, node->codeRange.start, L"Unknown element in <p>: \"" + node->name.value + L"\"."));
 						}
 						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
 						{
@@ -385,7 +385,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else
 					{
-						errors.Add(GuiResourceError(resource, att->codeRange.start, L"Unknown element in <Style> \"" + att->name.value + L"\"."));
+						errors.Add(GuiResourceError(resource, att->codeRange.start, L"Unknown element in <Style>: \"" + att->name.value + L"\"."));
 					}
 				}
 
@@ -446,7 +446,7 @@ DocumentModel
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resource, styleElement->codeRange.start, L"Unknown element in <Styles> \"" + styleElement->name.value + L"\"."));
+								errors.Add(GuiResourceError(resource, styleElement->codeRange.start, L"Unknown element in <Styles>: \"" + styleElement->name.value + L"\"."));
 							}
 						}
 					}
@@ -482,13 +482,13 @@ DocumentModel
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resource, p->codeRange.start, L"Unknown element in <Content> \"" + p->name.value + L"\"."));
+								errors.Add(GuiResourceError(resource, p->codeRange.start, L"Unknown element in <Content>: \"" + p->name.value + L"\"."));
 							}
 						}
 					}
 					else
 					{
-						errors.Add(GuiResourceError(resource, partElement->codeRange.start, L"Unknown element in <Doc> \"" + partElement->name.value + L"\"."));
+						errors.Add(GuiResourceError(resource, partElement->codeRange.start, L"Unknown element in <Doc>: \"" + partElement->name.value + L"\"."));
 					}
 				}
 			}
