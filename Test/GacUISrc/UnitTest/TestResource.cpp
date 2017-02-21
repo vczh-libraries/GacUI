@@ -124,3 +124,8 @@ TEST_CASE(TestResource_WrongDoc)
 {
 	LoadResource(L"Resource.WrongDoc.xml", true);
 }
+
+TEST_CASE(TestResource_WrongInstanceStyle)
+{
+	LoadResource(L"Resource.WrongInstanceStyle.xml", true);
+}

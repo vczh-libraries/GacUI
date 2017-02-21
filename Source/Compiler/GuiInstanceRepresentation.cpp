@@ -847,7 +847,7 @@ GuiInstanceStyle
 				List<Ptr<ParsingError>> parsingErrors;
 				auto parser = GetParserManager()->GetParser<GuiIqQuery>(L"INSTANCE-QUERY");
 				auto query = parser->TypedParse(pathAttr->value.value, parsingErrors);
-				GuiResourceError::Transform(resource, errors, parsingErrors, pathAttr->value.codeRange.start);
+				GuiResourceError::Transform(resource, errors, parsingErrors, pathAttr->value.codeRange.start, { 0,1 });
 				if (!query) return nullptr;
 				style->query = query;
 			}
@@ -895,19 +895,26 @@ GuiInstanceStyleContext
 		Ptr<GuiInstanceStyleContext> GuiInstanceStyleContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			auto context = MakePtr<GuiInstanceStyleContext>();
-			FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(xml->rootElement))
+			if (xml->rootElement->name.value == L"Styles")
 			{
-				if (styleElement->name.value == L"Style")
+				FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(xml->rootElement))
 				{
-					if (auto style = GuiInstanceStyle::LoadFromXml(resource, styleElement, errors))
+					if (styleElement->name.value == L"Style")
 					{
-						context->styles.Add(style);
+						if (auto style = GuiInstanceStyle::LoadFromXml(resource, styleElement, errors))
+						{
+							context->styles.Add(style);
+						}
+					}
+					else
+					{
+						errors.Add(GuiResourceError(styleElement->codeRange.start, L"Unknown element in <Styles>: \"" + styleElement->name.value + L"\"."));
 					}
 				}
-				else
-				{
-					errors.Add(GuiResourceError(styleElement->name.codeRange.start, L"Unknown style type \"" + styleElement->name.value + L"\"."));
-				}
+			}
+			else
+			{
+				errors.Add(GuiResourceError(resource, xml->rootElement->codeRange.start, L"The root element of instance styles should be \"Styles\"."));
 			}
 			return context;
 		}

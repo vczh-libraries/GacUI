@@ -1,0 +1,7 @@
+ # ..\GacUISrc\UnitTest
+(6, 6): Unknown element in <Styles>: "Unknown".
+InstanceStyle1 # .\Resource.WrongInstanceStyle.xml
+(2, 4): The root element of instance styles should be "Styles".
+InstanceStyle2 # .\Resource.WrongInstanceStyle.xml
+(7, 6): Missing attribute "ref.Path" in <Style>.
+(8, 24): Error happened during parsing.

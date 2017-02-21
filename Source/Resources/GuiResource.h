@@ -197,8 +197,8 @@ Resource Structure
 			GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message);
 			GuiResourceError(Ptr<GuiResourceNodeBase> node, const WString& _message);
 
-			static void								Transform(Ptr<GuiResourceNodeBase> node, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset = { 0,0 });
-			static void								Transform(const WString& filepath, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset = { 0,0 });
+			static void								Transform(Ptr<GuiResourceNodeBase> node, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset = { 0,0 }, parsing::ParsingTextPos offsetFix = { 0,0 });
+			static void								Transform(const WString& filepath, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset = { 0,0 }, parsing::ParsingTextPos offsetFix = { 0,0 });
 		};
 
 		class DocumentModel;

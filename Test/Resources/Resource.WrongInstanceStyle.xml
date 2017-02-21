@@ -1,0 +1,12 @@
+<Resource>
+  <InstanceStyle name="InstanceStyle1">
+    <Unknown/>
+  </InstanceStyle>
+  <InstanceStyle name="InstanceStyle2">
+    <Styles>
+      <Unknown/>
+      <Style/>
+      <Style ref.Path="/."/>
+    </Styles>
+  </InstanceStyle>
+</Resource>

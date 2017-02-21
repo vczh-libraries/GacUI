@@ -333,12 +333,14 @@ GuiResourceError
 		}
 
 		template<typename TCallback>
-		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, const TCallback& callback)
+		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix, const TCallback& callback)
 		{
 			if (offset.row < 0 || offset.column < 0)
 			{
 				offset = ParsingTextPos(0, 0);
 			}
+			offset.row += offsetFix.row;
+			offset.column += offsetFix.column;
 
 			FOREACH(Ptr<ParsingError>, error, parsingErrors)
 			{
@@ -359,17 +361,17 @@ GuiResourceError
 			}
 		}
 
-		void GuiResourceError::Transform(Ptr<GuiResourceNodeBase> node, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset)
+		void GuiResourceError::Transform(Ptr<GuiResourceNodeBase> node, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix)
 		{
-			TransformErrors(errors, parsingErrors, offset, [&](ParsingTextPos pos, const WString& message)
+			TransformErrors(errors, parsingErrors, offset, offsetFix, [&](ParsingTextPos pos, const WString& message)
 			{
 				return GuiResourceError(node, pos, message);
 			});
 		}
 
-		void GuiResourceError::Transform(const WString& filepath, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset)
+		void GuiResourceError::Transform(const WString& filepath, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix)
 		{
-			TransformErrors(errors, parsingErrors, offset, [&](ParsingTextPos pos, const WString& message)
+			TransformErrors(errors, parsingErrors, offset, offsetFix, [&](ParsingTextPos pos, const WString& message)
 			{
 				return GuiResourceError(filepath, pos, message);
 			});
