@@ -1,0 +1,18 @@
+Instance1 # .\Resource.WrongInstance.xml
+(2, 4): The root element of instance should be "Instance".
+Instance2 # .\Resource.WrongInstance.xml
+(6, 6): ref.Parameter requires the following attributes existing at the same time: Name, Class.
+(7, 6): Script should be contained in a CDATA section.
+(8, 6): Wrong constructor name "ev.Wrong".
+Instance3 # .\Resource.WrongInstance.xml
+(13, 23): Duplicated environment variable "Var".
+(13, 42): Duplicated property "Prop".
+(13, 62): Duplicated event "Event".
+(13, 74): Unknown attribute name: "unknown.Unknown".
+(14, 8): Duplicated property "Prop".
+(15, 8): Duplicated property "Prop".
+(16, 8): Duplicated event "Event".
+(17, 8): Duplicated event "Event".
+(20, 8): Multiple lines script should be contained in a CDATA section.
+(29, 8): Event script should be contained in a text or CDATA section.
+(34, 8): Unknown element name: "unknown.Unknown".

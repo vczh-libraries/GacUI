@@ -129,3 +129,8 @@ TEST_CASE(TestResource_WrongInstanceStyle)
 {
 	LoadResource(L"Resource.WrongInstanceStyle.xml", true);
 }
+
+TEST_CASE(TestResource_WrongInstance)
+{
+	LoadResource(L"Resource.WrongInstance.xml", true);
+}

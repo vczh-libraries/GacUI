@@ -255,7 +255,7 @@ GuiInstanceContext
 						}
 						else if (!name->IsPropertyElementName() && !name->IsEventElementName())
 						{
-							errors.Add(GuiResourceError(resource, element->name.codeRange.start, L"Unknown element name: \"" + element->name.value + L"\"."));
+							errors.Add(GuiResourceError(resource, element->codeRange.start, L"Unknown element name: \"" + element->name.value + L"\"."));
 						}
 					}
 				}
@@ -288,7 +288,7 @@ GuiInstanceContext
 							// collect a value as a new attribute setter
 							if (setters.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(GuiResourceError(resource, element->name.codeRange.start, L"Duplicated property \"" + name->name + L"\"."));
+								errors.Add(GuiResourceError(resource, element->codeRange.start, L"Duplicated property \"" + name->name + L"\"."));
 							}
 							else
 							{
@@ -338,7 +338,7 @@ GuiInstanceContext
 							// collect a value as an event setter
 							if (eventHandlers.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(GuiResourceError(resource, element->name.codeRange.start, L"Duplicated event \"" + name->name + L"\"."));
+								errors.Add(GuiResourceError(resource, element->codeRange.start, L"Duplicated event \"" + name->name + L"\"."));
 							}
 							else
 							{
@@ -357,6 +357,7 @@ GuiInstanceContext
 										{
 											errors.Add(GuiResourceError(resource, element->codeRange.start, L"Multiple lines script should be contained in a CDATA section."));
 										}
+										goto EVENT_SUCCESS;
 									}
 									else if (Ptr<XmlCData> text = element->subNodes[0].Cast<XmlCData>())
 									{
@@ -368,11 +369,10 @@ GuiInstanceContext
 										value->valuePosition.column += 9; // <![CDATA[
 										eventHandlers.Add(GlobalStringKey::Get(name->name), value);
 									}
+									goto EVENT_SUCCESS;
 								}
-								else
-								{
-									errors.Add(GuiResourceError(resource, element->codeRange.start, L"Event script should be contained in a text or CDATA section."));
-								}
+								errors.Add(GuiResourceError(resource, element->codeRange.start, L"Event script should be contained in a text or CDATA section."));
+							EVENT_SUCCESS:;
 							}
 						}
 					}
@@ -503,7 +503,7 @@ GuiInstanceContext
 					}
 					else
 					{
-						errors.Add(GuiResourceError(resource, xml->name.codeRange.start, L"Wrong constructor name \"" + xml->name.value + L"\"."));
+						errors.Add(GuiResourceError(resource, xml->codeRange.start, L"Wrong constructor name \"" + xml->name.value + L"\"."));
 					}
 				}
 			}
@@ -636,7 +636,7 @@ GuiInstanceContext
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resource, element->name.codeRange.start, L"ref.Parameter requires the following attributes existing at the same time: Name, Class."));
+							errors.Add(GuiResourceError(resource, element->codeRange.start, L"ref.Parameter requires the following attributes existing at the same time: Name, Class."));
 						}
 					}
 					else if (element->name.value == L"ref.Members")
@@ -659,6 +659,10 @@ GuiInstanceContext
 						context->instance = LoadCtor(resource, element, errors);
 					}
 				}
+			}
+			else
+			{
+				errors.Add(GuiResourceError(resource, xml->rootElement->codeRange.start, L"The root element of instance should be \"Instance\"."));
 			}
 
 			return context->instance ? context : nullptr;

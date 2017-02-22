@@ -1,0 +1,39 @@
+<Resource>
+  <Instance name="Instance1">
+    <Unknown/>
+  </Instance>
+  <Instance name="Instance2">
+    <Instance>
+      <ref.Parameter/>
+      <ref.Members>.</ref.Members>
+      <ev.Wrong/>
+    </Instance>
+  </Instance>
+  <Instance name="Instance3">
+    <Instance>
+      <Ctor env.Var="" env.Var="" Prop="" Prop="" ev.Event="" ev.Event="" unknown.Unknown="">
+        <att.Prop></att.Prop>
+        <att.Prop></att.Prop>
+        <ev.Event></ev.Event>
+        <ev.Event></ev.Event>
+
+        <ev.Singleline>abc</ev.Singleline>
+        <ev.Multipleline>
+          abc
+          abc
+          abc
+        </ev.Multipleline>
+        
+        <ev.Wrong>
+          <Ctor/>
+        </ev.Wrong>
+        <ev.Wrong>
+          <Ctor/>
+          <Ctor/>
+        </ev.Wrong>
+
+        <unknown.Unknown/>
+      </Ctor>
+    </Instance>
+  </Instance>
+</Resource>
