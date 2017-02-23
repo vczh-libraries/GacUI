@@ -1,0 +1,19 @@
+<Resource>
+  <Instance name="i1">
+    <Instance ref.Styles="Wrong Path">
+      <Unknown/>
+    </Instance>
+  </Instance>
+  
+  <Instance name="i2">
+    <Instance ref.Class="MainWindow" ref.Styles="res://NotExists">
+      <ref.Parameter Name="WrongClassName" Class="[]"/>
+      <ref.Members>
+        <![CDATA[
+          Syntax Error
+        ]]>
+      </ref.Members>
+      <Window/>
+    </Instance>
+  </Instance>
+</Resource>

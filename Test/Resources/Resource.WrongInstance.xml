@@ -11,7 +11,7 @@
   </Instance>
   <Instance name="Instance3">
     <Instance>
-      <Ctor env.Var="" env.Var="" Prop="" Prop="" ev.Event="" ev.Event="" unknown.Unknown="">
+      <Ctor env.Var="" env.Var="" Prop="" Prop="" ev.Event="" ev.Event="" unknown.Unknown="" a-b-c="">
         <att.Prop></att.Prop>
         <att.Prop></att.Prop>
         <ev.Event></ev.Event>
@@ -33,6 +33,7 @@
         </ev.Wrong>
 
         <unknown.Unknown/>
+        <a-b-c/>
       </Ctor>
     </Instance>
   </Instance>

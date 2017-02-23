@@ -241,7 +241,7 @@ GuiInstanceContext
 				{
 					List<Ptr<ParsingError>> parsingErrors;
 					auto name = parser->TypedParse(element->name.value, parsingErrors);
-					GuiResourceError::Transform(resource, errors, parsingErrors, element->name.codeRange.start);
+					GuiResourceError::Transform(resource, errors, parsingErrors, element->codeRange.start);
 					if (name)
 					{
 						if (name->IsCtorName())
@@ -632,6 +632,8 @@ GuiInstanceContext
 							parameter->name = GlobalStringKey::Get(attName->value.value);
 							parameter->className = GlobalStringKey::Get(attClass->value.value);
 							parameter->tagPosition = element->codeRange.start;
+							parameter->classPosition = attClass->value.codeRange.start;
+							parameter->classPosition.column += 1;
 							context->parameters.Add(parameter);
 						}
 						else

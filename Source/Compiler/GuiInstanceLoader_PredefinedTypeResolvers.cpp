@@ -387,6 +387,17 @@ Instance Type Resolver (Instance)
 					{
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
+							if (obj->className == L"")
+							{
+								errors.Add(GuiResourceError(resource, obj->tagPosition,
+									L"Precompile: Instance \"" +
+									(obj->instance->typeNamespace == GlobalStringKey::Empty
+										? obj->instance->typeName.ToString()
+										: obj->instance->typeNamespace.ToString() + L":" + obj->instance->typeName.ToString()
+										) +
+									L"\" should have the class name specified in the ref.Class attribute."));
+							}
+
 							obj->ApplyStyles(resource, context.resolver, errors);
 
 							types::ResolvingResult resolvingResult;
@@ -416,16 +427,6 @@ Instance Type Resolver (Instance)
 						if (auto obj = resource->GetContent().Cast<GuiInstanceContext>())
 						{
 							vint previousErrorCount = errors.Count();
-							if (obj->className == L"")
-							{
-								errors.Add(GuiResourceError(resource, obj->classPosition,
-									L"Precompile: Instance  \"" +
-									(obj->instance->typeNamespace == GlobalStringKey::Empty
-										? obj->instance->typeName.ToString()
-										: obj->instance->typeNamespace.ToString() + L":" + obj->instance->typeName.ToString()
-										) +
-									L"\" should have the class name specified in the ref.Class attribute."));
-							}
 
 							types::ResolvingResult resolvingResult;
 							resolvingResult.resource = resource;

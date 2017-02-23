@@ -280,8 +280,6 @@ Workflow_GenerateInstanceClass
 						? context->instance->typeName.ToString()
 						: context->instance->typeNamespace.ToString() + L":" + context->instance->typeName.ToString()
 						) +
-					L" for instance type \"" +
-					context->className +
 					L"\"."));
 				return nullptr;
 			}
@@ -457,13 +455,13 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
 			{
-				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\"", param->tagPosition))
+				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\"", param->classPosition))
 				{
 					if (!beforePrecompile)
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
 						addDecl(decl);
-
+						
 						decl->name.value = L"<parameter>" + param->name.ToString();
 						decl->type = CopyType(type);
 

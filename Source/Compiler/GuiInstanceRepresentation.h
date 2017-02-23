@@ -135,6 +135,7 @@ Instance Namespace
 			GlobalStringKey							name;
 			GlobalStringKey							className;
 			parsing::ParsingTextPos					tagPosition;
+			parsing::ParsingTextPos					classPosition;
 		};
 
 /***********************************************************************

@@ -152,7 +152,7 @@ GuiInstanceContext::ElementName Parser
 				if (!match || match->Result().Length() != text.Length())
 				{
 					errors.Add(MakePtr<ParsingError>(L"Failed to parse an element name \"" + text + L"\"."));
-					return 0;
+					return nullptr;
 				}
 
 				Ptr<ElementName> elementName = new ElementName;
@@ -391,8 +391,7 @@ GuiDefaultInstanceLoader
 				case ITypeInfo::RawPtr:
 				case ITypeInfo::SharedPtr:
 				case ITypeInfo::Nullable:
-					FillPropertyInfo(propertyInfo, propType->GetElementType());
-					return true;
+					return FillPropertyInfo(propertyInfo, propType->GetElementType());
 				case ITypeInfo::TypeDescriptor:
 					propertyInfo->acceptableTypes.Add(propType->GetTypeDescriptor());
 					return true;

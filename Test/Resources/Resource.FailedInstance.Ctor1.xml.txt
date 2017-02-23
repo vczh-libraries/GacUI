@@ -1,0 +1,8 @@
+i1 # .\Resource.FailedInstance.Ctor1.xml
+(2, 4): Precompile: Instance "Unknown" should have the class name specified in the ref.Class attribute.
+(2, 14): Invalid path in attribute "ref.Styles": "Wrong Path".
+(3, 6): Precompile: Failed to find type "Unknown".
+i2 # .\Resource.FailedInstance.Ctor1.xml
+(8, 37): Failed to find the style referred in attribute "ref.Styles": "res://NotExists".
+(9, 50): Error happened during parsing.
+(12, 10): Error happened during parsing.
