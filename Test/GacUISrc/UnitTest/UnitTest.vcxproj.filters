@@ -22,4 +22,65 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.NotExists.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.WrongDoc.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.WrongInstance.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.WrongInstanceStyle.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.WrongSyntax.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.WrongSyntax2.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.WrongDoc.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.WrongInstance.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.WrongInstanceStyle.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.WrongSyntax.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.WrongSyntax2.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>

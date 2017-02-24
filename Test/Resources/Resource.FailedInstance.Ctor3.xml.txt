@@ -5,13 +5,15 @@ i1 # .\Resource.FailedInstance.Ctor3.xml
 (5, 66): Precompile: Property "TooltipControl" of type "MainWindow" does not accept a value of text "Not Serializable" because its type "presentation::controls::GuiControl" is not serializable.
 (5, 84): Precompile: Property "NotExists" of type "MainWindow" does not exist.
 (5, 84): Precompile: Property "NotExists" of type "MainWindow" is not supported.
-(11, 8): Precompile: Referece name "self" conflict with an existing named object.
-(14, 10): Precompile: Property "ControlTemplate" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using binding "-bind". Because it is a non-bindable constructor argument.
-(15, 10): Precompile: Property "ViewModelContext" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using binding "-bind". Because it is a constructor argument, and this binding does not apply to any constructor argument.
-(16, 10): Precompile: Property "Text" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using an unexisting binding "-NotExists".
-(17, 10): Precompile: Binder "bind" requires the text value of property "SelectedCell".
-(22, 15): The appropriate IGuiInstanceEventBinder of binding "-NotExists" cannot be found.
-(23, 10): Precompile: When you assign to property "Columns" of type "presentation::compositions::GuiTableComposition", the following missing properties are required: "Rows".
-(24, 12): Precompile: Type "presentation::compositions::GuiCellOption" cannot be used to create an instance.
-(28, 8): Precompile: Missing constructor argument "ListControl" of type "presentation::controls::GuiComboBox".
-(30, 8): Precompile: Property "" of type "MainWindow" does not accept a value of type "system::String" because it only accepts value of the following types: "presentation::controls::GuiControl", "presentation::compositions::GuiGraphicsComposition", "presentation::controls::GuiComponent".
+(7, 8): Precompile: Referece name "self" conflict with an existing named object.
+(10, 10): Precompile: Property "ControlTemplate" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using binding "-bind". Because it is a non-bindable constructor argument.
+(11, 10): Precompile: Property "ViewModelContext" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using binding "-bind". Because it is a constructor argument, and this binding does not apply to any constructor argument.
+(12, 10): Precompile: Property "Text" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using an unexisting binding "-NotExists".
+(13, 10): Precompile: Binder "bind" requires the text value of property "SelectedCell".
+(18, 15): The appropriate IGuiInstanceEventBinder of binding "-NotExists" cannot be found.
+(19, 10): Precompile: When you assign to property "Columns" of type "presentation::compositions::GuiTableComposition", the following missing properties are required: "Rows".
+(20, 12): Precompile: Reference name "notAReferenceType" cannot be added to a non-reference instance of type "presentation::compositions::GuiCellOption".
+(20, 12): Precompile: Type "presentation::compositions::GuiCellOption" cannot be used to create an instance.
+(21, 29): Unrecognizable token: "!".
+(25, 8): Precompile: Missing constructor argument "ListControl" of type "presentation::controls::GuiComboBox".
+(27, 8): Precompile: Property "" of type "MainWindow" does not accept a value of type "system::String" because it only accepts value of the following types: "presentation::controls::GuiControl", "presentation::compositions::GuiGraphicsComposition", "presentation::controls::GuiComponent".

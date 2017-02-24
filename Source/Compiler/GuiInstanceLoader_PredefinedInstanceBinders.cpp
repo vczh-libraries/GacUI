@@ -220,7 +220,7 @@ GuiFormatInstanceBinder (format)
 				{
 					if (error->codeRange.start.row >= 0)
 					{
-						error->codeRange.start.column += 7; // bind($"
+						error->codeRange.start.column -= 7; // bind($"
 					}
 				}
 				GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, position);

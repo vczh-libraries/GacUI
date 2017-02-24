@@ -166,6 +166,29 @@
       <Project>{407401eb-c968-42b2-aee9-47aa1658e1ff}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml.txt" />
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml.txt" />
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt" />
+    <Text Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml.txt" />
+    <Text Include="..\..\Resources\Resource.NotExists.xml.txt" />
+    <Text Include="..\..\Resources\Resource.WrongDoc.xml.txt" />
+    <Text Include="..\..\Resources\Resource.WrongInstance.xml.txt" />
+    <Text Include="..\..\Resources\Resource.WrongInstanceStyle.xml.txt" />
+    <Text Include="..\..\Resources\Resource.WrongSyntax.xml.txt" />
+    <Text Include="..\..\Resources\Resource.WrongSyntax2.xml.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml" />
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml" />
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml" />
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml" />
+    <Xml Include="..\..\Resources\Resource.WrongDoc.xml" />
+    <Xml Include="..\..\Resources\Resource.WrongInstance.xml" />
+    <Xml Include="..\..\Resources\Resource.WrongInstanceStyle.xml" />
+    <Xml Include="..\..\Resources\Resource.WrongSyntax.xml" />
+    <Xml Include="..\..\Resources\Resource.WrongSyntax2.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

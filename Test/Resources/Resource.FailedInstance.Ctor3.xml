@@ -4,11 +4,7 @@
       <ref.Parameter Name="textBox" Class="SinglelineTextBox"/>
       <ref.Parameter Name="self" Class="presentation::controls::GuiSinglelineTextBox"/>
       <Window ref.Name="self" Border="Not A Bool" TooltipControl="Not Serializable" NotExists="">
-        <att.BoundsComposition-set AlignmentToParent="Not A Margin">
-          <att.PreferredMinSize>
-            <Size ref.Name="notAReferenceType">x:10 y:10</Size>
-          </att.PreferredMinSize>
-        </att.BoundsComposition-set>
+        <att.BoundsComposition-set AlignmentToParent="Not A Margin"/>
         <Button ref.Name="self"/>
 
         <BindableDataGrid>
@@ -22,7 +18,8 @@
 
         <Table ev.BoundsChanged-NotExists="Binder Not Exists">
           <att.Columns>
-            <CellOption/>
+            <CellOption ref.Name="notAReferenceType"/>
+            <CellOption>Wrong!</CellOption>
           </att.Columns>
         </Table>
 

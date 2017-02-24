@@ -69,7 +69,17 @@ Converter
 			}
 			else if (typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
 			{
+				vint oldErrorCount = errors.Count();
 				auto valueExpr = Workflow_ParseExpression(L"{" + textValue + L"}", errors);
+				for (vint i = oldErrorCount; i < errors.Count(); i++)
+				{
+					auto error = errors[i];
+					if (error->codeRange.start.row >= 0)
+					{
+						errors[i]->codeRange.start.column -= 1; // {
+					}
+				}
+
 				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 
 				auto infer = MakePtr<WfInferExpression>();
@@ -80,7 +90,17 @@ Converter
 			}
 			else if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 			{
+				vint oldErrorCount = errors.Count();
 				auto valueExpr = Workflow_ParseExpression(L"(" + textValue + L")", errors);
+				for (vint i = oldErrorCount; i < errors.Count(); i++)
+				{
+					auto error = errors[i];
+					if (error->codeRange.start.row >= 0)
+					{
+						errors[i]->codeRange.start.column -= 1; // (
+					}
+				}
+
 				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 
 				auto infer = MakePtr<WfInferExpression>();
