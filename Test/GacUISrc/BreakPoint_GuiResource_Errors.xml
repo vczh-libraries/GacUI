@@ -6,8 +6,9 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
-      <IsCondition>0</IsCondition>
+      <IsCondition>1</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
       <LocationType>SourceLocation</LocationType>
       <TextPosition>
         <Version>4</Version>
@@ -16,7 +17,7 @@
         <StartColumn>0</StartColumn>
         <EndLine>711</EndLine>
         <EndColumn>117</EndColumn>
-        <MarkerId>69</MarkerId>
+        <MarkerId>41</MarkerId>
         <IsLineBased>1</IsLineBased>
         <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
         <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
@@ -106,8 +107,9 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
-      <IsCondition>0</IsCondition>
+      <IsCondition>1</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
       <LocationType>SourceLocation</LocationType>
       <TextPosition>
         <Version>4</Version>
@@ -116,7 +118,7 @@
         <StartColumn>0</StartColumn>
         <EndLine>741</EndLine>
         <EndColumn>118</EndColumn>
-        <MarkerId>69</MarkerId>
+        <MarkerId>41</MarkerId>
         <IsLineBased>1</IsLineBased>
         <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
         <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
@@ -518,8 +520,9 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
-      <IsCondition>0</IsCondition>
+      <IsCondition>1</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
       <LocationType>SourceLocation</LocationType>
       <TextPosition>
         <Version>4</Version>
@@ -528,7 +531,7 @@
         <StartColumn>0</StartColumn>
         <EndLine>121</EndLine>
         <EndColumn>91</EndColumn>
-        <MarkerId>69</MarkerId>
+        <MarkerId>41</MarkerId>
         <IsLineBased>1</IsLineBased>
         <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
         <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
@@ -568,8 +571,9 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
-      <IsCondition>0</IsCondition>
+      <IsCondition>1</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
       <LocationType>SourceLocation</LocationType>
       <TextPosition>
         <Version>4</Version>
@@ -578,7 +582,7 @@
         <StartColumn>0</StartColumn>
         <EndLine>129</EndLine>
         <EndColumn>91</EndColumn>
-        <MarkerId>69</MarkerId>
+        <MarkerId>41</MarkerId>
         <IsLineBased>1</IsLineBased>
         <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
         <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
@@ -618,8 +622,9 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
-      <IsCondition>0</IsCondition>
+      <IsCondition>1</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
       <LocationType>SourceLocation</LocationType>
       <TextPosition>
         <Version>4</Version>
@@ -628,7 +633,7 @@
         <StartColumn>0</StartColumn>
         <EndLine>170</EndLine>
         <EndColumn>91</EndColumn>
-        <MarkerId>69</MarkerId>
+        <MarkerId>41</MarkerId>
         <IsLineBased>1</IsLineBased>
         <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
         <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
@@ -668,8 +673,9 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
-      <IsCondition>0</IsCondition>
+      <IsCondition>1</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
       <LocationType>SourceLocation</LocationType>
       <TextPosition>
         <Version>4</Version>
@@ -678,7 +684,7 @@
         <StartColumn>0</StartColumn>
         <EndLine>225</EndLine>
         <EndColumn>91</EndColumn>
-        <MarkerId>69</MarkerId>
+        <MarkerId>41</MarkerId>
         <IsLineBased>1</IsLineBased>
         <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
         <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
@@ -718,8 +724,9 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
-      <IsCondition>0</IsCondition>
+      <IsCondition>1</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
       <LocationType>SourceLocation</LocationType>
       <TextPosition>
         <Version>4</Version>
@@ -728,7 +735,7 @@
         <StartColumn>0</StartColumn>
         <EndLine>251</EndLine>
         <EndColumn>91</EndColumn>
-        <MarkerId>69</MarkerId>
+        <MarkerId>41</MarkerId>
         <IsLineBased>1</IsLineBased>
         <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
         <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
@@ -22956,6 +22963,108 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
+      <IsCondition>1</IsCondition>
+      <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
+      <LocationType>SourceLocation</LocationType>
+      <TextPosition>
+        <Version>4</Version>
+        <FileName>C:\Code\VczhLibraries\GacUI\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateCreating.cpp</FileName>
+        <startLine>75</startLine>
+        <StartColumn>0</StartColumn>
+        <EndLine>75</EndLine>
+        <EndColumn>101</EndColumn>
+        <MarkerId>41</MarkerId>
+        <IsLineBased>1</IsLineBased>
+        <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
+        <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
+        <Checksum>
+          <Version>1</Version>
+          <Algorithm>00000000-0000-0000-0000-000000000000</Algorithm>
+          <ByteCount>0</ByteCount>
+          <Bytes />
+        </Checksum>
+      </TextPosition>
+      <NamedLocationText>class WorkflowGenerateCreatingVisitor::GetArgumentInfo(parsing::ParsingTextPos attPosition, GuiValueRepr* repr)</NamedLocationText>
+      <NamedLocationLine>42</NamedLocationLine>
+      <NamedLocationColumn>0</NamedLocationColumn>
+      <HitCountType>NoHitCount</HitCountType>
+      <HitCountTarget>1</HitCountTarget>
+      <Language>3a12d0b7-c26c-11d0-b442-00a0244a1dd2</Language>
+      <IsMapped>0</IsMapped>
+      <BreakpointType>PendingBreakpoint</BreakpointType>
+      <AddressLocation>
+        <Version>0</Version>
+        <MarkerId>0</MarkerId>
+        <FunctionLine>0</FunctionLine>
+        <FunctionColumn>0</FunctionColumn>
+        <Language>00000000-0000-0000-0000-000000000000</Language>
+      </AddressLocation>
+      <DataCount>4</DataCount>
+      <IsTracepointActive>0</IsTracepointActive>
+      <IsBreakWhenHit>1</IsBreakWhenHit>
+      <IsRunMacroWhenHit>0</IsRunMacroWhenHit>
+      <UseChecksum>1</UseChecksum>
+      <Labels />
+      <RequestRemapped>0</RequestRemapped>
+      <parentIndex>-1</parentIndex>
+    </Breakpoint>
+    <Breakpoint>
+      <Version>15</Version>
+      <IsEnabled>1</IsEnabled>
+      <IsVisible>1</IsVisible>
+      <IsEmulated>0</IsEmulated>
+      <IsCondition>1</IsCondition>
+      <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
+      <LocationType>SourceLocation</LocationType>
+      <TextPosition>
+        <Version>4</Version>
+        <FileName>C:\Code\VczhLibraries\GacUI\Source\Compiler\GuiInstanceRepresentation.cpp</FileName>
+        <startLine>477</startLine>
+        <StartColumn>0</StartColumn>
+        <EndLine>477</EndLine>
+        <EndColumn>92</EndColumn>
+        <MarkerId>41</MarkerId>
+        <IsLineBased>1</IsLineBased>
+        <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
+        <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
+        <Checksum>
+          <Version>1</Version>
+          <Algorithm>00000000-0000-0000-0000-000000000000</Algorithm>
+          <ByteCount>0</ByteCount>
+          <Bytes />
+        </Checksum>
+      </TextPosition>
+      <NamedLocationText>LoadCtor(Ptr&lt;GuiResourceItem&gt; resource, Ptr&lt;parsing::xml::XmlElement&gt; xml, GuiResourceError::List&amp; errors)</NamedLocationText>
+      <NamedLocationLine>5</NamedLocationLine>
+      <NamedLocationColumn>0</NamedLocationColumn>
+      <HitCountType>NoHitCount</HitCountType>
+      <HitCountTarget>1</HitCountTarget>
+      <Language>3a12d0b7-c26c-11d0-b442-00a0244a1dd2</Language>
+      <IsMapped>0</IsMapped>
+      <BreakpointType>PendingBreakpoint</BreakpointType>
+      <AddressLocation>
+        <Version>0</Version>
+        <MarkerId>0</MarkerId>
+        <FunctionLine>0</FunctionLine>
+        <FunctionColumn>0</FunctionColumn>
+        <Language>00000000-0000-0000-0000-000000000000</Language>
+      </AddressLocation>
+      <DataCount>4</DataCount>
+      <IsTracepointActive>0</IsTracepointActive>
+      <IsBreakWhenHit>1</IsBreakWhenHit>
+      <IsRunMacroWhenHit>0</IsRunMacroWhenHit>
+      <UseChecksum>1</UseChecksum>
+      <Labels />
+      <RequestRemapped>0</RequestRemapped>
+      <parentIndex>-1</parentIndex>
+    </Breakpoint>
+    <Breakpoint>
+      <Version>15</Version>
+      <IsEnabled>1</IsEnabled>
+      <IsVisible>1</IsVisible>
+      <IsEmulated>0</IsEmulated>
       <IsCondition>0</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
       <LocationType>SourceLocation</LocationType>
@@ -23556,8 +23665,9 @@
       <IsEnabled>1</IsEnabled>
       <IsVisible>1</IsVisible>
       <IsEmulated>0</IsEmulated>
-      <IsCondition>0</IsCondition>
+      <IsCondition>1</IsCondition>
       <ConditionType>WhenTrue</ConditionType>
+      <ConditionText>parsingErrors.count &gt; 0</ConditionText>
       <LocationType>SourceLocation</LocationType>
       <TextPosition>
         <Version>4</Version>
@@ -23566,7 +23676,7 @@
         <StartColumn>0</StartColumn>
         <EndLine>300</EndLine>
         <EndColumn>66</EndColumn>
-        <MarkerId>69</MarkerId>
+        <MarkerId>41</MarkerId>
         <IsLineBased>1</IsLineBased>
         <IsDocumentPathNotFound>0</IsDocumentPathNotFound>
         <ShouldUpdateTextSpan>1</ShouldUpdateTextSpan>
