@@ -584,14 +584,14 @@ WorkflowReferenceNamesVisitor
 				auto type = GetTypeDescriptor(parameter->className.ToString());
 				if (!type)
 				{
-					errors.Add(GuiResourceError(resolvingResult.resource, parameter->tagPosition,
+					errors.Add(GuiResourceError(resolvingResult.resource, parameter->classPosition,
 						L"Precompile: Cannot find type \"" +
 						parameter->className.ToString() +
 						L"\"."));
 				}
 				else if (resolvingResult.typeInfos.Keys().Contains(parameter->name))
 				{
-					errors.Add(GuiResourceError(resolvingResult.resource, parameter->tagPosition,
+					errors.Add(GuiResourceError(resolvingResult.resource, parameter->classPosition,
 						L"Precompile: Parameter \"" +
 						parameter->name.ToString() +
 						L"\" conflict with an existing named object."));

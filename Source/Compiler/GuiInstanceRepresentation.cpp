@@ -434,6 +434,8 @@ GuiInstanceContext
 
 								Ptr<GuiTextRepr> value = new GuiTextRepr;
 								value->text = att->value.value;
+								value->tagPosition = att->value.codeRange.start;
+								value->tagPosition.column += 1;
 								sv->values.Add(value);
 							}
 						}
