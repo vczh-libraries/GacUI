@@ -1,0 +1,20 @@
+i1 # .\Resource.FailedInstance.Control.xml
+(4, 8): Precompile: Property "BoundsComposition" of type "I1" is not assignable.
+(8, 45): Unrecognizable token: "!".
+(9, 10): Precompile: Type "T1" will never be tried, because "T1", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.
+(11, 26): Precompile: env.ItemType must be specified before assigning "NoItemType" to property "TextProperty" of type "presentation::controls::GuiBindableTextList".
+(12, 10): Precompile: To use type "T2" as a control template or item template, its constructor cannot have more than one parameter.
+(14, 45): Unrecognizable token: "!".
+(15, 10): Precompile: To use type "presentation::GuiImageData" as a control template or item template, it should have exactly one constructor.
+(18, 10): Precompile: Type "NotExists", which is assigned to contructor parameter "ItemTemplate of type "presentation::controls::GuiBindableTextList", does not exist.
+(21, 42): Unrecognizable token: "!".
+(22, 42): Unrecognizable token: "!".
+(25, 25): Precompile: "Wrong URI" is not a valid resource uri.
+(26, 10): Precompile: "T3;T3", which is assigned to contructor parameter "ControlTemplate of type "presentation::controls::GuiLabel", is illegal because control template should not have multiple choices.
+(28, 31): Unrecognizable token: "!".
+(29, 10): Precompile: Type "NotExists", which is assigned to contructor parameter "ControlTemplate of type "presentation::controls::GuiLabel", does not exist.
+(31, 18): Precompile: The value of property "View" of type "presentation::controls::GuiListView" is not in a correct format: "BigIcon | SmallIcon | List | Tile | Information | Detail".
+(31, 49): Unrecognizable token: "")".
+(34, 19): Unrecognizable token: "!".
+(47, 16): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".
+(48, 16): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".

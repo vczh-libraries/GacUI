@@ -1,0 +1,74 @@
+<Resource>
+  <Instance name="i1">
+    <Instance ref.Class="I1">
+      <Window>
+        <att.BoundsComposition>
+          <Table/>
+        </att.BoundsComposition>
+        
+        <BindableTextList TextProperty="Wrong!">
+          <att.ItemTemplate>T1;T1</att.ItemTemplate>
+        </BindableTextList>
+        <BindableTextList TextProperty="NoItemType">
+          <att.ItemTemplate>T2</att.ItemTemplate>
+        </BindableTextList>
+        <BindableTextList env.ItemType="Wrong!" TextProperty="WrongItemType">
+          <att.ItemTemplate>presentation::GuiImageData</att.ItemTemplate>
+        </BindableTextList>
+        <BindableTextList>
+          <att.ItemTemplate>NotExists</att.ItemTemplate>
+        </BindableTextList>
+
+        <BindableDataGrid Text-eval="Wrong!">
+          <att.ViewModelContext-eval>Wrong!</att.ViewModelContext-eval>
+        </BindableDataGrid>
+
+        <Label Text-uri="Wrong URI">
+          <att.ControlTemplate>T3;T3</att.ControlTemplate>
+        </Label>
+        <Label Text-bind="Wrong!">
+          <att.ControlTemplate>NotExists</att.ControlTemplate>
+        </Label>
+        <ListView View="NotExists" Text-format="&quot;">
+          <ev.SelectionChanged-eval>
+            <![CDATA[
+              Wrong!
+            ]]>
+          </ev.SelectionChanged-eval>
+        </ListView>
+
+        <Table>
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:MinSize</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:x column:y"/>
+          <Cell Site="a:b"/>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+
+  <Instance name="t1">
+    <Instance ref.Class="T1">
+      <ControlTemplate/>
+    </Instance>
+  </Instance>
+
+  <Instance name="t2">
+    <Instance ref.Class="T2">
+      <ref.Parameter Name="a" Class="T1"/>
+      <ref.Parameter Name="b" Class="T1"/>
+      <ControlTemplate/>
+    </Instance>
+  </Instance>
+
+  <Instance name="t3">
+    <Instance ref.Class="T3">
+      <LabelTemplate/>
+    </Instance>
+  </Instance>
+</Resource>

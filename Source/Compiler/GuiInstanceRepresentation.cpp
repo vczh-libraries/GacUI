@@ -415,6 +415,7 @@ GuiInstanceContext
 								value->value = att->value.value;
 								value->attPosition = att->codeRange.start;
 								value->valuePosition = att->value.codeRange.start;
+								value->valuePosition.column += 1;
 								setter->environmentVariables.Add(GlobalStringKey::Get(name->name), value);
 							}
 						}
@@ -453,6 +454,7 @@ GuiInstanceContext
 								value->value = att->value.value;
 								value->attPosition = att->codeRange.start;
 								value->valuePosition = att->value.codeRange.start;
+								value->valuePosition.column += 1;
 								setter->eventHandlers.Add(GlobalStringKey::Get(name->name), value);
 							}
 						}

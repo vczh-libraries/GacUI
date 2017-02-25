@@ -277,7 +277,7 @@ GuiListViewInstanceLoader
 							errors.Add(GuiResourceError(resolvingResult.resource, viewArgument.attPosition,
 								L"Precompile: The value of property \"View\" of type \"" +
 								typeInfo.typeName.ToString() +
-								L"\" is not in a right format."));
+								L"\" is not in a correct format: \"BigIcon | SmallIcon | List | Tile | Information | Detail\"."));
 						FINISH_VIEW_PROPERTY:;
 						}
 

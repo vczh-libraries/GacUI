@@ -438,7 +438,7 @@ GuiCellCompositionInstanceLoader
 								errors.Add(GuiResourceError(resolvingResult.resource, attPosition,
 									L"Precompile: The value of property \"Site\" of type \"" +
 									typeInfo.typeName.ToString() +
-									L"\" is not in a right format: \"row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]\"."));
+									L"\" is not in a correct format: \"row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]\"."));
 								continue;
 							}
 						FINISH_SITE_PROPERTY:;
