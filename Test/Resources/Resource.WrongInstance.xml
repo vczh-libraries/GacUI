@@ -37,4 +37,9 @@
       </Ctor>
     </Instance>
   </Instance>
+  <Instance name="Instance4">
+    <Instance>
+      <a-b-c/>
+    </Instance>
+  </Instance>
 </Resource>

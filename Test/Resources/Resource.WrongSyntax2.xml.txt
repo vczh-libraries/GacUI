@@ -4,6 +4,7 @@
 (9, 2): Duplicated resource folder name "Instances".
 (10, 2): A resource folder should have a name.
 (12, 2): Unknown resource type "Unknown".
+(26, 4): Script should be contained in a CDATA section.
 Instances # .\Resource.WrongSyntax2.xml
 (7, 4): Duplicated resource item name "Text".
 Instances/Instance # .\Resource.WrongSyntax.xml

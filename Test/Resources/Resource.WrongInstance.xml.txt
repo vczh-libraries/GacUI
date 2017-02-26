@@ -21,3 +21,5 @@ Instance3 # .\Resource.WrongInstance.xml
 (35, 8): Failed to parse an element name "a-b-c".
 (35, 9): Failed to parse an element name "a-b-c".
 (35, 9): Failed to parse an element name "a-b-c".
+Instance4 # .\Resource.WrongInstance.xml
+(41, 7): Failed to parse an element name "a-b-c".

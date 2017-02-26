@@ -23,4 +23,7 @@
       <Data/>
     </Image>
   </Folder>
+  <Script>
+    <Workflow>Not A CDATA Section</Workflow>
+  </Script>
 </Resource>
