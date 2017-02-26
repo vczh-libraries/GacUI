@@ -106,6 +106,7 @@ TEST_CASE(TestResource_FailedInstance_Ctor1)
 TEST_CASE(TestResource_FailedInstance_Ctor2)
 {
 	LoadResource(L"Resource.FailedInstance.Ctor2.xml", true);
+	LoadResource(L"Resource.FailedInstance.Ctor2_r.xml", true);
 }
 
 TEST_CASE(TestResource_FailedInstance_Ctor3)

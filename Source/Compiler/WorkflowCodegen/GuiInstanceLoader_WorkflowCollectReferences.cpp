@@ -253,7 +253,7 @@ WorkflowReferenceNamesVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, L"[[INTERNAL-ERROR] ]" + errorPrefix + L" does not support the \"-set\" binding."));
+								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, L"[INTERNAL-ERROR] " + errorPrefix + L" does not support the \"-set\" binding."));
 							}
 						}
 						else if (setter->binding != GlobalStringKey::Empty)

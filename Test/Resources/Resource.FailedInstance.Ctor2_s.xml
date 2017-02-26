@@ -1,0 +1,8 @@
+<Styles>
+  <Style ref.Path="/Window">
+    <att.NotExists-set/>
+    <att.Text-set/>
+    <ev.NotExists>window_NotExists</ev.NotExists>
+    <Unknown/>
+  </Style>
+</Styles>

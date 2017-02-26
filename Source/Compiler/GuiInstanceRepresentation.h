@@ -38,8 +38,9 @@ Instance Representation
 			};
 
 			bool									fromStyle = false;
-
 			GuiResourceTextPos						tagPosition;
+
+			void									CloneBody(Ptr<GuiValueRepr> repr);
 
 			virtual void							Accept(IVisitor* visitor) = 0;
 			virtual Ptr<GuiValueRepr>				Clone() = 0;
@@ -83,6 +84,7 @@ Instance Representation
 			struct EnvVarValue : public Object, public Description<EnvVarValue>
 			{
 				WString								value;
+				bool								fromStyle = false;
 				GuiResourceTextPos					attPosition;
 				GuiResourceTextPos					valuePosition;
 			};

@@ -15,13 +15,23 @@ namespace vl
 		using namespace stream;
 
 /***********************************************************************
+GuiValueRepr
+***********************************************************************/
+
+		void GuiValueRepr::CloneBody(Ptr<GuiValueRepr> repr)
+		{
+			repr->fromStyle = fromStyle;
+			repr->tagPosition = tagPosition;
+		}
+
+/***********************************************************************
 GuiTextRepr
 ***********************************************************************/
 
 		Ptr<GuiValueRepr> GuiTextRepr::Clone()
 		{
 			auto repr = MakePtr<GuiTextRepr>();
-			repr->fromStyle = fromStyle;
+			GuiValueRepr::CloneBody(repr);
 			repr->text = text;
 			return repr;
 		}
@@ -42,26 +52,58 @@ GuiAttSetterRepr
 
 		void GuiAttSetterRepr::CloneBody(Ptr<GuiAttSetterRepr> repr)
 		{
-			CopyFrom(repr->eventHandlers, eventHandlers);
+			GuiValueRepr::CloneBody(repr);
+
 			FOREACH_INDEXER(GlobalStringKey, name, index, setters.Keys())
 			{
-				Ptr<SetterValue> src = setters.Values()[index];
-				Ptr<SetterValue> dst = new SetterValue;
+				auto src = setters.Values()[index];
+				auto dst = MakePtr<SetterValue>();
+
 				dst->binding = src->binding;
+				dst->attPosition = src->attPosition;
 				FOREACH(Ptr<GuiValueRepr>, value, src->values)
 				{
 					dst->values.Add(value->Clone());
 				}
+
 				repr->setters.Add(name, dst);
 			}
+
+			FOREACH_INDEXER(GlobalStringKey, name, index, eventHandlers.Keys())
+			{
+				auto src = eventHandlers.Values()[index];
+				auto dst = MakePtr<EventValue>();
+
+				dst->binding = src->binding;
+				dst->value = src->value;
+				dst->fromStyle = src->fromStyle;
+				dst->attPosition = src->attPosition;
+				dst->valuePosition = src->valuePosition;
+
+				repr->eventHandlers.Add(name, dst);
+			}
+
+			FOREACH_INDEXER(GlobalStringKey, name, index, environmentVariables.Keys())
+			{
+				auto src = environmentVariables.Values()[index];
+				auto dst = MakePtr<EnvVarValue>();
+
+				dst->value = src->value;
+				dst->fromStyle = src->fromStyle;
+				dst->attPosition = src->attPosition;
+				dst->valuePosition = src->valuePosition;
+
+				repr->environmentVariables.Add(name, dst);
+			}
+
 			repr->instanceName = instanceName;
 		}
 
 		Ptr<GuiValueRepr> GuiAttSetterRepr::Clone()
 		{
 			auto repr = MakePtr<GuiAttSetterRepr>();
+			GuiAttSetterRepr::CloneBody(repr);
 			repr->fromStyle = fromStyle;
-			CloneBody(repr);
 			return repr;
 		}
 
@@ -173,11 +215,11 @@ GuiConstructorRepr
 		Ptr<GuiValueRepr> GuiConstructorRepr::Clone()
 		{
 			auto repr = MakePtr<GuiConstructorRepr>();
+			GuiAttSetterRepr::CloneBody(repr);
 			repr->fromStyle = fromStyle;
 			repr->typeNamespace = typeNamespace;
 			repr->typeName = typeName;
 			repr->styleName = styleName;
-			CloneBody(repr);
 			return repr;
 		}
 
@@ -836,6 +878,10 @@ GuiInstanceStyle
 						}
 					}
 					FOREACH(Ptr<GuiAttSetterRepr::EventValue>, value, repr->eventHandlers.Values())
+					{
+						value->fromStyle = true;
+					}
+					FOREACH(Ptr<GuiAttSetterRepr::EnvVarValue>, value, repr->environmentVariables.Values())
 					{
 						value->fromStyle = true;
 					}
