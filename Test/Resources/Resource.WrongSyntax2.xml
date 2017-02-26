@@ -19,5 +19,8 @@
     <InstanceStyle name="InstanceStyle" content="File">Resource.NotExists.xml</InstanceStyle>
     <Text name="Text" content="File">Resource.NotExists.xml</Text>
     <Image name="Image" content="File">Resource.NotExists.xml</Image>
+    <Image name="Image2">
+      <Data/>
+    </Image>
   </Folder>
 </Resource>

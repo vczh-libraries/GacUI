@@ -518,13 +518,10 @@ GuiResourceFolder
 							if (!typeResolver->DirectLoadXml())
 							{
 								WString preloadType = typeResolver->IndirectLoad()->GetPreloadType();
-								if (preloadType != L"")
+								preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
+								if (!preloadResolver)
 								{
-									preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
-									if (!preloadResolver)
-									{
-										errors.Add(GuiResourceError(this, element->codeRange.start, L"Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
-									}
+									errors.Add(GuiResourceError(this, element->codeRange.start, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 								}
 							}
 						}
@@ -572,13 +569,13 @@ GuiResourceFolder
 									else
 									{
 										item->SetContent(typeResolver->GetType(), nullptr);
-										errors.Add(GuiResourceError(this, element->codeRange.start, L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
+										errors.Add(GuiResourceError(this, element->codeRange.start, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
 									}
 								}
 							}
 							else
 							{
-								errors.Add(GuiResourceError(this, element->codeRange.start, L"Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
+								errors.Add(GuiResourceError(this, element->codeRange.start, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 							}
 						}
 
@@ -726,14 +723,14 @@ GuiResourceFolder
 								preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
 								if (!preloadResolver)
 								{
-									errors.Add(GuiResourceError(item, L"Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
+									errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 								}
 							}
 						}
 					}
 					else
 					{
-						errors.Add(GuiResourceError(item, L"Unknown resource type \"" + type + L"\"."));
+						errors.Add(GuiResourceError(item, L"[BINARY] Unknown resource type \"" + type + L"\"."));
 					}
 
 					if(typeResolver && preloadResolver)
@@ -765,13 +762,13 @@ GuiResourceFolder
 								else
 								{
 									item->SetContent(typeResolver->GetType(), nullptr);
-									errors.Add(GuiResourceError(item, L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
+									errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
 								}
 							}
 						}
 						else
 						{
-							errors.Add(GuiResourceError(item, L"Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
+							errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 						}
 					}
 
@@ -782,7 +779,7 @@ GuiResourceFolder
 				}
 				else
 				{
-					errors.Add(GuiResourceError(this, L"Duplicated resource item name \"" + name + L"\"."));
+					errors.Add(GuiResourceError(this, L"[BINARY] Duplicated resource item name \"" + name + L"\"."));
 				}
 			}
 
@@ -1080,12 +1077,12 @@ GuiResource
 					}
 					else
 					{
-						errors.Add(GuiResourceError(item, L"Resource type \"" + type + L"\" is not a indirect load resource type."));
+						errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Resource type \"" + type + L"\" is not a indirect load resource type."));
 					}
 				}
 				else
 				{
-					errors.Add(GuiResourceError(item, L"Unknown resource type \"" + type + L"\"."));
+					errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Unknown resource type \"" + type + L"\"."));
 				}
 			}
 		}

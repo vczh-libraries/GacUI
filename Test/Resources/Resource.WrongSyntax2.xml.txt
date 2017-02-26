@@ -16,6 +16,8 @@ NotExistsCollection # .\Resource.WrongSyntax2.xml
 (14, 4): Failed to load file ".\Resource.NotExists.xml".
 NotExistsCollection/Image # .\Resource.NotExists.xml
 (-2, -2): Failed to load file ".\Resource.NotExists.xml".
+NotExistsCollection/Image2 # .\Resource.WrongSyntax2.xml
+(-2, -2): Image should load from file.
 NotExistsCollection/Instance # .\Resource.NotExists.xml
 (-2, -2): Failed to load file ".\Resource.NotExists.xml".
 NotExistsCollection/InstanceStyle # .\Resource.NotExists.xml

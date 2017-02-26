@@ -79,7 +79,7 @@ Image Type Resolver (Image)
 				else
 				{
 					errors.Add(GuiResourceError(resource, L"Failed to load file \"" + path + L"\"."));
-					return 0;
+					return nullptr;
 				}
 			}
 
@@ -96,8 +96,8 @@ Image Type Resolver (Image)
 				}
 				else
 				{
-					errors.Add(GuiResourceError(resource, L"Failed to load an image from binary data in a stream."));
-					return 0;
+					errors.Add(GuiResourceError(resource, L"[BINARY] Failed to load an image from binary data in a stream."));
+					return nullptr;
 				}
 			}
 		};
@@ -298,6 +298,10 @@ Xml Type Resolver (Xml)
 
 					List<Ptr<ParsingError>> parsingErrors;
 					auto xml = parser->TypedParse(text, parsingErrors);
+					FOREACH(Ptr<ParsingError>, error, parsingErrors)
+					{
+						error->errorMessage = L"[BINARY] " + error->errorMessage;
+					}
 					GuiResourceError::Transform(resource, errors, parsingErrors);
 					return xml;
 				}
