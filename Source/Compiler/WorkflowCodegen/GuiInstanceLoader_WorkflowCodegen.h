@@ -135,6 +135,26 @@ WorkflowCompiler (Compile)
 			resolvingResult.envVars.Remove(envVar, value.Obj());\
 		}\
 
+/***********************************************************************
+WorkflowCompiler (ScriptPosition)
+***********************************************************************/
+
+		namespace types
+		{
+			class ScriptPosition : public Object, public Description<ScriptPosition>
+			{
+				using NodePositionMap = collections::Dictionary<parsing::ParsingTreeCustomBase*, GuiResourceTextPos>;
+			public:
+				NodePositionMap									nodePositions;
+			};
+		}
+
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node);
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node);
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node);
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node);
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node);
+
 	}
 }
 

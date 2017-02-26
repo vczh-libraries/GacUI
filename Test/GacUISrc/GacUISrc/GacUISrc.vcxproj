@@ -300,6 +300,7 @@
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowScriptPosition.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiApplication.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiBasicControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiContainerControls.cpp" />
