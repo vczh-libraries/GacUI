@@ -223,14 +223,14 @@ GuiInstanceContext
 					{
 						Ptr<GuiTextRepr> value = new GuiTextRepr;
 						value->text = text->content.value;
-						value->tagPosition = text->content.codeRange.start;
+						value->tagPosition = { {resource},text->content.codeRange.start };
 						values.Add(value);
 					}
 					else if (Ptr<XmlCData> text = xml->subNodes[0].Cast<XmlCData>())
 					{
 						Ptr<GuiTextRepr> value = new GuiTextRepr;
 						value->text = text->content.value;
-						value->tagPosition = text->content.codeRange.start;
+						value->tagPosition = { {resource},text->content.codeRange.start };
 						value->tagPosition.column += 9; // <![CDATA[
 						values.Add(value);
 					}
@@ -241,7 +241,7 @@ GuiInstanceContext
 				{
 					List<Ptr<ParsingError>> parsingErrors;
 					auto name = parser->TypedParse(element->name.value, parsingErrors);
-					GuiResourceError::Transform(resource, errors, parsingErrors, element->codeRange.start);
+					GuiResourceError::Transform({ resource }, errors, parsingErrors, element->codeRange.start);
 					if (name)
 					{
 						if (name->IsCtorName())
@@ -255,7 +255,7 @@ GuiInstanceContext
 						}
 						else if (!name->IsPropertyElementName() && !name->IsEventElementName())
 						{
-							errors.Add(GuiResourceError(resource, element->codeRange.start, L"Unknown element name: \"" + element->name.value + L"\"."));
+							errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"Unknown element name: \"" + element->name.value + L"\"."));
 						}
 					}
 				}
@@ -280,7 +280,7 @@ GuiInstanceContext
 				{
 					List<Ptr<ParsingError>> parsingErrors;
 					auto name = parser->TypedParse(element->name.value, parsingErrors);
-					GuiResourceError::Transform(resource, errors, parsingErrors, element->name.codeRange.start);
+					GuiResourceError::Transform({ resource }, errors, parsingErrors, element->name.codeRange.start);
 					if (name)
 					{
 						if (name->IsPropertyElementName())
@@ -288,13 +288,13 @@ GuiInstanceContext
 							// collect a value as a new attribute setter
 							if (setters.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(GuiResourceError(resource, element->codeRange.start, L"Duplicated property \"" + name->name + L"\"."));
+								errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"Duplicated property \"" + name->name + L"\"."));
 							}
 							else
 							{
 								Ptr<GuiAttSetterRepr::SetterValue> sv = new GuiAttSetterRepr::SetterValue;
 								sv->binding = GlobalStringKey::Get(name->binding);
-								sv->attPosition = element->codeRange.start;
+								sv->attPosition = { {resource},element->codeRange.start };
 
 								if (name->binding == L"set")
 								{
@@ -330,7 +330,7 @@ GuiInstanceContext
 				{
 					List<Ptr<ParsingError>> parsingErrors;
 					auto name = parser->TypedParse(element->name.value, parsingErrors);
-					GuiResourceError::Transform(resource, errors, parsingErrors, element->name.codeRange.start);
+					GuiResourceError::Transform({ resource }, errors, parsingErrors, element->name.codeRange.start);
 					if (name)
 					{
 						if (name->IsEventElementName())
@@ -338,7 +338,7 @@ GuiInstanceContext
 							// collect a value as an event setter
 							if (eventHandlers.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(GuiResourceError(resource, element->codeRange.start, L"Duplicated event \"" + name->name + L"\"."));
+								errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"Duplicated event \"" + name->name + L"\"."));
 							}
 							else
 							{
@@ -350,12 +350,12 @@ GuiInstanceContext
 										auto value = MakePtr<GuiAttSetterRepr::EventValue>();
 										value->binding = GlobalStringKey::Get(name->binding);
 										value->value = text->content.value;
-										value->attPosition = element->codeRange.start;
-										value->valuePosition = text->content.codeRange.start;
+										value->attPosition = { {resource},element->codeRange.start };
+										value->valuePosition = { {resource},text->content.codeRange.start };
 										eventHandlers.Add(GlobalStringKey::Get(name->name), value);
 										if (text->content.codeRange.start.row != text->content.codeRange.end.row)
 										{
-											errors.Add(GuiResourceError(resource, element->codeRange.start, L"Multiple lines script should be contained in a CDATA section."));
+											errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"Multiple lines script should be contained in a CDATA section."));
 										}
 										goto EVENT_SUCCESS;
 									}
@@ -364,14 +364,14 @@ GuiInstanceContext
 										auto value = MakePtr<GuiAttSetterRepr::EventValue>();
 										value->binding = GlobalStringKey::Get(name->binding);
 										value->value = text->content.value;
-										value->attPosition = element->codeRange.start;
-										value->valuePosition = text->content.codeRange.start;
+										value->attPosition = { {resource},element->codeRange.start };
+										value->valuePosition = { {resource},text->content.codeRange.start };
 										value->valuePosition.column += 9; // <![CDATA[
 										eventHandlers.Add(GlobalStringKey::Get(name->name), value);
 									}
 									goto EVENT_SUCCESS;
 								}
-								errors.Add(GuiResourceError(resource, element->codeRange.start, L"Event script should be contained in a text or CDATA section."));
+								errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"Event script should be contained in a text or CDATA section."));
 							EVENT_SUCCESS:;
 							}
 						}
@@ -384,14 +384,14 @@ GuiInstanceContext
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
-				setter->tagPosition = xml->codeRange.start;
+				setter->tagPosition = { {resource},xml->codeRange.start };
 
 				// collect attributes as setters
 				FOREACH(Ptr<XmlAttribute>, att, xml->attributes)
 				{
 					List<Ptr<ParsingError>> parsingErrors;
 					auto name = parser->TypedParse(att->name.value, parsingErrors);
-					GuiResourceError::Transform(resource, errors, parsingErrors, att->name.codeRange.start);
+					GuiResourceError::Transform({ resource }, errors, parsingErrors, att->name.codeRange.start);
 					if (name)
 					{
 						if (name->IsReferenceAttributeName())
@@ -407,14 +407,14 @@ GuiInstanceContext
 							// collect environment variables
 							if (setter->environmentVariables.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Duplicated environment variable \"" + name->name + L"\"."));
+								errors.Add(GuiResourceError({ {resource},att->name.codeRange.start }, L"Duplicated environment variable \"" + name->name + L"\"."));
 							}
 							else
 							{
 								auto value = MakePtr<GuiAttSetterRepr::EnvVarValue>();
 								value->value = att->value.value;
-								value->attPosition = att->codeRange.start;
-								value->valuePosition = att->value.codeRange.start;
+								value->attPosition = { {resource},att->codeRange.start };
+								value->valuePosition = { {resource},att->value.codeRange.start };
 								value->valuePosition.column += 1;
 								setter->environmentVariables.Add(GlobalStringKey::Get(name->name), value);
 							}
@@ -424,18 +424,18 @@ GuiInstanceContext
 							// collect attributes setters
 							if (setter->setters.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Duplicated property \"" + name->name + L"\"."));
+								errors.Add(GuiResourceError({ {resource},att->name.codeRange.start }, L"Duplicated property \"" + name->name + L"\"."));
 							}
 							else
 							{
 								auto sv = MakePtr<GuiAttSetterRepr::SetterValue>();
 								sv->binding = GlobalStringKey::Get(name->binding);
-								sv->attPosition = att->codeRange.start;
+								sv->attPosition = { {resource},att->codeRange.start };
 								setter->setters.Add(GlobalStringKey::Get(name->name), sv);
 
 								Ptr<GuiTextRepr> value = new GuiTextRepr;
 								value->text = att->value.value;
-								value->tagPosition = att->value.codeRange.start;
+								value->tagPosition = { {resource},att->value.codeRange.start };
 								value->tagPosition.column += 1;
 								sv->values.Add(value);
 							}
@@ -445,22 +445,22 @@ GuiInstanceContext
 							// collect event setters
 							if (setter->eventHandlers.Keys().Contains(GlobalStringKey::Get(name->name)))
 							{
-								errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Duplicated event \"" + name->name + L"\"."));
+								errors.Add(GuiResourceError({ {resource},att->name.codeRange.start }, L"Duplicated event \"" + name->name + L"\"."));
 							}
 							else
 							{
 								auto value = MakePtr<GuiAttSetterRepr::EventValue>();
 								value->binding = GlobalStringKey::Get(name->binding);
 								value->value = att->value.value;
-								value->attPosition = att->codeRange.start;
-								value->valuePosition = att->value.codeRange.start;
+								value->attPosition = { {resource},att->codeRange.start };
+								value->valuePosition = { {resource},att->value.codeRange.start };
 								value->valuePosition.column += 1;
 								setter->eventHandlers.Add(GlobalStringKey::Get(name->name), value);
 							}
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Unknown attribute name: \"" + att->name.value + L"\"."));
+							errors.Add(GuiResourceError({ {resource},att->name.codeRange.start }, L"Unknown attribute name: \"" + att->name.value + L"\"."));
 						}
 					}
 				}
@@ -477,7 +477,7 @@ GuiInstanceContext
 			{
 				List<Ptr<ParsingError>> parsingErrors;
 				auto ctorName = parser->TypedParse(xml->name.value, parsingErrors);
-				GuiResourceError::Transform(resource, errors, parsingErrors, xml->name.codeRange.start);
+				GuiResourceError::Transform({ resource }, errors, parsingErrors, xml->name.codeRange.start);
 				if (ctorName)
 				{
 					if (ctorName->IsCtorName())
@@ -490,7 +490,7 @@ GuiInstanceContext
 						{
 							parsingErrors.Clear();
 							auto attName = parser->TypedParse(att->name.value, parsingErrors);
-							GuiResourceError::Transform(resource, errors, parsingErrors, att->name.codeRange.start);
+							GuiResourceError::Transform({ resource }, errors, parsingErrors, att->name.codeRange.start);
 							if (attName)
 							{
 								if (attName->IsReferenceAttributeName())
@@ -507,7 +507,7 @@ GuiInstanceContext
 					}
 					else
 					{
-						errors.Add(GuiResourceError(resource, xml->codeRange.start, L"Wrong constructor name \"" + xml->name.value + L"\"."));
+						errors.Add(GuiResourceError({ {resource},xml->codeRange.start }, L"Wrong constructor name \"" + xml->name.value + L"\"."));
 					}
 				}
 			}
@@ -517,7 +517,7 @@ GuiInstanceContext
 		Ptr<GuiInstanceContext> GuiInstanceContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			Ptr<GuiInstanceContext> context = new GuiInstanceContext;
-			context->tagPosition = xml->rootElement->codeRange.start;
+			context->tagPosition = { {resource},xml->rootElement->codeRange.start };
 
 			if (xml->rootElement->name.value == L"Instance")
 			{
@@ -530,14 +530,14 @@ GuiInstanceContext
 				if (auto classAttr = XmlGetAttribute(xml->rootElement, L"ref.Class"))
 				{
 					context->className = classAttr->value.value;
-					context->classPosition = classAttr->codeRange.start;
+					context->classPosition = { {resource},classAttr->codeRange.start };
 				}
 
 				// load style names
 				if (auto styleAttr = XmlGetAttribute(xml->rootElement, L"ref.Styles"))
 				{
 					SplitBySemicolon(styleAttr->value.value, context->stylePaths);
-					context->stylePosition = styleAttr->codeRange.start;
+					context->stylePosition = { {resource},styleAttr->codeRange.start };
 				}
 
 				// load namespaces
@@ -593,7 +593,7 @@ GuiInstanceContext
 						{
 							info = new NamespaceInfo;
 							info->name = ns;
-							info->attPosition = att->codeRange.start;
+							info->attPosition = { {resource},att->codeRange.start };
 							context->namespaces.Add(ns, info);
 						}
 						else
@@ -635,14 +635,14 @@ GuiInstanceContext
 							auto parameter = MakePtr<GuiInstanceParameter>();
 							parameter->name = GlobalStringKey::Get(attName->value.value);
 							parameter->className = GlobalStringKey::Get(attClass->value.value);
-							parameter->tagPosition = element->codeRange.start;
-							parameter->classPosition = attClass->value.codeRange.start;
+							parameter->tagPosition = { {resource},element->codeRange.start };
+							parameter->classPosition = { {resource},attClass->value.codeRange.start };
 							parameter->classPosition.column += 1;
 							context->parameters.Add(parameter);
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resource, element->codeRange.start, L"ref.Parameter requires the following attributes existing at the same time: Name, Class."));
+							errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"ref.Parameter requires the following attributes existing at the same time: Name, Class."));
 						}
 					}
 					else if (element->name.value == L"ref.Members")
@@ -652,12 +652,12 @@ GuiInstanceContext
 							if (auto cdata = element->subNodes[0].Cast<XmlCData>())
 							{
 								context->memberScript = cdata->content.value;
-								context->memberPosition = cdata->codeRange.start;
+								context->memberPosition = { {resource},cdata->codeRange.start };
 								context->memberPosition.column += 9; // <![CDATA[
 								goto MEMBERSCRIPT_SUCCESS;
 							}
 						}
-						errors.Add(GuiResourceError(resource, element->codeRange.start, L"Script should be contained in a CDATA section."));
+						errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"Script should be contained in a CDATA section."));
 					MEMBERSCRIPT_SUCCESS:;
 					}
 					else if (!context->instance)
@@ -668,7 +668,7 @@ GuiInstanceContext
 			}
 			else
 			{
-				errors.Add(GuiResourceError(resource, xml->rootElement->codeRange.start, L"The root element of instance should be \"Instance\"."));
+				errors.Add(GuiResourceError({ {resource},xml->rootElement->codeRange.start }, L"The root element of instance should be \"Instance\"."));
 			}
 
 			return context->instance ? context : nullptr;
@@ -784,12 +784,12 @@ GuiInstanceContext
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resource, stylePosition, L"Failed to find the style referred in attribute \"ref.Styles\": \"" + uri + L"\"."));
+							errors.Add(GuiResourceError({ resource }, stylePosition, L"Failed to find the style referred in attribute \"ref.Styles\": \"" + uri + L"\"."));
 						}
 					}
 					else
 					{
-						errors.Add(GuiResourceError(resource, stylePosition, L"Invalid path in attribute \"ref.Styles\": \"" + uri + L"\"."));
+						errors.Add(GuiResourceError({ resource }, stylePosition, L"Invalid path in attribute \"ref.Styles\": \"" + uri + L"\"."));
 					}
 				}
 
@@ -857,13 +857,13 @@ GuiInstanceStyle
 				List<Ptr<ParsingError>> parsingErrors;
 				auto parser = GetParserManager()->GetParser<GuiIqQuery>(L"INSTANCE-QUERY");
 				auto query = parser->TypedParse(pathAttr->value.value, parsingErrors);
-				GuiResourceError::Transform(resource, errors, parsingErrors, pathAttr->value.codeRange.start, { 0,1 });
+				GuiResourceError::Transform({ resource }, errors, parsingErrors, pathAttr->value.codeRange.start, { 0,1 });
 				if (!query) return nullptr;
 				style->query = query;
 			}
 			else
 			{
-				errors.Add(GuiResourceError(resource, xml->codeRange.start, L"Missing attribute \"ref.Path\" in <Style>."));
+				errors.Add(GuiResourceError({ {resource},xml->codeRange.start }, L"Missing attribute \"ref.Path\" in <Style>."));
 			}
 			style->setter = MakePtr<GuiAttSetterRepr>();
 			GuiInstanceContext::FillAttSetter(resource, style->setter, xml, errors);
@@ -918,13 +918,13 @@ GuiInstanceStyleContext
 					}
 					else
 					{
-						errors.Add(GuiResourceError(styleElement->codeRange.start, L"Unknown element in <Styles>: \"" + styleElement->name.value + L"\"."));
+						errors.Add(GuiResourceError({ {resource},styleElement->codeRange.start }, L"Unknown element in <Styles>: \"" + styleElement->name.value + L"\"."));
 					}
 				}
 			}
 			else
 			{
-				errors.Add(GuiResourceError(resource, xml->rootElement->codeRange.start, L"The root element of instance styles should be \"Styles\"."));
+				errors.Add(GuiResourceError({ {resource},xml->rootElement->codeRange.start }, L"The root element of instance styles should be \"Styles\"."));
 			}
 			return context;
 		}

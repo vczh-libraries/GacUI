@@ -39,7 +39,7 @@ Instance Representation
 
 			bool									fromStyle = false;
 
-			parsing::ParsingTextPos					tagPosition;
+			GuiResourceTextPos						tagPosition;
 
 			virtual void							Accept(IVisitor* visitor) = 0;
 			virtual Ptr<GuiValueRepr>				Clone() = 0;
@@ -68,7 +68,7 @@ Instance Representation
 			{
 				GlobalStringKey						binding;
 				ValueList							values;
-				parsing::ParsingTextPos				attPosition;
+				GuiResourceTextPos					attPosition;
 			};
 
 			struct EventValue : public Object, public Description<EventValue>
@@ -76,15 +76,15 @@ Instance Representation
 				GlobalStringKey						binding;
 				WString								value;
 				bool								fromStyle = false;
-				parsing::ParsingTextPos				attPosition;
-				parsing::ParsingTextPos				valuePosition;
+				GuiResourceTextPos					attPosition;
+				GuiResourceTextPos					valuePosition;
 			};
 
 			struct EnvVarValue : public Object, public Description<EnvVarValue>
 			{
 				WString								value;
-				parsing::ParsingTextPos				attPosition;
-				parsing::ParsingTextPos				valuePosition;
+				GuiResourceTextPos					attPosition;
+				GuiResourceTextPos					valuePosition;
 			};
 			
 			typedef collections::Dictionary<GlobalStringKey, Ptr<SetterValue>>			SetteValuerMap;
@@ -134,8 +134,8 @@ Instance Namespace
 		public:
 			GlobalStringKey							name;
 			GlobalStringKey							className;
-			parsing::ParsingTextPos					tagPosition;
-			parsing::ParsingTextPos					classPosition;
+			GuiResourceTextPos						tagPosition;
+			GuiResourceTextPos						classPosition;
 		};
 
 /***********************************************************************
@@ -153,7 +153,7 @@ Instance Context
 			{
 				GlobalStringKey						name;
 				NamespaceList						namespaces;
-				parsing::ParsingTextPos				attPosition;
+				GuiResourceTextPos					attPosition;
 			};
 			typedef collections::Dictionary<GlobalStringKey, Ptr<NamespaceInfo>>		NamespaceMap;
 			typedef collections::List<Ptr<GuiInstanceParameter>>						ParameterList;
@@ -185,10 +185,10 @@ Instance Context
 			ParameterList							parameters;
 			WString									memberScript;
 
-			parsing::ParsingTextPos					tagPosition;
-			parsing::ParsingTextPos					classPosition;
-			parsing::ParsingTextPos					stylePosition;
-			parsing::ParsingTextPos					memberPosition;
+			GuiResourceTextPos						tagPosition;
+			GuiResourceTextPos						classPosition;
+			GuiResourceTextPos						stylePosition;
+			GuiResourceTextPos						memberPosition;
 
 			bool									appliedStyles = false;
 			StyleContextList						styles;

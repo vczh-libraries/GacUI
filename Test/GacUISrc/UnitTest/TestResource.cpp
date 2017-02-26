@@ -13,46 +13,9 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 {
 	auto outputPath = FilePath(GetTestOutputPath()) / (resourceName + L".txt");
 	auto baselinePath = FilePath(GetTestResourcePath()) / (resourceName + L".txt");
+
 	List<WString> output;
-
-	SortLambda(&errors[0], errors.Count(), [](const GuiResourceError& a, const GuiResourceError& b)
-	{
-		vint result = 0;
-		if (result == 0) result = WString::Compare(a.resourcePath, b.resourcePath);
-		if (result == 0) result = WString::Compare(a.filePath, b.filePath);
-		if (result == 0) result = a.position.row - b.position.row;
-		if (result == 0) result = a.position.column - b.position.column;
-		return result;
-	});
-
-	FOREACH_INDEXER(GuiResourceError, error, index, errors)
-	{
-		bool needHeader = index == 0;
-		if (index > 0)
-		{
-			auto previousError = errors[index - 1];
-			if (error.resourcePath != previousError.resourcePath || error.filePath != previousError.filePath)
-			{
-				needHeader = true;
-			}
-		}
-
-		if (needHeader)
-		{
-			output.Add(error.resourcePath + L" # " + FilePath(GetTestResourcePath()).GetRelativePathFor(error.filePath));
-		}
-
-		WString prefix = L"Failed to load file \"";
-		WString postfix = L"\".";
-		if (INVLOC.StartsWith(error.message, prefix, Locale::Normalization::None) && INVLOC.EndsWith(error.message, postfix, Locale::Normalization::None))
-		{
-			auto path = error.message.Sub(prefix.Length(), error.message.Length() - prefix.Length() - postfix.Length());
-			path = FilePath(GetTestResourcePath()).GetRelativePathFor(path);
-			error.message = prefix + path + postfix;
-		}
-		output.Add(L"(" + itow(error.position.row) + L", " + itow(error.position.column) + L"): " + error.message);
-	}
-
+	GuiResourceError::SortAndLog(errors, output, GetTestResourcePath());
 	File(outputPath).WriteAllLines(output, false, BomEncoder::Utf8);
 
 	List<WString> baseline;

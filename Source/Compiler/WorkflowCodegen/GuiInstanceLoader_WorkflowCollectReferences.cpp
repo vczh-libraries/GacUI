@@ -64,7 +64,7 @@ WorkflowReferenceNamesVisitor
 							+ L"\" because it is not in a correct format of the serializable type \""
 							+ td->GetTypeName()
 							+ L"\".";
-						errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition, error));
+						errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition, error));
 					}
 				}
 				else
@@ -80,7 +80,7 @@ WorkflowReferenceNamesVisitor
 							{
 								resolvingResult.propertyResolvings.Add(repr, candidate);
 							}
-							GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, repr->tagPosition);
+							GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, repr->tagPosition);
 						}
 						break;
 					default:
@@ -95,7 +95,7 @@ WorkflowReferenceNamesVisitor
 								+ L"\" because its type \""
 								+ td->GetTypeName()
 								+ L"\" is not serializable.";
-							errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition, error));
+							errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition, error));
 						}
 					}
 				}
@@ -124,7 +124,7 @@ WorkflowReferenceNamesVisitor
 						= L"Precompile: Referece name \""
 						+ repr->instanceName.ToString()
 						+ L"\" conflict with an existing named object.";
-					errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition, error));
+					errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition, error));
 				}
 				else if (!isReferenceType)
 				{
@@ -134,7 +134,7 @@ WorkflowReferenceNamesVisitor
 						+ L"\" cannot be added to a non-reference instance of type \""
 						+ resolvedTypeInfo.typeName.ToString()
 						+ L"\".";
-					errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition, error));
+					errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition, error));
 				}
 				else
 				{
@@ -160,7 +160,7 @@ WorkflowReferenceNamesVisitor
 							{
 								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
 								{
-									errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" is not supported."));
+									errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" is not supported."));
 									break;
 								}
 								else
@@ -188,7 +188,7 @@ WorkflowReferenceNamesVisitor
 
 					if (possibleInfos.Count() == 0)
 					{
-						errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" does not exist."));
+						errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" does not exist."));
 					}
 					else
 					{
@@ -253,7 +253,7 @@ WorkflowReferenceNamesVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, L"[[INTERNAL-ERROR] ]" + errorPrefix + L" does not support the \"-set\" binding."));
+								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, L"[[INTERNAL-ERROR] ]" + errorPrefix + L" does not support the \"-set\" binding."));
 							}
 						}
 						else if (setter->binding != GlobalStringKey::Empty)
@@ -265,7 +265,7 @@ WorkflowReferenceNamesVisitor
 								{
 									if (!possibleInfos[0].info->bindable)
 									{
-										errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+										errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 											errorPrefix +
 											L" cannot be assigned using binding \"-" +
 											setter->binding.ToString() +
@@ -273,7 +273,7 @@ WorkflowReferenceNamesVisitor
 									}
 									else if (!binder->ApplicableToConstructorArgument())
 									{
-										errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+										errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 											errorPrefix +
 											L" cannot be assigned using binding \"-" +
 											setter->binding.ToString() +
@@ -283,7 +283,7 @@ WorkflowReferenceNamesVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 									errorPrefix +
 									L" cannot be assigned using an unexisting binding \"-" +
 									setter->binding.ToString() +
@@ -296,7 +296,7 @@ WorkflowReferenceNamesVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 									L"Precompile: Binder \"" +
 									setter->binding.ToString() +
 									L"\" requires the text value of property \"" +
@@ -336,7 +336,7 @@ WorkflowReferenceNamesVisitor
 						auto info = loader->GetPropertyType(IGuiInstanceLoader::PropertyInfo(resolvedTypeInfo, prop));
 						if (info->required && !properties.Contains(prop, loader))
 						{
-							errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+							errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 								L"Precompile: Missing constructor argument \"" +
 								prop.ToString() +
 								L"\" of type \"" +
@@ -379,7 +379,7 @@ WorkflowReferenceNamesVisitor
 								error += L"\"" + key.ToString() + L"\"";
 							}
 							error += L".";
-							errors.Add(GuiResourceError(resolvingResult.resource, repr->setters[prop]->attPosition, error));
+							errors.Add(GuiResourceError({ resolvingResult.resource }, repr->setters[prop]->attPosition, error));
 						}
 						
 						FOREACH(GlobalStringKey, key, pairProps)
@@ -400,7 +400,7 @@ WorkflowReferenceNamesVisitor
 						auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
 						if (!binder)
 						{
-							errors.Add(GuiResourceError(resolvingResult.resource, handler->attPosition,
+							errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
 								L"The appropriate IGuiInstanceEventBinder of binding \"-" +
 								handler->binding.ToString() +
 								L"\" cannot be found."));
@@ -483,7 +483,7 @@ WorkflowReferenceNamesVisitor
 						}
 
 						error += L".";
-						errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition, error));
+						errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition, error));
 					}
 					else
 					{
@@ -496,7 +496,7 @@ WorkflowReferenceNamesVisitor
 								{
 									if (candidatePropertyTypeInfos.Count() == 0)
 									{
-										errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+										errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 											L"Precompile: Type \"" +
 											resolvedTypeInfo.typeName.ToString() +
 											L"\" cannot be used to create an instance."));
@@ -538,7 +538,7 @@ WorkflowReferenceNamesVisitor
 									{
 										if (propertyNames[0] != GlobalStringKey::_ControlTemplate)
 										{
-											errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+											errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 												L"Precompile: Type \"" +
 												resolvedTypeInfo.typeName.ToString() +
 												L"\" cannot be used to create a root instance, because its only constructor parameter is not for a the control template."));
@@ -546,7 +546,7 @@ WorkflowReferenceNamesVisitor
 									}
 									else if (propertyNames.Count() > 1)
 									{
-										errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+										errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 											L"Precompile: Type \"" +
 											resolvedTypeInfo.typeName.ToString() +
 											L"\" cannot be used to create a root instance, because it has more than one constructor parameters. A root instance type can only have one constructor parameter, which is for the control template."));
@@ -555,7 +555,7 @@ WorkflowReferenceNamesVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+								errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 									L"Precompile: Type \"" +
 									resolvedTypeInfo.typeName.ToString() +
 									L"\" cannot be used to create an instance."));
@@ -566,7 +566,7 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+					errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 						L"[INTERNAL-ERROR] Precompile: Failed to find type \"" +
 						(repr->typeNamespace == GlobalStringKey::Empty
 							? repr->typeName.ToString()
@@ -584,14 +584,14 @@ WorkflowReferenceNamesVisitor
 				auto type = GetTypeDescriptor(parameter->className.ToString());
 				if (!type)
 				{
-					errors.Add(GuiResourceError(resolvingResult.resource, parameter->classPosition,
+					errors.Add(GuiResourceError({ resolvingResult.resource }, parameter->classPosition,
 						L"Precompile: Cannot find type \"" +
 						parameter->className.ToString() +
 						L"\"."));
 				}
 				else if (resolvingResult.typeInfos.Keys().Contains(parameter->name))
 				{
-					errors.Add(GuiResourceError(resolvingResult.resource, parameter->classPosition,
+					errors.Add(GuiResourceError({ resolvingResult.resource }, parameter->classPosition,
 						L"[INTERNAL-ERROR] Precompile: Parameter \"" +
 						parameter->name.ToString() +
 						L"\" conflict with an existing named object."));

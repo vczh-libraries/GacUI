@@ -389,7 +389,7 @@ Instance Type Resolver (Instance)
 						{
 							if (obj->className == L"")
 							{
-								errors.Add(GuiResourceError(resource, obj->tagPosition,
+								errors.Add(GuiResourceError({ resource }, obj->tagPosition,
 									L"Precompile: Instance \"" +
 									(obj->instance->typeNamespace == GlobalStringKey::Empty
 										? obj->instance->typeName.ToString()

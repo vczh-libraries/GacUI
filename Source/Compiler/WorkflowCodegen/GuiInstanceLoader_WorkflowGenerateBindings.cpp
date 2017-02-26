@@ -75,7 +75,7 @@ WorkflowGenerateBindingVisitor
 									}
 									else
 									{
-										errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+										errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 											L"Precompile: Binder \"" +
 											setter->binding.ToString() +
 											L"\" requires property \"" +
@@ -88,7 +88,7 @@ WorkflowGenerateBindingVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 									L"[INTERNAL ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
 									setter->binding.ToString() +
 									L"\" cannot be found."));
@@ -113,7 +113,7 @@ WorkflowGenerateBindingVisitor
 
 							if (!eventInfo)
 							{
-								errors.Add(GuiResourceError(resolvingResult.resource, handler->attPosition,
+								errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
 									L"[INTERNAL ERROR] Precompile: Event \"" +
 									propertyName.ToString() +
 									L"\" cannot be found in type \"" +
@@ -137,7 +137,7 @@ WorkflowGenerateBindingVisitor
 									}
 									else
 									{
-										errors.Add(GuiResourceError(resolvingResult.resource, handler->attPosition,
+										errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
 											L"[INTERNAL ERROR] The appropriate IGuiInstanceEventBinder of binding \"-" +
 											handler->binding.ToString() +
 											L"\" cannot be found."));

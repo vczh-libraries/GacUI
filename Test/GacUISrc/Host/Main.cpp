@@ -110,16 +110,9 @@ void GuiMain_Resource()
 		resource->Precompile(nullptr, errors);
 
 		{
-			FileStream fileStream(BINARY_FOLDER L"UI.error.txt", FileStream::WriteOnly);
-			BomEncoder encoder(BomEncoder::Utf16);
-			EncoderStream encoderStream(fileStream, encoder);
-			StreamWriter writer(encoderStream);
-
-			FOREACH(GuiResourceError, error, errors)
-			{
-				writer.WriteLine(error.resourcePath + L"(" + error.filePath + L":" + itow(error.position.row) + L"," + itow(error.position.column) + L")");
-				writer.WriteLine(L"\t" + error.message);
-			}
+			List<WString> output;
+			GuiResourceError::SortAndLog(errors, output);
+			File(BINARY_FOLDER L"UI.error.txt").WriteAllLines(output, true, BomEncoder::Utf16);
 		}
 		CHECK_ERROR(errors.Count() == 0, L"Error");
 

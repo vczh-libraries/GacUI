@@ -20,7 +20,7 @@ namespace vl
 		public:
 			WString										language;
 			WString										code;
-			parsing::ParsingTextPos						codePosition;
+			GuiResourceTextPos							codePosition;
 
 			static Ptr<GuiInstanceSharedScript>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<parsing::xml::XmlElement>				SaveToXml();

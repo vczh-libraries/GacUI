@@ -124,7 +124,7 @@ document_operation_visitors::DeserializeNodeVisitor
 								}
 								else if (att->name.value != L"source")
 								{
-									errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Unknown attribute in <img>: \"" + att->name.value + L"\"."));
+									errors.Add(GuiResourceError({ {resource},att->name.codeRange.start }, L"Unknown attribute in <img>: \"" + att->name.value + L"\"."));
 								}
 							}
 
@@ -132,7 +132,7 @@ document_operation_visitors::DeserializeNodeVisitor
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resource, node->codeRange.start, L"Attribute \"source\" is missing in <img>."));
+							errors.Add(GuiResourceError({ {resource},node->codeRange.start }, L"Attribute \"source\" is missing in <img>."));
 						}
 					}
 					else if (node->name.value == L"object")
@@ -147,7 +147,7 @@ document_operation_visitors::DeserializeNodeVisitor
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resource, node->codeRange.start, L"The \"name\" attribute in <object> is missing."));
+							errors.Add(GuiResourceError({ {resource},node->codeRange.start }, L"The \"name\" attribute in <object> is missing."));
 						}
 					}
 					else if (node->name.value == L"font")
@@ -176,7 +176,7 @@ document_operation_visitors::DeserializeNodeVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resource, att->name.codeRange.start, L"Unknown attribute in <font>: \"" + att->name.value + L"\"."));
+								errors.Add(GuiResourceError({ {resource},att->name.codeRange.start }, L"Unknown attribute in <font>: \"" + att->name.value + L"\"."));
 							}
 						}
 						container->runs.Add(run);
@@ -289,7 +289,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					{
 						if (node->name.value != L"nop")
 						{
-							errors.Add(GuiResourceError(resource, node->codeRange.start, L"Unknown element in <p>: \"" + node->name.value + L"\"."));
+							errors.Add(GuiResourceError({ {resource},node->codeRange.start }, L"Unknown element in <p>: \"" + node->name.value + L"\"."));
 						}
 						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
 						{
@@ -385,7 +385,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else
 					{
-						errors.Add(GuiResourceError(resource, att->codeRange.start, L"Unknown element in <Style>: \"" + att->name.value + L"\"."));
+						errors.Add(GuiResourceError({ {resource},att->codeRange.start }, L"Unknown element in <Style>: \"" + att->name.value + L"\"."));
 					}
 				}
 
@@ -441,12 +441,12 @@ DocumentModel
 								}
 								else
 								{
-									errors.Add(GuiResourceError(resource, styleElement->codeRange.start, L"Attribute \"name\" is missing in <Style>."));
+									errors.Add(GuiResourceError({ {resource},styleElement->codeRange.start }, L"Attribute \"name\" is missing in <Style>."));
 								}
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resource, styleElement->codeRange.start, L"Unknown element in <Styles>: \"" + styleElement->name.value + L"\"."));
+								errors.Add(GuiResourceError({ {resource},styleElement->codeRange.start }, L"Unknown element in <Styles>: \"" + styleElement->name.value + L"\"."));
 							}
 						}
 					}
@@ -473,7 +473,7 @@ DocumentModel
 									}
 									else
 									{
-										errors.Add(GuiResourceError(resource, att->value.codeRange.start, L"Unknown value in align attribute \"" + att->value.value + L"\"."));
+										errors.Add(GuiResourceError({ {resource},att->value.codeRange.start }, L"Unknown value in align attribute \"" + att->value.value + L"\"."));
 									}
 								}
 								model->paragraphs.Add(paragraph);
@@ -482,19 +482,19 @@ DocumentModel
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resource, p->codeRange.start, L"Unknown element in <Content>: \"" + p->name.value + L"\"."));
+								errors.Add(GuiResourceError({ {resource},p->codeRange.start }, L"Unknown element in <Content>: \"" + p->name.value + L"\"."));
 							}
 						}
 					}
 					else
 					{
-						errors.Add(GuiResourceError(resource, partElement->codeRange.start, L"Unknown element in <Doc>: \"" + partElement->name.value + L"\"."));
+						errors.Add(GuiResourceError({ {resource},partElement->codeRange.start }, L"Unknown element in <Doc>: \"" + partElement->name.value + L"\"."));
 					}
 				}
 			}
 			else
 			{
-				errors.Add(GuiResourceError(resource, xml->rootElement->codeRange.start, L"The root element of document should be \"Doc\"."));
+				errors.Add(GuiResourceError({ {resource},xml->rootElement->codeRange.start }, L"The root element of document should be \"Doc\"."));
 			}
 			return model;
 		}

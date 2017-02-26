@@ -97,7 +97,7 @@ WorkflowEventNamesVisitor
 							{
 								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
 								{
-									errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" is not supported."));
+									errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" is not supported."));
 									goto SKIP_SET;
 								}
 								else
@@ -109,7 +109,7 @@ WorkflowEventNamesVisitor
 									}
 									else
 									{
-										errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" does not support the \"-set\" binding."));
+										errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" does not support the \"-set\" binding."));
 										goto SKIP_SET;
 									}
 								}
@@ -134,7 +134,7 @@ WorkflowEventNamesVisitor
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, L"[INTERNAL ERROR]" + errorPrefix + L" does not exist."));
+							errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, L"[INTERNAL ERROR]" + errorPrefix + L" does not exist."));
 						}
 					SKIP_SET:;
 					}
@@ -192,7 +192,7 @@ WorkflowEventNamesVisitor
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resolvingResult.resource, handler->attPosition,
+							errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
 								L"Precompile: Event \"" +
 								propertyName.ToString() +
 								L"\" cannot be found in type \"" +
@@ -234,7 +234,7 @@ WorkflowEventNamesVisitor
 				}
 				else
 				{
-					errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+					errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 						L"Precompile: Failed to find type \"" +
 						(repr->typeNamespace == GlobalStringKey::Empty
 							? repr->typeName.ToString()
@@ -274,7 +274,7 @@ Workflow_GenerateInstanceClass
 			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 			if (!baseTd)
 			{
-				errors.Add(GuiResourceError(resolvingResult.resource, context->instance->tagPosition,
+				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
 					L"Precompile: Failed to find type \"" +
 					(context->instance->typeNamespace == GlobalStringKey::Empty
 						? context->instance->typeName.ToString()
@@ -324,7 +324,7 @@ Workflow_GenerateInstanceClass
 			}
 
 			auto typeParser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
-			auto parseType = [&](const WString& code, const WString& name, ParsingTextPos position)->Ptr<WfType>
+			auto parseType = [&](const WString& code, const WString& name, GuiResourceTextPos position)->Ptr<WfType>
 			{
 				List<Ptr<ParsingError>> parsingErrors;
 				if (auto type = typeParser->TypedParse(code, parsingErrors))
@@ -333,13 +333,13 @@ Workflow_GenerateInstanceClass
 				}
 				else
 				{
-					GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, position);
+					GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
 					return nullptr;
 				}
 			};
 
 			auto moduleParser = GetParserManager()->GetParser<WfModule>(L"WORKFLOW-MODULE");
-			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfClassMember>>& members, ParsingTextPos position)
+			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfClassMember>>& members, GuiResourceTextPos position)
 			{
 				List<Ptr<ParsingError>> parsingErrors;
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
@@ -360,7 +360,7 @@ Workflow_GenerateInstanceClass
 							error->codeRange = ParsingTextRange();
 						}
 					}
-					GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, position);
+					GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
 				}
 			};
 

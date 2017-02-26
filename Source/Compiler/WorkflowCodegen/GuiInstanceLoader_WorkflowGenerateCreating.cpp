@@ -30,12 +30,12 @@ WorkflowGenerateCreatingVisitor
 			{
 			}
 
-			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(parsing::ParsingTextPos attPosition, GuiValueRepr* repr)
+			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(GuiResourceTextPos attPosition, GuiValueRepr* repr)
 			{
 				ITypeDescriptor* td = nullptr;
 				bool serializable = false;
 				WString textValue;
-				ParsingTextPos textValuePosition;
+				GuiResourceTextPos textValuePosition;
 				GuiConstructorRepr* ctor = nullptr;
 
 				if (auto text = dynamic_cast<GuiTextRepr*>(repr))
@@ -77,7 +77,7 @@ WorkflowGenerateCreatingVisitor
 					{
 						error->errorMessage = L"[INTERNAL ERROR] " + error->errorMessage;
 					}
-					GuiResourceError::Transform(resolvingResult.resource, errors, parsingErrors, textValuePosition);
+					GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, textValuePosition);
 				}
 				else
 				{
@@ -130,7 +130,7 @@ WorkflowGenerateCreatingVisitor
 							}
 							else if (errorCount == errors.Count())
 							{
-								errors.Add(GuiResourceError(resolvingResult.resource, setTarget->tagPosition,
+								errors.Add(GuiResourceError({ resolvingResult.resource }, setTarget->tagPosition,
 									L"[INTERNAL ERROR] Precompile: Something is wrong when retriving the property \"" +
 									prop.ToString() +
 									L"\" from an instance of type \"" +
@@ -162,7 +162,7 @@ WorkflowGenerateCreatingVisitor
 										}
 										else if (errorCount == errors.Count())
 										{
-											errors.Add(GuiResourceError(resolvingResult.resource, value->tagPosition,
+											errors.Add(GuiResourceError({ resolvingResult.resource }, value->tagPosition,
 												L"[INTERNAL ERROR] Precompile: Something is wrong when assigning to property " +
 												prop.ToString() +
 												L" to an instance of type \"" +
@@ -207,7 +207,7 @@ WorkflowGenerateCreatingVisitor
 												if (propIndex > 0)propNames += L", ";
 												propNames += L"\"" + pairedProp.ToString() + L"\"";
 											}
-											errors.Add(GuiResourceError(resolvingResult.resource, value->tagPosition,
+											errors.Add(GuiResourceError({ resolvingResult.resource }, value->tagPosition,
 												L"[INTERNAL ERROR] Precompile: Something is wrong when assigning to properties " +
 												propNames +
 												L" to an instance of type \"" +
@@ -264,7 +264,7 @@ WorkflowGenerateCreatingVisitor
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition,
+							errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 								L"[INTERNAL ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
 								setter->binding.ToString() +
 								L"\" cannot be found."));
@@ -366,7 +366,7 @@ WorkflowGenerateCreatingVisitor
 					}
 					else if (errorCount == errors.Count())
 					{
-						errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
+						errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 							L"[INTERNAL ERROR] Precompile: Something is wrong when creating an instance of type \"" +
 							ctorTypeInfo.typeName.ToString() +
 							L"\"."));

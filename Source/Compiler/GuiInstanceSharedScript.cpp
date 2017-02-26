@@ -19,12 +19,12 @@ GuiInstanceSharedScript
 					auto script = MakePtr<GuiInstanceSharedScript>();
 					script->language = xml->rootElement->name.value;
 					script->code = cdata->content.value;
-					script->codePosition = cdata->codeRange.start;
+					script->codePosition = { {resource},cdata->codeRange.start };
 					script->codePosition.column += 9; // <![CDATA[
 					return script;
 				}
 			}
-			errors.Add(GuiResourceError(resource, xml->rootElement->codeRange.start, L"Script should be contained in a CDATA section."));
+			errors.Add(GuiResourceError({ {resource},xml->rootElement->codeRange.start }, L"Script should be contained in a CDATA section."));
 			return nullptr;
 		}
 

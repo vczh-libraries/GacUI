@@ -65,7 +65,7 @@ Image Type Resolver (Image)
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
-				errors.Add(GuiResourceError(resource, L"Image should load from file."));
+				errors.Add(GuiResourceError({ resource }, L"Image should load from file."));
 				return nullptr;
 			}
 
@@ -78,7 +78,7 @@ Image Type Resolver (Image)
 				}
 				else
 				{
-					errors.Add(GuiResourceError(resource, L"Failed to load file \"" + path + L"\"."));
+					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
 					return nullptr;
 				}
 			}
@@ -96,7 +96,7 @@ Image Type Resolver (Image)
 				}
 				else
 				{
-					errors.Add(GuiResourceError(resource, L"[BINARY] Failed to load an image from binary data in a stream."));
+					errors.Add(GuiResourceError({ resource }, L"[BINARY] Failed to load an image from binary data in a stream."));
 					return nullptr;
 				}
 			}
@@ -176,7 +176,7 @@ Text Type Resolver (Text)
 				}
 				else
 				{
-					errors.Add(GuiResourceError(resource, L"Failed to load file \"" + path + L"\"."));
+					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
 					return 0;
 				}
 			}
@@ -277,12 +277,12 @@ Xml Type Resolver (Xml)
 					{
 						List<Ptr<ParsingError>> parsingErrors;
 						auto xml = parser->TypedParse(text, parsingErrors);
-						GuiResourceError::Transform(resource, errors, parsingErrors);
+						GuiResourceError::Transform({ resource }, errors, parsingErrors);
 						return xml;
 					}
 					else
 					{
-						errors.Add(GuiResourceError(resource, L"Failed to load file \"" + path + L"\"."));
+						errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
 					}
 				}
 				return nullptr;
@@ -302,7 +302,7 @@ Xml Type Resolver (Xml)
 					{
 						error->errorMessage = L"[BINARY] " + error->errorMessage;
 					}
-					GuiResourceError::Transform(resource, errors, parsingErrors);
+					GuiResourceError::Transform({ resource }, errors, parsingErrors);
 					return xml;
 				}
 				return nullptr;

@@ -502,9 +502,19 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetFileContentPath, { L"content" _ L"absolute" })
 			END_CLASS_MEMBER(GuiResourceNodeBase)
 
-			BEGIN_STRUCT_MEMBER(GuiResourceError)
+			BEGIN_STRUCT_MEMBER(GuiResourceLocation)
 				STRUCT_MEMBER(resourcePath)
 				STRUCT_MEMBER(filePath)
+			END_STRUCT_MEMBER(GuiResourceLocation)
+
+			BEGIN_STRUCT_MEMBER(GuiResourceTextPos)
+				STRUCT_MEMBER(originalLocation)
+				STRUCT_MEMBER(row)
+				STRUCT_MEMBER(column)
+			END_STRUCT_MEMBER(GuiResourceTextPos)
+
+			BEGIN_STRUCT_MEMBER(GuiResourceError)
+				STRUCT_MEMBER(location)
 				STRUCT_MEMBER(position)
 				STRUCT_MEMBER(message)
 			END_STRUCT_MEMBER(GuiResourceError)

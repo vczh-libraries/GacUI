@@ -283,61 +283,77 @@ GuiResourceNodeBase
 		}
 
 /***********************************************************************
-GuiResourceError
+GuiResourceLocation
 ***********************************************************************/
 
-		void GuiResourceError::Initialize(Ptr<GuiResourceNodeBase> node)
+		GuiResourceLocation::GuiResourceLocation(const WString& _resourcePath, const WString& _filePath)
+			:resourcePath(_resourcePath)
+			, filePath(_filePath)
 		{
-			resourcePath = node->GetResourcePath();
+		}
 
-			auto current = node.Obj();
-			while (current)
+		GuiResourceLocation::GuiResourceLocation(Ptr<GuiResourceNodeBase> node)
+		{
+			if (node)
 			{
-				if (current->GetFileContentPath() != L"")
+				resourcePath = node->GetResourcePath();
+
+				auto current = node.Obj();
+				while (current)
 				{
-					filePath = current->GetFileAbsolutePath();
-					break;
+					if (current->GetFileContentPath() != L"")
+					{
+						filePath = current->GetFileAbsolutePath();
+						break;
+					}
+					current = current->GetParent();
 				}
-				current = current->GetParent();
 			}
 		}
 
-		GuiResourceError::GuiResourceError()
+/***********************************************************************
+GuiResourceTextPos
+***********************************************************************/
+
+		GuiResourceTextPos::GuiResourceTextPos(GuiResourceLocation location, parsing::ParsingTextPos position)
+			:originalLocation(location)
+			, row(position.row)
+			, column(position.column)
 		{
 		}
 
-		GuiResourceError::GuiResourceError(parsing::ParsingTextPos _position, const WString& _message)
-			:position(_position)
-			, message(_message)
-		{
-		}
+/***********************************************************************
+GuiResourceError
+***********************************************************************/
 
-		GuiResourceError::GuiResourceError(const WString& _filePath, parsing::ParsingTextPos _position, const WString& _message)
-			: filePath(_filePath)
+		GuiResourceError::GuiResourceError(GuiResourceTextPos _position, const WString& _message)
+			:location(_position.originalLocation)
 			, position(_position)
 			, message(_message)
 		{
 		}
 
-		GuiResourceError::GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message)
-			:position(_position)
+		GuiResourceError::GuiResourceError(GuiResourceLocation _location, const WString& _message)
+			:location(_location)
+			, position(_location, {})
 			, message(_message)
 		{
-			Initialize(node);
 		}
 
-		GuiResourceError::GuiResourceError(Ptr<GuiResourceNodeBase> node, const WString& _message)
-			:message(_message)
+		GuiResourceError::GuiResourceError(GuiResourceLocation _location, GuiResourceTextPos _position, const WString& _message)
+			:location(_location)
+			, position(_position)
+			, message(_message)
 		{
-			Initialize(node);
 		}
 
 		template<typename TCallback>
-		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix, const TCallback& callback)
+		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix, const TCallback& callback)
 		{
 			if (offset.row < 0 || offset.column < 0)
 			{
-				offset = ParsingTextPos(0, 0);
+				offset.row = 0;
+				offset.column = 0;
 			}
 			offset.row += offsetFix.row;
 			offset.column += offsetFix.column;
@@ -347,7 +363,7 @@ GuiResourceError
 				auto pos = error->codeRange.start;
 				if (pos.row < 0 || pos.column < 0)
 				{
-					pos = offset;
+					pos = { offset.row,offset.column };
 				}
 				else
 				{
@@ -357,24 +373,77 @@ GuiResourceError
 					}
 					pos.row += offset.row;
 				}
-				errors.Add(callback(pos, error->errorMessage));
+				errors.Add(callback({ offset.originalLocation,pos }, error->errorMessage));
 			}
 		}
 
-		void GuiResourceError::Transform(Ptr<GuiResourceNodeBase> node, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors)
 		{
-			TransformErrors(errors, parsingErrors, offset, offsetFix, [&](ParsingTextPos pos, const WString& message)
+			Transform(_location, errors, parsingErrors, { _location,{ 0,0 } });
+		}
+
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix)
+		{
+			Transform(_location, errors, parsingErrors, { _location,offset }, offsetFix);
+		}
+
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix)
+		{
+			TransformErrors(errors, parsingErrors, offset, offsetFix, [&](GuiResourceTextPos pos, const WString& message)
 			{
-				return GuiResourceError(node, pos, message);
+				return GuiResourceError(_location, pos, message);
 			});
 		}
 
-		void GuiResourceError::Transform(const WString& filepath, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix)
+		void GuiResourceError::SortAndLog(List& errors, collections::List<WString>& output, const WString& workingDirectory)
 		{
-			TransformErrors(errors, parsingErrors, offset, offsetFix, [&](ParsingTextPos pos, const WString& message)
+			SortLambda(&errors[0], errors.Count(), [](const GuiResourceError& a, const GuiResourceError& b)
 			{
-				return GuiResourceError(filepath, pos, message);
+				vint result = 0;
+				if (result == 0) result = WString::Compare(a.location.resourcePath, b.location.resourcePath);
+				if (result == 0) result = WString::Compare(a.location.filePath, b.location.filePath);
+				if (result == 0) result = WString::Compare(a.position.originalLocation.resourcePath, b.position.originalLocation.resourcePath);
+				if (result == 0) result = WString::Compare(a.position.originalLocation.filePath, b.position.originalLocation.filePath);
+				if (result == 0) result = a.position.row - b.position.row;
+				if (result == 0) result = a.position.column - b.position.column;
+				return result;
 			});
+
+			FOREACH_INDEXER(GuiResourceError, error, index, errors)
+			{
+				bool needHeader = index == 0;
+				if (index > 0)
+				{
+					auto previousError = errors[index - 1];
+					if (error.location != previousError.location || error.position.originalLocation != previousError.position.originalLocation)
+					{
+						needHeader = true;
+					}
+				}
+
+#define CONVERT_FILEPATH(FILEPATH) (workingDirectory == L"" ? FILEPATH  : filesystem::FilePath(workingDirectory).GetRelativePathFor(FILEPATH))
+#define CONVERT_LOCATION(LOCATION) (LOCATION).resourcePath + L" # " + CONVERT_FILEPATH((LOCATION).filePath)
+				if (needHeader)
+				{
+					output.Add(CONVERT_LOCATION(error.location));
+					if (error.location != error.position.originalLocation)
+					{
+						output.Add(L"    Original: " + CONVERT_LOCATION(error.position.originalLocation));
+					}
+				}
+
+				WString prefix = L"Failed to load file \"";
+				WString postfix = L"\".";
+				if (INVLOC.StartsWith(error.message, prefix, Locale::Normalization::None) && INVLOC.EndsWith(error.message, postfix, Locale::Normalization::None))
+				{
+					auto path = error.message.Sub(prefix.Length(), error.message.Length() - prefix.Length() - postfix.Length());
+					path = CONVERT_FILEPATH(path);
+					error.message = prefix + path + postfix;
+				}
+				output.Add(L"(" + itow(error.position.row) + L", " + itow(error.position.column) + L"): " + error.message);
+#undef CONVERT_FILEPATH
+#undef CONVERT_LOCATION
+			}
 		}
 
 /***********************************************************************
@@ -444,7 +513,7 @@ GuiResourceFolder
 				{
 					if (name == L"")
 					{
-						errors.Add(GuiResourceError(this, element->codeRange.start, L"A resource folder should have a name."));
+						errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"A resource folder should have a name."));
 					}
 					else
 					{
@@ -472,12 +541,12 @@ GuiResourceFolder
 												newContainingFolder = GetFolderPath(fileAbsolutePath);
 												newFolderXml = xml->rootElement;
 											}
-											GuiResourceError::Transform(fileAbsolutePath, errors, parsingErrors);
+											GuiResourceError::Transform({ WString::Empty,fileAbsolutePath }, errors, parsingErrors);
 										}
 									}
 									else
 									{
-										errors.Add(GuiResourceError(this, element->codeRange.start, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
+										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
 									}
 								}
 							}
@@ -485,7 +554,7 @@ GuiResourceFolder
 						}
 						else
 						{
-							errors.Add(GuiResourceError(this, element->codeRange.start, L"Duplicated resource folder name \"" + name + L"\"."));
+							errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Duplicated resource folder name \"" + name + L"\"."));
 						}
 					}
 				}
@@ -521,13 +590,13 @@ GuiResourceFolder
 								preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
 								if (!preloadResolver)
 								{
-									errors.Add(GuiResourceError(this, element->codeRange.start, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
+									errors.Add(GuiResourceError({ {this}, element->codeRange.start }, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 								}
 							}
 						}
 						else
 						{
-							errors.Add(GuiResourceError(this, element->codeRange.start, L"Unknown resource type \"" + type + L"\"."));
+							errors.Add(GuiResourceError({ {this}, element->codeRange.start }, L"Unknown resource type \"" + type + L"\"."));
 						}
 
 						if (typeResolver && preloadResolver)
@@ -569,13 +638,12 @@ GuiResourceFolder
 									else
 									{
 										item->SetContent(typeResolver->GetType(), nullptr);
-										errors.Add(GuiResourceError(this, element->codeRange.start, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
-									}
+										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));									}
 								}
 							}
 							else
 							{
-								errors.Add(GuiResourceError(this, element->codeRange.start, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
+								errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 							}
 						}
 
@@ -586,7 +654,7 @@ GuiResourceFolder
 					}
 					else
 					{
-						errors.Add(GuiResourceError(this, element->codeRange.start, L"Duplicated resource item name \"" + name + L"\"."));
+						errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Duplicated resource item name \"" + name + L"\"."));
 					}
 				}
 			}
@@ -723,14 +791,14 @@ GuiResourceFolder
 								preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
 								if (!preloadResolver)
 								{
-									errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
+									errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 								}
 							}
 						}
 					}
 					else
 					{
-						errors.Add(GuiResourceError(item, L"[BINARY] Unknown resource type \"" + type + L"\"."));
+						errors.Add(GuiResourceError({ item }, L"[BINARY] Unknown resource type \"" + type + L"\"."));
 					}
 
 					if(typeResolver && preloadResolver)
@@ -762,13 +830,13 @@ GuiResourceFolder
 								else
 								{
 									item->SetContent(typeResolver->GetType(), nullptr);
-									errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
+									errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
 								}
 							}
 						}
 						else
 						{
-							errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
+							errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 						}
 					}
 
@@ -779,7 +847,7 @@ GuiResourceFolder
 				}
 				else
 				{
-					errors.Add(GuiResourceError(this, L"[BINARY] Duplicated resource item name \"" + name + L"\"."));
+					errors.Add(GuiResourceError({ this }, L"[BINARY] Duplicated resource item name \"" + name + L"\"."));
 				}
 			}
 
@@ -1077,12 +1145,12 @@ GuiResource
 					}
 					else
 					{
-						errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Resource type \"" + type + L"\" is not a indirect load resource type."));
+						errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Resource type \"" + type + L"\" is not a indirect load resource type."));
 					}
 				}
 				else
 				{
-					errors.Add(GuiResourceError(item, L"[INTERNAL-ERROR] Unknown resource type \"" + type + L"\"."));
+					errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Unknown resource type \"" + type + L"\"."));
 				}
 			}
 		}
@@ -1122,11 +1190,11 @@ GuiResource
 				{
 					List<Ptr<ParsingError>> parsingErrors;
 					xml = parser->TypedParse(text, parsingErrors);
-					GuiResourceError::Transform(filePath, errors, parsingErrors);
+					GuiResourceError::Transform({ WString::Empty,filePath }, errors, parsingErrors);
 				}
 				else
 				{
-					errors.Add(GuiResourceError(filePath, ParsingTextPos(), L"Failed to load file \"" + filePath + L"\"."));
+					errors.Add(GuiResourceError({ WString::Empty,filePath }, L"Failed to load file \"" + filePath + L"\"."));
 				}
 			}
 			if(xml)
@@ -1184,7 +1252,7 @@ GuiResource
 		{
 			if (GetFolder(L"Precompiled"))
 			{
-				errors.Add(GuiResourceError(this, L"A precompiled resource cannot be compiled again."));
+				errors.Add(GuiResourceError({ this }, L"A precompiled resource cannot be compiled again."));
 				return;
 			}
 

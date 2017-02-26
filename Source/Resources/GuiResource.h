@@ -178,27 +178,53 @@ Resource Structure
 			void									SetFileContentPath(const WString& content, const WString& absolute);
 		};
 
+		struct GuiResourceLocation
+		{
+			WString									resourcePath;
+			WString									filePath;
+
+			GuiResourceLocation() = default;
+			GuiResourceLocation(const WString& _resourcePath, const WString& _filePath);
+			GuiResourceLocation(Ptr<GuiResourceNodeBase> node);
+
+			bool operator==(const GuiResourceLocation& b)const { return resourcePath == b.resourcePath && filePath == b.filePath; }
+			bool operator!=(const GuiResourceLocation& b)const { return !(*this == b); }
+		};
+
+		struct GuiResourceTextPos
+		{
+			GuiResourceLocation						originalLocation;
+			vint									row = parsing::ParsingTextPos::UnknownValue;
+			vint									column = parsing::ParsingTextPos::UnknownValue;
+
+			GuiResourceTextPos() = default;
+			GuiResourceTextPos(GuiResourceLocation location, parsing::ParsingTextPos position);
+
+			bool operator==(const GuiResourceTextPos& b)const { return originalLocation == b.originalLocation && row == b.row && column == b.column; }
+			bool operator!=(const GuiResourceTextPos& b)const { return !(*this == b); }
+		};
+
 		struct GuiResourceError
 		{
-		protected:
-			void									Initialize(Ptr<GuiResourceNodeBase> node);
-
 		public:
 			using List = collections::List<GuiResourceError>;
 
-			WString									resourcePath;
-			WString									filePath;
-			parsing::ParsingTextPos					position;
+			GuiResourceLocation						location;
+			GuiResourceTextPos						position;
 			WString									message;
 
-			GuiResourceError();
-			GuiResourceError(parsing::ParsingTextPos _position, const WString& _message);
-			GuiResourceError(const WString& _filepath, parsing::ParsingTextPos _position, const WString& _message);
-			GuiResourceError(Ptr<GuiResourceNodeBase> node, parsing::ParsingTextPos _position, const WString& _message);
-			GuiResourceError(Ptr<GuiResourceNodeBase> node, const WString& _message);
+			GuiResourceError() = default;
+			GuiResourceError(GuiResourceTextPos _position, const WString& _message);
+			GuiResourceError(GuiResourceLocation _location, const WString& _message);
+			GuiResourceError(GuiResourceLocation _location, GuiResourceTextPos _position, const WString& _message);
 
-			static void								Transform(Ptr<GuiResourceNodeBase> node, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset = { 0,0 }, parsing::ParsingTextPos offsetFix = { 0,0 });
-			static void								Transform(const WString& filepath, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset = { 0,0 }, parsing::ParsingTextPos offsetFix = { 0,0 });
+			bool operator==(const GuiResourceError& b)const { return location == b.location && position == b.position && message == b.message; }
+			bool operator!=(const GuiResourceError& b)const { return !(*this == b); }
+
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors);
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix = { 0,0 });
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix = { 0,0 });
+			static void								SortAndLog(List& errors, collections::List<WString>& output, const WString& workingDirectory = WString::Empty);
 		};
 
 		class DocumentModel;
