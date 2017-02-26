@@ -130,17 +130,13 @@ GuiAttSetterRepr
 							repr->FillXml(xml);
 						}
 					}
-					else
+					else if (From(value->values).Any([](Ptr<GuiValueRepr> value) {return !value->fromStyle; }))
 					{
-						bool containsElement = false;
-						FOREACH(Ptr<GuiValueRepr>, repr, value->values)
-						{
-							if (!repr.Cast<GuiTextRepr>())
+						bool containsElement = From(value->values)
+							.Any([](Ptr<GuiValueRepr> value)
 							{
-								containsElement = true;
-								break;
-							}
-						}
+								return !value->fromStyle && !value.Cast<GuiTextRepr>();
+							});
 
 						if (containsElement)
 						{
@@ -160,16 +156,26 @@ GuiAttSetterRepr
 							}
 							xml->subNodes.Add(xmlProp);
 						}
-						else if (value->values.Count() > 0)
+						else
 						{
-							auto att = MakePtr<XmlAttribute>();
-							att->name.value = key.ToString();
-							if (value->binding != GlobalStringKey::Empty)
+							FOREACH(Ptr<GuiValueRepr>, repr, value->values)
 							{
-								att->name.value += L"-" + value->binding.ToString();
+								if (auto textRepr = repr.Cast<GuiTextRepr>())
+								{
+									if (!textRepr->fromStyle)
+									{
+										auto att = MakePtr<XmlAttribute>();
+										att->name.value = key.ToString();
+										if (value->binding != GlobalStringKey::Empty)
+										{
+											att->name.value += L"-" + value->binding.ToString();
+										}
+										att->value.value = textRepr->text;
+										xml->attributes.Add(att);
+										break;
+									}
+								}
 							}
-							att->value.value = value->values[0].Cast<GuiTextRepr>()->text;
-							xml->attributes.Add(att);
 						}
 					}
 				}
@@ -178,32 +184,36 @@ GuiAttSetterRepr
 				{
 					auto key = eventHandlers.Keys()[i];
 					auto value = eventHandlers.Values()[i];
-
-					auto xmlEvent = MakePtr<XmlElement>();
-					xmlEvent->name.value = L"ev." + key.ToString();
-					if (value->binding != GlobalStringKey::Empty)
+					if (!value->fromStyle)
 					{
-						xmlEvent->name.value += L"-" + value->binding.ToString();
-					}
-					xml->subNodes.Add(xmlEvent);
+						auto xmlEvent = MakePtr<XmlElement>();
+						xmlEvent->name.value = L"ev." + key.ToString();
+						if (value->binding != GlobalStringKey::Empty)
+						{
+							xmlEvent->name.value += L"-" + value->binding.ToString();
+						}
+						xml->subNodes.Add(xmlEvent);
 
-					auto xmlText = MakePtr<XmlCData>();
-					xmlText->content.value = value->value;
-					xmlEvent->subNodes.Add(xmlText);
+						auto xmlText = MakePtr<XmlCData>();
+						xmlText->content.value = value->value;
+						xmlEvent->subNodes.Add(xmlText);
+					}
 				}
 
 				for (vint i = 0; i < environmentVariables.Count(); i++)
 				{
 					auto key = environmentVariables.Keys()[i];
 					auto value = environmentVariables.Values()[i];
+					if (!value->fromStyle)
+					{
+						auto xmlEnvVar = MakePtr<XmlElement>();
+						xmlEnvVar->name.value = L"env." + key.ToString();
+						xml->subNodes.Add(xmlEnvVar);
 
-					auto xmlEnvVar = MakePtr<XmlElement>();
-					xmlEnvVar->name.value = L"env." + key.ToString();
-					xml->subNodes.Add(xmlEnvVar);
-
-					auto xmlText = MakePtr<XmlText>();
-					xmlText->content.value = value->value;
-					xmlEnvVar->subNodes.Add(xmlText);
+						auto xmlText = MakePtr<XmlText>();
+						xmlText->content.value = value->value;
+						xmlEnvVar->subNodes.Add(xmlText);
+					}
 				}
 			}
 		}
