@@ -134,7 +134,7 @@ WorkflowEventNamesVisitor
 						}
 						else
 						{
-							errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" does not exist."));
+							errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, L"[INTERNAL ERROR]" + errorPrefix + L" does not exist."));
 						}
 					SKIP_SET:;
 					}

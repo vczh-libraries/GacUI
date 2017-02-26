@@ -282,7 +282,7 @@ GuiVrtualTypeInstanceLoader
 					if (!controlTemplateNameExpr)
 					{
 						errors.Add(GuiResourceError(resolvingResult.resource, attPosition,
-							L"Precompile: The value of contructor parameter \"" +
+							L"[INTERNAL ERROR] Precompile: The value of contructor parameter \"" +
 							GlobalStringKey::_ControlTemplate.ToString() +
 							L"\" of type \"" +
 							controlTypeInfo.typeName.ToString() +

@@ -253,7 +253,7 @@ WorkflowReferenceNamesVisitor
 							}
 							else
 							{
-								errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, errorPrefix + L" does not support the \"-set\" binding."));
+								errors.Add(GuiResourceError(resolvingResult.resource, setter->attPosition, L"[[INTERNAL-ERROR] ]" + errorPrefix + L" does not support the \"-set\" binding."));
 							}
 						}
 						else if (setter->binding != GlobalStringKey::Empty)
@@ -567,7 +567,7 @@ WorkflowReferenceNamesVisitor
 				else
 				{
 					errors.Add(GuiResourceError(resolvingResult.resource, repr->tagPosition,
-						L"Precompile: Failed to find type \"" +
+						L"[INTERNAL-ERROR] Precompile: Failed to find type \"" +
 						(repr->typeNamespace == GlobalStringKey::Empty
 							? repr->typeName.ToString()
 							: repr->typeNamespace.ToString() + L":" + repr->typeName.ToString()
@@ -592,7 +592,7 @@ WorkflowReferenceNamesVisitor
 				else if (resolvingResult.typeInfos.Keys().Contains(parameter->name))
 				{
 					errors.Add(GuiResourceError(resolvingResult.resource, parameter->classPosition,
-						L"Precompile: Parameter \"" +
+						L"[INTERNAL-ERROR] Precompile: Parameter \"" +
 						parameter->name.ToString() +
 						L"\" conflict with an existing named object."));
 				}
