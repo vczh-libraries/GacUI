@@ -397,6 +397,7 @@ GuiResourceError
 
 		void GuiResourceError::SortAndLog(List& errors, collections::List<WString>& output, const WString& workingDirectory)
 		{
+			if (errors.Count() == 0) return;
 			SortLambda(&errors[0], errors.Count(), [](const GuiResourceError& a, const GuiResourceError& b)
 			{
 				vint result = 0;
