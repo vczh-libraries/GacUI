@@ -198,7 +198,7 @@ void GuiMain()
 				{
 					code = MergeCppFileContent(file.ReadAllText(), code);
 				}
-				file.WriteAllText(code, false, BomEncoder::Utf8);
+				file.WriteAllText(code, false, BomEncoder::Mbcs);
 			}
 		}
 	}
