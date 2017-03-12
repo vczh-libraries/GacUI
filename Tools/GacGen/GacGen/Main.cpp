@@ -131,7 +131,7 @@ void GuiMain()
 		PrintSuccessMessage(L"gacgen> Making : " + inputPath);
 		List<GuiResourceError> errors;
 		resource = GuiResource::LoadFromXml(arguments->Get(0), errors);
-		if (!resource)
+		if (errors.Count() > 0)
 		{
 			PrintErrorMessage(L"error> Failed to load resource.");
 			SaveErrors(errorFilePath, errors);
