@@ -4053,10 +4053,17 @@ ExpandObserveExpression
 							referenceReplacement.Remove(key);
 							overrided.Add(key, value);
 						}
+
+						auto newVar = MakePtr<WfLetVariable>();
+						newVar->name.value = key;
+						newVar->value = CreateField(var->value);
+						expr->variables.Add(newVar);
 					}
 
-					result = CreateField(node->expression);
+					expr->expression = CreateField(node->expression);
 					CopyFrom(referenceReplacement, overrided, true);
+
+					result = expr;
 				}
 
 				void Visit(WfObserveExpression* node)override
