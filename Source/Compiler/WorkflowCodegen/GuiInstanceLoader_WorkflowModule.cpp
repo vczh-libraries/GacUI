@@ -160,10 +160,9 @@ Workflow_InstallCtorClass
 				func->attributes.Add(att);
 			}
 
-			auto member = MakePtr<WfClassMember>();
-			member->kind = WfClassMemberKind::Normal;
-			member->declaration = func;
-			ctorClass->members.Add(member);
+			func->classMember = MakePtr<WfClassMember>();
+			func->classMember->kind = WfClassMemberKind::Normal;
+			ctorClass->declarations.Add(func);
 
 			return block;
 		}
@@ -213,11 +212,9 @@ Variable
 			literal->value = WfLiteralValue::Null;
 			var->expression = literal;
 
-			auto member = MakePtr<WfClassMember>();
-			member->kind = WfClassMemberKind::Normal;
-			member->declaration = var;
-
-			ctorClass->members.Add(member);
+			var->classMember = MakePtr<WfClassMember>();
+			var->classMember->kind = WfClassMemberKind::Normal;
+			ctorClass->declarations.Add(var);
 		}
 		
 		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult)

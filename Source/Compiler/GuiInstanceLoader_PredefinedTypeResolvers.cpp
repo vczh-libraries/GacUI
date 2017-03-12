@@ -15,6 +15,7 @@ namespace vl
 		using namespace parsing::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
+		using namespace workflow::emitter;
 		using namespace workflow::runtime;
 		using namespace reflection::description;
 		using namespace collections;

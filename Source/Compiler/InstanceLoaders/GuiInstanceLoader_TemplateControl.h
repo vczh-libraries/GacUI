@@ -259,11 +259,9 @@ GuiVrtualTypeInstanceLoader
 							block->statements.Add(raiseStat);
 						}
 
-						auto member = MakePtr<WfClassMember>();
-						member->kind = WfClassMemberKind::Override;
-						member->declaration = funcCreateTemplate;
-
-						refFactory->members.Add(member);
+						funcCreateTemplate->classMember = MakePtr<WfClassMember>();
+						funcCreateTemplate->classMember->kind = WfClassMemberKind::Override;
+						refFactory->declarations.Add(funcCreateTemplate);
 					}
 
 					return refFactory;

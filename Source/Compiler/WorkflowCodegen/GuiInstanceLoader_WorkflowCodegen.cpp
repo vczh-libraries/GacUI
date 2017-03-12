@@ -185,10 +185,9 @@ WorkflowEventNamesVisitor
 								block->statements.Add(raiseStat);
 							}
 
-							auto member = MakePtr<WfClassMember>();
-							member->kind = WfClassMemberKind::Normal;
-							member->declaration = decl;
-							instanceClass->members.Add(member);
+							decl->classMember = MakePtr<WfClassMember>();
+							decl->classMember->kind = WfClassMemberKind::Normal;
+							instanceClass->declarations.Add(decl);
 						}
 						else
 						{
@@ -248,6 +247,46 @@ WorkflowEventNamesVisitor
 /***********************************************************************
 Workflow_GenerateInstanceClass
 ***********************************************************************/
+
+		class ReplaceDeclImplVisitor
+			: public empty_visitor::DeclarationVisitor
+			, public empty_visitor::VirtualDeclarationVisitor
+		{
+		public:
+			Func<Ptr<WfStatement>()>			statCtor;
+			List<Ptr<WfDeclaration>>&			unprocessed;
+
+			ReplaceDeclImplVisitor(Func<Ptr<WfStatement>()> _statCtor, List<Ptr<WfDeclaration>>& _unprocessed)
+				:statCtor(_statCtor)
+				, unprocessed(_unprocessed)
+			{
+			}
+
+			virtual void Dispatch(WfVirtualDeclaration* node)override
+			{
+				node->Accept(static_cast<WfVirtualDeclaration::IVisitor*>(this));
+			}
+
+			virtual void Visit(WfFunctionDeclaration* node)override
+			{
+				node->statement = statCtor();
+			}
+
+			virtual void Visit(WfConstructorDeclaration* node)override
+			{
+				node->statement = statCtor();
+			}
+
+			virtual void Visit(WfDestructorDeclaration* node)override
+			{
+				node->statement = statCtor();
+			}
+
+			virtual void Visit(WfClassDeclaration* node)override
+			{
+				CopyFrom(unprocessed, node->declarations, true);
+			}
+		};
 
 		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
 		{
@@ -339,13 +378,13 @@ Workflow_GenerateInstanceClass
 			};
 
 			auto moduleParser = GetParserManager()->GetParser<WfModule>(L"WORKFLOW-MODULE");
-			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfClassMember>>& members, GuiResourceTextPos position)
+			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfDeclaration>>& memberDecls, GuiResourceTextPos position)
 			{
 				List<Ptr<ParsingError>> parsingErrors;
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
 				if (auto module = moduleParser->TypedParse(wrappedCode, parsingErrors))
 				{
-					CopyFrom(members, module->declarations[0].Cast<WfClassDeclaration>()->members);
+					CopyFrom(memberDecls, module->declarations[0].Cast<WfClassDeclaration>()->declarations);
 				}
 				else
 				{
@@ -366,10 +405,9 @@ Workflow_GenerateInstanceClass
 
 			auto addDecl = [=](Ptr<WfDeclaration> decl)
 			{
-				auto member = MakePtr<WfClassMember>();
-				member->kind = WfClassMemberKind::Normal;
-				member->declaration = decl;
-				instanceClass->members.Add(member);
+				decl->classMember = MakePtr<WfClassMember>();
+				decl->classMember->kind = WfClassMemberKind::Normal;
+				instanceClass->declarations.Add(decl);
 			};
 
 			auto notImplemented = []()
@@ -388,36 +426,22 @@ Workflow_GenerateInstanceClass
 
 			if (context->memberScript != L"")
 			{
-				List<Ptr<WfClassMember>> members;
-				parseClassMembers(context->memberScript, L"members of instance \"" + context->className + L"\"", members, context->memberPosition);
+				List<Ptr<WfDeclaration>> memberDecls;
+				parseClassMembers(context->memberScript, L"members of instance \"" + context->className + L"\"", memberDecls, context->memberPosition);
 
 				if (beforePrecompile)
 				{
-					List<Ptr<WfClassMember>> unprocessed;
-					CopyFrom(unprocessed, members);
+					List<Ptr<WfDeclaration>> unprocessed;
+					CopyFrom(unprocessed, memberDecls);
+
+					ReplaceDeclImplVisitor visitor(notImplemented, unprocessed);
 					for (vint i = 0; i < unprocessed.Count(); i++)
 					{
-						auto decl = unprocessed[i]->declaration;
-						if (auto funcDecl = decl.Cast<WfFunctionDeclaration>())
-						{
-							funcDecl->statement = notImplemented();
-						}
-						else if (auto ctorDecl = decl.Cast<WfConstructorDeclaration>())
-						{
-							ctorDecl->statement = notImplemented();
-						}
-						else if (auto dtorDecl = decl.Cast<WfDestructorDeclaration>())
-						{
-							dtorDecl->statement = notImplemented();
-						}
-						else if (auto classDecl = decl.Cast<WfClassDeclaration>())
-						{
-							CopyFrom(unprocessed, classDecl->members, true);
-						}
+						unprocessed[i]->Accept(&visitor);
 					}
 				}
 
-				CopyFrom(instanceClass->members, members, true);
+				CopyFrom(instanceClass->declarations, memberDecls, true);
 			}
 
 			auto ctor = MakePtr<WfConstructorDeclaration>();
