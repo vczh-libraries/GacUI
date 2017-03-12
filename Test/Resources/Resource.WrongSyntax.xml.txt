@@ -1,2 +1,2 @@
  # .\Resource.WrongSyntax.xml
-(0, 1): Error happened during parsing.
+(1, 2): Error happened during parsing.

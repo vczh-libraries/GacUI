@@ -441,7 +441,12 @@ GuiResourceError
 					path = CONVERT_FILEPATH(path);
 					error.message = prefix + path + postfix;
 				}
-				output.Add(L"(" + itow(error.position.row) + L", " + itow(error.position.column) + L"): " + error.message);
+
+				auto row = error.position.row;
+				if (row >= 0) row++;
+				auto column = error.position.column;
+				if (column >= 0) column++;
+				output.Add(L"(" + itow(row) + L", " + itow(column) + L"): " + error.message);
 #undef CONVERT_FILEPATH
 #undef CONVERT_LOCATION
 			}
