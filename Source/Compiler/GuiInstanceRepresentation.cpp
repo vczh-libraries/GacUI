@@ -291,10 +291,7 @@ GuiInstanceContext
 				// collect default attributes
 				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
 				{
-					List<Ptr<ParsingError>> parsingErrors;
-					auto name = parser->TypedParse(element->name.value, parsingErrors);
-					GuiResourceError::Transform({ resource }, errors, parsingErrors, element->codeRange.start);
-					if (name)
+					if(auto name = parser->Parse({ resource }, element->name.value, element->codeRange.start, errors))
 					{
 						if (name->IsCtorName())
 						{
@@ -330,10 +327,7 @@ GuiInstanceContext
 				// collect values
 				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
 				{
-					List<Ptr<ParsingError>> parsingErrors;
-					auto name = parser->TypedParse(element->name.value, parsingErrors);
-					GuiResourceError::Transform({ resource }, errors, parsingErrors, element->name.codeRange.start);
-					if (name)
+					if(auto name = parser->Parse({ resource }, element->name.value, element->name.codeRange.start, errors))
 					{
 						if (name->IsPropertyElementName())
 						{
@@ -380,10 +374,7 @@ GuiInstanceContext
 				// collect values
 				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
 				{
-					List<Ptr<ParsingError>> parsingErrors;
-					auto name = parser->TypedParse(element->name.value, parsingErrors);
-					GuiResourceError::Transform({ resource }, errors, parsingErrors, element->name.codeRange.start);
-					if (name)
+					if(auto name = parser->Parse({ resource }, element->name.value, element->name.codeRange.start, errors))
 					{
 						if (name->IsEventElementName())
 						{
@@ -441,10 +432,7 @@ GuiInstanceContext
 				// collect attributes as setters
 				FOREACH(Ptr<XmlAttribute>, att, xml->attributes)
 				{
-					List<Ptr<ParsingError>> parsingErrors;
-					auto name = parser->TypedParse(att->name.value, parsingErrors);
-					GuiResourceError::Transform({ resource }, errors, parsingErrors, att->name.codeRange.start);
-					if (name)
+					if(auto name = parser->Parse({ resource }, att->name.value, att->name.codeRange.start, errors))
 					{
 						if (name->IsReferenceAttributeName())
 						{
@@ -527,10 +515,7 @@ GuiInstanceContext
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
-				List<Ptr<ParsingError>> parsingErrors;
-				auto ctorName = parser->TypedParse(xml->name.value, parsingErrors);
-				GuiResourceError::Transform({ resource }, errors, parsingErrors, xml->name.codeRange.start);
-				if (ctorName)
+				if(auto ctorName = parser->Parse({ resource }, xml->name.value, xml->name.codeRange.start, errors))
 				{
 					if (ctorName->IsCtorName())
 					{
@@ -540,10 +525,7 @@ GuiInstanceContext
 						// collect attributes as setters
 						FOREACH(Ptr<XmlAttribute>, att, xml->attributes)
 						{
-							parsingErrors.Clear();
-							auto attName = parser->TypedParse(att->name.value, parsingErrors);
-							GuiResourceError::Transform({ resource }, errors, parsingErrors, att->name.codeRange.start);
-							if (attName)
+							if(auto attName = parser->Parse({ resource }, att->name.value, att->name.codeRange.start, errors))
 							{
 								if (attName->IsReferenceAttributeName())
 								{
@@ -910,10 +892,11 @@ GuiInstanceStyle
 			auto style = MakePtr<GuiInstanceStyle>();
 			if (auto pathAttr = XmlGetAttribute(xml, L"ref.Path"))
 			{
-				List<Ptr<ParsingError>> parsingErrors;
+				auto position = pathAttr->value.codeRange.start;
+				position.column += 1;
+
 				auto parser = GetParserManager()->GetParser<GuiIqQuery>(L"INSTANCE-QUERY");
-				auto query = parser->TypedParse(pathAttr->value.value, parsingErrors);
-				GuiResourceError::Transform({ resource }, errors, parsingErrors, pathAttr->value.codeRange.start, { 0,1 });
+				auto query = parser->Parse({ resource }, pathAttr->value.value, position, errors);
 				if (!query) return nullptr;
 				style->query = query;
 			}

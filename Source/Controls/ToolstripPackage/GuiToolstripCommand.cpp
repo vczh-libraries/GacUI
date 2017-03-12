@@ -60,7 +60,7 @@ GuiToolstripCommand
 			{
 				List<Ptr<ParsingError>> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
-				if (Ptr<ShortcutBuilder> builder = parser->TypedParse(builderText, errors))
+				if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
 				{
 					if (shortcutOwner)
 					{
@@ -206,7 +206,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				{
 				}
 
-				Ptr<ShortcutBuilder> TypedParse(const WString& text, collections::List<Ptr<ParsingError>>& errors)override
+				Ptr<ShortcutBuilder> ParseInternal(const WString& text, collections::List<Ptr<ParsingError>>& errors)override
 				{
 					Ptr<RegexMatch> match=regexShortcut.MatchHead(text);
 					if (match && match->Result().Length() != text.Length())

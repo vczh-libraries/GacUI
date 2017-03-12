@@ -117,19 +117,12 @@ GuiEvalInstanceBinder (eval)
 
 			Ptr<workflow::WfExpression> GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				List<Ptr<ParsingError>> parsingErrors;
-				auto expression = Workflow_ParseExpression(code, parsingErrors);
-				GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
-				return expression;
+				return Workflow_ParseExpression({ resolvingResult.resource }, code, position, errors);
 			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				List<Ptr<ParsingError>> parsingErrors;
-				auto expression = Workflow_ParseExpression(code, parsingErrors);
-				GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
-
-				if (expression)
+				if(auto expression = Workflow_ParseExpression({ resolvingResult.resource }, code, position, errors))
 				{
 					return Workflow_InstallEvalProperty(resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
 				}
@@ -166,11 +159,7 @@ GuiBindInstanceBinder (bind)
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				List<Ptr<ParsingError>> parsingErrors;
-				auto expression = Workflow_ParseExpression(code, parsingErrors);
-				GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
-
-				if (expression)
+				if(auto expression = Workflow_ParseExpression({ resolvingResult.resource }, code, position, errors))
 				{
 					auto inferExpr = MakePtr<WfInferExpression>();
 					inferExpr->expression = expression;
@@ -214,18 +203,7 @@ GuiFormatInstanceBinder (format)
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				List<Ptr<ParsingError>> parsingErrors;
-				auto expression = Workflow_ParseExpression(L"bind($\"" + code + L"\")", parsingErrors);
-				FOREACH(Ptr<ParsingError>, error, parsingErrors)
-				{
-					if (error->codeRange.start.row >= 0)
-					{
-						error->codeRange.start.column -= 7; // bind($"
-					}
-				}
-				GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
-
-				if (expression)
+				if (auto expression = Workflow_ParseExpression({ resolvingResult.resource }, L"bind($\"" + code + L"\")", position, errors, { 0,7 })) // bind($"
 				{
 					return Workflow_InstallBindProperty(resolvingResult, variableName, propertyInfo, expression);
 				}
@@ -247,11 +225,7 @@ GuiEvalInstanceEventBinder (eval)
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				List<Ptr<ParsingError>> parsingErrors;
-				auto statement = Workflow_ParseStatement(code, parsingErrors);
-				GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
-
-				if (statement)
+				if(auto statement = Workflow_ParseStatement({ resolvingResult.resource }, code, position, errors))
 				{
 					return Workflow_InstallEvalEvent(resolvingResult, variableName, eventInfo, statement);
 				}

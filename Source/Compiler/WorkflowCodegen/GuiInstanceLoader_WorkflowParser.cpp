@@ -13,16 +13,50 @@ namespace vl
 Parser
 ***********************************************************************/
 
-		Ptr<workflow::WfExpression> Workflow_ParseExpression(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors)
+		template<typename T>
+		Ptr<T> Workflow_Parse(const WString& parserName, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
 		{
-			auto parser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
-			return parser->TypedParse(code, errors);
+			vint errorCount = errors.Count();
+			auto parser = GetParserManager()->GetParser<T>(parserName);
+			auto result = parser->Parse(location, code, position, errors);
+
+			if (availableAfter.row != 0 || availableAfter.column != 0)
+			{
+				for (vint i = errorCount; i < errors.Count(); i++)
+				{
+					auto& error = errors[i];
+					if (error.position.row > position.row)
+					{
+						error.position.row -= availableAfter.row;
+					}
+					else if (error.position.row == position.row && error.position.column >= position.column)
+					{
+						error.position.column -= availableAfter.column;
+					}
+				}
+			}
+
+			return result;
 		}
 
-		Ptr<workflow::WfStatement> Workflow_ParseStatement(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors)
+		Ptr<workflow::WfType> Workflow_ParseType(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
 		{
-			auto parser = GetParserManager()->GetParser<WfStatement>(L"WORKFLOW-STATEMENT");
-			return parser->TypedParse(code, errors);
+			return Workflow_Parse<WfType>(L"WORKFLOW-TYPE", location, code, position, errors, availableAfter);
+		}
+
+		Ptr<workflow::WfExpression> Workflow_ParseExpression(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		{
+			return Workflow_Parse<WfExpression>(L"WORKFLOW-EXPRESSION", location, code, position, errors, availableAfter);
+		}
+
+		Ptr<workflow::WfStatement> Workflow_ParseStatement(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		{
+			return Workflow_Parse<WfStatement>(L"WORKFLOW-STATEMENT", location, code, position, errors, availableAfter);
+		}
+
+		Ptr<workflow::WfModule> Workflow_ParseModule(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		{
+			return Workflow_Parse<WfModule>(L"WORKFLOW-MODULE", location, code, position, errors, availableAfter);
 		}
 
 /***********************************************************************
@@ -45,7 +79,7 @@ Workflow_ModuleToString
 Converter
 ***********************************************************************/
 
-		Ptr<workflow::WfExpression> Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, collections::List<Ptr<parsing::ParsingError>>& errors)
+		Ptr<workflow::WfExpression> Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, GuiResourceLocation location, const WString& textValue, GuiResourceTextPos position, collections::List<GuiResourceError>& errors)
 		{
 			if (typeDescriptor == description::GetTypeDescriptor<WString>())
 			{
@@ -69,45 +103,31 @@ Converter
 			}
 			else if (typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
 			{
-				vint oldErrorCount = errors.Count();
-				auto valueExpr = Workflow_ParseExpression(L"{" + textValue + L"}", errors);
-				for (vint i = oldErrorCount; i < errors.Count(); i++)
+				if (auto valueExpr = Workflow_ParseExpression(location, L"{" + textValue + L"}", position, errors, { 0,1 })) // {
 				{
-					auto error = errors[i];
-					if (error->codeRange.start.row >= 0)
-					{
-						errors[i]->codeRange.start.column -= 1; // {
-					}
+					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+
+					auto infer = MakePtr<WfInferExpression>();
+					infer->type = GetTypeFromTypeInfo(type.Obj());
+					infer->expression = valueExpr;
+
+					return infer;
 				}
-
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
-
-				auto infer = MakePtr<WfInferExpression>();
-				infer->type = GetTypeFromTypeInfo(type.Obj());
-				infer->expression = valueExpr;
-
-				return infer;
+				return nullptr;
 			}
 			else if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 			{
-				vint oldErrorCount = errors.Count();
-				auto valueExpr = Workflow_ParseExpression(L"(" + textValue + L")", errors);
-				for (vint i = oldErrorCount; i < errors.Count(); i++)
+				if (auto valueExpr = Workflow_ParseExpression(location, L"(" + textValue + L")", position, errors, { 0,1 })) // {
 				{
-					auto error = errors[i];
-					if (error->codeRange.start.row >= 0)
-					{
-						errors[i]->codeRange.start.column -= 1; // (
-					}
+					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+
+					auto infer = MakePtr<WfInferExpression>();
+					infer->type = GetTypeFromTypeInfo(type.Obj());
+					infer->expression = valueExpr;
+
+					return infer;
 				}
-
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
-
-				auto infer = MakePtr<WfInferExpression>();
-				infer->type = GetTypeFromTypeInfo(type.Obj());
-				infer->expression = valueExpr;
-
-				return infer;
+				return nullptr;
 			}
 			else
 			{

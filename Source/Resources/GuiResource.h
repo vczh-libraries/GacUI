@@ -222,8 +222,8 @@ Resource Structure
 			bool operator!=(const GuiResourceError& b)const { return !(*this == b); }
 
 			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors);
-			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix = { 0,0 });
-			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix = { 0,0 });
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset);
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset);
 			static void								SortAndLog(List& errors, collections::List<WString>& output, const WString& workingDirectory = WString::Empty);
 		};
 
