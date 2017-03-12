@@ -15,7 +15,7 @@ int wmain(int argc, wchar_t* argv[])
 	SetupWindowsDirect2DRenderer();
 }
 
-void SaveErrors(FilePath errorFilePath, List<WString>& errors)
+void SaveErrors(FilePath errorFilePath, List<GuiResourceError>& errors)
 {
 	FileStream fileStream(errorFilePath.GetFullPath(), FileStream::WriteOnly);
 	if (fileStream.IsAvailable())
@@ -24,10 +24,12 @@ void SaveErrors(FilePath errorFilePath, List<WString>& errors)
 		EncoderStream encoderStream(fileStream, encoder);
 		StreamWriter writer(encoderStream);
 
-		FOREACH(WString, error, errors)
+		List<WString> output;
+		GuiResourceError::SortAndLog(errors, output);
+		FOREACH(WString, line, output)
 		{
-			PrintErrorMessage(error);
-			writer.WriteLine(error);
+			PrintErrorMessage(line);
+			writer.WriteLine(line);
 		}
 
 		PrintInformationMessage(L"gacgen> Error information is saved at : " + errorFilePath.GetFullPath());
@@ -127,7 +129,7 @@ void GuiMain()
 	Ptr<GuiResource> resource;
 	{
 		PrintSuccessMessage(L"gacgen> Making : " + inputPath);
-		List<WString> errors;
+		List<GuiResourceError> errors;
 		resource = GuiResource::LoadFromXml(arguments->Get(0), errors);
 		if (!resource)
 		{
@@ -148,7 +150,7 @@ void GuiMain()
 	}
 
 	PrintSuccessMessage(L"gacgen> Compiling...");
-	List<WString> errors;
+	List<GuiResourceError> errors;
 	Callback callback;
 	resource->Precompile(&callback, errors);
 	if (errors.Count() > 0)

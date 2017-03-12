@@ -96,9 +96,9 @@ Compiled Workflow Type Resolver (Workflow)
 				return this;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				if (auto obj = resource.Cast<GuiInstanceCompiledWorkflow>())
+				if (auto obj = content.Cast<GuiInstanceCompiledWorkflow>())
 				{
 					internal::ContextFreeWriter writer(stream);
 
@@ -114,7 +114,7 @@ Compiled Workflow Type Resolver (Workflow)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
 				internal::ContextFreeReader reader(stream);
 
@@ -649,24 +649,41 @@ Type Declaration
 			END_CLASS_MEMBER(DocumentStyle)
 
 			BEGIN_CLASS_MEMBER(DocumentModel)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<DocumentModel>(const WString&), {L"filePath"}, vl::reflection::description::DocumentModel_Constructor)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DocumentModel>(), NO_PARAMETER)
 				
 				CLASS_MEMBER_FIELD(paragraphs)
 				CLASS_MEMBER_FIELD(styles)
 
 				CLASS_MEMBER_METHOD_OVERLOAD(GetText, {L"skipNonTextContent"}, WString(DocumentModel::*)(bool))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(LoadFromXml, {L"xml" _ L"workingDirectory" _ L"errors"}, Ptr<DocumentModel>(*)(Ptr<XmlDocument>, const WString&, List<WString>&))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(LoadFromXml, {L"filePath" _ L"errors"}, Ptr<DocumentModel>(*)(const WString&, List<WString>&))
+				CLASS_MEMBER_STATIC_METHOD(LoadFromXml, {L"resource" _ L"xml" _ L"workingDirectory" _ L"errors"})
 				CLASS_MEMBER_METHOD_OVERLOAD(SaveToXml, NO_PARAMETER, Ptr<XmlDocument>(DocumentModel::*)())
-				CLASS_MEMBER_METHOD_OVERLOAD(SaveToXml, {L"filePath"}, bool(DocumentModel::*)(const WString&))
 			END_CLASS_MEMBER(DocumentModel)
 
 			BEGIN_CLASS_MEMBER(GuiResourceNodeBase)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ResourcePath)
-				CLASS_MEMBER_PROPERTY_FAST(FileContentPath)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(FileContentPath)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(FileAbsolutePath)
+				CLASS_MEMBER_METHOD(SetFileContentPath, { L"content" _ L"absolute" })
 			END_CLASS_MEMBER(GuiResourceNodeBase)
+
+			BEGIN_STRUCT_MEMBER(GuiResourceLocation)
+				STRUCT_MEMBER(resourcePath)
+				STRUCT_MEMBER(filePath)
+			END_STRUCT_MEMBER(GuiResourceLocation)
+
+			BEGIN_STRUCT_MEMBER(GuiResourceTextPos)
+				STRUCT_MEMBER(originalLocation)
+				STRUCT_MEMBER(row)
+				STRUCT_MEMBER(column)
+			END_STRUCT_MEMBER(GuiResourceTextPos)
+
+			BEGIN_STRUCT_MEMBER(GuiResourceError)
+				STRUCT_MEMBER(location)
+				STRUCT_MEMBER(position)
+				STRUCT_MEMBER(message)
+			END_STRUCT_MEMBER(GuiResourceError)
 
 			BEGIN_CLASS_MEMBER(GuiResourceItem)
 				CLASS_MEMBER_BASE(GuiResourceNodeBase)
@@ -701,8 +718,6 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiResource)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiResource>(), NO_PARAMETER)
-				CLASS_MEMBER_EXTERNALCTOR(Ptr<GuiResource>(const WString&, List<WString>&), {L"filePath" _ L"errors"}, vl::presentation::GuiResource::LoadFromXml);
-
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(WorkingDirectory)
 
 				CLASS_MEMBER_METHOD(GetDocumentByPath, {L"path"})

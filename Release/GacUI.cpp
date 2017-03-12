@@ -128,24 +128,6 @@ External Functions (Basic)
 				return GetCurrentController()->ResourceService()->GetSystemCursor(type);
 			}
 
-			Ptr<DocumentModel> DocumentModel_Constructor(const WString& path)
-			{
-				FileStream fileStream(path, FileStream::ReadOnly);
-				if (!fileStream.IsAvailable()) return 0;
-
-				BomDecoder decoder;
-				DecoderStream decoderStream(fileStream, decoder);
-				StreamReader reader(decoderStream);
-				WString xmlText = reader.ReadToEnd();
-
-				Ptr<ParsingTable> table = XmlLoadTable();
-				Ptr<XmlDocument> xml = XmlParseDocument(xmlText, table);
-				if (!xml) return 0;
-
-				List<WString> errors;
-				return DocumentModel::LoadFromXml(xml, GetFolderPath(path), errors);
-			}
-
 /***********************************************************************
 External Functions (Elements)
 ***********************************************************************/
@@ -32174,6 +32156,7 @@ namespace vl
 			using namespace collections;
 			using namespace compositions;
 			using namespace regex;
+			using namespace parsing;
 
 /***********************************************************************
 GuiToolstripCommand
@@ -32220,7 +32203,7 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::BuildShortcut(const WString& builderText)
 			{
-				List<WString> errors;
+				List<Ptr<ParsingError>> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
 				if (Ptr<ShortcutBuilder> builder = parser->TypedParse(builderText, errors))
 				{
@@ -32368,12 +32351,12 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				{
 				}
 
-				Ptr<ShortcutBuilder> TypedParse(const WString& text, collections::List<WString>& errors)override
+				Ptr<ShortcutBuilder> TypedParse(const WString& text, collections::List<Ptr<ParsingError>>& errors)override
 				{
 					Ptr<RegexMatch> match=regexShortcut.MatchHead(text);
 					if (match && match->Result().Length() != text.Length())
 					{
-						errors.Add(L"Failed to parse a shortcut \"" + text + L"\".");
+						errors.Add(new ParsingError(L"Failed to parse a shortcut \"" + text + L"\"."));
 						return 0;
 					}
 
@@ -43073,14 +43056,16 @@ document_operation_visitors::DeserializeNodeVisitor
 				Ptr<DocumentModel>					model;
 				Ptr<DocumentContainerRun>			container;
 				vint								paragraphIndex;
+				Ptr<GuiResourceItem>				resource;
 				Ptr<GuiResourcePathResolver>		resolver;
 				Regex								regexAttributeApply;
-				List<WString>&						errors;
+				GuiResourceError::List&				errors;
 
-				DeserializeNodeVisitor(Ptr<DocumentModel> _model, Ptr<DocumentParagraphRun> _paragraph, vint _paragraphIndex, Ptr<GuiResourcePathResolver> _resolver, List<WString>& _errors)
+				DeserializeNodeVisitor(Ptr<DocumentModel> _model, Ptr<DocumentParagraphRun> _paragraph, vint _paragraphIndex, Ptr<GuiResourceItem> _resource, Ptr<GuiResourcePathResolver> _resolver, GuiResourceError::List& _errors)
 					:model(_model)
 					, container(_paragraph)
 					, paragraphIndex(_paragraphIndex)
+					, resource(_resource)
 					, resolver(_resolver)
 					, regexAttributeApply(L"/{@(<value>[^{}]+)/}")
 					, errors(_errors)
@@ -43089,8 +43074,8 @@ document_operation_visitors::DeserializeNodeVisitor
 
 				void PrintText(const WString& text)
 				{
-					Ptr<DocumentTextRun> run=new DocumentTextRun;
-					run->text=text;
+					Ptr<DocumentTextRun> run = new DocumentTextRun;
+					run->text = text;
 					container->runs.Add(run);
 				}
 
@@ -43115,215 +43100,219 @@ document_operation_visitors::DeserializeNodeVisitor
 				void Visit(XmlElement* node)override
 				{
 					Ptr<DocumentContainerRun> createdContainer;
-					bool useTemplateInfo=false;
-					XmlElement* subNodeContainer=node;
+					bool useTemplateInfo = false;
+					XmlElement* subNodeContainer = node;
 
-					if(node->name.value==L"br")
+					if (node->name.value == L"br")
 					{
 						PrintText(L"\r\n");
 					}
-					else if(node->name.value==L"sp")
+					else if (node->name.value == L"sp")
 					{
 						PrintText(L" ");
 					}
-					else if(node->name.value==L"tab")
+					else if (node->name.value == L"tab")
 					{
 						PrintText(L"\t");
 					}
-					else if(node->name.value==L"img")
+					else if (node->name.value == L"img")
 					{
-						Ptr<DocumentImageRun> run=new DocumentImageRun;
+						Ptr<DocumentImageRun> run = new DocumentImageRun;
 						run->baseline = -1;
 
-						if(Ptr<XmlAttribute> source=XmlGetAttribute(node, L"source"))
+						if (Ptr<XmlAttribute> source = XmlGetAttribute(node, L"source"))
 						{
-							run->source=source->value.value;
+							run->source = source->value.value;
 							WString protocol, path;
-							if(IsResourceUrl(run->source, protocol, path))
+							if (IsResourceUrl(run->source, protocol, path))
 							{
-								Ptr<GuiImageData> imageData=resolver->ResolveResource(protocol, path).Cast<GuiImageData>();
-								if(imageData)
+								Ptr<GuiImageData> imageData = resolver->ResolveResource(protocol, path).Cast<GuiImageData>();
+								if (imageData)
 								{
-									run->image=imageData->GetImage();
+									run->image = imageData->GetImage();
 								}
-								if(run->image && run->image->GetFrameCount()>0)
+								if (run->image && run->image->GetFrameCount() > 0)
 								{
-									run->size=run->image->GetFrame(0)->GetSize();
-									run->frameIndex=0;
+									run->size = run->image->GetFrame(0)->GetSize();
+									run->frameIndex = 0;
 								}
 							}
 
 							FOREACH(Ptr<XmlAttribute>, att, node->attributes)
 							{
-								if(att->name.value==L"width")
+								if (att->name.value == L"width")
 								{
-									run->size.x=wtoi(att->value.value);
+									run->size.x = wtoi(att->value.value);
 								}
-								else if(att->name.value==L"height")
+								else if (att->name.value == L"height")
 								{
-									run->size.y=wtoi(att->value.value);
+									run->size.y = wtoi(att->value.value);
 								}
-								else if(att->name.value==L"baseline")
+								else if (att->name.value == L"baseline")
 								{
-									run->baseline=wtoi(att->value.value);
+									run->baseline = wtoi(att->value.value);
 								}
-								else if(att->name.value==L"frameIndex")
+								else if (att->name.value == L"frameIndex")
 								{
-									run->frameIndex=wtoi(att->value.value);
+									run->frameIndex = wtoi(att->value.value);
 								}
 								else if (att->name.value != L"source")
 								{
-									errors.Add(L"Unknown attribute in <img> \"" + att->name.value + L"\".");
+									errors.Add(GuiResourceError({ {resource},att->name.codeRange.start }, L"Unknown attribute in <img>: \"" + att->name.value + L"\"."));
 								}
 							}
 
 							container->runs.Add(run);
 						}
+						else
+						{
+							errors.Add(GuiResourceError({ {resource},node->codeRange.start }, L"Attribute \"source\" is missing in <img>."));
+						}
 					}
-					else if(node->name.value==L"object")
+					else if (node->name.value == L"object")
 					{
-						Ptr<DocumentEmbeddedObjectRun> run=new DocumentEmbeddedObjectRun;
+						Ptr<DocumentEmbeddedObjectRun> run = new DocumentEmbeddedObjectRun;
 						run->baseline = -1;
 
-						if(Ptr<XmlAttribute> name=XmlGetAttribute(node, L"name"))
+						if (auto name = XmlGetAttribute(node, L"name"))
 						{
 							run->name = name->value.value;
 							container->runs.Add(run);
 						}
 						else
 						{
-							errors.Add(L"The \"name\" attribute in <object> is missing.");
+							errors.Add(GuiResourceError({ {resource},node->codeRange.start }, L"The \"name\" attribute in <object> is missing."));
 						}
 					}
-					else if(node->name.value==L"font")
+					else if (node->name.value == L"font")
 					{
-						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();
-						Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
-						run->style=sp;
+						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
+						Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
+						run->style = sp;
 
 						FOREACH(Ptr<XmlAttribute>, att, node->attributes)
 						{
-							if(att->name.value==L"face")
+							if (att->name.value == L"face")
 							{
-								sp->face=att->value.value;
+								sp->face = att->value.value;
 							}
-							else if(att->name.value==L"size")
+							else if (att->name.value == L"size")
 							{
-								sp->size=DocumentFontSize::Parse(att->value.value);
+								sp->size = DocumentFontSize::Parse(att->value.value);
 							}
-							else if(att->name.value==L"color")
+							else if (att->name.value == L"color")
 							{
-								sp->color=Color::Parse(att->value.value);
+								sp->color = Color::Parse(att->value.value);
 							}
-							else if(att->name.value==L"bkcolor")
+							else if (att->name.value == L"bkcolor")
 							{
-								sp->backgroundColor=Color::Parse(att->value.value);
+								sp->backgroundColor = Color::Parse(att->value.value);
 							}
 							else
 							{
-								errors.Add(L"Unknown attribute in <font> \"" + att->name.value + L"\".");
+								errors.Add(GuiResourceError({ {resource},att->name.codeRange.start }, L"Unknown attribute in <font>: \"" + att->name.value + L"\"."));
 							}
 						}
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"b" || node->name.value==L"b-")
+					else if (node->name.value == L"b" || node->name.value == L"b-")
 					{
-						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();
-						run->style=new DocumentStyleProperties;
-						run->style->bold=node->name.value==L"b";
+						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
+						run->style = new DocumentStyleProperties;
+						run->style->bold = node->name.value == L"b";
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"i" || node->name.value==L"i-")
+					else if (node->name.value == L"i" || node->name.value == L"i-")
 					{
-						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();
-						run->style=new DocumentStyleProperties;
-						run->style->italic=node->name.value==L"i";
+						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
+						run->style = new DocumentStyleProperties;
+						run->style->italic = node->name.value == L"i";
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"u" || node->name.value==L"u-")
+					else if (node->name.value == L"u" || node->name.value == L"u-")
 					{
-						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();
-						run->style=new DocumentStyleProperties;
-						run->style->underline=node->name.value==L"u";
+						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
+						run->style = new DocumentStyleProperties;
+						run->style->underline = node->name.value == L"u";
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"s" || node->name.value==L"s-")
+					else if (node->name.value == L"s" || node->name.value == L"s-")
 					{
-						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();
-						run->style=new DocumentStyleProperties;
-						run->style->strikeline=node->name.value==L"s";
+						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
+						run->style = new DocumentStyleProperties;
+						run->style->strikeline = node->name.value == L"s";
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"ha")
+					else if (node->name.value == L"ha")
 					{
-						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();
-						run->style=new DocumentStyleProperties;
-						run->style->antialias=true;
-						run->style->verticalAntialias=false;
+						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
+						run->style = new DocumentStyleProperties;
+						run->style->antialias = true;
+						run->style->verticalAntialias = false;
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"va")
+					else if (node->name.value == L"va")
 					{
-						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();
-						run->style=new DocumentStyleProperties;
-						run->style->antialias=true;
-						run->style->verticalAntialias=true;
+						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
+						run->style = new DocumentStyleProperties;
+						run->style->antialias = true;
+						run->style->verticalAntialias = true;
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"na")
+					else if (node->name.value == L"na")
 					{
-						Ptr<DocumentStylePropertiesRun> run=new DocumentStylePropertiesRun();
-						run->style=new DocumentStyleProperties;
-						run->style->antialias=false;
-						run->style->verticalAntialias=false;
+						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
+						run->style = new DocumentStyleProperties;
+						run->style->antialias = false;
+						run->style->verticalAntialias = false;
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"div")
+					else if (node->name.value == L"div")
 					{
-						if(Ptr<XmlAttribute> att=XmlGetAttribute(node, L"style"))
+						if (Ptr<XmlAttribute> att = XmlGetAttribute(node, L"style"))
 						{
-							WString styleName=att->value.value;
-							
-							Ptr<DocumentStyleApplicationRun> run=new DocumentStyleApplicationRun;
-							run->styleName=styleName;
+							WString styleName = att->value.value;
+
+							Ptr<DocumentStyleApplicationRun> run = new DocumentStyleApplicationRun;
+							run->styleName = styleName;
 							container->runs.Add(run);
-							createdContainer=run;
+							createdContainer = run;
 						}
 						else
 						{
-							createdContainer=container;
+							createdContainer = container;
 						}
 					}
-					else if(node->name.value==L"a")
+					else if (node->name.value == L"a")
 					{
-						Ptr<DocumentHyperlinkRun> run=new DocumentHyperlinkRun;
-						run->normalStyleName=L"#NormalLink";
-						run->activeStyleName=L"#ActiveLink";
-						if(Ptr<XmlAttribute> att=XmlGetAttribute(node, L"normal"))
+						Ptr<DocumentHyperlinkRun> run = new DocumentHyperlinkRun;
+						run->normalStyleName = L"#NormalLink";
+						run->activeStyleName = L"#ActiveLink";
+						if (Ptr<XmlAttribute> att = XmlGetAttribute(node, L"normal"))
 						{
-							run->normalStyleName=att->value.value;
+							run->normalStyleName = att->value.value;
 						}
-						if(Ptr<XmlAttribute> att=XmlGetAttribute(node, L"active"))
+						if (Ptr<XmlAttribute> att = XmlGetAttribute(node, L"active"))
 						{
-							run->activeStyleName=att->value.value;
+							run->activeStyleName = att->value.value;
 						}
-						if(Ptr<XmlAttribute> att=XmlGetAttribute(node, L"href"))
+						if (Ptr<XmlAttribute> att = XmlGetAttribute(node, L"href"))
 						{
-							run->reference=att->value.value;
+							run->reference = att->value.value;
 						}
-						run->styleName=run->normalStyleName;
+						run->styleName = run->normalStyleName;
 						container->runs.Add(run);
-						createdContainer=run;
+						createdContainer = run;
 					}
-					else if(node->name.value==L"p")
+					else if (node->name.value == L"p")
 					{
 						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
 						{
@@ -43334,7 +43323,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					{
 						if (node->name.value != L"nop")
 						{
-							errors.Add(L"Unknown tag in document resource \"" + node->name.value + L"\".");
+							errors.Add(GuiResourceError({ {resource},node->codeRange.start }, L"Unknown element in <p>: \"" + node->name.value + L"\"."));
 						}
 						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
 						{
@@ -43342,15 +43331,15 @@ document_operation_visitors::DeserializeNodeVisitor
 						}
 					}
 
-					if(createdContainer)
+					if (createdContainer)
 					{
-						Ptr<DocumentContainerRun> oldContainer=container;
-						container=createdContainer;
+						Ptr<DocumentContainerRun> oldContainer = container;
+						container = createdContainer;
 						FOREACH(Ptr<XmlNode>, subNode, subNodeContainer->subNodes)
 						{
 							subNode->Accept(this);
 						}
-						container=oldContainer;
+						container = oldContainer;
 					}
 				}
 
@@ -43363,7 +43352,7 @@ document_operation_visitors::DeserializeNodeVisitor
 				}
 			};
 
-			Ptr<DocumentStyle> ParseDocumentStyle(Ptr<XmlElement> styleElement)
+			Ptr<DocumentStyle> ParseDocumentStyle(Ptr<GuiResourceItem> resource, Ptr<XmlElement> styleElement, GuiResourceError::List& errors)
 			{
 				Ptr<DocumentStyle> style=new DocumentStyle;
 
@@ -43428,6 +43417,10 @@ document_operation_visitors::DeserializeNodeVisitor
 							sp->verticalAntialias=true;
 						}
 					}
+					else
+					{
+						errors.Add(GuiResourceError({ {resource},att->codeRange.start }, L"Unknown element in <Style>: \"" + att->name.value + L"\"."));
+					}
 				}
 
 				return style;
@@ -43439,99 +43432,105 @@ document_operation_visitors::DeserializeNodeVisitor
 DocumentModel
 ***********************************************************************/
 
-		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)
+		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)
 		{
-			Ptr<DocumentModel> model=new DocumentModel;
-			if(xml->rootElement->name.value==L"Doc")
+			Ptr<DocumentModel> model = new DocumentModel;
+			if (xml->rootElement->name.value == L"Doc")
 			{
-				if(Ptr<XmlElement> styles=XmlGetElement(xml->rootElement, L"Styles"))
+				FOREACH(Ptr<XmlElement>, partElement, XmlGetElements(xml->rootElement))
 				{
-					FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(styles, L"Style"))
-					if (Ptr<XmlAttribute> name = XmlGetAttribute(styleElement, L"name"))
+					if (partElement->name.value == L"Styles")
 					{
-						auto style = ParseDocumentStyle(styleElement);
-						auto styleName = name->value.value;
-						if(!model->styles.Keys().Contains(styleName))
+						FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(partElement))
 						{
-							model->styles.Add(styleName, style);
-							if (styleName.Length() > 9 && styleName.Right(9) == L"-Override")
+							if (styleElement->name.value == L"Style")
 							{
-								auto overridedStyle = MakePtr<DocumentStyle>();
-								overridedStyle->styles = new DocumentStyleProperties;
-								MergeStyle(overridedStyle->styles, style->styles);
-
-								styleName = styleName.Left(styleName.Length() - 9);
-								auto index = model->styles.Keys().IndexOf(styleName);
-								if (index == -1)
+								if (Ptr<XmlAttribute> name = XmlGetAttribute(styleElement, L"name"))
 								{
-									model->styles.Add(styleName, overridedStyle);
+									auto style = ParseDocumentStyle(resource, styleElement, errors);
+									auto styleName = name->value.value;
+									if (!model->styles.Keys().Contains(styleName))
+									{
+										model->styles.Add(styleName, style);
+										if (styleName.Length() > 9 && styleName.Right(9) == L"-Override")
+										{
+											auto overridedStyle = MakePtr<DocumentStyle>();
+											overridedStyle->styles = new DocumentStyleProperties;
+											MergeStyle(overridedStyle->styles, style->styles);
+
+											styleName = styleName.Left(styleName.Length() - 9);
+											auto index = model->styles.Keys().IndexOf(styleName);
+											if (index == -1)
+											{
+												model->styles.Add(styleName, overridedStyle);
+											}
+											else
+											{
+												auto originalStyle = model->styles.Values()[index];
+												MergeStyle(overridedStyle->styles, originalStyle->styles);
+												originalStyle->styles = overridedStyle->styles;
+											}
+										}
+									}
 								}
 								else
 								{
-									auto originalStyle = model->styles.Values()[index];
-									MergeStyle(overridedStyle->styles, originalStyle->styles);
-									originalStyle->styles = overridedStyle->styles;
+									errors.Add(GuiResourceError({ {resource},styleElement->codeRange.start }, L"Attribute \"name\" is missing in <Style>."));
 								}
 							}
+							else
+							{
+								errors.Add(GuiResourceError({ {resource},styleElement->codeRange.start }, L"Unknown element in <Styles>: \"" + styleElement->name.value + L"\"."));
+							}
 						}
 					}
-				}
-				if(Ptr<XmlElement> content=XmlGetElement(xml->rootElement, L"Content"))
-				{
-					FOREACH_INDEXER(Ptr<XmlElement>, p, i, XmlGetElements(content, L"p"))
+					else if (partElement->name.value == L"Content")
 					{
-						Ptr<DocumentParagraphRun> paragraph=new DocumentParagraphRun;
-						if(Ptr<XmlAttribute> att=XmlGetAttribute(p, L"align"))
+						FOREACH_INDEXER(Ptr<XmlElement>, p, i, XmlGetElements(partElement))
 						{
-							if(att->value.value==L"Left")
+							if (p->name.value == L"p")
 							{
-								paragraph->alignment=Alignment::Left;
+								Ptr<DocumentParagraphRun> paragraph = new DocumentParagraphRun;
+								if (Ptr<XmlAttribute> att = XmlGetAttribute(p, L"align"))
+								{
+									if (att->value.value == L"Left")
+									{
+										paragraph->alignment = Alignment::Left;
+									}
+									else if (att->value.value == L"Center")
+									{
+										paragraph->alignment = Alignment::Center;
+									}
+									else if (att->value.value == L"Right")
+									{
+										paragraph->alignment = Alignment::Right;
+									}
+									else
+									{
+										errors.Add(GuiResourceError({ {resource},att->value.codeRange.start }, L"Unknown value in align attribute \"" + att->value.value + L"\"."));
+									}
+								}
+								model->paragraphs.Add(paragraph);
+								DeserializeNodeVisitor visitor(model, paragraph, i, resource, resolver, errors);
+								p->Accept(&visitor);
 							}
-							else if(att->value.value==L"Center")
+							else
 							{
-								paragraph->alignment=Alignment::Center;
-							}
-							else if(att->value.value==L"Right")
-							{
-								paragraph->alignment=Alignment::Right;
+								errors.Add(GuiResourceError({ {resource},p->codeRange.start }, L"Unknown element in <Content>: \"" + p->name.value + L"\"."));
 							}
 						}
-						model->paragraphs.Add(paragraph);
-						DeserializeNodeVisitor visitor(model, paragraph, i, resolver, errors);
-						p->Accept(&visitor);
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ {resource},partElement->codeRange.start }, L"Unknown element in <Doc>: \"" + partElement->name.value + L"\"."));
 					}
 				}
+			}
+			else
+			{
+				errors.Add(GuiResourceError({ {resource},xml->rootElement->codeRange.start }, L"The root element of document should be \"Doc\"."));
 			}
 			return model;
-		}
-
-		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, collections::List<WString>& errors)
-		{
-			Ptr<GuiResourcePathResolver> resolver=new GuiResourcePathResolver(0, workingDirectory);
-			return LoadFromXml(xml, resolver, errors);
-		}
-
-		Ptr<DocumentModel> DocumentModel::LoadFromXml(const WString& filePath, collections::List<WString>& errors)
-		{
-			Ptr<XmlDocument> xml;
-			Ptr<DocumentModel> document;
-			if(auto parser=GetParserManager()->GetParser<XmlDocument>(L"XML"))
-			{
-				WString text;
-				if(LoadTextFile(filePath, text))
-				{
-					xml = parser->TypedParse(text, errors);
-				}
-				else
-				{
-					errors.Add(L"Failed to load file \"" + filePath + L"\".");
-				}
-			}
-			if(xml)
-			{
-				document = DocumentModel::LoadFromXml(xml, GetFolderPath(filePath), errors);
-			}
-			return document;
 		}
 	}
 }
@@ -43562,22 +43561,22 @@ document_operation_visitors::SerializeRunVisitor
 			public:
 				SerializeRunVisitor(DocumentModel* _model, Ptr<XmlElement> _parent)
 					:model(_model)
-					,parent(_parent)
+					, parent(_parent)
 				{
 				}
 
 				void VisitContainer(Ptr<XmlElement> replacedParent, DocumentContainerRun* run)
 				{
-					if(replacedParent)
+					if (replacedParent)
 					{
 						parent->subNodes.Add(replacedParent);
-						Ptr<XmlElement> oldParent=parent;
-						parent=replacedParent;
+						Ptr<XmlElement> oldParent = parent;
+						parent = replacedParent;
 						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
 						{
 							subRun->Accept(this);
 						}
-						parent=oldParent;
+						parent = oldParent;
 					}
 					else
 					{
@@ -43590,7 +43589,7 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentTextRun* run)override
 				{
-					if(run->text!=L"")
+					if (run->text != L"")
 					{
 						auto writer = XmlElementWriter(parent).Element(L"nop");
 						auto begin = run->text.Buffer();
@@ -43641,113 +43640,113 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentStylePropertiesRun* run)override
 				{
-					Ptr<DocumentStyleProperties> sp=run->style;
-					Ptr<XmlElement> oldParent=parent;
-					if(sp->face || sp->size || sp->color)
+					Ptr<DocumentStyleProperties> sp = run->style;
+					Ptr<XmlElement> oldParent = parent;
+					if (sp->face || sp->size || sp->color)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=L"font";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = L"font";
 						parent->subNodes.Add(element);
 
 						XmlElementWriter writer(element);
-						if(sp->face)
+						if (sp->face)
 						{
 							writer.Attribute(L"face", sp->face.Value());
 						}
-						if(sp->size)
+						if (sp->size)
 						{
 							writer.Attribute(L"size", sp->size.Value().ToString());
 						}
-						if(sp->color)
+						if (sp->color)
 						{
 							writer.Attribute(L"color", sp->color.Value().ToString());
 						}
-						if(sp->backgroundColor)
+						if (sp->backgroundColor)
 						{
 							writer.Attribute(L"bkcolor", sp->backgroundColor.Value().ToString());
 						}
-						parent=element;
+						parent = element;
 					}
-					if(sp->bold)
+					if (sp->bold)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=sp->bold.Value()?L"b":L"b-";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = sp->bold.Value() ? L"b" : L"b-";
 						parent->subNodes.Add(element);
-						parent=element;
+						parent = element;
 					}
-					if(sp->italic)
+					if (sp->italic)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=sp->italic.Value()?L"i":L"i-";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = sp->italic.Value() ? L"i" : L"i-";
 						parent->subNodes.Add(element);
-						parent=element;
+						parent = element;
 					}
-					if(sp->underline)
+					if (sp->underline)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=sp->underline.Value()?L"u":L"u-";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = sp->underline.Value() ? L"u" : L"u-";
 						parent->subNodes.Add(element);
-						parent=element;
+						parent = element;
 					}
-					if(sp->strikeline)
+					if (sp->strikeline)
 					{
-						Ptr<XmlElement> element=new XmlElement;
-						element->name.value=sp->strikeline.Value()?L"s":L"s-";
+						Ptr<XmlElement> element = new XmlElement;
+						element->name.value = sp->strikeline.Value() ? L"s" : L"s-";
 						parent->subNodes.Add(element);
-						parent=element;
+						parent = element;
 					}
-					if(sp->antialias || sp->verticalAntialias)
+					if (sp->antialias || sp->verticalAntialias)
 					{
-						bool ha=sp->antialias?sp->antialias.Value():true;
-						bool va=sp->verticalAntialias?sp->verticalAntialias.Value():false;
-						if(!ha)
+						bool ha = sp->antialias ? sp->antialias.Value() : true;
+						bool va = sp->verticalAntialias ? sp->verticalAntialias.Value() : false;
+						if (!ha)
 						{
-							Ptr<XmlElement> element=new XmlElement;
-							element->name.value=L"ha";
+							Ptr<XmlElement> element = new XmlElement;
+							element->name.value = L"ha";
 							parent->subNodes.Add(element);
-							parent=element;
+							parent = element;
 						}
-						else if(!va)
+						else if (!va)
 						{
-							Ptr<XmlElement> element=new XmlElement;
-							element->name.value=L"va";
+							Ptr<XmlElement> element = new XmlElement;
+							element->name.value = L"va";
 							parent->subNodes.Add(element);
-							parent=element;
+							parent = element;
 						}
 						else
 						{
-							Ptr<XmlElement> element=new XmlElement;
-							element->name.value=L"na";
+							Ptr<XmlElement> element = new XmlElement;
+							element->name.value = L"na";
 							parent->subNodes.Add(element);
-							parent=element;
+							parent = element;
 						}
 					}
 					VisitContainer(0, run);
-					parent=oldParent;
+					parent = oldParent;
 				}
 
 				void Visit(DocumentStyleApplicationRun* run)override
 				{
-					Ptr<XmlElement> element=new XmlElement;
-					element->name.value=L"div";
+					Ptr<XmlElement> element = new XmlElement;
+					element->name.value = L"div";
 					XmlElementWriter(element).Attribute(L"style", run->styleName);
 					VisitContainer(element, run);
 				}
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
-					Ptr<XmlElement> element=new XmlElement;
-					element->name.value=L"a";
+					Ptr<XmlElement> element = new XmlElement;
+					element->name.value = L"a";
 					XmlElementWriter writer(element);
-					if(run->normalStyleName!=L"#NormalLink")
+					if (run->normalStyleName != L"#NormalLink")
 					{
 						writer.Attribute(L"normal", run->normalStyleName);
 					}
-					if(run->activeStyleName!=L"#ActiveLink")
+					if (run->activeStyleName != L"#ActiveLink")
 					{
 						writer.Attribute(L"active", run->activeStyleName);
 					}
-					if(run->reference!=L"")
+					if (run->reference != L"")
 					{
 						writer.Attribute(L"href", run->reference);
 					}
@@ -43778,13 +43777,13 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentParagraphRun* run)override
 				{
-					Ptr<XmlElement> element=new XmlElement;
-					element->name.value=L"p";
+					Ptr<XmlElement> element = new XmlElement;
+					element->name.value = L"p";
 
 					XmlElementWriter writer(element);
 					if (run->alignment)
 					{
-						switch(run->alignment.Value())
+						switch (run->alignment.Value())
 						{
 						case Alignment::Left:
 							writer.Attribute(L"align", L"Left");
@@ -43874,21 +43873,6 @@ DocumentModel
 				}
 			}
 			return xml;
-		}
-
-		bool DocumentModel::SaveToXml(const WString& filePath)
-		{
-			Ptr<XmlDocument> xml=SaveToXml();
-			if(xml)
-			{
-				stream::FileStream fileStream(filePath, stream::FileStream::WriteOnly);
-				stream::BomEncoder encoder(stream::BomEncoder::Utf16);
-				stream::EncoderStream encoderStream(fileStream, encoder);
-				stream::StreamWriter writer(encoderStream);
-				XmlPrint(xml, writer);
-				return true;
-			}
-			return false;
 		}
 	}
 }
@@ -44009,6 +43993,7 @@ namespace vl
 	{
 		using namespace controls;
 		using namespace collections;
+		using namespace parsing;
 		using namespace parsing::tabling;
 		using namespace parsing::xml;
 		using namespace parsing::json;
@@ -44017,11 +44002,11 @@ namespace vl
 
 		WString GetFolderPath(const WString& filePath)
 		{
-			for(vint i=filePath.Length()-1;i>=0;i--)
+			for (vint i = filePath.Length() - 1; i >= 0; i--)
 			{
-				if(filePath[i]==L'\\' || filePath[i]==L'/')
+				if (filePath[i] == L'\\' || filePath[i] == L'/')
 				{
-					return filePath.Sub(0, i+1);
+					return filePath.Sub(0, i + 1);
 				}
 			}
 			return L"";
@@ -44029,11 +44014,11 @@ namespace vl
 
 		WString GetFileName(const WString& filePath)
 		{
-			for(vint i=filePath.Length()-1;i>=0;i--)
+			for (vint i = filePath.Length() - 1; i >= 0; i--)
 			{
-				if(filePath[i]==L'\\' || filePath[i]==L'/')
+				if (filePath[i] == L'\\' || filePath[i] == L'/')
 				{
-					return filePath.Sub(i+1, filePath.Length()-i-1);
+					return filePath.Sub(i + 1, filePath.Length() - i - 1);
 				}
 			}
 			return filePath;
@@ -44047,12 +44032,12 @@ namespace vl
 
 		bool LoadTextFromStream(stream::IStream& stream, WString& text)
 		{
-			if(stream.IsAvailable())
+			if (stream.IsAvailable())
 			{
 				stream::BomDecoder decoder;
 				stream::DecoderStream decoderStream(stream, decoder);
 				stream::StreamReader reader(decoderStream);
-				text=reader.ReadToEnd();
+				text = reader.ReadToEnd();
 				return true;
 			}
 			return false;
@@ -44060,11 +44045,11 @@ namespace vl
 
 		bool IsResourceUrl(const WString& text, WString& protocol, WString& path)
 		{
-			Pair<vint, vint> index=INVLOC.FindFirst(text, L"://", Locale::None);
-			if(index.key!=-1)
+			Pair<vint, vint> index = INVLOC.FindFirst(text, L"://", Locale::None);
+			if (index.key != -1)
 			{
-				protocol=INVLOC.ToLower(text.Sub(0, index.key));
-				path=text.Sub(index.key+index.value, text.Length()-index.key-index.value);
+				protocol = INVLOC.ToLower(text.Sub(0, index.key));
+				path = text.Sub(index.key + index.value, text.Length() - index.key - index.value);
 				return true;
 			}
 			else
@@ -44151,7 +44136,7 @@ GlobalStringKey
 				GlobalStringKey::_ControlTemplate = GlobalStringKey::Get(L"ControlTemplate");
 				GlobalStringKey::_ItemTemplate = GlobalStringKey::Get(L"ItemTemplate");
 			}
-		}* globalStringKeyManager = 0;
+		}*globalStringKeyManager = 0;
 
 		GlobalStringKey GlobalStringKey::Get(const WString& string)
 		{
@@ -44193,10 +44178,9 @@ GuiImageData
 		{
 		}
 
-		GuiImageData::GuiImageData(Ptr<INativeImage> _image, vint _frameIndex, const WString& _filePath)
-			:image(_image)
+		GuiImageData::GuiImageData(Ptr<INativeImage> _image, vint _frameIndex)
+			: image(_image)
 			, frameIndex(_frameIndex)
-			, filePath(_filePath)
 		{
 		}
 
@@ -44212,11 +44196,6 @@ GuiImageData
 		vint GuiImageData::GetFrameIndex()
 		{
 			return frameIndex;
-		}
-
-		const WString& GuiImageData::GetFilePath()
-		{
-			return filePath;
 		}
 
 /***********************************************************************
@@ -44272,14 +44251,185 @@ GuiResourceNodeBase
 			return fileContentPath;
 		}
 
-		void GuiResourceNodeBase::SetFileContentPath(const WString& value)
+		const WString& GuiResourceNodeBase::GetFileAbsolutePath()
 		{
-			fileContentPath = value;
+			return fileAbsolutePath;
+		}
+
+		void GuiResourceNodeBase::SetFileContentPath(const WString& content, const WString& absolute)
+		{
+			fileContentPath = content;
+			fileAbsolutePath = absolute;
 		}
 
 		GuiResourceFolder* GuiResourceNodeBase::GetParent()
 		{
 			return parent;
+		}
+
+/***********************************************************************
+GuiResourceLocation
+***********************************************************************/
+
+		GuiResourceLocation::GuiResourceLocation(const WString& _resourcePath, const WString& _filePath)
+			:resourcePath(_resourcePath)
+			, filePath(_filePath)
+		{
+		}
+
+		GuiResourceLocation::GuiResourceLocation(Ptr<GuiResourceNodeBase> node)
+		{
+			if (node)
+			{
+				resourcePath = node->GetResourcePath();
+
+				auto current = node.Obj();
+				while (current)
+				{
+					if (current->GetFileContentPath() != L"")
+					{
+						filePath = current->GetFileAbsolutePath();
+						break;
+					}
+					current = current->GetParent();
+				}
+			}
+		}
+
+/***********************************************************************
+GuiResourceTextPos
+***********************************************************************/
+
+		GuiResourceTextPos::GuiResourceTextPos(GuiResourceLocation location, parsing::ParsingTextPos position)
+			:originalLocation(location)
+			, row(position.row)
+			, column(position.column)
+		{
+		}
+
+/***********************************************************************
+GuiResourceError
+***********************************************************************/
+
+		GuiResourceError::GuiResourceError(GuiResourceTextPos _position, const WString& _message)
+			:location(_position.originalLocation)
+			, position(_position)
+			, message(_message)
+		{
+		}
+
+		GuiResourceError::GuiResourceError(GuiResourceLocation _location, const WString& _message)
+			:location(_location)
+			, position(_location, {})
+			, message(_message)
+		{
+		}
+
+		GuiResourceError::GuiResourceError(GuiResourceLocation _location, GuiResourceTextPos _position, const WString& _message)
+			:location(_location)
+			, position(_position)
+			, message(_message)
+		{
+		}
+
+		template<typename TCallback>
+		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix, const TCallback& callback)
+		{
+			if (offset.row < 0 || offset.column < 0)
+			{
+				offset.row = 0;
+				offset.column = 0;
+			}
+			offset.row += offsetFix.row;
+			offset.column += offsetFix.column;
+
+			FOREACH(Ptr<ParsingError>, error, parsingErrors)
+			{
+				auto pos = error->codeRange.start;
+				if (pos.row < 0 || pos.column < 0)
+				{
+					pos = { offset.row,offset.column };
+				}
+				else
+				{
+					if (pos.row == 0)
+					{
+						pos.column += offset.column;
+					}
+					pos.row += offset.row;
+				}
+				errors.Add(callback({ offset.originalLocation,pos }, error->errorMessage));
+			}
+		}
+
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors)
+		{
+			Transform(_location, errors, parsingErrors, { _location,{ 0,0 } });
+		}
+
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix)
+		{
+			Transform(_location, errors, parsingErrors, { _location,offset }, offsetFix);
+		}
+
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix)
+		{
+			TransformErrors(errors, parsingErrors, offset, offsetFix, [&](GuiResourceTextPos pos, const WString& message)
+			{
+				return GuiResourceError(_location, pos, message);
+			});
+		}
+
+		void GuiResourceError::SortAndLog(List& errors, collections::List<WString>& output, const WString& workingDirectory)
+		{
+			if (errors.Count() == 0) return;
+			SortLambda(&errors[0], errors.Count(), [](const GuiResourceError& a, const GuiResourceError& b)
+			{
+				vint result = 0;
+				if (result == 0) result = WString::Compare(a.location.resourcePath, b.location.resourcePath);
+				if (result == 0) result = WString::Compare(a.location.filePath, b.location.filePath);
+				if (result == 0) result = WString::Compare(a.position.originalLocation.resourcePath, b.position.originalLocation.resourcePath);
+				if (result == 0) result = WString::Compare(a.position.originalLocation.filePath, b.position.originalLocation.filePath);
+				if (result == 0) result = a.position.row - b.position.row;
+				if (result == 0) result = a.position.column - b.position.column;
+				return result;
+			});
+
+			FOREACH_INDEXER(GuiResourceError, error, index, errors)
+			{
+				bool needHeader = index == 0;
+				if (index > 0)
+				{
+					auto previousError = errors[index - 1];
+					if (error.location != previousError.location || error.position.originalLocation != previousError.position.originalLocation)
+					{
+						needHeader = true;
+					}
+				}
+
+#define CONVERT_FILEPATH(FILEPATH) (workingDirectory == L"" ? FILEPATH  : filesystem::FilePath(workingDirectory).GetRelativePathFor(FILEPATH))
+#define CONVERT_LOCATION(LOCATION) (LOCATION).resourcePath + L" # " + CONVERT_FILEPATH((LOCATION).filePath)
+				if (needHeader)
+				{
+					output.Add(CONVERT_LOCATION(error.location));
+					if (error.location != error.position.originalLocation)
+					{
+						output.Add(L"    Original: " + CONVERT_LOCATION(error.position.originalLocation));
+					}
+				}
+
+				WString prefix = L"Failed to load file \"";
+				WString postfix = L"\".";
+				if (INVLOC.StartsWith(error.message, prefix, Locale::Normalization::None) && INVLOC.EndsWith(error.message, postfix, Locale::Normalization::None))
+				{
+					auto path = error.message.Sub(prefix.Length(), error.message.Length() - prefix.Length() - postfix.Length());
+					path = CONVERT_FILEPATH(path);
+					error.message = prefix + path + postfix;
+				}
+				output.Add(L"(" + itow(error.position.row) + L", " + itow(error.position.column) + L"): " + error.message);
+#undef CONVERT_FILEPATH
+#undef CONVERT_LOCATION
+			}
 		}
 
 /***********************************************************************
@@ -44334,55 +44484,55 @@ GuiResourceItem
 GuiResourceFolder
 ***********************************************************************/
 
-		void GuiResourceFolder::LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, collections::List<WString>& errors)
+		void GuiResourceFolder::LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, GuiResourceError::List& errors)
 		{
 			ClearItems();
 			ClearFolders();
 			FOREACH(Ptr<XmlElement>, element, XmlGetElements(folderXml))
 			{
 				WString name;
-				if(Ptr<XmlAttribute> nameAtt=XmlGetAttribute(element, L"name"))
+				if (Ptr<XmlAttribute> nameAtt = XmlGetAttribute(element, L"name"))
 				{
-					name=nameAtt->value.value;
+					name = nameAtt->value.value;
 				}
-				if(element->name.value==L"Folder")
+				if (element->name.value == L"Folder")
 				{
 					if (name == L"")
 					{
-						errors.Add(L"A resource folder should have a name.");
-						errors.Add(
-							L"Format: RESOURCE, Row: " + itow(element->codeRange.start.row + 1) +
-							L", Column: " + itow(element->codeRange.start.column + 1) +
-							L", Message: A resource folder should have a name.");
+						errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"A resource folder should have a name."));
 					}
 					else
 					{
-						Ptr<GuiResourceFolder> folder=new GuiResourceFolder;
-						if(AddFolder(name, folder))
+						Ptr<GuiResourceFolder> folder = new GuiResourceFolder;
+						if (AddFolder(name, folder))
 						{
-							WString newContainingFolder=containingFolder;
-							Ptr<XmlElement> newFolderXml=element;
-							if(Ptr<XmlAttribute> contentAtt=XmlGetAttribute(element, L"content"))
+							WString newContainingFolder = containingFolder;
+							Ptr<XmlElement> newFolderXml = element;
+							if (Ptr<XmlAttribute> contentAtt = XmlGetAttribute(element, L"content"))
 							{
-								if(contentAtt->value.value==L"Link")
+								if (contentAtt->value.value == L"Link")
 								{
-									folder->SetFileContentPath(XmlGetValue(element));
-									WString filePath = containingFolder + folder->GetFileContentPath();
+									auto fileContentPath = XmlGetValue(element);
+									auto fileAbsolutePath = containingFolder + fileContentPath;
+									folder->SetFileContentPath(fileContentPath, fileAbsolutePath);
+
 									WString text;
-									if(LoadTextFile(filePath, text))
+									if (LoadTextFile(fileAbsolutePath, text))
 									{
-										if(auto parser=GetParserManager()->GetParser<XmlDocument>(L"XML"))
+										if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 										{
-											if(auto xml=parser->TypedParse(text, errors))
+											List<Ptr<ParsingError>> parsingErrors;
+											if (auto xml = parser->TypedParse(text, parsingErrors))
 											{
-												newContainingFolder=GetFolderPath(filePath);
-												newFolderXml=xml->rootElement;
+												newContainingFolder = GetFolderPath(fileAbsolutePath);
+												newFolderXml = xml->rootElement;
 											}
+											GuiResourceError::Transform({ WString::Empty,fileAbsolutePath }, errors, parsingErrors);
 										}
 									}
 									else
 									{
-										errors.Add(L"Failed to load file \"" + filePath + L"\".");
+										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
 									}
 								}
 							}
@@ -44390,75 +44540,74 @@ GuiResourceFolder
 						}
 						else
 						{
-							errors.Add(L"Duplicated resource folder name \"" + name + L"\".");
+							errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Duplicated resource folder name \"" + name + L"\"."));
 						}
 					}
 				}
-				else if(element->name.value.Length() <= 3 || element->name.value.Sub(0, 4) != L"ref.")
+				else if (element->name.value.Length() <= 3 || element->name.value.Sub(0, 4) != L"ref.")
 				{
-					WString relativeFilePath;
-					WString filePath;
-					if(Ptr<XmlAttribute> contentAtt=XmlGetAttribute(element, L"content"))
+					WString fileContentPath;
+					WString fileAbsolutePath;
+					if (Ptr<XmlAttribute> contentAtt = XmlGetAttribute(element, L"content"))
 					{
-						if(contentAtt->value.value==L"File")
+						if (contentAtt->value.value == L"File")
 						{
-							relativeFilePath = XmlGetValue(element);
-							filePath = containingFolder + relativeFilePath;
-							if(name==L"")
+							fileContentPath = XmlGetValue(element);
+							fileAbsolutePath = containingFolder + fileContentPath;
+							if (name == L"")
 							{
-								name=GetFileName(filePath);
+								name = GetFileName(fileAbsolutePath);
 							}
 						}
 					}
 
 					Ptr<GuiResourceItem> item = new GuiResourceItem;
-					if(AddItem(name, item))
+					if (AddItem(name, item))
 					{
 						WString type = element->name.value;
 						IGuiResourceTypeResolver* typeResolver = GetResourceResolverManager()->GetTypeResolver(type);
 						IGuiResourceTypeResolver* preloadResolver = typeResolver;
 
-						if(typeResolver)
+						if (typeResolver)
 						{
 							if (!typeResolver->DirectLoadXml())
 							{
 								WString preloadType = typeResolver->IndirectLoad()->GetPreloadType();
-								if (preloadType != L"")
+								preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
+								if (!preloadResolver)
 								{
-									preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
-									if (!preloadResolver)
-									{
-										errors.Add(L"Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\".");
-									}
+									errors.Add(GuiResourceError({ {this}, element->codeRange.start }, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 								}
 							}
 						}
 						else
 						{
-							errors.Add(L"Unknown resource type \"" + type + L"\".");
+							errors.Add(GuiResourceError({ {this}, element->codeRange.start }, L"Unknown resource type \"" + type + L"\"."));
 						}
 
-						if(typeResolver && preloadResolver)
+						if (typeResolver && preloadResolver)
 						{
 							if (auto directLoad = preloadResolver->DirectLoadXml())
 							{
-								Ptr<DescriptableObject> resource;
-								WString itemType = preloadResolver->GetType();
-								if (filePath == L"")
 								{
-									resource = directLoad->ResolveResource(element, errors);
-								}
-								else
-								{
-									item->SetFileContentPath(relativeFilePath);
-									resource = directLoad->ResolveResource(filePath, errors);
+									Ptr<DescriptableObject> resource;
+									if (fileAbsolutePath == L"")
+									{
+										resource = directLoad->ResolveResource(item, element, errors);
+									}
+									else
+									{
+										item->SetFileContentPath(fileContentPath, fileAbsolutePath);
+										resource = directLoad->ResolveResource(item, fileAbsolutePath, errors);
+									}
+									item->SetContent(preloadResolver->GetType(), resource);
 								}
 
 								if (typeResolver != preloadResolver)
 								{
 									if (auto indirectLoad = typeResolver->IndirectLoad())
 									{
-										if(indirectLoad->IsDelayLoad())
+										if (indirectLoad->IsDelayLoad())
 										{
 											DelayLoading delayLoading;
 											delayLoading.type = type;
@@ -44466,34 +44615,32 @@ GuiResourceFolder
 											delayLoading.preloadResource = item;
 											delayLoadings.Add(delayLoading);
 										}
-										else if(resource)
+										else if (item->GetContent())
 										{
-											resource = indirectLoad->ResolveResource(resource, 0, errors);
-											itemType = typeResolver->GetType();
+											auto resource = indirectLoad->ResolveResource(item, 0, errors);
+											item->SetContent(typeResolver->GetType(), resource);
 										}
 									}
 									else
 									{
-										resource = 0;
-										errors.Add(L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type.");
-									}
+										item->SetContent(typeResolver->GetType(), nullptr);
+										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));									}
 								}
-								item->SetContent(itemType, resource);
 							}
 							else
 							{
-								errors.Add(L"Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type.");
+								errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 							}
 						}
 
-						if(!item->GetContent())
+						if (!item->GetContent())
 						{
 							RemoveItem(name);
 						}
 					}
 					else
 					{
-						errors.Add(L"Duplicated resource item name \"" + name + L"\".");
+						errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Duplicated resource item name \"" + name + L"\"."));
 					}
 				}
 			}
@@ -44516,7 +44663,7 @@ GuiResourceFolder
 
 						if (auto directLoad = resolver->DirectLoadXml())
 						{
-							xmlElement = directLoad->Serialize(item->GetContent());
+							xmlElement = directLoad->Serialize(item, item->GetContent());
 						}
 						else if (auto indirectLoad = resolver->IndirectLoad())
 						{
@@ -44524,9 +44671,9 @@ GuiResourceFolder
 							{
 								if (auto directLoad = preloadResolver->DirectLoadXml())
 								{
-									if (auto resource = indirectLoad->Serialize(item->GetContent()))
+									if (auto resource = indirectLoad->Serialize(item, item->GetContent()))
 									{
-										xmlElement = directLoad->Serialize(resource);
+										xmlElement = directLoad->Serialize(item, resource);
 										xmlElement->name.value = resolver->GetType();
 									}
 								}
@@ -44602,7 +44749,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors)
+		void GuiResourceFolder::LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, GuiResourceError::List& errors)
 		{
 			vint count = 0;
 			reader << count;
@@ -44630,22 +44777,24 @@ GuiResourceFolder
 								preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
 								if (!preloadResolver)
 								{
-									errors.Add(L"Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\".");
+									errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 								}
 							}
 						}
 					}
 					else
 					{
-						errors.Add(L"Unknown resource type \"" + type + L"\".");
+						errors.Add(GuiResourceError({ item }, L"[BINARY] Unknown resource type \"" + type + L"\"."));
 					}
 
 					if(typeResolver && preloadResolver)
 					{
 						if (auto directLoad = preloadResolver->DirectLoadStream())
 						{
-							WString itemType = preloadResolver->GetType();
-							auto resource = directLoad->ResolveResourcePrecompiled(reader.input, errors);
+							{
+								auto resource = directLoad->ResolveResourcePrecompiled(item, reader.input, errors);
+								item->SetContent(preloadResolver->GetType(), resource);
+							}
 
 							if (typeResolver != preloadResolver)
 							{
@@ -44658,23 +44807,22 @@ GuiResourceFolder
 										delayLoading.preloadResource = item;
 										delayLoadings.Add(delayLoading);
 									}
-									else if(resource)
+									else if(item->GetContent())
 									{
-										resource = indirectLoad->ResolveResource(resource, 0, errors);
-										itemType = typeResolver->GetType();
+										auto resource = indirectLoad->ResolveResource(item, nullptr, errors);
+										item->SetContent(typeResolver->GetType(), resource);
 									}
 								}
 								else
 								{
-									resource = 0;
-									errors.Add(L"Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type.");
+									item->SetContent(typeResolver->GetType(), nullptr);
+									errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));
 								}
 							}
-							item->SetContent(itemType, resource);
 						}
 						else
 						{
-							errors.Add(L"Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type.");
+							errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 						}
 					}
 
@@ -44685,7 +44833,7 @@ GuiResourceFolder
 				}
 				else
 				{
-					errors.Add(L"Duplicated resource item name \"" + name + L"\".");
+					errors.Add(GuiResourceError({ this }, L"[BINARY] Duplicated resource item name \"" + name + L"\"."));
 				}
 			}
 
@@ -44703,7 +44851,7 @@ GuiResourceFolder
 
 		void GuiResourceFolder::SaveResourceFolderToBinary(stream::internal::ContextFreeWriter& writer, collections::List<WString>& typeNames)
 		{
-			typedef Tuple<vint, WString, IGuiResourceTypeResolver_DirectLoadStream*, Ptr<DescriptableObject>> ItemTuple;
+			typedef Tuple<vint, WString, IGuiResourceTypeResolver_DirectLoadStream*, Ptr<GuiResourceItem>, Ptr<DescriptableObject>> ItemTuple;
 			List<ItemTuple> itemTuples;
 
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
@@ -44716,7 +44864,7 @@ GuiResourceFolder
 				
 					if (auto directLoad = resolver->DirectLoadStream())
 					{
-						itemTuples.Add(ItemTuple(typeName, name, directLoad, item->GetContent()));
+						itemTuples.Add(ItemTuple(typeName, name, directLoad, item, item->GetContent()));
 					}
 					else if (auto indirectLoad = resolver->IndirectLoad())
 					{
@@ -44724,9 +44872,9 @@ GuiResourceFolder
 						{
 							if (auto directLoad = preloadResolver->DirectLoadStream())
 							{
-								if (auto resource = indirectLoad->Serialize(item->GetContent()))
+								if (auto resource = indirectLoad->Serialize(item, item->GetContent()))
 								{
-									itemTuples.Add(ItemTuple(typeName, name, directLoad, resource));
+									itemTuples.Add(ItemTuple(typeName, name, directLoad, item, resource));
 								}
 							}
 						}
@@ -44744,7 +44892,8 @@ GuiResourceFolder
 
 				auto directLoad = item.f2;
 				auto resource = item.f3;
-				directLoad->SerializePrecompiled(resource, writer.output);
+				auto content = item.f4;
+				directLoad->SerializePrecompiled(resource, content, writer.output);
 			}
 
 			count = folders.Count();
@@ -44757,7 +44906,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors)
+		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
 			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
 			{
@@ -44958,7 +45107,7 @@ GuiResourceFolder
 GuiResource
 ***********************************************************************/
 
-		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors)
+		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, GuiResourceError::List& errors)
 		{
 			FOREACH(DelayLoading, delay, delayLoadings)
 			{
@@ -44966,20 +45115,28 @@ GuiResource
 				WString folder = delay.workingDirectory;
 				Ptr<GuiResourceItem> item = delay.preloadResource;
 
-				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(type);
-				auto indirectLoad = typeResolver->IndirectLoad();
-				if (!indirectLoad)
+				if (auto typeResolver = GetResourceResolverManager()->GetTypeResolver(type))
 				{
-					errors.Add(L"Unknown resource type \"" + type + L"\".");
-				}
-				else if (item->GetContent())
-				{
-					Ptr<GuiResourcePathResolver> pathResolver = new GuiResourcePathResolver(resource, folder);
-					Ptr<DescriptableObject> resource = indirectLoad->ResolveResource(item->GetContent(), pathResolver, errors);
-					if(resource)
+					if (auto indirectLoad = typeResolver->IndirectLoad())
 					{
-						item->SetContent(typeResolver->GetType(), resource);
+						if (item->GetContent())
+						{
+							Ptr<GuiResourcePathResolver> pathResolver = new GuiResourcePathResolver(resource, folder);
+							Ptr<DescriptableObject> resource = indirectLoad->ResolveResource(item, pathResolver, errors);
+							if (resource)
+							{
+								item->SetContent(typeResolver->GetType(), resource);
+							}
+						}
 					}
+					else
+					{
+						errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Resource type \"" + type + L"\" is not a indirect load resource type."));
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError({ item }, L"[INTERNAL-ERROR] Unknown resource type \"" + type + L"\"."));
 				}
 			}
 		}
@@ -44997,9 +45154,10 @@ GuiResource
 			return workingDirectory;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, collections::List<WString>& errors)
+		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
 		{
 			Ptr<GuiResource> resource = new GuiResource;
+			resource->SetFileContentPath(filePath, filePath);
 			resource->workingDirectory = workingDirectory;
 			DelayLoadingList delayLoadings;
 			resource->LoadResourceFolderFromXml(delayLoadings, resource->workingDirectory, xml->rootElement, errors);
@@ -45008,7 +45166,7 @@ GuiResource
 			return resource;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadFromXml(const WString& filePath, collections::List<WString>& errors)
+		Ptr<GuiResource> GuiResource::LoadFromXml(const WString& filePath, GuiResourceError::List& errors)
 		{
 			Ptr<XmlDocument> xml;
 			if(auto parser=GetParserManager()->GetParser<XmlDocument>(L"XML"))
@@ -45016,16 +45174,18 @@ GuiResource
 				WString text;
 				if(LoadTextFile(filePath, text))
 				{
-					xml = parser->TypedParse(text, errors);
+					List<Ptr<ParsingError>> parsingErrors;
+					xml = parser->TypedParse(text, parsingErrors);
+					GuiResourceError::Transform({ WString::Empty,filePath }, errors, parsingErrors);
 				}
 				else
 				{
-					errors.Add(L"Failed to load file \"" + filePath + L"\".");
+					errors.Add(GuiResourceError({ WString::Empty,filePath }, L"Failed to load file \"" + filePath + L"\"."));
 				}
 			}
 			if(xml)
 			{
-				return LoadFromXml(xml, GetFolderPath(filePath), errors);
+				return LoadFromXml(xml, filePath, GetFolderPath(filePath), errors);
 			}
 			return 0;
 		}
@@ -45041,7 +45201,7 @@ GuiResource
 			return doc;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream, collections::List<WString>& errors)
+		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream, GuiResourceError::List& errors)
 		{
 			stream::internal::ContextFreeReader reader(stream);
 			auto resource = MakePtr<GuiResource>();
@@ -45056,6 +45216,14 @@ GuiResource
 			return resource;
 		}
 
+		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& stream)
+		{
+			GuiResourceError::List errors;
+			auto resource = LoadPrecompiledBinary(stream, errors);
+			CHECK_ERROR(errors.Count() == 0, L"GuiResource::LoadPrecompiledBinary(IStream&)#There are errors.");
+			return resource;
+		}
+
 		void GuiResource::SavePrecompiledBinary(stream::IStream& stream)
 		{
 			stream::internal::ContextFreeWriter writer(stream);
@@ -45066,11 +45234,11 @@ GuiResource
 			SaveResourceFolderToBinary(writer, typeNames);
 		}
 
-		void GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors)
+		void GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
 			if (GetFolder(L"Precompiled"))
 			{
-				errors.Add(L"A precompiled resource cannot be compiled again.");
+				errors.Add(GuiResourceError({ this }, L"A precompiled resource cannot be compiled again."));
 				return;
 			}
 
@@ -45107,11 +45275,12 @@ GuiResource
 						}
 					}
 				}
+				if (errors.Count() > 0)
+				{
+					return;
+				}
 			}
-			if (errors.Count() == 0)
-			{
-				AddFolder(L"Precompiled", context.targetFolder);
-			}
+			AddFolder(L"Precompiled", context.targetFolder);
 		}
 
 		void GuiResource::Initialize(GuiResourceUsage usage)
@@ -45494,16 +45663,16 @@ Class Name Record (ClassNameRecord)
 				return this;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				if (auto obj = resource.Cast<GuiResourceClassNameRecord>())
+				if (auto obj = content.Cast<GuiResourceClassNameRecord>())
 				{
 					internal::ContextFreeWriter writer(stream);
 					writer << obj->classNames;
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
 				internal::ContextFreeReader reader(stream);
 
@@ -45637,65 +45806,40 @@ Image Type Resolver (Image)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<GuiImageData>())
-				{
-					FileStream fileStream(obj->GetFilePath(), FileStream::ReadOnly);
-					if (fileStream.IsAvailable())
-					{
-						auto xmlContent = MakePtr<XmlCData>();
-						xmlContent->content.value = BinaryToHex(fileStream);
-
-						auto xmlImage = MakePtr<XmlElement>();
-						xmlImage->name.value = L"Image";
-						xmlImage->subNodes.Add(xmlContent);
-						return xmlImage;
-					}
-				}
-				return 0;
+				return nullptr;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				auto obj = resource.Cast<GuiImageData>();
+				auto obj = content.Cast<GuiImageData>();
 				stream::internal::ContextFreeWriter writer(stream);
-				FileStream fileStream(obj->GetFilePath(), FileStream::ReadOnly);
+				FileStream fileStream(resource->GetFileAbsolutePath(), FileStream::ReadOnly);
 				writer << (stream::IStream&)fileStream;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<parsing::xml::XmlElement> element, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
-				MemoryStream stream;
-				HexToBinary(stream, XmlGetValue(element));
-				stream.SeekFromBegin(0);
-				auto image = GetCurrentController()->ImageService()->CreateImageFromStream(stream);
-				if (image)
+				errors.Add(GuiResourceError({ resource }, L"Image should load from file."));
+				return nullptr;
+			}
+
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
+			{
+				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(path);
+				if(image)
 				{
 					return new GuiImageData(image, 0);
 				}
 				else
 				{
-					errors.Add(L"Failed to load an image from binary data in xml.");
-					return 0;
+					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
+					return nullptr;
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResource(const WString& path, collections::List<WString>& errors)override
-			{
-				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(path);
-				if(image)
-				{
-					return new GuiImageData(image, 0, path);
-				}
-				else
-				{
-					errors.Add(L"Failed to load file \"" + path + L"\".");
-					return 0;
-				}
-			}
-
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
 				stream::internal::ContextFreeReader reader(stream);
 				MemoryStream memoryStream;
@@ -45708,8 +45852,8 @@ Image Type Resolver (Image)
 				}
 				else
 				{
-					errors.Add(L"Failed to load an image from binary data in a stream.");
-					return 0;
+					errors.Add(GuiResourceError({ resource }, L"[BINARY] Failed to load an image from binary data in a stream."));
+					return nullptr;
 				}
 			}
 		};
@@ -45750,9 +45894,9 @@ Text Type Resolver (Text)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<GuiTextData>())
+				if (auto obj = content.Cast<GuiTextData>())
 				{
 					auto xmlContent = MakePtr<XmlText>();
 					xmlContent->content.value = obj->GetText();
@@ -45766,20 +45910,20 @@ Text Type Resolver (Text)
 				return 0;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				auto obj = resource.Cast<GuiTextData>();
+				auto obj = content.Cast<GuiTextData>();
 				stream::internal::ContextFreeWriter writer(stream);
 				WString text = obj->GetText();
 				writer << text;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<parsing::xml::XmlElement> element, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				return new GuiTextData(XmlGetValue(element));
 			}
 
-			Ptr<DescriptableObject> ResolveResource(const WString& path, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
 			{
 				WString text;
 				if(LoadTextFile(path, text))
@@ -45788,12 +45932,12 @@ Text Type Resolver (Text)
 				}
 				else
 				{
-					errors.Add(L"Failed to load file \"" + path + L"\".");
+					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
 					return 0;
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
 				stream::internal::ContextFreeReader reader(stream);
 				WString text;
@@ -45838,21 +45982,21 @@ Xml Type Resolver (Xml)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<XmlDocument>())
+				if (auto obj = content.Cast<XmlDocument>())
 				{
 					auto xmlXml = MakePtr<XmlElement>();
 					xmlXml->name.value = L"Xml";
 					xmlXml->subNodes.Add(obj->rootElement);
 					return xmlXml;
 				}
-				return 0;
+				return nullptr;
 			}
 
-			void SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream)override
+			void SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream)override
 			{
-				auto obj = resource.Cast<XmlDocument>();
+				auto obj = content.Cast<XmlDocument>();
 				MemoryStream buffer;
 				{
 					StreamWriter writer(buffer);
@@ -45868,7 +46012,7 @@ Xml Type Resolver (Xml)
 				}
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<parsing::xml::XmlElement> element, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				Ptr<XmlElement> root = XmlGetElements(element).First(0);
 				if(root)
@@ -45877,34 +46021,47 @@ Xml Type Resolver (Xml)
 					xml->rootElement=root;
 					return xml;
 				}
-				return 0;
+				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(const WString& path, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
 			{
-				if(auto parser=GetParserManager()->GetParser<XmlDocument>(L"XML"))
+				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 				{
 					WString text;
-					if(LoadTextFile(path, text))
+					if (LoadTextFile(path, text))
 					{
-						return parser->TypedParse(text, errors);
+						List<Ptr<ParsingError>> parsingErrors;
+						auto xml = parser->TypedParse(text, parsingErrors);
+						GuiResourceError::Transform({ resource }, errors, parsingErrors);
+						return xml;
 					}
 					else
 					{
-						errors.Add(L"Failed to load file \"" + path + L"\".");
+						errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors)override
 			{
-				stream::internal::ContextFreeReader reader(stream);
-				WString text;
-				reader << text;
+				if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
+				{
+					stream::internal::ContextFreeReader reader(stream);
+					WString text;
+					reader << text;
 
-				auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML");
-				return parser->TypedParse(text, errors);
+					List<Ptr<ParsingError>> parsingErrors;
+					auto xml = parser->TypedParse(text, parsingErrors);
+					FOREACH(Ptr<ParsingError>, error, parsingErrors)
+					{
+						error->errorMessage = L"[BINARY] " + error->errorMessage;
+					}
+					GuiResourceError::Transform({ resource }, errors, parsingErrors);
+					return xml;
+				}
+				return nullptr;
 			}
 		};
 
@@ -45948,24 +46105,23 @@ Doc Type Resolver (Doc)
 				return this;
 			}
 
-			Ptr<DescriptableObject> Serialize(Ptr<DescriptableObject> resource)override
+			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
-				if (auto obj = resource.Cast<DocumentModel>())
+				if (auto obj = content.Cast<DocumentModel>())
 				{
 					return obj->SaveToXml();
 				}
-				return 0;
+				return nullptr;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)override
 			{
-				Ptr<XmlDocument> xml = resource.Cast<XmlDocument>();
-				if(xml)
+				if(auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
-					Ptr<DocumentModel> model=DocumentModel::LoadFromXml(xml, resolver, errors);
+					Ptr<DocumentModel> model = DocumentModel::LoadFromXml(resource, xml, resolver, errors);
 					return model;
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 

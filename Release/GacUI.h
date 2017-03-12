@@ -3274,7 +3274,6 @@ Resource Image
 		protected:
 			Ptr<INativeImage>				image;
 			vint							frameIndex;
-			WString							filePath;
 
 		public:
 			/// <summary>Create an empty image data.</summary>
@@ -3283,7 +3282,7 @@ Resource Image
 			/// <param name="_image">The specified image.</param>
 			/// <param name="_frameIndex">The specified frame index.</param>
 			/// <param name="_filePath">The file path of the image. This parameter is only for metadata, it will not affect the content of the image.</param>
-			GuiImageData(Ptr<INativeImage> _image, vint _frameIndex, const WString& _filePath = L"");
+			GuiImageData(Ptr<INativeImage> _image, vint _frameIndex);
 			~GuiImageData();
 
 			/// <summary>Get the specified image.</summary>
@@ -3292,9 +3291,6 @@ Resource Image
 			/// <summary>Get the specified frame index.</summary>
 			/// <returns>The specified frame index.</returns>
 			vint							GetFrameIndex();
-			/// <summary>Get the file path.</summary>
-			/// <returns>The file path.</returns>
-			const WString&					GetFilePath();
 		};
 
 /***********************************************************************
@@ -3331,6 +3327,7 @@ Resource Structure
 			GuiResourceFolder*						parent;
 			WString									name;
 			WString									fileContentPath;
+			WString									fileAbsolutePath;
 			
 		public:
 			GuiResourceNodeBase();
@@ -3342,15 +3339,67 @@ Resource Structure
 			/// <summary>Get the name of this resource node.</summary>
 			/// <returns>The name of this resource node .</returns>
 			const WString&							GetName();
-			/// <summary>Get the resource path of this resource node. When saving the resource, if the path is not empty, the path will be serialized instead of the content.</summary>
+			/// <summary>Get the resource path of this resource node</summary>
 			/// <returns>The resource path of this resource node .</returns>
 			WString									GetResourcePath();
 			/// <summary>Get the file content path of this resource node. When saving the resource, if the path is not empty, the path will be serialized instead of the content.</summary>
 			/// <returns>The file content path of this resource node .</returns>
 			const WString&							GetFileContentPath();
+			/// <summary>Get the absolute file content path of this resource node. This path points to an existing file containing the content.</summary>
+			/// <returns>The file absolute path of this resource node .</returns>
+			const WString&							GetFileAbsolutePath();
 			/// <summary>Set the file content path of this resource node.</summary>
 			/// <param name="value">The file content path of this resource node .</param>
-			void									SetFileContentPath(const WString& value);
+			void									SetFileContentPath(const WString& content, const WString& absolute);
+		};
+
+		struct GuiResourceLocation
+		{
+			WString									resourcePath;
+			WString									filePath;
+
+			GuiResourceLocation() = default;
+			GuiResourceLocation(const WString& _resourcePath, const WString& _filePath);
+			GuiResourceLocation(Ptr<GuiResourceNodeBase> node);
+
+			bool operator==(const GuiResourceLocation& b)const { return resourcePath == b.resourcePath && filePath == b.filePath; }
+			bool operator!=(const GuiResourceLocation& b)const { return !(*this == b); }
+		};
+
+		struct GuiResourceTextPos
+		{
+			GuiResourceLocation						originalLocation;
+			vint									row = parsing::ParsingTextPos::UnknownValue;
+			vint									column = parsing::ParsingTextPos::UnknownValue;
+
+			GuiResourceTextPos() = default;
+			GuiResourceTextPos(GuiResourceLocation location, parsing::ParsingTextPos position);
+
+			bool operator==(const GuiResourceTextPos& b)const { return originalLocation == b.originalLocation && row == b.row && column == b.column; }
+			bool operator!=(const GuiResourceTextPos& b)const { return !(*this == b); }
+		};
+
+		struct GuiResourceError
+		{
+		public:
+			using List = collections::List<GuiResourceError>;
+
+			GuiResourceLocation						location;
+			GuiResourceTextPos						position;
+			WString									message;
+
+			GuiResourceError() = default;
+			GuiResourceError(GuiResourceTextPos _position, const WString& _message);
+			GuiResourceError(GuiResourceLocation _location, const WString& _message);
+			GuiResourceError(GuiResourceLocation _location, GuiResourceTextPos _position, const WString& _message);
+
+			bool operator==(const GuiResourceError& b)const { return location == b.location && position == b.position && message == b.message; }
+			bool operator!=(const GuiResourceError& b)const { return !(*this == b); }
+
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors);
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix = { 0,0 });
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix = { 0,0 });
+			static void								SortAndLog(List& errors, collections::List<WString>& output, const WString& workingDirectory = WString::Empty);
 		};
 
 		class DocumentModel;
@@ -3419,12 +3468,12 @@ Resource Structure
 			ItemMap									items;
 			FolderMap								folders;
 
-			void									LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, collections::List<WString>& errors);
+			void									LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, GuiResourceError::List& errors);
 			void									SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent);
 			void									CollectTypeNames(collections::List<WString>& typeNames);
-			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, collections::List<WString>& errors);
+			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, GuiResourceError::List& errors);
 			void									SaveResourceFolderToBinary(stream::internal::ContextFreeWriter& writer, collections::List<WString>& typeNames);
-			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors);
+			void									PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
 			void									InitializeResourceFolder(GuiResourceInitializeContext& context);
 		public:
 			/// <summary>Create a resource folder.</summary>
@@ -3501,7 +3550,7 @@ Resource
 		protected:
 			WString									workingDirectory;
 
-			static void								ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, collections::List<WString>& errors);
+			static void								ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, GuiResourceError::List& errors);
 		public:
 			/// <summary>Create a resource.</summary>
 			GuiResource();
@@ -3516,13 +3565,13 @@ Resource
 			/// <param name="xml">The xml document.</param>
 			/// <param name="workingDirectory">The working directory for loading image files.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<GuiResource>					LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, collections::List<WString>& errors);
+			static Ptr<GuiResource>					LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors);
 
 			/// <summary>Load a resource from an xml file. If the xml file refers other files, they will be loaded as well.</summary>
 			/// <returns>The loaded resource.</returns>
 			/// <param name="filePath">The file path of the xml file.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<GuiResource>					LoadFromXml(const WString& filePath, collections::List<WString>& errors);
+			static Ptr<GuiResource>					LoadFromXml(const WString& filePath, GuiResourceError::List& errors);
 
 			/// <summary>Save the resource to xml.</summary>
 			/// <returns>The xml.</returns>
@@ -3532,7 +3581,12 @@ Resource
 			/// <returns>The loaded resource.</returns>
 			/// <param name="stream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream, collections::List<WString>& errors);
+			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream, GuiResourceError::List& errors);
+
+			/// <summary>Load a precompiled resource from a stream. This function will hit an assert if there are errors.</summary>
+			/// <returns>The loaded resource.</returns>
+			/// <param name="stream">The stream.</param>
+			static Ptr<GuiResource>					LoadPrecompiledBinary(stream::IStream& stream);
 			
 			/// <summary>Save the precompiled resource to a stream.</summary>
 			/// <param name="stream">The stream.</param>
@@ -3541,7 +3595,7 @@ Resource
 			/// <summary>Precompile this resource to improve performance.</summary>
 			/// <param name="callback">A callback to receive progress.</param>
 			/// <param name="errors">All collected errors during precompiling a resource.</param>
-			void									Precompile(IGuiResourcePrecompileCallback* callback, collections::List<WString>& errors);
+			void									Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
 
 			/// <summary>Initialize a precompiled resource.</summary>
 			/// <param name="usage">In which role an application is initializing this resource.</param>
@@ -3728,11 +3782,11 @@ Resource Type Resolver
 			/// <param name="resource">The resource to precompile.</param>
 			/// <param name="context">The context for precompiling.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual void										PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+			virtual void										PerResourcePrecompile(Ptr<GuiResourceItem> resource, GuiResourcePrecompileContext& context, GuiResourceError::List& errors) = 0;
 			/// <summary>Precompile for a pass.</summary>
 			/// <param name="context">The context for precompiling.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual void										PerPassPrecompile(GuiResourcePrecompileContext& context, collections::List<WString>& errors) = 0;
+			virtual void										PerPassPrecompile(GuiResourcePrecompileContext& context, GuiResourceError::List& errors) = 0;
 		};
 
 		class IGuiResourcePrecompileCallback : public virtual IDescriptable, public Description<IGuiResourcePrecompileCallback>
@@ -3774,19 +3828,19 @@ Resource Type Resolver
 			/// <summary>Serialize a resource to an xml element. This function is called if this type resolver does not have a preload type.</summary>
 			/// <returns>The serialized xml element.</returns>
 			/// <param name="resource">The resource.</param>
-			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<DescriptableObject> resource) = 0;
+			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type inside an xml element.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="element">The xml element.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<parsing::xml::XmlElement> element, collections::List<WString>& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors) = 0;
 
 			/// <summary>Load a resource for a type from a file.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="path">The file path.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResource(const WString& path, collections::List<WString>& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource without a preload type.</summary>
@@ -3796,13 +3850,13 @@ Resource Type Resolver
 			/// <summary>Serialize a precompiled resource to a stream.</summary>
 			/// <param name="resource">The resource.</param>
 			/// <param name="stream">The stream.</param>
-			virtual void										SerializePrecompiled(Ptr<DescriptableObject> resource, stream::IStream& stream) = 0;
+			virtual void										SerializePrecompiled(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content, stream::IStream& stream) = 0;
 
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="stream">The stream.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(stream::IStream& stream, collections::List<WString>& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResourcePrecompiled(Ptr<GuiResourceItem> resource, stream::IStream& stream, GuiResourceError::List& errors) = 0;
 		};
 
 		/// <summary>Represents a symbol type for loading a resource with a preload type.</summary>
@@ -3819,14 +3873,14 @@ Resource Type Resolver
 			/// <summary>Serialize a resource to a resource in preload type.</summary>
 			/// <returns>The serialized resource.</returns>
 			/// <param name="resource">The resource.</param>
-			virtual Ptr<DescriptableObject>						Serialize(Ptr<DescriptableObject> resource) = 0;
+			virtual Ptr<DescriptableObject>						Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type from a resource loaded by the preload type resolver.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="resource">The resource.</param>
 			/// <param name="resolver">The path resolver. This is only for delay load resource.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<DescriptableObject> resource, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors) = 0;
 		};
 
 /***********************************************************************
@@ -4243,29 +4297,11 @@ Rich Content Document (model)
 			/// <param name="xml">The xml document.</param>
 			/// <param name="resolver">A document resolver to resolve symbols in non-embedded objects like image.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<DocumentModel>		LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, collections::List<WString>& errors);
-
-			/// <summary>Load a document model from an xml.</summary>
-			/// <returns>The loaded document model.</returns>
-			/// <param name="xml">The xml document.</param>
-			/// <param name="workingDirectory">The working directory for loading image files.</param>
-			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<DocumentModel>		LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& workingDirectory, collections::List<WString>& errors);
-
-			/// <summary>Load a document model from an xml.</summary>
-			/// <returns>The loaded document model.</returns>
-			/// <param name="filePath">The file path of the xml document.</param>
-			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<DocumentModel>		LoadFromXml(const WString& filePath, collections::List<WString>& errors);
+			static Ptr<DocumentModel>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors);
 
 			/// <summary>Save a document model to an xml.</summary>
 			/// <returns>The saved xml document.</returns>
 			Ptr<parsing::xml::XmlDocument>	SaveToXml();
-			
-			/// <summary>Save a document model to an xml.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="filePath">The file path of the xml document.</param>
-			bool							SaveToXml(const WString& filePath);
 		};
 	}
 }
@@ -19343,7 +19379,6 @@ External Functions
 			extern Ptr<presentation::INativeImage>							INativeImage_Constructor(const WString& path);
 			extern presentation::INativeCursor*								INativeCursor_Constructor1();
 			extern presentation::INativeCursor*								INativeCursor_Constructor2(presentation::INativeCursor::SystemCursorType type);
-			extern Ptr<presentation::DocumentModel>							DocumentModel_Constructor(const WString& path);
 
 			template<typename T>
 			Ptr<T> Element_Constructor()
@@ -21953,16 +21988,16 @@ Parser
 			/// <returns>The parsed object. Returns null if failed to parse.</returns>
 			/// <param name="text">The text.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<Object>						Parse(const WString& text, collections::List<WString>& errors)=0;
+			virtual Ptr<Object>						Parse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)=0;
 		};
 
 		template<typename T>
 		class IGuiParser : public IGuiGeneralParser
 		{
 		public:
-			virtual Ptr<T>							TypedParse(const WString& text, collections::List<WString>& errors)=0;
+			virtual Ptr<T>							TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)=0;
 
-			Ptr<Object> Parse(const WString& text, collections::List<WString>& errors)override
+			Ptr<Object> Parse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
 			{
 				return TypedParse(text, errors);
 			}
@@ -22030,7 +22065,7 @@ Strong Typed Table Parser
 			{
 			}
 
-			Ptr<T> TypedParse(const WString& text, collections::List<WString>& errors)override
+			Ptr<T> TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
 			{
 				if(!table)
 				{
@@ -22040,23 +22075,13 @@ Strong Typed Table Parser
 				{
 					collections::List<Ptr<parsing::ParsingError>> parsingErrors;
 					auto result = function(text, table, parsingErrors, -1);
-					if (!result)
+					if (parsingErrors.Count() > 0)
 					{
-						errors.Add(L"Failed to parse the following input as format \"" + name + L"\":");
-						errors.Add(text);
-					}
-					for (vint i = 0; i < parsingErrors.Count(); i++)
-					{
-						auto error = parsingErrors[i];
-						errors.Add(
-							L"Format: " + name +
-							L", Row: " + itow(error->codeRange.start.row + 1) +
-							L", Column: " + itow(error->codeRange.start.column + 1) +
-							L", Message: " + error->errorMessage);
+						errors.Add(parsingErrors[0]);
 					}
 					return result;
 				}
-				return 0;
+				return nullptr;
 			}
 		};
 
