@@ -55,12 +55,13 @@ namespace vl
 WorkflowCompiler (Parser)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfType>							Workflow_ParseType(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
-		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
-		extern Ptr<workflow::WfModule>							Workflow_ParseModule(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
+		extern Ptr<workflow::WfType>							Workflow_ParseType			(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression	(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement		(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfModule>							Workflow_ParseModule		(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+
 		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
-		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, collections::List<Ptr<parsing::ParsingError>>& errors);
+		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, GuiResourceLocation location, const WString& textValue, GuiResourceTextPos position, collections::List<GuiResourceError>& errors);
 
 /***********************************************************************
 WorkflowCompiler (Installation)

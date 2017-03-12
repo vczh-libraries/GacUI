@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_RESOURCES_GUIPARSERMANAGER
 #define VCZH_PRESENTATION_RESOURCES_GUIPARSERMANAGER
 
-#include "../NativeWindow/GuiNativeWindow.h"
+#include "GuiResource.h"
 
 namespace vl
 {
@@ -25,22 +25,37 @@ Parser
 		class IGuiGeneralParser : public IDescriptable, public Description<IGuiGeneralParser>
 		{
 		public:
-			/// <summary>Parse a text.</summary>
-			/// <returns>The parsed object. Returns null if failed to parse.</returns>
-			/// <param name="text">The text.</param>
-			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<Object>						Parse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)=0;
 		};
 
 		template<typename T>
 		class IGuiParser : public IGuiGeneralParser
 		{
+			using ErrorList = collections::List<Ptr<parsing::ParsingError>>;
 		public:
-			virtual Ptr<T>							TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)=0;
+			virtual Ptr<T>							ParseInternal(const WString& text, ErrorList& errors) = 0;
 
-			Ptr<Object> Parse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
+			Ptr<T> Parse(GuiResourceLocation location, const WString& text, collections::List<GuiResourceError>& errors)
 			{
-				return TypedParse(text, errors);
+				ErrorList parsingErrors;
+				auto result = ParseInternal(text, parsingErrors);
+				GuiResourceError::Transform(location, errors, parsingErrors);
+				return result;
+			}
+
+			Ptr<T> Parse(GuiResourceLocation location, const WString& text, parsing::ParsingTextPos position, collections::List<GuiResourceError>& errors)
+			{
+				ErrorList parsingErrors;
+				auto result = ParseInternal(text, parsingErrors);
+				GuiResourceError::Transform(location, errors, parsingErrors, position);
+				return result;
+			}
+
+			Ptr<T> Parse(GuiResourceLocation location, const WString& text, GuiResourceTextPos position, collections::List<GuiResourceError>& errors)
+			{
+				ErrorList parsingErrors;
+				auto result = ParseInternal(text, parsingErrors);
+				GuiResourceError::Transform(location, errors, parsingErrors, position);
+				return result;
 			}
 		};
 
@@ -99,6 +114,7 @@ Strong Typed Table Parser
 			WString									name;
 			Ptr<Table>								table;
 			Func<ParserFunction>					function;
+
 		public:
 			GuiStrongTypedTableParser(const WString& _name, ParserFunction* _function)
 				:name(_name)
@@ -106,13 +122,13 @@ Strong Typed Table Parser
 			{
 			}
 
-			Ptr<T> TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
+			Ptr<T> ParseInternal(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
 			{
-				if(!table)
+				if (!table)
 				{
 					table = GetParserManager()->GetParsingTable(name);
 				}
-				if(table)
+				if (table)
 				{
 					collections::List<Ptr<parsing::ParsingError>> parsingErrors;
 					auto result = function(text, table, parsingErrors, -1);

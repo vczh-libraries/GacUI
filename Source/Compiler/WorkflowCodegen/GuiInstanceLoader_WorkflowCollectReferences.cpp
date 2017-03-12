@@ -75,12 +75,10 @@ WorkflowReferenceNamesVisitor
 					case TypeDescriptorFlags::NormalEnum:
 					case TypeDescriptorFlags::Struct:
 						{
-							List<Ptr<ParsingError>> parsingErrors;
-							if (auto expression = Workflow_ParseTextValue(td, repr->text, parsingErrors))
+							if (auto expression = Workflow_ParseTextValue(td, { resolvingResult.resource }, repr->text, repr->tagPosition, errors))
 							{
 								resolvingResult.propertyResolvings.Add(repr, candidate);
 							}
-							GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, repr->tagPosition);
 						}
 						break;
 					default:

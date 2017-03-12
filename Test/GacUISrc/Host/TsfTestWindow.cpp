@@ -95,7 +95,7 @@ void UnitTestInGuiMain()
 		for (auto queryCode : queries)
 		{
 			List<Ptr<parsing::ParsingError>> errors;
-			auto query = parser->TypedParse(queryCode, errors);
+			auto query = parser->ParseInternal(queryCode, errors);
 			ASSERT(query);
 			ASSERT(errors.Count() == 0);
 			

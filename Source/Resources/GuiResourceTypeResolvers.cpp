@@ -275,10 +275,7 @@ Xml Type Resolver (Xml)
 					WString text;
 					if (LoadTextFile(path, text))
 					{
-						List<Ptr<ParsingError>> parsingErrors;
-						auto xml = parser->TypedParse(text, parsingErrors);
-						GuiResourceError::Transform({ resource }, errors, parsingErrors);
-						return xml;
+						return parser->Parse({ resource }, text, errors);
 					}
 					else
 					{
@@ -296,14 +293,7 @@ Xml Type Resolver (Xml)
 					WString text;
 					reader << text;
 
-					List<Ptr<ParsingError>> parsingErrors;
-					auto xml = parser->TypedParse(text, parsingErrors);
-					FOREACH(Ptr<ParsingError>, error, parsingErrors)
-					{
-						error->errorMessage = L"[BINARY] " + error->errorMessage;
-					}
-					GuiResourceError::Transform({ resource }, errors, parsingErrors);
-					return xml;
+					return parser->Parse({ resource }, text, errors);
 				}
 				return nullptr;
 			}

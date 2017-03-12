@@ -70,14 +70,8 @@ WorkflowGenerateCreatingVisitor
 
 				if (serializable)
 				{
-					List<Ptr<ParsingError>> parsingErrors;
-					argumentInfo.expression = Workflow_ParseTextValue(td, textValue, parsingErrors);
+					argumentInfo.expression = Workflow_ParseTextValue(td, { resolvingResult.resource }, textValue, textValuePosition, errors);
 					argumentInfo.valuePosition = textValuePosition;
-					FOREACH(Ptr<ParsingError>, error, parsingErrors)
-					{
-						error->errorMessage = L"[INTERNAL ERROR] " + error->errorMessage;
-					}
-					GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, textValuePosition);
 				}
 				else
 				{

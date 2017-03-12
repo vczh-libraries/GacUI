@@ -362,42 +362,12 @@ Workflow_GenerateInstanceClass
 				}
 			}
 
-			auto parseType = [&](const WString& code, const WString& name, GuiResourceTextPos position)->Ptr<WfType>
-			{
-				List<Ptr<ParsingError>> parsingErrors;
-				if (auto type = Workflow_ParseType(code, parsingErrors))
-				{
-					return type;
-				}
-				else
-				{
-					GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
-					return nullptr;
-				}
-			};
-
 			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfDeclaration>>& memberDecls, GuiResourceTextPos position)
 			{
-				List<Ptr<ParsingError>> parsingErrors;
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
-				if (auto module = Workflow_ParseModule(wrappedCode, parsingErrors))
+				if(auto module = Workflow_ParseModule({ resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
 				{
 					CopyFrom(memberDecls, module->declarations[0].Cast<WfClassDeclaration>()->declarations);
-				}
-				else
-				{
-					FOREACH(Ptr<ParsingError>, error, parsingErrors)
-					{
-						if (error->codeRange.start.row > 0)
-						{
-							error->codeRange.start.row--;
-						}
-						else
-						{
-							error->codeRange = ParsingTextRange();
-						}
-					}
-					GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, position);
 				}
 			};
 
@@ -477,7 +447,7 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
 			{
-				if (auto type = parseType(param->className.ToString() + L"^", L"parameter \"" + param->name.ToString() + L" of instance \"" + context->className + L"\"", param->classPosition))
+				if (auto type = Workflow_ParseType({ resolvingResult.resource }, param->className.ToString() + L"^", param->classPosition, errors))
 				{
 					if (!beforePrecompile)
 					{

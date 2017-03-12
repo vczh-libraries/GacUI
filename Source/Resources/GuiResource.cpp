@@ -539,13 +539,11 @@ GuiResourceFolder
 									{
 										if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 										{
-											List<Ptr<ParsingError>> parsingErrors;
-											if (auto xml = parser->TypedParse(text, parsingErrors))
+											if (auto xml = parser->Parse({ WString::Empty,fileAbsolutePath }, text, errors))
 											{
 												newContainingFolder = GetFolderPath(fileAbsolutePath);
 												newFolderXml = xml->rootElement;
 											}
-											GuiResourceError::Transform({ WString::Empty,fileAbsolutePath }, errors, parsingErrors);
 										}
 									}
 									else
@@ -1192,9 +1190,7 @@ GuiResource
 				WString text;
 				if(LoadTextFile(filePath, text))
 				{
-					List<Ptr<ParsingError>> parsingErrors;
-					xml = parser->TypedParse(text, parsingErrors);
-					GuiResourceError::Transform({ WString::Empty,filePath }, errors, parsingErrors);
+					xml = parser->Parse({ WString::Empty,filePath }, text, errors);
 				}
 				else
 				{

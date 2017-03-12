@@ -146,7 +146,7 @@ GuiInstanceContext::ElementName Parser
 			{
 			}
 
-			Ptr<ElementName> TypedParse(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
+			Ptr<ElementName> ParseInternal(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
 			{
 				Ptr<RegexMatch> match = regexElementName.MatchHead(text);
 				if (!match || match->Result().Length() != text.Length())
@@ -706,9 +706,7 @@ GuiDefaultInstanceLoader
 										auto propertyDescription = propertyValueExpression.Cast<WfStringExpression>()->value.value;
 										Ptr<WfExpression> propertyExpression;
 										{
-											List<Ptr<ParsingError>> parsingErrors;
-											propertyExpression = Workflow_ParseExpression(propertyDescription, parsingErrors);
-											GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, propertyValue.valuePosition);
+											propertyExpression = Workflow_ParseExpression({ resolvingResult.resource }, propertyDescription, propertyValue.valuePosition, errors);
 											if (!propertyExpression)
 											{
 												break;
@@ -735,9 +733,7 @@ GuiDefaultInstanceLoader
 											const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
 											auto itemTypeValue = values[values.Count() - 1];
 
-											List<Ptr<ParsingError>> parsingErrors;
-											itemType = Workflow_ParseType(itemTypeValue->value, parsingErrors);
-											GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, itemTypeValue->valuePosition);
+											itemType = Workflow_ParseType({ resolvingResult.resource }, itemTypeValue->value, itemTypeValue->valuePosition, errors);
 											if (!itemType)
 											{
 												break;
