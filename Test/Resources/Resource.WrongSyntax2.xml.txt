@@ -31,4 +31,3 @@ NotExistsCollection/Xml # .\Resource.NotExists.xml
 (-2, -2): Failed to load file ".\Resource.NotExists.xml".
 Xml # .\Resource.WrongSyntax.xml
 (1, 2): Error happened during parsing.
-

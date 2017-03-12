@@ -1,3 +1,2 @@
  # .\Resource.WrongSyntax.xml
 (1, 2): Error happened during parsing.
-
