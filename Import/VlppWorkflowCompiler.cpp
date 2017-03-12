@@ -4055,7 +4055,7 @@ ExpandObserveExpression
 						}
 					}
 
-					result = CreateField(node);
+					result = CreateField(node->expression);
 					CopyFrom(referenceReplacement, overrided, true);
 				}
 
