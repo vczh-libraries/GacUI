@@ -706,9 +706,8 @@ GuiDefaultInstanceLoader
 										auto propertyDescription = propertyValueExpression.Cast<WfStringExpression>()->value.value;
 										Ptr<WfExpression> propertyExpression;
 										{
-											auto typeParser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
 											List<Ptr<ParsingError>> parsingErrors;
-											propertyExpression = typeParser->TypedParse(propertyDescription, parsingErrors);
+											propertyExpression = Workflow_ParseExpression(propertyDescription, parsingErrors);
 											GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, propertyValue.valuePosition);
 											if (!propertyExpression)
 											{
@@ -733,12 +732,11 @@ GuiDefaultInstanceLoader
 
 										Ptr<WfType> itemType;
 										{
-											auto typeParser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
 											const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
 											auto itemTypeValue = values[values.Count() - 1];
 
 											List<Ptr<ParsingError>> parsingErrors;
-											itemType = typeParser->TypedParse(itemTypeValue->value, parsingErrors);
+											itemType = Workflow_ParseType(itemTypeValue->value, parsingErrors);
 											GuiResourceError::Transform({ resolvingResult.resource }, errors, parsingErrors, itemTypeValue->valuePosition);
 											if (!itemType)
 											{

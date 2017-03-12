@@ -362,11 +362,10 @@ Workflow_GenerateInstanceClass
 				}
 			}
 
-			auto typeParser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
 			auto parseType = [&](const WString& code, const WString& name, GuiResourceTextPos position)->Ptr<WfType>
 			{
 				List<Ptr<ParsingError>> parsingErrors;
-				if (auto type = typeParser->TypedParse(code, parsingErrors))
+				if (auto type = Workflow_ParseType(code, parsingErrors))
 				{
 					return type;
 				}
@@ -377,12 +376,11 @@ Workflow_GenerateInstanceClass
 				}
 			};
 
-			auto moduleParser = GetParserManager()->GetParser<WfModule>(L"WORKFLOW-MODULE");
 			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfDeclaration>>& memberDecls, GuiResourceTextPos position)
 			{
 				List<Ptr<ParsingError>> parsingErrors;
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
-				if (auto module = moduleParser->TypedParse(wrappedCode, parsingErrors))
+				if (auto module = Workflow_ParseModule(wrappedCode, parsingErrors))
 				{
 					CopyFrom(memberDecls, module->declarations[0].Cast<WfClassDeclaration>()->declarations);
 				}

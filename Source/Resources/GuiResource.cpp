@@ -348,15 +348,13 @@ GuiResourceError
 		}
 
 		template<typename TCallback>
-		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix, const TCallback& callback)
+		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, const TCallback& callback)
 		{
 			if (offset.row < 0 || offset.column < 0)
 			{
 				offset.row = 0;
 				offset.column = 0;
 			}
-			offset.row += offsetFix.row;
-			offset.column += offsetFix.column;
 
 			FOREACH(Ptr<ParsingError>, error, parsingErrors)
 			{
@@ -382,14 +380,14 @@ GuiResourceError
 			Transform(_location, errors, parsingErrors, { _location,{ 0,0 } });
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset)
 		{
-			Transform(_location, errors, parsingErrors, { _location,offset }, offsetFix);
+			Transform(_location, errors, parsingErrors, { _location,offset });
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset)
 		{
-			TransformErrors(errors, parsingErrors, offset, offsetFix, [&](GuiResourceTextPos pos, const WString& message)
+			TransformErrors(errors, parsingErrors, offset, [&](GuiResourceTextPos pos, const WString& message)
 			{
 				return GuiResourceError(_location, pos, message);
 			});

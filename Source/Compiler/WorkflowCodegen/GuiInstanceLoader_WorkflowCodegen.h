@@ -54,9 +54,11 @@ namespace vl
 /***********************************************************************
 WorkflowCompiler (Parser)
 ***********************************************************************/
-		
+
+		extern Ptr<workflow::WfType>							Workflow_ParseType(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
 		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
 		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
+		extern Ptr<workflow::WfModule>							Workflow_ParseModule(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
 		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, collections::List<Ptr<parsing::ParsingError>>& errors);
 

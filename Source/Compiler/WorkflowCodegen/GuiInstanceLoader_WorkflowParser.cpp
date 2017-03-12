@@ -13,6 +13,12 @@ namespace vl
 Parser
 ***********************************************************************/
 
+		Ptr<workflow::WfType> Workflow_ParseType(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors)
+		{
+			auto parser = GetParserManager()->GetParser<WfType>(L"WORKFLOW-TYPE");
+			return parser->TypedParse(code, errors);
+		}
+
 		Ptr<workflow::WfExpression> Workflow_ParseExpression(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors)
 		{
 			auto parser = GetParserManager()->GetParser<WfExpression>(L"WORKFLOW-EXPRESSION");
@@ -22,6 +28,12 @@ Parser
 		Ptr<workflow::WfStatement> Workflow_ParseStatement(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors)
 		{
 			auto parser = GetParserManager()->GetParser<WfStatement>(L"WORKFLOW-STATEMENT");
+			return parser->TypedParse(code, errors);
+		}
+
+		Ptr<workflow::WfModule> Workflow_ParseModule(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors)
+		{
+			auto parser = GetParserManager()->GetParser<WfModule>(L"WORKFLOW-MODULE");
 			return parser->TypedParse(code, errors);
 		}
 

@@ -913,7 +913,9 @@ GuiInstanceStyle
 				List<Ptr<ParsingError>> parsingErrors;
 				auto parser = GetParserManager()->GetParser<GuiIqQuery>(L"INSTANCE-QUERY");
 				auto query = parser->TypedParse(pathAttr->value.value, parsingErrors);
-				GuiResourceError::Transform({ resource }, errors, parsingErrors, pathAttr->value.codeRange.start, { 0,1 });
+				auto position = pathAttr->value.codeRange.start;
+				position.column += 1;
+				GuiResourceError::Transform({ resource }, errors, parsingErrors, position);
 				if (!query) return nullptr;
 				style->query = query;
 			}
