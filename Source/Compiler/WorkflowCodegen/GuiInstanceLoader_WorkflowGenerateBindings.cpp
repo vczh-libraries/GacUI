@@ -17,16 +17,122 @@ WorkflowGenerateBindingVisitor
 		class WorkflowGenerateBindingVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
+			GuiResourcePrecompileContext&		precompileContext;
 			types::ResolvingResult&				resolvingResult;
 			Ptr<WfBlockStatement>				statements;
 			GuiResourceError::List&				errors;
 			
-			WorkflowGenerateBindingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
-				:resolvingResult(_resolvingResult)
+			WorkflowGenerateBindingVisitor(GuiResourcePrecompileContext& _precompileContext, types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
+				:precompileContext(_precompileContext)
+				, resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, statements(_statements)
 			{
 			}
+
+			///////////////////////////////////////////////////////////////////////////////////
+
+			Ptr<WfStatement> ProcessPropertyBinding(
+				GuiAttSetterRepr* repr,
+				IGuiInstanceLoader::TypeInfo reprTypeInfo,
+				Ptr<GuiAttSetterRepr::SetterValue> setter,
+				GlobalStringKey propertyName
+				)
+			{
+				if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
+				{
+					auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
+					if (propertyResolving.info->scope == GuiInstancePropertyInfo::Property)
+					{
+						WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
+						auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
+
+						if (instancePropertyInfo || !binder->RequirePropertyExist())
+						{
+							if (auto statement = binder->GenerateInstallStatement(
+								resolvingResult,
+								repr->instanceName,
+								instancePropertyInfo,
+								propertyResolving.loader,
+								propertyResolving.propertyInfo,
+								propertyResolving.info,
+								expressionCode,
+								setter->values[0]->tagPosition,
+								errors))
+							{
+								return statement;
+							}
+						}
+						else
+						{
+							errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
+								L"Precompile: Binder \"" +
+								setter->binding.ToString() +
+								L"\" requires property \"" +
+								propertyName.ToString() +
+								L"\" to physically appear in type \"" +
+								reprTypeInfo.typeName.ToString() +
+								L"\"."));
+						}
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
+						L"[INTERNAL ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
+						setter->binding.ToString() +
+						L"\" cannot be found."));
+				}
+				return nullptr;
+			}
+
+			///////////////////////////////////////////////////////////////////////////////////
+
+			Ptr<WfStatement> ProcessEventBinding(
+				GuiAttSetterRepr* repr,
+				IGuiInstanceLoader::TypeInfo reprTypeInfo,
+				Ptr<GuiAttSetterRepr::EventValue> handler,
+				GlobalStringKey propertyName
+				)
+			{
+				auto td = reprTypeInfo.typeDescriptor;
+				auto eventInfo = td->GetEventByName(propertyName.ToString(), true);
+
+				if (!eventInfo)
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
+						L"[INTERNAL ERROR] Precompile: Event \"" +
+						propertyName.ToString() +
+						L"\" cannot be found in type \"" +
+						reprTypeInfo.typeName.ToString() +
+						L"\"."));
+				}
+				else
+				{
+					if (handler->binding == GlobalStringKey::Empty)
+					{
+						return Workflow_InstallEvent(resolvingResult, repr->instanceName, eventInfo, handler->value);
+					}
+					else
+					{
+						auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
+						if (binder)
+						{
+							return binder->GenerateInstallStatement(resolvingResult, repr->instanceName, eventInfo, handler->value, handler->valuePosition, errors);
+						}
+						else
+						{
+							errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
+								L"[INTERNAL ERROR] The appropriate IGuiInstanceEventBinder of binding \"-" +
+								handler->binding.ToString() +
+								L"\" cannot be found."));
+						}
+					}
+				}
+				return nullptr;
+			}
+
+			///////////////////////////////////////////////////////////////////////////////////
 
 			void Visit(GuiTextRepr* repr)override
 			{
@@ -49,49 +155,10 @@ WorkflowGenerateBindingVisitor
 						auto propertyName = repr->setters.Keys()[index];
 						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
 						{
-							if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
+							if (auto statement = ProcessPropertyBinding(repr, reprTypeInfo, setter, propertyName))
 							{
-								auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
-								if (propertyResolving.info->scope == GuiInstancePropertyInfo::Property)
-								{
-									WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
-									auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
-
-									if (instancePropertyInfo || !binder->RequirePropertyExist())
-									{
-										if (auto statement = binder->GenerateInstallStatement(
-											resolvingResult,
-											repr->instanceName,
-											instancePropertyInfo,
-											propertyResolving.loader,
-											propertyResolving.propertyInfo,
-											propertyResolving.info,
-											expressionCode,
-											setter->values[0]->tagPosition,
-											errors))
-										{
-											statements->statements.Add(statement);
-										}
-									}
-									else
-									{
-										errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
-											L"Precompile: Binder \"" +
-											setter->binding.ToString() +
-											L"\" requires property \"" +
-											propertyName.ToString() +
-											L"\" to physically appear in type \"" +
-											reprTypeInfo.typeName.ToString() +
-											L"\"."));
-									}
-								}
-							}
-							else
-							{
-								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
-									L"[INTERNAL ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
-									setter->binding.ToString() +
-									L"\" cannot be found."));
+								Workflow_RecordScriptPosition(precompileContext, setter->values[0]->tagPosition, statement);
+								statements->statements.Add(statement);
 							}
 						}
 						else
@@ -108,46 +175,10 @@ WorkflowGenerateBindingVisitor
 						if (reprTypeInfo.typeDescriptor)
 						{
 							GlobalStringKey propertyName = repr->eventHandlers.Keys()[index];
-							auto td = reprTypeInfo.typeDescriptor;
-							auto eventInfo = td->GetEventByName(propertyName.ToString(), true);
-
-							if (!eventInfo)
+							if (auto statement = ProcessEventBinding(repr, reprTypeInfo, handler, propertyName))
 							{
-								errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
-									L"[INTERNAL ERROR] Precompile: Event \"" +
-									propertyName.ToString() +
-									L"\" cannot be found in type \"" +
-									reprTypeInfo.typeName.ToString() +
-									L"\"."));
-							}
-							else
-							{
-								Ptr<WfStatement> statement;
-
-								if (handler->binding == GlobalStringKey::Empty)
-								{
-									statement = Workflow_InstallEvent(resolvingResult, repr->instanceName, eventInfo, handler->value);
-								}
-								else
-								{
-									auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
-									if (binder)
-									{
-										statement = binder->GenerateInstallStatement(resolvingResult, repr->instanceName, eventInfo, handler->value, handler->valuePosition, errors);
-									}
-									else
-									{
-										errors.Add(GuiResourceError({ resolvingResult.resource }, handler->attPosition,
-											L"[INTERNAL ERROR] The appropriate IGuiInstanceEventBinder of binding \"-" +
-											handler->binding.ToString() +
-											L"\" cannot be found."));
-									}
-								}
-
-								if (statement)
-								{
-									statements->statements.Add(statement);
-								}
+								Workflow_RecordScriptPosition(precompileContext, handler->valuePosition, statement);
+								statements->statements.Add(statement);
 							}
 						}
 					}
@@ -162,9 +193,9 @@ WorkflowGenerateBindingVisitor
 			}
 		};
 
-		void Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, GuiResourceError::List& errors)
+		void Workflow_GenerateBindings(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, GuiResourceError::List& errors)
 		{
-			WorkflowGenerateBindingVisitor visitor(resolvingResult, statements, errors);
+			WorkflowGenerateBindingVisitor visitor(precompileContext, resolvingResult, statements, errors);
 			resolvingResult.context->instance->Accept(&visitor);
 		}
 	}

@@ -855,51 +855,7 @@ GuiDefaultInstanceLoader
 													block->statements.Add(returnStat);
 
 													auto returnType = propertyType.f1->GetReturn()->GetElementType()->GetGenericArgument(0);
-													auto returnTd = returnType->GetTypeDescriptor();
-
-													if ((returnTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
-													{
-														auto expr = MakePtr<WfLiteralExpression>();
-														expr->value = WfLiteralValue::Null;
-														returnStat->expression = expr;
-													}
-													else if ((returnTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
-													{
-														auto zero = MakePtr<WfIntegerExpression>();
-														zero->value.value = L"0";
-
-														auto expr = MakePtr<WfInferExpression>();
-														expr->type = GetTypeFromTypeInfo(returnType);
-														expr->expression = zero;
-														returnStat->expression = expr;
-													}
-													else if (returnTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-													{
-														auto expr = MakePtr<WfConstructorExpression>();
-														returnStat->expression = expr;
-													}
-													else if (returnTd == description::GetTypeDescriptor<WString>())
-													{
-														returnStat->expression = MakePtr<WfStringExpression>();
-													}
-													else if (returnTd == description::GetTypeDescriptor<bool>())
-													{
-														auto expr = MakePtr<WfLiteralExpression>();
-														expr->value = WfLiteralValue::False;
-														returnStat->expression = expr;
-													}
-													else if (returnTd == description::GetTypeDescriptor<float>() || returnTd == description::GetTypeDescriptor<double>())
-													{
-														auto expr = MakePtr<WfFloatingExpression>();
-														expr->value.value = L"0";
-														returnStat->expression = expr;
-													}
-													else
-													{
-														auto expr = MakePtr<WfIntegerExpression>();
-														expr->value.value = L"0";
-														returnStat->expression = expr;
-													}
+													returnStat->expression = CreateDefaultValue(returnType);
 												}
 											}
 											{

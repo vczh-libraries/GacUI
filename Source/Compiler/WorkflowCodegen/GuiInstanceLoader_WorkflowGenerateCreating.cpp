@@ -19,16 +19,20 @@ WorkflowGenerateCreatingVisitor
 		class WorkflowGenerateCreatingVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
+			GuiResourcePrecompileContext&		precompileContext;
 			types::ResolvingResult&				resolvingResult;
 			Ptr<WfBlockStatement>				statements;
 			GuiResourceError::List&				errors;
 			
-			WorkflowGenerateCreatingVisitor(types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
-				:resolvingResult(_resolvingResult)
+			WorkflowGenerateCreatingVisitor(GuiResourcePrecompileContext& _precompileContext, types::ResolvingResult& _resolvingResult, Ptr<WfBlockStatement> _statements, GuiResourceError::List& _errors)
+				:precompileContext(_precompileContext)
+				, resolvingResult(_resolvingResult)
 				, errors(_errors)
 				, statements(_statements)
 			{
 			}
+
+			///////////////////////////////////////////////////////////////////////////////////
 
 			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(GuiResourceTextPos attPosition, GuiValueRepr* repr)
 			{
@@ -82,8 +86,143 @@ WorkflowGenerateCreatingVisitor
 					argumentInfo.expression = ref;
 				}
 
+				if (argumentInfo.expression)
+				{
+					Workflow_RecordScriptPosition(precompileContext, repr->tagPosition, argumentInfo.expression);
+				}
 				return argumentInfo;
 			}
+
+			///////////////////////////////////////////////////////////////////////////////////
+
+			Ptr<WfStatement> ProcessPropertySet(
+				IGuiInstanceLoader::PropertyInfo propInfo,
+				GuiAttSetterRepr* repr,
+				Ptr<GuiAttSetterRepr::SetterValue> setter,
+				GuiAttSetterRepr* setTarget
+				)
+			{
+				auto info = resolvingResult.propertyResolvings[setTarget];
+				vint errorCount = errors.Count();
+				if (auto expr = info.loader->GetParameter(resolvingResult, propInfo, repr->instanceName, setter->attPosition, errors))
+				{
+					auto refInstance = MakePtr<WfReferenceExpression>();
+					refInstance->name.value = setTarget->instanceName.ToString();
+
+					auto assign = MakePtr<WfBinaryExpression>();
+					assign->op = WfBinaryOperator::Assign;
+					assign->first = refInstance;
+					assign->second = expr;
+
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = assign;
+
+					return stat;
+				}
+				else if (errorCount == errors.Count())
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, setTarget->tagPosition,
+						L"[INTERNAL ERROR] Precompile: Something is wrong when retriving the property \"" +
+						propInfo.propertyName.ToString() +
+						L"\" from an instance of type \"" +
+						propInfo.typeInfo.typeName.ToString() +
+						L"\"."));
+				}
+				return nullptr;
+			}
+
+			///////////////////////////////////////////////////////////////////////////////////
+
+			Ptr<WfStatement> ProcessPropertyCollection(
+				IGuiInstanceLoader::PropertyInfo propInfo,
+				GuiAttSetterRepr* repr,
+				Group<GlobalStringKey, IGuiInstanceLoader*>& usedProps,
+				Ptr<GuiAttSetterRepr::SetterValue> setter,
+				types::PropertyResolving info,
+				Ptr<GuiValueRepr> value
+				)
+			{
+				if (!usedProps.Contains(propInfo.propertyName, info.loader))
+				{
+					usedProps.Add(propInfo.propertyName, info.loader);
+				}
+
+				vint errorCount = errors.Count();
+				IGuiInstanceLoader::ArgumentMap arguments;
+				arguments.Add(propInfo.propertyName, GetArgumentInfo(setter->attPosition, value.Obj()));
+				if (auto stat = info.loader->AssignParameters(resolvingResult, propInfo.typeInfo, repr->instanceName, arguments, setter->attPosition, errors))
+				{
+					return stat;
+				}
+				else if (errorCount == errors.Count())
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, value->tagPosition,
+						L"[INTERNAL ERROR] Precompile: Something is wrong when assigning to property " +
+						propInfo.propertyName.ToString() +
+						L" to an instance of type \"" +
+						propInfo.typeInfo.typeName.ToString() +
+						L"\"."));
+				}
+				return nullptr;
+			}
+
+			///////////////////////////////////////////////////////////////////////////////////
+
+			Ptr<WfStatement> ProcessPropertyOthers(
+				IGuiInstanceLoader::PropertyInfo propInfo,
+				GuiAttSetterRepr* repr,
+				Group<GlobalStringKey, IGuiInstanceLoader*>& usedProps,
+				Ptr<GuiAttSetterRepr::SetterValue> setter,
+				types::PropertyResolving info,
+				Ptr<GuiValueRepr> value
+				)
+			{
+				List<GlobalStringKey> pairedProps;
+				info.loader->GetPairedProperties(propInfo, pairedProps);
+				if (pairedProps.Count() == 0)
+				{
+					pairedProps.Add(propInfo.propertyName);
+				}
+
+				IGuiInstanceLoader::ArgumentMap arguments;
+				FOREACH(GlobalStringKey, pairedProp, pairedProps)
+				{
+					usedProps.Add(pairedProp, info.loader);
+					auto pairedSetter = repr->setters[pairedProp];
+					FOREACH(Ptr<GuiValueRepr>, pairedValue, pairedSetter->values)
+					{
+						auto pairedInfo = resolvingResult.propertyResolvings[pairedValue.Obj()];
+						if (pairedInfo.loader == info.loader)
+						{
+							arguments.Add(pairedProp, GetArgumentInfo(pairedSetter->attPosition, pairedValue.Obj()));
+						}
+					}
+				}
+
+				vint errorCount = errors.Count();
+				if (auto stat = info.loader->AssignParameters(resolvingResult, propInfo.typeInfo, repr->instanceName, arguments, setter->attPosition, errors))
+				{
+					return stat;
+				}
+				else if (errorCount == errors.Count())
+				{
+					WString propNames;
+					FOREACH_INDEXER(GlobalStringKey, pairedProp, propIndex, pairedProps)
+					{
+						if (propIndex > 0)propNames += L", ";
+						propNames += L"\"" + pairedProp.ToString() + L"\"";
+					}
+					errors.Add(GuiResourceError({ resolvingResult.resource }, value->tagPosition,
+						L"[INTERNAL ERROR] Precompile: Something is wrong when assigning to properties " +
+						propNames +
+						L" to an instance of type \"" +
+						propInfo.typeInfo.typeName.ToString() +
+						L"\"."));
+				}
+				return nullptr;
+			}
+
+			///////////////////////////////////////////////////////////////////////////////////
 
 			void Visit(GuiTextRepr* repr)override
 			{
@@ -105,31 +244,10 @@ WorkflowGenerateCreatingVisitor
 						if (setter->binding == GlobalStringKey::_Set)
 						{
 							auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
-							auto info = resolvingResult.propertyResolvings[setTarget];
-							vint errorCount = errors.Count();
-							if (auto expr = info.loader->GetParameter(resolvingResult, propInfo, repr->instanceName, setter->attPosition, errors))
+							if (auto statement = ProcessPropertySet(propInfo, repr, setter, setTarget))
 							{
-								auto refInstance = MakePtr<WfReferenceExpression>();
-								refInstance->name.value = setTarget->instanceName.ToString();
-
-								auto assign = MakePtr<WfBinaryExpression>();
-								assign->op = WfBinaryOperator::Assign;
-								assign->first = refInstance;
-								assign->second = expr;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = assign;
-
-								statements->statements.Add(stat);
-							}
-							else if (errorCount == errors.Count())
-							{
-								errors.Add(GuiResourceError({ resolvingResult.resource }, setTarget->tagPosition,
-									L"[INTERNAL ERROR] Precompile: Something is wrong when retriving the property \"" +
-									prop.ToString() +
-									L"\" from an instance of type \"" +
-									reprTypeInfo.typeName.ToString() +
-									L"\"."));
+								Workflow_RecordScriptPosition(precompileContext, setTarget->tagPosition, statement);
+								statements->statements.Add(statement);
 							}
 							setTarget->Accept(this);
 						}
@@ -142,71 +260,18 @@ WorkflowGenerateCreatingVisitor
 								{
 									if (info.info->support == GuiInstancePropertyInfo::SupportCollection)
 									{
-										if (!usedProps.Contains(prop, info.loader))
+										if (auto statement = ProcessPropertyCollection(propInfo, repr, usedProps, setter, info, value))
 										{
-											usedProps.Add(prop, info.loader);
-										}
-
-										vint errorCount = errors.Count();
-										IGuiInstanceLoader::ArgumentMap arguments;
-										arguments.Add(prop, GetArgumentInfo(setter->attPosition, value.Obj()));
-										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, setter->attPosition, errors))
-										{
-											statements->statements.Add(stat);
-										}
-										else if (errorCount == errors.Count())
-										{
-											errors.Add(GuiResourceError({ resolvingResult.resource }, value->tagPosition,
-												L"[INTERNAL ERROR] Precompile: Something is wrong when assigning to property " +
-												prop.ToString() +
-												L" to an instance of type \"" +
-												reprTypeInfo.typeName.ToString() +
-												L"\"."));
+											Workflow_RecordScriptPosition(precompileContext, value->tagPosition, statement);
+											statements->statements.Add(statement);
 										}
 									}
 									else if (!usedProps.Contains(prop, info.loader))
 									{
-										List<GlobalStringKey> pairedProps;
-										info.loader->GetPairedProperties(propInfo, pairedProps);
-										if (pairedProps.Count() == 0)
+										if (auto statement = ProcessPropertyOthers(propInfo, repr, usedProps, setter, info, value))
 										{
-											pairedProps.Add(prop);
-										}
-
-										IGuiInstanceLoader::ArgumentMap arguments;
-										FOREACH(GlobalStringKey, pairedProp, pairedProps)
-										{
-											usedProps.Add(pairedProp, info.loader);
-											auto pairedSetter = repr->setters[pairedProp];
-											FOREACH(Ptr<GuiValueRepr>, pairedValue, pairedSetter->values)
-											{
-												auto pairedInfo = resolvingResult.propertyResolvings[pairedValue.Obj()];
-												if (pairedInfo.loader == info.loader)
-												{
-													arguments.Add(pairedProp, GetArgumentInfo(pairedSetter->attPosition, pairedValue.Obj()));
-												}
-											}
-										}
-
-										vint errorCount = errors.Count();
-										if (auto stat = info.loader->AssignParameters(resolvingResult, reprTypeInfo, repr->instanceName, arguments, setter->attPosition, errors))
-										{
-											statements->statements.Add(stat);
-										}
-										else if (errorCount == errors.Count())
-										{
-											WString propNames;
-											FOREACH_INDEXER(GlobalStringKey, pairedProp, propIndex, pairedProps)
-											{
-												if (propIndex > 0)propNames += L", ";
-												propNames += L"\"" + pairedProp.ToString() + L"\"";
-											}
-											errors.Add(GuiResourceError({ resolvingResult.resource }, value->tagPosition,
-												L"[INTERNAL ERROR] Precompile: Something is wrong when assigning to properties " +
-												propNames +
-												L" to an instance of type \"" +
-												reprTypeInfo.typeName.ToString() +
-												L"\"."));
+											Workflow_RecordScriptPosition(precompileContext, value->tagPosition, statement);
+											statements->statements.Add(statement);
 										}
 									}
 								}
@@ -249,6 +314,8 @@ WorkflowGenerateCreatingVisitor
 							auto value = setter->values[0].Cast<GuiTextRepr>();
 							if (auto expression = binder->GenerateConstructorArgument(resolvingResult, loader, propInfo, resolvedPropInfo, value->text, value->tagPosition, errors))
 							{
+								Workflow_RecordScriptPosition(precompileContext, value->tagPosition, expression);
+
 								IGuiInstanceLoader::ArgumentInfo argument;
 								argument.expression = expression;
 								argument.type = resolvedPropInfo->acceptableTypes[0];
@@ -321,6 +388,7 @@ WorkflowGenerateCreatingVisitor
 					{
 						if (auto stat = ctorLoader->InitializeRootInstance(resolvingResult, ctorTypeInfo, repr->instanceName, resolvingResult.rootCtorArguments, errors))
 						{
+							Workflow_RecordScriptPosition(precompileContext, resolvingResult.context->tagPosition, stat);
 							statements->statements.Add(stat);
 						}
 					}
@@ -346,6 +414,7 @@ WorkflowGenerateCreatingVisitor
 						stat->expression = assign;
 
 						statements->statements.Add(stat);
+						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfStatement>)stat);
 					}
 				}
 				else
@@ -356,6 +425,7 @@ WorkflowGenerateCreatingVisitor
 					vint errorCount = errors.Count();
 					if (auto ctorStats = ctorLoader->CreateInstance(resolvingResult, ctorTypeInfo, repr->instanceName, arguments, repr->tagPosition, errors))
 					{
+						Workflow_RecordScriptPosition(precompileContext, resolvingResult.context->tagPosition, ctorStats);
 						statements->statements.Add(ctorStats);
 					}
 					else if (errorCount == errors.Count())
@@ -370,9 +440,9 @@ WorkflowGenerateCreatingVisitor
 			}
 		};
 
-		void Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, GuiResourceError::List& errors)
+		void Workflow_GenerateCreating(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<WfBlockStatement> statements, GuiResourceError::List& errors)
 		{
-			WorkflowGenerateCreatingVisitor visitor(resolvingResult, statements, errors);
+			WorkflowGenerateCreatingVisitor visitor(precompileContext, resolvingResult, statements, errors);
 			resolvingResult.context->instance->Accept(&visitor);
 		}
 	}

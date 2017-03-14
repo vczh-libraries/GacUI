@@ -404,7 +404,7 @@ Instance Type Resolver (Instance)
 							types::ResolvingResult resolvingResult;
 							resolvingResult.resource = resource;
 							resolvingResult.context = obj;
-							if (auto module = Workflow_GenerateInstanceClass(resolvingResult, errors, context.passIndex))
+							if (auto module = Workflow_GenerateInstanceClass(context, resolvingResult, errors, context.passIndex))
 							{
 								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
 							}
@@ -436,9 +436,9 @@ Instance Type Resolver (Instance)
 
 							if (errors.Count() == previousErrorCount)
 							{
-								if (auto ctorModule = Workflow_PrecompileInstanceContext(resolvingResult, errors))
+								if (auto ctorModule = Workflow_PrecompileInstanceContext(context, resolvingResult, errors))
 								{
-									if (auto instanceModule = Workflow_GenerateInstanceClass(resolvingResult, errors, context.passIndex))
+									if (auto instanceModule = Workflow_GenerateInstanceClass(context, resolvingResult, errors, context.passIndex))
 									{
 										Workflow_AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass);
 										Workflow_AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass);
@@ -493,6 +493,7 @@ Instance Type Resolver (Instance)
 					break;
 				default:;
 				}
+				Workflow_ClearScriptPosition(context);
 				GetInstanceLoaderManager()->ClearReflectionCache();
 			}
 

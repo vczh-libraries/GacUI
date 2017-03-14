@@ -33,7 +33,10 @@ WorkflowScriptPositionVisitor
 
 			virtual void Traverse(ParsingTreeCustomBase* node)override
 			{
-				sp->nodePositions.Add(node, position);
+				if (!sp->nodePositions.Keys().Contains(node))
+				{
+					sp->nodePositions.Add(node, position);
+				}
 			}
 		};
 
@@ -64,6 +67,11 @@ WorkflowCompiler_ScriptPosition
 		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node)
 		{
 			WorkflowScriptPositionVisitor(context, position).VisitField(node.Obj());
+		}
+
+		void Workflow_ClearScriptPosition(GuiResourcePrecompileContext& context)
+		{
+			context.additionalProperties.Remove(nullptr);
 		}
 	}
 }
