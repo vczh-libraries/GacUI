@@ -17,11 +17,13 @@ WorkflowScriptPositionVisitor
 		public:
 			GuiResourcePrecompileContext&					context;
 			GuiResourceTextPos								position;
+			ParsingTextPos									availableAfter;
 			Ptr<types::ScriptPosition>						sp;
 
-			WorkflowScriptPositionVisitor(GuiResourcePrecompileContext& _context, GuiResourceTextPos _position)
+			WorkflowScriptPositionVisitor(GuiResourcePrecompileContext& _context, GuiResourceTextPos _position, ParsingTextPos _availableAfter)
 				:context(_context)
 				, position(_position)
+				, availableAfter(_availableAfter)
 			{
 				vint index = context.additionalProperties.Keys().IndexOf(nullptr);
 				if (index == -1)
@@ -35,7 +37,28 @@ WorkflowScriptPositionVisitor
 			{
 				if (!sp->nodePositions.Keys().Contains(node))
 				{
-					sp->nodePositions.Add(node, position);
+					auto pos = node->codeRange.start;
+					if (pos.row == availableAfter.row && pos.column > availableAfter.column)
+					{
+						pos.column -= availableAfter.column;
+					}
+					else if (pos.row > availableAfter.row)
+					{
+						pos.row -= availableAfter.row;
+					}
+
+					if (pos.row < 0 || pos.column < 0)
+					{
+						sp->nodePositions.Add(node, { position.originalLocation,pos });
+					}
+					else if (pos.row == 0)
+					{
+						sp->nodePositions.Add(node, { position.originalLocation,{position.row,position.column + pos.column} });
+					}
+					else
+					{
+						sp->nodePositions.Add(node, { position.originalLocation,{ position.row + pos.row,position.column } });
+					}
 				}
 			}
 		};
@@ -44,29 +67,29 @@ WorkflowScriptPositionVisitor
 WorkflowCompiler_ScriptPosition
 ***********************************************************************/
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node, parsing::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
 		}
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, parsing::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
 		}
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, parsing::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
 		}
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, parsing::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
 		}
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, parsing::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
 		}
 
 		void Workflow_ClearScriptPosition(GuiResourcePrecompileContext& context)

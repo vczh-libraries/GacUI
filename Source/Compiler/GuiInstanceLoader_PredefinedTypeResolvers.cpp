@@ -432,7 +432,7 @@ Instance Type Resolver (Instance)
 							types::ResolvingResult resolvingResult;
 							resolvingResult.resource = resource;
 							resolvingResult.context = obj;
-							resolvingResult.rootTypeDescriptor = Workflow_CollectReferences(resolvingResult, errors);
+							resolvingResult.rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
 
 							if (errors.Count() == previousErrorCount)
 							{

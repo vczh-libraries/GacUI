@@ -50,6 +50,7 @@ WorkflowGenerateBindingVisitor
 						if (instancePropertyInfo || !binder->RequirePropertyExist())
 						{
 							if (auto statement = binder->GenerateInstallStatement(
+								precompileContext,
 								resolvingResult,
 								repr->instanceName,
 								instancePropertyInfo,
@@ -111,14 +112,14 @@ WorkflowGenerateBindingVisitor
 				{
 					if (handler->binding == GlobalStringKey::Empty)
 					{
-						return Workflow_InstallEvent(resolvingResult, repr->instanceName, eventInfo, handler->value);
+						return Workflow_InstallEvent(precompileContext, resolvingResult, repr->instanceName, eventInfo, handler->value);
 					}
 					else
 					{
 						auto binder = GetInstanceLoaderManager()->GetInstanceEventBinder(handler->binding);
 						if (binder)
 						{
-							return binder->GenerateInstallStatement(resolvingResult, repr->instanceName, eventInfo, handler->value, handler->valuePosition, errors);
+							return binder->GenerateInstallStatement(precompileContext, resolvingResult, repr->instanceName, eventInfo, handler->value, handler->valuePosition, errors);
 						}
 						else
 						{

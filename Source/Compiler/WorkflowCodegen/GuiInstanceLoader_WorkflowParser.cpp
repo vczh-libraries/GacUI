@@ -14,7 +14,7 @@ Parser
 ***********************************************************************/
 
 		template<typename T>
-		Ptr<T> Workflow_Parse(const WString& parserName, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<T> Workflow_Parse(GuiResourcePrecompileContext& precompileContext, const WString& parserName, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
 		{
 			vint errorCount = errors.Count();
 			auto parser = GetParserManager()->GetParser<T>(parserName);
@@ -36,27 +36,31 @@ Parser
 				}
 			}
 
+			if (result)
+			{
+				Workflow_RecordScriptPosition(precompileContext, position, result, availableAfter);
+			}
 			return result;
 		}
 
-		Ptr<workflow::WfType> Workflow_ParseType(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfType> Workflow_ParseType(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
 		{
-			return Workflow_Parse<WfType>(L"WORKFLOW-TYPE", location, code, position, errors, availableAfter);
+			return Workflow_Parse<WfType>(precompileContext, L"WORKFLOW-TYPE", location, code, position, errors, availableAfter);
 		}
 
-		Ptr<workflow::WfExpression> Workflow_ParseExpression(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfExpression> Workflow_ParseExpression(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
 		{
-			return Workflow_Parse<WfExpression>(L"WORKFLOW-EXPRESSION", location, code, position, errors, availableAfter);
+			return Workflow_Parse<WfExpression>(precompileContext, L"WORKFLOW-EXPRESSION", location, code, position, errors, availableAfter);
 		}
 
-		Ptr<workflow::WfStatement> Workflow_ParseStatement(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfStatement> Workflow_ParseStatement(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
 		{
-			return Workflow_Parse<WfStatement>(L"WORKFLOW-STATEMENT", location, code, position, errors, availableAfter);
+			return Workflow_Parse<WfStatement>(precompileContext, L"WORKFLOW-STATEMENT", location, code, position, errors, availableAfter);
 		}
 
-		Ptr<workflow::WfModule> Workflow_ParseModule(GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfModule> Workflow_ParseModule(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
 		{
-			return Workflow_Parse<WfModule>(L"WORKFLOW-MODULE", location, code, position, errors, availableAfter);
+			return Workflow_Parse<WfModule>(precompileContext, L"WORKFLOW-MODULE", location, code, position, errors, availableAfter);
 		}
 
 /***********************************************************************
@@ -79,7 +83,7 @@ Workflow_ModuleToString
 Converter
 ***********************************************************************/
 
-		Ptr<workflow::WfExpression> Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, GuiResourceLocation location, const WString& textValue, GuiResourceTextPos position, collections::List<GuiResourceError>& errors)
+		Ptr<workflow::WfExpression> Workflow_ParseTextValue(GuiResourcePrecompileContext& precompileContext, description::ITypeDescriptor* typeDescriptor, GuiResourceLocation location, const WString& textValue, GuiResourceTextPos position, collections::List<GuiResourceError>& errors)
 		{
 			if (typeDescriptor == description::GetTypeDescriptor<WString>())
 			{
@@ -103,7 +107,7 @@ Converter
 			}
 			else if (typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
 			{
-				if (auto valueExpr = Workflow_ParseExpression(location, L"{" + textValue + L"}", position, errors, { 0,1 })) // {
+				if (auto valueExpr = Workflow_ParseExpression(precompileContext, location, L"{" + textValue + L"}", position, errors, { 0,1 })) // {
 				{
 					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 
@@ -117,7 +121,7 @@ Converter
 			}
 			else if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 			{
-				if (auto valueExpr = Workflow_ParseExpression(location, L"(" + textValue + L")", position, errors, { 0,1 })) // {
+				if (auto valueExpr = Workflow_ParseExpression(precompileContext, location, L"(" + textValue + L")", position, errors, { 0,1 })) // {
 				{
 					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 

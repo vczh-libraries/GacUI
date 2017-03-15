@@ -18,6 +18,7 @@ WorkflowReferenceNamesVisitor
 		class WorkflowReferenceNamesVisitor : public Object, public GuiValueRepr::IVisitor
 		{
 		public:
+			GuiResourcePrecompileContext&		precompileContext;
 			types::ResolvingResult&				resolvingResult;
 			vint&								generatedNameCount;
 			GuiResourceError::List&				errors;
@@ -26,8 +27,9 @@ WorkflowReferenceNamesVisitor
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 			vint								selectedPropertyTypeInfo = -1;
 
-			WorkflowReferenceNamesVisitor(types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, GuiResourceError::List& _errors)
-				:resolvingResult(_resolvingResult)
+			WorkflowReferenceNamesVisitor(GuiResourcePrecompileContext& _precompileContext, types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, vint& _generatedNameCount, GuiResourceError::List& _errors)
+				:precompileContext(_precompileContext)
+				, resolvingResult(_resolvingResult)
 				, candidatePropertyTypeInfos(_candidatePropertyTypeInfos)
 				, generatedNameCount(_generatedNameCount)
 				, errors(_errors)
@@ -75,7 +77,7 @@ WorkflowReferenceNamesVisitor
 					case TypeDescriptorFlags::NormalEnum:
 					case TypeDescriptorFlags::Struct:
 						{
-							if (auto expression = Workflow_ParseTextValue(td, { resolvingResult.resource }, repr->text, repr->tagPosition, errors))
+							if (auto expression = Workflow_ParseTextValue(precompileContext, td, { resolvingResult.resource }, repr->text, repr->tagPosition, errors))
 							{
 								resolvingResult.propertyResolvings.Add(repr, candidate);
 							}
@@ -194,7 +196,7 @@ WorkflowReferenceNamesVisitor
 						{
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
-								WorkflowReferenceNamesVisitor visitor(resolvingResult, possibleInfos, generatedNameCount, errors);
+								WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, generatedNameCount, errors);
 								value->Accept(&visitor);
 							}
 						}
@@ -204,7 +206,7 @@ WorkflowReferenceNamesVisitor
 							{
 								auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
 
-								WorkflowReferenceNamesVisitor visitor(resolvingResult, possibleInfos, generatedNameCount, errors);
+								WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, generatedNameCount, errors);
 								auto td = possibleInfos[0].info->acceptableTypes[0];
 								visitor.selectedPropertyTypeInfo = 0;
 								visitor.resolvedTypeInfo.typeDescriptor = td;
@@ -575,7 +577,7 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
-		ITypeDescriptor* Workflow_CollectReferences(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
+		ITypeDescriptor* Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
 			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 			{
@@ -613,7 +615,7 @@ WorkflowReferenceNamesVisitor
 			
 			List<types::PropertyResolving> infos;
 			vint generatedNameCount = 0;
-			WorkflowReferenceNamesVisitor visitor(resolvingResult, infos, generatedNameCount, errors);
+			WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, infos, generatedNameCount, errors);
 			resolvingResult.context->instance->Accept(&visitor);
 			return visitor.resolvedTypeInfo.typeDescriptor;
 		}

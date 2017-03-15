@@ -145,7 +145,7 @@ WorkflowEventNamesVisitor
 			{
 				if (auto eventInfo = resolvedTypeInfo.typeDescriptor->GetEventByName(propertyName.ToString(), true))
 				{
-					auto decl = Workflow_GenerateEventHandler(eventInfo);
+					auto decl = Workflow_GenerateEventHandler(precompileContext, eventInfo);
 					decl->anonymity = WfFunctionAnonymity::Named;
 					decl->name.value = handler->value;
 
@@ -394,7 +394,7 @@ Workflow_GenerateInstanceClass
 			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfDeclaration>>& memberDecls, GuiResourceTextPos position)
 			{
 				WString wrappedCode = L"module parse_members; class Class {\r\n" + code + L"\r\n}";
-				if(auto module = Workflow_ParseModule({ resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
+				if(auto module = Workflow_ParseModule(precompileContext, { resolvingResult.resource }, wrappedCode, position, errors, { 1,0 }))
 				{
 					CopyFrom(memberDecls, module->declarations[0].Cast<WfClassDeclaration>()->declarations);
 				}
@@ -453,7 +453,7 @@ Workflow_GenerateInstanceClass
 				{
 					if (!beforePrecompile)
 					{
-						if (auto call = resolvingResult.rootLoader->CreateRootInstance(resolvingResult, resolvingResult.rootTypeInfo, resolvingResult.rootCtorArguments, errors))
+						if (auto call = resolvingResult.rootLoader->CreateRootInstance(precompileContext, resolvingResult, resolvingResult.rootTypeInfo, resolvingResult.rootCtorArguments, errors))
 						{
 							ctor->baseConstructorCalls.Add(call);
 						}
@@ -476,7 +476,7 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
 			{
-				if (auto type = Workflow_ParseType({ resolvingResult.resource }, param->className.ToString() + L"^", param->classPosition, errors))
+				if (auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, param->className.ToString() + L"^", param->classPosition, errors))
 				{
 					if (!beforePrecompile)
 					{

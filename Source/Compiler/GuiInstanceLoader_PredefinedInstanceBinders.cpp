@@ -38,12 +38,12 @@ GuiResourceInstanceBinder (uri)
 				return false;
 			}
 
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
 				CHECK_FAIL(L"GuiResourceInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
 			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
 				WString protocol, path;
 				if (!IsResourceUrl(code, protocol, path))
@@ -53,7 +53,7 @@ GuiResourceInstanceBinder (uri)
 				}
 				else
 				{
-					return Workflow_InstallUriProperty(resolvingResult, variableName, loader, prop, propInfo, protocol, path, position, errors);
+					return Workflow_InstallUriProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, protocol, path, position, errors);
 				}
 			}
 		};
@@ -80,16 +80,16 @@ GuiReferenceInstanceBinder (ref)
 				return false;
 			}
 
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
 				CHECK_FAIL(L"GuiReferenceInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
 			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
 				auto expression = MakePtr<WfReferenceExpression>();
 				expression->name.value = code;
-				return Workflow_InstallEvalProperty(resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
+				return Workflow_InstallEvalProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
 			}
 		};
 
@@ -115,16 +115,16 @@ GuiEvalInstanceBinder (eval)
 				return false;
 			}
 
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				return Workflow_ParseExpression({ resolvingResult.resource }, code, position, errors);
+				return Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors);
 			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				if(auto expression = Workflow_ParseExpression({ resolvingResult.resource }, code, position, errors))
+				if(auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors))
 				{
-					return Workflow_InstallEvalProperty(resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
+					return Workflow_InstallEvalProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
 				}
 				return nullptr;
 			}
@@ -152,14 +152,14 @@ GuiBindInstanceBinder (bind)
 				return true;
 			}
 
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
 				CHECK_FAIL(L"GuiBindInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
 			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				if(auto expression = Workflow_ParseExpression({ resolvingResult.resource }, code, position, errors))
+				if(auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors))
 				{
 					auto inferExpr = MakePtr<WfInferExpression>();
 					inferExpr->expression = expression;
@@ -168,7 +168,7 @@ GuiBindInstanceBinder (bind)
 					auto bindExpr = MakePtr<WfBindExpression>();
 					bindExpr->expression = inferExpr;
 
-					return Workflow_InstallBindProperty(resolvingResult, variableName, propertyInfo, bindExpr);
+					return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, bindExpr);
 				}
 				return nullptr;
 			}
@@ -196,16 +196,16 @@ GuiFormatInstanceBinder (format)
 				return true;
 			}
 
-			Ptr<workflow::WfExpression> GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
 				CHECK_FAIL(L"GuiFormatInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
 			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				if (auto expression = Workflow_ParseExpression({ resolvingResult.resource }, L"bind($\"" + code + L"\")", position, errors, { 0,7 })) // bind($"
+				if (auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, L"bind($\"" + code + L"\")", position, errors, { 0,7 })) // bind($"
 				{
-					return Workflow_InstallBindProperty(resolvingResult, variableName, propertyInfo, expression);
+					return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, expression);
 				}
 				return nullptr;
 			}
@@ -223,11 +223,11 @@ GuiEvalInstanceEventBinder (eval)
 				return GlobalStringKey::_Eval;
 			}
 			
-			Ptr<workflow::WfStatement> GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
+			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				if(auto statement = Workflow_ParseStatement({ resolvingResult.resource }, code, position, errors))
+				if(auto statement = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, code, position, errors))
 				{
-					return Workflow_InstallEvalEvent(resolvingResult, variableName, eventInfo, statement);
+					return Workflow_InstallEvalEvent(precompileContext, resolvingResult, variableName, eventInfo, statement);
 				}
 				return nullptr;
 			}

@@ -18,7 +18,7 @@ namespace vl
 Workflow_InstallBindProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
+		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
@@ -176,7 +176,7 @@ Workflow_InstallBindProperty
 					arguments.Add(prop.propertyName, argumentInfo);
 				}
 
-				if (auto stat = loader->AssignParameters(resolvingResult, prop.typeInfo, variableName, arguments, attPosition, errors))
+				if (auto stat = loader->AssignParameters(precompileContext, resolvingResult, prop.typeInfo, variableName, arguments, attPosition, errors))
 				{
 					subBlock->statements.Add(stat);
 				}
@@ -188,7 +188,7 @@ Workflow_InstallBindProperty
 Workflow_InstallBindProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallBindProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression)
+		Ptr<workflow::WfStatement> Workflow_InstallBindProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression)
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
@@ -346,7 +346,7 @@ Workflow_InstallBindProperty
 Workflow_InstallEvalProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
+		Ptr<workflow::WfStatement> Workflow_InstallEvalProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
 		{
 			IGuiInstanceLoader::ArgumentMap arguments;
 			{
@@ -357,14 +357,14 @@ Workflow_InstallEvalProperty
 				arguments.Add(prop.propertyName, argumentInfo);
 			}
 
-			return loader->AssignParameters(resolvingResult, prop.typeInfo, variableName, arguments, attPosition, errors);
+			return loader->AssignParameters(precompileContext, resolvingResult, prop.typeInfo, variableName, arguments, attPosition, errors);
 		}
 
 /***********************************************************************
 Workflow_InstallEvent
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName)
+		Ptr<workflow::WfStatement> Workflow_InstallEvent(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName)
 		{
 			vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
 
@@ -412,7 +412,7 @@ Workflow_InstallEvent
 Workflow_GenerateEventHandler
 ***********************************************************************/
 
-		Ptr<workflow::WfFunctionDeclaration> Workflow_GenerateEventHandler(description::IEventInfo* eventInfo)
+		Ptr<workflow::WfFunctionDeclaration> Workflow_GenerateEventHandler(GuiResourcePrecompileContext& precompileContext, description::IEventInfo* eventInfo)
 		{
 			auto func = MakePtr<WfFunctionDeclaration>();
 			func->anonymity = WfFunctionAnonymity::Anonymous;
@@ -484,9 +484,9 @@ Workflow_GenerateEventHandler
 Workflow_InstallEvalEvent
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallEvalEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement)
+		Ptr<workflow::WfStatement> Workflow_InstallEvalEvent(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement)
 		{
-			auto func = Workflow_GenerateEventHandler(eventInfo);
+			auto func = Workflow_GenerateEventHandler(precompileContext, eventInfo);
 						
 			auto funcBlock = MakePtr<WfBlockStatement>();
 			funcBlock->statements.Add(evalStatement);

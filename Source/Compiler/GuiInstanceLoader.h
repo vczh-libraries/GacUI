@@ -131,11 +131,11 @@ Instance Loader
 			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
 
 			virtual bool									CanCreate(const TypeInfo& typeInfo);
-			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfStatement>				CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfStatement>				AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfExpression>				GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfStatement>				CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfStatement>				AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfExpression>				GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
 		};
 
 /***********************************************************************
@@ -148,15 +148,15 @@ Instance Binder
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							ApplicableToConstructorArgument() = 0;
 			virtual bool							RequirePropertyExist() = 0;
-			virtual Ptr<workflow::WfExpression>		GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
-			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
+			virtual Ptr<workflow::WfExpression>		GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
+			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
 		};
 
 		class IGuiInstanceEventBinder : public IDescriptable, public Description<IGuiInstanceEventBinder>
 		{
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
-			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
+			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
 		};
 
 /***********************************************************************
