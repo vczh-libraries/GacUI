@@ -15,6 +15,13 @@
             ]]>
           </ev.Clicked-eval>
         </Button>
+
+        <BindableTextList env.ItemType="What" ItemSource-eval="Wrong">
+          <att.TextProperty>First</att.TextProperty>
+        </BindableTextList>
+        <BindableTextList env.ItemType="object" ItemSource-eval="null">
+          <att.CheckedProperty>Second</att.CheckedProperty>
+        </BindableTextList>
       </Window>
     </Instance>
   </Instance>

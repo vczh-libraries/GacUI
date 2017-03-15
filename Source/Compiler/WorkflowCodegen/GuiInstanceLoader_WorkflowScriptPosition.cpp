@@ -52,7 +52,7 @@ WorkflowScriptPositionVisitor
 					record.availableAfter = availableAfter;
 					if (pos.row < 0 || pos.column < 0)
 					{
-						record.computedPosition = { position.originalLocation,pos };
+						record.computedPosition = position;
 					}
 					else if (pos.row == 0)
 					{
