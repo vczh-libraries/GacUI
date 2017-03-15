@@ -92,6 +92,13 @@ WorkflowCompiler_ScriptPosition
 			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
 		}
 
+		Ptr<types::ScriptPosition> Workflow_GetScriptPosition(GuiResourcePrecompileContext& context)
+		{
+			vint index = context.additionalProperties.Keys().IndexOf(nullptr);
+			if (index == -1) return nullptr;
+			return context.additionalProperties.Values()[index].Cast<types::ScriptPosition>();
+		}
+
 		void Workflow_ClearScriptPosition(GuiResourcePrecompileContext& context)
 		{
 			context.additionalProperties.Remove(nullptr);

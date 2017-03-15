@@ -28,7 +28,7 @@ namespace vl
 			return context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
 		}
 
-		Ptr<GuiInstanceCompiledWorkflow> Workflow_EnsureModule(GuiResourcePrecompileContext& context, const WString& path, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
+		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType, GuiResourceTextPos tagPosition)
 		{
 			auto compiled = Workflow_GetModule(context, path);
 			if (!compiled)
@@ -39,21 +39,17 @@ namespace vl
 			}
 			else
 			{
-				CHECK_ERROR(compiled->type == assemblyType, L"Workflow_EnsureModule(GuiResourcePrecompiledContext&, const WString&, GuiInstanceCompiledWorkflow::AssemblyType)#Unexpected assembly type.");
+				CHECK_ERROR(compiled->type == assemblyType, L"Workflow_AddModule(GuiResourcePrecompiledContext&, const WString&, GuiInstanceCompiledWorkflow::AssemblyType)#Unexpected assembly type.");
 			}
-			return compiled;
-		}
 
-		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, Ptr<WfModule> module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
-		{
-			auto compiled = Workflow_EnsureModule(context, path, assemblyType);
-			compiled->modules.Add(module);
-		}
-
-		void Workflow_AddModule(GuiResourcePrecompileContext& context, const WString& path, const WString& module, GuiInstanceCompiledWorkflow::AssemblyType assemblyType)
-		{
-			auto compiled = Workflow_EnsureModule(context, path, assemblyType);
-			compiled->codes.Add(module);
+			if (compiled)
+			{
+				GuiInstanceCompiledWorkflow::ModuleRecord record;
+				record.module = module;
+				record.position = tagPosition;
+				record.shared = assemblyType == GuiInstanceCompiledWorkflow::Shared;
+				compiled->modules.Add(record);
+			}
 		}
 
 		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, GuiResourceError::List& errors, bool keepMetadata)
@@ -86,32 +82,9 @@ namespace vl
 					codes.Add(code);
 				};
 
-				FOREACH_INDEXER(Ptr<WfModule>, module, index, compiled->modules)
+				for (vint i = 0; i < compiled->modules.Count(); i++)
 				{
-					{
-						MemoryStream stream;
-						{
-							StreamWriter writer(stream);
-							auto recorder = MakePtr<ParsingUpdateLocationRecorder>();
-							ParsingWriter parsingWriter(writer, recorder, index);
-							WfPrint(module, L"", parsingWriter);
-						}
-						stream.SeekFromBegin(0);
-						{
-							StreamReader reader(stream);
-							addCode(reader);
-						}
-					}
-					manager->AddModule(module);
-				}
-
-				FOREACH(WString, code, compiled->codes)
-				{
-					{
-						StringReader reader(code);
-						addCode(reader);
-					}
-					manager->AddModule(code);
+					manager->AddModule(compiled->modules[i].module);
 				}
 
 				if (manager->errors.Count() == 0)
@@ -126,44 +99,18 @@ namespace vl
 				}
 				else
 				{
-					CHECK_FAIL(L"Temporary assert");
-					/*
-					errors.Add(L"Failed to compile workflow scripts in: " + path);
-
-					using ErrorGroup = Pair<vint, LazyList<Ptr<ParsingError>>>;
-					List<ErrorGroup> errorGroups;
-					CopyFrom(
-						errorGroups,
-						From(manager->errors)
-							.GroupBy([](Ptr<ParsingError> error){ return error->codeRange.codeIndex; })
-							.OrderBy([](ErrorGroup g1, ErrorGroup g2){ return g1.key - g2.key; })
-						);
-
-					FOREACH(ErrorGroup, errorGroup, errorGroups)
+					for (vint i = 0; i < compiled->modules.Count(); i++)
 					{
-						if (errorGroup.key == -1)
-						{
-							FOREACH(Ptr<ParsingError>, error, errorGroup.value)
-							{
-								errors.Add(L"    " + error->errorMessage);
-							}
-						}
-						else
-						{
-							FOREACH(Ptr<ParsingError>, error, errorGroup.value)
-							{
-								errors.Add(
-									L"    "
-									L"Row: " + itow(error->codeRange.start.row + 1) +
-									L", Column: " + itow(error->codeRange.start.column + 1) +
-									L", Message: " + error->errorMessage);
-							}
-							errors.Add(L"Workflow script for reference:");
-							errors.Add(codes[errorGroup.key]);
-						}
+						auto module = compiled->modules[i];
+						Workflow_RecordScriptPosition(context, module.position, module.module);
 					}
-					errors.Add(L"<END>");
-					*/
+
+					auto sp = Workflow_GetScriptPosition(context);
+					for (vint i = 0; i < manager->errors.Count(); i++)
+					{
+						auto error = manager->errors[i];
+						errors.Add({ sp->nodePositions[error->parsingTree], error->errorMessage });
+					}
 				}
 
 				if (keepMetadata)
@@ -240,16 +187,19 @@ Shared Script Type Resolver (Script)
 				switch (context.passIndex)
 				{
 				case Workflow_Collect:
-				{
-					if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
 					{
-						if (obj->language == L"Workflow")
+						if (auto obj = resource->GetContent().Cast<GuiInstanceSharedScript>())
 						{
-							Workflow_AddModule(context, Path_Shared, obj->code, GuiInstanceCompiledWorkflow::Shared);
+							if (obj->language == L"Workflow")
+							{
+								if (auto module = Workflow_ParseModule(context, obj->codePosition.originalLocation, obj->code, obj->codePosition, errors))
+								{
+									Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->codePosition);
+								}
+							}
 						}
 					}
-				}
-				break;
+					break;
 				}
 			}
 
@@ -406,7 +356,7 @@ Instance Type Resolver (Instance)
 							resolvingResult.context = obj;
 							if (auto module = Workflow_GenerateInstanceClass(context, resolvingResult, errors, context.passIndex))
 							{
-								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass);
+								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass, obj->tagPosition);
 							}
 
 							if (context.passIndex == Instance_CollectInstanceTypes)
@@ -440,8 +390,8 @@ Instance Type Resolver (Instance)
 								{
 									if (auto instanceModule = Workflow_GenerateInstanceClass(context, resolvingResult, errors, context.passIndex))
 									{
-										Workflow_AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass);
-										Workflow_AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass);
+										Workflow_AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
+										Workflow_AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
 									}
 								}
 							}
@@ -476,7 +426,14 @@ Instance Type Resolver (Instance)
 				auto compiled = Workflow_GetModule(context, path);
 				if (sharedCompiled && compiled)
 				{
-					CopyFrom(compiled->codes, sharedCompiled->codes);
+					CopyFrom(
+						compiled->modules,
+						From(sharedCompiled->modules)
+							.Where([](const GuiInstanceCompiledWorkflow::ModuleRecord& module)
+							{
+								return module.shared;
+							})
+					);
 				}
 
 				switch (context.passIndex)
