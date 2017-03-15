@@ -57,7 +57,7 @@ WorkflowScriptPositionVisitor
 					}
 					else
 					{
-						sp->nodePositions.Add(node, { position.originalLocation,{ position.row + pos.row,position.column } });
+						sp->nodePositions.Add(node, { position.originalLocation,{ position.row + pos.row,pos.column } });
 					}
 				}
 			}

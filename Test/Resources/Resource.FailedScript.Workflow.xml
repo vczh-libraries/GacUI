@@ -1,0 +1,14 @@
+<Resource>
+  <Script name="SharedScript">
+    <Workflow>
+      <![CDATA[
+        module test;
+        
+        func Main() : void
+        {
+          return "Wrong";
+        }
+      ]]>
+    </Workflow>
+  </Script>
+</Resource>

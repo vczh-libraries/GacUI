@@ -123,3 +123,8 @@ TEST_CASE(TestResource_FailedInstance_Control)
 {
 	LoadResource(L"Resource.FailedInstance.Control.xml", true);
 }
+
+TEST_CASE(Resource_FailedScript_Workflow)
+{
+	LoadResource(L"Resource.FailedScript.Workflow.xml", true);
+}

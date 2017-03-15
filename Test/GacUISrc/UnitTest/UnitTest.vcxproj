@@ -171,6 +171,7 @@
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml.txt" />
+    <Text Include="..\..\Resources\Resource.FailedScript.Workflow.xml.txt" />
     <Text Include="..\..\Resources\Resource.NotExists.xml.txt" />
     <Text Include="..\..\Resources\Resource.WrongDoc.xml.txt" />
     <Text Include="..\..\Resources\Resource.WrongInstance.xml.txt" />
@@ -183,6 +184,7 @@
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml" />
+    <Xml Include="..\..\Resources\Resource.FailedScript.Workflow.xml" />
     <Xml Include="..\..\Resources\Resource.WrongDoc.xml" />
     <Xml Include="..\..\Resources\Resource.WrongInstance.xml" />
     <Xml Include="..\..\Resources\Resource.WrongInstanceStyle.xml" />
