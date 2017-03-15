@@ -23,6 +23,36 @@ namespace vl
 
 		using namespace controls;
 
+		class WorkflowVirtualScriptPositionVisitor : public traverse_visitor::ModuleVisitor
+		{
+		public:
+			GuiResourcePrecompileContext&						context;
+			Ptr<types::ScriptPosition>							sp;
+
+			WorkflowVirtualScriptPositionVisitor(GuiResourcePrecompileContext& _context)
+				:context(_context)
+			{
+				sp = Workflow_GetScriptPosition(context);
+			}
+
+			void Visit(WfVirtualExpression* node)override
+			{
+				traverse_visitor::ExpressionVisitor::Visit(node);
+				auto record = sp->nodePositions[node];
+				Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+			}
+
+			void Visit(WfVirtualDeclaration* node)override
+			{
+				traverse_visitor::DeclarationVisitor::Visit(node);
+				auto record = sp->nodePositions[node];
+				FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+				{
+					Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
+				}
+			}
+		};
+
 		Ptr<GuiInstanceCompiledWorkflow> Workflow_GetModule(GuiResourcePrecompileContext& context, const WString& path)
 		{
 			return context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
@@ -99,9 +129,11 @@ namespace vl
 				}
 				else
 				{
+					WorkflowVirtualScriptPositionVisitor visitor(context);
 					for (vint i = 0; i < compiled->modules.Count(); i++)
 					{
 						auto module = compiled->modules[i];
+						visitor.VisitField(module.module.Obj());
 						Workflow_RecordScriptPosition(context, module.position, module.module);
 					}
 
@@ -109,7 +141,7 @@ namespace vl
 					for (vint i = 0; i < manager->errors.Count(); i++)
 					{
 						auto error = manager->errors[i];
-						errors.Add({ sp->nodePositions[error->parsingTree], error->errorMessage });
+						errors.Add({ sp->nodePositions[error->parsingTree].computedPosition, error->errorMessage });
 					}
 				}
 

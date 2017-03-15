@@ -581,6 +581,7 @@
     <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </Text>
+    <Text Include="..\..\Resources\Resource.FailedScript.Properties.xml.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\Compiler\InstanceQuery\Codegen.bat" />

@@ -88,5 +88,8 @@
     <Xml Include="..\..\Resources\Resource.FailedScript.Workflow.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="..\..\Resources\Resource.FailedScript.Properties.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

@@ -1,0 +1,21 @@
+<Resource>
+  <Instance name="i1">
+    <Instance ref.Class="demo::MainWindow">
+      <Window ClientSize="x:true y:false">
+        <SinglelineTextBox ref.Name="a" Text-eval="{}"/>
+        <SinglelineTextBox ref.Name="b" Text-format="$(true + false)"/>
+        <SinglelineTextBox ref.Name="c" Text-bind="a.Text + b.Text"/>
+
+        <Button>
+          <ev.Clicked-eval>
+            <![CDATA[
+              {
+                Wrong;
+              }
+            ]]>
+          </ev.Clicked-eval>
+        </Button>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

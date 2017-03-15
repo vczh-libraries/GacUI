@@ -128,3 +128,8 @@ TEST_CASE(Resource_FailedScript_Workflow)
 {
 	LoadResource(L"Resource.FailedScript.Workflow.xml", true);
 }
+
+TEST_CASE(Resource_FailedScript_Properties)
+{
+	LoadResource(L"Resource.FailedScript.Properties.xml", true);
+}

@@ -143,9 +143,16 @@ WorkflowCompiler (ScriptPosition)
 
 		namespace types
 		{
+			struct ScriptPositionRecord
+			{
+				GuiResourceTextPos								position;
+				parsing::ParsingTextPos							availableAfter;
+				GuiResourceTextPos								computedPosition;
+			};
+
 			class ScriptPosition : public Object, public Description<ScriptPosition>
 			{
-				using NodePositionMap = collections::Dictionary<Ptr<parsing::ParsingTreeCustomBase>, GuiResourceTextPos>;
+				using NodePositionMap = collections::Dictionary<Ptr<parsing::ParsingTreeCustomBase>, ScriptPositionRecord>;
 			public:
 				NodePositionMap									nodePositions;
 			};

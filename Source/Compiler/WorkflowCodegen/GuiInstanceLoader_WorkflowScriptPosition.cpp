@@ -47,18 +47,23 @@ WorkflowScriptPositionVisitor
 						pos.row -= availableAfter.row;
 					}
 
+					types::ScriptPositionRecord record;
+					record.position = position;
+					record.availableAfter = availableAfter;
 					if (pos.row < 0 || pos.column < 0)
 					{
-						sp->nodePositions.Add(node, { position.originalLocation,pos });
+						record.computedPosition = { position.originalLocation,pos };
 					}
 					else if (pos.row == 0)
 					{
-						sp->nodePositions.Add(node, { position.originalLocation,{position.row,position.column + pos.column} });
+						record.computedPosition = { position.originalLocation,{position.row,position.column + pos.column} };
 					}
 					else
 					{
-						sp->nodePositions.Add(node, { position.originalLocation,{ position.row + pos.row,pos.column } });
+						record.computedPosition = { position.originalLocation,{ position.row + pos.row,pos.column } };
 					}
+
+					sp->nodePositions.Add(node, record);
 				}
 			}
 		};

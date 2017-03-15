@@ -817,6 +817,9 @@
     <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
       <Filter>GacUI\Compiler\InstanceQuery</Filter>
     </Text>
+    <Text Include="..\..\Resources\Resource.FailedScript.Properties.xml.txt">
+      <Filter>GacUI\Compiler</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Source\Compiler\InstanceQuery\Codegen.bat">
