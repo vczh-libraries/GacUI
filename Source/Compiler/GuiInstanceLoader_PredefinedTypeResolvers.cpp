@@ -464,7 +464,8 @@ Instance Type Resolver (Instance)
 							.Where([](const GuiInstanceCompiledWorkflow::ModuleRecord& module)
 							{
 								return module.shared;
-							})
+							}),
+						true
 					);
 				}
 
