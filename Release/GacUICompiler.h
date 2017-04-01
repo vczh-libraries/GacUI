@@ -541,11 +541,11 @@ Instance Loader
 			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
 
 			virtual bool									CanCreate(const TypeInfo& typeInfo);
-			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfStatement>				CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfStatement>				AssignParameters(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
-			virtual Ptr<workflow::WfExpression>				GetParameter(types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfStatement>				InitializeRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfStatement>				CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfStatement>				AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
+			virtual Ptr<workflow::WfExpression>				GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
 		};
 
 /***********************************************************************
@@ -558,15 +558,15 @@ Instance Binder
 			virtual GlobalStringKey					GetBindingName() = 0;
 			virtual bool							ApplicableToConstructorArgument() = 0;
 			virtual bool							RequirePropertyExist() = 0;
-			virtual Ptr<workflow::WfExpression>		GenerateConstructorArgument(types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
-			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
+			virtual Ptr<workflow::WfExpression>		GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
+			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
 		};
 
 		class IGuiInstanceEventBinder : public IDescriptable, public Description<IGuiInstanceEventBinder>
 		{
 		public:
 			virtual GlobalStringKey					GetBindingName() = 0;
-			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
+			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
 		};
 
 /***********************************************************************
@@ -718,7 +718,6 @@ namespace vl
 				Ptr<GuiResourceItem>							resource;						// compiling resource
 				Ptr<GuiInstanceContext>							context;						// compiling context
 				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;	// type of the context
-				collections::List<WString>						sharedModules;					// code of all shared workflow scripts
 				EnvironmentVariableGroup						envVars;						// current environment variable value stacks
 
 				collections::List<GlobalStringKey>				referenceNames;					// all reference names
@@ -738,22 +737,25 @@ namespace vl
 /***********************************************************************
 WorkflowCompiler (Parser)
 ***********************************************************************/
-		
-		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement(const WString& code, collections::List<Ptr<parsing::ParsingError>>& errors);
+
+		extern Ptr<workflow::WfType>							Workflow_ParseType			(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression	(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement		(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfModule>							Workflow_ParseModule		(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+
 		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
-		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(description::ITypeDescriptor* typeDescriptor, const WString& textValue, collections::List<Ptr<parsing::ParsingError>>& errors);
+		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(GuiResourcePrecompileContext& precompileContext, description::ITypeDescriptor* typeDescriptor, GuiResourceLocation location, const WString& textValue, GuiResourceTextPos position, collections::List<GuiResourceError>& errors);
 
 /***********************************************************************
 WorkflowCompiler (Installation)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
-		extern Ptr<workflow::WfFunctionDeclaration>				Workflow_GenerateEventHandler(description::IEventInfo* eventInfo);
-		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvent(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& handlerName);
+		extern Ptr<workflow::WfFunctionDeclaration>				Workflow_GenerateEventHandler(GuiResourcePrecompileContext& precompileContext, description::IEventInfo* eventInfo);
+		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalEvent(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement);
 
 /***********************************************************************
 WorkflowCompiler (Compile)
@@ -797,13 +799,13 @@ WorkflowCompiler (Compile)
 			}
 		};
 
-		extern description::ITypeDescriptor*					Workflow_CollectReferences(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
-		extern void												Workflow_GenerateCreating(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
-		extern void												Workflow_GenerateBindings(types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
+		extern description::ITypeDescriptor*					Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
+		extern void												Workflow_GenerateCreating(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
+		extern void												Workflow_GenerateBindings(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 
 		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
-		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
-		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex);
+		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex);
 
 #define WORKFLOW_ENVIRONMENT_VARIABLE_ADD\
 		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
@@ -825,19 +827,28 @@ WorkflowCompiler (ScriptPosition)
 
 		namespace types
 		{
+			struct ScriptPositionRecord
+			{
+				GuiResourceTextPos								position;
+				parsing::ParsingTextPos							availableAfter;
+				GuiResourceTextPos								computedPosition;
+			};
+
 			class ScriptPosition : public Object, public Description<ScriptPosition>
 			{
-				using NodePositionMap = collections::Dictionary<parsing::ParsingTreeCustomBase*, GuiResourceTextPos>;
+				using NodePositionMap = collections::Dictionary<Ptr<parsing::ParsingTreeCustomBase>, ScriptPositionRecord>;
 			public:
 				NodePositionMap									nodePositions;
 			};
 		}
 
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node);
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node);
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node);
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node);
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node);
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<types::ScriptPosition>						Workflow_GetScriptPosition(GuiResourcePrecompileContext& context);
+		extern void												Workflow_ClearScriptPosition(GuiResourcePrecompileContext& context);
 
 	}
 }
@@ -1352,7 +1363,7 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
-				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)override
+				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)override
 				{
 					if (auto createStyleExpr = CreateInstance_ControlTemplate(resolvingResult, typeInfo, arguments, errors))
 					{
@@ -1364,7 +1375,7 @@ GuiVrtualTypeInstanceLoader
 					return nullptr;
 				}
 
-				Ptr<workflow::WfStatement> CreateInstance(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
 					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
 					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);

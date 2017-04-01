@@ -32205,7 +32205,7 @@ GuiToolstripCommand
 			{
 				List<Ptr<ParsingError>> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
-				if (Ptr<ShortcutBuilder> builder = parser->TypedParse(builderText, errors))
+				if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
 				{
 					if (shortcutOwner)
 					{
@@ -32351,7 +32351,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				{
 				}
 
-				Ptr<ShortcutBuilder> TypedParse(const WString& text, collections::List<Ptr<ParsingError>>& errors)override
+				Ptr<ShortcutBuilder> ParseInternal(const WString& text, collections::List<Ptr<ParsingError>>& errors)override
 				{
 					Ptr<RegexMatch> match=regexShortcut.MatchHead(text);
 					if (match && match->Result().Length() != text.Length())
@@ -44333,15 +44333,13 @@ GuiResourceError
 		}
 
 		template<typename TCallback>
-		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix, const TCallback& callback)
+		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, const TCallback& callback)
 		{
 			if (offset.row < 0 || offset.column < 0)
 			{
 				offset.row = 0;
 				offset.column = 0;
 			}
-			offset.row += offsetFix.row;
-			offset.column += offsetFix.column;
 
 			FOREACH(Ptr<ParsingError>, error, parsingErrors)
 			{
@@ -44367,14 +44365,14 @@ GuiResourceError
 			Transform(_location, errors, parsingErrors, { _location,{ 0,0 } });
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset, parsing::ParsingTextPos offsetFix)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset)
 		{
-			Transform(_location, errors, parsingErrors, { _location,offset }, offsetFix);
+			Transform(_location, errors, parsingErrors, { _location,offset });
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, parsing::ParsingTextPos offsetFix)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset)
 		{
-			TransformErrors(errors, parsingErrors, offset, offsetFix, [&](GuiResourceTextPos pos, const WString& message)
+			TransformErrors(errors, parsingErrors, offset, [&](GuiResourceTextPos pos, const WString& message)
 			{
 				return GuiResourceError(_location, pos, message);
 			});
@@ -44426,7 +44424,12 @@ GuiResourceError
 					path = CONVERT_FILEPATH(path);
 					error.message = prefix + path + postfix;
 				}
-				output.Add(L"(" + itow(error.position.row) + L", " + itow(error.position.column) + L"): " + error.message);
+
+				auto row = error.position.row;
+				if (row >= 0) row++;
+				auto column = error.position.column;
+				if (column >= 0) column++;
+				output.Add(L"(" + itow(row) + L", " + itow(column) + L"): " + error.message);
 #undef CONVERT_FILEPATH
 #undef CONVERT_LOCATION
 			}
@@ -44521,13 +44524,11 @@ GuiResourceFolder
 									{
 										if (auto parser = GetParserManager()->GetParser<XmlDocument>(L"XML"))
 										{
-											List<Ptr<ParsingError>> parsingErrors;
-											if (auto xml = parser->TypedParse(text, parsingErrors))
+											if (auto xml = parser->Parse({ WString::Empty,fileAbsolutePath }, text, errors))
 											{
 												newContainingFolder = GetFolderPath(fileAbsolutePath);
 												newFolderXml = xml->rootElement;
 											}
-											GuiResourceError::Transform({ WString::Empty,fileAbsolutePath }, errors, parsingErrors);
 										}
 									}
 									else
@@ -45174,9 +45175,7 @@ GuiResource
 				WString text;
 				if(LoadTextFile(filePath, text))
 				{
-					List<Ptr<ParsingError>> parsingErrors;
-					xml = parser->TypedParse(text, parsingErrors);
-					GuiResourceError::Transform({ WString::Empty,filePath }, errors, parsingErrors);
+					xml = parser->Parse({ WString::Empty,filePath }, text, errors);
 				}
 				else
 				{
@@ -46031,10 +46030,7 @@ Xml Type Resolver (Xml)
 					WString text;
 					if (LoadTextFile(path, text))
 					{
-						List<Ptr<ParsingError>> parsingErrors;
-						auto xml = parser->TypedParse(text, parsingErrors);
-						GuiResourceError::Transform({ resource }, errors, parsingErrors);
-						return xml;
+						return parser->Parse({ resource }, text, errors);
 					}
 					else
 					{
@@ -46052,14 +46048,7 @@ Xml Type Resolver (Xml)
 					WString text;
 					reader << text;
 
-					List<Ptr<ParsingError>> parsingErrors;
-					auto xml = parser->TypedParse(text, parsingErrors);
-					FOREACH(Ptr<ParsingError>, error, parsingErrors)
-					{
-						error->errorMessage = L"[BINARY] " + error->errorMessage;
-					}
-					GuiResourceError::Transform({ resource }, errors, parsingErrors);
-					return xml;
+					return parser->Parse({ resource }, text, errors);
 				}
 				return nullptr;
 			}

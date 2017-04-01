@@ -2325,9 +2325,15 @@ namespace vl
 				InstanceClass,
 				TemporaryClass,
 			};
+
+			struct ModuleRecord
+			{
+				Ptr<workflow::WfModule>							module;
+				GuiResourceTextPos								position;
+				bool											shared = false;
+			};
 			
-			collections::List<WString>							codes;
-			collections::List<Ptr<workflow::WfModule>>			modules;
+			collections::List<ModuleRecord>						modules;
 			Ptr<workflow::analyzer::WfLexicalScopeManager>		metadata;
 			Ptr<stream::MemoryStream>							binaryToLoad;
 
