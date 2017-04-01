@@ -56,7 +56,6 @@ Instruction
 				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
 				CreateRange,			// I1248/U1248			: Value-begin, Value-end -> <enumerable>							;
 				CreateStruct,			// flag, typeDescriptor	: () -> Value														;
-				ReverseEnumerable,		//						: Value -> Value													;
 				DeleteRawPtr,			//						: Value -> ()														;
 				ConvertToType,			// flag, typeDescriptor	: Value -> Value													;
 				TryConvertToType,		// flag, typeDescriptor	: Value -> Value													;
@@ -129,7 +128,6 @@ Instruction
 			APPLY_METHOD_COUNT(CreateInterface)\
 			APPLY_TYPE(CreateRange)\
 			APPLY_FLAG_TYPEDESCRIPTOR(CreateStruct)\
-			APPLY(ReverseEnumerable)\
 			APPLY(DeleteRawPtr)\
 			APPLY_FLAG_TYPEDESCRIPTOR(ConvertToType)\
 			APPLY_FLAG_TYPEDESCRIPTOR(TryConvertToType)\
@@ -969,35 +967,6 @@ Range
 				{
 					return MakePtr<Enumerator>(begin, end);
 				}
-			};
-			
-/***********************************************************************
-ReverseEnumerable
-***********************************************************************/
-
-			class WfRuntimeReverseEnumerable : public Object, public reflection::description::IValueEnumerable
-			{
-				typedef reflection::description::IValueReadonlyList		IValueReadonlyList;
-			protected:
-				Ptr<IValueReadonlyList>					list;
-
-				class Enumerator : public Object, public reflection::description::IValueEnumerator
-				{
-				protected:
-					Ptr<IValueReadonlyList>				list;
-					vint								index;
-
-				public:
-					Enumerator(Ptr<IValueReadonlyList> _list);
-					reflection::description::Value						GetCurrent();
-					vint												GetIndex();
-					bool												Next();
-				};
-
-			public:
-				WfRuntimeReverseEnumerable(Ptr<IValueReadonlyList> _list);
-
-				Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
 			};
 			
 /***********************************************************************

@@ -8237,7 +8237,7 @@ Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
 Framework::Reflection
 
-XML Representation for Code Generation:
+Interfaces:
 ***********************************************************************/
 
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTOR
@@ -9279,181 +9279,6 @@ Cpp Helper Functions
 			extern bool							CppExists(IEventInfo* ev);
 
 #endif
-
-/***********************************************************************
-Collections
-***********************************************************************/
-
-			class IValueEnumerator : public virtual IDescriptable, public Description<IValueEnumerator>
-			{
-			public:
-				virtual Value					GetCurrent()=0;
-				virtual vint					GetIndex()=0;
-				virtual bool					Next()=0;
-			};
-
-			class IValueEnumerable : public virtual IDescriptable, public Description<IValueEnumerable>
-			{
-			public:
-				virtual Ptr<IValueEnumerator>	CreateEnumerator()=0;
-
-				static Ptr<IValueEnumerable>	Create(collections::LazyList<Value> values);
-			};
-
-			class IValueReadonlyList : public virtual IValueEnumerable, public Description<IValueReadonlyList>
-			{
-			public:
-				virtual vint					GetCount()=0;
-				virtual Value					Get(vint index)=0;
-				virtual bool					Contains(const Value& value)=0;
-				virtual vint					IndexOf(const Value& value)=0;
-			};
-
-			class IValueList : public virtual IValueReadonlyList, public Description<IValueList>
-			{
-			public:
-				virtual void					Set(vint index, const Value& value)=0;
-				virtual vint					Add(const Value& value)=0;
-				virtual vint					Insert(vint index, const Value& value)=0;
-				virtual bool					Remove(const Value& value)=0;
-				virtual bool					RemoveAt(vint index)=0;
-				virtual void					Clear()=0;
-
-				static Ptr<IValueList>			Create();
-				static Ptr<IValueList>			Create(Ptr<IValueReadonlyList> values);
-				static Ptr<IValueList>			Create(collections::LazyList<Value> values);
-			};
-
-			class IValueObservableList : public virtual IValueReadonlyList, public Description<IValueObservableList>
-			{
-				typedef void ItemChangedProc(vint index, vint oldCount, vint newCount);
-			public:
-				Event<ItemChangedProc>			ItemChanged;
-			};
-
-			class IValueReadonlyDictionary : public virtual IDescriptable, public Description<IValueReadonlyDictionary>
-			{
-			public:
-				virtual Ptr<IValueReadonlyList>	GetKeys()=0;
-				virtual Ptr<IValueReadonlyList>	GetValues()=0;
-				virtual vint					GetCount()=0;
-				virtual Value					Get(const Value& key)=0;
-			};
-
-			class IValueDictionary : public virtual IValueReadonlyDictionary, public Description<IValueDictionary>
-			{
-			public:
-				virtual void					Set(const Value& key, const Value& value)=0;
-				virtual bool					Remove(const Value& key)=0;
-				virtual void					Clear()=0;
-
-				static Ptr<IValueDictionary>	Create();
-				static Ptr<IValueDictionary>	Create(Ptr<IValueReadonlyDictionary> values);
-				static Ptr<IValueDictionary>	Create(collections::LazyList<collections::Pair<Value, Value>> values);
-			};
-
-/***********************************************************************
-Interface Implementation Proxy
-***********************************************************************/
-
-			class IValueInterfaceProxy : public virtual IDescriptable, public Description<IValueInterfaceProxy>
-			{
-			public:
-				virtual Value					Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)=0;
-			};
-
-			class IValueFunctionProxy : public virtual IDescriptable, public Description<IValueFunctionProxy>
-			{
-			public:
-				virtual Value					Invoke(Ptr<IValueList> arguments)=0;
-			};
-
-			class IValueListener : public virtual IDescriptable, public Description<IValueListener>
-			{
-			public:
-				virtual IValueSubscription*		GetSubscription() = 0;
-				virtual bool					GetStopped() = 0;
-				virtual bool					StopListening() = 0;
-			};
-
-			class IValueSubscription : public virtual IDescriptable, public Description<IValueSubscription>
-			{
-			public:
-				virtual Ptr<IValueListener>		Subscribe(const Func<void(const Value&)>& callback) = 0;
-				virtual bool					Update() = 0;
-				virtual bool					Close() = 0;
-			};
-
-/***********************************************************************
-Interface Implementation Proxy (Implement)
-***********************************************************************/
-
-			class ValueInterfaceRoot : public virtual IDescriptable
-			{
-			protected:
-				Ptr<IValueInterfaceProxy>		proxy;
-
-				void SetProxy(Ptr<IValueInterfaceProxy> value)
-				{
-					proxy = value;
-				}
-			public:
-				Ptr<IValueInterfaceProxy> GetProxy()
-				{
-					return proxy;
-				}
-			};
-
-			template<typename T>
-			class ValueInterfaceProxy
-			{
-			};
-			
-#pragma warning(push)
-#pragma warning(disable:4250)
-			template<typename TInterface, typename ...TBaseInterfaces>
-			class ValueInterfaceImpl : public virtual ValueInterfaceRoot, public virtual TInterface, public ValueInterfaceProxy<TBaseInterfaces>...
-			{
-			public:
-				~ValueInterfaceImpl()
-				{
-					FinalizeAggregation();
-				}
-			};
-#pragma warning(pop)
-
-/***********************************************************************
-Runtime Exception
-***********************************************************************/
-
-			class IValueCallStack : public virtual IDescriptable, public Description<IValueCallStack>
-			{
-			public:
-				virtual Ptr<IValueReadonlyDictionary>	GetLocalVariables() = 0;
-				virtual Ptr<IValueReadonlyDictionary>	GetLocalArguments() = 0;
-				virtual Ptr<IValueReadonlyDictionary>	GetCapturedVariables() = 0;
-				virtual Ptr<IValueReadonlyDictionary>	GetGlobalVariables() = 0;
-				virtual WString							GetFunctionName() = 0;
-				virtual WString							GetSourceCodeBeforeCodegen() = 0;
-				virtual WString							GetSourceCodeAfterCodegen() = 0;
-				virtual vint							GetRowBeforeCodegen() = 0;
-				virtual vint							GetRowAfterCodegen() = 0;
-			};
-
-			class IValueException : public virtual IDescriptable, public Description<IValueException>
-			{
-			public:
-#pragma push_macro("GetMessage")
-#if defined GetMessage
-#undef GetMessage
-#endif
-				virtual WString							GetMessage() = 0;
-#pragma pop_macro("GetMessage")
-				virtual bool							GetFatal() = 0;
-				virtual Ptr<IValueReadonlyList>			GetCallStack() = 0;
-
-				static Ptr<IValueException>				Create(const WString& message);
-			};
 
 /***********************************************************************
 Exceptions
@@ -11084,13 +10909,385 @@ Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
 Framework::Reflection
 
-XML Representation for Code Generation:
+Interfaces:
 ***********************************************************************/
 
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORPREDEFINED
 #define VCZH_REFLECTION_GUITYPEDESCRIPTORPREDEFINED
 
 #include <math.h>
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+			struct VoidValue {};
+
+/***********************************************************************
+Collections
+***********************************************************************/
+
+			class IValueEnumerator : public virtual IDescriptable, public Description<IValueEnumerator>
+			{
+			public:
+				virtual Value					GetCurrent() = 0;
+				virtual vint					GetIndex() = 0;
+				virtual bool					Next() = 0;
+			};
+
+			class IValueEnumerable : public virtual IDescriptable, public Description<IValueEnumerable>
+			{
+			public:
+				virtual Ptr<IValueEnumerator>	CreateEnumerator() = 0;
+
+				static Ptr<IValueEnumerable>	Create(collections::LazyList<Value> values);
+			};
+
+			class IValueReadonlyList : public virtual IValueEnumerable, public Description<IValueReadonlyList>
+			{
+			public:
+				virtual vint					GetCount() = 0;
+				virtual Value					Get(vint index) = 0;
+				virtual bool					Contains(const Value& value) = 0;
+				virtual vint					IndexOf(const Value& value) = 0;
+			};
+
+			class IValueList : public virtual IValueReadonlyList, public Description<IValueList>
+			{
+			public:
+				virtual void					Set(vint index, const Value& value) = 0;
+				virtual vint					Add(const Value& value) = 0;
+				virtual vint					Insert(vint index, const Value& value) = 0;
+				virtual bool					Remove(const Value& value) = 0;
+				virtual bool					RemoveAt(vint index) = 0;
+				virtual void					Clear() = 0;
+
+				static Ptr<IValueList>			Create();
+				static Ptr<IValueList>			Create(Ptr<IValueReadonlyList> values);
+				static Ptr<IValueList>			Create(collections::LazyList<Value> values);
+			};
+
+			class IValueObservableList : public virtual IValueReadonlyList, public Description<IValueObservableList>
+			{
+				typedef void ItemChangedProc(vint index, vint oldCount, vint newCount);
+			public:
+				Event<ItemChangedProc>			ItemChanged;
+			};
+
+			class IValueReadonlyDictionary : public virtual IDescriptable, public Description<IValueReadonlyDictionary>
+			{
+			public:
+				virtual Ptr<IValueReadonlyList>	GetKeys() = 0;
+				virtual Ptr<IValueReadonlyList>	GetValues() = 0;
+				virtual vint					GetCount() = 0;
+				virtual Value					Get(const Value& key) = 0;
+			};
+
+			class IValueDictionary : public virtual IValueReadonlyDictionary, public Description<IValueDictionary>
+			{
+			public:
+				virtual void					Set(const Value& key, const Value& value) = 0;
+				virtual bool					Remove(const Value& key) = 0;
+				virtual void					Clear() = 0;
+
+				static Ptr<IValueDictionary>	Create();
+				static Ptr<IValueDictionary>	Create(Ptr<IValueReadonlyDictionary> values);
+				static Ptr<IValueDictionary>	Create(collections::LazyList<collections::Pair<Value, Value>> values);
+			};
+
+/***********************************************************************
+Interface Implementation Proxy
+***********************************************************************/
+
+			class IValueInterfaceProxy : public virtual IDescriptable, public Description<IValueInterfaceProxy>
+			{
+			public:
+				virtual Value					Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments) = 0;
+			};
+
+			class IValueFunctionProxy : public virtual IDescriptable, public Description<IValueFunctionProxy>
+			{
+			public:
+				virtual Value					Invoke(Ptr<IValueList> arguments) = 0;
+			};
+
+			class IValueListener : public virtual IDescriptable, public Description<IValueListener>
+			{
+			public:
+				virtual IValueSubscription*		GetSubscription() = 0;
+				virtual bool					GetStopped() = 0;
+				virtual bool					StopListening() = 0;
+			};
+
+			class IValueSubscription : public virtual IDescriptable, public Description<IValueSubscription>
+			{
+			public:
+				virtual Ptr<IValueListener>		Subscribe(const Func<void(const Value&)>& callback) = 0;
+				virtual bool					Update() = 0;
+				virtual bool					Close() = 0;
+			};
+
+/***********************************************************************
+Interface Implementation Proxy (Implement)
+***********************************************************************/
+
+			class ValueInterfaceRoot : public virtual IDescriptable
+			{
+			protected:
+				Ptr<IValueInterfaceProxy>		proxy;
+
+				void SetProxy(Ptr<IValueInterfaceProxy> value)
+				{
+					proxy = value;
+				}
+			public:
+				Ptr<IValueInterfaceProxy> GetProxy()
+				{
+					return proxy;
+				}
+			};
+
+			template<typename T>
+			class ValueInterfaceProxy
+			{
+			};
+
+#pragma warning(push)
+#pragma warning(disable:4250)
+			template<typename TInterface, typename ...TBaseInterfaces>
+			class ValueInterfaceImpl : public virtual ValueInterfaceRoot, public virtual TInterface, public ValueInterfaceProxy<TBaseInterfaces>...
+			{
+			public:
+				~ValueInterfaceImpl()
+				{
+					FinalizeAggregation();
+				}
+			};
+#pragma warning(pop)
+
+/***********************************************************************
+Runtime Exception
+***********************************************************************/
+
+			class IValueCallStack : public virtual IDescriptable, public Description<IValueCallStack>
+			{
+			public:
+				virtual Ptr<IValueReadonlyDictionary>	GetLocalVariables() = 0;
+				virtual Ptr<IValueReadonlyDictionary>	GetLocalArguments() = 0;
+				virtual Ptr<IValueReadonlyDictionary>	GetCapturedVariables() = 0;
+				virtual Ptr<IValueReadonlyDictionary>	GetGlobalVariables() = 0;
+				virtual WString							GetFunctionName() = 0;
+				virtual WString							GetSourceCodeBeforeCodegen() = 0;
+				virtual WString							GetSourceCodeAfterCodegen() = 0;
+				virtual vint							GetRowBeforeCodegen() = 0;
+				virtual vint							GetRowAfterCodegen() = 0;
+			};
+
+			class IValueException : public virtual IDescriptable, public Description<IValueException>
+			{
+			public:
+#pragma push_macro("GetMessage")
+#if defined GetMessage
+#undef GetMessage
+#endif
+				virtual WString							GetMessage() = 0;
+#pragma pop_macro("GetMessage")
+				virtual bool							GetFatal() = 0;
+				virtual Ptr<IValueReadonlyList>			GetCallStack() = 0;
+
+				static Ptr<IValueException>				Create(const WString& message);
+			};
+
+/***********************************************************************
+Coroutine
+***********************************************************************/
+
+			enum class CoroutineStatus
+			{
+				Waiting,
+				Executing,
+				Stopped,
+			};
+
+			class CoroutineResult : public virtual IDescriptable, public Description<CoroutineResult>
+			{
+			protected:
+				Value									result;
+				Ptr<IValueException>					failure;
+
+			public:
+				Value									GetResult();
+				void									SetResult(const Value& value);
+				Ptr<IValueException>					GetFailure();
+				void									SetFailure(Ptr<IValueException> value);
+			};
+
+			class ICoroutine : public virtual IDescriptable, public Description<ICoroutine>
+			{
+			public:
+				virtual void							Resume(bool raiseException, Ptr<CoroutineResult> output) = 0;
+				virtual Ptr<IValueException>			GetFailure() = 0;
+				virtual CoroutineStatus					GetStatus() = 0;
+			};
+
+/***********************************************************************
+Coroutine (Enumerable)
+***********************************************************************/
+
+			class EnumerableCoroutine : public Object, public Description<EnumerableCoroutine>
+			{
+			public:
+				class IImpl : public virtual IValueEnumerator, public Description<IImpl>
+				{
+				public:
+					virtual void						OnYield(const Value& value) = 0;
+					virtual void						OnJoin(Ptr<IValueEnumerable> value) = 0;
+				};
+
+				typedef Func<Ptr<ICoroutine>(IImpl*)>	Creator;
+
+				static void								YieldAndPause(IImpl* impl, const Value& value);
+				static void								JoinAndPause(IImpl* impl, Ptr<IValueEnumerable> value);
+				static void								ReturnAndExit(IImpl* impl);
+				static Ptr<IValueEnumerable>			Create(const Creator& creator);
+			};
+
+/***********************************************************************
+Coroutine (Async)
+***********************************************************************/
+
+			enum class AsyncStatus
+			{
+				Ready,
+				Executing,
+				Stopped,
+			};
+
+			class IAsync : public IDescriptable, public Description<IAsync>
+			{
+			public:
+				virtual AsyncStatus						GetStatus() = 0;
+				virtual bool							Execute(const Func<void(Ptr<CoroutineResult>)>& callback) = 0;
+
+				static Ptr<IAsync>						Delay(vint milliseconds);
+			};
+
+			class IAsyncScheduler : public IDescriptable, public Description<IAsyncScheduler>
+			{
+			public:
+				virtual void							Execute(const Func<void()>& callback) = 0;
+				virtual void							DelayExecute(const Func<void()>& callback, vint milliseconds) = 0;
+
+				static void								RegisterDefaultScheduler(Ptr<IAsyncScheduler> scheduler);
+				static void								RegisterSchedulerForCurrentThread(Ptr<IAsyncScheduler> scheduler);
+				static Ptr<IAsyncScheduler>				UnregisterDefaultScheduler();
+				static Ptr<IAsyncScheduler>				UnregisterSchedulerForCurrentThread();
+				static Ptr<IAsyncScheduler>				GetSchedulerForCurrentThread();
+			};
+
+			class AsyncCoroutine : public Object, public Description<AsyncCoroutine>
+			{
+			public:
+				class IImpl : public virtual IAsync, public Description<IImpl>
+				{
+				public:
+					virtual Ptr<IAsyncScheduler>		GetScheduler() = 0;
+					virtual void						OnContinue(Ptr<CoroutineResult> output) = 0;
+					virtual void						OnReturn(const Value& value) = 0;
+				};
+
+				typedef Func<Ptr<ICoroutine>(IImpl*)>	Creator;
+
+				static void								AwaitAndRead(IImpl* impl, Ptr<IAsync> value);
+				static void								ReturnAndExit(IImpl* impl, const Value& value);
+				static Ptr<IAsync>						Create(const Creator& creator);
+				static void								CreateAndRun(const Creator& creator);
+			};
+
+/***********************************************************************
+Libraries
+***********************************************************************/
+
+			class Sys : public Description<Sys>
+			{
+			public:
+				static vint			Len(const WString& value)							{ return value.Length(); }
+				static WString		Left(const WString& value, vint length)				{ return value.Left(length); }
+				static WString		Right(const WString& value, vint length)			{ return value.Right(length); }
+				static WString		Mid(const WString& value, vint start, vint length)	{ return value.Sub(start, length); }
+				static vint			Find(const WString& value, const WString& substr)	{ return INVLOC.FindFirst(value, substr, Locale::Normalization::None).key; }
+
+				static Ptr<IValueEnumerable>		ReverseEnumerable(Ptr<IValueEnumerable> value);
+			};
+
+			class Math : public Description<Math>
+			{
+			public:
+				static vint8_t		Abs(vint8_t value)				{ return value > 0 ? value : -value; }
+				static vint16_t		Abs(vint16_t value)				{ return value > 0 ? value : -value; }
+				static vint32_t		Abs(vint32_t value)				{ return value > 0 ? value : -value; }
+				static vint64_t		Abs(vint64_t value)				{ return value > 0 ? value : -value; }
+				static float		Abs(float value)				{ return value > 0 ? value : -value; }
+				static double		Abs(double value)				{ return value > 0 ? value : -value; }
+
+				static vint8_t		Max(vint8_t a, vint8_t b)		{ return a > b ? a : b; }
+				static vint16_t		Max(vint16_t a, vint16_t b)		{ return a > b ? a : b; }
+				static vint32_t		Max(vint32_t a, vint32_t b)		{ return a > b ? a : b; }
+				static vint64_t		Max(vint64_t a, vint64_t b)		{ return a > b ? a : b; }
+				static float		Max(float a, float b)			{ return a > b ? a : b; }
+				static double		Max(double a, double b)			{ return a > b ? a : b; }
+
+				static vint8_t		Min(vint8_t a, vint8_t b)		{ return a < b ? a : b; }
+				static vint16_t		Min(vint16_t a, vint16_t b)		{ return a < b ? a : b; }
+				static vint32_t		Min(vint32_t a, vint32_t b)		{ return a < b ? a : b; }
+				static vint64_t		Min(vint64_t a, vint64_t b)		{ return a < b ? a : b; }
+				static float		Min(float a, float b)			{ return a < b ? a : b; }
+				static double		Min(double a, double b)			{ return a < b ? a : b; }
+
+				static double		Sin(double value)				{ return sin(value); }
+				static double		Cos(double value)				{ return cos(value); }
+				static double		Tan(double value)				{ return tan(value); }
+				static double		ASin(double value)				{ return asin(value); }
+				static double		ACos(double value)				{ return acos(value); }
+				static double		ATan(double value)				{ return atan(value); }
+				static double		ATan2(double x, double y)		{ return atan2(y, x); }
+
+				static double		Exp(double value)				{ return exp(value);  }
+				static double		LogN(double value)				{ return log(value); }
+				static double		Log10(double value)				{ return log10(value); }
+				static double		Log(double value, double base)	{ return log(value) / log(base); }
+				static double		Pow(double value, double power)	{ return pow(value, power); }
+				static double		Ceil(double value)				{ return ceil(value); }
+				static double		Floor(double value)				{ return floor(value); }
+				static double		Round(double value)				{ return round(value); }
+				static double		Trunc(double value)				{ return trunc(value); }
+				static vint64_t		CeilI(double value)				{ return (vint64_t)ceil(value); }
+				static vint64_t		FloorI(double value)			{ return (vint64_t)floor(value); }
+				static vint64_t		RoundI(double value)			{ return (vint64_t)round(value); }
+				static vint64_t		TruncI(double value)			{ return (vint64_t)trunc(value); }
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+REFLECTION\GUITYPEDESCRIPTORBUILDER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::Reflection
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER
+#define VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER
+
 
 namespace vl
 {
@@ -11207,205 +11404,6 @@ SerializableTypeDescriptor
 				{
 				}
 			};
-
-#endif
-
-/***********************************************************************
-Predefined Libraries
-***********************************************************************/
-
-			class Sys : public Description<Sys>
-			{
-			public:
-				static vint			Len(const WString& value)							{ return value.Length(); }
-				static WString		Left(const WString& value, vint length)				{ return value.Left(length); }
-				static WString		Right(const WString& value, vint length)			{ return value.Right(length); }
-				static WString		Mid(const WString& value, vint start, vint length)	{ return value.Sub(start, length); }
-				static vint			Find(const WString& value, const WString& substr)	{ return INVLOC.FindFirst(value, substr, Locale::Normalization::None).key; }
-			};
-
-			class Math : public Description<Math>
-			{
-			public:
-				static vint8_t		Abs(vint8_t value)				{ return value > 0 ? value : -value; }
-				static vint16_t		Abs(vint16_t value)				{ return value > 0 ? value : -value; }
-				static vint32_t		Abs(vint32_t value)				{ return value > 0 ? value : -value; }
-				static vint64_t		Abs(vint64_t value)				{ return value > 0 ? value : -value; }
-				static float		Abs(float value)				{ return value > 0 ? value : -value; }
-				static double		Abs(double value)				{ return value > 0 ? value : -value; }
-
-				static vint8_t		Max(vint8_t a, vint8_t b)		{ return a > b ? a : b; }
-				static vint16_t		Max(vint16_t a, vint16_t b)		{ return a > b ? a : b; }
-				static vint32_t		Max(vint32_t a, vint32_t b)		{ return a > b ? a : b; }
-				static vint64_t		Max(vint64_t a, vint64_t b)		{ return a > b ? a : b; }
-				static float		Max(float a, float b)			{ return a > b ? a : b; }
-				static double		Max(double a, double b)			{ return a > b ? a : b; }
-
-				static vint8_t		Min(vint8_t a, vint8_t b)		{ return a < b ? a : b; }
-				static vint16_t		Min(vint16_t a, vint16_t b)		{ return a < b ? a : b; }
-				static vint32_t		Min(vint32_t a, vint32_t b)		{ return a < b ? a : b; }
-				static vint64_t		Min(vint64_t a, vint64_t b)		{ return a < b ? a : b; }
-				static float		Min(float a, float b)			{ return a < b ? a : b; }
-				static double		Min(double a, double b)			{ return a < b ? a : b; }
-
-				static double		Sin(double value)				{ return sin(value); }
-				static double		Cos(double value)				{ return cos(value); }
-				static double		Tan(double value)				{ return tan(value); }
-				static double		ASin(double value)				{ return asin(value); }
-				static double		ACos(double value)				{ return acos(value); }
-				static double		ATan(double value)				{ return atan(value); }
-				static double		ATan2(double x, double y)		{ return atan2(y, x); }
-
-				static double		Exp(double value)				{ return exp(value);  }
-				static double		LogN(double value)				{ return log(value); }
-				static double		Log10(double value)				{ return log10(value); }
-				static double		Log(double value, double base)	{ return log(value) / log(base); }
-				static double		Pow(double value, double power)	{ return pow(value, power); }
-				static double		Ceil(double value)				{ return ceil(value); }
-				static double		Floor(double value)				{ return floor(value); }
-				static double		Round(double value)				{ return round(value); }
-				static double		Trunc(double value)				{ return trunc(value); }
-				static vint64_t		CeilI(double value)				{ return (vint64_t)ceil(value); }
-				static vint64_t		FloorI(double value)			{ return (vint64_t)floor(value); }
-				static vint64_t		RoundI(double value)			{ return (vint64_t)round(value); }
-				static vint64_t		TruncI(double value)			{ return (vint64_t)trunc(value); }
-			};
-
-/***********************************************************************
-Predefined Types
-***********************************************************************/
-
-			struct VoidValue{};
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-			DECL_TYPE_INFO(Sys)
-			DECL_TYPE_INFO(Math)
-			
-			DECL_TYPE_INFO(void)
-			DECL_TYPE_INFO(VoidValue)
-			DECL_TYPE_INFO(IDescriptable)
-			DECL_TYPE_INFO(DescriptableObject)
-			DECL_TYPE_INFO(Value)
-			DECL_TYPE_INFO(vuint8_t)
-			DECL_TYPE_INFO(vuint16_t)
-			DECL_TYPE_INFO(vuint32_t)
-			DECL_TYPE_INFO(vuint64_t)
-			DECL_TYPE_INFO(vint8_t)
-			DECL_TYPE_INFO(vint16_t)
-			DECL_TYPE_INFO(vint32_t)
-			DECL_TYPE_INFO(vint64_t)
-			DECL_TYPE_INFO(float)
-			DECL_TYPE_INFO(double)
-			DECL_TYPE_INFO(bool)
-			DECL_TYPE_INFO(wchar_t)
-			DECL_TYPE_INFO(WString)
-			DECL_TYPE_INFO(Locale)
-			DECL_TYPE_INFO(DateTime)
-
-			DECL_TYPE_INFO(IValueEnumerator)
-			DECL_TYPE_INFO(IValueEnumerable)
-			DECL_TYPE_INFO(IValueReadonlyList)
-			DECL_TYPE_INFO(IValueList)
-			DECL_TYPE_INFO(IValueObservableList)
-			DECL_TYPE_INFO(IValueReadonlyDictionary)
-			DECL_TYPE_INFO(IValueDictionary)
-			DECL_TYPE_INFO(IValueInterfaceProxy)
-			DECL_TYPE_INFO(IValueFunctionProxy)
-			DECL_TYPE_INFO(IValueListener)
-			DECL_TYPE_INFO(IValueSubscription)
-			DECL_TYPE_INFO(IValueCallStack)
-			DECL_TYPE_INFO(IValueException)
-
-			DECL_TYPE_INFO(IBoxedValue)
-			DECL_TYPE_INFO(IBoxedValue::CompareResult)
-			DECL_TYPE_INFO(IValueType)
-			DECL_TYPE_INFO(IEnumType)
-			DECL_TYPE_INFO(ISerializableType)
-			DECL_TYPE_INFO(ITypeInfo)
-			DECL_TYPE_INFO(ITypeInfo::Decorator)
-			DECL_TYPE_INFO(IMemberInfo)
-			DECL_TYPE_INFO(IEventHandler)
-			DECL_TYPE_INFO(IEventInfo)
-			DECL_TYPE_INFO(IPropertyInfo)
-			DECL_TYPE_INFO(IParameterInfo)
-			DECL_TYPE_INFO(IMethodInfo)
-			DECL_TYPE_INFO(IMethodGroupInfo)
-			DECL_TYPE_INFO(TypeDescriptorFlags)
-			DECL_TYPE_INFO(ITypeDescriptor)
-
-#endif
-
-#define DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(TYPENAME)\
-			template<>\
-			struct TypedValueSerializerProvider<TYPENAME>\
-			{\
-				static TYPENAME GetDefaultValue();\
-				static bool Serialize(const TYPENAME& input, WString& output);\
-				static bool Deserialize(const WString& input, TYPENAME& output);\
-				static IBoxedValue::CompareResult Compare(const TYPENAME& a, const TYPENAME& b);\
-			};\
-
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint8_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint16_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint32_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint64_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint8_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint16_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint32_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint64_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(float)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(double)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(bool)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(wchar_t)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(WString)
-			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(Locale)
-
-#undef DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-			extern vint										ITypeDescriptor_GetTypeDescriptorCount();
-			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(vint index);
-			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(const WString& name);
-			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(const Value& value);
-
-/***********************************************************************
-LoadPredefinedTypes
-***********************************************************************/
-
-			extern bool										LoadPredefinedTypes();
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-REFLECTION\GUITYPEDESCRIPTORBUILDER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER
-#define VCZH_REFLECTION_GUITYPEDESCRIPTORBUILDER
-
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
 TypeInfoImp
@@ -13340,6 +13338,15 @@ namespace vl
 			return result;
 		}
 
+		template<typename T, typename U>
+		Ptr<T> UnboxCollection(const collections::LazyList<U>& value)
+		{
+			auto boxedValue = reflection::description::BoxParameter<collections::LazyList<U>>(const_cast<collections::LazyList<U>&>(value));
+			Ptr<T> result;
+			reflection::description::UnboxParameter<Ptr<T>>(boxedValue, result);
+			return result;
+		}
+
 		struct CreateList
 		{
 			using IValueList = reflection::description::IValueList;
@@ -14407,7 +14414,7 @@ Vczh Library++ 3.0
 Developer: Zihan Chen(vczh)
 Framework::Reflection
 
-Classes:
+Interfaces:
 ***********************************************************************/
 
 #ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORMACROS
@@ -14975,6 +14982,346 @@ Property
 }
 
 #endif
+#endif
+
+/***********************************************************************
+REFLECTION\GUITYPEDESCRIPTORREFLECTION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::Reflection
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORREFLECTION
+#define VCZH_REFLECTION_GUITYPEDESCRIPTORREFLECTION
+
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Predefined Types
+***********************************************************************/
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+			DECL_TYPE_INFO(Sys)
+			DECL_TYPE_INFO(Math)
+
+			DECL_TYPE_INFO(void)
+			DECL_TYPE_INFO(VoidValue)
+			DECL_TYPE_INFO(IDescriptable)
+			DECL_TYPE_INFO(DescriptableObject)
+			DECL_TYPE_INFO(Value)
+			DECL_TYPE_INFO(vuint8_t)
+			DECL_TYPE_INFO(vuint16_t)
+			DECL_TYPE_INFO(vuint32_t)
+			DECL_TYPE_INFO(vuint64_t)
+			DECL_TYPE_INFO(vint8_t)
+			DECL_TYPE_INFO(vint16_t)
+			DECL_TYPE_INFO(vint32_t)
+			DECL_TYPE_INFO(vint64_t)
+			DECL_TYPE_INFO(float)
+			DECL_TYPE_INFO(double)
+			DECL_TYPE_INFO(bool)
+			DECL_TYPE_INFO(wchar_t)
+			DECL_TYPE_INFO(WString)
+			DECL_TYPE_INFO(Locale)
+			DECL_TYPE_INFO(DateTime)
+
+			DECL_TYPE_INFO(IValueEnumerator)
+			DECL_TYPE_INFO(IValueEnumerable)
+			DECL_TYPE_INFO(IValueReadonlyList)
+			DECL_TYPE_INFO(IValueList)
+			DECL_TYPE_INFO(IValueObservableList)
+			DECL_TYPE_INFO(IValueReadonlyDictionary)
+			DECL_TYPE_INFO(IValueDictionary)
+			DECL_TYPE_INFO(IValueInterfaceProxy)
+			DECL_TYPE_INFO(IValueFunctionProxy)
+
+			DECL_TYPE_INFO(IValueListener)
+			DECL_TYPE_INFO(IValueSubscription)
+			DECL_TYPE_INFO(IValueCallStack)
+			DECL_TYPE_INFO(IValueException)
+
+			DECL_TYPE_INFO(CoroutineStatus)
+			DECL_TYPE_INFO(CoroutineResult)
+			DECL_TYPE_INFO(ICoroutine)
+			DECL_TYPE_INFO(EnumerableCoroutine::IImpl)
+			DECL_TYPE_INFO(EnumerableCoroutine)
+			DECL_TYPE_INFO(AsyncStatus)
+			DECL_TYPE_INFO(IAsync)
+			DECL_TYPE_INFO(AsyncCoroutine::IImpl)
+			DECL_TYPE_INFO(AsyncCoroutine)
+
+			DECL_TYPE_INFO(IBoxedValue)
+			DECL_TYPE_INFO(IBoxedValue::CompareResult)
+			DECL_TYPE_INFO(IValueType)
+			DECL_TYPE_INFO(IEnumType)
+			DECL_TYPE_INFO(ISerializableType)
+			DECL_TYPE_INFO(ITypeInfo)
+			DECL_TYPE_INFO(ITypeInfo::Decorator)
+			DECL_TYPE_INFO(IMemberInfo)
+			DECL_TYPE_INFO(IEventHandler)
+			DECL_TYPE_INFO(IEventInfo)
+			DECL_TYPE_INFO(IPropertyInfo)
+			DECL_TYPE_INFO(IParameterInfo)
+			DECL_TYPE_INFO(IMethodInfo)
+			DECL_TYPE_INFO(IMethodGroupInfo)
+			DECL_TYPE_INFO(TypeDescriptorFlags)
+			DECL_TYPE_INFO(ITypeDescriptor)
+
+#endif
+
+#define DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(TYPENAME)\
+			template<>\
+			struct TypedValueSerializerProvider<TYPENAME>\
+			{\
+				static TYPENAME GetDefaultValue();\
+				static bool Serialize(const TYPENAME& input, WString& output);\
+				static bool Deserialize(const WString& input, TYPENAME& output);\
+				static IBoxedValue::CompareResult Compare(const TYPENAME& a, const TYPENAME& b);\
+			};\
+
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint8_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint16_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint32_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vuint64_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint8_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint16_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint32_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(vint64_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(float)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(double)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(bool)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(wchar_t)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(WString)
+			DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(Locale)
+
+#undef DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER
+
+/***********************************************************************
+Interface Implementation Proxy (Implement)
+***********************************************************************/
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+#pragma warning(push)
+#pragma warning(disable:4250)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueEnumerator)
+				Value GetCurrent()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrent);
+				}
+
+				vint GetIndex()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIndex);
+				}
+
+				bool Next()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Next);
+				}
+			END_INTERFACE_PROXY(IValueEnumerator)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueEnumerable)
+				Ptr<IValueEnumerator> CreateEnumerator()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateEnumerator);
+				}
+			END_INTERFACE_PROXY(IValueEnumerable)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueReadonlyList, IValueEnumerable)
+				vint GetCount()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCount);
+				}
+
+				Value Get(vint index)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Get, index);
+				}
+
+				bool Contains(const Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Contains, value);
+				}
+
+				vint IndexOf(const Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(IndexOf, value);
+				}
+			END_INTERFACE_PROXY(IValueReadonlyList)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueList, IValueReadonlyList)
+				void Set(vint index, const Value& value)override
+				{
+					INVOKE_INTERFACE_PROXY(Set, index, value);
+				}
+
+				vint Add(const Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Add, value);
+				}
+
+				vint Insert(vint index, const Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Insert, index, value);
+				}
+
+				bool Remove(const Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Remove, value);
+				}
+
+				bool RemoveAt(vint index)override
+				{
+					INVOKEGET_INTERFACE_PROXY(RemoveAt, index);
+				}
+
+				void Clear()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Clear);
+				}
+			END_INTERFACE_PROXY(IValueList)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueObservableList, IValueReadonlyList)
+			END_INTERFACE_PROXY(IValueObservableList)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueReadonlyDictionary)
+				Ptr<IValueReadonlyList> GetKeys()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetKeys);
+				}
+
+				Ptr<IValueReadonlyList> GetValues()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValues);
+				}
+
+				vint GetCount()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCount);
+				}
+
+				Value Get(const Value& key)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Get, key);
+				}
+			END_INTERFACE_PROXY(IValueReadonlyDictionary)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueDictionary, IValueReadonlyDictionary)
+				void Set(const Value& key, const Value& value)override
+				{
+					INVOKE_INTERFACE_PROXY(Set, key, value);
+				}
+
+				bool Remove(const Value& key)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Remove, key);
+				}
+
+				void Clear()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(Clear);
+				}
+			END_INTERFACE_PROXY(IValueDictionary)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueListener)
+				IValueSubscription* GetSubscription()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSubscription);
+				}
+
+				bool GetStopped()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStopped);
+				}
+
+				bool StopListening()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(StopListening);
+				}
+			END_INTERFACE_PROXY(IValueListener)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueSubscription)
+				Ptr<IValueListener> Subscribe(const Func<void(const Value&)>& callback)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Subscribe, callback);
+				}
+
+				bool Update()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Update);
+				}
+
+				bool Close()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Close);
+				}
+			END_INTERFACE_PROXY(IValueSubscription)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(ICoroutine)
+
+				void Resume(bool raiseException, Ptr<CoroutineResult> output)override
+				{
+					INVOKE_INTERFACE_PROXY(Resume, raiseException, output);
+				}
+
+				Ptr<IValueException> GetFailure()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetFailure);
+				}
+
+				CoroutineStatus GetStatus()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStatus);
+				}
+			END_INTERFACE_PROXY(ICoroutine)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IAsync)
+
+				AsyncStatus GetStatus()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStatus);
+				}
+
+				bool Execute(const Func<void(Ptr<CoroutineResult>)>& callback)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Execute, callback);
+				}
+			END_INTERFACE_PROXY(IAsync)
+
+#pragma warning(pop)
+
+#endif
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+			extern vint										ITypeDescriptor_GetTypeDescriptorCount();
+			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(vint index);
+			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(const WString& name);
+			extern ITypeDescriptor*							ITypeDescriptor_GetTypeDescriptor(const Value& value);
+
+/***********************************************************************
+LoadPredefinedTypes
+***********************************************************************/
+
+			extern bool										LoadPredefinedTypes();
+		}
+	}
+}
+
 #endif
 
 /***********************************************************************
@@ -18405,197 +18752,6 @@ namespace vl
 	}
 }
 
-#endif
-
-/***********************************************************************
-REFLECTION\GUITYPEDESCRIPTORINTERFACEPROXIES.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::Reflection
-
-XML Representation for Code Generation:
-***********************************************************************/
-
-#ifndef VCZH_REFLECTION_GUITYPEDESCRIPTORINTERFACEPROXIES
-#define VCZH_REFLECTION_GUITYPEDESCRIPTORINTERFACEPROXIES
-
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-namespace vl
-{
-	namespace reflection
-	{
-		namespace description
-		{
-
-/***********************************************************************
-Interface Implementation Proxy (Implement)
-***********************************************************************/
-
-#pragma warning(push)
-#pragma warning(disable:4250)
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueEnumerator)
-				Value GetCurrent()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCurrent);
-				}
-
-				vint GetIndex()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetIndex);
-				}
-
-				bool Next()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Next);
-				}
-			END_INTERFACE_PROXY(IValueEnumerator)
-				
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueEnumerable)
-				Ptr<IValueEnumerator> CreateEnumerator()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateEnumerator);
-				}
-			END_INTERFACE_PROXY(IValueEnumerable)
-				
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueReadonlyList, IValueEnumerable)
-				vint GetCount()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCount);
-				}
-
-				Value Get(vint index)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Get, index);
-				}
-
-				bool Contains(const Value& value)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Contains, value);
-				}
-
-				vint IndexOf(const Value& value)override
-				{
-					INVOKEGET_INTERFACE_PROXY(IndexOf, value);
-				}
-			END_INTERFACE_PROXY(IValueReadonlyList)
-				
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueList, IValueReadonlyList)
-				void Set(vint index, const Value& value)override
-				{
-					INVOKE_INTERFACE_PROXY(Set, index, value);
-				}
-
-				vint Add(const Value& value)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Add, value);
-				}
-
-				vint Insert(vint index, const Value& value)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Insert, index, value);
-				}
-
-				bool Remove(const Value& value)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Remove, value);
-				}
-
-				bool RemoveAt(vint index)override
-				{
-					INVOKEGET_INTERFACE_PROXY(RemoveAt, index);
-				}
-
-				void Clear()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Clear);
-				}
-			END_INTERFACE_PROXY(IValueList)
-
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueObservableList, IValueReadonlyList)
-			END_INTERFACE_PROXY(IValueObservableList)
-				
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueReadonlyDictionary)
-				Ptr<IValueReadonlyList> GetKeys()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetKeys);
-				}
-
-				Ptr<IValueReadonlyList> GetValues()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValues);
-				}
-
-				vint GetCount()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCount);
-				}
-
-				Value Get(const Value& key)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Get, key);
-				}
-			END_INTERFACE_PROXY(IValueReadonlyDictionary)
-				
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueDictionary, IValueReadonlyDictionary)
-				void Set(const Value& key, const Value& value)override
-				{
-					INVOKE_INTERFACE_PROXY(Set, key, value);
-				}
-
-				bool Remove(const Value& key)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Remove, key);
-				}
-
-				void Clear()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Clear);
-				}
-			END_INTERFACE_PROXY(IValueDictionary)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueListener)
-				IValueSubscription* GetSubscription()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSubscription);
-				}
-
-				bool GetStopped()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStopped);
-				}
-
-				bool StopListening()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(StopListening);
-				}
-			END_INTERFACE_PROXY(IValueListener)
-			
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueSubscription)
-				Ptr<IValueListener> Subscribe(const Func<void(const Value&)>& callback)override
-				{
-					INVOKEGET_INTERFACE_PROXY(Subscribe, callback);
-				}
-
-				bool Update()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Update);
-				}
-
-				bool Close()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Close);
-				}
-			END_INTERFACE_PROXY(IValueSubscription)
-#pragma warning(pop)
-		}
-	}
-}
-
-#endif
 #endif
 
 /***********************************************************************

@@ -2239,42 +2239,6 @@ namespace vl
 		namespace runtime
 		{
 			using namespace reflection::description;
-
-/***********************************************************************
-WfRuntimeReverseEnumerable
-***********************************************************************/
-
-			WfRuntimeReverseEnumerable::Enumerator::Enumerator(Ptr<IValueReadonlyList> _list)
-				:list(_list), index(_list->GetCount())
-			{
-			}
-
-			reflection::description::Value WfRuntimeReverseEnumerable::Enumerator::GetCurrent()
-			{
-				return list->Get(index);
-			}
-
-			vint WfRuntimeReverseEnumerable::Enumerator::GetIndex()
-			{
-				return list->GetCount() - 1 - index;
-			}
-
-			bool WfRuntimeReverseEnumerable::Enumerator::Next()
-			{
-				if (index <= 0) return false;
-				index--;
-				return true;
-			}
-
-			WfRuntimeReverseEnumerable::WfRuntimeReverseEnumerable(Ptr<IValueReadonlyList> _list)
-				:list(_list)
-			{
-			}
-
-			Ptr<reflection::description::IValueEnumerator> WfRuntimeReverseEnumerable::CreateEnumerator()
-			{
-				return MakePtr<Enumerator>(list);
-			}
 			
 /***********************************************************************
 WfRuntimeLambda
@@ -3370,21 +3334,6 @@ WfRuntimeThreadContext (Range)
 				CONTEXT_ACTION(PushValue(Value::From(enumerable)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
-			
-/***********************************************************************
-WfRuntimeThreadContext (ReverseEnumerable)
-***********************************************************************/
-			
-			Value OPERATOR_OpReverseEnumerable(Value operand)
-			{
-				auto enumerable = UnboxValue<Ptr<IValueEnumerable>>(operand);
-				auto list = enumerable.Cast<IValueReadonlyList>();
-				if (!list)
-				{
-					list = IValueList::Create(GetLazyList<Value>(enumerable));
-				}
-				return Value::From(MakePtr<WfRuntimeReverseEnumerable>(list));
-			}
 
 #undef INTERNAL_ERROR
 #undef CONTEXT_ACTION
@@ -3658,14 +3607,6 @@ WfRuntimeThreadContext
 						}
 						Value result = ins.typeDescriptorParameter->GetValueType()->CreateDefault();
 						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
-						return WfRuntimeExecutionAction::ExecuteInstruction;
-					}
-				case WfInsCode::ReverseEnumerable:
-					{
-						Value operand;
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						Value reversedEnumerable = OPERATOR_OpReverseEnumerable(operand);
-						CONTEXT_ACTION(PushValue(reversedEnumerable), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::DeleteRawPtr:
@@ -3980,6 +3921,10 @@ WfRuntimeThreadContext
 						else if (auto info = operand.GetSharedPtr().Cast<WfRuntimeExceptionInfo>())
 						{
 							RaiseException(info);
+						}
+						else if (auto ex = operand.GetSharedPtr().Cast<IValueException>())
+						{
+							RaiseException(ex->GetMessage(), false);
 						}
 						else
 						{
@@ -4335,11 +4280,6 @@ WfRuntimeThreadContext
 				catch (const Exception& ex)
 				{
 					RaiseException(ex.Message(), false);
-					return WfRuntimeExecutionAction::ExecuteInstruction;
-				}
-				catch (const Error& ex)
-				{
-					RaiseException(ex.Description(), false);
 					return WfRuntimeExecutionAction::ExecuteInstruction;
 				}
 			}
