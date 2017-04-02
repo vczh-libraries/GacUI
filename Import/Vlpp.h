@@ -7435,6 +7435,7 @@ namespace vl
 			None=0,
 			/// <summary>Ignore case using the file system rule.</summary>
 			IgnoreCase=1,
+#ifdef VCZH_MSVC
 			/// <summary>Ignore case using the linguistic rule.</summary>
 			IgnoreCaseLinguistic=2,
 			/// <summary>Ignore the difference between between hiragana and katakana characters.</summary>
@@ -7449,6 +7450,7 @@ namespace vl
 			DigitsAsNumbers=64,
 			/// <summary>Treat punctuation the same as symbols.</summary>
 			StringSoft=128,
+#endif
 		};
 
 		/// <summary>Compare two strings.</summary>

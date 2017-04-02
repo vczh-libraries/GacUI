@@ -1532,7 +1532,29 @@ GuiEvalInstanceEventBinder (eval)
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				if(auto statement = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, code, position, errors))
+				bool coroutine = false;
+				{
+					auto reading = code.Buffer();
+					while (true)
+					{
+						switch (*reading)
+						{
+						case ' ':
+						case '\t':
+						case '\r':
+						case '\n':
+							reading++;
+							break;
+						default:
+							goto BEGIN_TESTING;
+						}
+					}
+				BEGIN_TESTING:
+					coroutine = *reading == '$';
+				}
+
+				auto parseFunction = coroutine ? &Workflow_ParseCoProviderStatement : &Workflow_ParseStatement;
+				if (auto statement = parseFunction(precompileContext, { resolvingResult.resource }, code, position, errors, { 0,0 }))
 				{
 					return Workflow_InstallEvalEvent(precompileContext, resolvingResult, variableName, eventInfo, statement);
 				}
@@ -1565,6 +1587,7 @@ GuiPredefinedInstanceBindersPlugin
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-TYPE", &WfParseType);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-EXPRESSION", &WfParseExpression);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-STATEMENT", &WfParseStatement);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-COPROVIDER-STATEMENT", &WfParseCoProviderStatement);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-DECLARATION", &WfParseDeclaration);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-MODULE", &WfParseModule);
 					manager->SetParsingTable(L"INSTANCE-QUERY", &GuiIqLoadTable);
@@ -9394,10 +9417,21 @@ Workflow_InstallEvalEvent
 		Ptr<workflow::WfStatement> Workflow_InstallEvalEvent(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement)
 		{
 			auto func = Workflow_GenerateEventHandler(precompileContext, eventInfo);
-						
-			auto funcBlock = MakePtr<WfBlockStatement>();
-			funcBlock->statements.Add(evalStatement);
-			func->statement = funcBlock;
+
+			if (evalStatement.Cast<WfBlockStatement>())
+			{
+				func->statement = evalStatement;
+			}
+			else if (evalStatement.Cast<WfCoProviderStatement>())
+			{
+				func->statement = evalStatement;
+			}
+			else
+			{
+				auto funcBlock = MakePtr<WfBlockStatement>();
+				funcBlock->statements.Add(evalStatement);
+				func->statement = funcBlock;
+			}
 
 			auto subBlock = MakePtr<WfBlockStatement>();
 
@@ -9736,6 +9770,11 @@ Parser
 		Ptr<workflow::WfStatement> Workflow_ParseStatement(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
 		{
 			return Workflow_Parse<WfStatement>(precompileContext, L"WORKFLOW-STATEMENT", location, code, position, errors, availableAfter);
+		}
+
+		Ptr<workflow::WfStatement> Workflow_ParseCoProviderStatement(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		{
+			return Workflow_Parse<WfStatement>(precompileContext, L"WORKFLOW-COPROVIDER-STATEMENT", location, code, position, errors, availableAfter);
 		}
 
 		Ptr<workflow::WfModule> Workflow_ParseModule(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)

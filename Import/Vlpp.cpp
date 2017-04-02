@@ -1924,28 +1924,20 @@ Locale
 #ifdef VCZH_MSVC
 	WString Locale::FormatNumber(const WString& number)const
 	{
-#if defined VCZH_MSVC
 		int length=GetNumberFormatEx(localeName.Buffer(), 0, number.Buffer(), NULL, NULL, 0);
 		if(length==0) return L"";
 		Array<wchar_t> buffer(length);
 		GetNumberFormatEx(localeName.Buffer(), 0, number.Buffer(), NULL, &buffer[0], (int)buffer.Count());
 		return &buffer[0];
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 
 	WString Locale::FormatCurrency(const WString& currency)const
 	{
-#if defined VCZH_MSVC
 		int length=GetCurrencyFormatEx(localeName.Buffer(), 0, currency.Buffer(), NULL, NULL, 0);
 		if(length==0) return L"";
 		Array<wchar_t> buffer(length);
 		GetCurrencyFormatEx(localeName.Buffer(), 0, currency.Buffer(), NULL, &buffer[0], (int)buffer.Count());
 		return &buffer[0];
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 #endif
 
@@ -2038,38 +2030,22 @@ Locale
 #ifdef VCZH_MSVC
 	WString Locale::ToFullWidth(const WString& str)const
 	{
-#if defined VCZH_MSVC
 		return Transform(localeName, str, LCMAP_FULLWIDTH);
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 
 	WString Locale::ToHalfWidth(const WString& str)const
 	{
-#if defined VCZH_MSVC
 		return Transform(localeName, str, LCMAP_HALFWIDTH);
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 
 	WString Locale::ToHiragana(const WString& str)const
 	{
-#if defined VCZH_MSVC
 		return Transform(localeName, str, LCMAP_HIRAGANA);
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 
 	WString Locale::ToKatagana(const WString& str)const
 	{
-#if defined VCZH_MSVC
 		return Transform(localeName, str, LCMAP_KATAKANA);
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 #endif
 
@@ -2112,29 +2088,17 @@ Locale
 #ifdef VCZH_MSVC
 	WString Locale::ToSimplifiedChinese(const WString& str)const
 	{
-#if defined VCZH_MSVC
 		return Transform(localeName, str, LCMAP_SIMPLIFIED_CHINESE);
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 
 	WString Locale::ToTraditionalChinese(const WString& str)const
 	{
-#if defined VCZH_MSVC
 		return Transform(localeName, str, LCMAP_TRADITIONAL_CHINESE);
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 
 	WString Locale::ToTileCase(const WString& str)const
 	{
-#if defined VCZH_MSVC
 		return Transform(localeName, str, LCMAP_TITLECASE);
-#elif defined VCZH_GCC
-		throw 0;
-#endif
 	}
 #endif
 
@@ -2154,8 +2118,6 @@ Locale
 				return wcscmp(s1.Buffer(), s2.Buffer());
 			case Normalization::IgnoreCase:
 				return wcscasecmp(s1.Buffer(), s2.Buffer());
-			default:
-				throw 0;
 		}
 #endif
 	}
@@ -2230,8 +2192,6 @@ Locale
 					}
 				}
 				break;
-			default:
-				throw 0;
 		}
 		return result == nullptr ? Pair<vint, vint>(-1, 0) : Pair<vint, vint>(result - text.Buffer(), find.Length());
 #endif
@@ -2277,8 +2237,6 @@ Locale
 					}
 				}
 				break;
-			default:
-				throw 0;
 		}
 		return result == nullptr ? Pair<vint, vint>(-1, 0) : Pair<vint, vint>(result - text.Buffer(), find.Length());
 #endif
@@ -2300,8 +2258,6 @@ Locale
 				return wcsncmp(text.Buffer(), find.Buffer(), find.Length()) == 0;
 			case Normalization::IgnoreCase:
 				return wcsncasecmp(text.Buffer(), find.Buffer(), find.Length()) == 0;
-			default:
-				throw 0;
 		}
 #endif
 	}
@@ -2322,8 +2278,6 @@ Locale
 				return wcsncmp(text.Buffer() + text.Length() - find.Length(), find.Buffer(), find.Length()) == 0;
 			case Normalization::IgnoreCase:
 				return wcsncasecmp(text.Buffer() + text.Length() - find.Length(), find.Buffer(), find.Length()) == 0;
-			default:
-				throw 0;
 		}
 #endif
 	}

@@ -590,6 +590,44 @@ Helpers
 GuiApplicationMain
 ***********************************************************************/
 
+			class UIThreadAsyncScheduler :public Object, public IAsyncScheduler, public Description<UIThreadAsyncScheduler>
+			{
+			public:
+				void Execute(const Func<void()>& callback)override
+				{
+					GetApplication()->InvokeInMainThread(callback);
+				}
+
+				void ExecuteInBackground(const Func<void()>& callback)override
+				{
+					GetApplication()->InvokeAsync(callback);
+				}
+
+				void DelayExecute(const Func<void()>& callback, vint milliseconds)override
+				{
+					GetApplication()->DelayExecuteInMainThread(callback, milliseconds);
+				}
+			};
+
+			class OtherThreadAsyncScheduler :public Object, public IAsyncScheduler, public Description<UIThreadAsyncScheduler>
+			{
+			public:
+				void Execute(const Func<void()>& callback)override
+				{
+					GetApplication()->InvokeAsync(callback);
+				}
+
+				void ExecuteInBackground(const Func<void()>& callback)override
+				{
+					GetApplication()->InvokeAsync(callback);
+				}
+
+				void DelayExecute(const Func<void()>& callback, vint milliseconds)override
+				{
+					GetApplication()->DelayExecute(callback, milliseconds);
+				}
+			};
+
 			void GuiApplicationInitialize()
 			{
 				Ptr<theme::ITheme> theme;
@@ -625,9 +663,13 @@ GuiApplicationMain
 				{
 					GuiApplication app;
 					application = &app;
+					IAsyncScheduler::RegisterSchedulerForCurrentThread(new UIThreadAsyncScheduler);
+					IAsyncScheduler::RegisterDefaultScheduler(new OtherThreadAsyncScheduler);
 					GuiMain();
+					IAsyncScheduler::UnregisterDefaultScheduler();
+					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+					application = nullptr;
 				}
-				application = nullptr;
 
 				theme::SetCurrentTheme(0);
 				DestroyPluginManager();
@@ -3529,6 +3571,7 @@ namespace vl
 			using namespace elements;
 			using namespace compositions;
 			using namespace collections;
+			using namespace reflection::description;
 
 /***********************************************************************
 GuiControlHost
@@ -4419,20 +4462,21 @@ GuiWindow
 
 			void GuiWindow::ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback)
 			{
-				owner->SetEnabled(false);
-				GetNativeWindow()->SetParent(owner->GetNativeWindow());
-				WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				ShowModal(owner, [=]()
 				{
-					GetApplication()->InvokeInMainThread([=]()
-					{
-						GetNativeWindow()->SetParent(0);
-						callback();
-						owner->SetEnabled(true);
-						owner->SetActivated();
-						delete this;
-					});
+					callback();
+					delete this;
 				});
-				Show();
+			}
+
+			Ptr<reflection::description::IAsync> GuiWindow::ShowModalAsync(GuiWindow* owner)
+			{
+				auto future = IFuture::Create();
+				ShowModal(owner, [promise = future->GetPromise()]()
+				{
+					promise->SendResult({});
+				});
+				return future;
 			}
 
 /***********************************************************************
