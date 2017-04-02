@@ -901,20 +901,11 @@ GuiWindow
 
 			void GuiWindow::ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback)
 			{
-				owner->SetEnabled(false);
-				GetNativeWindow()->SetParent(owner->GetNativeWindow());
-				WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				ShowModal(owner, [=]()
 				{
-					GetApplication()->InvokeInMainThread([=]()
-					{
-						GetNativeWindow()->SetParent(0);
-						callback();
-						owner->SetEnabled(true);
-						owner->SetActivated();
-						delete this;
-					});
+					callback();
+					delete this;
 				});
-				Show();
 			}
 
 			Ptr<reflection::description::IAsync> GuiWindow::ShowModalAsync(GuiWindow* owner)
