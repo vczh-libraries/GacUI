@@ -224,6 +224,7 @@ namespace vl
 		class WfBindExpression;
 		class WfFormatExpression;
 		class WfNewCoroutineExpression;
+		class WfMixinCastExpression;
 		class WfModuleUsingFragment;
 		class WfModuleUsingNameFragment;
 		class WfModuleUsingWildCardFragment;
@@ -1391,6 +1392,7 @@ namespace vl
 				virtual void Visit(WfBindExpression* node)=0;
 				virtual void Visit(WfFormatExpression* node)=0;
 				virtual void Visit(WfNewCoroutineExpression* node)=0;
+				virtual void Visit(WfMixinCastExpression* node)=0;
 			};
 
 			virtual void Accept(WfVirtualExpression::IVisitor* visitor)=0;
@@ -1429,6 +1431,17 @@ namespace vl
 			void Accept(WfVirtualExpression::IVisitor* visitor)override;
 
 			static vl::Ptr<WfNewCoroutineExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
+		};
+
+		class WfMixinCastExpression : public WfVirtualExpression, vl::reflection::Description<WfMixinCastExpression>
+		{
+		public:
+			vl::Ptr<WfType> type;
+			vl::Ptr<WfExpression> expression;
+
+			void Accept(WfVirtualExpression::IVisitor* visitor)override;
+
+			static vl::Ptr<WfMixinCastExpression> Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		};
 
 		class WfModuleUsingFragment abstract : public vl::parsing::ParsingTreeCustomBase, vl::reflection::Description<WfModuleUsingFragment>
@@ -1614,6 +1627,7 @@ namespace vl
 			DECL_TYPE_INFO(vl::workflow::WfBindExpression)
 			DECL_TYPE_INFO(vl::workflow::WfFormatExpression)
 			DECL_TYPE_INFO(vl::workflow::WfNewCoroutineExpression)
+			DECL_TYPE_INFO(vl::workflow::WfMixinCastExpression)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingNameFragment)
 			DECL_TYPE_INFO(vl::workflow::WfModuleUsingWildCardFragment)
@@ -2028,6 +2042,11 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
+				void Visit(vl::workflow::WfMixinCastExpression* node)override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
 			END_INTERFACE_PROXY(vl::workflow::WfVirtualExpression::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::workflow::WfModuleUsingFragment::IVisitor)
@@ -2072,6 +2091,11 @@ namespace vl
 		extern vl::WString WfGetParserTextBuffer();
 		extern vl::Ptr<vl::parsing::ParsingTreeCustomBase> WfConvertParsingTreeNode(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens);
 		extern vl::Ptr<vl::parsing::tabling::ParsingTable> WfLoadTable();
+
+		extern vl::Ptr<vl::parsing::ParsingTreeNode> WfParseCoProviderStatementAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
+		extern vl::Ptr<vl::parsing::ParsingTreeNode> WfParseCoProviderStatementAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
+		extern vl::Ptr<WfStatement> WfParseCoProviderStatement(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
+		extern vl::Ptr<WfStatement> WfParseCoProviderStatement(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
 
 		extern vl::Ptr<vl::parsing::ParsingTreeNode> WfParseDeclarationAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex = -1);
 		extern vl::Ptr<vl::parsing::ParsingTreeNode> WfParseDeclarationAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex = -1);
@@ -2444,15 +2468,18 @@ namespace vl
 				void CopyFields(WfExpression* from, WfExpression* to);
 				void CopyFields(WfFormatExpression* from, WfFormatExpression* to);
 				void CopyFields(WfNewCoroutineExpression* from, WfNewCoroutineExpression* to);
+				void CopyFields(WfMixinCastExpression* from, WfMixinCastExpression* to);
 
 				// CreateField (virtual) -----------------------------
 				virtual vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from) = 0;
 				virtual vl::Ptr<WfStatement> CreateField(vl::Ptr<WfStatement> from) = 0;
+				virtual vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfBindExpression* node)override;
 				void Visit(WfFormatExpression* node)override;
 				void Visit(WfNewCoroutineExpression* node)override;
+				void Visit(WfMixinCastExpression* node)override;
 			};
 
 			class ModuleUsingFragmentVisitor : public virtual VisitorBase, public WfModuleUsingFragment::IVisitor
@@ -2863,15 +2890,18 @@ namespace vl
 				virtual void Traverse(WfExpression* node);
 				virtual void Traverse(WfFormatExpression* node);
 				virtual void Traverse(WfNewCoroutineExpression* node);
+				virtual void Traverse(WfMixinCastExpression* node);
 
 				// VisitField (virtual) ------------------------------
 				virtual void VisitField(WfExpression* node) = 0;
 				virtual void VisitField(WfStatement* node) = 0;
+				virtual void VisitField(WfType* node) = 0;
 
 				// Visitor Members -----------------------------------
 				void Visit(WfBindExpression* node)override;
 				void Visit(WfFormatExpression* node)override;
 				void Visit(WfNewCoroutineExpression* node)override;
+				void Visit(WfMixinCastExpression* node)override;
 			};
 
 			class ModuleUsingFragmentVisitor : public Object, public WfModuleUsingFragment::IVisitor
@@ -3093,6 +3123,7 @@ namespace vl
 				void Visit(WfBindExpression* node)override;
 				void Visit(WfFormatExpression* node)override;
 				void Visit(WfNewCoroutineExpression* node)override;
+				void Visit(WfMixinCastExpression* node)override;
 			};
 
 			class ModuleUsingFragmentVisitor : public Object, public WfModuleUsingFragment::IVisitor
@@ -3595,6 +3626,7 @@ Expanding Virtual Nodes
 
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 			extern void										ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node);
+			extern void										ExpandMixinCastExpression(WfLexicalScopeManager* manager, WfMixinCastExpression* node);
 			extern void										ExpandSwitchStatement(WfLexicalScopeManager* manager, WfSwitchStatement* node);
 			extern void										ExpandForEachStatement(WfLexicalScopeManager* manager, WfForEachStatement* node);
 			extern void										ExpandCoProviderStatement(WfLexicalScopeManager* manager, WfCoProviderStatement* node);
@@ -3656,6 +3688,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			IncorrectTypeForUnion(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			IncorrectTypeForIntersect(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			ExpressionIsNotConstant(WfExpression* node);
+				static Ptr<parsing::ParsingError>			WrongMixinTargetType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
 
 				// B: Type error
 				static Ptr<parsing::ParsingError>			WrongVoidType(WfType* node);
