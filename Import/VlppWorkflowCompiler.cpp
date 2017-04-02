@@ -7675,8 +7675,7 @@ ExpandCoProviderStatement
 
 				auto providerBlock = MakePtr<WfBlockStatement>();
 				{
-					auto funcSymbol = manager->GetDeclarationSymbol(manager->nodeScopes[funcDecl.Obj()].Obj(), funcDecl.Obj());
-					auto funcReturnType = funcSymbol->typeInfo->GetElementType()->GetGenericArgument(0);
+					auto funcReturnType = CreateTypeInfoFromType(functionScope, funcDecl->returnType);
 					auto creatorInfo = manager->coProviderResolvings[node].methodInfo;
 
 					auto funcExpr = MakePtr<WfChildExpression>();
@@ -7695,7 +7694,7 @@ ExpandCoProviderStatement
 					}
 					else
 					{
-						if (IsSameType(funcReturnType, creatorInfo->GetReturn()))
+						if (IsSameType(funcReturnType.Obj(), creatorInfo->GetReturn()))
 						{
 							auto stat = MakePtr<WfReturnStatement>();
 							stat->expression = callExpr;
@@ -7705,7 +7704,7 @@ ExpandCoProviderStatement
 						{
 							auto castExpr = MakePtr<WfTypeCastingExpression>();
 							castExpr->strategy = WfTypeCastingStrategy::Strong;
-							castExpr->type = GetTypeFromTypeInfo(funcReturnType);
+							castExpr->type = GetTypeFromTypeInfo(funcReturnType.Obj());
 							castExpr->expression = callExpr;
 
 							auto stat = MakePtr<WfReturnStatement>();
@@ -7728,7 +7727,7 @@ ExpandCoProviderStatement
 								refExpr->name.value = L"<co-mixin-source-variable>";
 
 								auto castExpr = MakePtr<WfMixinCastExpression>();
-								castExpr->type = GetTypeFromTypeInfo(funcReturnType);
+								castExpr->type = GetTypeFromTypeInfo(funcReturnType.Obj());
 								castExpr->expression = refExpr;
 
 								auto stat = MakePtr<WfReturnStatement>();
@@ -9874,14 +9873,10 @@ ValidateSemantic(Statement)
 					auto scope = manager->nodeScopes[node].Obj();
 					auto providerSymbol = scope->symbols[L"$PROVIDER"][0];
 					auto implSymbol = scope->symbols[L"$IMPL"][0];
-					ITypeInfo* funcReturnType = nullptr;
+					Ptr<ITypeInfo> funcReturnType;
 					{
 						auto decl = scope->parentScope->ownerNode.Cast<WfFunctionDeclaration>();
-						auto funcSymbol = manager->GetDeclarationSymbol(scope->parentScope.Obj(), decl.Obj());
-						if (funcSymbol->typeInfo)
-						{
-							funcReturnType = funcSymbol->typeInfo->GetElementType()->GetGenericArgument(0);
-						}
+						funcReturnType = CreateTypeInfoFromType(scope->parentScope.Obj(), decl->returnType);
 					}
 					ITypeDescriptor* selectedProviderTd = nullptr;
 					List<WString> candidates;

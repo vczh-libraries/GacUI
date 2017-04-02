@@ -487,10 +487,21 @@ Workflow_InstallEvalEvent
 		Ptr<workflow::WfStatement> Workflow_InstallEvalEvent(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, Ptr<workflow::WfStatement> evalStatement)
 		{
 			auto func = Workflow_GenerateEventHandler(precompileContext, eventInfo);
-						
-			auto funcBlock = MakePtr<WfBlockStatement>();
-			funcBlock->statements.Add(evalStatement);
-			func->statement = funcBlock;
+
+			if (evalStatement.Cast<WfBlockStatement>())
+			{
+				func->statement = evalStatement;
+			}
+			else if (evalStatement.Cast<WfCoProviderStatement>())
+			{
+				func->statement = evalStatement;
+			}
+			else
+			{
+				auto funcBlock = MakePtr<WfBlockStatement>();
+				funcBlock->statements.Add(evalStatement);
+				func->statement = funcBlock;
+			}
 
 			auto subBlock = MakePtr<WfBlockStatement>();
 

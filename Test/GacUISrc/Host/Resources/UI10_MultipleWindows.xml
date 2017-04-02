@@ -6,10 +6,11 @@
         <Button Text="Click me and show a modal window!">
           <ev.Clicked-eval>
             <![CDATA[
-              {
+              $Async{
                 var window = new demo::ModalWindow*();
                 window.MoveToScreenCenter();
-                window.ShowModalAndDelete(self, func():void{});
+                $Await window.ShowModalAsync(self);
+                delete window;
               }
             ]]>
           </ev.Clicked-eval>

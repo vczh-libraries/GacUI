@@ -10,6 +10,7 @@ namespace vl
 			using namespace elements;
 			using namespace compositions;
 			using namespace collections;
+			using namespace reflection::description;
 
 /***********************************************************************
 GuiControlHost
@@ -914,6 +915,16 @@ GuiWindow
 					});
 				});
 				Show();
+			}
+
+			Ptr<reflection::description::IAsync> GuiWindow::ShowModalAsync(GuiWindow* owner)
+			{
+				auto future = IFuture::Create();
+				ShowModal(owner, [promise = future->GetPromise()]()
+				{
+					promise->SendResult({});
+				});
+				return future;
 			}
 
 /***********************************************************************

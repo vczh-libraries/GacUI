@@ -225,7 +225,29 @@ GuiEvalInstanceEventBinder (eval)
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				if(auto statement = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, code, position, errors))
+				bool coroutine = false;
+				{
+					auto reading = code.Buffer();
+					while (true)
+					{
+						switch (*reading)
+						{
+						case ' ':
+						case '\t':
+						case '\r':
+						case '\n':
+							reading++;
+							break;
+						default:
+							goto BEGIN_TESTING;
+						}
+					}
+				BEGIN_TESTING:
+					coroutine = *reading == '$';
+				}
+
+				auto parseFunction = coroutine ? &Workflow_ParseCoProviderStatement : &Workflow_ParseStatement;
+				if (auto statement = parseFunction(precompileContext, { resolvingResult.resource }, code, position, errors, { 0,0 }))
 				{
 					return Workflow_InstallEvalEvent(precompileContext, resolvingResult, variableName, eventInfo, statement);
 				}
@@ -258,6 +280,7 @@ GuiPredefinedInstanceBindersPlugin
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-TYPE", &WfParseType);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-EXPRESSION", &WfParseExpression);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-STATEMENT", &WfParseStatement);
+					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-COPROVIDER-STATEMENT", &WfParseCoProviderStatement);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-DECLARATION", &WfParseDeclaration);
 					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-MODULE", &WfParseModule);
 					manager->SetParsingTable(L"INSTANCE-QUERY", &GuiIqLoadTable);

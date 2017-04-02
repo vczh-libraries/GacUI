@@ -394,6 +394,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(MoveToScreenCenter, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ShowModal, { L"owner" _ L"callback" })
 				CLASS_MEMBER_METHOD(ShowModalAndDelete, { L"owner" _ L"callback" })
+				CLASS_MEMBER_METHOD(ShowModalAsync, { L"owner" })
 			END_CLASS_MEMBER(GuiWindow)
 
 			BEGIN_INTERFACE_MEMBER(GuiWindow::IStyleController)
