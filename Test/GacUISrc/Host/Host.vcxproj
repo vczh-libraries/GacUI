@@ -224,6 +224,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Xml Include="Resources\UI10_MultipleWindows.xml" />
     <Xml Include="Resources\UI1_StyleTemplate.xml" />
     <Xml Include="Resources\UI2_Properties.xml" />
     <Xml Include="Resources\UI3_DataGrid.xml" />

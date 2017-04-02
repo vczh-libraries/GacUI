@@ -1,0 +1,28 @@
+<Resource>
+  <Instance name="MainWindowResource">
+    <Instance ref.Class="demo::MainWindow">
+      <Window ref.Name="self" Text-format="MainWindow" ClientSize="x:480 y:320">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
+        <Button Text="Click me and show a modal window!">
+          <ev.Clicked-eval>
+            <![CDATA[
+              {
+                var window = new demo::ModalWindow*();
+                window.MoveToScreenCenter();
+                window.ShowModalAndDelete(self, func():void{});
+              }
+            ]]>
+          </ev.Clicked-eval>
+        </Button>
+      </Window>
+    </Instance>
+  </Instance>
+  
+  <Instance name="ModalWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ModalWindow">
+      <Window Text-format="ModalWindow" ClientSize="x:320 y:240" SizeBox="false">
+        <Label Text="Modal Window!" Font="fontFamily:'Segoe UI' size:40"/>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

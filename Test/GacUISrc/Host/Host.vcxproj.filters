@@ -42,6 +42,9 @@
     <Xml Include="Resources\UI1_StyleTemplate.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="Resources\UI10_MultipleWindows.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">
