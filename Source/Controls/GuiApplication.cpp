@@ -396,6 +396,44 @@ Helpers
 GuiApplicationMain
 ***********************************************************************/
 
+			class UIThreadAsyncScheduler :public Object, public IAsyncScheduler, public Description<UIThreadAsyncScheduler>
+			{
+			public:
+				void Execute(const Func<void()>& callback)override
+				{
+					GetApplication()->InvokeInMainThread(callback);
+				}
+
+				void ExecuteInBackground(const Func<void()>& callback)override
+				{
+					GetApplication()->InvokeAsync(callback);
+				}
+
+				void DelayExecute(const Func<void()>& callback, vint milliseconds)override
+				{
+					GetApplication()->DelayExecuteInMainThread(callback, milliseconds);
+				}
+			};
+
+			class OtherThreadAsyncScheduler :public Object, public IAsyncScheduler, public Description<UIThreadAsyncScheduler>
+			{
+			public:
+				void Execute(const Func<void()>& callback)override
+				{
+					GetApplication()->InvokeAsync(callback);
+				}
+
+				void ExecuteInBackground(const Func<void()>& callback)override
+				{
+					GetApplication()->InvokeAsync(callback);
+				}
+
+				void DelayExecute(const Func<void()>& callback, vint milliseconds)override
+				{
+					GetApplication()->DelayExecute(callback, milliseconds);
+				}
+			};
+
 			void GuiApplicationInitialize()
 			{
 				Ptr<theme::ITheme> theme;
@@ -431,9 +469,13 @@ GuiApplicationMain
 				{
 					GuiApplication app;
 					application = &app;
+					IAsyncScheduler::RegisterSchedulerForCurrentThread(new UIThreadAsyncScheduler);
+					IAsyncScheduler::RegisterDefaultScheduler(new OtherThreadAsyncScheduler);
 					GuiMain();
+					IAsyncScheduler::UnregisterDefaultScheduler();
+					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
+					application = nullptr;
 				}
-				application = nullptr;
 
 				theme::SetCurrentTheme(0);
 				DestroyPluginManager();
