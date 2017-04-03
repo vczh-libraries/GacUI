@@ -3162,6 +3162,11 @@ ContextFreeModuleDesugar
 
 				void Traverse(WfCastResultInterfaceDeclaration* node)override
 				{
+					if (node->expandedDeclarations.Count() > 0)
+					{
+						return;
+					}
+
 					auto decl = MakePtr<WfClassDeclaration>();
 					node->expandedDeclarations.Add(decl);
 					decl->kind = WfClassKind::Interface;
@@ -5876,11 +5881,15 @@ GenerateFlowChart
 				void Visit(WfReferenceExpression* node)override
 				{
 					copy_visitor::ExpressionVisitor::Visit(node);
-					auto resolvingResult = manager->expressionResolvings[node];
-					vint index = referenceRenaming.Keys().IndexOf(resolvingResult.symbol.Obj());
+					vint index = manager->expressionResolvings.Keys().IndexOf(node);
 					if (index != -1)
 					{
-						result.Cast<WfReferenceExpression>()->name.value = referenceRenaming.Values()[index];
+						auto resolvingResult = manager->expressionResolvings.Values()[index];
+						vint index = referenceRenaming.Keys().IndexOf(resolvingResult.symbol.Obj());
+						if (index != -1)
+						{
+							result.Cast<WfReferenceExpression>()->name.value = referenceRenaming.Values()[index];
+						}
 					}
 				}
 			};
