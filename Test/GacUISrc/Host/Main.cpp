@@ -146,7 +146,15 @@ void GuiMain_Resource()
 						code = MergeCppFileContent(file.ReadAllText(), code);
 					}
 
-					file.WriteAllText(code, false, BomEncoder::Utf8);
+					if (file.Exists())
+					{
+						auto originalCode = file.ReadAllText();
+						if (originalCode == code)
+						{
+							continue;
+						}
+					}
+					file.WriteAllText(code, false, BomEncoder::Mbcs);
 				}
 			}
 		}
