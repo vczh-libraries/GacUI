@@ -1,4 +1,4 @@
-#include "GuiGraphicsBasicComposition.h"
+#include "../GraphicsElement/GuiGraphicsHost.h"
 
 namespace vl
 {
@@ -15,7 +15,6 @@ GuiWindowComposition
 ***********************************************************************/
 
 			GuiWindowComposition::GuiWindowComposition()
-				:attachedWindow(0)
 			{
 			}
 
@@ -23,20 +22,16 @@ GuiWindowComposition
 			{
 			}
 
-			INativeWindow* GuiWindowComposition::GetAttachedWindow()
-			{
-				return attachedWindow;
-			}
-
-			void GuiWindowComposition::SetAttachedWindow(INativeWindow* window)
-			{
-				attachedWindow=window;
-				SetRenderTarget(attachedWindow?GetGuiGraphicsResourceManager()->GetRenderTarget(attachedWindow):0);
-			}
-
 			Rect GuiWindowComposition::GetBounds()
 			{
-				return attachedWindow?Rect(Point(0, 0), attachedWindow->GetClientSize()):Rect();
+				if (relatedHostRecord)
+				{
+					if (auto window = relatedHostRecord->host->GetNativeWindow())
+					{
+						return Rect(Point(0, 0), window->GetClientSize());
+					}
+				}
+				return Rect();
 			}
 
 			void GuiWindowComposition::SetMargin(Margin value)

@@ -27,18 +27,9 @@ Basic Compositions
 			/// </summary>
 			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
 			{
-			protected:
-				INativeWindow*						attachedWindow;
 			public:
 				GuiWindowComposition();
 				~GuiWindowComposition();
-				
-				/// <summary>Get the attached native window object.</summary>
-				/// <returns>The attached native window object.</returns>
-				INativeWindow*						GetAttachedWindow();
-				/// <summary>Attached a native window object.</summary>
-				/// <param name="window">The native window object to attach.</param>
-				void								SetAttachedWindow(INativeWindow* window);
 
 				Rect								GetBounds()override;
 				void								SetMargin(Margin value)override;

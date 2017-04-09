@@ -154,7 +154,7 @@ Table Compositions
 				
 				void								UpdateCellBoundsInternal();
 				void								UpdateTableContentMinSize();
-				void								OnRenderTargetChanged()override;
+				void								OnRenderContextChanged()override;
 			public:
 				GuiTableComposition();
 				~GuiTableComposition();

@@ -55,18 +55,27 @@ Basic Construction
 					/// <summary>Minimum size of this composition is combiniation of sub compositions and the minimum size of the contained graphics element.</summary>
 					LimitToElementAndChildren,
 				};
+
+			protected:
+
+				struct GraphicsHostRecord
+				{
+					GuiGraphicsHost*						host = nullptr;
+					elements::IGuiGraphicsRenderTarget*		renderTarget = nullptr;
+					INativeWindow*							nativeWindow = nullptr;
+				};
+
 			protected:
 				CompositionList								children;
-				GuiGraphicsComposition*						parent;
+				GuiGraphicsComposition*						parent = nullptr;
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
 				bool										visible;
-				elements::IGuiGraphicsRenderTarget*			renderTarget;
 				MinSizeLimitation							minSizeLimitation;
 
 				Ptr<compositions::GuiGraphicsEventReceiver>	eventReceiver;
-				controls::GuiControl*						associatedControl;
-				GuiGraphicsHost*							associatedHost;
-				INativeCursor*								associatedCursor;
+				GraphicsHostRecord*							relatedHostRecord = nullptr;
+				controls::GuiControl*						associatedControl = nullptr;
+				INativeCursor*								associatedCursor = nullptr;
 				INativeWindowListener::HitTestResult		associatedHitTestResult;
 
 				Margin										margin;
@@ -78,10 +87,10 @@ Basic Construction
 				virtual void								OnChildRemoved(GuiGraphicsComposition* child);
 				virtual void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent);
 				virtual void								OnParentLineChanged();
-				virtual void								OnRenderTargetChanged();
+				virtual void								OnRenderContextChanged();
 				
-				virtual void								SetAssociatedControl(controls::GuiControl* control);
-				virtual void								SetAssociatedHost(GuiGraphicsHost* host);
+				void										UpdateRelatedHostRecord(GraphicsHostRecord* record);
+				void										SetAssociatedControl(controls::GuiControl* control);
 
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 			public:
@@ -134,9 +143,6 @@ Basic Construction
 				/// <summary>Get the binded render target.</summary>
 				/// <returns>The binded render target.</returns>
 				elements::IGuiGraphicsRenderTarget*			GetRenderTarget();
-				/// <summary>Set the binded render target. This function is designed for internal usage. Users are not suggested to call this function directly.</summary>
-				/// <param name="value">The binded render target.</param>
-				void										SetRenderTarget(elements::IGuiGraphicsRenderTarget* value);
 
 				/// <summary>Render the composition using an offset.</summary>
 				/// <param name="offset">The offset.</param>

@@ -411,7 +411,7 @@ GuiTableComposition
 				}
 			}
 
-			void GuiTableComposition::OnRenderTargetChanged()
+			void GuiTableComposition::OnRenderContextChanged()
 			{
 				if(GetRenderTarget())
 				{

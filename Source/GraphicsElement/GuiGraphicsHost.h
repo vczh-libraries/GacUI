@@ -169,10 +169,11 @@ Host
 				typedef collections::List<GuiGraphicsComposition*>							CompositionList;
 				typedef collections::Dictionary<WString, IGuiAltAction*>					AltActionMap;
 				typedef collections::Dictionary<WString, controls::GuiControl*>				AltControlMap;
+				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
 			public:
 				static const vuint64_t					CaretInterval=500;
 			protected:
-				INativeWindow*							nativeWindow;
+				HostRecord								hostRecord;
 				IGuiShortcutKeyManager*					shortcutKeyManager;
 				GuiWindowComposition*					windowComposition;
 				GuiGraphicsComposition*					focusedComposition;

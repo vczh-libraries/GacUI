@@ -60,11 +60,49 @@ GuiGraphicsComposition
 				}
 			}
 
-			void GuiGraphicsComposition::OnRenderTargetChanged()
+			void GuiGraphicsComposition::OnRenderContextChanged()
 			{
-				if(associatedControl)
+			}
+
+			void GuiGraphicsComposition::UpdateRelatedHostRecord(GraphicsHostRecord* record)
+			{
+				relatedHostRecord = record;
+				auto renderTarget = GetRenderTarget();
+				if (ownedElement)
+				{
+					if (auto renderer = ownedElement->GetRenderer())
+					{
+						renderer->SetRenderTarget(renderTarget);
+					}
+				}
+				if (associatedControl)
 				{
 					associatedControl->OnRenderTargetChanged(renderTarget);
+				}
+				OnRenderContextChanged();
+
+				for (vint i = 0; i < children.Count(); i++)
+				{
+					children[i]->UpdateRelatedHostRecord(record);
+				}
+			}
+
+			void GuiGraphicsComposition::SetAssociatedControl(controls::GuiControl* control)
+			{
+				if (associatedControl)
+				{
+					for (vint i = 0; i < children.Count(); i++)
+					{
+						children[i]->OnControlParentChanged(0);
+					}
+				}
+				associatedControl = control;
+				if (associatedControl)
+				{
+					for (vint i = 0; i < children.Count(); i++)
+					{
+						children[i]->OnControlParentChanged(associatedControl);
+					}
 				}
 			}
 
@@ -80,13 +118,8 @@ GuiGraphicsComposition
 			}
 
 			GuiGraphicsComposition::GuiGraphicsComposition()
-				:parent(0)
-				,visible(true)
+				:visible(true)
 				,minSizeLimitation(NoLimit)
-				,renderTarget(0)
-				,associatedControl(0)
-				,associatedHost(0)
-				,associatedCursor(0)
 				,associatedHitTestResult(INativeWindowListener::NoDecision)
 			{
 				sharedPtrDestructorProc = &GuiGraphicsComposition::SharedPtrDestructorProc;
@@ -117,27 +150,27 @@ GuiGraphicsComposition
 
 			bool GuiGraphicsComposition::InsertChild(vint index, GuiGraphicsComposition* child)
 			{
-				if(!child) return false;
-				if(child->GetParent()) return false;
+				if (!child) return false;
+				if (child->GetParent()) return false;
 				children.Insert(index, child);
-				child->parent=this;
-				child->SetRenderTarget(renderTarget);
+				child->parent = this;
+				child->UpdateRelatedHostRecord(relatedHostRecord);
 				OnChildInserted(child);
-				child->OnParentChanged(0, child->parent);
+				child->OnParentChanged(nullptr, child->parent);
 				return true;
 			}
 
 			bool GuiGraphicsComposition::RemoveChild(GuiGraphicsComposition* child)
 			{
-				if(!child) return false;
-				vint index=children.IndexOf(child);
-				if(index==-1) return false;
-				child->OnParentChanged(child->parent, 0);
+				if (!child) return false;
+				vint index = children.IndexOf(child);
+				if (index == -1) return false;
+				child->OnParentChanged(child->parent, nullptr);
 				OnChildRemoved(child);
-				child->SetRenderTarget(0);
-				child->parent=0;
-				GuiGraphicsHost* host=GetRelatedGraphicsHost();
-				if(host)
+				child->UpdateRelatedHostRecord(nullptr);
+				child->parent = nullptr;
+				GuiGraphicsHost* host = GetRelatedGraphicsHost();
+				if (host)
 				{
 					host->DisconnectComposition(child);
 				}
@@ -162,21 +195,21 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetOwnedElement(Ptr<IGuiGraphicsElement> element)
 			{
-				if(ownedElement)
+				if (ownedElement)
 				{
-					IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-					if(renderer)
+					IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
+					if (renderer)
 					{
-						renderer->SetRenderTarget(0);
+						renderer->SetRenderTarget(nullptr);
 					}
 				}
-				ownedElement=element;
-				if(ownedElement)
+				ownedElement = element;
+				if (ownedElement)
 				{
-					IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-					if(renderer)
+					IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
+					if (renderer)
 					{
-						renderer->SetRenderTarget(renderTarget);
+						renderer->SetRenderTarget(GetRenderTarget());
 					}
 				}
 			}
@@ -201,67 +234,50 @@ GuiGraphicsComposition
 				minSizeLimitation=value;
 			}
 
-			IGuiGraphicsRenderTarget* GuiGraphicsComposition::GetRenderTarget()
+			elements::IGuiGraphicsRenderTarget* GuiGraphicsComposition::GetRenderTarget()
 			{
-				return renderTarget;
-			}
-
-			void GuiGraphicsComposition::SetRenderTarget(IGuiGraphicsRenderTarget* value)
-			{
-				renderTarget=value;
-				if(ownedElement)
-				{
-					IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-					if(renderer)
-					{
-						renderer->SetRenderTarget(renderTarget);
-					}
-				}
-				for(vint i=0;i<children.Count();i++)
-				{
-					children[i]->SetRenderTarget(renderTarget);
-				}
-				OnRenderTargetChanged();
+				return relatedHostRecord ? relatedHostRecord->renderTarget : nullptr;
 			}
 
 			void GuiGraphicsComposition::Render(Size offset)
 			{
-				if(visible && renderTarget && !renderTarget->IsClipperCoverWholeTarget())
+				auto renderTarget = GetRenderTarget();
+				if (visible && renderTarget && !renderTarget->IsClipperCoverWholeTarget())
 				{
-					Rect bounds=GetBounds();
-					bounds.x1+=margin.left;
-					bounds.y1+=margin.top;
-					bounds.x2-=margin.right;
-					bounds.y2-=margin.bottom;
+					Rect bounds = GetBounds();
+					bounds.x1 += margin.left;
+					bounds.y1 += margin.top;
+					bounds.x2 -= margin.right;
+					bounds.y2 -= margin.bottom;
 
-					if(bounds.x1<=bounds.x2 && bounds.y1<=bounds.y2)
+					if (bounds.x1 <= bounds.x2 && bounds.y1 <= bounds.y2)
 					{
-						bounds.x1+=offset.x;
-						bounds.x2+=offset.x;
-						bounds.y1+=offset.y;
-						bounds.y2+=offset.y;
+						bounds.x1 += offset.x;
+						bounds.x2 += offset.x;
+						bounds.y1 += offset.y;
+						bounds.y2 += offset.y;
 
-						if(ownedElement)
+						if (ownedElement)
 						{
-							IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-							if(renderer)
+							IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
+							if (renderer)
 							{
 								renderer->Render(bounds);
 							}
 						}
-						if(children.Count()>0)
+						if (children.Count() > 0)
 						{
-							bounds.x1+=internalMargin.left;
-							bounds.y1+=internalMargin.top;
-							bounds.x2-=internalMargin.right;
-							bounds.y2-=internalMargin.bottom;
-							if(bounds.x1<=bounds.x2 && bounds.y1<=bounds.y2)
+							bounds.x1 += internalMargin.left;
+							bounds.y1 += internalMargin.top;
+							bounds.x2 -= internalMargin.right;
+							bounds.y2 -= internalMargin.bottom;
+							if (bounds.x1 <= bounds.x2 && bounds.y1 <= bounds.y2)
 							{
-								offset=bounds.GetSize();
+								offset = bounds.GetSize();
 								renderTarget->PushClipper(bounds);
-								if(!renderTarget->IsClipperCoverWholeTarget())
+								if (!renderTarget->IsClipperCoverWholeTarget())
 								{
-									for(vint i=0;i<children.Count();i++)
+									for (vint i = 0; i < children.Count(); i++)
 									{
 										children[i]->Render(Size(bounds.x1, bounds.y1));
 									}
@@ -338,33 +354,16 @@ GuiGraphicsComposition
 				return associatedControl;
 			}
 
-			void GuiGraphicsComposition::SetAssociatedControl(controls::GuiControl* control)
-			{
-				if(associatedControl)
-				{
-					for(vint i=0;i<children.Count();i++)
-					{
-						children[i]->OnControlParentChanged(0);
-					}
-				}
-				associatedControl=control;
-				if(associatedControl)
-				{
-					for(vint i=0;i<children.Count();i++)
-					{
-						children[i]->OnControlParentChanged(associatedControl);
-					}
-				}
-			}
-
 			GuiGraphicsHost* GuiGraphicsComposition::GetAssociatedHost()
 			{
-				return associatedHost;
-			}
-
-			void GuiGraphicsComposition::SetAssociatedHost(GuiGraphicsHost* host)
-			{
-				associatedHost=host;
+				if (relatedHostRecord && relatedHostRecord->host->GetMainComposition() == this)
+				{
+					return relatedHostRecord->host;
+				}
+				else
+				{
+					return nullptr;
+				}
 			}
 
 			INativeCursor* GuiGraphicsComposition::GetAssociatedCursor()
@@ -406,19 +405,7 @@ GuiGraphicsComposition
 
 			GuiGraphicsHost* GuiGraphicsComposition::GetRelatedGraphicsHost()
 			{
-				GuiGraphicsComposition* composition=this;
-				while(composition)
-				{
-					if(composition->GetAssociatedHost())
-					{
-						return composition->GetAssociatedHost();
-					}
-					else
-					{
-						composition=composition->GetParent();
-					}
-				}
-				return 0;
+				return relatedHostRecord ? relatedHostRecord->host : nullptr;
 			}
 
 			controls::GuiControlHost* GuiGraphicsComposition::GetRelatedControlHost()

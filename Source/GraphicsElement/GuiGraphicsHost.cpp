@@ -317,9 +317,9 @@ GuiGraphicsHost
 				}
 				if(mouseCaptureComposition==composition)
 				{
-					if(nativeWindow)
+					if(hostRecord.nativeWindow)
 					{
-						nativeWindow->ReleaseCapture();
+						hostRecord.nativeWindow->ReleaseCapture();
 					}
 					mouseCaptureComposition=0;
 				}
@@ -332,11 +332,11 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MouseCapture(const NativeWindowMouseInfo& info)
 			{
-				if(nativeWindow && (info.left || info.middle || info.right))
+				if(hostRecord.nativeWindow && (info.left || info.middle || info.right))
 				{
-					if(!nativeWindow->IsCapturing() && !info.nonClient)
+					if(!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
 					{
-						nativeWindow->RequireCapture();
+						hostRecord.nativeWindow->RequireCapture();
 						mouseCaptureComposition=windowComposition->FindComposition(Point(info.x, info.y));
 					}
 				}
@@ -344,9 +344,9 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MouseUncapture(const NativeWindowMouseInfo& info)
 			{
-				if(nativeWindow && !(info.left || info.middle || info.right))
+				if(hostRecord.nativeWindow && !(info.left || info.middle || info.right))
 				{
-					nativeWindow->ReleaseCapture();
+					hostRecord.nativeWindow->ReleaseCapture();
 					mouseCaptureComposition=0;
 				}
 			}
@@ -482,16 +482,16 @@ GuiGraphicsHost
 
 			INativeWindowListener::HitTestResult GuiGraphicsHost::HitTest(Point location)
 			{
-				Rect bounds=nativeWindow->GetBounds();
-				Rect clientBounds=nativeWindow->GetClientBoundsInScreen();
-				Point clientLocation(location.x+bounds.x1-clientBounds.x1, location.y+bounds.y1-clientBounds.y1);
-				GuiGraphicsComposition* hitComposition=windowComposition->FindComposition(clientLocation);
-				while(hitComposition)
+				Rect bounds = hostRecord.nativeWindow->GetBounds();
+				Rect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
+				Point clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
+				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(clientLocation);
+				while (hitComposition)
 				{
-					INativeWindowListener::HitTestResult result=hitComposition->GetAssociatedHitTestResult();
-					if(result==INativeWindowListener::NoDecision)
+					INativeWindowListener::HitTestResult result = hitComposition->GetAssociatedHitTestResult();
+					if (result == INativeWindowListener::NoDecision)
 					{
-						hitComposition=hitComposition->GetParent();
+						hitComposition = hitComposition->GetParent();
 					}
 					else
 					{
@@ -503,54 +503,54 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Moving(Rect& bounds, bool fixSizeOnly)
 			{
-				Rect oldBounds=nativeWindow->GetBounds();
-				minSize=windowComposition->GetPreferredBounds().GetSize();
-				Size minWindowSize=minSize+(oldBounds.GetSize()-nativeWindow->GetClientSize());
-				if(bounds.Width()<minWindowSize.x)
+				Rect oldBounds = hostRecord.nativeWindow->GetBounds();
+				minSize = windowComposition->GetPreferredBounds().GetSize();
+				Size minWindowSize = minSize + (oldBounds.GetSize() - hostRecord.nativeWindow->GetClientSize());
+				if (bounds.Width() < minWindowSize.x)
 				{
-					if(fixSizeOnly)
+					if (fixSizeOnly)
 					{
-						if(bounds.Width()<minWindowSize.x)
+						if (bounds.Width() < minWindowSize.x)
 						{
-							bounds.x2=bounds.x1+minWindowSize.x;
+							bounds.x2 = bounds.x1 + minWindowSize.x;
 						}
 					}
-					else if(oldBounds.x1!=bounds.x1)
+					else if (oldBounds.x1 != bounds.x1)
 					{
-						bounds.x1=oldBounds.x2-minWindowSize.x;
+						bounds.x1 = oldBounds.x2 - minWindowSize.x;
 					}
-					else if(oldBounds.x2!=bounds.x2)
+					else if (oldBounds.x2 != bounds.x2)
 					{
-						bounds.x2=oldBounds.x1+minWindowSize.x;
+						bounds.x2 = oldBounds.x1 + minWindowSize.x;
 					}
 				}
-				if(bounds.Height()<minWindowSize.y)
+				if (bounds.Height() < minWindowSize.y)
 				{
-					if(fixSizeOnly)
+					if (fixSizeOnly)
 					{
-						if(bounds.Height()<minWindowSize.y)
+						if (bounds.Height() < minWindowSize.y)
 						{
-							bounds.y2=bounds.y1+minWindowSize.y;
+							bounds.y2 = bounds.y1 + minWindowSize.y;
 						}
 					}
-					else if(oldBounds.y1!=bounds.y1)
+					else if (oldBounds.y1 != bounds.y1)
 					{
-						bounds.y1=oldBounds.y2-minWindowSize.y;
+						bounds.y1 = oldBounds.y2 - minWindowSize.y;
 					}
-					else if(oldBounds.y2!=bounds.y2)
+					else if (oldBounds.y2 != bounds.y2)
 					{
-						bounds.y2=oldBounds.y1+minWindowSize.y;
+						bounds.y2 = oldBounds.y1 + minWindowSize.y;
 					}
 				}
 			}
 
 			void GuiGraphicsHost::Moved()
 			{
-				Size size=nativeWindow->GetClientSize();
-				if(previousClientSize!=size)
+				Size size = hostRecord.nativeWindow->GetClientSize();
+				if (previousClientSize != size)
 				{
-					previousClientSize=size;
-					minSize=windowComposition->GetPreferredBounds().GetSize();
+					previousClientSize = size;
+					minSize = windowComposition->GetPreferredBounds().GetSize();
 					Render();
 				}
 			}
@@ -626,60 +626,60 @@ GuiGraphicsHost
 			{
 				CompositionList newCompositions;
 				{
-					GuiGraphicsComposition* composition=windowComposition->FindComposition(Point(info.x, info.y));
-					while(composition)
+					GuiGraphicsComposition* composition = windowComposition->FindComposition(Point(info.x, info.y));
+					while (composition)
 					{
 						newCompositions.Insert(0, composition);
-						composition=composition->GetParent();
+						composition = composition->GetParent();
 					}
 				}
 
-				vint firstDifferentIndex=mouseEnterCompositions.Count();
-				for(vint i=0;i<mouseEnterCompositions.Count();i++)
+				vint firstDifferentIndex = mouseEnterCompositions.Count();
+				for (vint i = 0; i < mouseEnterCompositions.Count(); i++)
 				{
-					if(i==newCompositions.Count())
+					if (i == newCompositions.Count())
 					{
-						firstDifferentIndex=newCompositions.Count();
+						firstDifferentIndex = newCompositions.Count();
 						break;
 					}
-					if(mouseEnterCompositions[i]!=newCompositions[i])
+					if (mouseEnterCompositions[i] != newCompositions[i])
 					{
-						firstDifferentIndex=i;
+						firstDifferentIndex = i;
 						break;
 					}
 				}
 
-				for(vint i=mouseEnterCompositions.Count()-1;i>=firstDifferentIndex;i--)
+				for (vint i = mouseEnterCompositions.Count() - 1; i >= firstDifferentIndex; i--)
 				{
-					GuiGraphicsComposition* composition=mouseEnterCompositions[i];
-					if(composition->HasEventReceiver())
+					GuiGraphicsComposition* composition = mouseEnterCompositions[i];
+					if (composition->HasEventReceiver())
 					{
 						composition->GetEventReceiver()->mouseLeave.Execute(GuiEventArgs(composition));
 					}
 				}
 
 				CopyFrom(mouseEnterCompositions, newCompositions);
-				for(vint i=firstDifferentIndex;i<mouseEnterCompositions.Count();i++)
+				for (vint i = firstDifferentIndex; i < mouseEnterCompositions.Count(); i++)
 				{
-					GuiGraphicsComposition* composition=mouseEnterCompositions[i];
-					if(composition->HasEventReceiver())
+					GuiGraphicsComposition* composition = mouseEnterCompositions[i];
+					if (composition->HasEventReceiver())
 					{
 						composition->GetEventReceiver()->mouseEnter.Execute(GuiEventArgs(composition));
 					}
 				}
 
-				INativeCursor* cursor=0;
-				if(newCompositions.Count()>0)
+				INativeCursor* cursor = 0;
+				if (newCompositions.Count() > 0)
 				{
-					cursor=newCompositions[newCompositions.Count()-1]->GetRelatedCursor();
+					cursor = newCompositions[newCompositions.Count() - 1]->GetRelatedCursor();
 				}
-				if(cursor)
+				if (cursor)
 				{
-					nativeWindow->SetWindowCursor(cursor);
+					hostRecord.nativeWindow->SetWindowCursor(cursor);
 				}
 				else
 				{
-					nativeWindow->SetWindowCursor(GetCurrentController()->ResourceService()->GetDefaultSystemCursor());
+					hostRecord.nativeWindow->SetWindowCursor(GetCurrentController()->ResourceService()->GetDefaultSystemCursor());
 				}
 
 				OnMouseInput(info, &GuiGraphicsEventReceiver::mouseMove);
@@ -791,15 +791,15 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY_MENU && nativeWindow)
+				if (!info.ctrl && !info.shift && info.code == VKEY_MENU && hostRecord.nativeWindow)
 				{
-					if (nativeWindow)
+					if (hostRecord.nativeWindow)
 					{
-						nativeWindow->SupressAlt();
+						hostRecord.nativeWindow->SupressAlt();
 					}
 				}
 
-				if(focusedComposition && focusedComposition->HasEventReceiver())
+				if (focusedComposition && focusedComposition->HasEventReceiver())
 				{
 					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::systemKeyUp);
 				}
@@ -837,8 +837,7 @@ GuiGraphicsHost
 			}
 
 			GuiGraphicsHost::GuiGraphicsHost()
-				:nativeWindow(0)
-				,shortcutKeyManager(0)
+				:shortcutKeyManager(0)
 				,windowComposition(0)
 				,focusedComposition(0)
 				,mouseCaptureComposition(0)
@@ -846,8 +845,9 @@ GuiGraphicsHost
 				,currentAltHost(0)
 				,supressAltKey(0)
 			{
+				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
-				windowComposition->SetAssociatedHost(this);
+				windowComposition->UpdateRelatedHostRecord(&hostRecord);
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
@@ -863,27 +863,28 @@ GuiGraphicsHost
 
 			INativeWindow* GuiGraphicsHost::GetNativeWindow()
 			{
-				return nativeWindow;
+				return hostRecord.nativeWindow;
 			}
 
 			void GuiGraphicsHost::SetNativeWindow(INativeWindow* _nativeWindow)
 			{
-				if(nativeWindow!=_nativeWindow)
+				if (hostRecord.nativeWindow != _nativeWindow)
 				{
-					if(nativeWindow)
+					if (hostRecord.nativeWindow)
 					{
 						GetCurrentController()->CallbackService()->UninstallListener(this);
-						nativeWindow->UninstallListener(this);
+						hostRecord.nativeWindow->UninstallListener(this);
 					}
-					nativeWindow=_nativeWindow;
-					windowComposition->SetAttachedWindow(nativeWindow);
-					if(nativeWindow)
+					hostRecord.nativeWindow = _nativeWindow;
+					hostRecord.renderTarget = _nativeWindow ? GetGuiGraphicsResourceManager()->GetRenderTarget(_nativeWindow) : nullptr;
+					windowComposition->UpdateRelatedHostRecord(&hostRecord);
+					if (hostRecord.nativeWindow)
 					{
-						nativeWindow->InstallListener(this);
+						hostRecord.nativeWindow->InstallListener(this);
 						GetCurrentController()->CallbackService()->InstallListener(this);
-						previousClientSize=nativeWindow->GetClientSize();
-						minSize=windowComposition->GetPreferredBounds().GetSize();
-						nativeWindow->SetCaretPoint(caretPoint);
+						previousClientSize = hostRecord.nativeWindow->GetClientSize();
+						minSize = windowComposition->GetPreferredBounds().GetSize();
+						hostRecord.nativeWindow->SetCaretPoint(caretPoint);
 					}
 				}
 			}
@@ -895,18 +896,18 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Render()
 			{
-				if(nativeWindow && nativeWindow->IsVisible())
+				if(hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
 				{
-					windowComposition->GetRenderTarget()->StartRendering();
+					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(Size());
-					bool success = windowComposition->GetRenderTarget()->StopRendering();
-					nativeWindow->RedrawContent();
+					bool success = hostRecord.renderTarget->StopRendering();
+					hostRecord.nativeWindow->RedrawContent();
 
 					if (!success)
 					{
-						windowComposition->SetAttachedWindow(0);
-						GetGuiGraphicsResourceManager()->RecreateRenderTarget(nativeWindow);
-						windowComposition->SetAttachedWindow(nativeWindow);
+						windowComposition->UpdateRelatedHostRecord(nullptr);
+						GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
+						windowComposition->UpdateRelatedHostRecord(&hostRecord);
 					}
 				}
 			}
@@ -958,16 +959,16 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SetCaretPoint(Point value, GuiGraphicsComposition* referenceComposition)
 			{
-				if(referenceComposition)
+				if (referenceComposition)
 				{
-					Rect bounds=referenceComposition->GetGlobalBounds();
-					value.x+=bounds.x1;
-					value.y+=bounds.y1;
+					Rect bounds = referenceComposition->GetGlobalBounds();
+					value.x += bounds.x1;
+					value.y += bounds.y1;
 				}
-				caretPoint=value;
-				if(nativeWindow)
+				caretPoint = value;
+				if (hostRecord.nativeWindow)
 				{
-					nativeWindow->SetCaretPoint(caretPoint);
+					hostRecord.nativeWindow->SetCaretPoint(caretPoint);
 				}
 			}
 
