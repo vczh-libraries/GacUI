@@ -388,19 +388,19 @@ GuiGraphicsComposition
 
 			controls::GuiControl* GuiGraphicsComposition::GetRelatedControl()
 			{
-				GuiGraphicsComposition* composition=this;
-				while(composition)
+				GuiGraphicsComposition* composition = this;
+				while (composition)
 				{
-					if(composition->GetAssociatedControl())
+					if (composition->GetAssociatedControl())
 					{
 						return composition->GetAssociatedControl();
 					}
 					else
 					{
-						composition=composition->GetParent();
+						composition = composition->GetParent();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			GuiGraphicsHost* GuiGraphicsComposition::GetRelatedGraphicsHost()
@@ -410,37 +410,28 @@ GuiGraphicsComposition
 
 			controls::GuiControlHost* GuiGraphicsComposition::GetRelatedControlHost()
 			{
-				GuiGraphicsComposition* composition=this;
-				while(composition)
+				if (auto control = GetRelatedControl())
 				{
-					if(composition->GetAssociatedControl())
-					{
-						GuiControlHost* controlHost=dynamic_cast<GuiControlHost*>(composition->GetAssociatedControl());
-						if(controlHost)
-						{
-							return controlHost;
-						}
-					}
-					composition=composition->GetParent();
+					return control->GetRelatedControlHost();
 				}
-				return 0;
+				return nullptr;
 			}
 
 			INativeCursor* GuiGraphicsComposition::GetRelatedCursor()
 			{
-				GuiGraphicsComposition* composition=this;
-				while(composition)
+				GuiGraphicsComposition* composition = this;
+				while (composition)
 				{
-					if(composition->GetAssociatedCursor())
+					if (composition->GetAssociatedCursor())
 					{
 						return composition->GetAssociatedCursor();
 					}
 					else
 					{
-						composition=composition->GetParent();
+						composition = composition->GetParent();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			Margin GuiGraphicsComposition::GetMargin()

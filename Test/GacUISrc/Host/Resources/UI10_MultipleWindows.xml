@@ -3,7 +3,7 @@
     <Instance ref.Class="demo::MainWindow">
       <Window ref.Name="self" Text-format="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <Button Text="Click me and show a modal window!">
+        <Button Text="Click me and show a modal window!" Alt="C">
           <ev.Clicked-eval>
             <![CDATA[
               $Async{
