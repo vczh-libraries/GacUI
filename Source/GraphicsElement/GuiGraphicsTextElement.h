@@ -449,8 +449,6 @@ Colorized Plain Text (element)
 
 				GuiColorizedTextElement();
 			public:
-				~GuiColorizedTextElement();
-
 				/// <summary>
 				/// Get the internal <see cref="text::TextLines"/> object that stores all characters and colors.
 				/// </summary>

@@ -141,8 +141,6 @@ Rich Content Document (element)
 
 				GuiDocumentElement();
 			public:
-				~GuiDocumentElement();
-				
 				/// <summary>Get the callback.</summary>
 				/// <returns>The callback.</returns>
 				ICallback*									GetCallback();

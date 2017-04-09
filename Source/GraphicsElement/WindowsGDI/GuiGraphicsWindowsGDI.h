@@ -57,8 +57,6 @@ Raw API Rendering Element
 			protected:
 				GuiGDIElement();
 			public:
-				~GuiGDIElement();
-
 				/// <summary>Rendering event.</summary>
 				compositions::GuiGraphicsEvent<GuiGDIElementEventArgs>		Rendering;
 			};

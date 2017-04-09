@@ -18,10 +18,6 @@ GuiDirect2DElement
 			GuiDirect2DElement::GuiDirect2DElement()
 			{
 			}
-
-			GuiDirect2DElement::~GuiDirect2DElement()
-			{
-			}
 		}
 
 		namespace elements_windows_d2d

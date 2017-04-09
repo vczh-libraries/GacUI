@@ -47,8 +47,6 @@ Elements
 
 				GuiSolidBorderElement();
 			public:
-				~GuiSolidBorderElement();
-
 				/// <summary>
 				/// Get the border color.
 				/// </summary>
@@ -83,8 +81,6 @@ Elements
 
 				GuiRoundBorderElement();
 			public:
-				~GuiRoundBorderElement();
-				
 				/// <summary>
 				/// Get the border color.
 				/// </summary>
@@ -120,8 +116,6 @@ Elements
 
 				Gui3DBorderElement();
 			public:
-				~Gui3DBorderElement();
-				
 				/// <summary>
 				/// Get the left-top color.
 				/// </summary>
@@ -174,8 +168,6 @@ Elements
 
 				Gui3DSplitterElement();
 			public:
-				~Gui3DSplitterElement();
-				
 				/// <summary>
 				/// Get the left-top color.
 				/// </summary>
@@ -227,8 +219,6 @@ Elements
 
 				GuiSolidBackgroundElement();
 			public:
-				~GuiSolidBackgroundElement();
-				
 				/// <summary>
 				/// Get the border color.
 				/// </summary>
@@ -280,8 +270,6 @@ Elements
 
 				GuiGradientBackgroundElement();
 			public:
-				~GuiGradientBackgroundElement();
-				
 				/// <summary>
 				/// Get the left-top color.
 				/// </summary>
@@ -350,8 +338,6 @@ Elements
 
 				GuiSolidLabelElement();
 			public:
-				~GuiSolidLabelElement();
-				
 				/// <summary>
 				/// Get the text color.
 				/// </summary>
@@ -473,8 +459,6 @@ Elements
 
 				GuiImageFrameElement();
 			public:
-				~GuiImageFrameElement();
-
 				/// <summary>
 				/// Get the containing image.
 				/// </summary>
@@ -568,8 +552,6 @@ Elements
 
 				GuiPolygonElement();
 			public:
-				~GuiPolygonElement();
-
 				/// <summary>
 				/// Get a suggested size. The polygon element will be layouted to the center of the required bounds using this size.
 				/// </summary>

@@ -786,10 +786,6 @@ GuiDocumentElement
 			{
 			}
 
-			GuiDocumentElement::~GuiDocumentElement()
-			{
-			}
-
 			GuiDocumentElement::ICallback* GuiDocumentElement::GetCallback()
 			{
 				return callback;

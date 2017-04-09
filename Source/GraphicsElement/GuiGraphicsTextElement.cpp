@@ -661,11 +661,6 @@ GuiColorizedTextElement
 			{
 			}
 
-			GuiColorizedTextElement::~GuiColorizedTextElement()
-			{
-				renderer->Finalize();
-			}
-
 			text::TextLines& GuiColorizedTextElement::GetLines()
 			{
 				return lines;

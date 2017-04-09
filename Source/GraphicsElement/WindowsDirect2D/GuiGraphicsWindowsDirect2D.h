@@ -62,8 +62,6 @@ Raw API Rendering Element
 			protected:
 				GuiDirect2DElement();
 			public:
-				~GuiDirect2DElement();
-				
 				/// <summary>Render target changed (before) event. Resources that binded to the render target can be released at this moment.</summary>
 				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		BeforeRenderTargetChanged;
 				/// <summary>Render target changed (after) event. Resources that binded to the render target can be recreated at this moment.</summary>

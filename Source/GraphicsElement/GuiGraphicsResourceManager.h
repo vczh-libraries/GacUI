@@ -102,11 +102,11 @@ Resource Manager
 			/// <param name="rendererFactory">The renderer factory to register.</param>
 			extern bool									RegisterFactories(IGuiGraphicsElementFactory* elementFactory, IGuiGraphicsRendererFactory* rendererFactory);
 
-/***********************************************************************
-Helpers
-***********************************************************************/
+			/***********************************************************************
+			Helpers
+			***********************************************************************/
 
-#define DEFINE_GUI_GRAPHICS_ELEMENT(TELEMENT, ELEMENT_TYPE_NAME)\
+#define DEFINE_GUI_GRAPHICS_ELEMENT_NO_DTOR(TELEMENT, ELEMENT_TYPE_NAME)\
 			public:\
 				class Factory : public Object, public IGuiGraphicsElementFactory\
 				{\
@@ -147,6 +147,17 @@ Helpers
 				IGuiGraphicsRenderer* GetRenderer()override\
 				{\
 					return renderer.Obj();\
+				}\
+
+#define DEFINE_GUI_GRAPHICS_ELEMENT(TELEMENT, ELEMENT_TYPE_NAME)\
+				DEFINE_GUI_GRAPHICS_ELEMENT_NO_DTOR(TELEMENT, ELEMENT_TYPE_NAME)\
+			public:\
+				~TELEMENT()\
+				{\
+					if (renderer)\
+					{\
+						renderer->Finalize();\
+					}\
 				}\
 
 #define DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)\

@@ -18,11 +18,6 @@ GuiSolidBorderElement
 			{
 			}
 
-			GuiSolidBorderElement::~GuiSolidBorderElement()
-			{
-				renderer->Finalize();
-			}
-
 			Color GuiSolidBorderElement::GetColor()
 			{
 				return color;
@@ -58,11 +53,6 @@ GuiRoundBorderElement
 				:color(0, 0, 0)
 				,radius(10)
 			{
-			}
-
-			GuiRoundBorderElement::~GuiRoundBorderElement()
-			{
-				renderer->Finalize();
 			}
 
 			Color GuiRoundBorderElement::GetColor()
@@ -107,11 +97,6 @@ Gui3DBorderElement
 			{
 			}
 
-			Gui3DBorderElement::~Gui3DBorderElement()
-			{
-				renderer->Finalize();
-			}
-
 			Color Gui3DBorderElement::GetColor1()
 			{
 				return color1;
@@ -152,11 +137,6 @@ Gui3DSplitterElement
 			Gui3DSplitterElement::Gui3DSplitterElement()
 				:direction(Horizontal)
 			{
-			}
-
-			Gui3DSplitterElement::~Gui3DSplitterElement()
-			{
-				renderer->Finalize();
 			}
 
 			Color Gui3DSplitterElement::GetColor1()
@@ -219,11 +199,6 @@ GuiSolidBackgroundElement
 			{
 			}
 
-			GuiSolidBackgroundElement::~GuiSolidBackgroundElement()
-			{
-				renderer->Finalize();
-			}
-
 			Color GuiSolidBackgroundElement::GetColor()
 			{
 				return color;
@@ -259,11 +234,6 @@ GuiGradientBackgroundElement
 				:direction(Horizontal)
 				,shape(ElementShape::Rectangle)
 			{
-			}
-
-			GuiGradientBackgroundElement::~GuiGradientBackgroundElement()
-			{
-				renderer->Finalize();
 			}
 
 			Color GuiGradientBackgroundElement::GetColor1()
@@ -341,11 +311,6 @@ GuiSolidLabelElement
 			{
 				fontProperties.fontFamily=L"Lucida Console";
 				fontProperties.size=12;
-			}
-
-			GuiSolidLabelElement::~GuiSolidLabelElement()
-			{
-				renderer->Finalize();
 			}
 
 			Color GuiSolidLabelElement::GetColor()
@@ -513,11 +478,6 @@ GuiImageFrameElement
 			{
 			}
 
-			GuiImageFrameElement::~GuiImageFrameElement()
-			{
-				renderer->Finalize();
-			}
-
 			Ptr<INativeImage> GuiImageFrameElement::GetImage()
 			{
 				return image;
@@ -631,10 +591,6 @@ GuiPolygonElement
 ***********************************************************************/
 
 			GuiPolygonElement::GuiPolygonElement()
-			{
-			}
-
-			GuiPolygonElement::~GuiPolygonElement()
 			{
 			}
 

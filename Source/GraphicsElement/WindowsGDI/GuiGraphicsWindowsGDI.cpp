@@ -17,10 +17,6 @@ GuiGDIElement
 			GuiGDIElement::GuiGDIElement()
 			{
 			}
-
-			GuiGDIElement::~GuiGDIElement()
-			{
-			}
 		}
 
 		namespace elements_windows_gdi
