@@ -890,6 +890,7 @@ GuiWindow
 					GetApplication()->InvokeInMainThread([=]()
 					{
 						WindowClosed.Detach(container->handler);
+						container->handler = nullptr;
 						GetNativeWindow()->SetParent(0);
 						callback();
 						owner->SetEnabled(true);
