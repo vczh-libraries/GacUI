@@ -436,28 +436,10 @@ GuiApplicationMain
 
 			void GuiApplicationInitialize()
 			{
-				Ptr<theme::ITheme> theme;
-				{
-					WString osVersion=GetCurrentController()->GetOSVersion();
-					vint index=osVersion.IndexOf(L';');
-					if (index == -1)
-					{
-						theme=new win8::Win8Theme;
-					}
-					else
-					{
-						WString osMainVersion=osVersion.Sub(0, index);
-						if(osMainVersion==L"Windows 8" || osMainVersion==L"Windows Server 2012")
-						{
-							theme=new win8::Win8Theme;
-						}
-						else
-						{
-							theme=new win7::Win7Theme;
-						}
-					}
-				}
-
+				// There will be a GacUI theme in the future
+				// win7::Win7Theme
+				// win8::Win8Theme
+				auto theme = MakePtr<win8::Win8Theme>();
 				GetCurrentController()->InputService()->StartTimer();
 
 #ifndef VCZH_DEBUG_NO_REFLECTION

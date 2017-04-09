@@ -346,7 +346,6 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeController)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::reflection::description::GetCurrentController)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(OSVersion)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ExecutablePath)
 
 				CLASS_MEMBER_METHOD(ResourceService, NO_PARAMETER)
