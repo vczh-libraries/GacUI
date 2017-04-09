@@ -409,6 +409,9 @@ namespace demo
 			(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetAlt(::vl::WString(L"C", false));
+		}
+		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetText(::vl::WString(L"Click me and show a modal window!", false));
 		}
 		{
