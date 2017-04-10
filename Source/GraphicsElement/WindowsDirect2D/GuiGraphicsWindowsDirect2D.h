@@ -56,7 +56,7 @@ Raw API Rendering Element
 			/// <summary>
 			/// Defines an element for customized rendering using Direct2D.
 			/// </summary>
-			class GuiDirect2DElement : public Object, public IGuiGraphicsElement, public Description<GuiDirect2DElement>
+			class GuiDirect2DElement : public GuiElementBase<GuiDirect2DElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDirect2DElement, L"Direct2DElement")
 			protected:

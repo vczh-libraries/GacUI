@@ -28,7 +28,7 @@ Rich Content Document (element)
 ***********************************************************************/
 
 			/// <summary>Defines a rich text document element for rendering complex styled document.</summary>
-			class GuiDocumentElement : public Object, public IGuiGraphicsElement, public Description<GuiDocumentElement>
+			class GuiDocumentElement : public GuiElementBase<GuiDocumentElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDocumentElement, L"RichDocument");
 			public:

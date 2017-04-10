@@ -38,7 +38,7 @@ Elements
 			/// <summary>
 			/// Defines a border element with a thickness of one pixel.
 			/// </summary>
-			class GuiSolidBorderElement : public Object, public IGuiGraphicsElement, public Description<GuiSolidBorderElement>
+			class GuiSolidBorderElement : public GuiElementBase<GuiSolidBorderElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiSolidBorderElement, L"SolidBorder")
 			protected:
@@ -72,7 +72,7 @@ Elements
 			/// <summary>
 			/// Defines a rectangle border element with round corners and a thickness of one pixel.
 			/// </summary>
-			class GuiRoundBorderElement : public Object, public IGuiGraphicsElement, public Description<GuiRoundBorderElement>
+			class GuiRoundBorderElement : public GuiElementBase<GuiRoundBorderElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiRoundBorderElement, L"RoundBorder")
 			protected:
@@ -107,7 +107,7 @@ Elements
 			/// <summary>
 			/// Defines a 3D-like rectangle element with a thickness of two pixels.
 			/// </summary>
-			class Gui3DBorderElement : public Object, public IGuiGraphicsElement, public Description<Gui3DBorderElement>
+			class Gui3DBorderElement : public GuiElementBase<Gui3DBorderElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(Gui3DBorderElement, L"3DBorder")
 			protected:
@@ -147,7 +147,7 @@ Elements
 			/// <summary>
 			/// Defines a 3D-like splitter element with a thickness of two pixels.
 			/// </summary>
-			class Gui3DSplitterElement : public Object, public IGuiGraphicsElement, public Description<Gui3DSplitterElement>
+			class Gui3DSplitterElement : public GuiElementBase<Gui3DSplitterElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(Gui3DSplitterElement, L"3DSplitter")
 			public:
@@ -210,7 +210,7 @@ Elements
 			/// <summary>
 			/// Defines a color-filled element without border.
 			/// </summary>
-			class GuiSolidBackgroundElement : public Object, public IGuiGraphicsElement, public Description<GuiSolidBackgroundElement>
+			class GuiSolidBackgroundElement : public GuiElementBase<GuiSolidBackgroundElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiSolidBackgroundElement, L"SolidBackground")
 			protected:
@@ -244,7 +244,7 @@ Elements
 			/// <summary>
 			/// Defines a color-filled gradient element without border.
 			/// </summary>
-			class GuiGradientBackgroundElement : public Object, public IGuiGraphicsElement, public Description<GuiGradientBackgroundElement>
+			class GuiGradientBackgroundElement : public GuiElementBase<GuiGradientBackgroundElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGradientBackgroundElement, L"GradientBackground")
 			public:
@@ -322,7 +322,7 @@ Elements
 			/// <summary>
 			/// Defines an element of a plain text.
 			/// </summary>
-			class GuiSolidLabelElement : public Object, public IGuiGraphicsElement, public Description<GuiSolidLabelElement>
+			class GuiSolidLabelElement : public GuiElementBase<GuiSolidLabelElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiSolidLabelElement, L"SolidLabel");
 			protected:
@@ -446,7 +446,7 @@ Elements
 			/// <summary>
 			/// Defines an element containing an image.
 			/// </summary>
-			class GuiImageFrameElement : public Object, public IGuiGraphicsElement, public Description<GuiImageFrameElement>
+			class GuiImageFrameElement : public GuiElementBase<GuiImageFrameElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiImageFrameElement, L"ImageFrame");
 			protected:
@@ -539,7 +539,7 @@ Elements
 			/// <summary>
 			/// Defines a polygon element with a thickness of one pixel.
 			/// </summary>
-			class GuiPolygonElement : public Object, public IGuiGraphicsElement, public Description<GuiPolygonElement>
+			class GuiPolygonElement : public GuiElementBase<GuiPolygonElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiPolygonElement, L"Polygon");
 

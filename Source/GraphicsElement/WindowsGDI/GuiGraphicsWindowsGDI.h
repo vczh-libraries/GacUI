@@ -51,7 +51,7 @@ Raw API Rendering Element
 			/// <summary>
 			/// Defines an element for customized rendering using GDI.
 			/// </summary>
-			class GuiGDIElement : public Object, public IGuiGraphicsElement, public Description<GuiGDIElement>
+			class GuiGDIElement : public GuiElementBase<GuiGDIElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGDIElement, L"GDIElement")
 			protected:

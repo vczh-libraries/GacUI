@@ -102,70 +102,76 @@ Resource Manager
 			/// <param name="rendererFactory">The renderer factory to register.</param>
 			extern bool									RegisterFactories(IGuiGraphicsElementFactory* elementFactory, IGuiGraphicsRendererFactory* rendererFactory);
 
-			/***********************************************************************
-			Helpers
-			***********************************************************************/
+/***********************************************************************
+Helpers
+***********************************************************************/
 
-#define DEFINE_GUI_GRAPHICS_ELEMENT_NO_DTOR(TELEMENT, ELEMENT_TYPE_NAME)\
-			public:\
-				class Factory : public Object, public IGuiGraphicsElementFactory\
-				{\
-				public:\
-					WString GetElementTypeName()\
-					{\
-						return TELEMENT::GetElementTypeName();\
-					}\
-					IGuiGraphicsElement* Create()\
-					{\
-						TELEMENT* element=new TELEMENT;\
-						element->factory=this;\
-						IGuiGraphicsRendererFactory* rendererFactory=GetGuiGraphicsResourceManager()->GetRendererFactory(GetElementTypeName());\
-						if(rendererFactory)\
-						{\
-							element->renderer=rendererFactory->Create();\
-							element->renderer->Initialize(element);\
-						}\
-						return element;\
-					}\
-				};\
-			protected:\
-				IGuiGraphicsElementFactory*		factory;\
-				Ptr<IGuiGraphicsRenderer>		renderer;\
-			protected:\
-				void InvokeOnElementStateChanged()\
-				{\
-					if (renderer)\
-					{\
-						renderer->OnElementStateChanged();\
-					}\
-				}\
+			template<typename TElement>
+			class GuiElementBase : public Object, public IGuiGraphicsElement, public Description<TElement>
+			{
+			public:
+				class Factory : public Object, public IGuiGraphicsElementFactory
+				{
+				public:
+					WString GetElementTypeName()
+					{
+						return TElement::GetElementTypeName();
+					}
+					IGuiGraphicsElement* Create()
+					{
+						auto element = new TElement;
+						element->factory = this;
+						IGuiGraphicsRendererFactory* rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(GetElementTypeName());
+						if (rendererFactory)
+						{
+							element->renderer = rendererFactory->Create();
+							element->renderer->Initialize(element);
+						}
+						return element;
+					}
+				};
+			protected:
+				IGuiGraphicsElementFactory*		factory;
+				Ptr<IGuiGraphicsRenderer>		renderer;
+
+				void InvokeOnElementStateChanged()
+				{
+					if (renderer)
+					{
+						renderer->OnElementStateChanged();
+					}
+				}
+			public:
+				static TElement* Create()
+				{
+					return dynamic_cast<TElement*>(GetGuiGraphicsResourceManager()->GetElementFactory(TElement::GetElementTypeName())->Create());
+				}
+
+				~GuiElementBase()
+				{
+					if (renderer)
+					{
+						renderer->Finalize();
+					}
+				}
+
+				IGuiGraphicsElementFactory* GetFactory()override
+				{
+					return factory;
+				}
+
+				IGuiGraphicsRenderer* GetRenderer()override
+				{
+					return renderer.Obj();
+				}
+			};
+
+#define DEFINE_GUI_GRAPHICS_ELEMENT(TELEMENT, ELEMENT_TYPE_NAME)\
+				friend class GuiElementBase<TELEMENT>;\
 			public:\
 				static WString GetElementTypeName()\
 				{\
 					return ELEMENT_TYPE_NAME;\
-				}\
-				static TELEMENT* Create()\
-				{\
-					return dynamic_cast<TELEMENT*>(GetGuiGraphicsResourceManager()->GetElementFactory(TELEMENT::GetElementTypeName())->Create());\
-				}\
-				IGuiGraphicsElementFactory* GetFactory()override\
-				{\
-					return factory;\
-				}\
-				IGuiGraphicsRenderer* GetRenderer()override\
-				{\
-					return renderer.Obj();\
-				}\
-
-#define DEFINE_GUI_GRAPHICS_ELEMENT(TELEMENT, ELEMENT_TYPE_NAME)\
-				DEFINE_GUI_GRAPHICS_ELEMENT_NO_DTOR(TELEMENT, ELEMENT_TYPE_NAME)\
-			public:\
-				~TELEMENT()\
-				{\
-					if (renderer)\
-					{\
-						renderer->Finalize();\
-					}\
 				}\
 
 #define DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)\

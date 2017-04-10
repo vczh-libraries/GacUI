@@ -411,7 +411,7 @@ Colorized Plain Text (element)
 			/// <summary>
 			/// Defines a text element with separate color configuration for each character.
 			/// </summary>
-			class GuiColorizedTextElement : public Object, public IGuiGraphicsElement, public Description<GuiColorizedTextElement>
+			class GuiColorizedTextElement : public GuiElementBase<GuiColorizedTextElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiColorizedTextElement, L"ColorizedText");
 
