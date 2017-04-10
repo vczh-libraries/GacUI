@@ -113,6 +113,10 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::InvokeOnCompositionStateChanged()
 			{
+				if (relatedHostRecord)
+				{
+					relatedHostRecord->host->RequestRender();
+				}
 			}
 
 			bool GuiGraphicsComposition::SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing)

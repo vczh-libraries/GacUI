@@ -551,8 +551,12 @@ GuiGraphicsHost
 				{
 					previousClientSize = size;
 					minSize = windowComposition->GetPreferredBounds().GetSize();
-					Render();
+					Render(true);
 				}
+			}
+
+			void GuiGraphicsHost::Paint()
+			{
 			}
 
 			void GuiGraphicsHost::LeftButtonDown(const NativeWindowMouseInfo& info)
@@ -833,7 +837,7 @@ GuiGraphicsHost
 					}
 				}
 				
-				Render();
+				Render(false);
 			}
 
 			GuiGraphicsHost::GuiGraphicsHost()
@@ -885,6 +889,7 @@ GuiGraphicsHost
 						previousClientSize = hostRecord.nativeWindow->GetClientSize();
 						minSize = windowComposition->GetPreferredBounds().GetSize();
 						hostRecord.nativeWindow->SetCaretPoint(caretPoint);
+						needRender = true;
 					}
 				}
 			}
@@ -894,8 +899,14 @@ GuiGraphicsHost
 				return windowComposition;
 			}
 
-			void GuiGraphicsHost::Render()
+			void GuiGraphicsHost::Render(bool forceUpdate)
 			{
+				if (!forceUpdate && !needRender)
+				{
+					return;
+				}
+				needRender = false;
+
 				if(hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
 				{
 					hostRecord.renderTarget->StartRendering();
@@ -908,8 +919,14 @@ GuiGraphicsHost
 						windowComposition->UpdateRelatedHostRecord(nullptr);
 						GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
 						windowComposition->UpdateRelatedHostRecord(&hostRecord);
+						needRender = true;
 					}
 				}
+			}
+
+			void GuiGraphicsHost::RequestRender()
+			{
+				needRender = true;
 			}
 
 			IGuiShortcutKeyManager* GuiGraphicsHost::GetShortcutKeyManager()

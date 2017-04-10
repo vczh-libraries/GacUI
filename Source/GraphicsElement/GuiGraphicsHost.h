@@ -171,9 +171,11 @@ Host
 				typedef collections::Dictionary<WString, controls::GuiControl*>				AltControlMap;
 				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
 			public:
-				static const vuint64_t					CaretInterval=500;
+				static const vuint64_t					CaretInterval = 500;
 			protected:
 				HostRecord								hostRecord;
+				bool									needRender = true;
+
 				IGuiShortcutKeyManager*					shortcutKeyManager;
 				GuiWindowComposition*					windowComposition;
 				GuiGraphicsComposition*					focusedComposition;
@@ -213,6 +215,7 @@ Host
 				INativeWindowListener::HitTestResult	HitTest(Point location)override;
 				void									Moving(Rect& bounds, bool fixSizeOnly)override;
 				void									Moved()override;
+				void									Paint()override;
 
 				void									LeftButtonDown(const NativeWindowMouseInfo& info)override;
 				void									LeftButtonUp(const NativeWindowMouseInfo& info)override;
@@ -250,7 +253,9 @@ Host
 				/// <returns>The main compositoin.</returns>
 				GuiGraphicsComposition*					GetMainComposition();
 				/// <summary>Render the main composition and all content to the associated window.</summary>
-				void									Render();
+				void									Render(bool forceUpdate);
+				/// <summary>Request a rendering</summary>
+				void									RequestRender();
 
 				/// <summary>Get the <see cref="IGuiShortcutKeyManager"/> attached with this graphics host.</summary>
 				/// <returns>The shortcut key manager.</returns>
