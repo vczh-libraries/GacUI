@@ -131,14 +131,24 @@ Helpers
 					}
 				};
 			protected:
-				IGuiGraphicsElementFactory*		factory;
-				Ptr<IGuiGraphicsRenderer>		renderer;
+				IGuiGraphicsElementFactory*				factory = nullptr;
+				Ptr<IGuiGraphicsRenderer>				renderer;
+				compositions::GuiGraphicsComposition*	ownerComposition = nullptr;
+
+				void SetOwnerComposition(compositions::GuiGraphicsComposition* composition)override
+				{
+					ownerComposition = composition;
+				}
 
 				void InvokeOnElementStateChanged()
 				{
 					if (renderer)
 					{
 						renderer->OnElementStateChanged();
+					}
+					if (ownerComposition)
+					{
+						compositions::InvokeOnCompositionStateChanged(ownerComposition);
 					}
 				}
 			public:
@@ -163,6 +173,11 @@ Helpers
 				IGuiGraphicsRenderer* GetRenderer()override
 				{
 					return renderer.Obj();
+				}
+
+				compositions::GuiGraphicsComposition* GetOwnerComposition()override
+				{
+					return ownerComposition;
 				}
 			};
 

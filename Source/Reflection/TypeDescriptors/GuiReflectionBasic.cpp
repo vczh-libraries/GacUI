@@ -578,6 +578,7 @@ Type Declaration
 			END_INTERFACE_MEMBER(IGuiResourceManager)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerComposition)
 			END_INTERFACE_MEMBER(IGuiGraphicsElement)
 
 			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)

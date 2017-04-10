@@ -42,6 +42,7 @@ Basic Construction
 
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
+				friend void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 			public:
 				/// <summary>
 				/// Minimum size limitation.

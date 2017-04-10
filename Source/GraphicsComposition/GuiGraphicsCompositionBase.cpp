@@ -11,6 +11,11 @@ namespace vl
 			using namespace controls;
 			using namespace elements;
 
+			void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition)
+			{
+				composition->InvokeOnCompositionStateChanged();
+			}
+
 /***********************************************************************
 GuiGraphicsComposition
 ***********************************************************************/
@@ -206,20 +211,20 @@ GuiGraphicsComposition
 				{
 					if (ownedElement)
 					{
-						IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
-						if (renderer)
+						if (auto renderer = ownedElement->GetRenderer())
 						{
 							renderer->SetRenderTarget(nullptr);
 						}
+						ownedElement->SetOwnerComposition(nullptr);
 					}
 					ownedElement = element;
 					if (ownedElement)
 					{
-						IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
-						if (renderer)
+						if (auto renderer = ownedElement->GetRenderer())
 						{
 							renderer->SetRenderTarget(GetRenderTarget());
 						}
+						ownedElement->SetOwnerComposition(this);
 					}
 					InvokeOnCompositionStateChanged();
 				}

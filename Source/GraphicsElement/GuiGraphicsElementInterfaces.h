@@ -17,6 +17,13 @@ namespace vl
 	{
 		using namespace reflection;
 
+		namespace compositions
+		{
+			class GuiGraphicsComposition;
+
+			extern void											InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
+		}
+
 		namespace elements
 		{
 			class IGuiGraphicsElement;
@@ -36,17 +43,26 @@ Basic Construction
 			/// </summary>
 			class IGuiGraphicsElement : public virtual IDescriptable, public Description<IGuiGraphicsElement>
 			{
+				friend class compositions::GuiGraphicsComposition;
+			protected:
+
+				virtual void									SetOwnerComposition(compositions::GuiGraphicsComposition* composition) = 0;
 			public:
 				/// <summary>
 				/// Access the <see cref="IGuiGraphicsElementFactory"></see> that is used to create this graphics elements.
 				/// </summary>
 				/// <returns>Returns the related factory.</returns>
-				virtual IGuiGraphicsElementFactory*		GetFactory()=0;
+				virtual IGuiGraphicsElementFactory*				GetFactory() = 0;
 				/// <summary>
 				/// Access the associated <see cref="IGuiGraphicsRenderer"></see> for this graphics element.
 				/// </summary>
 				/// <returns>Returns the related renderer.</returns>
-				virtual IGuiGraphicsRenderer*			GetRenderer()=0;
+				virtual IGuiGraphicsRenderer*					GetRenderer() = 0;
+				/// <summary>
+				/// Get the owner composition.
+				/// </summary>
+				/// <returns>The owner composition.</returns>
+				virtual compositions::GuiGraphicsComposition*	GetOwnerComposition() = 0;
 			};
 
 			/// <summary>
