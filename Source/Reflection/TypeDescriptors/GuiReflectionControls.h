@@ -1516,6 +1516,11 @@ Interface Proxy
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBaselineDocument);
 				}
+
+				presentation::Color GetCaretColor()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetCaretColor);
+				}
 			END_INTERFACE_PROXY(presentation::controls::GuiDocumentViewer::IStyleProvider)
 
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiDocumentLabel::IStyleController,

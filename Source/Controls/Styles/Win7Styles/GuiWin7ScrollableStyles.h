@@ -215,6 +215,7 @@ TextBox
 				~Win7DocumentViewerStyle();
 
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 
 			/// <summary>Document label style (Windows 7).</summary>

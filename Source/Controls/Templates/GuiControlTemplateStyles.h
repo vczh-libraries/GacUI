@@ -319,6 +319,7 @@ Control Template
 				~GuiDocumentViewerTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
+				Color															GetCaretColor()override;
 			};
 
 			class GuiTextListTemplate_StyleProvider

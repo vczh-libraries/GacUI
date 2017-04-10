@@ -1,21 +1,106 @@
 <Resource>
+  <Folder name="Documents">
+    <Doc name="Sample">
+    <Doc>
+      <Content>
+        <p>
+          <div style="Title">GacUI Rich Document Demo</div>
+        </p>
+        <p align="Left">
+          <div style="Content">
+            <nop>This is a sample document to demonstrate the rich document in GacUI. </nop>
+            <nop>Text in a paragraph can be <b>bold</b>, <i>italic</i>, <u>underline</u>, <s>strikeline</s> or their <b><i><u><s>combination</s></u></i></b>. </nop>
+            <nop>Text in a paragraph can also have different <font face="Harlow Solid" size="32">font</font>, <font color="#FF5000">text color</font> and <font bkcolor="#0050FF" color="#FF5000">background color</font>.</nop>
+          </div>
+        </p>
+        <p align="Center"><div style="Content">Paragraph can also center-aliened,</div></p>
+        <p align="Right"><div style="Content">Or even right-aligned.</div></p>
+        <p>
+          <div style="Content">
+            <nop>Rich document now supports <b>images</b>, <b>style list</b> and <b>hyper-link</b>, but this demo does not show the full features because the file format limitation ---- <i>All resoures are linked, not encoded into the xml file</i>.</nop>
+          </div>
+        </p>
+      </Content>
+      <Styles>
+        <Style name="Title" parent="#Default">
+          <face>Segoe UI</face>
+          <size>24</size>
+          <b>true</b>
+        </Style>
+        <Style name="Content" parent="#Default">
+          <face>Segoe UI</face>
+          <size>16</size>
+        </Style>
+      </Styles>
+    </Doc>
+    </Doc>
+  </Folder>
+  
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow">
-      <Window ref.Name="self" Text-format="MainWindow" ClientSize="x:480 y:320">
-        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
-        <Button Text="Click me and show a modal window!" Alt="C">
-          <att.BoundsComposition-set AlignmentToParent="left:20 top:20 right:20 bottom:20"/>
-          <ev.Clicked-eval>
-            <![CDATA[
-              $Async{
-                var window = new demo::ModalWindow*();
-                window.MoveToScreenCenter();
-                $Await window.ShowModalAsync(self);
-                delete window;
-              }
-            ]]>
-          </ev.Clicked-eval>
-        </Button>
+      <Window ref.Name="self" Text-format="MainWindow" ClientSize="x:640 y:480">
+        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0 columnSpan:2">
+            <ToolstripMenuBar ref.Name="menuDropDown">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <MenuBarButton Text="File">
+                <att.SubMenu-set>
+                  <MenuItemButton Text="New" Alt="N">
+                    <att.SubMenu-set>
+                      <MenuItemButton Text="New Text File" Alt="T" ShortcutText="Ctrl+N"/>
+                      <MenuItemButton Text="New RTF File" Alt="R"/>
+                    </att.SubMenu-set>
+                  </MenuItemButton>
+                  <MenuItemButton Text="Open" Alt="O">
+                    <att.SubMenu-set>
+                      <MenuItemButton Text="Open Text File..." Alt="T" ShortcutText="Ctrl+O"/>
+                      <MenuItemButton Text="Open RTF File..." Alt="R"/>
+                    </att.SubMenu-set>
+                  </MenuItemButton>
+                  <MenuItemButton Text="Save" Alt="S" ShortcutText="Ctrl+S"/>
+                  <MenuItemButton Text="Save As..." Alt="A"/>
+                  <MenuSplitter/>
+                  <MenuItemButton Text="Print" Alt="P"/>
+                  <MenuSplitter/>
+                  <MenuItemButton Text="Exit" Alt="X"/>
+                </att.SubMenu-set>
+              </MenuBarButton>
+            </ToolstripMenuBar>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <Button Text="Click me and show a modal window!"/>
+            <DocumentViewer EditMode="Editable" Document-uri="res://Documents/Sample">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </DocumentViewer>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <Button Text="Click me and show a modal window!" Alt="C">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  $Async{
+                    var window = new demo::ModalWindow*();
+                    window.MoveToScreenCenter();
+                    $Await window.ShowModalAsync(self);
+                    delete window;
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>

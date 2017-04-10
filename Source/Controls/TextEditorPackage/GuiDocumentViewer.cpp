@@ -199,6 +199,7 @@ GuiDocumentCommonInterface
 
 				documentElement=GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
+				documentElement->SetCaretColor(caretColor);
 
 				documentComposition=new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(documentElement);
@@ -563,8 +564,9 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument)
+			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor)
 				:baselineDocument(_baselineDocument)
+				,caretColor(_caretColor)
 				,documentElement(0)
 				,documentComposition(0)
 				,activeHyperlinkParagraph(-1)

@@ -310,6 +310,7 @@ Control Template
 
 #define GuiDocumentViewerTemplate_PROPERTIES(F)\
 				F(GuiDocumentViewerTemplate, Ptr<DocumentModel>, BaselineDocument)\
+				F(GuiDocumentViewerTemplate, Color, CaretColor)\
 
 				GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};

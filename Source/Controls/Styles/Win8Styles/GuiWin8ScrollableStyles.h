@@ -224,6 +224,7 @@ TextBox
 				~Win8DocumentViewerStyle();
 
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 
 			/// <summary>Document label style (Windows 8).</summary>

@@ -638,6 +638,11 @@ Win8DocumentViewerStyle
 				return nullptr;
 			}
 
+			Color Win8DocumentViewerStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
+			}
+
 /***********************************************************************
 Win8DocumentlabelStyle
 ***********************************************************************/

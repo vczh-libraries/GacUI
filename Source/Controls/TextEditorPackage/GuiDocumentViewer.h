@@ -66,6 +66,7 @@ GuiDocumentCommonInterface
 				};
 			protected:
 				Ptr<DocumentModel>							baselineDocument;
+				Color										caretColor;
 				DocumentItemMap								documentItems;
 				GuiControl*									documentControl;
 				elements::GuiDocumentElement*				documentElement;
@@ -110,7 +111,7 @@ GuiDocumentCommonInterface
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 			public:
-				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument);
+				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor = {});
 				~GuiDocumentCommonInterface();
 
 				/// <summary>Active hyperlink changed event.</summary>
@@ -330,6 +331,9 @@ GuiDocumentViewer
 					/// <summary>Get a baseline document for customize default styles.</summary>
 					/// <returns>The baseline document.</returns>
 					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
+					/// <summary>Get the caret color.</summary>
+					/// <returns>The caret color.</returns>
+					virtual Color							GetCaretColor() = 0;
 				};
 			protected:
 

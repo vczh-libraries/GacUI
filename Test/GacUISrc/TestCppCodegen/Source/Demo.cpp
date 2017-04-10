@@ -397,33 +397,287 @@ namespace demo
 	void MainWindowConstructor::__vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
 	{
 		(::vl::__vwsn::This(this)->self = __vwsn_this_);
-		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetBoundsComposition());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_26 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 480; __vwsn_temp__.y = 320; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_26)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 480; __vwsn_temp__.y = 320; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowsAndColumns(2, 2);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 0.5; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 0.5; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetSite(0, 0, 1, 2);
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuBarStyle();
+			(::vl::__vwsn::This(this)->menuDropDown = new ::vl::presentation::controls::GuiToolstripMenuBar(__vwsn_controlStyle_));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_18 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->menuDropDown)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuBarButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetText(::vl::WString(L"File", false));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->EnsureToolstripSubMenu());
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetAlt(::vl::WString(L"N", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetText(::vl::WString(L"New", false));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_5 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->EnsureToolstripSubMenu());
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetShortcutText(::vl::WString(L"Ctrl+N", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetAlt(::vl::WString(L"T", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetText(::vl::WString(L"New Text File", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_6));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->SetAlt(::vl::WString(L"R", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->SetText(::vl::WString(L"New RTF File", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_7));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_4));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_8 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->SetAlt(::vl::WString(L"O", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->SetText(::vl::WString(L"Open", false));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_9 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->EnsureToolstripSubMenu());
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_10 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetShortcutText(::vl::WString(L"Ctrl+O", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetAlt(::vl::WString(L"T", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetText(::vl::WString(L"Open Text File...", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_10));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_11 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->SetAlt(::vl::WString(L"R", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->SetText(::vl::WString(L"Open RTF File...", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_11));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_8));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_12 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetShortcutText(::vl::WString(L"Ctrl+S", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetAlt(::vl::WString(L"S", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetText(::vl::WString(L"Save", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_12));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->SetAlt(::vl::WString(L"A", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->SetText(::vl::WString(L"Save As...", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_13));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuSplitterStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_14 = new ::vl::presentation::controls::GuiControl(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_14));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_15 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->SetAlt(::vl::WString(L"P", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->SetText(::vl::WString(L"Print", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_15));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuSplitterStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiControl(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_16));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMenuItemButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_17 = new ::vl::presentation::controls::GuiToolstripButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17)->SetAlt(::vl::WString(L"X", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17)->SetText(::vl::WString(L"Exit", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_17));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->menuDropDown)->GetToolstripItems()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_2));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->menuDropDown)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_19 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->SetSite(1, 0, 1, 1);
 		}
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 20; __vwsn_temp__.top = 20; __vwsn_temp__.right = 20; __vwsn_temp__.bottom = 20; return __vwsn_temp__; }());
+			(::vl::__vwsn::This(this)->__vwsn_precompile_20 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetAlt(::vl::WString(L"C", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20)->SetText(::vl::WString(L"Click me and show a modal window!", false));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetText(::vl::WString(L"Click me and show a modal window!", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentViewerStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_21 = new ::vl::presentation::controls::GuiDocumentViewer(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_22 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_19));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_23 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23)->SetSite(1, 1, 1, 1);
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_24 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_25 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_25)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->SetAlt(::vl::WString(L"C", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->SetText(::vl::WString(L"Click me and show a modal window!", false));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_23));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_resolver_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"Documents/Sample", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://Documents/Sample\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://Documents/Sample\" cannot be read as type \"presentation::DocumentModel\".", false));
+			}
+			{
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->SetDocument(__vwsn_resource_value_);
+			}
 		}
 		{
 			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::__vwsn::This(__vwsn_this_)->AddSubscription(::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this)));
@@ -522,7 +776,32 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" _ L"__vwsn_resolver_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_11)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_12)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_13)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_14)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_15)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_16)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_17)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_18)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_19)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_20)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_21)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_22)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_23)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_24)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_25)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_26)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(menuDropDown)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::MainWindowConstructor)
 

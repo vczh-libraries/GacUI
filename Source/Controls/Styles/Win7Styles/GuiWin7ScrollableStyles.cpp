@@ -667,6 +667,11 @@ Win7DocumentViewerStyle
 				return nullptr;
 			}
 
+			Color Win7DocumentViewerStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
+			}
+
 /***********************************************************************
 Win7DocumentlabelStyle
 ***********************************************************************/

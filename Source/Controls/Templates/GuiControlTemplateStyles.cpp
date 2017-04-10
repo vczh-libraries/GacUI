@@ -658,6 +658,11 @@ GuiDocumentViewerTemplate_StyleProvider
 				return controlTemplate->GetBaselineDocument();
 			}
 
+			Color GuiDocumentViewerTemplate_StyleProvider::GetCaretColor()
+			{
+				return controlTemplate->GetCaretColor();
+			}
+
 /***********************************************************************
 GuiTextListTemplate_StyleProvider::ItemStyleProvider
 ***********************************************************************/
