@@ -140,16 +140,21 @@ Helpers
 					ownerComposition = composition;
 				}
 
+				void InvokeOnCompositionStateChanged()
+				{
+					if (ownerComposition)
+					{
+						compositions::InvokeOnCompositionStateChanged(ownerComposition);
+					}
+				}
+
 				void InvokeOnElementStateChanged()
 				{
 					if (renderer)
 					{
 						renderer->OnElementStateChanged();
 					}
-					if (ownerComposition)
-					{
-						compositions::InvokeOnCompositionStateChanged(ownerComposition);
-					}
+					InvokeOnCompositionStateChanged();
 				}
 			public:
 				static TElement* Create()

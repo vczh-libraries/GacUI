@@ -777,7 +777,7 @@ GuiDocumentElement
 					{
 						elementRenderer->CloseCaret(caretEnd);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -911,7 +911,7 @@ GuiDocumentElement
 				if (elementRenderer)
 				{
 					elementRenderer->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -932,7 +932,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -953,7 +953,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -973,7 +973,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -993,7 +993,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, 1, true);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -1013,7 +1013,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -1033,7 +1033,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -1053,7 +1053,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -1073,7 +1073,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -1083,7 +1083,6 @@ GuiDocumentElement
 				if (elementRenderer)
 				{
 					document->RenameStyle(oldStyleName, newStyleName);
-					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -1103,7 +1102,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -1146,7 +1145,7 @@ GuiDocumentElement
 						}
 						elementRenderer->NotifyParagraphUpdated(first, alignments.Count(), alignments.Count(), false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
