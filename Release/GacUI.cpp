@@ -27495,7 +27495,7 @@ GuiDocumentViewer
 
 			GuiDocumentViewer::GuiDocumentViewer(GuiDocumentViewer::IStyleProvider* styleProvider)
 				:GuiScrollContainer(styleProvider)
-				, GuiDocumentCommonInterface(styleProvider->GetBaselineDocument())
+				, GuiDocumentCommonInterface(styleProvider->GetBaselineDocument(), styleProvider->GetCaretColor())
 			{
 				SetExtendToFullWidth(true);
 				SetHorizontalAlwaysVisible(false);
@@ -43817,7 +43817,7 @@ DocumentModel
 					if(sp->face)				XmlElementWriter(styleElement).Element(L"face").Text(		sp->face.Value()						);
 					if(sp->size)				XmlElementWriter(styleElement).Element(L"size").Text(		sp->size.Value().ToString()				);
 					if(sp->color)				XmlElementWriter(styleElement).Element(L"color").Text(		sp->color.Value().ToString()			);
-					if(sp->backgroundColor)		XmlElementWriter(styleElement).Element(L"bkcolor").Text(	sp->color.Value().ToString()			);
+					if(sp->backgroundColor)		XmlElementWriter(styleElement).Element(L"bkcolor").Text(	sp->backgroundColor.Value().ToString()	);
 					if(sp->bold)				XmlElementWriter(styleElement).Element(L"b").Text(			sp->bold.Value()?L"true":L"false"		);
 					if(sp->italic)				XmlElementWriter(styleElement).Element(L"i").Text(			sp->italic.Value()?L"true":L"false"		);
 					if(sp->underline)			XmlElementWriter(styleElement).Element(L"u").Text(			sp->underline.Value()?L"true":L"false"	);
