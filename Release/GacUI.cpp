@@ -630,28 +630,10 @@ GuiApplicationMain
 
 			void GuiApplicationInitialize()
 			{
-				Ptr<theme::ITheme> theme;
-				{
-					WString osVersion=GetCurrentController()->GetOSVersion();
-					vint index=osVersion.IndexOf(L';');
-					if (index == -1)
-					{
-						theme=new win8::Win8Theme;
-					}
-					else
-					{
-						WString osMainVersion=osVersion.Sub(0, index);
-						if(osMainVersion==L"Windows 8" || osMainVersion==L"Windows Server 2012")
-						{
-							theme=new win8::Win8Theme;
-						}
-						else
-						{
-							theme=new win7::Win7Theme;
-						}
-					}
-				}
-
+				// There will be a GacUI theme in the future
+				// win7::Win7Theme
+				// win8::Win8Theme
+				auto theme = MakePtr<win8::Win8Theme>();
 				GetCurrentController()->InputService()->StartTimer();
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -4451,6 +4433,7 @@ GuiWindow
 					GetApplication()->InvokeInMainThread([=]()
 					{
 						WindowClosed.Detach(container->handler);
+						container->handler = nullptr;
 						GetNativeWindow()->SetParent(0);
 						callback();
 						owner->SetEnabled(true);
@@ -33337,7 +33320,6 @@ GuiWindowComposition
 ***********************************************************************/
 
 			GuiWindowComposition::GuiWindowComposition()
-				:attachedWindow(0)
 			{
 			}
 
@@ -33345,20 +33327,18 @@ GuiWindowComposition
 			{
 			}
 
-			INativeWindow* GuiWindowComposition::GetAttachedWindow()
-			{
-				return attachedWindow;
-			}
-
-			void GuiWindowComposition::SetAttachedWindow(INativeWindow* window)
-			{
-				attachedWindow=window;
-				SetRenderTarget(attachedWindow?GetGuiGraphicsResourceManager()->GetRenderTarget(attachedWindow):0);
-			}
-
 			Rect GuiWindowComposition::GetBounds()
 			{
-				return attachedWindow?Rect(Point(0, 0), attachedWindow->GetClientSize()):Rect();
+				Rect bounds;
+				if (relatedHostRecord)
+				{
+					if (auto window = relatedHostRecord->host->GetNativeWindow())
+					{
+						bounds = Rect(Point(0, 0), window->GetClientSize());
+					}
+				}
+				UpdatePreviousBounds(bounds);
+				return bounds;
 			}
 
 			void GuiWindowComposition::SetMargin(Margin value)
@@ -33371,7 +33351,6 @@ GuiBoundsComposition
 
 			GuiBoundsComposition::GuiBoundsComposition()
 			{
-				ClearAlignmentToParent();
 			}
 
 			GuiBoundsComposition::~GuiBoundsComposition()
@@ -33380,28 +33359,28 @@ GuiBoundsComposition
 
 			Rect GuiBoundsComposition::GetPreferredBounds()
 			{
-				Rect result=GetBoundsInternal(compositionBounds);
-				if(GetParent() && IsAlignedToParent())
+				Rect result = GetBoundsInternal(compositionBounds);
+				if (GetParent() && IsAlignedToParent())
 				{
-					if(alignmentToParent.left>=0)
+					if (alignmentToParent.left >= 0)
 					{
-						vint offset=alignmentToParent.left-result.x1;
-						result.x1+=offset;
-						result.x2+=offset;
+						vint offset = alignmentToParent.left - result.x1;
+						result.x1 += offset;
+						result.x2 += offset;
 					}
-					if(alignmentToParent.top>=0)
+					if (alignmentToParent.top >= 0)
 					{
-						vint offset=alignmentToParent.top-result.y1;
-						result.y1+=offset;
-						result.y2+=offset;
+						vint offset = alignmentToParent.top - result.y1;
+						result.y1 += offset;
+						result.y2 += offset;
 					}
-					if(alignmentToParent.right>=0)
+					if (alignmentToParent.right >= 0)
 					{
-						result.x2+=alignmentToParent.right;
+						result.x2 += alignmentToParent.right;
 					}
-					if(alignmentToParent.bottom>=0)
+					if (alignmentToParent.bottom >= 0)
 					{
-						result.y2+=alignmentToParent.bottom;
+						result.y2 += alignmentToParent.bottom;
 					}
 				}
 				return result;
@@ -33409,44 +33388,44 @@ GuiBoundsComposition
 
 			Rect GuiBoundsComposition::GetBounds()
 			{
-				Rect result=GetPreferredBounds();
-				if(GetParent() && IsAlignedToParent())
+				Rect result = GetPreferredBounds();
+				if (GetParent() && IsAlignedToParent())
 				{
-					Size clientSize=GetParent()->GetClientArea().GetSize();
-					if(alignmentToParent.left>=0 && alignmentToParent.right>=0)
+					Size clientSize = GetParent()->GetClientArea().GetSize();
+					if (alignmentToParent.left >= 0 && alignmentToParent.right >= 0)
 					{
-						result.x1=alignmentToParent.left;
-						result.x2=clientSize.x-alignmentToParent.right;
+						result.x1 = alignmentToParent.left;
+						result.x2 = clientSize.x - alignmentToParent.right;
 					}
-					else if(alignmentToParent.left>=0)
+					else if (alignmentToParent.left >= 0)
 					{
-						vint width=result.Width();
-						result.x1=alignmentToParent.left;
-						result.x2=result.x1+width;
+						vint width = result.Width();
+						result.x1 = alignmentToParent.left;
+						result.x2 = result.x1 + width;
 					}
-					else if(alignmentToParent.right>=0)
+					else if (alignmentToParent.right >= 0)
 					{
-						vint width=result.Width();
-						result.x2=clientSize.x-alignmentToParent.right;
-						result.x1=result.x2-width;
+						vint width = result.Width();
+						result.x2 = clientSize.x - alignmentToParent.right;
+						result.x1 = result.x2 - width;
 					}
 
-					if(alignmentToParent.top>=0 && alignmentToParent.bottom>=0)
+					if (alignmentToParent.top >= 0 && alignmentToParent.bottom >= 0)
 					{
-						result.y1=alignmentToParent.top;
-						result.y2=clientSize.y-alignmentToParent.bottom;
+						result.y1 = alignmentToParent.top;
+						result.y2 = clientSize.y - alignmentToParent.bottom;
 					}
-					else if(alignmentToParent.top>=0)
+					else if (alignmentToParent.top >= 0)
 					{
-						vint height=result.Height();
-						result.y1=alignmentToParent.top;
-						result.y2=result.y1+height;
+						vint height = result.Height();
+						result.y1 = alignmentToParent.top;
+						result.y2 = result.y1 + height;
 					}
-					else if(alignmentToParent.bottom>=0)
+					else if (alignmentToParent.bottom >= 0)
 					{
-						vint height=result.Height();
-						result.y2=clientSize.y-alignmentToParent.bottom;
-						result.y1=result.y2-height;
+						vint height = result.Height();
+						result.y2 = clientSize.y - alignmentToParent.bottom;
+						result.y1 = result.y2 - height;
 					}
 				}
 				UpdatePreviousBounds(result);
@@ -33455,12 +33434,8 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetBounds(Rect value)
 			{
-				compositionBounds=value;
-			}
-
-			void GuiBoundsComposition::ClearAlignmentToParent()
-			{
-				alignmentToParent=Margin(-1, -1, -1, -1);
+				compositionBounds = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Margin GuiBoundsComposition::GetAlignmentToParent()
@@ -33470,12 +33445,13 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetAlignmentToParent(Margin value)
 			{
-				alignmentToParent=value;
+				alignmentToParent = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			bool GuiBoundsComposition::IsAlignedToParent()
 			{
-				return alignmentToParent!=Margin(-1, -1, -1, -1);
+				return alignmentToParent != Margin(-1, -1, -1, -1);
 			}
 		}
 	}
@@ -33505,6 +33481,7 @@ GuiSharedSizeItemComposition
 				{
 					parentRoot->ForceCalculateSizeImmediately();
 				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiSharedSizeItemComposition::OnParentLineChanged()
@@ -33676,6 +33653,11 @@ namespace vl
 			using namespace controls;
 			using namespace elements;
 
+			void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition)
+			{
+				composition->InvokeOnCompositionStateChanged();
+			}
+
 /***********************************************************************
 GuiGraphicsComposition
 ***********************************************************************/
@@ -33725,11 +33707,57 @@ GuiGraphicsComposition
 				}
 			}
 
-			void GuiGraphicsComposition::OnRenderTargetChanged()
+			void GuiGraphicsComposition::OnRenderContextChanged()
 			{
-				if(associatedControl)
+			}
+
+			void GuiGraphicsComposition::UpdateRelatedHostRecord(GraphicsHostRecord* record)
+			{
+				relatedHostRecord = record;
+				auto renderTarget = GetRenderTarget();
+				if (ownedElement)
+				{
+					if (auto renderer = ownedElement->GetRenderer())
+					{
+						renderer->SetRenderTarget(renderTarget);
+					}
+				}
+				if (associatedControl)
 				{
 					associatedControl->OnRenderTargetChanged(renderTarget);
+				}
+				OnRenderContextChanged();
+
+				for (vint i = 0; i < children.Count(); i++)
+				{
+					children[i]->UpdateRelatedHostRecord(record);
+				}
+			}
+
+			void GuiGraphicsComposition::SetAssociatedControl(controls::GuiControl* control)
+			{
+				if (associatedControl)
+				{
+					for (vint i = 0; i < children.Count(); i++)
+					{
+						children[i]->OnControlParentChanged(0);
+					}
+				}
+				associatedControl = control;
+				if (associatedControl)
+				{
+					for (vint i = 0; i < children.Count(); i++)
+					{
+						children[i]->OnControlParentChanged(associatedControl);
+					}
+				}
+			}
+
+			void GuiGraphicsComposition::InvokeOnCompositionStateChanged()
+			{
+				if (relatedHostRecord)
+				{
+					relatedHostRecord->host->RequestRender();
 				}
 			}
 
@@ -33745,13 +33773,8 @@ GuiGraphicsComposition
 			}
 
 			GuiGraphicsComposition::GuiGraphicsComposition()
-				:parent(0)
-				,visible(true)
+				:visible(true)
 				,minSizeLimitation(NoLimit)
-				,renderTarget(0)
-				,associatedControl(0)
-				,associatedHost(0)
-				,associatedCursor(0)
 				,associatedHitTestResult(INativeWindowListener::NoDecision)
 			{
 				sharedPtrDestructorProc = &GuiGraphicsComposition::SharedPtrDestructorProc;
@@ -33782,31 +33805,33 @@ GuiGraphicsComposition
 
 			bool GuiGraphicsComposition::InsertChild(vint index, GuiGraphicsComposition* child)
 			{
-				if(!child) return false;
-				if(child->GetParent()) return false;
+				if (!child) return false;
+				if (child->GetParent()) return false;
 				children.Insert(index, child);
-				child->parent=this;
-				child->SetRenderTarget(renderTarget);
+				child->parent = this;
+				child->UpdateRelatedHostRecord(relatedHostRecord);
 				OnChildInserted(child);
-				child->OnParentChanged(0, child->parent);
+				child->OnParentChanged(nullptr, child->parent);
+				InvokeOnCompositionStateChanged();
 				return true;
 			}
 
 			bool GuiGraphicsComposition::RemoveChild(GuiGraphicsComposition* child)
 			{
-				if(!child) return false;
-				vint index=children.IndexOf(child);
-				if(index==-1) return false;
-				child->OnParentChanged(child->parent, 0);
+				if (!child) return false;
+				vint index = children.IndexOf(child);
+				if (index == -1) return false;
+				child->OnParentChanged(child->parent, nullptr);
 				OnChildRemoved(child);
-				child->SetRenderTarget(0);
-				child->parent=0;
-				GuiGraphicsHost* host=GetRelatedGraphicsHost();
-				if(host)
+				child->UpdateRelatedHostRecord(nullptr);
+				child->parent = nullptr;
+				GuiGraphicsHost* host = GetRelatedGraphicsHost();
+				if (host)
 				{
 					host->DisconnectComposition(child);
 				}
 				children.RemoveAt(index);
+				InvokeOnCompositionStateChanged();
 				return true;
 			}
 
@@ -33817,6 +33842,7 @@ GuiGraphicsComposition
 				if(index==-1) return false;
 				children.RemoveAt(index);
 				children.Insert(newIndex, child);
+				InvokeOnCompositionStateChanged();
 				return true;
 			}
 
@@ -33827,22 +33853,26 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetOwnedElement(Ptr<IGuiGraphicsElement> element)
 			{
-				if(ownedElement)
+				if (ownedElement != element)
 				{
-					IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-					if(renderer)
+					if (ownedElement)
 					{
-						renderer->SetRenderTarget(0);
+						if (auto renderer = ownedElement->GetRenderer())
+						{
+							renderer->SetRenderTarget(nullptr);
+						}
+						ownedElement->SetOwnerComposition(nullptr);
 					}
-				}
-				ownedElement=element;
-				if(ownedElement)
-				{
-					IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-					if(renderer)
+					ownedElement = element;
+					if (ownedElement)
 					{
-						renderer->SetRenderTarget(renderTarget);
+						if (auto renderer = ownedElement->GetRenderer())
+						{
+							renderer->SetRenderTarget(GetRenderTarget());
+						}
+						ownedElement->SetOwnerComposition(this);
 					}
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -33853,7 +33883,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetVisible(bool value)
 			{
-				visible=value;
+				visible = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			GuiGraphicsComposition::MinSizeLimitation GuiGraphicsComposition::GetMinSizeLimitation()
@@ -33863,70 +33894,54 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetMinSizeLimitation(MinSizeLimitation value)
 			{
-				minSizeLimitation=value;
+				minSizeLimitation = value;
+				InvokeOnCompositionStateChanged();
 			}
 
-			IGuiGraphicsRenderTarget* GuiGraphicsComposition::GetRenderTarget()
+			elements::IGuiGraphicsRenderTarget* GuiGraphicsComposition::GetRenderTarget()
 			{
-				return renderTarget;
-			}
-
-			void GuiGraphicsComposition::SetRenderTarget(IGuiGraphicsRenderTarget* value)
-			{
-				renderTarget=value;
-				if(ownedElement)
-				{
-					IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-					if(renderer)
-					{
-						renderer->SetRenderTarget(renderTarget);
-					}
-				}
-				for(vint i=0;i<children.Count();i++)
-				{
-					children[i]->SetRenderTarget(renderTarget);
-				}
-				OnRenderTargetChanged();
+				return relatedHostRecord ? relatedHostRecord->renderTarget : nullptr;
 			}
 
 			void GuiGraphicsComposition::Render(Size offset)
 			{
-				if(visible && renderTarget && !renderTarget->IsClipperCoverWholeTarget())
+				auto renderTarget = GetRenderTarget();
+				if (visible && renderTarget && !renderTarget->IsClipperCoverWholeTarget())
 				{
-					Rect bounds=GetBounds();
-					bounds.x1+=margin.left;
-					bounds.y1+=margin.top;
-					bounds.x2-=margin.right;
-					bounds.y2-=margin.bottom;
+					Rect bounds = GetBounds();
+					bounds.x1 += margin.left;
+					bounds.y1 += margin.top;
+					bounds.x2 -= margin.right;
+					bounds.y2 -= margin.bottom;
 
-					if(bounds.x1<=bounds.x2 && bounds.y1<=bounds.y2)
+					if (bounds.x1 <= bounds.x2 && bounds.y1 <= bounds.y2)
 					{
-						bounds.x1+=offset.x;
-						bounds.x2+=offset.x;
-						bounds.y1+=offset.y;
-						bounds.y2+=offset.y;
+						bounds.x1 += offset.x;
+						bounds.x2 += offset.x;
+						bounds.y1 += offset.y;
+						bounds.y2 += offset.y;
 
-						if(ownedElement)
+						if (ownedElement)
 						{
-							IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-							if(renderer)
+							IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
+							if (renderer)
 							{
 								renderer->Render(bounds);
 							}
 						}
-						if(children.Count()>0)
+						if (children.Count() > 0)
 						{
-							bounds.x1+=internalMargin.left;
-							bounds.y1+=internalMargin.top;
-							bounds.x2-=internalMargin.right;
-							bounds.y2-=internalMargin.bottom;
-							if(bounds.x1<=bounds.x2 && bounds.y1<=bounds.y2)
+							bounds.x1 += internalMargin.left;
+							bounds.y1 += internalMargin.top;
+							bounds.x2 -= internalMargin.right;
+							bounds.y2 -= internalMargin.bottom;
+							if (bounds.x1 <= bounds.x2 && bounds.y1 <= bounds.y2)
 							{
-								offset=bounds.GetSize();
+								offset = bounds.GetSize();
 								renderTarget->PushClipper(bounds);
-								if(!renderTarget->IsClipperCoverWholeTarget())
+								if (!renderTarget->IsClipperCoverWholeTarget())
 								{
-									for(vint i=0;i<children.Count();i++)
+									for (vint i = 0; i < children.Count(); i++)
 									{
 										children[i]->Render(Size(bounds.x1, bounds.y1));
 									}
@@ -33954,21 +33969,21 @@ GuiGraphicsComposition
 
 			GuiGraphicsComposition* GuiGraphicsComposition::FindComposition(Point location)
 			{
-				if(!visible) return 0;
-				Rect bounds=GetBounds();
-				Rect relativeBounds=Rect(Point(0, 0), bounds.GetSize());
-				if(relativeBounds.Contains(location))
+				if (!visible) return 0;
+				Rect bounds = GetBounds();
+				Rect relativeBounds = Rect(Point(0, 0), bounds.GetSize());
+				if (relativeBounds.Contains(location))
 				{
-					Rect clientArea=GetClientArea();
-					for(vint i=children.Count()-1;i>=0;i--)
+					Rect clientArea = GetClientArea();
+					for (vint i = children.Count() - 1; i >= 0; i--)
 					{
-						GuiGraphicsComposition* child=children[i];
-						Rect childBounds=child->GetBounds();
-						vint offsetX=childBounds.x1+(clientArea.x1-bounds.x1);
-						vint offsetY=childBounds.y1+(clientArea.y1-bounds.y1);
-						Point newLocation=location-Size(offsetX, offsetY);
-						GuiGraphicsComposition* childResult=child->FindComposition(newLocation);
-						if(childResult)
+						GuiGraphicsComposition* child = children[i];
+						Rect childBounds = child->GetBounds();
+						vint offsetX = childBounds.x1 + (clientArea.x1 - bounds.x1);
+						vint offsetY = childBounds.y1 + (clientArea.y1 - bounds.y1);
+						Point newLocation = location - Size(offsetX, offsetY);
+						GuiGraphicsComposition* childResult = child->FindComposition(newLocation);
+						if (childResult)
 						{
 							return childResult;
 						}
@@ -33983,17 +33998,17 @@ GuiGraphicsComposition
 
 			Rect GuiGraphicsComposition::GetGlobalBounds()
 			{
-				Rect bounds=GetBounds();
-				GuiGraphicsComposition* composition=parent;
-				while(composition)
+				Rect bounds = GetBounds();
+				GuiGraphicsComposition* composition = parent;
+				while (composition)
 				{
-					Rect clientArea=composition->GetClientArea();
-					Rect parentBounds=composition->GetBounds();
-					bounds.x1+=clientArea.x1;
-					bounds.x2+=clientArea.x1;
-					bounds.y1+=clientArea.y1;
-					bounds.y2+=clientArea.y1;
-					composition=composition->parent;
+					Rect clientArea = composition->GetClientArea();
+					Rect parentBounds = composition->GetBounds();
+					bounds.x1 += clientArea.x1;
+					bounds.x2 += clientArea.x1;
+					bounds.y1 += clientArea.y1;
+					bounds.y2 += clientArea.y1;
+					composition = composition->parent;
 				}
 				return bounds;
 			}
@@ -34003,33 +34018,16 @@ GuiGraphicsComposition
 				return associatedControl;
 			}
 
-			void GuiGraphicsComposition::SetAssociatedControl(controls::GuiControl* control)
-			{
-				if(associatedControl)
-				{
-					for(vint i=0;i<children.Count();i++)
-					{
-						children[i]->OnControlParentChanged(0);
-					}
-				}
-				associatedControl=control;
-				if(associatedControl)
-				{
-					for(vint i=0;i<children.Count();i++)
-					{
-						children[i]->OnControlParentChanged(associatedControl);
-					}
-				}
-			}
-
 			GuiGraphicsHost* GuiGraphicsComposition::GetAssociatedHost()
 			{
-				return associatedHost;
-			}
-
-			void GuiGraphicsComposition::SetAssociatedHost(GuiGraphicsHost* host)
-			{
-				associatedHost=host;
+				if (relatedHostRecord && relatedHostRecord->host->GetMainComposition() == this)
+				{
+					return relatedHostRecord->host;
+				}
+				else
+				{
+					return nullptr;
+				}
 			}
 
 			INativeCursor* GuiGraphicsComposition::GetAssociatedCursor()
@@ -34039,7 +34037,7 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetAssociatedCursor(INativeCursor* cursor)
 			{
-				associatedCursor=cursor;
+				associatedCursor = cursor;
 			}
 
 			INativeWindowListener::HitTestResult GuiGraphicsComposition::GetAssociatedHitTestResult()
@@ -34049,76 +34047,55 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetAssociatedHitTestResult(INativeWindowListener::HitTestResult value)
 			{
-				associatedHitTestResult=value;
+				associatedHitTestResult = value;
 			}
 
 			controls::GuiControl* GuiGraphicsComposition::GetRelatedControl()
 			{
-				GuiGraphicsComposition* composition=this;
-				while(composition)
+				GuiGraphicsComposition* composition = this;
+				while (composition)
 				{
-					if(composition->GetAssociatedControl())
+					if (composition->GetAssociatedControl())
 					{
 						return composition->GetAssociatedControl();
 					}
 					else
 					{
-						composition=composition->GetParent();
+						composition = composition->GetParent();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			GuiGraphicsHost* GuiGraphicsComposition::GetRelatedGraphicsHost()
 			{
-				GuiGraphicsComposition* composition=this;
-				while(composition)
-				{
-					if(composition->GetAssociatedHost())
-					{
-						return composition->GetAssociatedHost();
-					}
-					else
-					{
-						composition=composition->GetParent();
-					}
-				}
-				return 0;
+				return relatedHostRecord ? relatedHostRecord->host : nullptr;
 			}
 
 			controls::GuiControlHost* GuiGraphicsComposition::GetRelatedControlHost()
 			{
-				GuiGraphicsComposition* composition=this;
-				while(composition)
+				if (auto control = GetRelatedControl())
 				{
-					if(composition->GetAssociatedControl())
-					{
-						GuiControlHost* controlHost=dynamic_cast<GuiControlHost*>(composition->GetAssociatedControl());
-						if(controlHost)
-						{
-							return controlHost;
-						}
-					}
-					composition=composition->GetParent();
+					return control->GetRelatedControlHost();
 				}
-				return 0;
+				return nullptr;
 			}
 
 			INativeCursor* GuiGraphicsComposition::GetRelatedCursor()
 			{
-				GuiGraphicsComposition* composition=this;
-				while(composition)
+				GuiGraphicsComposition* composition = this;
+				while (composition)
 				{
-					if(composition->GetAssociatedCursor())
+					if (composition->GetAssociatedCursor())
 					{
 						return composition->GetAssociatedCursor();
 					}
 					else
 					{
-						composition=composition->GetParent();
+						composition = composition->GetParent();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			Margin GuiGraphicsComposition::GetMargin()
@@ -34128,7 +34105,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetMargin(Margin value)
 			{
-				margin=value;
+				margin = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Margin GuiGraphicsComposition::GetInternalMargin()
@@ -34138,7 +34116,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetInternalMargin(Margin value)
 			{
-				internalMargin=value;
+				internalMargin = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Size GuiGraphicsComposition::GetPreferredMinSize()
@@ -34148,7 +34127,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetPreferredMinSize(Size value)
 			{
-				preferredMinSize=value;
+				preferredMinSize = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Rect GuiGraphicsComposition::GetClientArea()
@@ -34163,10 +34143,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::ForceCalculateSizeImmediately()
 			{
-				for(vint i=0;i<children.Count();i++)
+				for (vint i = 0; i < children.Count(); i++)
 				{
 					children[i]->ForceCalculateSizeImmediately();
 				}
+				InvokeOnCompositionStateChanged();
 			}
 
 /***********************************************************************
@@ -34175,25 +34156,26 @@ GuiGraphicsSite
 
 			Rect GuiGraphicsSite::GetBoundsInternal(Rect expectedBounds)
 			{
-				Size minSize=GetMinPreferredClientSize();
-				if(minSize.x<preferredMinSize.x) minSize.x=preferredMinSize.x;
-				if(minSize.y<preferredMinSize.y) minSize.y=preferredMinSize.y;
+				Size minSize = GetMinPreferredClientSize();
+				if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
+				if (minSize.y < preferredMinSize.y) minSize.y = preferredMinSize.y;
 
-				minSize.x+=margin.left+margin.right+internalMargin.left+internalMargin.right;
-				minSize.y+=margin.top+margin.bottom+internalMargin.top+internalMargin.bottom;
-				vint w=expectedBounds.Width();
-				vint h=expectedBounds.Height();
-				if(minSize.x<w) minSize.x=w;
-				if(minSize.y<h) minSize.y=h;
+				minSize.x += margin.left + margin.right + internalMargin.left + internalMargin.right;
+				minSize.y += margin.top + margin.bottom + internalMargin.top + internalMargin.bottom;
+				vint w = expectedBounds.Width();
+				vint h = expectedBounds.Height();
+				if (minSize.x < w) minSize.x = w;
+				if (minSize.y < h) minSize.y = h;
 				return Rect(expectedBounds.LeftTop(), minSize);
 			}
 
 			void GuiGraphicsSite::UpdatePreviousBounds(Rect bounds)
 			{
-				if(previousBounds!=bounds)
+				if (previousBounds != bounds)
 				{
-					previousBounds=bounds;
+					previousBounds = bounds;
 					BoundsChanged.Execute(GuiEventArgs(this));
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -34214,28 +34196,28 @@ GuiGraphicsSite
 			Size GuiGraphicsSite::GetMinPreferredClientSize()
 			{
 				Size minSize;
-				if(minSizeLimitation!=GuiGraphicsComposition::NoLimit)
+				if (minSizeLimitation != GuiGraphicsComposition::NoLimit)
 				{
-					if(ownedElement)
+					if (ownedElement)
 					{
-						IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-						if(renderer)
+						IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
+						if (renderer)
 						{
-							minSize=renderer->GetMinSize();
+							minSize = renderer->GetMinSize();
 						}
 					}
 				}
-				if(minSizeLimitation==GuiGraphicsComposition::LimitToElementAndChildren)
+				if (minSizeLimitation == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					vint childCount=Children().Count();
-					for(vint i=0;i<childCount;i++)
+					vint childCount = Children().Count();
+					for (vint i = 0; i < childCount; i++)
 					{
-						GuiGraphicsComposition* child=children[i];
-						if(child->IsSizeAffectParent())
+						GuiGraphicsComposition* child = children[i];
+						if (child->IsSizeAffectParent())
 						{
-							Rect childBounds=child->GetPreferredBounds();
-							if(minSize.x<childBounds.x2) minSize.x=childBounds.x2;
-							if(minSize.y<childBounds.y2) minSize.y=childBounds.y2;
+							Rect childBounds = child->GetPreferredBounds();
+							if (minSize.x < childBounds.x2) minSize.x = childBounds.x2;
+							if (minSize.y < childBounds.y2) minSize.y = childBounds.y2;
 						}
 					}
 				}
@@ -34369,6 +34351,8 @@ GuiFlowComposition
 				if (forceUpdate || needUpdate)
 				{
 					needUpdate = false;
+					InvokeOnCompositionStateChanged();
+
 					auto clientMargin = axis->RealMarginToVirtualMargin(extraMargin);
 					if (clientMargin.left < 0) clientMargin.left = 0;
 					if (clientMargin.top < 0) clientMargin.top = 0;
@@ -34476,10 +34460,10 @@ GuiFlowComposition
 									Point(
 										itemLeft + clientMargin.left,
 										itemTop + clientMargin.top
-										),
+									),
 									itemSize
-									)
-								);
+								)
+							);
 							rowUsedWidth += itemSize.x;
 						}
 
@@ -34510,8 +34494,8 @@ GuiFlowComposition
 			void GuiFlowComposition::OnChildRemoved(GuiGraphicsComposition* child)
 			{
 				GuiBoundsComposition::OnChildRemoved(child);
-				auto item=dynamic_cast<GuiFlowItemComposition*>(child);
-				if(item)
+				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
+				if (item)
 				{
 					flowItems.Remove(item);
 					needUpdate = true;
@@ -34542,6 +34526,7 @@ GuiFlowComposition
 			{
 				extraMargin = value;
 				needUpdate = true;
+				InvokeOnCompositionStateChanged();
 			}
 
 			vint GuiFlowComposition::GetRowPadding()
@@ -34553,6 +34538,7 @@ GuiFlowComposition
 			{
 				rowPadding = value;
 				needUpdate = true;
+				InvokeOnCompositionStateChanged();
 			}
 
 			vint GuiFlowComposition::GetColumnPadding()
@@ -34564,6 +34550,7 @@ GuiFlowComposition
 			{
 				columnPadding = value;
 				needUpdate = true;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Ptr<IGuiAxis> GuiFlowComposition::GetAxis()
@@ -34577,6 +34564,7 @@ GuiFlowComposition
 				{
 					axis = value;
 					needUpdate = true;
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -34589,6 +34577,7 @@ GuiFlowComposition
 			{
 				alignment = value;
 				needUpdate = true;
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiFlowComposition::ForceCalculateSizeImmediately()
@@ -34703,6 +34692,7 @@ GuiFlowItemComposition
 			void GuiFlowItemComposition::SetBounds(Rect value)
 			{
 				bounds = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Margin GuiFlowItemComposition::GetExtraMargin()
@@ -34713,6 +34703,7 @@ GuiFlowItemComposition
 			void GuiFlowItemComposition::SetExtraMargin(Margin value)
 			{
 				extraMargin = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			GuiFlowOption GuiFlowItemComposition::GetFlowOption()
@@ -34726,6 +34717,7 @@ GuiFlowItemComposition
 				if (flowParent)
 				{
 					flowParent->needUpdate = true;
+					InvokeOnCompositionStateChanged();
 				}
 			}
 		}
@@ -34765,7 +34757,8 @@ GuiSideAlignedComposition
 
 			void GuiSideAlignedComposition::SetDirection(Direction value)
 			{
-				direction=value;
+				direction = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			vint GuiSideAlignedComposition::GetMaxLength()
@@ -34775,8 +34768,9 @@ GuiSideAlignedComposition
 
 			void GuiSideAlignedComposition::SetMaxLength(vint value)
 			{
-				if(value<0) value=0;
-				maxLength=value;
+				if (value < 0) value = 0;
+				maxLength = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			double GuiSideAlignedComposition::GetMaxRatio()
@@ -34786,10 +34780,11 @@ GuiSideAlignedComposition
 
 			void GuiSideAlignedComposition::SetMaxRatio(double value)
 			{
-				maxRatio=
-					value<0?0:
-					value>1?1:
+				maxRatio =
+					value < 0 ? 0 :
+					value>1 ? 1 :
 					value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			bool GuiSideAlignedComposition::IsSizeAffectParent()
@@ -34800,34 +34795,34 @@ GuiSideAlignedComposition
 			Rect GuiSideAlignedComposition::GetBounds()
 			{
 				Rect result;
-				GuiGraphicsComposition* parent=GetParent();
-				if(parent)
+				GuiGraphicsComposition* parent = GetParent();
+				if (parent)
 				{
-					Rect bounds=parent->GetBounds();
-					vint w=(vint)(bounds.Width()*maxRatio);
-					vint h=(vint)(bounds.Height()*maxRatio);
-					if(w>maxLength) w=maxLength;
-					if(h>maxLength) h=maxLength;
-					switch(direction)
+					Rect bounds = parent->GetBounds();
+					vint w = (vint)(bounds.Width()*maxRatio);
+					vint h = (vint)(bounds.Height()*maxRatio);
+					if (w > maxLength) w = maxLength;
+					if (h > maxLength) h = maxLength;
+					switch (direction)
 					{
 					case Left:
 						{
-							bounds.x2=bounds.x1+w;
+							bounds.x2 = bounds.x1 + w;
 						}
 						break;
 					case Top:
 						{
-							bounds.y2=bounds.y1+h;
+							bounds.y2 = bounds.y1 + h;
 						}
 						break;
 					case Right:
 						{
-							bounds.x1=bounds.x2-w;
+							bounds.x1 = bounds.x2 - w;
 						}
 						break;
 					case Bottom:
 						{
-							bounds.y1=bounds.y2-h;
+							bounds.y1 = bounds.y2 - h;
 						}
 						break;
 					}
@@ -34875,22 +34870,26 @@ GuiPartialViewComposition
 
 			void GuiPartialViewComposition::SetWidthRatio(double value)
 			{
-				wRatio=value;
+				wRatio = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiPartialViewComposition::SetWidthPageSize(double value)
 			{
-				wPageSize=value;
+				wPageSize = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiPartialViewComposition::SetHeightRatio(double value)
 			{
-				hRatio=value;
+				hRatio = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiPartialViewComposition::SetHeightPageSize(double value)
 			{
-				hPageSize=value;
+				hPageSize = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			bool GuiPartialViewComposition::IsSizeAffectParent()
@@ -34901,24 +34900,24 @@ GuiPartialViewComposition
 			Rect GuiPartialViewComposition::GetBounds()
 			{
 				Rect result;
-				GuiGraphicsComposition* parent=GetParent();
-				if(parent)
+				GuiGraphicsComposition* parent = GetParent();
+				if (parent)
 				{
-					Rect bounds=parent->GetBounds();
-					vint w=bounds.Width();
-					vint h=bounds.Height();
-					vint pw=(vint)(wPageSize*w);
-					vint ph=(vint)(hPageSize*h);
+					Rect bounds = parent->GetBounds();
+					vint w = bounds.Width();
+					vint h = bounds.Height();
+					vint pw = (vint)(wPageSize*w);
+					vint ph = (vint)(hPageSize*h);
 
-					vint ow=preferredMinSize.x-pw;
-					if(ow<0) ow=0;
-					vint oh=preferredMinSize.y-ph;
-					if(oh<0) oh=0;
+					vint ow = preferredMinSize.x - pw;
+					if (ow < 0) ow = 0;
+					vint oh = preferredMinSize.y - ph;
+					if (oh < 0) oh = 0;
 
-					w-=ow;
-					h-=oh;
-					pw+=ow;
-					ph+=oh;
+					w -= ow;
+					h -= oh;
+					pw += ow;
+					ph += oh;
 
 					result = Rect(Point((vint)(wRatio*w), (vint)(hRatio*h)), Size(pw, ph));
 				}
@@ -35024,6 +35023,7 @@ GuiStackComposition
 					}
 				}
 
+				InvokeOnCompositionStateChanged();
 #undef ADJUSTMENT
 			}
 
@@ -35049,8 +35049,8 @@ GuiStackComposition
 			void GuiStackComposition::OnChildRemoved(GuiGraphicsComposition* child)
 			{
 				GuiBoundsComposition::OnChildRemoved(child);
-				GuiStackItemComposition* item=dynamic_cast<GuiStackItemComposition*>(child);
-				if(item)
+				GuiStackItemComposition* item = dynamic_cast<GuiStackItemComposition*>(child);
+				if (item)
 				{
 					stackItems.Remove(item);
 					if (item == ensuringVisibleStackItem)
@@ -35077,8 +35077,8 @@ GuiStackComposition
 
 			bool GuiStackComposition::InsertStackItem(vint index, GuiStackItemComposition* item)
 			{
-				index=stackItems.Insert(index, item);
-				if(!AddChild(item))
+				index = stackItems.Insert(index, item);
+				if (!AddChild(item))
 				{
 					stackItems.RemoveAt(index);
 					return false;
@@ -35130,7 +35130,7 @@ GuiStackComposition
 						}
 					}
 					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
-					{	
+					{
 						if (minSize.y < stackItemTotalSize.y)
 						{
 							minSize.y = stackItemTotalSize.y;
@@ -35309,6 +35309,7 @@ GuiStackItemComposition
 			void GuiStackItemComposition::SetBounds(Rect value)
 			{
 				bounds = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Margin GuiStackItemComposition::GetExtraMargin()
@@ -35319,6 +35320,7 @@ GuiStackItemComposition
 			void GuiStackItemComposition::SetExtraMargin(Margin value)
 			{
 				extraMargin = value;
+				InvokeOnCompositionStateChanged();
 			}
 		}
 	}
@@ -35388,12 +35390,12 @@ GuiTableComposition
 
 			vint GuiTableComposition::GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column)
 			{
-				return _row*_columns+_column;
+				return _row*_columns + _column;
 			}
 
 			void GuiTableComposition::SetSitedCell(vint _row, vint _column, GuiCellComposition* cell)
 			{
-				cellCompositions[GetSiteIndex(rows, columns, _row, _column)]=cell;
+				cellCompositions[GetSiteIndex(rows, columns, _row, _column)] = cell;
 			}
 
 			void GuiTableComposition::UpdateCellBoundsInternal(
@@ -35403,57 +35405,57 @@ GuiTableComposition
 				collections::Array<GuiCellOption>& dimOptions,
 				vint GuiTableComposition::* dim1,
 				vint GuiTableComposition::* dim2,
-				vint (*getSize)(Size),
-				vint (*getLocation)(GuiCellComposition*),
-				vint (*getSpan)(GuiCellComposition*),
-				vint (*getRow)(vint, vint),
-				vint (*getCol)(vint, vint),
+				vint(*getSize)(Size),
+				vint(*getLocation)(GuiCellComposition*),
+				vint(*getSpan)(GuiCellComposition*),
+				vint(*getRow)(vint, vint),
+				vint(*getCol)(vint, vint),
 				vint maxPass
-				)
+			)
 			{
-				for(vint pass=0;pass<maxPass;pass++)
+				for (vint pass = 0; pass < maxPass; pass++)
 				{
-					for(vint i=0;i<this->*dim1;i++)
+					for (vint i = 0; i < this->*dim1; i++)
 					{
-						GuiCellOption option=dimOptions[i];
-						if(pass==0)
+						GuiCellOption option = dimOptions[i];
+						if (pass == 0)
 						{
-							dimSizes[i]=0;
+							dimSizes[i] = 0;
 						}
-						switch(option.composeType)
+						switch (option.composeType)
 						{
 						case GuiCellOption::Absolute:
 							{
-								dimSizes[i]=option.absolute;
+								dimSizes[i] = option.absolute;
 							}
 							break;
 						case GuiCellOption::MinSize:
 							{
-								for(vint j=0;j<this->*dim2;j++)
+								for (vint j = 0; j < this->*dim2; j++)
 								{
-									GuiCellComposition* cell=GetSitedCell(getRow(i, j), getCol(i, j));
-									if(cell)
+									GuiCellComposition* cell = GetSitedCell(getRow(i, j), getCol(i, j));
+									if (cell)
 									{
-										bool accept=false;
-										if(pass==0)
+										bool accept = false;
+										if (pass == 0)
 										{
-											accept=getSpan(cell)==1;
+											accept = getSpan(cell) == 1;
 										}
 										else
 										{
-											accept=getLocation(cell)+getSpan(cell)==i+1;
+											accept = getLocation(cell) + getSpan(cell) == i + 1;
 										}
-										if(accept)
+										if (accept)
 										{
-											vint size=getSize(cell->GetPreferredBounds().GetSize());
-											vint span=getSpan(cell);
-											for(vint k=1;k<span;k++)
+											vint size = getSize(cell->GetPreferredBounds().GetSize());
+											vint span = getSpan(cell);
+											for (vint k = 1; k < span; k++)
 											{
-												size-=dimSizes[i-k]+cellPadding;
+												size -= dimSizes[i - k] + cellPadding;
 											}
-											if(dimSizes[i]<size)
+											if (dimSizes[i] < size)
 											{
-												dimSizes[i]=size;
+												dimSizes[i] = size;
 											}
 										}
 									}
@@ -35464,59 +35466,59 @@ GuiTableComposition
 						}
 					}
 				}
-				
-				bool percentageExists=false;
-				for(vint i=0;i<this->*dim1;i++)
+
+				bool percentageExists = false;
+				for (vint i = 0; i < this->*dim1; i++)
 				{
-					GuiCellOption option=dimOptions[i];
-					if(option.composeType==GuiCellOption::Percentage)
+					GuiCellOption option = dimOptions[i];
+					if (option.composeType == GuiCellOption::Percentage)
 					{
-						if(0.001<option.percentage)
+						if (0.001 < option.percentage)
 						{
-							percentageExists=true;
+							percentageExists = true;
 						}
 					}
 				}
 
-				if(percentageExists)
+				if (percentageExists)
 				{
-					for(vint i=0;i<this->*dim1;i++)
+					for (vint i = 0; i < this->*dim1; i++)
 					{
-						GuiCellOption option=dimOptions[i];
-						if(option.composeType==GuiCellOption::Percentage)
+						GuiCellOption option = dimOptions[i];
+						if (option.composeType == GuiCellOption::Percentage)
 						{
-							if(0.001<option.percentage)
+							if (0.001 < option.percentage)
 							{
-								for(vint j=0;j<this->*dim2;j++)
+								for (vint j = 0; j < this->*dim2; j++)
 								{
-									GuiCellComposition* cell=GetSitedCell(getRow(i, j), getCol(i, j));
-									if(cell)
+									GuiCellComposition* cell = GetSitedCell(getRow(i, j), getCol(i, j));
+									if (cell)
 									{
-										vint size=getSize(cell->GetPreferredBounds().GetSize());
-										vint start=getLocation(cell);
-										vint span=getSpan(cell);
-										size-=(span-1)*cellPadding;
-										double totalPercentage=0;
+										vint size = getSize(cell->GetPreferredBounds().GetSize());
+										vint start = getLocation(cell);
+										vint span = getSpan(cell);
+										size -= (span - 1)*cellPadding;
+										double totalPercentage = 0;
 
-										for(vint k=start;k<start+span;k++)
+										for (vint k = start; k < start + span; k++)
 										{
-											if(dimOptions[k].composeType==GuiCellOption::Percentage)
+											if (dimOptions[k].composeType == GuiCellOption::Percentage)
 											{
-												if(0.001<dimOptions[k].percentage)
+												if (0.001 < dimOptions[k].percentage)
 												{
-													totalPercentage+=dimOptions[k].percentage;
+													totalPercentage += dimOptions[k].percentage;
 												}
 											}
 											else
 											{
-												size-=dimSizes[k];
+												size -= dimSizes[k];
 											}
 										}
 
-										size=(vint)ceil(size*option.percentage/totalPercentage);
-										if(dimSizes[i]<size)
+										size = (vint)ceil(size*option.percentage / totalPercentage);
+										if (dimSizes[i] < size)
 										{
-											dimSizes[i]=size;
+											dimSizes[i] = size;
 										}
 									}
 								}
@@ -35524,60 +35526,60 @@ GuiTableComposition
 						}
 					}
 
-					vint percentageTotalSize=0;
-					for(vint i=0;i<this->*dim1;i++)
+					vint percentageTotalSize = 0;
+					for (vint i = 0; i < this->*dim1; i++)
 					{
-						GuiCellOption option=dimOptions[i];
-						if(option.composeType==GuiCellOption::Percentage)
+						GuiCellOption option = dimOptions[i];
+						if (option.composeType == GuiCellOption::Percentage)
 						{
-							if(0.001<option.percentage)
+							if (0.001 < option.percentage)
 							{
-								vint size=(vint)ceil(dimSizes[i]/option.percentage);
-								if(percentageTotalSize<size)
+								vint size = (vint)ceil(dimSizes[i] / option.percentage);
+								if (percentageTotalSize < size)
 								{
-									percentageTotalSize=size;
+									percentageTotalSize = size;
 								}
 							}
 						}
 					}
 
-					double totalPercentage=0;
-					for(vint i=0;i<this->*dim1;i++)
+					double totalPercentage = 0;
+					for (vint i = 0; i < this->*dim1; i++)
 					{
-						GuiCellOption option=dimOptions[i];
-						if(option.composeType==GuiCellOption::Percentage)
+						GuiCellOption option = dimOptions[i];
+						if (option.composeType == GuiCellOption::Percentage)
 						{
-							if(0.001<option.percentage)
+							if (0.001 < option.percentage)
 							{
-								totalPercentage+=option.percentage;
+								totalPercentage += option.percentage;
 							}
 						}
 					}
-					
-					for(vint i=0;i<this->*dim1;i++)
+
+					for (vint i = 0; i < this->*dim1; i++)
 					{
-						GuiCellOption option=dimOptions[i];
-						if(option.composeType==GuiCellOption::Percentage)
+						GuiCellOption option = dimOptions[i];
+						if (option.composeType == GuiCellOption::Percentage)
 						{
-							if(0.001<option.percentage)
+							if (0.001 < option.percentage)
 							{
-								vint size=(vint)ceil(percentageTotalSize*option.percentage/totalPercentage);
-								if(dimSizes[i]<size)
+								vint size = (vint)ceil(percentageTotalSize*option.percentage / totalPercentage);
+								if (dimSizes[i] < size)
 								{
-									dimSizes[i]=size;
+									dimSizes[i] = size;
 								}
 							}
 						}
 					}
 				}
 
-				for(vint i=0;i<this->*dim1;i++)
+				for (vint i = 0; i < this->*dim1; i++)
 				{
-					if(dimOptions[i].composeType!=GuiCellOption::Percentage)
+					if (dimOptions[i].composeType != GuiCellOption::Percentage)
 					{
-						dimSize+=dimSizes[i];
+						dimSize += dimSizes[i];
 					}
-					dimSizeWithPercentage+=dimSizes[i];
+					dimSizeWithPercentage += dimSizes[i];
 				}
 			}
 
@@ -35586,29 +35588,29 @@ GuiTableComposition
 				vint dimSize,
 				vint maxDimSize,
 				collections::Array<GuiCellOption>& dimOptions
-				)
+			)
 			{
-				if(maxDimSize>dimSize)
+				if (maxDimSize > dimSize)
 				{
-					double totalPercentage=0;
-					vint percentageCount=0;
-					for(vint i=0;i<dimOptions.Count();i++)
+					double totalPercentage = 0;
+					vint percentageCount = 0;
+					for (vint i = 0; i < dimOptions.Count(); i++)
 					{
-						GuiCellOption option=dimOptions[i];
-						if(option.composeType==GuiCellOption::Percentage)
+						GuiCellOption option = dimOptions[i];
+						if (option.composeType == GuiCellOption::Percentage)
 						{
-							totalPercentage+=option.percentage;
+							totalPercentage += option.percentage;
 							percentageCount++;
 						}
 					}
-					if(percentageCount>0 && totalPercentage>0.001)
+					if (percentageCount > 0 && totalPercentage > 0.001)
 					{
-						for(vint i=0;i<dimOptions.Count();i++)
+						for (vint i = 0; i < dimOptions.Count(); i++)
 						{
-							GuiCellOption option=dimOptions[i];
-							if(option.composeType==GuiCellOption::Percentage)
+							GuiCellOption option = dimOptions[i];
+							if (option.composeType == GuiCellOption::Percentage)
 							{
-								dimSizes[i]=(vint)((maxDimSize-dimSize)*option.percentage/totalPercentage);
+								dimSizes[i] = (vint)((maxDimSize - dimSize)*option.percentage / totalPercentage);
 							}
 						}
 					}
@@ -35621,15 +35623,15 @@ GuiTableComposition
 				vint max
 				)
 			{
-				offsets[0]=0;
-				for(vint i=1;i<offsets.Count();i++)
+				offsets[0] = 0;
+				for (vint i = 1; i < offsets.Count(); i++)
 				{
 					offsets[i] = offsets[i - 1] + cellPadding + sizes[i - 1];
 				}
 
-				vint last=offsets.Count()-1;
-				vint right=offsets[last]+sizes[last];
-				return max-right;
+				vint last = offsets.Count() - 1;
+				vint right = offsets[last] + sizes[last];
+				return max - right;
 			}
 
 			void GuiTableComposition::UpdateCellBoundsInternal()
@@ -35641,8 +35643,8 @@ GuiTableComposition
 				{
 					vint rowTotal = (rows - 1)*cellPadding;
 					vint columnTotal = (columns - 1)*cellPadding;
-					vint rowTotalWithPercentage=rowTotal;
-					vint columnTotalWithPercentage=columnTotal;
+					vint rowTotalWithPercentage = rowTotal;
+					vint columnTotalWithPercentage = columnTotal;
 
 					UpdateCellBoundsInternal(
 						rowSizes,
@@ -35657,7 +35659,7 @@ GuiTableComposition
 						&First,
 						&Second,
 						1
-						);
+					);
 					UpdateCellBoundsInternal(
 						columnSizes,
 						columnTotal,
@@ -35671,20 +35673,20 @@ GuiTableComposition
 						&Second,
 						&First,
 						1
-						);
+					);
 
-					Rect area=GetCellArea();
+					Rect area = GetCellArea();
 					UpdateCellBoundsPercentages(rowSizes, rowTotal, area.Height(), rowOptions);
 					UpdateCellBoundsPercentages(columnSizes, columnTotal, area.Width(), columnOptions);
-					rowExtending=UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
-					columnExtending=UpdateCellBoundsOffsets(columnOffsets, columnSizes, area.Width());
+					rowExtending = UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
+					columnExtending = UpdateCellBoundsOffsets(columnOffsets, columnSizes, area.Width());
 
-					for(vint i=0;i<rows;i++)
+					for (vint i = 0; i < rows; i++)
 					{
-						for(vint j=0;j<columns;j++)
+						for (vint j = 0; j < columns; j++)
 						{
-							vint index=GetSiteIndex(rows, columns, i, j);
-							cellBounds[index]=Rect(Point(columnOffsets[j], rowOffsets[i]), Size(columnSizes[j], rowSizes[i]));
+							vint index = GetSiteIndex(rows, columns, i, j);
+							cellBounds[index] = Rect(Point(columnOffsets[j], rowOffsets[i]), Size(columnSizes[j], rowSizes[i]));
 						}
 					}
 				}
@@ -35698,8 +35700,8 @@ GuiTableComposition
 				{
 					vint rowTotal = (rows - 1) * cellPadding;
 					vint columnTotal = (columns - 1) * cellPadding;
-					vint rowTotalWithPercentage=rowTotal;
-					vint columnTotalWithPercentage=columnTotal;
+					vint rowTotalWithPercentage = rowTotal;
+					vint columnTotalWithPercentage = columnTotal;
 
 					UpdateCellBoundsInternal(
 						rowSizes,
@@ -35729,16 +35731,16 @@ GuiTableComposition
 						&First,
 						2
 						);
-					tableContentMinSize=Size(columnTotalWithPercentage, rowTotalWithPercentage);
+					tableContentMinSize = Size(columnTotalWithPercentage, rowTotalWithPercentage);
 				}
-				if(previousContentMinSize!=tableContentMinSize)
+				if (previousContentMinSize != tableContentMinSize)
 				{
-					previousContentMinSize=tableContentMinSize;
+					previousContentMinSize = tableContentMinSize;
 					UpdateCellBoundsInternal();
 				}
 			}
 
-			void GuiTableComposition::OnRenderTargetChanged()
+			void GuiTableComposition::OnRenderContextChanged()
 			{
 				if(GetRenderTarget())
 				{
@@ -35774,29 +35776,30 @@ GuiTableComposition
 
 			bool GuiTableComposition::SetRowsAndColumns(vint _rows, vint _columns)
 			{
-				if(_rows<=0 || _columns<=0) return false;
+				if (_rows <= 0 || _columns <= 0) return false;
 				rowOptions.Resize(_rows);
 				columnOptions.Resize(_columns);
 				cellCompositions.Resize(_rows*_columns);
 				cellBounds.Resize(_rows*_columns);
-				for(vint i=0;i<_rows*_columns;i++)
+				for (vint i = 0; i < _rows*_columns; i++)
 				{
-					cellCompositions[i]=0;
-					cellBounds[i]=Rect();
+					cellCompositions[i] = 0;
+					cellBounds[i] = Rect();
 				}
-				rows=_rows;
-				columns=_columns;
-				vint childCount=Children().Count();
-				for(vint i=0;i<childCount;i++)
+				rows = _rows;
+				columns = _columns;
+				vint childCount = Children().Count();
+				for (vint i = 0; i < childCount; i++)
 				{
-					GuiCellComposition* cell=dynamic_cast<GuiCellComposition*>(Children().Get(i));
-					if(cell)
+					GuiCellComposition* cell = dynamic_cast<GuiCellComposition*>(Children().Get(i));
+					if (cell)
 					{
 						cell->OnTableRowsAndColumnsChanged();
 					}
 				}
 				ConfigChanged.Execute(GuiEventArgs(this));
 				UpdateCellBounds();
+				InvokeOnCompositionStateChanged();
 				return true;
 			}
 
@@ -35812,7 +35815,8 @@ GuiTableComposition
 
 			void GuiTableComposition::SetRowOption(vint _row, GuiCellOption option)
 			{
-				rowOptions[_row]=option;
+				rowOptions[_row] = option;
+				InvokeOnCompositionStateChanged();
 				ConfigChanged.Execute(GuiEventArgs(this));
 			}
 
@@ -35823,7 +35827,8 @@ GuiTableComposition
 
 			void GuiTableComposition::SetColumnOption(vint _column, GuiCellOption option)
 			{
-				columnOptions[_column]=option;
+				columnOptions[_column] = option;
+				InvokeOnCompositionStateChanged();
 				ConfigChanged.Execute(GuiEventArgs(this));
 			}
 
@@ -35834,8 +35839,9 @@ GuiTableComposition
 
 			void GuiTableComposition::SetCellPadding(vint value)
 			{
-				if(value<0) value=0;
-				cellPadding=value;
+				if (value < 0) value = 0;
+				cellPadding = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			bool GuiTableComposition::GetBorderVisible()
@@ -35849,6 +35855,7 @@ GuiTableComposition
 				{
 					borderVisible = value;
 					UpdateCellBounds();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -35887,34 +35894,34 @@ GuiTableComposition
 			Rect GuiTableComposition::GetBounds()
 			{
 				Rect result;
-				if(!IsAlignedToParent() && GetMinSizeLimitation()!=GuiGraphicsComposition::NoLimit)
+				if (!IsAlignedToParent() && GetMinSizeLimitation() != GuiGraphicsComposition::NoLimit)
 				{
-					result=Rect(compositionBounds.LeftTop(), compositionBounds.GetSize()-Size(columnExtending, rowExtending));
+					result = Rect(compositionBounds.LeftTop(), compositionBounds.GetSize() - Size(columnExtending, rowExtending));
 				}
 				else
 				{
-					result=GuiBoundsComposition::GetBounds();
+					result = GuiBoundsComposition::GetBounds();
 				}
 
-				bool cellMinSizeModified=false;
+				bool cellMinSizeModified = false;
 				SortedList<GuiCellComposition*> cells;
 				FOREACH(GuiCellComposition*, cell, cellCompositions)
 				{
-					if(cell && !cells.Contains(cell))
+					if (cell && !cells.Contains(cell))
 					{
 						cells.Add(cell);
-						Size newSize=cell->GetPreferredBounds().GetSize();
-						if(cell->lastPreferredSize!=newSize)
+						Size newSize = cell->GetPreferredBounds().GetSize();
+						if (cell->lastPreferredSize != newSize)
 						{
-							cell->lastPreferredSize=newSize;
-							cellMinSizeModified=true;
+							cell->lastPreferredSize = newSize;
+							cellMinSizeModified = true;
 						}
 					}
 				}
 
-				if(previousBounds!=result || cellMinSizeModified)
+				if (previousBounds != result || cellMinSizeModified)
 				{
-					previousBounds=result;
+					previousBounds = result;
 					UpdateCellBounds();
 				}
 				return result;
@@ -35926,13 +35933,13 @@ GuiCellComposition
 
 			void GuiCellComposition::ClearSitedCells(GuiTableComposition* table)
 			{
-				if(row!=-1 && column!=-1)
+				if (row != -1 && column != -1)
 				{
-					for(vint r=0;r<rowSpan;r++)
+					for (vint r = 0; r < rowSpan; r++)
 					{
-						for(vint c=0;c<columnSpan;c++)
+						for (vint c = 0; c < columnSpan; c++)
 						{
-							table->SetSitedCell(row+r, column+c, 0);
+							table->SetSitedCell(row + r, column + c, 0);
 						}
 					}
 				}
@@ -35940,36 +35947,36 @@ GuiCellComposition
 
 			void GuiCellComposition::SetSitedCells(GuiTableComposition* table)
 			{
-				for(vint r=0;r<rowSpan;r++)
+				for (vint r = 0; r < rowSpan; r++)
 				{
-					for(vint c=0;c<columnSpan;c++)
+					for (vint c = 0; c < columnSpan; c++)
 					{
-						table->SetSitedCell(row+r, column+c, this);
+						table->SetSitedCell(row + r, column + c, this);
 					}
 				}
 			}
 
 			void GuiCellComposition::ResetSiteInternal()
 			{
-				row=-1;
-				column=-1;
-				rowSpan=1;
-				columnSpan=1;
+				row = -1;
+				column = -1;
+				rowSpan = 1;
+				columnSpan = 1;
 			}
 
 			bool GuiCellComposition::SetSiteInternal(vint _row, vint _column, vint _rowSpan, vint _columnSpan)
 			{
 				if (tableParent)
 				{
-					if(_row<0 || _row>=tableParent->rows || _column<0 || _column>=tableParent->columns) return false;
-					if(_rowSpan<1 || _row+_rowSpan>tableParent->rows || _columnSpan<1 || _column+_columnSpan>tableParent->columns) return false;
+					if (_row < 0 || _row >= tableParent->rows || _column < 0 || _column >= tableParent->columns) return false;
+					if (_rowSpan<1 || _row + _rowSpan>tableParent->rows || _columnSpan<1 || _column + _columnSpan>tableParent->columns) return false;
 
-					for(vint r=0;r<_rowSpan;r++)
+					for (vint r = 0; r < _rowSpan; r++)
 					{
-						for(vint c=0;c<_columnSpan;c++)
+						for (vint c = 0; c < _columnSpan; c++)
 						{
-							GuiCellComposition* cell=tableParent->GetSitedCell(_row+r, _column+c);
-							if(cell && cell!=this)
+							GuiCellComposition* cell = tableParent->GetSitedCell(_row + r, _column + c);
+							if (cell && cell != this)
 							{
 								return false;
 							}
@@ -35978,10 +35985,10 @@ GuiCellComposition
 					ClearSitedCells(tableParent);
 				}
 
-				row=_row;
-				column=_column;
-				rowSpan=_rowSpan;
-				columnSpan=_columnSpan;
+				row = _row;
+				column = _column;
+				rowSpan = _rowSpan;
+				columnSpan = _columnSpan;
 
 				if (tableParent)
 				{
@@ -35993,16 +36000,16 @@ GuiCellComposition
 			void GuiCellComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
 				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
-				if(tableParent)
+				if (tableParent)
 				{
 					ClearSitedCells(tableParent);
 				}
-				tableParent=dynamic_cast<GuiTableComposition*>(newParent);
-				if(!tableParent || !SetSiteInternal(row, column, rowSpan, columnSpan))
+				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
+				if (!tableParent || !SetSiteInternal(row, column, rowSpan, columnSpan))
 				{
 					ResetSiteInternal();
 				}
-				if(tableParent)
+				if (tableParent)
 				{
 					if (row != -1 && column != -1)
 					{
@@ -36067,6 +36074,7 @@ GuiCellComposition
 					{
 						tableParent->UpdateCellBounds();
 					}
+					InvokeOnCompositionStateChanged();
 					return true;
 				}
 				else
@@ -36311,6 +36319,7 @@ GuiRowSplitterComposition
 			void GuiRowSplitterComposition::SetRowsToTheTop(vint value)
 			{
 				rowsToTheTop = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Rect GuiRowSplitterComposition::GetBounds()
@@ -36362,6 +36371,7 @@ GuiColumnSplitterComposition
 			void GuiColumnSplitterComposition::SetColumnsToTheLeft(vint value)
 			{
 				columnsToTheLeft = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Rect GuiColumnSplitterComposition::GetBounds()
@@ -37171,10 +37181,6 @@ GuiDocumentElement
 			{
 			}
 
-			GuiDocumentElement::~GuiDocumentElement()
-			{
-			}
-
 			GuiDocumentElement::ICallback* GuiDocumentElement::GetCallback()
 			{
 				return callback;
@@ -37193,11 +37199,8 @@ GuiDocumentElement
 			void GuiDocumentElement::SetDocument(Ptr<DocumentModel> value)
 			{
 				document=value;
-				if(renderer)
-				{
-					renderer->OnElementStateChanged();
-					SetCaret(TextPos(), TextPos(), false);
-				}
+				InvokeOnElementStateChanged();
+				SetCaret(TextPos(), TextPos(), false);
 			}
 
 			TextPos GuiDocumentElement::GetCaretBegin()
@@ -37567,11 +37570,6 @@ GuiSolidBorderElement
 			{
 			}
 
-			GuiSolidBorderElement::~GuiSolidBorderElement()
-			{
-				renderer->Finalize();
-			}
-
 			Color GuiSolidBorderElement::GetColor()
 			{
 				return color;
@@ -37582,10 +37580,7 @@ GuiSolidBorderElement
 				if(color!=value)
 				{
 					color=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 			
@@ -37609,11 +37604,6 @@ GuiRoundBorderElement
 			{
 			}
 
-			GuiRoundBorderElement::~GuiRoundBorderElement()
-			{
-				renderer->Finalize();
-			}
-
 			Color GuiRoundBorderElement::GetColor()
 			{
 				return color;
@@ -37624,10 +37614,7 @@ GuiRoundBorderElement
 				if(color!=value)
 				{
 					color=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37641,10 +37628,7 @@ GuiRoundBorderElement
 				if(radius!=value)
 				{
 					radius=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37654,11 +37638,6 @@ Gui3DBorderElement
 
 			Gui3DBorderElement::Gui3DBorderElement()
 			{
-			}
-
-			Gui3DBorderElement::~Gui3DBorderElement()
-			{
-				renderer->Finalize();
 			}
 
 			Color Gui3DBorderElement::GetColor1()
@@ -37687,10 +37666,7 @@ Gui3DBorderElement
 				{
 					color1=value1;
 					color2=value2;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37701,11 +37677,6 @@ Gui3DSplitterElement
 			Gui3DSplitterElement::Gui3DSplitterElement()
 				:direction(Horizontal)
 			{
-			}
-
-			Gui3DSplitterElement::~Gui3DSplitterElement()
-			{
-				renderer->Finalize();
 			}
 
 			Color Gui3DSplitterElement::GetColor1()
@@ -37734,10 +37705,7 @@ Gui3DSplitterElement
 				{
 					color1=value1;
 					color2=value2;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37751,10 +37719,7 @@ Gui3DSplitterElement
 				if(direction!=value)
 				{
 					direction=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37768,11 +37733,6 @@ GuiSolidBackgroundElement
 			{
 			}
 
-			GuiSolidBackgroundElement::~GuiSolidBackgroundElement()
-			{
-				renderer->Finalize();
-			}
-
 			Color GuiSolidBackgroundElement::GetColor()
 			{
 				return color;
@@ -37783,10 +37743,7 @@ GuiSolidBackgroundElement
 				if(color!=value)
 				{
 					color=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 			
@@ -37808,11 +37765,6 @@ GuiGradientBackgroundElement
 				:direction(Horizontal)
 				,shape(ElementShape::Rectangle)
 			{
-			}
-
-			GuiGradientBackgroundElement::~GuiGradientBackgroundElement()
-			{
-				renderer->Finalize();
 			}
 
 			Color GuiGradientBackgroundElement::GetColor1()
@@ -37841,10 +37793,7 @@ GuiGradientBackgroundElement
 				{
 					color1=value1;
 					color2=value2;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37858,10 +37807,7 @@ GuiGradientBackgroundElement
 				if(direction!=value)
 				{
 					direction=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 			
@@ -37892,11 +37838,6 @@ GuiSolidLabelElement
 				fontProperties.size=12;
 			}
 
-			GuiSolidLabelElement::~GuiSolidLabelElement()
-			{
-				renderer->Finalize();
-			}
-
 			Color GuiSolidLabelElement::GetColor()
 			{
 				return color;
@@ -37907,10 +37848,7 @@ GuiSolidLabelElement
 				if(color!=value)
 				{
 					color=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37924,10 +37862,7 @@ GuiSolidLabelElement
 				if(fontProperties!=value)
 				{
 					fontProperties=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37941,10 +37876,7 @@ GuiSolidLabelElement
 				if(text!=value)
 				{
 					text=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37974,10 +37906,7 @@ GuiSolidLabelElement
 				{
 					hAlignment=horizontal;
 					vAlignment=vertical;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37991,10 +37920,7 @@ GuiSolidLabelElement
 				if(wrapLine!=value)
 				{
 					wrapLine=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38008,10 +37934,7 @@ GuiSolidLabelElement
 				if(ellipse!=value)
 				{
 					ellipse=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38025,10 +37948,7 @@ GuiSolidLabelElement
 				if(multiline!=value)
 				{
 					multiline=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38042,10 +37962,7 @@ GuiSolidLabelElement
 				if(wrapLineHeightCalculation!=value)
 				{
 					wrapLineHeightCalculation=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38060,11 +37977,6 @@ GuiImageFrameElement
 				,stretch(false)
 				,enabled(true)
 			{
-			}
-
-			GuiImageFrameElement::~GuiImageFrameElement()
-			{
-				renderer->Finalize();
 			}
 
 			Ptr<INativeImage> GuiImageFrameElement::GetImage()
@@ -38101,10 +38013,7 @@ GuiImageFrameElement
 						image=_image;
 						frameIndex=_frameIndex;
 					}
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38134,10 +38043,7 @@ GuiImageFrameElement
 				{
 					hAlignment=horizontal;
 					vAlignment=vertical;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38151,10 +38057,7 @@ GuiImageFrameElement
 				if(stretch!=value)
 				{
 					stretch=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38168,10 +38071,7 @@ GuiImageFrameElement
 				if(enabled!=value)
 				{
 					enabled=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38180,10 +38080,6 @@ GuiPolygonElement
 ***********************************************************************/
 
 			GuiPolygonElement::GuiPolygonElement()
-			{
-			}
-
-			GuiPolygonElement::~GuiPolygonElement()
 			{
 			}
 
@@ -38197,10 +38093,7 @@ GuiPolygonElement
 				if(size!=value)
 				{
 					size=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38221,10 +38114,7 @@ GuiPolygonElement
 				{
 					memcpy(&points[0], p, sizeof(*p)*count);
 				}
-				if(renderer)
-				{
-					renderer->OnElementStateChanged();
-				}
+				InvokeOnElementStateChanged();
 			}
 
 			const GuiPolygonElement::PointArray& GuiPolygonElement::GetPointsArray()
@@ -38247,10 +38137,7 @@ GuiPolygonElement
 				if(borderColor!=value)
 				{
 					borderColor=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -38264,10 +38151,7 @@ GuiPolygonElement
 				if(backgroundColor!=value)
 				{
 					backgroundColor=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 		}
@@ -38593,9 +38477,9 @@ GuiGraphicsHost
 				}
 				if(mouseCaptureComposition==composition)
 				{
-					if(nativeWindow)
+					if(hostRecord.nativeWindow)
 					{
-						nativeWindow->ReleaseCapture();
+						hostRecord.nativeWindow->ReleaseCapture();
 					}
 					mouseCaptureComposition=0;
 				}
@@ -38608,11 +38492,11 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MouseCapture(const NativeWindowMouseInfo& info)
 			{
-				if(nativeWindow && (info.left || info.middle || info.right))
+				if(hostRecord.nativeWindow && (info.left || info.middle || info.right))
 				{
-					if(!nativeWindow->IsCapturing() && !info.nonClient)
+					if(!hostRecord.nativeWindow->IsCapturing() && !info.nonClient)
 					{
-						nativeWindow->RequireCapture();
+						hostRecord.nativeWindow->RequireCapture();
 						mouseCaptureComposition=windowComposition->FindComposition(Point(info.x, info.y));
 					}
 				}
@@ -38620,9 +38504,9 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MouseUncapture(const NativeWindowMouseInfo& info)
 			{
-				if(nativeWindow && !(info.left || info.middle || info.right))
+				if(hostRecord.nativeWindow && !(info.left || info.middle || info.right))
 				{
-					nativeWindow->ReleaseCapture();
+					hostRecord.nativeWindow->ReleaseCapture();
 					mouseCaptureComposition=0;
 				}
 			}
@@ -38758,16 +38642,16 @@ GuiGraphicsHost
 
 			INativeWindowListener::HitTestResult GuiGraphicsHost::HitTest(Point location)
 			{
-				Rect bounds=nativeWindow->GetBounds();
-				Rect clientBounds=nativeWindow->GetClientBoundsInScreen();
-				Point clientLocation(location.x+bounds.x1-clientBounds.x1, location.y+bounds.y1-clientBounds.y1);
-				GuiGraphicsComposition* hitComposition=windowComposition->FindComposition(clientLocation);
-				while(hitComposition)
+				Rect bounds = hostRecord.nativeWindow->GetBounds();
+				Rect clientBounds = hostRecord.nativeWindow->GetClientBoundsInScreen();
+				Point clientLocation(location.x + bounds.x1 - clientBounds.x1, location.y + bounds.y1 - clientBounds.y1);
+				GuiGraphicsComposition* hitComposition = windowComposition->FindComposition(clientLocation);
+				while (hitComposition)
 				{
-					INativeWindowListener::HitTestResult result=hitComposition->GetAssociatedHitTestResult();
-					if(result==INativeWindowListener::NoDecision)
+					INativeWindowListener::HitTestResult result = hitComposition->GetAssociatedHitTestResult();
+					if (result == INativeWindowListener::NoDecision)
 					{
-						hitComposition=hitComposition->GetParent();
+						hitComposition = hitComposition->GetParent();
 					}
 					else
 					{
@@ -38779,56 +38663,60 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Moving(Rect& bounds, bool fixSizeOnly)
 			{
-				Rect oldBounds=nativeWindow->GetBounds();
-				minSize=windowComposition->GetPreferredBounds().GetSize();
-				Size minWindowSize=minSize+(oldBounds.GetSize()-nativeWindow->GetClientSize());
-				if(bounds.Width()<minWindowSize.x)
+				Rect oldBounds = hostRecord.nativeWindow->GetBounds();
+				minSize = windowComposition->GetPreferredBounds().GetSize();
+				Size minWindowSize = minSize + (oldBounds.GetSize() - hostRecord.nativeWindow->GetClientSize());
+				if (bounds.Width() < minWindowSize.x)
 				{
-					if(fixSizeOnly)
+					if (fixSizeOnly)
 					{
-						if(bounds.Width()<minWindowSize.x)
+						if (bounds.Width() < minWindowSize.x)
 						{
-							bounds.x2=bounds.x1+minWindowSize.x;
+							bounds.x2 = bounds.x1 + minWindowSize.x;
 						}
 					}
-					else if(oldBounds.x1!=bounds.x1)
+					else if (oldBounds.x1 != bounds.x1)
 					{
-						bounds.x1=oldBounds.x2-minWindowSize.x;
+						bounds.x1 = oldBounds.x2 - minWindowSize.x;
 					}
-					else if(oldBounds.x2!=bounds.x2)
+					else if (oldBounds.x2 != bounds.x2)
 					{
-						bounds.x2=oldBounds.x1+minWindowSize.x;
+						bounds.x2 = oldBounds.x1 + minWindowSize.x;
 					}
 				}
-				if(bounds.Height()<minWindowSize.y)
+				if (bounds.Height() < minWindowSize.y)
 				{
-					if(fixSizeOnly)
+					if (fixSizeOnly)
 					{
-						if(bounds.Height()<minWindowSize.y)
+						if (bounds.Height() < minWindowSize.y)
 						{
-							bounds.y2=bounds.y1+minWindowSize.y;
+							bounds.y2 = bounds.y1 + minWindowSize.y;
 						}
 					}
-					else if(oldBounds.y1!=bounds.y1)
+					else if (oldBounds.y1 != bounds.y1)
 					{
-						bounds.y1=oldBounds.y2-minWindowSize.y;
+						bounds.y1 = oldBounds.y2 - minWindowSize.y;
 					}
-					else if(oldBounds.y2!=bounds.y2)
+					else if (oldBounds.y2 != bounds.y2)
 					{
-						bounds.y2=oldBounds.y1+minWindowSize.y;
+						bounds.y2 = oldBounds.y1 + minWindowSize.y;
 					}
 				}
 			}
 
 			void GuiGraphicsHost::Moved()
 			{
-				Size size=nativeWindow->GetClientSize();
-				if(previousClientSize!=size)
+				Size size = hostRecord.nativeWindow->GetClientSize();
+				if (previousClientSize != size)
 				{
-					previousClientSize=size;
-					minSize=windowComposition->GetPreferredBounds().GetSize();
-					Render();
+					previousClientSize = size;
+					minSize = windowComposition->GetPreferredBounds().GetSize();
+					Render(true);
 				}
+			}
+
+			void GuiGraphicsHost::Paint()
+			{
 			}
 
 			void GuiGraphicsHost::LeftButtonDown(const NativeWindowMouseInfo& info)
@@ -38902,60 +38790,60 @@ GuiGraphicsHost
 			{
 				CompositionList newCompositions;
 				{
-					GuiGraphicsComposition* composition=windowComposition->FindComposition(Point(info.x, info.y));
-					while(composition)
+					GuiGraphicsComposition* composition = windowComposition->FindComposition(Point(info.x, info.y));
+					while (composition)
 					{
 						newCompositions.Insert(0, composition);
-						composition=composition->GetParent();
+						composition = composition->GetParent();
 					}
 				}
 
-				vint firstDifferentIndex=mouseEnterCompositions.Count();
-				for(vint i=0;i<mouseEnterCompositions.Count();i++)
+				vint firstDifferentIndex = mouseEnterCompositions.Count();
+				for (vint i = 0; i < mouseEnterCompositions.Count(); i++)
 				{
-					if(i==newCompositions.Count())
+					if (i == newCompositions.Count())
 					{
-						firstDifferentIndex=newCompositions.Count();
+						firstDifferentIndex = newCompositions.Count();
 						break;
 					}
-					if(mouseEnterCompositions[i]!=newCompositions[i])
+					if (mouseEnterCompositions[i] != newCompositions[i])
 					{
-						firstDifferentIndex=i;
+						firstDifferentIndex = i;
 						break;
 					}
 				}
 
-				for(vint i=mouseEnterCompositions.Count()-1;i>=firstDifferentIndex;i--)
+				for (vint i = mouseEnterCompositions.Count() - 1; i >= firstDifferentIndex; i--)
 				{
-					GuiGraphicsComposition* composition=mouseEnterCompositions[i];
-					if(composition->HasEventReceiver())
+					GuiGraphicsComposition* composition = mouseEnterCompositions[i];
+					if (composition->HasEventReceiver())
 					{
 						composition->GetEventReceiver()->mouseLeave.Execute(GuiEventArgs(composition));
 					}
 				}
 
 				CopyFrom(mouseEnterCompositions, newCompositions);
-				for(vint i=firstDifferentIndex;i<mouseEnterCompositions.Count();i++)
+				for (vint i = firstDifferentIndex; i < mouseEnterCompositions.Count(); i++)
 				{
-					GuiGraphicsComposition* composition=mouseEnterCompositions[i];
-					if(composition->HasEventReceiver())
+					GuiGraphicsComposition* composition = mouseEnterCompositions[i];
+					if (composition->HasEventReceiver())
 					{
 						composition->GetEventReceiver()->mouseEnter.Execute(GuiEventArgs(composition));
 					}
 				}
 
-				INativeCursor* cursor=0;
-				if(newCompositions.Count()>0)
+				INativeCursor* cursor = 0;
+				if (newCompositions.Count() > 0)
 				{
-					cursor=newCompositions[newCompositions.Count()-1]->GetRelatedCursor();
+					cursor = newCompositions[newCompositions.Count() - 1]->GetRelatedCursor();
 				}
-				if(cursor)
+				if (cursor)
 				{
-					nativeWindow->SetWindowCursor(cursor);
+					hostRecord.nativeWindow->SetWindowCursor(cursor);
 				}
 				else
 				{
-					nativeWindow->SetWindowCursor(GetCurrentController()->ResourceService()->GetDefaultSystemCursor());
+					hostRecord.nativeWindow->SetWindowCursor(GetCurrentController()->ResourceService()->GetDefaultSystemCursor());
 				}
 
 				OnMouseInput(info, &GuiGraphicsEventReceiver::mouseMove);
@@ -39067,15 +38955,15 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SysKeyUp(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY_MENU && nativeWindow)
+				if (!info.ctrl && !info.shift && info.code == VKEY_MENU && hostRecord.nativeWindow)
 				{
-					if (nativeWindow)
+					if (hostRecord.nativeWindow)
 					{
-						nativeWindow->SupressAlt();
+						hostRecord.nativeWindow->SupressAlt();
 					}
 				}
 
-				if(focusedComposition && focusedComposition->HasEventReceiver())
+				if (focusedComposition && focusedComposition->HasEventReceiver())
 				{
 					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::systemKeyUp);
 				}
@@ -39109,12 +38997,11 @@ GuiGraphicsHost
 					}
 				}
 				
-				Render();
+				Render(false);
 			}
 
 			GuiGraphicsHost::GuiGraphicsHost()
-				:nativeWindow(0)
-				,shortcutKeyManager(0)
+				:shortcutKeyManager(0)
 				,windowComposition(0)
 				,focusedComposition(0)
 				,mouseCaptureComposition(0)
@@ -39122,8 +39009,9 @@ GuiGraphicsHost
 				,currentAltHost(0)
 				,supressAltKey(0)
 			{
+				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
-				windowComposition->SetAssociatedHost(this);
+				windowComposition->UpdateRelatedHostRecord(&hostRecord);
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
@@ -39139,27 +39027,29 @@ GuiGraphicsHost
 
 			INativeWindow* GuiGraphicsHost::GetNativeWindow()
 			{
-				return nativeWindow;
+				return hostRecord.nativeWindow;
 			}
 
 			void GuiGraphicsHost::SetNativeWindow(INativeWindow* _nativeWindow)
 			{
-				if(nativeWindow!=_nativeWindow)
+				if (hostRecord.nativeWindow != _nativeWindow)
 				{
-					if(nativeWindow)
+					if (hostRecord.nativeWindow)
 					{
 						GetCurrentController()->CallbackService()->UninstallListener(this);
-						nativeWindow->UninstallListener(this);
+						hostRecord.nativeWindow->UninstallListener(this);
 					}
-					nativeWindow=_nativeWindow;
-					windowComposition->SetAttachedWindow(nativeWindow);
-					if(nativeWindow)
+					hostRecord.nativeWindow = _nativeWindow;
+					hostRecord.renderTarget = _nativeWindow ? GetGuiGraphicsResourceManager()->GetRenderTarget(_nativeWindow) : nullptr;
+					windowComposition->UpdateRelatedHostRecord(&hostRecord);
+					if (hostRecord.nativeWindow)
 					{
-						nativeWindow->InstallListener(this);
+						hostRecord.nativeWindow->InstallListener(this);
 						GetCurrentController()->CallbackService()->InstallListener(this);
-						previousClientSize=nativeWindow->GetClientSize();
-						minSize=windowComposition->GetPreferredBounds().GetSize();
-						nativeWindow->SetCaretPoint(caretPoint);
+						previousClientSize = hostRecord.nativeWindow->GetClientSize();
+						minSize = windowComposition->GetPreferredBounds().GetSize();
+						hostRecord.nativeWindow->SetCaretPoint(caretPoint);
+						needRender = true;
 					}
 				}
 			}
@@ -39169,22 +39059,34 @@ GuiGraphicsHost
 				return windowComposition;
 			}
 
-			void GuiGraphicsHost::Render()
+			void GuiGraphicsHost::Render(bool forceUpdate)
 			{
-				if(nativeWindow && nativeWindow->IsVisible())
+				if (!forceUpdate && !needRender)
 				{
-					windowComposition->GetRenderTarget()->StartRendering();
+					return;
+				}
+				needRender = false;
+
+				if(hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
+				{
+					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(Size());
-					bool success = windowComposition->GetRenderTarget()->StopRendering();
-					nativeWindow->RedrawContent();
+					bool success = hostRecord.renderTarget->StopRendering();
+					hostRecord.nativeWindow->RedrawContent();
 
 					if (!success)
 					{
-						windowComposition->SetAttachedWindow(0);
-						GetGuiGraphicsResourceManager()->RecreateRenderTarget(nativeWindow);
-						windowComposition->SetAttachedWindow(nativeWindow);
+						windowComposition->UpdateRelatedHostRecord(nullptr);
+						GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
+						windowComposition->UpdateRelatedHostRecord(&hostRecord);
+						needRender = true;
 					}
 				}
+			}
+
+			void GuiGraphicsHost::RequestRender()
+			{
+				needRender = true;
 			}
 
 			IGuiShortcutKeyManager* GuiGraphicsHost::GetShortcutKeyManager()
@@ -39234,16 +39136,16 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::SetCaretPoint(Point value, GuiGraphicsComposition* referenceComposition)
 			{
-				if(referenceComposition)
+				if (referenceComposition)
 				{
-					Rect bounds=referenceComposition->GetGlobalBounds();
-					value.x+=bounds.x1;
-					value.y+=bounds.y1;
+					Rect bounds = referenceComposition->GetGlobalBounds();
+					value.x += bounds.x1;
+					value.y += bounds.y1;
 				}
-				caretPoint=value;
-				if(nativeWindow)
+				caretPoint = value;
+				if (hostRecord.nativeWindow)
 				{
-					nativeWindow->SetCaretPoint(caretPoint);
+					hostRecord.nativeWindow->SetCaretPoint(caretPoint);
 				}
 			}
 
@@ -40177,11 +40079,6 @@ GuiColorizedTextElement
 			{
 			}
 
-			GuiColorizedTextElement::~GuiColorizedTextElement()
-			{
-				renderer->Finalize();
-			}
-
 			text::TextLines& GuiColorizedTextElement::GetLines()
 			{
 				return lines;
@@ -40210,10 +40107,7 @@ GuiColorizedTextElement
 			{
 				CopyFrom(colors, value);
 				if(callback) callback->ColorChanged();
-				if(renderer)
-				{
-					renderer->OnElementStateChanged();
-				}
+				InvokeOnElementStateChanged();
 			}
 
 			void GuiColorizedTextElement::ResetTextColorIndex(vint index)
@@ -40245,10 +40139,7 @@ GuiColorizedTextElement
 					{
 						callback->FontChanged();
 					}
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -40262,10 +40153,7 @@ GuiColorizedTextElement
 				if(lines.GetPasswordChar()!=value)
 				{
 					lines.SetPasswordChar(value);
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -40279,10 +40167,7 @@ GuiColorizedTextElement
 				if(viewPosition!=value)
 				{
 					viewPosition=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -40296,10 +40181,7 @@ GuiColorizedTextElement
 				if(isVisuallyEnabled!=value)
 				{
 					isVisuallyEnabled=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -40313,10 +40195,7 @@ GuiColorizedTextElement
 				if(isFocused!=value)
 				{
 					isFocused=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -40360,10 +40239,7 @@ GuiColorizedTextElement
 				if(caretColor!=value)
 				{
 					caretColor=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 		}

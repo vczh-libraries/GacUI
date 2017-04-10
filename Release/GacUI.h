@@ -690,6 +690,13 @@ namespace vl
 	{
 		using namespace reflection;
 
+		namespace compositions
+		{
+			class GuiGraphicsComposition;
+
+			extern void											InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
+		}
+
 		namespace elements
 		{
 			class IGuiGraphicsElement;
@@ -709,17 +716,26 @@ Basic Construction
 			/// </summary>
 			class IGuiGraphicsElement : public virtual IDescriptable, public Description<IGuiGraphicsElement>
 			{
+				friend class compositions::GuiGraphicsComposition;
+			protected:
+
+				virtual void									SetOwnerComposition(compositions::GuiGraphicsComposition* composition) = 0;
 			public:
 				/// <summary>
 				/// Access the <see cref="IGuiGraphicsElementFactory"></see> that is used to create this graphics elements.
 				/// </summary>
 				/// <returns>Returns the related factory.</returns>
-				virtual IGuiGraphicsElementFactory*		GetFactory()=0;
+				virtual IGuiGraphicsElementFactory*				GetFactory() = 0;
 				/// <summary>
 				/// Access the associated <see cref="IGuiGraphicsRenderer"></see> for this graphics element.
 				/// </summary>
 				/// <returns>Returns the related renderer.</returns>
-				virtual IGuiGraphicsRenderer*			GetRenderer()=0;
+				virtual IGuiGraphicsRenderer*					GetRenderer() = 0;
+				/// <summary>
+				/// Get the owner composition.
+				/// </summary>
+				/// <returns>The owner composition.</returns>
+				virtual compositions::GuiGraphicsComposition*	GetOwnerComposition() = 0;
 			};
 
 			/// <summary>
@@ -2508,11 +2524,6 @@ Native Window Controller
 			/// <returns>The user dialog service</returns>
 			virtual INativeDialogService*			DialogService()=0;
 			/// <summary>
-			/// Get the operating system's version display string.
-			/// </summary>
-			/// <returns>The version string. In Windows implementation, the version string formats like "MAIN-VERSION;CSD-VERSION, e.g. "Windows XP;Service Pack 3". The ";" always exists, but the CSD version can be empty.</returns>
-			virtual WString							GetOSVersion()=0;
-			/// <summary>
 			/// Get the file path of the current executable.
 			/// </summary>
 			/// <returns>The file path of the current executable.</returns>
@@ -2998,47 +3009,87 @@ Resource Manager
 Helpers
 ***********************************************************************/
 
+			template<typename TElement>
+			class GuiElementBase : public Object, public IGuiGraphicsElement, public Description<TElement>
+			{
+			public:
+				class Factory : public Object, public IGuiGraphicsElementFactory
+				{
+				public:
+					WString GetElementTypeName()
+					{
+						return TElement::GetElementTypeName();
+					}
+					IGuiGraphicsElement* Create()
+					{
+						auto element = new TElement;
+						element->factory = this;
+						IGuiGraphicsRendererFactory* rendererFactory = GetGuiGraphicsResourceManager()->GetRendererFactory(GetElementTypeName());
+						if (rendererFactory)
+						{
+							element->renderer = rendererFactory->Create();
+							element->renderer->Initialize(element);
+						}
+						return element;
+					}
+				};
+			protected:
+				IGuiGraphicsElementFactory*				factory = nullptr;
+				Ptr<IGuiGraphicsRenderer>				renderer;
+				compositions::GuiGraphicsComposition*	ownerComposition = nullptr;
+
+				void SetOwnerComposition(compositions::GuiGraphicsComposition* composition)override
+				{
+					ownerComposition = composition;
+				}
+
+				void InvokeOnElementStateChanged()
+				{
+					if (renderer)
+					{
+						renderer->OnElementStateChanged();
+					}
+					if (ownerComposition)
+					{
+						compositions::InvokeOnCompositionStateChanged(ownerComposition);
+					}
+				}
+			public:
+				static TElement* Create()
+				{
+					return dynamic_cast<TElement*>(GetGuiGraphicsResourceManager()->GetElementFactory(TElement::GetElementTypeName())->Create());
+				}
+
+				~GuiElementBase()
+				{
+					if (renderer)
+					{
+						renderer->Finalize();
+					}
+				}
+
+				IGuiGraphicsElementFactory* GetFactory()override
+				{
+					return factory;
+				}
+
+				IGuiGraphicsRenderer* GetRenderer()override
+				{
+					return renderer.Obj();
+				}
+
+				compositions::GuiGraphicsComposition* GetOwnerComposition()override
+				{
+					return ownerComposition;
+				}
+			};
+
 #define DEFINE_GUI_GRAPHICS_ELEMENT(TELEMENT, ELEMENT_TYPE_NAME)\
-			public:\
-				class Factory : public Object, public IGuiGraphicsElementFactory\
-				{\
-				public:\
-					WString GetElementTypeName()\
-					{\
-						return TELEMENT::GetElementTypeName();\
-					}\
-					IGuiGraphicsElement* Create()\
-					{\
-						TELEMENT* element=new TELEMENT;\
-						element->factory=this;\
-						IGuiGraphicsRendererFactory* rendererFactory=GetGuiGraphicsResourceManager()->GetRendererFactory(GetElementTypeName());\
-						if(rendererFactory)\
-						{\
-							element->renderer=rendererFactory->Create();\
-							element->renderer->Initialize(element);\
-						}\
-						return element;\
-					}\
-				};\
-			protected:\
-				IGuiGraphicsElementFactory*		factory;\
-				Ptr<IGuiGraphicsRenderer>		renderer;\
+				friend class GuiElementBase<TELEMENT>;\
 			public:\
 				static WString GetElementTypeName()\
 				{\
 					return ELEMENT_TYPE_NAME;\
-				}\
-				static TELEMENT* Create()\
-				{\
-					return dynamic_cast<TELEMENT*>(GetGuiGraphicsResourceManager()->GetElementFactory(TELEMENT::GetElementTypeName())->Create());\
-				}\
-				IGuiGraphicsElementFactory* GetFactory()override\
-				{\
-					return factory;\
-				}\
-				IGuiGraphicsRenderer* GetRenderer()override\
-				{\
-					return renderer.Obj();\
 				}\
 
 #define DEFINE_GUI_GRAPHICS_RENDERER(TELEMENT, TRENDERER, TTARGET)\
@@ -4348,7 +4399,7 @@ Elements
 			/// <summary>
 			/// Defines a border element with a thickness of one pixel.
 			/// </summary>
-			class GuiSolidBorderElement : public Object, public IGuiGraphicsElement, public Description<GuiSolidBorderElement>
+			class GuiSolidBorderElement : public GuiElementBase<GuiSolidBorderElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiSolidBorderElement, L"SolidBorder")
 			protected:
@@ -4357,8 +4408,6 @@ Elements
 
 				GuiSolidBorderElement();
 			public:
-				~GuiSolidBorderElement();
-
 				/// <summary>
 				/// Get the border color.
 				/// </summary>
@@ -4384,7 +4433,7 @@ Elements
 			/// <summary>
 			/// Defines a rectangle border element with round corners and a thickness of one pixel.
 			/// </summary>
-			class GuiRoundBorderElement : public Object, public IGuiGraphicsElement, public Description<GuiRoundBorderElement>
+			class GuiRoundBorderElement : public GuiElementBase<GuiRoundBorderElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiRoundBorderElement, L"RoundBorder")
 			protected:
@@ -4393,8 +4442,6 @@ Elements
 
 				GuiRoundBorderElement();
 			public:
-				~GuiRoundBorderElement();
-				
 				/// <summary>
 				/// Get the border color.
 				/// </summary>
@@ -4421,7 +4468,7 @@ Elements
 			/// <summary>
 			/// Defines a 3D-like rectangle element with a thickness of two pixels.
 			/// </summary>
-			class Gui3DBorderElement : public Object, public IGuiGraphicsElement, public Description<Gui3DBorderElement>
+			class Gui3DBorderElement : public GuiElementBase<Gui3DBorderElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(Gui3DBorderElement, L"3DBorder")
 			protected:
@@ -4430,8 +4477,6 @@ Elements
 
 				Gui3DBorderElement();
 			public:
-				~Gui3DBorderElement();
-				
 				/// <summary>
 				/// Get the left-top color.
 				/// </summary>
@@ -4463,7 +4508,7 @@ Elements
 			/// <summary>
 			/// Defines a 3D-like splitter element with a thickness of two pixels.
 			/// </summary>
-			class Gui3DSplitterElement : public Object, public IGuiGraphicsElement, public Description<Gui3DSplitterElement>
+			class Gui3DSplitterElement : public GuiElementBase<Gui3DSplitterElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(Gui3DSplitterElement, L"3DSplitter")
 			public:
@@ -4484,8 +4529,6 @@ Elements
 
 				Gui3DSplitterElement();
 			public:
-				~Gui3DSplitterElement();
-				
 				/// <summary>
 				/// Get the left-top color.
 				/// </summary>
@@ -4528,7 +4571,7 @@ Elements
 			/// <summary>
 			/// Defines a color-filled element without border.
 			/// </summary>
-			class GuiSolidBackgroundElement : public Object, public IGuiGraphicsElement, public Description<GuiSolidBackgroundElement>
+			class GuiSolidBackgroundElement : public GuiElementBase<GuiSolidBackgroundElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiSolidBackgroundElement, L"SolidBackground")
 			protected:
@@ -4537,8 +4580,6 @@ Elements
 
 				GuiSolidBackgroundElement();
 			public:
-				~GuiSolidBackgroundElement();
-				
 				/// <summary>
 				/// Get the border color.
 				/// </summary>
@@ -4564,7 +4605,7 @@ Elements
 			/// <summary>
 			/// Defines a color-filled gradient element without border.
 			/// </summary>
-			class GuiGradientBackgroundElement : public Object, public IGuiGraphicsElement, public Description<GuiGradientBackgroundElement>
+			class GuiGradientBackgroundElement : public GuiElementBase<GuiGradientBackgroundElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGradientBackgroundElement, L"GradientBackground")
 			public:
@@ -4590,8 +4631,6 @@ Elements
 
 				GuiGradientBackgroundElement();
 			public:
-				~GuiGradientBackgroundElement();
-				
 				/// <summary>
 				/// Get the left-top color.
 				/// </summary>
@@ -4644,7 +4683,7 @@ Elements
 			/// <summary>
 			/// Defines an element of a plain text.
 			/// </summary>
-			class GuiSolidLabelElement : public Object, public IGuiGraphicsElement, public Description<GuiSolidLabelElement>
+			class GuiSolidLabelElement : public GuiElementBase<GuiSolidLabelElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiSolidLabelElement, L"SolidLabel");
 			protected:
@@ -4660,8 +4699,6 @@ Elements
 
 				GuiSolidLabelElement();
 			public:
-				~GuiSolidLabelElement();
-				
 				/// <summary>
 				/// Get the text color.
 				/// </summary>
@@ -4770,7 +4807,7 @@ Elements
 			/// <summary>
 			/// Defines an element containing an image.
 			/// </summary>
-			class GuiImageFrameElement : public Object, public IGuiGraphicsElement, public Description<GuiImageFrameElement>
+			class GuiImageFrameElement : public GuiElementBase<GuiImageFrameElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiImageFrameElement, L"ImageFrame");
 			protected:
@@ -4783,8 +4820,6 @@ Elements
 
 				GuiImageFrameElement();
 			public:
-				~GuiImageFrameElement();
-
 				/// <summary>
 				/// Get the containing image.
 				/// </summary>
@@ -4865,7 +4900,7 @@ Elements
 			/// <summary>
 			/// Defines a polygon element with a thickness of one pixel.
 			/// </summary>
-			class GuiPolygonElement : public Object, public IGuiGraphicsElement, public Description<GuiPolygonElement>
+			class GuiPolygonElement : public GuiElementBase<GuiPolygonElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiPolygonElement, L"Polygon");
 
@@ -4878,8 +4913,6 @@ Elements
 
 				GuiPolygonElement();
 			public:
-				~GuiPolygonElement();
-
 				/// <summary>
 				/// Get a suggested size. The polygon element will be layouted to the center of the required bounds using this size.
 				/// </summary>
@@ -5363,7 +5396,7 @@ Colorized Plain Text (element)
 			/// <summary>
 			/// Defines a text element with separate color configuration for each character.
 			/// </summary>
-			class GuiColorizedTextElement : public Object, public IGuiGraphicsElement, public Description<GuiColorizedTextElement>
+			class GuiColorizedTextElement : public GuiElementBase<GuiColorizedTextElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiColorizedTextElement, L"ColorizedText");
 
@@ -5401,8 +5434,6 @@ Colorized Plain Text (element)
 
 				GuiColorizedTextElement();
 			public:
-				~GuiColorizedTextElement();
-
 				/// <summary>
 				/// Get the internal <see cref="text::TextLines"/> object that stores all characters and colors.
 				/// </summary>
@@ -5564,7 +5595,7 @@ Rich Content Document (element)
 ***********************************************************************/
 
 			/// <summary>Defines a rich text document element for rendering complex styled document.</summary>
-			class GuiDocumentElement : public Object, public IGuiGraphicsElement, public Description<GuiDocumentElement>
+			class GuiDocumentElement : public GuiElementBase<GuiDocumentElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDocumentElement, L"RichDocument");
 			public:
@@ -5677,8 +5708,6 @@ Rich Content Document (element)
 
 				GuiDocumentElement();
 			public:
-				~GuiDocumentElement();
-				
 				/// <summary>Get the callback.</summary>
 				/// <returns>The callback.</returns>
 				ICallback*									GetCallback();
@@ -6420,6 +6449,7 @@ Basic Construction
 
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
+				friend void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 			public:
 				/// <summary>
 				/// Minimum size limitation.
@@ -6433,18 +6463,27 @@ Basic Construction
 					/// <summary>Minimum size of this composition is combiniation of sub compositions and the minimum size of the contained graphics element.</summary>
 					LimitToElementAndChildren,
 				};
+
+			protected:
+
+				struct GraphicsHostRecord
+				{
+					GuiGraphicsHost*						host = nullptr;
+					elements::IGuiGraphicsRenderTarget*		renderTarget = nullptr;
+					INativeWindow*							nativeWindow = nullptr;
+				};
+
 			protected:
 				CompositionList								children;
-				GuiGraphicsComposition*						parent;
+				GuiGraphicsComposition*						parent = nullptr;
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
 				bool										visible;
-				elements::IGuiGraphicsRenderTarget*			renderTarget;
 				MinSizeLimitation							minSizeLimitation;
 
 				Ptr<compositions::GuiGraphicsEventReceiver>	eventReceiver;
-				controls::GuiControl*						associatedControl;
-				GuiGraphicsHost*							associatedHost;
-				INativeCursor*								associatedCursor;
+				GraphicsHostRecord*							relatedHostRecord = nullptr;
+				controls::GuiControl*						associatedControl = nullptr;
+				INativeCursor*								associatedCursor = nullptr;
 				INativeWindowListener::HitTestResult		associatedHitTestResult;
 
 				Margin										margin;
@@ -6456,10 +6495,11 @@ Basic Construction
 				virtual void								OnChildRemoved(GuiGraphicsComposition* child);
 				virtual void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent);
 				virtual void								OnParentLineChanged();
-				virtual void								OnRenderTargetChanged();
+				virtual void								OnRenderContextChanged();
 				
-				virtual void								SetAssociatedControl(controls::GuiControl* control);
-				virtual void								SetAssociatedHost(GuiGraphicsHost* host);
+				void										UpdateRelatedHostRecord(GraphicsHostRecord* record);
+				void										SetAssociatedControl(controls::GuiControl* control);
+				void										InvokeOnCompositionStateChanged();
 
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 			public:
@@ -6512,9 +6552,6 @@ Basic Construction
 				/// <summary>Get the binded render target.</summary>
 				/// <returns>The binded render target.</returns>
 				elements::IGuiGraphicsRenderTarget*			GetRenderTarget();
-				/// <summary>Set the binded render target. This function is designed for internal usage. Users are not suggested to call this function directly.</summary>
-				/// <param name="value">The binded render target.</param>
-				void										SetRenderTarget(elements::IGuiGraphicsRenderTarget* value);
 
 				/// <summary>Render the composition using an offset.</summary>
 				/// <param name="offset">The offset.</param>
@@ -6677,18 +6714,9 @@ Basic Compositions
 			/// </summary>
 			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
 			{
-			protected:
-				INativeWindow*						attachedWindow;
 			public:
 				GuiWindowComposition();
 				~GuiWindowComposition();
-				
-				/// <summary>Get the attached native window object.</summary>
-				/// <returns>The attached native window object.</returns>
-				INativeWindow*						GetAttachedWindow();
-				/// <summary>Attached a native window object.</summary>
-				/// <param name="window">The native window object to attach.</param>
-				void								SetAttachedWindow(INativeWindow* window);
 
 				Rect								GetBounds()override;
 				void								SetMargin(Margin value)override;
@@ -6701,7 +6729,7 @@ Basic Compositions
 			{
 			protected:
 				Rect								compositionBounds;
-				Margin								alignmentToParent;
+				Margin								alignmentToParent{ -1,-1,-1,-1 };
 				
 			public:
 				GuiBoundsComposition();
@@ -6713,8 +6741,6 @@ Basic Compositions
 				/// <param name="value">The expected bounds.</param>
 				void								SetBounds(Rect value);
 
-				/// <summary>Make the composition not aligned to its parent.</summary>
-				void								ClearAlignmentToParent();
 				/// <summary>Get the alignment to its parent. -1 in each alignment component means that the corressponding side is not aligned to its parent.</summary>
 				/// <returns>The alignment to its parent.</returns>
 				Margin								GetAlignmentToParent();
@@ -6889,7 +6915,7 @@ Table Compositions
 				
 				void								UpdateCellBoundsInternal();
 				void								UpdateTableContentMinSize();
-				void								OnRenderTargetChanged()override;
+				void								OnRenderContextChanged()override;
 			public:
 				GuiTableComposition();
 				~GuiTableComposition();
@@ -7951,10 +7977,13 @@ Host
 				typedef collections::List<GuiGraphicsComposition*>							CompositionList;
 				typedef collections::Dictionary<WString, IGuiAltAction*>					AltActionMap;
 				typedef collections::Dictionary<WString, controls::GuiControl*>				AltControlMap;
+				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
 			public:
-				static const vuint64_t					CaretInterval=500;
+				static const vuint64_t					CaretInterval = 500;
 			protected:
-				INativeWindow*							nativeWindow;
+				HostRecord								hostRecord;
+				bool									needRender = true;
+
 				IGuiShortcutKeyManager*					shortcutKeyManager;
 				GuiWindowComposition*					windowComposition;
 				GuiGraphicsComposition*					focusedComposition;
@@ -7994,6 +8023,7 @@ Host
 				INativeWindowListener::HitTestResult	HitTest(Point location)override;
 				void									Moving(Rect& bounds, bool fixSizeOnly)override;
 				void									Moved()override;
+				void									Paint()override;
 
 				void									LeftButtonDown(const NativeWindowMouseInfo& info)override;
 				void									LeftButtonUp(const NativeWindowMouseInfo& info)override;
@@ -8031,7 +8061,9 @@ Host
 				/// <returns>The main compositoin.</returns>
 				GuiGraphicsComposition*					GetMainComposition();
 				/// <summary>Render the main composition and all content to the associated window.</summary>
-				void									Render();
+				void									Render(bool forceUpdate);
+				/// <summary>Request a rendering</summary>
+				void									RequestRender();
 
 				/// <summary>Get the <see cref="IGuiShortcutKeyManager"/> attached with this graphics host.</summary>
 				/// <returns>The shortcut key manager.</returns>

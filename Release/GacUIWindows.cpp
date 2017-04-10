@@ -1523,74 +1523,6 @@ WindowsController
 					return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
 				}
 
-				bool IsWindowsServer()
-				{
-					OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0, 0, VER_NT_WORKSTATION };
-					DWORDLONG const dwlConditionMask = VerSetConditionMask( 0, VER_PRODUCT_TYPE, VER_EQUAL );
-
-					return !VerifyVersionInfoW(&osvi, VER_PRODUCT_TYPE, dwlConditionMask);
-				}
-
-				WString GetOSVersion()
-				{
-					const vint SystemCount = 5;
-					DWORD SystemVersions[SystemCount] = 
-					{
-						_WIN32_WINNT_WIN2K,
-						_WIN32_WINNT_WINXP,
-						_WIN32_WINNT_VISTA,
-						_WIN32_WINNT_WIN7,
-						_WIN32_WINNT_WIN8
-					};
-					vint SystemMaxServerPacks[SystemCount] =
-					{
-						4,
-						3,
-						2,
-						1,
-						0,
-					};
-					const wchar_t* SystemClientNames[SystemCount] =
-					{
-						L"Windows 2000",
-						L"Windows XP",
-						L"Windows Vista",
-						L"Windows 7",
-						L"Windows 8",
-					};
-					const wchar_t* SystemServerNames[SystemCount] =
-					{
-						L"Windows Server 2003",
-						L"Windows Server 2003 R2",
-						L"Windows Server 2008",
-						L"Windows Server 2008 R2",
-						L"Windows Server 2012",
-					};
-
-					bool isWindowsServer = IsWindowsServer();
-					for(vint systemIndex = SystemCount-1; systemIndex >=0; systemIndex--)
-					{
-						DWORD systemVersion = SystemVersions[systemIndex];
-						vint maxSp = SystemMaxServerPacks[systemIndex];
-						for(vint sp = maxSp; sp>=0; sp--)
-						{
-							if(IsWindowsVersionEqualOrGreater(HIBYTE(systemVersion), LOBYTE(systemVersion), (WORD)sp))
-							{
-								WString systemName = isWindowsServer?SystemServerNames[systemIndex]:SystemClientNames[systemIndex];
-								if(sp==0)
-								{
-									return systemName+L";";
-								}
-								else
-								{
-									return systemName+L";SP"+itow(sp);
-								}
-							}
-						}
-					}
-					return L"Windows <Unknown Version>";
-				}
-
 				WString GetExecutablePath()
 				{
 					Array<wchar_t> buffer(65536);
@@ -9793,10 +9725,6 @@ GuiGDIElement
 			GuiGDIElement::GuiGDIElement()
 			{
 			}
-
-			GuiGDIElement::~GuiGDIElement()
-			{
-			}
 		}
 
 		namespace elements_windows_gdi
@@ -12814,10 +12742,6 @@ GuiDirect2DElement
 ***********************************************************************/
 
 			GuiDirect2DElement::GuiDirect2DElement()
-			{
-			}
-
-			GuiDirect2DElement::~GuiDirect2DElement()
 			{
 			}
 		}

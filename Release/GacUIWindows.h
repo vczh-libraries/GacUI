@@ -140,8 +140,8 @@ namespace vl
 			{
 				friend class WinMetaFile;
 			protected:
-				vint						FWidth;
-				vint						FHeight;
+				vint					FWidth;
+				vint					FHeight;
 				WinProxyDC*				FDC;
 
 				void					Create(vint Width, vint Height);
@@ -157,8 +157,8 @@ namespace vl
 				void					LoadFrom(WString FileName);
 				void					SaveTo(WString FileName);
 				WinDC*					GetWinDC();
-				vint						GetWidth();
-				vint						GetHeight();
+				vint					GetWidth();
+				vint					GetHeight();
 			};
 
 			class WinMetaFile : public Object
@@ -166,16 +166,16 @@ namespace vl
 				friend class WinMetaFileBuilder;
 			protected:
 				HENHMETAFILE			FHandle;
-				vint						FWidth;
-				vint						FHeight;
+				vint					FWidth;
+				vint					FHeight;
 			public:
 				WinMetaFile(WString FileName);
 				WinMetaFile(WinMetaFileBuilder* Builder);
 				~WinMetaFile();
 
 				HENHMETAFILE			GetHandle();
-				vint						GetWidth();
-				vint						GetHeight();
+				vint					GetWidth();
+				vint					GetHeight();
 			};
 
 			class WinBitmap : public Object
@@ -190,15 +190,15 @@ namespace vl
 				};
 			protected:
 				BitmapBits				FBits;
-				vint						FWidth;
-				vint						FHeight;
+				vint					FWidth;
+				vint					FHeight;
 				WinImageDC*				FDC;
 				HBITMAP					FHandle;
 				BYTE**					FScanLines;
 				bool					FAlphaChannelBuilt;
 
-				vint						GetBitsFromBB(BitmapBits BB);
-				vint						GetLineBytes(vint Width, BitmapBits BB);
+				vint					GetBitsFromBB(BitmapBits BB);
+				vint					GetLineBytes(vint Width, BitmapBits BB);
 				void					FillBitmapInfoHeader(vint Width, vint Height, BitmapBits Bits, BITMAPINFOHEADER* Header);
 				HBITMAP					CreateDDB(vint Width, vint Height, BitmapBits Bits);
 				HBITMAP					CreateDIB(vint Width, vint Height, BitmapBits Bits, BYTE**& ScanLines);
@@ -211,9 +211,9 @@ namespace vl
 				void					SaveToFile(WString FileName);
 
 				WinDC*					GetWinDC();
-				vint						GetWidth();
-				vint						GetHeight();
-				vint						GetLineBytes();
+				vint					GetWidth();
+				vint					GetHeight();
+				vint					GetLineBytes();
 				BYTE**					GetScanLines();
 				HBITMAP					GetBitmap();
 				BitmapBits				GetBitmapBits();
@@ -237,7 +237,7 @@ namespace vl
 			class WinBrush : public Object
 			{
 			public:
-				typedef Ptr<WinBrush>		Ptr;
+				typedef Ptr<WinBrush>	Ptr;
 			protected:
 				HBRUSH					FHandle;
 				unsigned char*			FDIBMemory;
@@ -1118,14 +1118,12 @@ Raw API Rendering Element
 			/// <summary>
 			/// Defines an element for customized rendering using GDI.
 			/// </summary>
-			class GuiGDIElement : public Object, public IGuiGraphicsElement, public Description<GuiGDIElement>
+			class GuiGDIElement : public GuiElementBase<GuiGDIElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiGDIElement, L"GDIElement")
 			protected:
 				GuiGDIElement();
 			public:
-				~GuiGDIElement();
-
 				/// <summary>Rendering event.</summary>
 				compositions::GuiGraphicsEvent<GuiGDIElementEventArgs>		Rendering;
 			};
@@ -1874,14 +1872,12 @@ Raw API Rendering Element
 			/// <summary>
 			/// Defines an element for customized rendering using Direct2D.
 			/// </summary>
-			class GuiDirect2DElement : public Object, public IGuiGraphicsElement, public Description<GuiDirect2DElement>
+			class GuiDirect2DElement : public GuiElementBase<GuiDirect2DElement>
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiDirect2DElement, L"Direct2DElement")
 			protected:
 				GuiDirect2DElement();
 			public:
-				~GuiDirect2DElement();
-				
 				/// <summary>Render target changed (before) event. Resources that binded to the render target can be released at this moment.</summary>
 				compositions::GuiGraphicsEvent<GuiDirect2DElementEventArgs>		BeforeRenderTargetChanged;
 				/// <summary>Render target changed (after) event. Resources that binded to the render target can be recreated at this moment.</summary>

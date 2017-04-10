@@ -512,7 +512,6 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeController)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::reflection::description::GetCurrentController)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(OSVersion)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ExecutablePath)
 
 				CLASS_MEMBER_METHOD(ResourceService, NO_PARAMETER)
@@ -745,6 +744,7 @@ Type Declaration
 			END_INTERFACE_MEMBER(IGuiResourceManager)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerComposition)
 			END_INTERFACE_MEMBER(IGuiGraphicsElement)
 
 			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
@@ -852,7 +852,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(AlignmentToParent)
 				
-				CLASS_MEMBER_METHOD(ClearAlignmentToParent, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsAlignedToParent, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiBoundsComposition)
 
