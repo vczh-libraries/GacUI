@@ -4,6 +4,7 @@
       <Window ref.Name="self" Text-format="MainWindow" ClientSize="x:480 y:320">
         <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
         <Button Text="Click me and show a modal window!" Alt="C">
+          <att.BoundsComposition-set AlignmentToParent="left:20 top:20 right:20 bottom:20"/>
           <ev.Clicked-eval>
             <![CDATA[
               $Async{

@@ -106,6 +106,10 @@ GuiGraphicsComposition
 				}
 			}
 
+			void GuiGraphicsComposition::InvokeOnCompositionStateChanged()
+			{
+			}
+
 			bool GuiGraphicsComposition::SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing)
 			{
 				GuiGraphicsComposition* value=dynamic_cast<GuiGraphicsComposition*>(obj);
@@ -157,6 +161,7 @@ GuiGraphicsComposition
 				child->UpdateRelatedHostRecord(relatedHostRecord);
 				OnChildInserted(child);
 				child->OnParentChanged(nullptr, child->parent);
+				InvokeOnCompositionStateChanged();
 				return true;
 			}
 
@@ -175,6 +180,7 @@ GuiGraphicsComposition
 					host->DisconnectComposition(child);
 				}
 				children.RemoveAt(index);
+				InvokeOnCompositionStateChanged();
 				return true;
 			}
 
@@ -185,6 +191,7 @@ GuiGraphicsComposition
 				if(index==-1) return false;
 				children.RemoveAt(index);
 				children.Insert(newIndex, child);
+				InvokeOnCompositionStateChanged();
 				return true;
 			}
 
@@ -195,22 +202,26 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetOwnedElement(Ptr<IGuiGraphicsElement> element)
 			{
-				if (ownedElement)
+				if (ownedElement != element)
 				{
-					IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
-					if (renderer)
+					if (ownedElement)
 					{
-						renderer->SetRenderTarget(nullptr);
+						IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
+						if (renderer)
+						{
+							renderer->SetRenderTarget(nullptr);
+						}
 					}
-				}
-				ownedElement = element;
-				if (ownedElement)
-				{
-					IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
-					if (renderer)
+					ownedElement = element;
+					if (ownedElement)
 					{
-						renderer->SetRenderTarget(GetRenderTarget());
+						IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
+						if (renderer)
+						{
+							renderer->SetRenderTarget(GetRenderTarget());
+						}
 					}
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -221,7 +232,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetVisible(bool value)
 			{
-				visible=value;
+				visible = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			GuiGraphicsComposition::MinSizeLimitation GuiGraphicsComposition::GetMinSizeLimitation()
@@ -231,7 +243,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetMinSizeLimitation(MinSizeLimitation value)
 			{
-				minSizeLimitation=value;
+				minSizeLimitation = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			elements::IGuiGraphicsRenderTarget* GuiGraphicsComposition::GetRenderTarget()
@@ -305,21 +318,21 @@ GuiGraphicsComposition
 
 			GuiGraphicsComposition* GuiGraphicsComposition::FindComposition(Point location)
 			{
-				if(!visible) return 0;
-				Rect bounds=GetBounds();
-				Rect relativeBounds=Rect(Point(0, 0), bounds.GetSize());
-				if(relativeBounds.Contains(location))
+				if (!visible) return 0;
+				Rect bounds = GetBounds();
+				Rect relativeBounds = Rect(Point(0, 0), bounds.GetSize());
+				if (relativeBounds.Contains(location))
 				{
-					Rect clientArea=GetClientArea();
-					for(vint i=children.Count()-1;i>=0;i--)
+					Rect clientArea = GetClientArea();
+					for (vint i = children.Count() - 1; i >= 0; i--)
 					{
-						GuiGraphicsComposition* child=children[i];
-						Rect childBounds=child->GetBounds();
-						vint offsetX=childBounds.x1+(clientArea.x1-bounds.x1);
-						vint offsetY=childBounds.y1+(clientArea.y1-bounds.y1);
-						Point newLocation=location-Size(offsetX, offsetY);
-						GuiGraphicsComposition* childResult=child->FindComposition(newLocation);
-						if(childResult)
+						GuiGraphicsComposition* child = children[i];
+						Rect childBounds = child->GetBounds();
+						vint offsetX = childBounds.x1 + (clientArea.x1 - bounds.x1);
+						vint offsetY = childBounds.y1 + (clientArea.y1 - bounds.y1);
+						Point newLocation = location - Size(offsetX, offsetY);
+						GuiGraphicsComposition* childResult = child->FindComposition(newLocation);
+						if (childResult)
 						{
 							return childResult;
 						}
@@ -334,17 +347,17 @@ GuiGraphicsComposition
 
 			Rect GuiGraphicsComposition::GetGlobalBounds()
 			{
-				Rect bounds=GetBounds();
-				GuiGraphicsComposition* composition=parent;
-				while(composition)
+				Rect bounds = GetBounds();
+				GuiGraphicsComposition* composition = parent;
+				while (composition)
 				{
-					Rect clientArea=composition->GetClientArea();
-					Rect parentBounds=composition->GetBounds();
-					bounds.x1+=clientArea.x1;
-					bounds.x2+=clientArea.x1;
-					bounds.y1+=clientArea.y1;
-					bounds.y2+=clientArea.y1;
-					composition=composition->parent;
+					Rect clientArea = composition->GetClientArea();
+					Rect parentBounds = composition->GetBounds();
+					bounds.x1 += clientArea.x1;
+					bounds.x2 += clientArea.x1;
+					bounds.y1 += clientArea.y1;
+					bounds.y2 += clientArea.y1;
+					composition = composition->parent;
 				}
 				return bounds;
 			}
@@ -373,7 +386,7 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetAssociatedCursor(INativeCursor* cursor)
 			{
-				associatedCursor=cursor;
+				associatedCursor = cursor;
 			}
 
 			INativeWindowListener::HitTestResult GuiGraphicsComposition::GetAssociatedHitTestResult()
@@ -383,7 +396,7 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetAssociatedHitTestResult(INativeWindowListener::HitTestResult value)
 			{
-				associatedHitTestResult=value;
+				associatedHitTestResult = value;
 			}
 
 			controls::GuiControl* GuiGraphicsComposition::GetRelatedControl()
@@ -441,7 +454,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetMargin(Margin value)
 			{
-				margin=value;
+				margin = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Margin GuiGraphicsComposition::GetInternalMargin()
@@ -451,7 +465,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetInternalMargin(Margin value)
 			{
-				internalMargin=value;
+				internalMargin = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Size GuiGraphicsComposition::GetPreferredMinSize()
@@ -461,7 +476,8 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetPreferredMinSize(Size value)
 			{
-				preferredMinSize=value;
+				preferredMinSize = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Rect GuiGraphicsComposition::GetClientArea()
@@ -476,10 +492,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::ForceCalculateSizeImmediately()
 			{
-				for(vint i=0;i<children.Count();i++)
+				for (vint i = 0; i < children.Count(); i++)
 				{
 					children[i]->ForceCalculateSizeImmediately();
 				}
+				InvokeOnCompositionStateChanged();
 			}
 
 /***********************************************************************
@@ -488,25 +505,26 @@ GuiGraphicsSite
 
 			Rect GuiGraphicsSite::GetBoundsInternal(Rect expectedBounds)
 			{
-				Size minSize=GetMinPreferredClientSize();
-				if(minSize.x<preferredMinSize.x) minSize.x=preferredMinSize.x;
-				if(minSize.y<preferredMinSize.y) minSize.y=preferredMinSize.y;
+				Size minSize = GetMinPreferredClientSize();
+				if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
+				if (minSize.y < preferredMinSize.y) minSize.y = preferredMinSize.y;
 
-				minSize.x+=margin.left+margin.right+internalMargin.left+internalMargin.right;
-				minSize.y+=margin.top+margin.bottom+internalMargin.top+internalMargin.bottom;
-				vint w=expectedBounds.Width();
-				vint h=expectedBounds.Height();
-				if(minSize.x<w) minSize.x=w;
-				if(minSize.y<h) minSize.y=h;
+				minSize.x += margin.left + margin.right + internalMargin.left + internalMargin.right;
+				minSize.y += margin.top + margin.bottom + internalMargin.top + internalMargin.bottom;
+				vint w = expectedBounds.Width();
+				vint h = expectedBounds.Height();
+				if (minSize.x < w) minSize.x = w;
+				if (minSize.y < h) minSize.y = h;
 				return Rect(expectedBounds.LeftTop(), minSize);
 			}
 
 			void GuiGraphicsSite::UpdatePreviousBounds(Rect bounds)
 			{
-				if(previousBounds!=bounds)
+				if (previousBounds != bounds)
 				{
-					previousBounds=bounds;
+					previousBounds = bounds;
 					BoundsChanged.Execute(GuiEventArgs(this));
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -527,28 +545,28 @@ GuiGraphicsSite
 			Size GuiGraphicsSite::GetMinPreferredClientSize()
 			{
 				Size minSize;
-				if(minSizeLimitation!=GuiGraphicsComposition::NoLimit)
+				if (minSizeLimitation != GuiGraphicsComposition::NoLimit)
 				{
-					if(ownedElement)
+					if (ownedElement)
 					{
-						IGuiGraphicsRenderer* renderer=ownedElement->GetRenderer();
-						if(renderer)
+						IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
+						if (renderer)
 						{
-							minSize=renderer->GetMinSize();
+							minSize = renderer->GetMinSize();
 						}
 					}
 				}
-				if(minSizeLimitation==GuiGraphicsComposition::LimitToElementAndChildren)
+				if (minSizeLimitation == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					vint childCount=Children().Count();
-					for(vint i=0;i<childCount;i++)
+					vint childCount = Children().Count();
+					for (vint i = 0; i < childCount; i++)
 					{
-						GuiGraphicsComposition* child=children[i];
-						if(child->IsSizeAffectParent())
+						GuiGraphicsComposition* child = children[i];
+						if (child->IsSizeAffectParent())
 						{
-							Rect childBounds=child->GetPreferredBounds();
-							if(minSize.x<childBounds.x2) minSize.x=childBounds.x2;
-							if(minSize.y<childBounds.y2) minSize.y=childBounds.y2;
+							Rect childBounds = child->GetPreferredBounds();
+							if (minSize.x < childBounds.x2) minSize.x = childBounds.x2;
+							if (minSize.y < childBounds.y2) minSize.y = childBounds.y2;
 						}
 					}
 				}

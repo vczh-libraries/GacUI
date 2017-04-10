@@ -24,14 +24,16 @@ GuiWindowComposition
 
 			Rect GuiWindowComposition::GetBounds()
 			{
+				Rect bounds;
 				if (relatedHostRecord)
 				{
 					if (auto window = relatedHostRecord->host->GetNativeWindow())
 					{
-						return Rect(Point(0, 0), window->GetClientSize());
+						bounds = Rect(Point(0, 0), window->GetClientSize());
 					}
 				}
-				return Rect();
+				UpdatePreviousBounds(bounds);
+				return bounds;
 			}
 
 			void GuiWindowComposition::SetMargin(Margin value)
@@ -44,7 +46,6 @@ GuiBoundsComposition
 
 			GuiBoundsComposition::GuiBoundsComposition()
 			{
-				ClearAlignmentToParent();
 			}
 
 			GuiBoundsComposition::~GuiBoundsComposition()
@@ -53,28 +54,28 @@ GuiBoundsComposition
 
 			Rect GuiBoundsComposition::GetPreferredBounds()
 			{
-				Rect result=GetBoundsInternal(compositionBounds);
-				if(GetParent() && IsAlignedToParent())
+				Rect result = GetBoundsInternal(compositionBounds);
+				if (GetParent() && IsAlignedToParent())
 				{
-					if(alignmentToParent.left>=0)
+					if (alignmentToParent.left >= 0)
 					{
-						vint offset=alignmentToParent.left-result.x1;
-						result.x1+=offset;
-						result.x2+=offset;
+						vint offset = alignmentToParent.left - result.x1;
+						result.x1 += offset;
+						result.x2 += offset;
 					}
-					if(alignmentToParent.top>=0)
+					if (alignmentToParent.top >= 0)
 					{
-						vint offset=alignmentToParent.top-result.y1;
-						result.y1+=offset;
-						result.y2+=offset;
+						vint offset = alignmentToParent.top - result.y1;
+						result.y1 += offset;
+						result.y2 += offset;
 					}
-					if(alignmentToParent.right>=0)
+					if (alignmentToParent.right >= 0)
 					{
-						result.x2+=alignmentToParent.right;
+						result.x2 += alignmentToParent.right;
 					}
-					if(alignmentToParent.bottom>=0)
+					if (alignmentToParent.bottom >= 0)
 					{
-						result.y2+=alignmentToParent.bottom;
+						result.y2 += alignmentToParent.bottom;
 					}
 				}
 				return result;
@@ -82,44 +83,44 @@ GuiBoundsComposition
 
 			Rect GuiBoundsComposition::GetBounds()
 			{
-				Rect result=GetPreferredBounds();
-				if(GetParent() && IsAlignedToParent())
+				Rect result = GetPreferredBounds();
+				if (GetParent() && IsAlignedToParent())
 				{
-					Size clientSize=GetParent()->GetClientArea().GetSize();
-					if(alignmentToParent.left>=0 && alignmentToParent.right>=0)
+					Size clientSize = GetParent()->GetClientArea().GetSize();
+					if (alignmentToParent.left >= 0 && alignmentToParent.right >= 0)
 					{
-						result.x1=alignmentToParent.left;
-						result.x2=clientSize.x-alignmentToParent.right;
+						result.x1 = alignmentToParent.left;
+						result.x2 = clientSize.x - alignmentToParent.right;
 					}
-					else if(alignmentToParent.left>=0)
+					else if (alignmentToParent.left >= 0)
 					{
-						vint width=result.Width();
-						result.x1=alignmentToParent.left;
-						result.x2=result.x1+width;
+						vint width = result.Width();
+						result.x1 = alignmentToParent.left;
+						result.x2 = result.x1 + width;
 					}
-					else if(alignmentToParent.right>=0)
+					else if (alignmentToParent.right >= 0)
 					{
-						vint width=result.Width();
-						result.x2=clientSize.x-alignmentToParent.right;
-						result.x1=result.x2-width;
+						vint width = result.Width();
+						result.x2 = clientSize.x - alignmentToParent.right;
+						result.x1 = result.x2 - width;
 					}
 
-					if(alignmentToParent.top>=0 && alignmentToParent.bottom>=0)
+					if (alignmentToParent.top >= 0 && alignmentToParent.bottom >= 0)
 					{
-						result.y1=alignmentToParent.top;
-						result.y2=clientSize.y-alignmentToParent.bottom;
+						result.y1 = alignmentToParent.top;
+						result.y2 = clientSize.y - alignmentToParent.bottom;
 					}
-					else if(alignmentToParent.top>=0)
+					else if (alignmentToParent.top >= 0)
 					{
-						vint height=result.Height();
-						result.y1=alignmentToParent.top;
-						result.y2=result.y1+height;
+						vint height = result.Height();
+						result.y1 = alignmentToParent.top;
+						result.y2 = result.y1 + height;
 					}
-					else if(alignmentToParent.bottom>=0)
+					else if (alignmentToParent.bottom >= 0)
 					{
-						vint height=result.Height();
-						result.y2=clientSize.y-alignmentToParent.bottom;
-						result.y1=result.y2-height;
+						vint height = result.Height();
+						result.y2 = clientSize.y - alignmentToParent.bottom;
+						result.y1 = result.y2 - height;
 					}
 				}
 				UpdatePreviousBounds(result);
@@ -128,12 +129,8 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetBounds(Rect value)
 			{
-				compositionBounds=value;
-			}
-
-			void GuiBoundsComposition::ClearAlignmentToParent()
-			{
-				alignmentToParent=Margin(-1, -1, -1, -1);
+				compositionBounds = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Margin GuiBoundsComposition::GetAlignmentToParent()
@@ -143,12 +140,13 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetAlignmentToParent(Margin value)
 			{
-				alignmentToParent=value;
+				alignmentToParent = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			bool GuiBoundsComposition::IsAlignedToParent()
 			{
-				return alignmentToParent!=Margin(-1, -1, -1, -1);
+				return alignmentToParent != Margin(-1, -1, -1, -1);
 			}
 		}
 	}

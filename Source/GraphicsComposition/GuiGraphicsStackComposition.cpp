@@ -91,6 +91,7 @@ GuiStackComposition
 					}
 				}
 
+				InvokeOnCompositionStateChanged();
 #undef ADJUSTMENT
 			}
 
@@ -116,8 +117,8 @@ GuiStackComposition
 			void GuiStackComposition::OnChildRemoved(GuiGraphicsComposition* child)
 			{
 				GuiBoundsComposition::OnChildRemoved(child);
-				GuiStackItemComposition* item=dynamic_cast<GuiStackItemComposition*>(child);
-				if(item)
+				GuiStackItemComposition* item = dynamic_cast<GuiStackItemComposition*>(child);
+				if (item)
 				{
 					stackItems.Remove(item);
 					if (item == ensuringVisibleStackItem)
@@ -144,8 +145,8 @@ GuiStackComposition
 
 			bool GuiStackComposition::InsertStackItem(vint index, GuiStackItemComposition* item)
 			{
-				index=stackItems.Insert(index, item);
-				if(!AddChild(item))
+				index = stackItems.Insert(index, item);
+				if (!AddChild(item))
 				{
 					stackItems.RemoveAt(index);
 					return false;
@@ -197,7 +198,7 @@ GuiStackComposition
 						}
 					}
 					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
-					{	
+					{
 						if (minSize.y < stackItemTotalSize.y)
 						{
 							minSize.y = stackItemTotalSize.y;
@@ -376,6 +377,7 @@ GuiStackItemComposition
 			void GuiStackItemComposition::SetBounds(Rect value)
 			{
 				bounds = value;
+				InvokeOnCompositionStateChanged();
 			}
 
 			Margin GuiStackItemComposition::GetExtraMargin()
@@ -386,6 +388,7 @@ GuiStackItemComposition
 			void GuiStackItemComposition::SetExtraMargin(Margin value)
 			{
 				extraMargin = value;
+				InvokeOnCompositionStateChanged();
 			}
 		}
 	}

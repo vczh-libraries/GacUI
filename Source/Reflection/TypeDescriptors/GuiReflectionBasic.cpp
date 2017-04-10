@@ -685,7 +685,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(AlignmentToParent)
 				
-				CLASS_MEMBER_METHOD(ClearAlignmentToParent, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsAlignedToParent, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiBoundsComposition)
 

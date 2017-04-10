@@ -20,6 +20,7 @@ GuiSharedSizeItemComposition
 				{
 					parentRoot->ForceCalculateSizeImmediately();
 				}
+				InvokeOnCompositionStateChanged();
 			}
 
 			void GuiSharedSizeItemComposition::OnParentLineChanged()

@@ -42,7 +42,7 @@ Basic Compositions
 			{
 			protected:
 				Rect								compositionBounds;
-				Margin								alignmentToParent;
+				Margin								alignmentToParent{ -1,-1,-1,-1 };
 				
 			public:
 				GuiBoundsComposition();
@@ -54,8 +54,6 @@ Basic Compositions
 				/// <param name="value">The expected bounds.</param>
 				void								SetBounds(Rect value);
 
-				/// <summary>Make the composition not aligned to its parent.</summary>
-				void								ClearAlignmentToParent();
 				/// <summary>Get the alignment to its parent. -1 in each alignment component means that the corressponding side is not aligned to its parent.</summary>
 				/// <returns>The alignment to its parent.</returns>
 				Margin								GetAlignmentToParent();
