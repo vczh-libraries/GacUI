@@ -689,10 +689,7 @@ GuiColorizedTextElement
 			{
 				CopyFrom(colors, value);
 				if(callback) callback->ColorChanged();
-				if(renderer)
-				{
-					renderer->OnElementStateChanged();
-				}
+				InvokeOnElementStateChanged();
 			}
 
 			void GuiColorizedTextElement::ResetTextColorIndex(vint index)
@@ -724,10 +721,7 @@ GuiColorizedTextElement
 					{
 						callback->FontChanged();
 					}
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -741,10 +735,7 @@ GuiColorizedTextElement
 				if(lines.GetPasswordChar()!=value)
 				{
 					lines.SetPasswordChar(value);
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -758,10 +749,7 @@ GuiColorizedTextElement
 				if(viewPosition!=value)
 				{
 					viewPosition=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -775,10 +763,7 @@ GuiColorizedTextElement
 				if(isVisuallyEnabled!=value)
 				{
 					isVisuallyEnabled=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -792,10 +777,7 @@ GuiColorizedTextElement
 				if(isFocused!=value)
 				{
 					isFocused=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -839,10 +821,7 @@ GuiColorizedTextElement
 				if(caretColor!=value)
 				{
 					caretColor=value;
-					if(renderer)
-					{
-						renderer->OnElementStateChanged();
-					}
+					InvokeOnElementStateChanged();
 				}
 			}
 		}

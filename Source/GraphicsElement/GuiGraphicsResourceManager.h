@@ -131,6 +131,14 @@ Resource Manager
 			protected:\
 				IGuiGraphicsElementFactory*		factory;\
 				Ptr<IGuiGraphicsRenderer>		renderer;\
+			protected:\
+				void InvokeOnElementStateChanged()\
+				{\
+					if (renderer)\
+					{\
+						renderer->OnElementStateChanged();\
+					}\
+				}\
 			public:\
 				static WString GetElementTypeName()\
 				{\

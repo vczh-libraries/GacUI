@@ -804,11 +804,8 @@ GuiDocumentElement
 			void GuiDocumentElement::SetDocument(Ptr<DocumentModel> value)
 			{
 				document=value;
-				if(renderer)
-				{
-					renderer->OnElementStateChanged();
-					SetCaret(TextPos(), TextPos(), false);
-				}
+				InvokeOnElementStateChanged();
+				SetCaret(TextPos(), TextPos(), false);
 			}
 
 			TextPos GuiDocumentElement::GetCaretBegin()
