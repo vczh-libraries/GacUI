@@ -38,17 +38,25 @@ namespace vl
 			void Visit(WfVirtualExpression* node)override
 			{
 				traverse_visitor::ExpressionVisitor::Visit(node);
-				auto record = sp->nodePositions[node];
-				Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+				}
 			}
 
 			void Visit(WfVirtualDeclaration* node)override
 			{
 				traverse_visitor::DeclarationVisitor::Visit(node);
-				auto record = sp->nodePositions[node];
-				FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
 				{
-					Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
+					auto record = sp->nodePositions.Values()[index];
+					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					{
+						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
+					}
 				}
 			}
 		};
