@@ -2603,6 +2603,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiScrollContainer::IStyleProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BaselineDocument)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretColor)
 			END_INTERFACE_MEMBER(GuiDocumentViewer::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentLabel)

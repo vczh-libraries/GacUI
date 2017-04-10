@@ -3043,16 +3043,21 @@ Helpers
 					ownerComposition = composition;
 				}
 
+				void InvokeOnCompositionStateChanged()
+				{
+					if (ownerComposition)
+					{
+						compositions::InvokeOnCompositionStateChanged(ownerComposition);
+					}
+				}
+
 				void InvokeOnElementStateChanged()
 				{
 					if (renderer)
 					{
 						renderer->OnElementStateChanged();
 					}
-					if (ownerComposition)
-					{
-						compositions::InvokeOnCompositionStateChanged(ownerComposition);
-					}
+					InvokeOnCompositionStateChanged();
 				}
 			public:
 				static TElement* Create()
@@ -7985,6 +7990,7 @@ Host
 				static const vuint64_t					CaretInterval = 500;
 			protected:
 				HostRecord								hostRecord;
+				bool									supressPaint = false;
 				bool									needRender = true;
 
 				IGuiShortcutKeyManager*					shortcutKeyManager;
@@ -14908,6 +14914,7 @@ GuiDocumentCommonInterface
 				};
 			protected:
 				Ptr<DocumentModel>							baselineDocument;
+				Color										caretColor;
 				DocumentItemMap								documentItems;
 				GuiControl*									documentControl;
 				elements::GuiDocumentElement*				documentElement;
@@ -14952,7 +14959,7 @@ GuiDocumentCommonInterface
 				void										OnFinishRender()override;
 				Size										OnRenderEmbeddedObject(const WString& name, const Rect& location)override;
 			public:
-				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument);
+				GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor = {});
 				~GuiDocumentCommonInterface();
 
 				/// <summary>Active hyperlink changed event.</summary>
@@ -15172,6 +15179,9 @@ GuiDocumentViewer
 					/// <summary>Get a baseline document for customize default styles.</summary>
 					/// <returns>The baseline document.</returns>
 					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
+					/// <summary>Get the caret color.</summary>
+					/// <returns>The caret color.</returns>
+					virtual Color							GetCaretColor() = 0;
 				};
 			protected:
 
@@ -18489,6 +18499,7 @@ Control Template
 
 #define GuiDocumentViewerTemplate_PROPERTIES(F)\
 				F(GuiDocumentViewerTemplate, Ptr<DocumentModel>, BaselineDocument)\
+				F(GuiDocumentViewerTemplate, Color, CaretColor)\
 
 				GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -18950,6 +18961,7 @@ Control Template
 				~GuiDocumentViewerTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
+				Color															GetCaretColor()override;
 			};
 
 			class GuiTextListTemplate_StyleProvider
@@ -20311,6 +20323,7 @@ TextBox
 				~Win7DocumentViewerStyle();
 
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 
 			/// <summary>Document label style (Windows 7).</summary>
@@ -21220,6 +21233,7 @@ TextBox
 				~Win8DocumentViewerStyle();
 
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 
 			/// <summary>Document label style (Windows 8).</summary>

@@ -18547,6 +18547,11 @@ Win7DocumentViewerStyle
 				return nullptr;
 			}
 
+			Color Win7DocumentViewerStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
+			}
+
 /***********************************************************************
 Win7DocumentlabelStyle
 ***********************************************************************/
@@ -22655,6 +22660,11 @@ Win8DocumentViewerStyle
 				return nullptr;
 			}
 
+			Color Win8DocumentViewerStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
+			}
+
 /***********************************************************************
 Win8DocumentlabelStyle
 ***********************************************************************/
@@ -25371,6 +25381,11 @@ GuiDocumentViewerTemplate_StyleProvider
 				return controlTemplate->GetBaselineDocument();
 			}
 
+			Color GuiDocumentViewerTemplate_StyleProvider::GetCaretColor()
+			{
+				return controlTemplate->GetCaretColor();
+			}
+
 /***********************************************************************
 GuiTextListTemplate_StyleProvider::ItemStyleProvider
 ***********************************************************************/
@@ -26604,6 +26619,7 @@ GuiDocumentCommonInterface
 
 				documentElement=GuiDocumentElement::Create();
 				documentElement->SetCallback(this);
+				documentElement->SetCaretColor(caretColor);
 
 				documentComposition=new GuiBoundsComposition;
 				documentComposition->SetOwnedElement(documentElement);
@@ -26968,8 +26984,9 @@ GuiDocumentCommonInterface
 
 			//================ basic
 
-			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument)
+			GuiDocumentCommonInterface::GuiDocumentCommonInterface(Ptr<DocumentModel> _baselineDocument, Color _caretColor)
 				:baselineDocument(_baselineDocument)
+				,caretColor(_caretColor)
 				,documentElement(0)
 				,documentComposition(0)
 				,activeHyperlinkParagraph(-1)
@@ -37172,7 +37189,7 @@ GuiDocumentElement
 					{
 						elementRenderer->CloseCaret(caretEnd);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37306,7 +37323,7 @@ GuiDocumentElement
 				if (elementRenderer)
 				{
 					elementRenderer->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37327,7 +37344,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37348,7 +37365,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37368,7 +37385,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37388,7 +37405,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, 1, true);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37408,7 +37425,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37428,7 +37445,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(paragraphIndex, 1, 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37448,7 +37465,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37468,7 +37485,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37478,7 +37495,6 @@ GuiDocumentElement
 				if (elementRenderer)
 				{
 					document->RenameStyle(oldStyleName, newStyleName);
-					InvokeOnElementStateChanged();
 				}
 			}
 
@@ -37498,7 +37514,7 @@ GuiDocumentElement
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, end.row - begin.row + 1, false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -37541,7 +37557,7 @@ GuiDocumentElement
 						}
 						elementRenderer->NotifyParagraphUpdated(first, alignments.Count(), alignments.Count(), false);
 					}
-					InvokeOnElementStateChanged();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -38727,6 +38743,10 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Paint()
 			{
+				if (!supressPaint)
+				{
+					needRender = true;
+				}
 			}
 
 			void GuiGraphicsHost::LeftButtonDown(const NativeWindowMouseInfo& info)
@@ -39079,10 +39099,12 @@ GuiGraphicsHost
 
 				if(hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
 				{
+					supressPaint = true;
 					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(Size());
 					bool success = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();
+					supressPaint = false;
 
 					if (!success)
 					{

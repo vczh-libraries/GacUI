@@ -174,6 +174,7 @@ Host
 				static const vuint64_t					CaretInterval = 500;
 			protected:
 				HostRecord								hostRecord;
+				bool									supressPaint = false;
 				bool									needRender = true;
 
 				IGuiShortcutKeyManager*					shortcutKeyManager;

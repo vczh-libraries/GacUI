@@ -557,6 +557,10 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::Paint()
 			{
+				if (!supressPaint)
+				{
+					needRender = true;
+				}
 			}
 
 			void GuiGraphicsHost::LeftButtonDown(const NativeWindowMouseInfo& info)
@@ -909,10 +913,12 @@ GuiGraphicsHost
 
 				if(hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
 				{
+					supressPaint = true;
 					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(Size());
 					bool success = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();
+					supressPaint = false;
 
 					if (!success)
 					{
