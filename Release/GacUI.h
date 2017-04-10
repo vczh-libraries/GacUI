@@ -5002,6 +5002,7 @@ namespace vl
 	{
 		namespace elements
 		{
+			class GuiColorizedTextElement;
 
 /***********************************************************************
 Colorized Plain Text (model)
@@ -5139,7 +5140,7 @@ Colorized Plain Text (model)
 					/// Bind a render target to this character measurer.
 					/// </summary>
 					/// <param name="value">The render target to bind.</param>
-					void							SetRenderTarget(IGuiGraphicsRenderTarget* value);
+					void								SetRenderTarget(IGuiGraphicsRenderTarget* value);
 					/// <summary>
 					/// Measure the width of a character using the binded render target.
 					/// </summary>
@@ -5160,6 +5161,7 @@ Colorized Plain Text (model)
 				{
 					typedef collections::List<TextLine>		TextLineList;
 				protected:
+					GuiColorizedTextElement*		ownerElement;
 					TextLineList					lines;
 					CharMeasurer*					charMeasurer;
 					IGuiGraphicsRenderTarget*		renderTarget;
@@ -5167,7 +5169,7 @@ Colorized Plain Text (model)
 					vint							tabSpaceCount;
 					wchar_t							passwordChar;
 				public:
-					TextLines();
+					TextLines(GuiColorizedTextElement* _ownerElement);
 					~TextLines();
 
 					/// <summary>
@@ -5400,6 +5402,7 @@ Colorized Plain Text (element)
 			{
 				DEFINE_GUI_GRAPHICS_ELEMENT(GuiColorizedTextElement, L"ColorizedText");
 
+				friend class text::TextLines;
 				typedef collections::Array<text::ColorEntry>			ColorArray;
 			public:
 				/// <summary>

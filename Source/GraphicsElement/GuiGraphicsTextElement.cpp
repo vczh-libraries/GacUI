@@ -178,8 +178,9 @@ text::CharMeasurer
 text::TextLines
 ***********************************************************************/
 
-				TextLines::TextLines()
-					:charMeasurer(0)
+				TextLines::TextLines(GuiColorizedTextElement* _ownerElement)
+					:ownerElement(_ownerElement)
+					,charMeasurer(0)
 					,renderTarget(0)
 					,tabWidth(1)
 					,tabSpaceCount(4)
@@ -340,6 +341,10 @@ text::TextLines
 				TextPos TextLines::Modify(TextPos start, TextPos end, const wchar_t** inputs, vint* inputCounts, vint rows)
 				{
 					if(!IsAvailable(start) || !IsAvailable(end) || start>end) return TextPos(-1, -1);
+					if (ownerElement)
+					{
+						ownerElement->InvokeOnElementStateChanged();
+					}
 
 					if(rows==1)
 					{
@@ -441,6 +446,10 @@ text::TextLines
 					TextLine line;
 					line.Initialize();
 					lines.Add(line);
+					if (ownerElement)
+					{
+						ownerElement->InvokeOnElementStateChanged();
+					}
 				}
 
 				//--------------------------------------------------------
@@ -458,6 +467,10 @@ text::TextLines
 					if(tabWidth==0)
 					{
 						tabWidth=1;
+					}
+					if (ownerElement)
+					{
+						ownerElement->InvokeOnElementStateChanged();
 					}
 				}
 
@@ -658,6 +671,7 @@ GuiColorizedTextElement
 				,isVisuallyEnabled(true)
 				,isFocused(false)
 				,caretVisible(false)
+				,lines(this)
 			{
 			}
 
@@ -789,6 +803,7 @@ GuiColorizedTextElement
 			void GuiColorizedTextElement::SetCaretBegin(TextPos value)
 			{
 				caretBegin=value;
+				InvokeOnElementStateChanged();
 			}
 
 			TextPos GuiColorizedTextElement::GetCaretEnd()
@@ -799,6 +814,7 @@ GuiColorizedTextElement
 			void GuiColorizedTextElement::SetCaretEnd(TextPos value)
 			{
 				caretEnd=value;
+				InvokeOnElementStateChanged();
 			}
 
 			bool GuiColorizedTextElement::GetCaretVisible()
@@ -809,6 +825,7 @@ GuiColorizedTextElement
 			void GuiColorizedTextElement::SetCaretVisible(bool value)
 			{
 				caretVisible=value;
+				InvokeOnElementStateChanged();
 			}
 
 			Color GuiColorizedTextElement::GetCaretColor()

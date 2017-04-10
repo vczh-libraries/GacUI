@@ -409,7 +409,7 @@ GuiGrammarAutoComplete
 					else
 					{
 						// initialize a TextLines with the latest modifiedCode
-						text::TextLines lines;
+						text::TextLines lines(nullptr);
 						lines.SetText(newContext.modifiedCode);
 						FOREACH(TextEditNotifyStruct, trace, usedTrace)
 						{
