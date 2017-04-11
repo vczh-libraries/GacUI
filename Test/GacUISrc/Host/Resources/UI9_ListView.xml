@@ -38,9 +38,9 @@
 
               <att.Columns>
                 <ListViewColumn Text="Name"/>
-                <ListViewColumn Text="Birthday"/>
-                <ListViewColumn Text="Phone"/>
-                <ListViewColumn Text="Address"/>
+                <ListViewColumn Text="Owner"/>
+                <ListViewColumn Text="Languages"/>
+                <ListViewColumn Text="Ranking"/>
               </att.Columns>
 
               <att.DataColumns>
@@ -50,25 +50,25 @@
               </att.DataColumns>
 
               <att.Items>
-                <ListViewItem Text="A">
+                <ListViewItem Text="Visual Studio">
                   <att.SubItems>
-                    <String>X1</String>
-                    <String>Y1</String>
-                    <String>Z1</String>
+                    <String>Microsoft</String>
+                    <String>C++, C#, VB.NET, F#, JavaScript, Python</String>
+                    <String>1</String>
                   </att.SubItems>
                 </ListViewItem>
-                <ListViewItem Text="B">
+                <ListViewItem Text="Borland Delphi Studio">
                   <att.SubItems>
-                    <String>X2</String>
-                    <String>Y2</String>
-                    <String>Z2</String>
+                    <String>Borland</String>
+                    <String>Object Pascal, C++, C#, VB.NET</String>
+                    <String>2</String>
                   </att.SubItems>
                 </ListViewItem>
-                <ListViewItem Text="C">
+                <ListViewItem Text="JetBrains Clion">
                   <att.SubItems>
-                    <String>X3</String>
-                    <String>Y3</String>
-                    <String>Z3</String>
+                    <String>JetBrains</String>
+                    <String>C++</String>
+                    <String>3</String>
                   </att.SubItems>
                 </ListViewItem>
               </att.Items>

@@ -254,13 +254,15 @@ List Control
 
 				class ItemCallback : public IItemProviderCallback, public IItemArrangerCallback
 				{
-					typedef collections::List<IItemStyleController*>			StyleList;
+					typedef collections::List<IItemStyleController*>													StyleList;
+					typedef collections::Dictionary<IItemStyleController*, Ptr<compositions::IGuiGraphicsEventHandler>>	InstalledStyleMap;
 				protected:
 					GuiListControl*								listControl;
 					IItemProvider*								itemProvider;
 					StyleList									cachedStyles;
-					StyleList									installedStyles;
+					InstalledStyleMap							installedStyles;
 
+					void										OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					ItemCallback(GuiListControl* _listControl);
 					~ItemCallback();
