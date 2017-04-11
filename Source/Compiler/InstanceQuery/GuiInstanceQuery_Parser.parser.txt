@@ -2,9 +2,14 @@ include:"../../../Import/Vlpp.h"
 namespace:vl.presentation
 reflection:presentation
 classPrefix:GuiIq
+classRoot:Query
 guard:VCZH_PRESENTATION_REFLECTION_INSTANCEQUERY_GUIINSTANCEQUERY_PARSER
-serialization:enabled
 parser:Parse(QueryRoot)
+filePrefix:GuiInstanceQuery
+file:Ast(_Ast)
+file:Parser(_Parser)
+serialization:enabled
+ambiguity:disabled
 grammar:
 
 class Query

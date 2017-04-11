@@ -477,6 +477,9 @@
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowScriptPosition.cpp">
       <Filter>GacUI\Compiler\WorkflowCodegen</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.cpp">
+      <Filter>GacUI\Compiler\InstanceQuery</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -811,6 +814,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\GacUIReflectionHelper.h">
       <Filter>GacUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.h">
+      <Filter>GacUI\Compiler\InstanceQuery</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

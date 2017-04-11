@@ -276,6 +276,7 @@
     <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.cpp" />
     <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -456,6 +457,7 @@
     <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.h" />
     <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClInclude>
