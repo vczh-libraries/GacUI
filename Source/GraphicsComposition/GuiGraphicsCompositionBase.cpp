@@ -84,12 +84,12 @@ GuiGraphicsComposition
 				{
 					associatedControl->OnRenderTargetChanged(renderTarget);
 				}
-				OnRenderContextChanged();
 
 				for (vint i = 0; i < children.Count(); i++)
 				{
 					children[i]->UpdateRelatedHostRecord(record);
 				}
+				OnRenderContextChanged();
 			}
 
 			void GuiGraphicsComposition::SetAssociatedControl(controls::GuiControl* control)

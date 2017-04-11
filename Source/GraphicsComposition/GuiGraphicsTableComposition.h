@@ -119,7 +119,6 @@ Table Compositions
 				collections::Array<vint>					rowSizes;
 				collections::Array<vint>					columnSizes;
 
-				Rect										previousBounds;
 				Size										previousContentMinSize;
 				Size										tableContentMinSize;
 
