@@ -27,6 +27,11 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
+namespace vl_workflow_global
+{
+	struct __vwsno1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+}
+
 namespace demo
 {
 	class MainWindowConstructor;
@@ -34,33 +39,34 @@ namespace demo
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
 	{
+		friend struct ::vl_workflow_global::__vwsno1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
+		::vl::presentation::controls::GuiComboBoxListControl* comboBox = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
+		::vl::presentation::controls::GuiListView* listView = static_cast<::vl::presentation::controls::GuiListView*>(nullptr);
 		::demo::MainWindow* __vwsn_precompile_0 = static_cast<::demo::MainWindow*>(nullptr);
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiComboBoxListControl* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
-		::vl::presentation::controls::GuiTextList* __vwsn_precompile_4 = static_cast<::vl::presentation::controls::GuiTextList*>(nullptr);
+		::vl::presentation::controls::GuiTextList* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiTextList*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_10 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiListView* __vwsn_precompile_13 = static_cast<::vl::presentation::controls::GuiListView*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_12 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_13 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
 		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_14 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
 		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_15 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_16 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
 		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_21 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		MainWindowConstructor();
@@ -78,6 +84,20 @@ namespace vl_workflow_global
 	public:
 
 		static Demo& Instance();
+	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsno1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindow* __vwsn_this_;
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsno1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindow* __vwsnctor___vwsn_this_, ::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* __vwsno_1, ::vl::presentation::compositions::GuiEventArgs* __vwsno_2) const;
 	};
 }
 

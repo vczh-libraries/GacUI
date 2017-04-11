@@ -15,7 +15,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <ComboBox SelectedIndex="5">
+            <ComboBox ref.Name="comboBox" SelectedIndex="5" ev.SelectedIndexChanged="comboBox_SelectedIndexChanged">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
                 <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
@@ -33,7 +33,7 @@
           </Cell>
 
           <Cell Site="row:1 column:0 columnSpan:2">
-            <ListView View="Detail" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+            <ListView ref.Name="listView" View="Detail" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
               <att.Columns>

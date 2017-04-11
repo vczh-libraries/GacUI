@@ -31,6 +31,32 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
+	USERIMPL(/* ::demo::MainWindow */)
+	void MainWindow::comboBox_SelectedIndexChanged(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
+	{
+		switch (comboBox->GetSelectedIndex())
+		{
+		case 0:
+			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewBigIconContentProvider);
+			break;
+		case 1:
+			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewSmallIconContentProvider);
+			break;
+		case 2:
+			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewListContentProvider);
+			break;
+		case 3:
+			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewTileContentProvider);
+			break;
+		case 4:
+			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewInformationContentProvider);
+			break;
+		case 5:
+			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewDetailContentProvider);
+			break;
+		}
+	}
+
 	MainWindow::MainWindow()
 		: ::vl::presentation::controls::GuiWindow(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateWindowStyle())
 	{
