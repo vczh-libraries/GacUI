@@ -26,6 +26,13 @@
         <ComboBox Text="Missing Constructor Argument"/>
 
         <String>Not A Control Or Composition</String>
+
+        <Table>
+          <att.Columns>
+            <_ ref.Name="notAReferenceType"/>
+            <_>Wrong!</_>
+          </att.Columns>
+        </Table>
       </Window>
     </Instance>
   </Instance>

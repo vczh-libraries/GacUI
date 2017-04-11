@@ -197,21 +197,48 @@ WorkflowEventNamesVisitor
 			void Visit(GuiConstructorRepr* repr)override
 			{
 				auto context = resolvingResult.context;
-				if (repr == context->instance.Obj())
+
+				bool inferType = repr->typeNamespace == GlobalStringKey::Empty&&repr->typeName == GlobalStringKey::_InferType;
+
+				bool noContextToInfer = false;
+				if (inferType)
 				{
-					auto fullName = GlobalStringKey::Get(context->className);
-					if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
+					if (candidatePropertyTypeInfos.Count() == 1)
 					{
-						resolvedTypeInfo.typeName = fullName;
-						resolvedTypeInfo.typeDescriptor = reprTd;
+						auto info = candidatePropertyTypeInfos[0].info;
+						if (info->acceptableTypes.Count() == 1)
+						{
+							auto td = info->acceptableTypes[0];
+							resolvedTypeInfo.typeDescriptor = td;
+							resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+						}
+						else if (info->acceptableTypes.Count() == 0)
+						{
+							noContextToInfer = true;
+						}
+					}
+					else if (candidatePropertyTypeInfos.Count() == 0)
+					{
+						noContextToInfer = true;
 					}
 				}
-
-				if (!resolvedTypeInfo.typeDescriptor)
+				else
 				{
-					auto source = FindInstanceLoadingSource(context, repr);
-					resolvedTypeInfo.typeName = source.typeName;
-					resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+					if (repr == context->instance.Obj())
+					{
+						auto fullName = GlobalStringKey::Get(context->className);
+						if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
+						{
+							resolvedTypeInfo.typeName = fullName;
+							resolvedTypeInfo.typeDescriptor = reprTd;
+						}
+					}
+					if (!resolvedTypeInfo.typeDescriptor)
+					{
+						auto source = FindInstanceLoadingSource(context, repr);
+						resolvedTypeInfo.typeName = source.typeName;
+						resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+					}
 				}
 
 				if (resolvedTypeInfo.typeDescriptor)
@@ -228,6 +255,19 @@ WorkflowEventNamesVisitor
 						}
 					}
 					Visit((GuiAttSetterRepr*)repr);
+				}
+				else if (inferType)
+				{
+					if (noContextToInfer)
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
+							L"Precompile: Unable to resolve type \"_\" without any context."));
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
+							L"Precompile: Unable to resolve type \"_\" since the current property accepts multiple types."));
+					}
 				}
 				else
 				{

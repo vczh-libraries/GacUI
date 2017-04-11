@@ -8,3 +8,5 @@ i2 # .\Resource.FailedInstance.Ctor1.xml
 (13, 11): Error happened during parsing.
 (18, 18): Error happened during parsing.
 (23, 18): Error happened during parsing.
+i3 # .\Resource.FailedInstance.Ctor1.xml
+(32, 7): Precompile: Failed to find type "_".

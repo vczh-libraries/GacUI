@@ -26,4 +26,10 @@
       <Window/>
     </Instance>
   </Instance>
+
+  <Instance name="i3">
+    <Instance ref.Class="InferType">
+      <_/>
+    </Instance>
+  </Instance>
 </Resource>

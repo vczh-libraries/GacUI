@@ -433,31 +433,39 @@ WorkflowReferenceNamesVisitor
 			{
 				bool found = false;
 
-				if (repr == resolvingResult.context->instance.Obj())
+				bool inferType = repr->typeNamespace == GlobalStringKey::Empty&&repr->typeName == GlobalStringKey::_InferType;
+				if (inferType)
 				{
-					auto fullName = GlobalStringKey::Get(resolvingResult.context->className);
-					auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName);
-					if (td)
+					if (candidatePropertyTypeInfos.Count() == 1)
 					{
-						found = true;
-						resolvedTypeInfo.typeName = fullName;
-						resolvedTypeInfo.typeDescriptor = td;
+						auto info = candidatePropertyTypeInfos[0].info;
+						if (info->acceptableTypes.Count() == 1)
+						{
+							auto td = info->acceptableTypes[0];
+							resolvedTypeInfo.typeDescriptor = td;
+							resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+						}
 					}
 				}
-
-				if (!found)
+				else
 				{
-					auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
-					resolvedTypeInfo.typeName = source.typeName;
-					resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
-				}
-
-				if (!found)
-				{
-					if (repr->typeNamespace == GlobalStringKey::Empty && repr->typeName.ToString() == L"Int")
+					if (repr == resolvingResult.context->instance.Obj())
 					{
-						resolvedTypeInfo.typeDescriptor = description::GetTypeDescriptor<vint>();
-						resolvedTypeInfo.typeName = GlobalStringKey::Get(resolvedTypeInfo.typeDescriptor->GetTypeName());
+						auto fullName = GlobalStringKey::Get(resolvingResult.context->className);
+						auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName);
+						if (td)
+						{
+							found = true;
+							resolvedTypeInfo.typeName = fullName;
+							resolvedTypeInfo.typeDescriptor = td;
+						}
+					}
+
+					if (!found)
+					{
+						auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
+						resolvedTypeInfo.typeName = source.typeName;
+						resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 					}
 				}
 

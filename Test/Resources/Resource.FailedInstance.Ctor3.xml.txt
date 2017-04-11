@@ -15,3 +15,7 @@ i1 # .\Resource.FailedInstance.Ctor3.xml
 (22, 30): Unrecognizable token: "!".
 (26, 9): Precompile: Missing constructor argument "ListControl" of type "presentation::controls::GuiComboBox".
 (28, 9): Precompile: Property "" of type "MainWindow" does not accept a value of type "system::String" because it only accepts value of the following types: "presentation::controls::GuiControl", "presentation::compositions::GuiGraphicsComposition", "presentation::controls::GuiComponent".
+(31, 11): Precompile: When you assign to property "Columns" of type "presentation::compositions::GuiTableComposition", the following missing properties are required: "Rows".
+(32, 13): Precompile: Reference name "notAReferenceType" cannot be added to a non-reference instance of type "presentation::compositions::GuiCellOption".
+(32, 13): Precompile: Type "presentation::compositions::GuiCellOption" cannot be used to create an instance.
+(33, 21): Unrecognizable token: "!".
