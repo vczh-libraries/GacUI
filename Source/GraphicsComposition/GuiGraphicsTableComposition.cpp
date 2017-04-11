@@ -593,6 +593,7 @@ GuiTableComposition
 
 				if (previousContentBounds != result || cellMinSizeModified)
 				{
+					previousContentBounds = result;
 					UpdateCellBounds();
 					InvokeOnCompositionStateChanged();
 				}
