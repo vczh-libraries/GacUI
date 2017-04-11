@@ -1627,6 +1627,13 @@ Windows Platform Native Controller
 
 			void EnableCrossKernelCrashing()
 			{
+				/*
+				"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
+					DWORD DisableUserModeCallbackFilter = 1
+
+				"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\TestCppCodegen.exe"
+					DWORD DisableUserModeCallbackFilter = 1
+				*/
 				typedef BOOL (WINAPI *tGetPolicy)(LPDWORD lpFlags); 
 				typedef BOOL (WINAPI *tSetPolicy)(DWORD dwFlags); 
 				const DWORD EXCEPTION_SWALLOWING = 0x1;

@@ -309,6 +309,13 @@ GuiGraphicsHost
 				}
 			}
 
+			void GuiGraphicsHost::RefreshRelatedHostRecord(INativeWindow* nativeWindow)
+			{
+				hostRecord.nativeWindow = nativeWindow;
+				hostRecord.renderTarget = nativeWindow ? GetGuiGraphicsResourceManager()->GetRenderTarget(nativeWindow) : nullptr;
+				windowComposition->UpdateRelatedHostRecord(&hostRecord);
+			}
+
 			void GuiGraphicsHost::DisconnectCompositionInternal(GuiGraphicsComposition* composition)
 			{
 				for(vint i=0;i<composition->Children().Count();i++)
@@ -855,8 +862,8 @@ GuiGraphicsHost
 			{
 				hostRecord.host = this;
 				windowComposition=new GuiWindowComposition;
-				windowComposition->UpdateRelatedHostRecord(&hostRecord);
 				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				RefreshRelatedHostRecord(nullptr);
 			}
 
 			GuiGraphicsHost::~GuiGraphicsHost()
@@ -883,18 +890,18 @@ GuiGraphicsHost
 						GetCurrentController()->CallbackService()->UninstallListener(this);
 						hostRecord.nativeWindow->UninstallListener(this);
 					}
-					hostRecord.nativeWindow = _nativeWindow;
-					hostRecord.renderTarget = _nativeWindow ? GetGuiGraphicsResourceManager()->GetRenderTarget(_nativeWindow) : nullptr;
-					windowComposition->UpdateRelatedHostRecord(&hostRecord);
-					if (hostRecord.nativeWindow)
+
+					if (_nativeWindow)
 					{
-						hostRecord.nativeWindow->InstallListener(this);
+						_nativeWindow->InstallListener(this);
 						GetCurrentController()->CallbackService()->InstallListener(this);
-						previousClientSize = hostRecord.nativeWindow->GetClientSize();
+						previousClientSize = _nativeWindow->GetClientSize();
 						minSize = windowComposition->GetPreferredBounds().GetSize();
-						hostRecord.nativeWindow->SetCaretPoint(caretPoint);
+						_nativeWindow->SetCaretPoint(caretPoint);
 						needRender = true;
 					}
+
+					RefreshRelatedHostRecord(_nativeWindow);
 				}
 			}
 
@@ -916,16 +923,27 @@ GuiGraphicsHost
 					supressPaint = true;
 					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(Size());
-					bool success = hostRecord.renderTarget->StopRendering();
+					auto result = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();
 					supressPaint = false;
 
-					if (!success)
+					switch (result)
 					{
-						windowComposition->UpdateRelatedHostRecord(nullptr);
-						GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
-						windowComposition->UpdateRelatedHostRecord(&hostRecord);
-						needRender = true;
+					case RenderTargetFailure::ResizeWhileRendering:
+						{
+							GetGuiGraphicsResourceManager()->ResizeRenderTarget(hostRecord.nativeWindow);
+							needRender = true;
+						}
+						break;
+					case RenderTargetFailure::LostDevice:
+						{
+							windowComposition->UpdateRelatedHostRecord(nullptr);
+							GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
+							RefreshRelatedHostRecord(hostRecord.nativeWindow);
+							needRender = true;
+						}
+						break;
+					default:;
 					}
 				}
 			}

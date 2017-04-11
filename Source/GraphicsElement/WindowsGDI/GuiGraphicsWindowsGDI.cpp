@@ -70,10 +70,10 @@ WindowsGDIRenderTarget
 					dc=GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 
-				bool StopRendering()override
+				RenderTargetFailure StopRendering()override
 				{
 					dc = 0;
-					return true;
+					return RenderTargetFailure::None;
 				}
 
 				void PushClipper(Rect clipper)override
@@ -342,6 +342,10 @@ WindowsGDIResourceManager
 				}
 
 				void RecreateRenderTarget(INativeWindow* window)override
+				{
+				}
+
+				void ResizeRenderTarget(INativeWindow* window)override
 				{
 				}
 

@@ -78,6 +78,11 @@ Resource Manager
 				/// <param name="window">The specified window.</param>
 				virtual void							RecreateRenderTarget(INativeWindow* window) = 0;
 				/// <summary>
+				/// Resize the render target to fit the current window size.
+				/// </summary>
+				/// <param name="window">The specified window.</param>
+				virtual void							ResizeRenderTarget(INativeWindow* window) = 0;
+				/// <summary>
 				/// Get the renderer awared rich text document layout engine provider object.
 				/// </summary>
 				/// <returns>Returns the layout provider.</returns>

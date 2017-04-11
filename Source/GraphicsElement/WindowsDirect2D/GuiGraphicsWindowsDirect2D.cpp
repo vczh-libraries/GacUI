@@ -445,20 +445,17 @@ WindowsDirect2DRenderTarget
 				void StartRendering()override
 				{
 					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
-					d2dRenderTarget->BeginDraw();
-					d2dRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Invalid render target.");
+
+					GetWindowsDirect2DObjectProvider()->StartRendering(window);
 				}
 
-				bool StopRendering()override
+				RenderTargetFailure StopRendering()override
 				{
-					auto result = d2dRenderTarget->EndDraw();
-					bool deviceAvailable = false;
-					if (result == S_OK)
-					{
-						deviceAvailable = GetWindowsDirect2DObjectProvider()->PresentRenderTarget(window);
-					}
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Invalid render target.");
+					auto result = GetWindowsDirect2DObjectProvider()->StopRenderingAndPresent(window);
 					d2dRenderTarget = nullptr;
-					return deviceAvailable;
+					return result;
 				}
 
 				void PushClipper(Rect clipper)override
@@ -571,6 +568,11 @@ WindowsGDIResourceManager
 					NativeWindowDestroying(window);
 					GetWindowsDirect2DObjectProvider()->RecreateRenderTarget(window);
 					NativeWindowCreated(window);
+				}
+
+				void ResizeRenderTarget(INativeWindow* window)
+				{
+					GetWindowsDirect2DObjectProvider()->ResizeRenderTarget(window);
 				}
 
 				IGuiGraphicsLayoutProvider* GetLayoutProvider()override

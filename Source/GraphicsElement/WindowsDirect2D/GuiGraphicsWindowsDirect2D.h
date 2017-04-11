@@ -119,15 +119,18 @@ OS Supporting
 			class IWindowsDirect2DObjectProvider : public Interface
 			{
 			public:
-				virtual void								RecreateRenderTarget(INativeWindow* window)=0;
-				virtual bool								PresentRenderTarget(INativeWindow* window)=0;
-				virtual ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window)=0;
-				virtual ID2D1Factory*						GetDirect2DFactory()=0;
-				virtual IDWriteFactory*						GetDirectWriteFactory()=0;
-				virtual IWindowsDirect2DRenderTarget*		GetBindedRenderTarget(INativeWindow* window)=0;
-				virtual void								SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget)=0;
-				virtual IWICImagingFactory*					GetWICImagingFactory()=0;
-				virtual IWICBitmap*							GetWICBitmap(INativeImageFrame* frame)=0;
+				virtual void								RecreateRenderTarget(INativeWindow* window) = 0;
+				virtual void								ResizeRenderTarget(INativeWindow* window) = 0;
+				virtual ID2D1RenderTarget*					GetNativeWindowDirect2DRenderTarget(INativeWindow* window) = 0;
+				virtual void								StartRendering(INativeWindow* window) = 0;
+				virtual elements::RenderTargetFailure		StopRenderingAndPresent(INativeWindow* window) = 0;
+
+				virtual ID2D1Factory*						GetDirect2DFactory() = 0;
+				virtual IDWriteFactory*						GetDirectWriteFactory() = 0;
+				virtual IWindowsDirect2DRenderTarget*		GetBindedRenderTarget(INativeWindow* window) = 0;
+				virtual void								SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget) = 0;
+				virtual IWICImagingFactory*					GetWICImagingFactory() = 0;
+				virtual IWICBitmap*							GetWICBitmap(INativeImageFrame* frame) = 0;
 			};
 
 			extern IWindowsDirect2DObjectProvider*			GetWindowsDirect2DObjectProvider();

@@ -203,6 +203,7 @@ Host
 				vint									FilterTitles();
 				void									ClearAltHost();
 				void									CloseAltHost();
+				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
 				void									DisconnectCompositionInternal(GuiGraphicsComposition* composition);
 				void									MouseCapture(const NativeWindowMouseInfo& info);

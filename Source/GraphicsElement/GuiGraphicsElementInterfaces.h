@@ -140,6 +140,13 @@ Basic Construction
 				virtual IGuiGraphicsRenderer*			Create()=0;
 			};
 
+			enum RenderTargetFailure
+			{
+				None,
+				ResizeWhileRendering,
+				LostDevice,
+			};
+
 			/// <summary>
 			/// This is the interface for graphics renderer targets.
 			/// </summary>
@@ -154,7 +161,7 @@ Basic Construction
 				/// Notify the target to stop rendering.
 				/// </summary>
 				/// <returns>Returns false to recreate render target.</returns>
-				virtual bool							StopRendering()=0;
+				virtual RenderTargetFailure				StopRendering()=0;
 				/// <summary>
 				/// Apply a clipper to the render target.
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
