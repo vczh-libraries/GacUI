@@ -3,8 +3,6 @@ i1 # .\Resource.FailedInstance.Ctor3.xml
 (6, 7): Precompile: Referece name "self" conflict with an existing named object.
 (6, 39): Precompile: Property "Border" of type "MainWindow" does not accept a value of text "Not A Bool" because it is not in a correct format of the serializable type "system::Boolean".
 (6, 67): Precompile: Property "TooltipControl" of type "MainWindow" does not accept a value of text "Not Serializable" because its type "presentation::controls::GuiControl" is not serializable.
-(6, 85): Precompile: Property "NotExists" of type "MainWindow" does not exist.
-(6, 85): Precompile: Property "NotExists" of type "MainWindow" is not supported.
 (8, 9): Precompile: Referece name "self" conflict with an existing named object.
 (11, 11): Precompile: Property "ControlTemplate" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using binding "-bind". Because it is a non-bindable constructor argument.
 (12, 11): Precompile: Property "ViewModelContext" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using binding "-bind". Because it is a constructor argument, and this binding does not apply to any constructor argument.

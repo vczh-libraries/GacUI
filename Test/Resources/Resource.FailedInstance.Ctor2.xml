@@ -1,8 +1,9 @@
 <Resource>
   <Instance name="i1">
     <Instance ref.Class="MainWindow">
-      <Window>
-        <att.NotExists-set/>
+      <Window NotExists="">
+        <att.BoundsComposition-set NotExists=""/>
+        <att.NotExists2-set/>
         <att.Text-set/>
         <ev.NotExists>window_NotExists</ev.NotExists>
         <Unknown/>

@@ -1,5 +1,7 @@
 i1 # .\Resource.FailedInstance.Ctor2.xml
-(5, 9): Precompile: Property "NotExists" of type "MainWindow" is not supported.
-(6, 9): Precompile: Property "Text" of type "MainWindow" does not support the "-set" binding.
-(7, 9): Precompile: Event "NotExists" cannot be found in type "MainWindow".
-(8, 9): Precompile: Failed to find type "Unknown".
+(4, 15): Precompile: Property "NotExists" of type "MainWindow" is not supported.
+(5, 36): Precompile: Property "NotExists" of type "presentation::compositions::GuiBoundsComposition" is not supported.
+(6, 9): Precompile: Property "NotExists2" of type "MainWindow" is not supported.
+(7, 9): Precompile: Property "Text" of type "MainWindow" does not support the "-set" binding.
+(8, 9): Precompile: Event "NotExists" cannot be found in type "MainWindow".
+(9, 9): Precompile: Failed to find type "Unknown".

@@ -125,6 +125,7 @@ GlobalStringKey
 ***********************************************************************/
 
 		GlobalStringKey GlobalStringKey::Empty;
+		GlobalStringKey GlobalStringKey::_InferType;
 		GlobalStringKey GlobalStringKey::_Set;
 		GlobalStringKey GlobalStringKey::_Ref;
 		GlobalStringKey GlobalStringKey::_Bind;
@@ -143,6 +144,7 @@ GlobalStringKey
 			void InitializeConstants()
 			{
 				GlobalStringKey::_Set = GlobalStringKey::Get(L"set");
+				GlobalStringKey::_InferType = GlobalStringKey::Get(L"_");
 				GlobalStringKey::_Ref = GlobalStringKey::Get(L"ref");
 				GlobalStringKey::_Bind = GlobalStringKey::Get(L"bind");
 				GlobalStringKey::_Format = GlobalStringKey::Get(L"format");

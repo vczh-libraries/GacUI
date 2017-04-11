@@ -12,6 +12,66 @@ namespace vl
 		using namespace workflow::analyzer;
 
 /***********************************************************************
+Workflow_GetPropertyTypes
+***********************************************************************/
+
+		bool Workflow_GetPropertyTypes(WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors)
+		{
+			bool reportedNotSupported = false;
+			IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
+
+			errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
+			{
+				auto currentLoader = loader;
+
+				while (currentLoader)
+				{
+					if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
+					{
+						if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
+						{
+							errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" is not supported."));
+							reportedNotSupported = true;
+							break;
+						}
+						else
+						{
+							types::PropertyResolving resolving;
+							resolving.loader = currentLoader;
+							resolving.propertyInfo = propertyInfo;
+							resolving.info = propertyTypeInfo;
+							possibleInfos.Add(resolving);
+
+							if (setter->binding == GlobalStringKey::_Set)
+							{
+								break;
+							}
+						}
+
+						if (!propertyTypeInfo->tryParent)
+						{
+							break;
+						}
+					}
+					currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
+				}
+			}
+
+			if (possibleInfos.Count() == 0)
+			{
+				if (!reportedNotSupported)
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" does not exist."));
+				}
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+/***********************************************************************
 WorkflowReferenceNamesVisitor
 ***********************************************************************/
 
@@ -148,49 +208,9 @@ WorkflowReferenceNamesVisitor
 				{
 					List<types::PropertyResolving> possibleInfos;
 					auto prop = repr->setters.Keys()[index];
-					IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
 
-					auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
-					{
-						auto currentLoader = loader;
-
-						while (currentLoader)
-						{
-							if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
-							{
-								if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
-								{
-									errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" is not supported."));
-									break;
-								}
-								else
-								{
-									types::PropertyResolving resolving;
-									resolving.loader = currentLoader;
-									resolving.propertyInfo = propertyInfo;
-									resolving.info = propertyTypeInfo;
-									possibleInfos.Add(resolving);
-
-									if (setter->binding == GlobalStringKey::_Set)
-									{
-										break;
-									}
-								}
-
-								if (!propertyTypeInfo->tryParent)
-								{
-									break;
-								}
-							}
-							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
-						}
-					}
-
-					if (possibleInfos.Count() == 0)
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" does not exist."));
-					}
-					else
+					WString errorPrefix;
+					if (Workflow_GetPropertyTypes(errorPrefix, resolvingResult, loader, resolvedTypeInfo, prop, setter, possibleInfos, errors))
 					{
 						if (setter->binding == GlobalStringKey::Empty)
 						{
@@ -300,7 +320,7 @@ WorkflowReferenceNamesVisitor
 									L"Precompile: Binder \"" +
 									setter->binding.ToString() +
 									L"\" requires the text value of property \"" +
-									propertyInfo.propertyName.ToString() +
+									prop.ToString() +
 									L"\"."));
 							}
 						}

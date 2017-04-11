@@ -61,6 +61,7 @@ Global String Key
 		{
 		public:
 			static GlobalStringKey					Empty;
+			static GlobalStringKey					_InferType;
 			static GlobalStringKey					_Set;
 			static GlobalStringKey					_Ref;
 			static GlobalStringKey					_Bind;

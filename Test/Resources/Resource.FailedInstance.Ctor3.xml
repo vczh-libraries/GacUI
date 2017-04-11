@@ -3,7 +3,7 @@
     <Instance ref.Class="MainWindow">
       <ref.Parameter Name="textBox" Class="SinglelineTextBox"/>
       <ref.Parameter Name="self" Class="presentation::controls::GuiSinglelineTextBox"/>
-      <Window ref.Name="self" Border="Not A Bool" TooltipControl="Not Serializable" NotExists="">
+      <Window ref.Name="self" Border="Not A Bool" TooltipControl="Not Serializable">
         <att.BoundsComposition-set AlignmentToParent="Not A Margin"/>
         <Button ref.Name="self"/>
 

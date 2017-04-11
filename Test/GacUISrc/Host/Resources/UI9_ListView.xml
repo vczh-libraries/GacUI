@@ -6,12 +6,12 @@
 
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
-            <CellOption>composeType:MinSize</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
-            <CellOption>composeType:Absolute absolute:100</CellOption>
-            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <_>composeType:Absolute absolute:100</_>
+            <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
 
           <Cell Site="row:0 column:0">
@@ -20,12 +20,12 @@
               <att.ListControl>
                 <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
                   <att.Items>
-                    <TextItem Text="BigIcon"/>
-                    <TextItem Text="SmallIcon"/>
-                    <TextItem Text="List"/>
-                    <TextItem Text="Tile"/>
-                    <TextItem Text="Information"/>
-                    <TextItem Text="Detail"/>
+                    <_ Text="BigIcon"/>
+                    <_ Text="SmallIcon"/>
+                    <_ Text="List"/>
+                    <_ Text="Tile"/>
+                    <_ Text="Information"/>
+                    <_ Text="Detail"/>
                   </att.Items>
                 </TextList>
               </att.ListControl>
@@ -37,40 +37,40 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
               <att.Columns>
-                <ListViewColumn Text="Name"/>
-                <ListViewColumn Text="Owner"/>
-                <ListViewColumn Text="Languages"/>
-                <ListViewColumn Text="Ranking"/>
+                <_ Text="Name"/>
+                <_ Text="Owner"/>
+                <_ Text="Languages"/>
+                <_ Text="Ranking"/>
               </att.Columns>
 
               <att.DataColumns>
-                <Int32>0</Int32>
-                <Int32>1</Int32>
-                <Int32>2</Int32>
+                <_>0</_>
+                <_>1</_>
+                <_>2</_>
               </att.DataColumns>
 
               <att.Items>
-                <ListViewItem Text="Visual Studio">
+                <_ Text="Visual Studio">
                   <att.SubItems>
-                    <String>Microsoft</String>
-                    <String>C++, C#, VB.NET, F#, JavaScript, Python</String>
-                    <String>1</String>
+                    <_>Microsoft</_>
+                    <_>C++, C#, VB.NET, F#, JavaScript, Python</_>
+                    <_>1</_>
                   </att.SubItems>
-                </ListViewItem>
-                <ListViewItem Text="Borland Delphi Studio">
+                </_>
+                <_ Text="Borland Delphi Studio">
                   <att.SubItems>
-                    <String>Borland</String>
-                    <String>Object Pascal, C++, C#, VB.NET</String>
-                    <String>2</String>
+                    <_>Borland</_>
+                    <_>Object Pascal, C++, C#, VB.NET</_>
+                    <_>2</_>
                   </att.SubItems>
-                </ListViewItem>
-                <ListViewItem Text="JetBrains Clion">
+                </_>
+                <_ Text="JetBrains Clion">
                   <att.SubItems>
-                    <String>JetBrains</String>
-                    <String>C++</String>
-                    <String>3</String>
+                    <_>JetBrains</_>
+                    <_>C++</_>
+                    <_>3</_>
                   </att.SubItems>
-                </ListViewItem>
+                </_>
               </att.Items>
             </ListView>
           </Cell>

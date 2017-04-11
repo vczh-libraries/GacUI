@@ -63,77 +63,19 @@ WorkflowEventNamesVisitor
 		public:
 			GuiResourcePrecompileContext&		precompileContext;
 			types::ResolvingResult&				resolvingResult;
+			List<types::PropertyResolving>&		candidatePropertyTypeInfos;
 			Ptr<WfClassDeclaration>				instanceClass;
 			GuiResourceError::List&				errors;
+
 			IGuiInstanceLoader::TypeInfo		resolvedTypeInfo;
 
-			WorkflowEventNamesVisitor(GuiResourcePrecompileContext& _precompileContext, types::ResolvingResult& _resolvingResult, Ptr<WfClassDeclaration> _instanceClass, GuiResourceError::List& _errors)
+			WorkflowEventNamesVisitor(GuiResourcePrecompileContext& _precompileContext, types::ResolvingResult& _resolvingResult, List<types::PropertyResolving>& _candidatePropertyTypeInfos, Ptr<WfClassDeclaration> _instanceClass, GuiResourceError::List& _errors)
 				:precompileContext(_precompileContext)
 				, resolvingResult(_resolvingResult)
+				, candidatePropertyTypeInfos(_candidatePropertyTypeInfos)
 				, instanceClass(_instanceClass)
 				, errors(_errors)
 			{
-			}
-
-			///////////////////////////////////////////////////////////////////////////////////
-
-			void ProcessPropertySet(
-				GuiAttSetterRepr* repr,
-				Ptr<GuiAttSetterRepr::SetterValue> setter,
-				IGuiInstanceLoader::PropertyInfo propertyInfo
-				)
-			{
-				auto errorPrefix = L"Precompile: Property \"" + propertyInfo.propertyName.ToString() + L"\" of type \"" + resolvedTypeInfo.typeName.ToString() + L"\"";
-
-				auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
-				auto currentLoader = loader;
-				IGuiInstanceLoader::TypeInfo propTypeInfo;
-
-				while (currentLoader)
-				{
-					if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
-					{
-						if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
-						{
-							errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" is not supported."));
-							return;
-						}
-						else
-						{
-							if (propertyTypeInfo->support == GuiInstancePropertyInfo::SupportSet)
-							{
-								propTypeInfo.typeDescriptor = propertyTypeInfo->acceptableTypes[0];
-								propTypeInfo.typeName = GlobalStringKey::Get(propTypeInfo.typeDescriptor->GetTypeName());
-							}
-							else
-							{
-								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" does not support the \"-set\" binding."));
-								return;
-							}
-						}
-
-						if (!propertyTypeInfo->tryParent)
-						{
-							break;
-						}
-					}
-					currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
-				}
-
-				if (propTypeInfo.typeDescriptor)
-				{
-					auto oldTypeInfo = resolvedTypeInfo;
-					resolvedTypeInfo = propTypeInfo;
-					FOREACH(Ptr<GuiValueRepr>, value, setter->values)
-					{
-						value->Accept(this);
-					}
-					resolvedTypeInfo = oldTypeInfo;
-				}
-				else
-				{
-					errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, L"[INTERNAL ERROR]" + errorPrefix + L" does not exist."));
-				}
 			}
 
 			///////////////////////////////////////////////////////////////////////////////////
@@ -202,17 +144,38 @@ WorkflowEventNamesVisitor
 			{
 				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
 				{
-					if (setter->binding == GlobalStringKey::_Set)
+					auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
+					List<types::PropertyResolving> possibleInfos;
+					auto prop = repr->setters.Keys()[index];
+
+					WString errorPrefix;
+					if (Workflow_GetPropertyTypes(errorPrefix, resolvingResult, loader, resolvedTypeInfo, prop, setter, possibleInfos, errors))
 					{
-						auto prop = repr->setters.Keys()[index];
-						IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
-						ProcessPropertySet(repr, setter, propertyInfo);
-					}
-					else
-					{
-						FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+						if (setter->binding == GlobalStringKey::_Set)
 						{
-							value->Accept(this);
+							if (possibleInfos[0].info->support == GuiInstancePropertyInfo::SupportSet)
+							{
+								auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
+
+								List<types::PropertyResolving> infos;
+								WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, infos, instanceClass, errors);
+								auto td = possibleInfos[0].info->acceptableTypes[0];
+								visitor.resolvedTypeInfo.typeDescriptor = td;
+								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+								setTarget->Accept(&visitor);
+							}
+							else
+							{
+								errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition, errorPrefix + L" does not support the \"-set\" binding."));
+							}
+						}
+						else
+						{
+							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							{
+								WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, instanceClass, errors);
+								value->Accept(&visitor);
+							}
 						}
 					}
 				}
@@ -233,32 +196,38 @@ WorkflowEventNamesVisitor
 
 			void Visit(GuiConstructorRepr* repr)override
 			{
-				IGuiInstanceLoader::TypeInfo reprTypeInfo;
-
 				auto context = resolvingResult.context;
 				if (repr == context->instance.Obj())
 				{
 					auto fullName = GlobalStringKey::Get(context->className);
 					if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
 					{
-						reprTypeInfo.typeName = fullName;
-						reprTypeInfo.typeDescriptor = reprTd;
+						resolvedTypeInfo.typeName = fullName;
+						resolvedTypeInfo.typeDescriptor = reprTd;
 					}
 				}
 
-				if (!reprTypeInfo.typeDescriptor)
+				if (!resolvedTypeInfo.typeDescriptor)
 				{
 					auto source = FindInstanceLoadingSource(context, repr);
-					reprTypeInfo.typeName = source.typeName;
-					reprTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+					resolvedTypeInfo.typeName = source.typeName;
+					resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
 				}
 
-				if (reprTypeInfo.typeDescriptor)
+				if (resolvedTypeInfo.typeDescriptor)
 				{
-					auto oldTypeInfo = resolvedTypeInfo;
-					resolvedTypeInfo = reprTypeInfo;
+					if (repr->setters.Count() == 1 && repr->setters.Keys()[0] == GlobalStringKey::Empty)
+					{
+						auto setter = repr->setters.Values()[0];
+						if (setter->values.Count() == 1)
+						{
+							if (auto text = setter->values[0].Cast<GuiTextRepr>())
+							{
+								return;
+							}
+						}
+					}
 					Visit((GuiAttSetterRepr*)repr);
-					resolvedTypeInfo = oldTypeInfo;
 				}
 				else
 				{
@@ -588,7 +557,8 @@ Workflow_GenerateInstanceClass
 
 			if (needEventHandler)
 			{
-				WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, instanceClass, errors);
+				List<types::PropertyResolving> infos;
+				WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, infos, instanceClass, errors);
 				context->instance->Accept(&visitor);
 			}
 
