@@ -27,70 +27,31 @@ https://github.com/vczh-libraries
 #pragma clang diagnostic ignored "-Wparentheses-equality"
 #endif
 
-namespace vl_workflow_global
-{
-	struct __vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
-	struct __vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___;
-	struct __vwsnf3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__;
-	class __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance_____vl_reflection_description_ICoroutine;
-	class __vwsnc2_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
-}
-
 namespace demo
 {
 	class MainWindowConstructor;
 	class MainWindow;
-	class ModalWindowConstructor;
-	class ModalWindow;
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance_____vl_reflection_description_ICoroutine;
-		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
-		::demo::MainWindow* self = static_cast<::demo::MainWindow*>(nullptr);
-		::vl::presentation::controls::GuiMessageDialog* dialog = static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_0 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::demo::MainWindow* __vwsn_precompile_0 = static_cast<::demo::MainWindow*>(nullptr);
+		::vl::presentation::controls::GuiListView* __vwsn_precompile_1 = static_cast<::vl::presentation::controls::GuiListView*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		MainWindowConstructor();
-	};
-
-	class ModalWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<ModalWindowConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
-		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ModalWindowConstructor>;
-#endif
-	protected:
-		::demo::ModalWindow* __vwsn_precompile_0 = static_cast<::demo::ModalWindow*>(nullptr);
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_1 = static_cast<::vl::presentation::controls::GuiLabel*>(nullptr);
-		void __vwsn_initialize_instance_(::demo::ModalWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
-	public:
-		ModalWindowConstructor();
-	};
-
-	class ModalWindow : public ::vl::presentation::controls::GuiWindow, public ::demo::ModalWindowConstructor, public ::vl::reflection::Description<ModalWindow>
-	{
-		friend class ::demo::ModalWindowConstructor;
-		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
-		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ModalWindow>;
-#endif
-	public:
-		ModalWindow();
-		~ModalWindow();
 	};
 
 }
@@ -105,88 +66,6 @@ namespace vl_workflow_global
 	public:
 
 		static Demo& Instance();
-	};
-
-/***********************************************************************
-Closures
-***********************************************************************/
-
-	struct __vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
-	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
-
-		__vwsnf1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
-	};
-
-	struct __vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___
-	{
-		::demo::MainWindowConstructor* __vwsnthis_0;
-
-		__vwsnf2_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___(::demo::MainWindowConstructor* __vwsnctorthis_0);
-
-		::vl::Ptr<::vl::reflection::description::ICoroutine> operator()(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_) const;
-	};
-
-	struct __vwsnf3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__
-	{
-		::demo::ModalWindowConstructor* __vwsnthis_0;
-
-		__vwsnf3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__(::demo::ModalWindowConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	class __vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance_____vl_reflection_description_ICoroutine : public ::vl::Object, public virtual ::vl::reflection::description::ICoroutine
-	{
-	public:
-		::vl::reflection::description::AsyncCoroutine::IImpl* __vwsn_co_impl_;
-		::demo::MainWindowConstructor* __vwsnthis_0;
-
-		__vwsnc1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance_____vl_reflection_description_ICoroutine(::vl::reflection::description::AsyncCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::demo::MainWindowConstructor* __vwsnctorthis_0);
-
-		::demo::ModalWindow* __vwsn_co0_window = nullptr;
-		::vl::vint32_t __vwsn_co_state_ = 0;
-		::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_prop_Failure;
-		::vl::Ptr<::vl::reflection::description::IValueException> GetFailure() override;
-		void SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_);
-		::vl::reflection::description::CoroutineStatus __vwsn_prop_Status = static_cast<::vl::reflection::description::CoroutineStatus>(0);
-		::vl::reflection::description::CoroutineStatus GetStatus() override;
-		void SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_);
-		void Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_) override;
-	};
-
-	class __vwsnc2_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::ModalWindowConstructor* __vwsnthis_0;
-
-		__vwsnc2_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ModalWindowConstructor* __vwsnctorthis_0);
-
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_initialize_();
-		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
-	{
-	public:
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
-		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
-		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
-		::demo::ModalWindowConstructor* __vwsnthis_1;
-
-		__vwsnc3_Demo_demo_ModalWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::ModalWindowConstructor* __vwsnctorthis_1);
-
-		::vl::reflection::description::IValueSubscription* GetSubscription() override;
-		bool GetStopped() override;
-		bool StopListening() override;
 	};
 }
 
