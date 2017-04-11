@@ -352,6 +352,10 @@ Workflow_GenerateInstanceClass
 				return nullptr;
 			}
 
+			///////////////////////////////////////////////////////////////
+			// Instance Class
+			///////////////////////////////////////////////////////////////
+
 			auto module = Workflow_CreateModuleWithUsings(context);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
@@ -372,6 +376,11 @@ Workflow_GenerateInstanceClass
 					instanceClass->attributes.Add(att);
 				}
 			}
+
+			///////////////////////////////////////////////////////////////
+			// Inherit from Constructor Class
+			///////////////////////////////////////////////////////////////
+
 			if (!beforePrecompile)
 			{
 				auto baseType = MakePtr<WfReferenceType>();
@@ -390,6 +399,10 @@ Workflow_GenerateInstanceClass
 					instanceClass->attributes.Add(att);
 				}
 			}
+
+			///////////////////////////////////////////////////////////////
+			// Helpers
+			///////////////////////////////////////////////////////////////
 
 			auto parseClassMembers = [&](const WString& code, const WString& name, List<Ptr<WfDeclaration>>& memberDecls, GuiResourceTextPos position)
 			{
@@ -421,6 +434,10 @@ Workflow_GenerateInstanceClass
 				return block;
 			};
 
+			///////////////////////////////////////////////////////////////
+			// ref.Members
+			///////////////////////////////////////////////////////////////
+
 			if (context->memberScript != L"")
 			{
 				List<Ptr<WfDeclaration>> memberDecls;
@@ -440,6 +457,10 @@ Workflow_GenerateInstanceClass
 
 				CopyFrom(instanceClass->declarations, memberDecls, true);
 			}
+
+			///////////////////////////////////////////////////////////////
+			// Constructor Declaration
+			///////////////////////////////////////////////////////////////
 
 			auto ctor = MakePtr<WfConstructorDeclaration>();
 			ctor->constructorType = WfConstructorType::RawPtr;
@@ -473,6 +494,10 @@ Workflow_GenerateInstanceClass
 					}
 				}
 			}
+
+			///////////////////////////////////////////////////////////////
+			// ref.Parameter (Variable, Getter, CtorArgument)
+			///////////////////////////////////////////////////////////////
 
 			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
 			{
@@ -557,12 +582,21 @@ Workflow_GenerateInstanceClass
 				}
 			}
 
+			///////////////////////////////////////////////////////////////
+			// Event Handlers
+			///////////////////////////////////////////////////////////////
+
 			if (needEventHandler)
 			{
 				WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, instanceClass, errors);
 				context->instance->Accept(&visitor);
 			}
+
 			addDecl(ctor);
+
+			///////////////////////////////////////////////////////////////
+			// Calling Constructor Class
+			///////////////////////////////////////////////////////////////
 
 			if (!beforePrecompile)
 			{
@@ -655,13 +689,97 @@ Workflow_GenerateInstanceClass
 				}
 			}
 
+			///////////////////////////////////////////////////////////////
+			// ref.Ctor
+			///////////////////////////////////////////////////////////////
+
+			if (context->ctorScript != L"")
 			{
-				auto dtor = MakePtr<WfDestructorDeclaration>();
-				addDecl(dtor);
+				if (auto stat = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, context->ctorScript, context->ctorPosition, errors))
+				{
+					if (!beforePrecompile)
+					{
+						if (!stat.Cast<WfBlockStatement>())
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							block->statements.Add(stat);
+							stat = block;
+						}
 
-				auto block = MakePtr<WfBlockStatement>();
-				dtor->statement = block;
+						auto decl = MakePtr<WfFunctionDeclaration>();
+						decl->anonymity = WfFunctionAnonymity::Named;
+						decl->name.value = L"<instance-ctor>";
+						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+						decl->statement = stat;
+						addDecl(decl);
 
+						{
+							auto refCtor = MakePtr<WfReferenceExpression>();
+							refCtor->name.value = L"<instance-ctor>";
+
+							auto callExpr = MakePtr<WfCallExpression>();
+							callExpr->function = refCtor;
+
+							auto exprStat = MakePtr<WfExpressionStatement>();
+							exprStat->expression = callExpr;
+							ctorBlock->statements.Add(exprStat);
+						}
+					}
+				}
+			}
+
+			///////////////////////////////////////////////////////////////
+			// Destructor
+			///////////////////////////////////////////////////////////////
+
+			auto dtor = MakePtr<WfDestructorDeclaration>();
+			auto dtorBlock = MakePtr<WfBlockStatement>();
+			dtor->statement = dtorBlock;
+
+			///////////////////////////////////////////////////////////////
+			// ref.Dtor
+			///////////////////////////////////////////////////////////////
+
+			if (context->dtorScript != L"")
+			{
+				if (auto stat = Workflow_ParseStatement(precompileContext, { resolvingResult.resource }, context->dtorScript, context->dtorPosition, errors))
+				{
+					if (!beforePrecompile)
+					{
+						if (!stat.Cast<WfBlockStatement>())
+						{
+							auto block = MakePtr<WfBlockStatement>();
+							block->statements.Add(stat);
+							stat = block;
+						}
+
+						auto decl = MakePtr<WfFunctionDeclaration>();
+						decl->anonymity = WfFunctionAnonymity::Named;
+						decl->name.value = L"<instance-dtor>";
+						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+						decl->statement = stat;
+						addDecl(decl);
+
+						{
+							auto refDtor = MakePtr<WfReferenceExpression>();
+							refDtor->name.value = L"<instance-dtor>";
+
+							auto callExpr = MakePtr<WfCallExpression>();
+							callExpr->function = refDtor;
+
+							auto exprStat = MakePtr<WfExpressionStatement>();
+							exprStat->expression = callExpr;
+							dtorBlock->statements.Add(exprStat);
+						}
+					}
+				}
+			}
+
+			///////////////////////////////////////////////////////////////
+			// Clear Binding Subscriptions
+			///////////////////////////////////////////////////////////////
+
+			{
 				auto ref = MakePtr<WfReferenceExpression>();
 				ref->name.value = L"ClearSubscriptions";
 
@@ -670,8 +788,10 @@ Workflow_GenerateInstanceClass
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = call;
-				block->statements.Add(stat);
+				dtorBlock->statements.Add(stat);
 			}
+
+			addDecl(dtor);
 
 			return module;
 		}

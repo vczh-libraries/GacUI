@@ -37,10 +37,22 @@ namespace demo
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::MainWindow", false));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this, ::vl::__vwsn::Ensure(static_cast<::vl::presentation::GuiResourcePathResolver*>(__vwsn_resolver_.Obj())));
+		::vl::__vwsn::This(this)->__vwsn_instance_ctor_();
+	}
+
+	void MainWindow::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(::vl::__vwsn::This(this)->dialog)->SetTitle(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetText());
+	}
+
+	void MainWindow::__vwsn_instance_dtor_()
+	{
+		::vl::__vwsn::This(::vl::__vwsn::This(this)->dialog)->ShowDialog();
 	}
 
 	MainWindow::~MainWindow()
 	{
+		::vl::__vwsn::This(this)->__vwsn_instance_dtor_();
 		::vl::__vwsn::This(this)->ClearSubscriptions();
 	}
 

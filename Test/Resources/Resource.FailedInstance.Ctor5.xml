@@ -1,0 +1,18 @@
+<Resource>
+  <Instance name="i1">
+    <Instance ref.Class="MainWindow">
+      <ref.Ctor>
+        <![CDATA[
+          Wrong;
+        ]]>
+      </ref.Ctor>
+      <ref.Dtor>
+        <![CDATA[
+          Wrong;
+        ]]>
+      </ref.Dtor>
+      <Window>
+      </Window>
+    </Instance>
+  </Instance>
+</Resource>

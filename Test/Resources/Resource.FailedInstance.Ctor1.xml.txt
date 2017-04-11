@@ -6,3 +6,5 @@ i2 # .\Resource.FailedInstance.Ctor1.xml
 (9, 38): Failed to find the style referred in attribute "ref.Styles": "res://NotExists".
 (10, 51): Error happened during parsing.
 (13, 11): Error happened during parsing.
+(18, 18): Error happened during parsing.
+(23, 18): Error happened during parsing.

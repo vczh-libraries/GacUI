@@ -679,21 +679,29 @@ GuiInstanceContext
 							errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"ref.Parameter requires the following attributes existing at the same time: Name, Class."));
 						}
 					}
-					else if (element->name.value == L"ref.Members")
-					{
-						if (element->subNodes.Count() == 1)
-						{
-							if (auto cdata = element->subNodes[0].Cast<XmlCData>())
-							{
-								context->memberScript = cdata->content.value;
-								context->memberPosition = { {resource},cdata->codeRange.start };
-								context->memberPosition.column += 9; // <![CDATA[
-								goto MEMBERSCRIPT_SUCCESS;
-							}
-						}
-						errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"Script should be contained in a CDATA section."));
-					MEMBERSCRIPT_SUCCESS:;
-					}
+
+#define COLLECT_SCRIPT(NAME, SCRIPT, POSITION)\
+					(element->name.value == L"ref." #NAME)\
+					{\
+						if (element->subNodes.Count() == 1)\
+						{\
+							if (auto cdata = element->subNodes[0].Cast<XmlCData>())\
+							{\
+								context->SCRIPT = cdata->content.value;\
+								context->POSITION = { {resource},cdata->codeRange.start };\
+								context->POSITION.column += 9; /* <![CDATA[ */\
+								goto NAME##_SCRIPT_SUCCESS;\
+							}\
+						}\
+						errors.Add(GuiResourceError({ {resource},element->codeRange.start }, L"Script should be contained in a CDATA section."));\
+					NAME##_SCRIPT_SUCCESS:;\
+					}\
+
+					else if COLLECT_SCRIPT(Members, memberScript, memberPosition)
+					else if COLLECT_SCRIPT(Ctor, ctorScript, ctorPosition)
+					else if COLLECT_SCRIPT(Dtor, dtorScript, dtorPosition)
+
+#undef COLLECT_SCRIPT
 					else if (!context->instance)
 					{
 						context->instance = LoadCtor(resource, element, errors);
@@ -766,16 +774,22 @@ GuiInstanceContext
 				xmlParameter->attributes.Add(attClass);
 			}
 
-			if (memberScript != L"")
-			{
-				auto xmlMembers = MakePtr<XmlElement>();
-				xmlMembers->name.value = L"ref.Members";
-				xmlInstance->subNodes.Add(xmlMembers);
+#define SERIALIZE_SCRIPT(NAME, SCRIPT)\
+			if (SCRIPT != L"")\
+			{\
+				auto xmlScript = MakePtr<XmlElement>();\
+				xmlScript->name.value = L"ref." #NAME;\
+				xmlInstance->subNodes.Add(xmlScript);\
+				auto text = MakePtr<XmlCData>();\
+				text->content.value = SCRIPT;\
+				xmlScript->subNodes.Add(text);\
+			}\
 
-				auto text = MakePtr<XmlCData>();
-				text->content.value = memberScript;
-				xmlMembers->subNodes.Add(text);
-			}
+			SERIALIZE_SCRIPT(Members, memberScript)
+			SERIALIZE_SCRIPT(Ctpr, ctorScript)
+			SERIALIZE_SCRIPT(Dtor, dtorScript)
+
+#undef SERIALIZE_SCRIPT
 
 			if (stylePaths.Count() > 0)
 			{
