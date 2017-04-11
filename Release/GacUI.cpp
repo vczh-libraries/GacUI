@@ -35959,10 +35959,10 @@ GuiTableComposition
 					}
 				}
 
-				if (previousBounds != result || cellMinSizeModified)
+				if (previousContentBounds != result || cellMinSizeModified)
 				{
 					UpdateCellBounds();
-					UpdatePreviousBounds(result);
+					InvokeOnCompositionStateChanged();
 				}
 				return result;
 			}

@@ -6900,6 +6900,7 @@ Table Compositions
 				collections::Array<vint>					rowSizes;
 				collections::Array<vint>					columnSizes;
 
+				Rect										previousContentBounds;
 				Size										previousContentMinSize;
 				Size										tableContentMinSize;
 
