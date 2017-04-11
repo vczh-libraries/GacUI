@@ -813,6 +813,13 @@ Basic Construction
 				virtual IGuiGraphicsRenderer*			Create()=0;
 			};
 
+			enum RenderTargetFailure
+			{
+				None,
+				ResizeWhileRendering,
+				LostDevice,
+			};
+
 			/// <summary>
 			/// This is the interface for graphics renderer targets.
 			/// </summary>
@@ -827,7 +834,7 @@ Basic Construction
 				/// Notify the target to stop rendering.
 				/// </summary>
 				/// <returns>Returns false to recreate render target.</returns>
-				virtual bool							StopRendering()=0;
+				virtual RenderTargetFailure				StopRendering()=0;
 				/// <summary>
 				/// Apply a clipper to the render target.
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
@@ -2980,6 +2987,11 @@ Resource Manager
 				/// </summary>
 				/// <param name="window">The specified window.</param>
 				virtual void							RecreateRenderTarget(INativeWindow* window) = 0;
+				/// <summary>
+				/// Resize the render target to fit the current window size.
+				/// </summary>
+				/// <param name="window">The specified window.</param>
+				virtual void							ResizeRenderTarget(INativeWindow* window) = 0;
 				/// <summary>
 				/// Get the renderer awared rich text document layout engine provider object.
 				/// </summary>
@@ -6888,7 +6900,6 @@ Table Compositions
 				collections::Array<vint>					rowSizes;
 				collections::Array<vint>					columnSizes;
 
-				Rect										previousBounds;
 				Size										previousContentMinSize;
 				Size										tableContentMinSize;
 
@@ -8019,6 +8030,7 @@ Host
 				vint									FilterTitles();
 				void									ClearAltHost();
 				void									CloseAltHost();
+				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
 
 				void									DisconnectCompositionInternal(GuiGraphicsComposition* composition);
 				void									MouseCapture(const NativeWindowMouseInfo& info);
@@ -10806,13 +10818,15 @@ List Control
 
 				class ItemCallback : public IItemProviderCallback, public IItemArrangerCallback
 				{
-					typedef collections::List<IItemStyleController*>			StyleList;
+					typedef collections::List<IItemStyleController*>													StyleList;
+					typedef collections::Dictionary<IItemStyleController*, Ptr<compositions::IGuiGraphicsEventHandler>>	InstalledStyleMap;
 				protected:
 					GuiListControl*								listControl;
 					IItemProvider*								itemProvider;
 					StyleList									cachedStyles;
-					StyleList									installedStyles;
+					InstalledStyleMap							installedStyles;
 
+					void										OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					ItemCallback(GuiListControl* _listControl);
 					~ItemCallback();

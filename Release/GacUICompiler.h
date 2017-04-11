@@ -362,11 +362,15 @@ Instance Context
 
 			ParameterList							parameters;
 			WString									memberScript;
+			WString									ctorScript;
+			WString									dtorScript;
 
 			GuiResourceTextPos						tagPosition;
 			GuiResourceTextPos						classPosition;
 			GuiResourceTextPos						stylePosition;
 			GuiResourceTextPos						memberPosition;
+			GuiResourceTextPos						ctorPosition;
+			GuiResourceTextPos						dtorPosition;
 
 			bool									appliedStyles = false;
 			StyleContextList						styles;

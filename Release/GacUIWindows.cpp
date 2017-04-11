@@ -1627,6 +1627,13 @@ Windows Platform Native Controller
 
 			void EnableCrossKernelCrashing()
 			{
+				/*
+				"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
+					DWORD DisableUserModeCallbackFilter = 1
+
+				"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\TestCppCodegen.exe"
+					DWORD DisableUserModeCallbackFilter = 1
+				*/
 				typedef BOOL (WINAPI *tGetPolicy)(LPDWORD lpFlags); 
 				typedef BOOL (WINAPI *tSetPolicy)(DWORD dwFlags); 
 				const DWORD EXCEPTION_SWALLOWING = 0x1;
@@ -1660,6 +1667,8 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace elements;
+
 		namespace windows
 		{
 			using namespace vl::collections;
@@ -1673,6 +1682,8 @@ WindowListener
 			protected:
 				ID2D1Factory*					d2dFactory;
 				INativeWindow*					window;
+				bool							rendering = false;
+				bool							movedWhileRendering = false;
 
 				virtual void					RebuildCanvas(Size size) = 0;
 			public:
@@ -1684,7 +1695,36 @@ WindowListener
 
 				void Moved()
 				{
+					if (rendering)
+					{
+						movedWhileRendering = true;
+					}
+					else
+					{
+						ResizeRenderTarget();
+					}
+				}
+
+				void ResizeRenderTarget()
+				{
 					RebuildCanvas(window->GetClientSize());
+				}
+
+				void StartRendering()
+				{
+					rendering = true;
+				}
+
+				void StopRendering()
+				{
+					rendering = false;
+				}
+
+				bool RetrieveAndResetMovedWhileRendering()
+				{
+					bool result = movedWhileRendering;
+					movedWhileRendering = false;
+					return result;
 				}
 
 				virtual ID2D1RenderTarget*		GetDirect2DRenderTarget() = 0;
@@ -2067,40 +2107,6 @@ ControllerListener
 
 			Direct2DWindowsNativeControllerListener* direct2DListener=0;
 
-			Direct2DWindowsNativeWindowListener* GetNativeWindowListener(INativeWindow* window)
-			{
-				vint index = direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
-				return index == -1
-					? 0
-					: direct2DListener->nativeWindowListeners.Values().Get(index).Obj();
-			}
-
-			ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)
-			{
-				if (auto listener = GetNativeWindowListener(window))
-				{
-					return listener->GetDirect2DRenderTarget();
-				}
-				return 0;
-			}
-
-			void RecreateNativeWindowDirect2DRenderTarget(INativeWindow* window)
-			{
-				if (auto listener = GetNativeWindowListener(window))
-				{
-					return listener->RecreateRenderTarget();
-				}
-			}
-
-			bool PresentNativeWindowDirect2DRenderTarget(INativeWindow* window)
-			{
-				if (auto listener = GetNativeWindowListener(window))
-				{
-					return listener->PresentRenderTarget();
-				}
-				return true;
-			}
-
 			ID2D1Factory* GetDirect2DFactory()
 			{
 				return direct2DListener->d2dFactory.Obj();
@@ -2125,48 +2131,107 @@ OS Supporting
 
 			class WinDirect2DApplicationDirect2DObjectProvider : public IWindowsDirect2DObjectProvider
 			{
+			protected:
+
+				windows::Direct2DWindowsNativeWindowListener* GetNativeWindowListener(INativeWindow* window)
+				{
+					vint index = windows::direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
+					return index == -1
+						? nullptr
+						: windows::direct2DListener->nativeWindowListeners.Values().Get(index).Obj();
+				}
+
 			public:
-				void RecreateRenderTarget(INativeWindow* window)
+				void RecreateRenderTarget(INativeWindow* window)override
 				{
-					vl::presentation::windows::RecreateNativeWindowDirect2DRenderTarget(window);
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						return listener->RecreateRenderTarget();
+					}
 				}
 
-				bool PresentRenderTarget(INativeWindow* window)
+				void ResizeRenderTarget(INativeWindow* window)override
 				{
-					return vl::presentation::windows::PresentNativeWindowDirect2DRenderTarget(window);
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						return listener->ResizeRenderTarget();
+					}
 				}
 
-				ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)
+				ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)override
 				{
-					return vl::presentation::windows::GetNativeWindowDirect2DRenderTarget(window);
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						return listener->GetDirect2DRenderTarget();
+					}
+					return nullptr;
 				}
 
-				ID2D1Factory* GetDirect2DFactory()
+				void StartRendering(INativeWindow* window)override
+				{
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						listener->StartRendering();
+						if (auto renderTarget = listener->GetDirect2DRenderTarget())
+						{
+							renderTarget->BeginDraw();
+							renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+						}
+					}
+				}
+
+				RenderTargetFailure StopRenderingAndPresent(INativeWindow* window)override
+				{
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						listener->StopRendering();
+						bool moved = listener->RetrieveAndResetMovedWhileRendering();
+
+						if (auto renderTarget = listener->GetDirect2DRenderTarget())
+						{
+							HRESULT hr = renderTarget->EndDraw();
+							if (hr == S_OK)
+							{
+								if (moved)
+								{
+									return RenderTargetFailure::ResizeWhileRendering;
+								}
+								else if (listener->PresentRenderTarget())
+								{
+									return RenderTargetFailure::None;
+								}
+							}
+						}
+					}
+					return RenderTargetFailure::LostDevice;
+				}
+
+				ID2D1Factory* GetDirect2DFactory()override
 				{
 					return vl::presentation::windows::GetDirect2DFactory();
 				}
 
-				IDWriteFactory* GetDirectWriteFactory()
+				IDWriteFactory* GetDirectWriteFactory()override
 				{
 					return vl::presentation::windows::GetDirectWriteFactory();
 				}
 
-				IWindowsDirect2DRenderTarget* GetBindedRenderTarget(INativeWindow* window)
+				IWindowsDirect2DRenderTarget* GetBindedRenderTarget(INativeWindow* window)override
 				{
 					return dynamic_cast<IWindowsDirect2DRenderTarget*>(vl::presentation::windows::GetWindowsForm(window)->GetGraphicsHandler());
 				}
 
-				void SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget)
+				void SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget)override
 				{
 					vl::presentation::windows::GetWindowsForm(window)->SetGraphicsHandler(renderTarget);
 				}
 
-				IWICImagingFactory* GetWICImagingFactory()
+				IWICImagingFactory* GetWICImagingFactory()override
 				{
 					return vl::presentation::windows::GetWICImagingFactory();
 				}
 
-				IWICBitmap* GetWICBitmap(INativeImageFrame* frame)
+				IWICBitmap* GetWICBitmap(INativeImageFrame* frame)override
 				{
 					return vl::presentation::windows::GetWICBitmap(frame);
 				}
@@ -9778,10 +9843,10 @@ WindowsGDIRenderTarget
 					dc=GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 
-				bool StopRendering()override
+				RenderTargetFailure StopRendering()override
 				{
 					dc = 0;
-					return true;
+					return RenderTargetFailure::None;
 				}
 
 				void PushClipper(Rect clipper)override
@@ -10050,6 +10115,10 @@ WindowsGDIResourceManager
 				}
 
 				void RecreateRenderTarget(INativeWindow* window)override
+				{
+				}
+
+				void ResizeRenderTarget(INativeWindow* window)override
 				{
 				}
 
@@ -13051,9 +13120,9 @@ WindowsDirect2DRenderTarget
 				typedef SortedList<Ptr<WindowsDirect2DImageFrameCache>> ImageCacheList;
 			protected:
 				INativeWindow*					window;
-				ID2D1RenderTarget*				d2dRenderTarget;
+				ID2D1RenderTarget*				d2dRenderTarget = nullptr;
 				List<Rect>						clippers;
-				vint							clipperCoverWholeTargetCounter;
+				vint							clipperCoverWholeTargetCounter = 0;
 
 				CachedSolidBrushAllocator		solidBrushes;
 				CachedLinearBrushAllocator		linearBrushes;
@@ -13089,8 +13158,6 @@ WindowsDirect2DRenderTarget
 			public:
 				WindowsDirect2DRenderTarget(INativeWindow* _window)
 					:window(_window)
-					,d2dRenderTarget(0)
-					,clipperCoverWholeTargetCounter(0)
 				{
 					solidBrushes.SetRenderTarget(this);
 					linearBrushes.SetRenderTarget(this);
@@ -13173,20 +13240,17 @@ WindowsDirect2DRenderTarget
 				void StartRendering()override
 				{
 					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
-					d2dRenderTarget->BeginDraw();
-					d2dRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Invalid render target.");
+
+					GetWindowsDirect2DObjectProvider()->StartRendering(window);
 				}
 
-				bool StopRendering()override
+				RenderTargetFailure StopRendering()override
 				{
-					auto result = d2dRenderTarget->EndDraw();
-					bool deviceAvailable = false;
-					if (result == S_OK)
-					{
-						deviceAvailable = GetWindowsDirect2DObjectProvider()->PresentRenderTarget(window);
-					}
-					d2dRenderTarget = 0;
-					return deviceAvailable;
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Invalid render target.");
+					auto result = GetWindowsDirect2DObjectProvider()->StopRenderingAndPresent(window);
+					d2dRenderTarget = nullptr;
+					return result;
 				}
 
 				void PushClipper(Rect clipper)override
@@ -13299,6 +13363,11 @@ WindowsGDIResourceManager
 					NativeWindowDestroying(window);
 					GetWindowsDirect2DObjectProvider()->RecreateRenderTarget(window);
 					NativeWindowCreated(window);
+				}
+
+				void ResizeRenderTarget(INativeWindow* window)
+				{
+					GetWindowsDirect2DObjectProvider()->ResizeRenderTarget(window);
 				}
 
 				IGuiGraphicsLayoutProvider* GetLayoutProvider()override
