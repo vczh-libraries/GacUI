@@ -19,7 +19,7 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 	File(outputPath).WriteAllLines(output, false, BomEncoder::Utf8);
 
 	List<WString> baseline;
-	File(baselinePath).ReadAllLines(baseline);
+	File(baselinePath).ReadAllLinesByBom(baseline);
 	if (baseline.Count() > 0 && baseline[baseline.Count() - 1] == L"")
 	{
 		baseline.RemoveAt(baseline.Count() - 1);

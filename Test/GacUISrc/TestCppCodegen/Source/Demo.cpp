@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
 
 Source: Host.sln
@@ -81,7 +81,7 @@ namespace demo
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetText(::vl::WString(L"MainWindow", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetText(::vl::WString(L"中文", false));
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiTableComposition());
 		{

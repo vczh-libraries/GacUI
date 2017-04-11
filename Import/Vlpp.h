@@ -17648,17 +17648,24 @@ namespace vl
 			/// <returns>The file path.</returns>
 			const FilePath&				GetFilePath()const;
 
+			/// <summary>Get the content of the file as text with encoding testing.</summary>
+			/// <returns>The content of the file.</returns>
+			/// <returns>Returns false if this operation succeeded.</returns>
+			/// <param name="text">The content of the file.</param>
+			/// <param name="encoding">The encoding.</param>
+			/// <param name="bom">True if there is BOM.</param>
+			bool						ReadAllTextWithEncodingTesting(WString& text, stream::BomEncoder::Encoding& encoding, bool& containsBom);
 			/// <summary>Get the content of the file as text.</summary>
 			/// <returns>The content of the file.</returns>
-			WString						ReadAllText()const;
+			WString						ReadAllTextByBom()const;
 			/// <summary>Get the content of the file as text.</summary>
 			/// <returns>Returns false if this operation succeeded.</returns>
 			/// <param name="text">The content of the file.</param>
-			bool						ReadAllText(WString& text)const;
+			bool						ReadAllTextByBom(WString& text)const;
 			/// <summary>Get the content of the file as text.</summary>
 			/// <returns>Returns false if this operation succeeded.</returns>
 			/// <param name="lines">The content of the file.</param>
-			bool						ReadAllLines(collections::List<WString>& lines)const;
+			bool						ReadAllLinesByBom(collections::List<WString>& lines)const;
 
 			/// <summary>Write text to the file.</summary>
 			/// <returns>Returns false if this operation succeeded.</returns>

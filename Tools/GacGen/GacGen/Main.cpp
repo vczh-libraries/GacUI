@@ -198,18 +198,25 @@ void GuiMain()
 
 				if (file.Exists())
 				{
-					code = MergeCppFileContent(file.ReadAllText(), code);
+					WString inputText;
+					BomEncoder::Encoding inputEncoding;
+					bool inputBom;
+					file.ReadAllTextWithEncodingTesting(inputText, inputEncoding, inputBom);
+					code = MergeCppFileContent(inputText, code);
 				}
 
 				if (file.Exists())
 				{
-					auto originalCode = file.ReadAllText();
-					if (originalCode == code)
+					WString inputText;
+					BomEncoder::Encoding inputEncoding;
+					bool inputBom;
+					file.ReadAllTextWithEncodingTesting(inputText, inputEncoding, inputBom);
+					if (inputText == code)
 					{
 						continue;
 					}
 				}
-				file.WriteAllText(code, false, BomEncoder::Mbcs);
+				file.WriteAllText(code, true, BomEncoder::Utf8);
 			}
 		}
 	}

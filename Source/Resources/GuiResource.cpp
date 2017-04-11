@@ -14,48 +14,31 @@ namespace vl
 		using namespace parsing::json;
 		using namespace regex;
 		using namespace stream;
+		using namespace filesystem;
 
 		WString GetFolderPath(const WString& filePath)
 		{
-			for (vint i = filePath.Length() - 1; i >= 0; i--)
+			auto path = FilePath(filePath).GetFolder().GetFullPath();
+			if (path != L"")
 			{
-				if (filePath[i] == L'\\' || filePath[i] == L'/')
+				if (path[path.Length() - 1] != FilePath::Delimiter)
 				{
-					return filePath.Sub(0, i + 1);
+					path += FilePath::Delimiter;
 				}
 			}
-			return L"";
+			return path;
 		}
 
 		WString GetFileName(const WString& filePath)
 		{
-			for (vint i = filePath.Length() - 1; i >= 0; i--)
-			{
-				if (filePath[i] == L'\\' || filePath[i] == L'/')
-				{
-					return filePath.Sub(i + 1, filePath.Length() - i - 1);
-				}
-			}
-			return filePath;
+			return FilePath(filePath).GetName();
 		}
 
 		bool LoadTextFile(const WString& filePath, WString& text)
 		{
-			stream::FileStream fileStream(filePath, stream::FileStream::ReadOnly);
-			return LoadTextFromStream(fileStream, text);
-		}
-
-		bool LoadTextFromStream(stream::IStream& stream, WString& text)
-		{
-			if (stream.IsAvailable())
-			{
-				stream::BomDecoder decoder;
-				stream::DecoderStream decoderStream(stream, decoder);
-				stream::StreamReader reader(decoderStream);
-				text = reader.ReadToEnd();
-				return true;
-			}
-			return false;
+			BomEncoder::Encoding encoding;
+			bool bom;
+			return File(filePath).ReadAllTextWithEncodingTesting(text, encoding, bom);
 		}
 
 		bool IsResourceUrl(const WString& text, WString& protocol, WString& path)
