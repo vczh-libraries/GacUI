@@ -56,9 +56,9 @@ namespace demo
 	void MainWindowConstructor::__vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
 	{
 		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = __vwsn_this_);
-		(::vl::__vwsn::This(this)->__vwsn_precompile_10 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_22 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
@@ -66,127 +66,224 @@ namespace demo
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetText(::vl::WString(L"MainWindow", false));
 		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateListViewStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::controls::GuiListView(__vwsn_controlStyle_));
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->ChangeItemStyle(::vl::Ptr<::vl::presentation::controls::list::ListViewItemStyleProvider::IListViewItemContentProvider>(::vl::Ptr<::vl::presentation::controls::list::ListViewTileContentProvider>(new ::vl::presentation::controls::list::ListViewTileContentProvider([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 32; __vwsn_temp__.y = 32; return __vwsn_temp__; }(), true))));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem()));
-		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"X1", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Y1", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Z1", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetRowsAndColumns(2, 2);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Absolute; __vwsn_temp__.absolute = 100; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetColumnOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetSite(0, 0, 1, 1);
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->SetText(::vl::WString(L"A", false));
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextListStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiTextList(__vwsn_controlStyle_, ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextListItemStyle()));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5.Obj())->SetText(::vl::WString(L"BigIcon", false));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetItems());
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_5));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6.Obj())->SetText(::vl::WString(L"SmallIcon", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_6));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->SetText(::vl::WString(L"List", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetItems());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_7));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem()));
+		(::vl::__vwsn::This(this)->__vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"X2", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->SetText(::vl::WString(L"Tile", false));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Y2", false)));
-		}
-		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Z2", false)));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->SetText(::vl::WString(L"B", false));
-		}
-		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetItems());
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetItems());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_8));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem()));
+		(::vl::__vwsn::This(this)->__vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"X3", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->SetText(::vl::WString(L"Information", false));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Y3", false)));
-		}
-		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->GetSubItems());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Z3", false)));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->SetText(::vl::WString(L"C", false));
-		}
-		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetItems());
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetItems());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_9));
 		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_10 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem()));
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetDataColumns());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10.Obj())->SetText(::vl::WString(L"Detail", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_10));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateComboBoxStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_3 = new ::vl::presentation::controls::GuiComboBoxListControl(__vwsn_controlStyle_, ::vl::__vwsn::This(this)->__vwsn_precompile_4));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_11 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetSelectedIndex(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_2));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->SetSite(1, 0, 1, 2);
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateListViewStyle();
+			(::vl::__vwsn::This(this)->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiListView(__vwsn_controlStyle_));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->ChangeItemStyle(::vl::Ptr<::vl::presentation::controls::list::ListViewItemStyleProvider::IListViewItemContentProvider>(::vl::Ptr<::vl::presentation::controls::list::ListViewDetailContentProvider>(new ::vl::presentation::controls::list::ListViewDetailContentProvider([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 32; __vwsn_temp__.y = 32; return __vwsn_temp__; }(), true))));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetDataColumns());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"0", false))));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetDataColumns());
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetDataColumns());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"1", false))));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetDataColumns());
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetDataColumns());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"2", false))));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 5; __vwsn_temp__.top = 5; __vwsn_temp__.right = 5; __vwsn_temp__.bottom = 5; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->SetHorizontalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetHorizontalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem()));
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"X1", false)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->SetText(::vl::WString(L"Name", false));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Y1", false)));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetColumns());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_2));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->SetText(::vl::WString(L"Birthday", false));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Z1", false)));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetColumns());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_3));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4.Obj())->SetText(::vl::WString(L"Phone", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->SetText(::vl::WString(L"A", false));
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetColumns());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_4));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_19));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
+		(::vl::__vwsn::This(this)->__vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem()));
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5.Obj())->SetText(::vl::WString(L"Address", false));
-		}
-		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetColumns());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_5));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"X2", false)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Y2", false)));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Z2", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->SetText(::vl::WString(L"B", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_20));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_21 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem()));
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"X3", false)));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Y3", false)));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21.Obj())->GetSubItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"Z3", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21.Obj())->SetText(::vl::WString(L"C", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetItems());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_21));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_18 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_14 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->SetText(::vl::WString(L"Name", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetColumns());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_14));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_15 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15.Obj())->SetText(::vl::WString(L"Birthday", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetColumns());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_15));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_16 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16.Obj())->SetText(::vl::WString(L"Phone", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetColumns());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_16));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17.Obj())->SetText(::vl::WString(L"Address", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetColumns());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_17));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_12));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
 		}
 	}
 
@@ -225,7 +322,19 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_11)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_12)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_13)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_14)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_15)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_16)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_17)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_18)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_19)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_20)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_21)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_22)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)

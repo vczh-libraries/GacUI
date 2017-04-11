@@ -4,46 +4,77 @@
       <Window Text="MainWindow" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
 
-        <ListView View="Tile" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
-          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
           <att.Columns>
-            <ListViewColumn Text="Name"/>
-            <ListViewColumn Text="Birthday"/>
-            <ListViewColumn Text="Phone"/>
-            <ListViewColumn Text="Address"/>
+            <CellOption>composeType:Absolute absolute:100</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
           </att.Columns>
 
-          <att.DataColumns>
-            <Int32>0</Int32>
-            <Int32>1</Int32>
-            <Int32>2</Int32>
-          </att.DataColumns>
+          <Cell Site="row:0 column:0">
+            <ComboBox SelectedIndex="5">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="BigIcon"/>
+                    <TextItem Text="SmallIcon"/>
+                    <TextItem Text="List"/>
+                    <TextItem Text="Tile"/>
+                    <TextItem Text="Information"/>
+                    <TextItem Text="Detail"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+            </ComboBox>
+          </Cell>
 
-          <att.Items>
-            <ListViewItem Text="A">
-              <att.SubItems>
-                <String>X1</String>
-                <String>Y1</String>
-                <String>Z1</String>
-              </att.SubItems>
-            </ListViewItem>
-            <ListViewItem Text="B">
-              <att.SubItems>
-                <String>X2</String>
-                <String>Y2</String>
-                <String>Z2</String>
-              </att.SubItems>
-            </ListViewItem>
-            <ListViewItem Text="C">
-              <att.SubItems>
-                <String>X3</String>
-                <String>Y3</String>
-                <String>Z3</String>
-              </att.SubItems>
-            </ListViewItem>
-          </att.Items>
-        </ListView>
+          <Cell Site="row:1 column:0 columnSpan:2">
+            <ListView View="Detail" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+
+              <att.Columns>
+                <ListViewColumn Text="Name"/>
+                <ListViewColumn Text="Birthday"/>
+                <ListViewColumn Text="Phone"/>
+                <ListViewColumn Text="Address"/>
+              </att.Columns>
+
+              <att.DataColumns>
+                <Int32>0</Int32>
+                <Int32>1</Int32>
+                <Int32>2</Int32>
+              </att.DataColumns>
+
+              <att.Items>
+                <ListViewItem Text="A">
+                  <att.SubItems>
+                    <String>X1</String>
+                    <String>Y1</String>
+                    <String>Z1</String>
+                  </att.SubItems>
+                </ListViewItem>
+                <ListViewItem Text="B">
+                  <att.SubItems>
+                    <String>X2</String>
+                    <String>Y2</String>
+                    <String>Z2</String>
+                  </att.SubItems>
+                </ListViewItem>
+                <ListViewItem Text="C">
+                  <att.SubItems>
+                    <String>X3</String>
+                    <String>Y3</String>
+                    <String>Z3</String>
+                  </att.SubItems>
+                </ListViewItem>
+              </att.Items>
+            </ListView>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>

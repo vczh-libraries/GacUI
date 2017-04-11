@@ -325,9 +325,9 @@ WindowsDirect2DRenderTarget
 				typedef SortedList<Ptr<WindowsDirect2DImageFrameCache>> ImageCacheList;
 			protected:
 				INativeWindow*					window;
-				ID2D1RenderTarget*				d2dRenderTarget;
+				ID2D1RenderTarget*				d2dRenderTarget = nullptr;
 				List<Rect>						clippers;
-				vint							clipperCoverWholeTargetCounter;
+				vint							clipperCoverWholeTargetCounter = 0;
 
 				CachedSolidBrushAllocator		solidBrushes;
 				CachedLinearBrushAllocator		linearBrushes;
@@ -363,8 +363,6 @@ WindowsDirect2DRenderTarget
 			public:
 				WindowsDirect2DRenderTarget(INativeWindow* _window)
 					:window(_window)
-					,d2dRenderTarget(0)
-					,clipperCoverWholeTargetCounter(0)
 				{
 					solidBrushes.SetRenderTarget(this);
 					linearBrushes.SetRenderTarget(this);
@@ -459,7 +457,7 @@ WindowsDirect2DRenderTarget
 					{
 						deviceAvailable = GetWindowsDirect2DObjectProvider()->PresentRenderTarget(window);
 					}
-					d2dRenderTarget = 0;
+					d2dRenderTarget = nullptr;
 					return deviceAvailable;
 				}
 

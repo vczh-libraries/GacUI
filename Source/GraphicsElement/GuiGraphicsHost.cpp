@@ -551,7 +551,7 @@ GuiGraphicsHost
 				{
 					previousClientSize = size;
 					minSize = windowComposition->GetPreferredBounds().GetSize();
-					Render(true);
+					needRender = true;
 				}
 			}
 

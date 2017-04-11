@@ -39,16 +39,28 @@ namespace demo
 #endif
 	protected:
 		::demo::MainWindow* __vwsn_precompile_0 = static_cast<::demo::MainWindow*>(nullptr);
-		::vl::presentation::controls::GuiListView* __vwsn_precompile_1 = static_cast<::vl::presentation::controls::GuiListView*>(nullptr);
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiComboBoxListControl* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
+		::vl::presentation::controls::GuiTextList* __vwsn_precompile_4 = static_cast<::vl::presentation::controls::GuiTextList*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_10 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiListView* __vwsn_precompile_13 = static_cast<::vl::presentation::controls::GuiListView*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_14 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_15 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_16 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_21 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		MainWindowConstructor();
