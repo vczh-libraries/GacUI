@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUILISTVIEWCONTROLS
 #define VCZH_PRESENTATION_CONTROLS_GUILISTVIEWCONTROLS
 
-#include "GuiListControls.h"
+#include "GuiListControlItemArrangers.h"
 #include "../ToolstripPackage/GuiMenuControls.h"
 
 namespace vl

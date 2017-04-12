@@ -312,6 +312,7 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridStructured.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.cpp" />
@@ -475,6 +476,7 @@
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridInterfaces.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridStructured.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.h" />

@@ -1,4 +1,5 @@
 #include "GuiTextListControls.h"
+#include "GuiListControlItemArrangers.h"
 
 namespace vl
 {

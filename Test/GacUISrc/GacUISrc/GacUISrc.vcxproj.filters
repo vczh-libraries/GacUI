@@ -480,6 +480,9 @@
     <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.cpp">
       <Filter>GacUI\Compiler\InstanceQuery</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.cpp">
+      <Filter>GacUI\Controls\ListControlPackage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -817,6 +820,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.h">
       <Filter>GacUI\Compiler\InstanceQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.h">
+      <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
