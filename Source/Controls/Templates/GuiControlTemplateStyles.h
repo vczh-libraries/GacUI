@@ -482,8 +482,7 @@ Item Template (GuiTextListItemTemplate)
 
 				void												AttachListControl(controls::GuiListControl* value)override;
 				void												DetachListControl()override;
-				vint												GetItemStyleId(vint itemIndex)override;
-				controls::GuiListControl::IItemStyleController*		CreateItemStyle(vint styleId)override;
+				controls::GuiListControl::IItemStyleController*		CreateItemStyle()override;
 				void												DestroyItemStyle(controls::GuiListControl::IItemStyleController* style)override;
 				void												Install(controls::GuiListControl::IItemStyleController* style, vint itemIndex)override;
 				void												SetStyleIndex(controls::GuiListControl::IItemStyleController* style, vint value)override;
@@ -552,8 +551,7 @@ Item Template (GuiTreeItemTemplate)
 				controls::GuiListControl::IItemStyleProvider*		GetBindedItemStyleProvider()override;
 				void												AttachListControl(controls::GuiListControl* value)override;
 				void												DetachListControl()override;
-				vint												GetItemStyleId(controls::tree::INodeProvider* node)override;
-				controls::tree::INodeItemStyleController*			CreateItemStyle(vint styleId)override;
+				controls::tree::INodeItemStyleController*			CreateItemStyle()override;
 				void												DestroyItemStyle(controls::tree::INodeItemStyleController* style)override;
 				void												Install(controls::tree::INodeItemStyleController* style, controls::tree::INodeProvider* node, vint itemIndex)override;
 				void												SetStyleIndex(controls::tree::INodeItemStyleController* style, vint value)override;

@@ -65,11 +65,6 @@ ListViewItemStyleProviderBase
 					listControl=0;
 				}
 
-				vint ListViewItemStyleProviderBase::GetItemStyleId(vint itemIndex)
-				{
-					return 0;
-				}
-
 				void ListViewItemStyleProviderBase::SetStyleSelected(GuiListControl::IItemStyleController* style, bool value)
 				{
 					ListViewItemStyleController* textStyle=dynamic_cast<ListViewItemStyleController*>(style);
@@ -220,7 +215,7 @@ ListViewItemStyleProvider
 					ListViewItemStyleProviderBase::DetachListControl();
 				}
 
-				GuiListControl::IItemStyleController* ListViewItemStyleProvider::CreateItemStyle(vint styleId)
+				GuiListControl::IItemStyleController* ListViewItemStyleProvider::CreateItemStyle()
 				{
 					ListViewContentItemStyleController* itemStyle=new ListViewContentItemStyleController(this);
 					itemStyles.Add(itemStyle);

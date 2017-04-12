@@ -66,7 +66,6 @@ ListView Base
 
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
-					vint										GetItemStyleId(vint itemIndex)override;
 					void										SetStyleSelected(GuiListControl::IItemStyleController* style, bool value)override;
 				};
 			}
@@ -289,7 +288,7 @@ ListView ItemStyleProvider
 
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
-					GuiListControl::IItemStyleController*		CreateItemStyle(vint styleId)override;
+					GuiListControl::IItemStyleController*		CreateItemStyle()override;
 					void										DestroyItemStyle(GuiListControl::IItemStyleController* style)override;
 					void										Install(GuiListControl::IItemStyleController* style, vint itemIndex)override;
 					void										SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)override;

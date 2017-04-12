@@ -60,22 +60,18 @@ GuiListControl::ItemCallback
 
 			GuiListControl::IItemStyleController* GuiListControl::ItemCallback::RequestItem(vint itemIndex)
 			{
-				vint id = listControl->itemStyleProvider->GetItemStyleId(itemIndex);
-				IItemStyleController* style = 0;
-				for (vint i = 0; i < cachedStyles.Count(); i++)
+				IItemStyleController* style = nullptr;
+				if (cachedStyles.Count() > 0)
 				{
-					IItemStyleController* cachedStyle = cachedStyles[i];
-					if (cachedStyle->GetItemStyleId() == id)
-					{
-						style = cachedStyle;
-						cachedStyles.RemoveAt(i);
-						break;
-					}
+					vint index = cachedStyles.Count() - 1;
+					style = cachedStyles[index];
+					cachedStyles.RemoveAt(index);
 				}
-				if (!style)
+				else
 				{
-					style = listControl->itemStyleProvider->CreateItemStyle(id);
+					style = listControl->itemStyleProvider->CreateItemStyle();
 				}
+
 				listControl->itemStyleProvider->Install(style, itemIndex);
 				style->OnInstalled();
 				auto handler = style->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &ItemCallback::OnStyleBoundsChanged);

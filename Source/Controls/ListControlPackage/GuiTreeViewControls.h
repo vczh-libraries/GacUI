@@ -247,14 +247,9 @@ GuiVirtualTreeListControl NodeProvider
 					virtual void									AttachListControl(GuiListControl* value)=0;
 					/// <summary>Called when a node item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
 					virtual void									DetachListControl()=0;
-					/// <summary>Get a node item style id from a node.</summary>
-					/// <returns>The node item style id.</returns>
-					/// <param name="node">The node.</param>
-					virtual vint									GetItemStyleId(INodeProvider* node)=0;
 					/// <summary>Create a node item style controller from a node item style id.</summary>
 					/// <returns>The created node item style controller.</returns>
-					/// <param name="styleId">The node item style id.</param>
-					virtual INodeItemStyleController*				CreateItemStyle(vint styleId)=0;
+					virtual INodeItemStyleController*				CreateItemStyle()=0;
 					/// <summary>Destroy a node item style controller.</summary>
 					/// <param name="style">The node item style controller.</param>
 					virtual void									DestroyItemStyle(INodeItemStyleController* style)=0;
@@ -288,8 +283,7 @@ GuiVirtualTreeListControl NodeProvider
 
 					void											AttachListControl(GuiListControl* value)override;
 					void											DetachListControl()override;
-					vint											GetItemStyleId(vint itemIndex)override;
-					GuiListControl::IItemStyleController*			CreateItemStyle(vint styleId)override;
+					GuiListControl::IItemStyleController*			CreateItemStyle()override;
 					void											DestroyItemStyle(GuiListControl::IItemStyleController* style)override;
 					void											Install(GuiListControl::IItemStyleController* style, vint itemIndex)override;
 					void											SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)override;
@@ -686,8 +680,7 @@ TreeView
 					GuiListControl::IItemStyleProvider*		GetBindedItemStyleProvider()override;
 					void									AttachListControl(GuiListControl* value)override;
 					void									DetachListControl()override;
-					vint									GetItemStyleId(INodeProvider* node)override;
-					INodeItemStyleController*				CreateItemStyle(vint styleId)override;
+					INodeItemStyleController*				CreateItemStyle()override;
 					void									DestroyItemStyle(INodeItemStyleController* style)override;
 					void									Install(INodeItemStyleController* style, INodeProvider* node, vint itemIndex)override;
 					void									SetStyleIndex(INodeItemStyleController* style, vint value)override;

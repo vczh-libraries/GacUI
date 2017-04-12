@@ -327,24 +327,9 @@ NodeItemProvider
 					listControl=0;
 				}
 
-				vint NodeItemStyleProvider::GetItemStyleId(vint itemIndex)
+				GuiListControl::IItemStyleController* NodeItemStyleProvider::CreateItemStyle()
 				{
-					vint result=-1;
-					if(nodeItemView)
-					{
-						INodeProvider* node=nodeItemView->RequestNode(itemIndex);
-						if(node)
-						{
-							result=nodeItemStyleProvider->GetItemStyleId(node);
-							nodeItemView->ReleaseNode(node);
-						}
-					}
-					return result;
-				}
-
-				GuiListControl::IItemStyleController* NodeItemStyleProvider::CreateItemStyle(vint styleId)
-				{
-					return nodeItemStyleProvider->CreateItemStyle(styleId);
+					return nodeItemStyleProvider->CreateItemStyle();
 				}
 
 				void NodeItemStyleProvider::DestroyItemStyle(GuiListControl::IItemStyleController* style)
@@ -1323,12 +1308,7 @@ TreeViewNodeItemStyleProvider
 					}
 				}
 
-				vint TreeViewNodeItemStyleProvider::GetItemStyleId(INodeProvider* node)
-				{
-					return 0;
-				}
-
-				INodeItemStyleController* TreeViewNodeItemStyleProvider::CreateItemStyle(vint styleId)
+				INodeItemStyleController* TreeViewNodeItemStyleProvider::CreateItemStyle()
 				{
 					return new ItemController(this, minIconSize, fitImage);
 				}

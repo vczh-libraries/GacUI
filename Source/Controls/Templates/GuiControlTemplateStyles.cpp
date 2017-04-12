@@ -1103,12 +1103,7 @@ GuiTextListItemTemplate_ItemStyleProvider
 				bindingView = 0;
 			}
 
-			vint GuiTextListItemTemplate_ItemStyleProvider::GetItemStyleId(vint itemIndex)
-			{
-				return 0;
-			}
-
-			controls::GuiListControl::IItemStyleController* GuiTextListItemTemplate_ItemStyleProvider::CreateItemStyle(vint styleId)
+			controls::GuiListControl::IItemStyleController* GuiTextListItemTemplate_ItemStyleProvider::CreateItemStyle()
 			{
 				return new GuiTextListItemTemplate_ItemStyleController(this);
 			}
@@ -1325,12 +1320,7 @@ GuiTreeItemTemplate_ItemStyleProvider
 				bindingView = 0;
 			}
 
-			vint GuiTreeItemTemplate_ItemStyleProvider::GetItemStyleId(controls::tree::INodeProvider* node)
-			{
-				return 0;
-			}
-
-			controls::tree::INodeItemStyleController* GuiTreeItemTemplate_ItemStyleProvider::CreateItemStyle(vint styleId)
+			controls::tree::INodeItemStyleController* GuiTreeItemTemplate_ItemStyleProvider::CreateItemStyle()
 			{
 				return new GuiTreeItemTemplate_ItemStyleController(this);
 			}

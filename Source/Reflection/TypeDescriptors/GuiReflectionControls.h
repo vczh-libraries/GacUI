@@ -552,14 +552,9 @@ Interface Proxy
 					INVOKE_INTERFACE_PROXY_NOPARAMS(DetachListControl);
 				}
 
-				vint GetItemStyleId(vint itemIndex)override
+				presentation::controls::GuiListControl::IItemStyleController* CreateItemStyle()override
 				{
-					INVOKEGET_INTERFACE_PROXY(GetItemStyleId, itemIndex);
-				}
-
-				presentation::controls::GuiListControl::IItemStyleController* CreateItemStyle(vint styleId)override
-				{
-					INVOKEGET_INTERFACE_PROXY(CreateItemStyle, styleId);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateItemStyle);
 				}
 
 				void DestroyItemStyle(presentation::controls::GuiListControl::IItemStyleController* style)override
@@ -1054,14 +1049,9 @@ Interface Proxy
 					INVOKE_INTERFACE_PROXY_NOPARAMS(DetachListControl);
 				}
 
-				vint GetItemStyleId(presentation::controls::tree::INodeProvider* node)override
+				presentation::controls::tree::INodeItemStyleController* CreateItemStyle()override
 				{
-					INVOKEGET_INTERFACE_PROXY(GetItemStyleId, node);
-				}
-
-				presentation::controls::tree::INodeItemStyleController* CreateItemStyle(vint styleId)override
-				{
-					INVOKEGET_INTERFACE_PROXY(CreateItemStyle, styleId);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateItemStyle);
 				}
 
 				void DestroyItemStyle(presentation::controls::tree::INodeItemStyleController* style)override

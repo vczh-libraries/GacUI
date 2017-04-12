@@ -181,14 +181,9 @@ List Control
 					virtual void								AttachListControl(GuiListControl* value)=0;
 					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
 					virtual void								DetachListControl()=0;
-					/// <summary>Get a item style id from an item index.</summary>
-					/// <returns>The item style id.</returns>
-					/// <param name="itemIndex">The item index.</param>
-					virtual vint								GetItemStyleId(vint itemIndex)=0;
 					/// <summary>Create an item style controller from an item style id.</summary>
 					/// <returns>The created item style controller.</returns>
-					/// <param name="styleId">The item style id.</param>
-					virtual IItemStyleController*				CreateItemStyle(vint styleId)=0;
+					virtual IItemStyleController*				CreateItemStyle()=0;
 					/// <summary>Destroy an item style controller.</summary>
 					/// <param name="style">The item style controller.</param>
 					virtual void								DestroyItemStyle(IItemStyleController* style)=0;

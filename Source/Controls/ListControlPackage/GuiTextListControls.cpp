@@ -159,12 +159,7 @@ TextItemStyleProvider
 					listControl=0;
 				}
 
-				vint TextItemStyleProvider::GetItemStyleId(vint itemIndex)
-				{
-					return 0;
-				}
-
-				GuiListControl::IItemStyleController* TextItemStyleProvider::CreateItemStyle(vint styleId)
+				GuiListControl::IItemStyleController* TextItemStyleProvider::CreateItemStyle()
 				{
 					return new TextItemStyleController(this);
 				}
