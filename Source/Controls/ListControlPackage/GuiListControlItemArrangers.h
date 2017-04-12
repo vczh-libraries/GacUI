@@ -29,12 +29,12 @@ Predefined ItemArranger
 				{
 					typedef collections::List<GuiListControl::IItemStyleController*>		StyleList;
 				protected:
-					GuiListControl*								listControl;
-					GuiListControl::IItemArrangerCallback*		callback;
-					GuiListControl::IItemProvider*				itemProvider;
+					GuiListControl*								listControl = nullptr;
+					GuiListControl::IItemArrangerCallback*		callback = nullptr;
+					GuiListControl::IItemProvider*				itemProvider = nullptr;
 					bool										suppressOnViewChanged = false;
 					Rect										viewBounds;
-					vint										startIndex;
+					vint										startIndex = 0;
 					StyleList									visibleStyles;
 
 					void										InvalidateAdoptedSize();

@@ -61,9 +61,6 @@ RangedItemArrangerBase
 				}
 
 				RangedItemArrangerBase::RangedItemArrangerBase()
-					:listControl(0)
-					, callback(0)
-					, startIndex(0)
 				{
 				}
 
