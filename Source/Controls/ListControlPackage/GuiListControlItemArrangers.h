@@ -32,6 +32,7 @@ Predefined ItemArranger
 					GuiListControl*								listControl;
 					GuiListControl::IItemArrangerCallback*		callback;
 					GuiListControl::IItemProvider*				itemProvider;
+					bool										suppressOnViewChanged = false;
 					Rect										viewBounds;
 					vint										startIndex;
 					StyleList									visibleStyles;
@@ -65,7 +66,6 @@ Predefined ItemArranger
 				{
 				protected:
 					vint										rowHeight;
-					bool										suppressOnViewChanged;
 
 					virtual void								RearrangeItemBounds();
 					virtual vint								GetWidth();
@@ -88,7 +88,6 @@ Predefined ItemArranger
 				{
 				protected:
 					Size										itemSize;
-					bool										suppressOnViewChanged;
 
 					virtual void								RearrangeItemBounds();
 					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
@@ -110,7 +109,6 @@ Predefined ItemArranger
 				{
 				protected:
 					vint										itemHeight;
-					bool										suppressOnViewChanged;
 
 					virtual void								RearrangeItemBounds();
 					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
