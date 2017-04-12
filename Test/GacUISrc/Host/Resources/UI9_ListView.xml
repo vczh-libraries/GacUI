@@ -1,8 +1,8 @@
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow">
-      <Window Text="中文" ClientSize="x:640 y:480">
-        <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
+      <Window Text="中文" ClientSize="x:480 y:320">
+        <att.BoundsComposition-set PreferredMinSize="x:480 y:320"/>
 
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
           <att.Rows>
@@ -57,13 +57,9 @@
                     <_>1</_>
                   </att.SubItems>
                 </_>
-                <_ Text="Borland Delphi Studio">
-                  <att.SubItems>
-                    <_>Borland</_>
-                    <_>Object Pascal, C++, C#, VB.NET</_>
-                    <_>2</_>
-                  </att.SubItems>
-                </_>
+                <_ Text="Xamarin Studio"/>
+                <_ Text="Visual Studio for Mac"/>
+                <_ Text="VSCode"/>
                 <_ Text="JetBrains Clion">
                   <att.SubItems>
                     <_>JetBrains</_>
@@ -71,6 +67,20 @@
                     <_>3</_>
                   </att.SubItems>
                 </_>
+                <_ Text="JetBrains IntelliJ IDEA"/>
+                <_ Text="JetBrains PyCharm"/>
+                <_ Text="JetBrains WebStorm"/>
+                <_ Text="JetBrains PhpStorm"/>
+                <_ Text="JetBrains AppCode"/>
+                <_ Text="Embarcadero Delphi">
+                  <att.SubItems>
+                    <_>Borland</_>
+                    <_>Object Pascal, C++, C#, VB.NET</_>
+                    <_>2</_>
+                  </att.SubItems>
+                </_>
+                <_ Text="Embarcadero RAD Studio"/>
+                <_ Text="Embarcadero C++ Builder"/>
               </att.Items>
             </ListView>
           </Cell>

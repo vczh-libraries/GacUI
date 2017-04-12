@@ -46,24 +46,24 @@ RangedItemArrangerBase
 
 				void RangedItemArrangerBase::ClearStyles()
 				{
-					startIndex=0;
-					if(callback)
+					startIndex = 0;
+					if (callback)
 					{
-						for(vint i=0;i<visibleStyles.Count();i++)
+						for (vint i = 0; i < visibleStyles.Count(); i++)
 						{
-							GuiListControl::IItemStyleController* style=visibleStyles[i];
+							GuiListControl::IItemStyleController* style = visibleStyles[i];
 							callback->ReleaseItem(style);
 						}
 					}
 					visibleStyles.Clear();
-					viewBounds=Rect(0, 0, 0, 0);
+					viewBounds = Rect(0, 0, 0, 0);
 					OnStylesCleared();
 				}
 
 				RangedItemArrangerBase::RangedItemArrangerBase()
 					:listControl(0)
-					,callback(0)
-					,startIndex(0)
+					, callback(0)
+					, startIndex(0)
 				{
 				}
 
@@ -73,8 +73,8 @@ RangedItemArrangerBase
 
 				void RangedItemArrangerBase::OnAttached(GuiListControl::IItemProvider* provider)
 				{
-					itemProvider=provider;
-					if(provider)
+					itemProvider = provider;
+					if (provider)
 					{
 						OnItemModified(0, 0, provider->Count());
 					}
@@ -82,53 +82,53 @@ RangedItemArrangerBase
 
 				void RangedItemArrangerBase::OnItemModified(vint start, vint count, vint newCount)
 				{
-					if(callback)
+					if (callback)
 					{
-						vint visibleCount=visibleStyles.Count();
-						vint itemCount=itemProvider->Count();
+						vint visibleCount = visibleStyles.Count();
+						vint itemCount = itemProvider->Count();
 						SortedList<GuiListControl::IItemStyleController*> reusedStyles;
-						for(vint i=0;i<visibleCount;i++)
+						for (vint i = 0; i < visibleCount; i++)
 						{
-							vint index=startIndex+i;
-							if(index>=itemCount)
+							vint index = startIndex + i;
+							if (index >= itemCount)
 							{
 								break;
 							}
 
-							vint oldIndex=-1;
-							if(index<start)
+							vint oldIndex = -1;
+							if (index < start)
 							{
-								oldIndex=index;
+								oldIndex = index;
 							}
-							else if(index>=start+newCount)
+							else if (index >= start + newCount)
 							{
-								oldIndex=index-newCount+count;
+								oldIndex = index - newCount + count;
 							}
 
-							if(oldIndex!=-1)
+							if (oldIndex != -1)
 							{
-								if(oldIndex>=startIndex && oldIndex<startIndex+visibleCount)
+								if (oldIndex >= startIndex && oldIndex < startIndex + visibleCount)
 								{
-									GuiListControl::IItemStyleController* style=visibleStyles[oldIndex-startIndex];
+									GuiListControl::IItemStyleController* style = visibleStyles[oldIndex - startIndex];
 									reusedStyles.Add(style);
 									visibleStyles.Add(style);
 								}
 								else
 								{
-									oldIndex=-1;
+									oldIndex = -1;
 								}
 							}
-							if(oldIndex==-1)
+							if (oldIndex == -1)
 							{
-								GuiListControl::IItemStyleController* style=callback->RequestItem(index);
+								GuiListControl::IItemStyleController* style = callback->RequestItem(index);
 								visibleStyles.Add(style);
 							}
 						}
 
-						for(vint i=0;i<visibleCount;i++)
+						for (vint i = 0; i < visibleCount; i++)
 						{
-							GuiListControl::IItemStyleController* style=visibleStyles[i];
-							if(!reusedStyles.Contains(style))
+							GuiListControl::IItemStyleController* style = visibleStyles[i];
+							if (!reusedStyles.Contains(style))
 							{
 								callback->ReleaseItem(style);
 							}
@@ -167,11 +167,11 @@ RangedItemArrangerBase
 
 				void RangedItemArrangerBase::SetCallback(GuiListControl::IItemArrangerCallback* value)
 				{
-					if(!value)
+					if (!value)
 					{
 						ClearStyles();
 					}
-					callback=value;
+					callback = value;
 				}
 
 				Size RangedItemArrangerBase::GetTotalSize()
@@ -181,9 +181,9 @@ RangedItemArrangerBase
 
 				GuiListControl::IItemStyleController* RangedItemArrangerBase::GetVisibleStyle(vint itemIndex)
 				{
-					if(startIndex<=itemIndex && itemIndex<startIndex+visibleStyles.Count())
+					if (startIndex <= itemIndex && itemIndex < startIndex + visibleStyles.Count())
 					{
-						return visibleStyles[itemIndex-startIndex];
+						return visibleStyles[itemIndex - startIndex];
 					}
 					else
 					{
@@ -193,15 +193,15 @@ RangedItemArrangerBase
 
 				vint RangedItemArrangerBase::GetVisibleIndex(GuiListControl::IItemStyleController* style)
 				{
-					vint index=visibleStyles.IndexOf(style);
-					return index==-1?-1:index+startIndex;
+					vint index = visibleStyles.IndexOf(style);
+					return index == -1 ? -1 : index + startIndex;
 				}
 
 				void RangedItemArrangerBase::OnViewChanged(Rect bounds)
 				{
-					Rect oldBounds=viewBounds;
-					viewBounds=bounds;
-					if(callback)
+					Rect oldBounds = viewBounds;
+					viewBounds = bounds;
+					if (callback)
 					{
 						OnViewChangedInternal(oldBounds, viewBounds);
 					}
@@ -213,14 +213,14 @@ FixedHeightItemArranger
 
 				void FixedHeightItemArranger::RearrangeItemBounds()
 				{
-					vint x0=-viewBounds.Left();
-					vint y0=-viewBounds.Top()+GetYOffset();
-					vint width=GetWidth();
-					for(vint i=0;i<visibleStyles.Count();i++)
+					vint x0 = -viewBounds.Left();
+					vint y0 = -viewBounds.Top() + GetYOffset();
+					vint width = GetWidth();
+					for (vint i = 0; i < visibleStyles.Count(); i++)
 					{
-						GuiListControl::IItemStyleController* style=visibleStyles[i];
-						vint top=y0+(startIndex+i)*rowHeight;
-						if(width==-1)
+						GuiListControl::IItemStyleController* style = visibleStyles[i];
+						vint top = y0 + (startIndex + i)*rowHeight;
+						if (width == -1)
 						{
 							callback->SetStyleAlignmentToParent(style, Margin(0, -1, 0, -1));
 							callback->SetStyleBounds(style, Rect(Point(0, top), Size(0, rowHeight)));
@@ -245,17 +245,17 @@ FixedHeightItemArranger
 
 				void FixedHeightItemArranger::OnStylesCleared()
 				{
-					rowHeight=1;
+					rowHeight = 1;
 					InvalidateAdoptedSize();
 				}
 
 				Size FixedHeightItemArranger::OnCalculateTotalSize()
 				{
-					if(callback)
+					if (callback)
 					{
-						vint width=GetWidth();
-						if(width<0) width=0;
-						return Size(width, rowHeight*itemProvider->Count()+GetYOffset());
+						vint width = GetWidth();
+						if (width < 0) width = 0;
+						return Size(width, rowHeight*itemProvider->Count() + GetYOffset());
 					}
 					else
 					{
@@ -336,7 +336,7 @@ FixedHeightItemArranger
 
 				FixedHeightItemArranger::FixedHeightItemArranger()
 					:rowHeight(1)
-					,suppressOnViewChanged(false)
+					, suppressOnViewChanged(false)
 				{
 				}
 
@@ -346,11 +346,11 @@ FixedHeightItemArranger
 
 				vint FixedHeightItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
 				{
-					vint count=itemProvider->Count();
-					if(count==0) return -1;
-					vint groupCount=viewBounds.Height()/rowHeight;
-					if(groupCount==0) groupCount=1;
-					switch(key)
+					vint count = itemProvider->Count();
+					if (count == 0) return -1;
+					vint groupCount = viewBounds.Height() / rowHeight;
+					if (groupCount == 0) groupCount = 1;
+					switch (key)
 					{
 					case KeyDirection::Up:
 						itemIndex--;
@@ -359,56 +359,56 @@ FixedHeightItemArranger
 						itemIndex++;
 						break;
 					case KeyDirection::Home:
-						itemIndex=0;
+						itemIndex = 0;
 						break;
 					case KeyDirection::End:
-						itemIndex=count;
+						itemIndex = count;
 						break;
 					case KeyDirection::PageUp:
-						itemIndex-=groupCount;
+						itemIndex -= groupCount;
 						break;
 					case KeyDirection::PageDown:
-						itemIndex+=groupCount;
+						itemIndex += groupCount;
 						break;
 					default:
 						return -1;
 					}
-					
-					if(itemIndex<0) return 0;
-					else if(itemIndex>=count) return count-1;
+
+					if (itemIndex < 0) return 0;
+					else if (itemIndex >= count) return count - 1;
 					else return itemIndex;
 				}
 
 				bool FixedHeightItemArranger::EnsureItemVisible(vint itemIndex)
 				{
-					if(callback)
+					if (callback)
 					{
-						if(itemIndex<0 || itemIndex>=itemProvider->Count())
+						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
 							return false;
 						}
-						while(true)
+						while (true)
 						{
-							vint yOffset=GetYOffset();
-							vint top=itemIndex*rowHeight;
-							vint bottom=top+rowHeight+yOffset;
+							vint yOffset = GetYOffset();
+							vint top = itemIndex*rowHeight;
+							vint bottom = top + rowHeight + yOffset;
 
-							if(viewBounds.Height()<rowHeight)
+							if (viewBounds.Height() < rowHeight)
 							{
-								if(viewBounds.Top()<bottom && top<viewBounds.Bottom())
+								if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
 								{
 									break;
 								}
 							}
 
-							Point location=viewBounds.LeftTop();
-							if(top<viewBounds.Top())
+							Point location = viewBounds.LeftTop();
+							if (top < viewBounds.Top())
 							{
-								location.y=top;
+								location.y = top;
 							}
-							else if(viewBounds.Bottom()<bottom)
+							else if (viewBounds.Bottom() < bottom)
 							{
-								location.y=bottom-viewBounds.Height();
+								location.y = bottom - viewBounds.Height();
 							}
 							else
 							{
@@ -439,46 +439,46 @@ FixedSizeMultiColumnItemArranger
 
 				void FixedSizeMultiColumnItemArranger::RearrangeItemBounds()
 				{
-					vint y0=-viewBounds.Top();
-					vint rowItems=viewBounds.Width()/itemSize.x;
-					if(rowItems<1) rowItems=1;
+					vint y0 = -viewBounds.Top();
+					vint rowItems = viewBounds.Width() / itemSize.x;
+					if (rowItems < 1) rowItems = 1;
 
-					for(vint i=0;i<visibleStyles.Count();i++)
+					for (vint i = 0; i < visibleStyles.Count(); i++)
 					{
-						GuiListControl::IItemStyleController* style=visibleStyles[i];
-						vint row=(startIndex+i)/rowItems;
-						vint col=(startIndex+i)%rowItems;
-						callback->SetStyleBounds(style, Rect(Point(col*itemSize.x, y0+row*itemSize.y), itemSize));
+						GuiListControl::IItemStyleController* style = visibleStyles[i];
+						vint row = (startIndex + i) / rowItems;
+						vint col = (startIndex + i) % rowItems;
+						callback->SetStyleBounds(style, Rect(Point(col*itemSize.x, y0 + row*itemSize.y), itemSize));
 					}
 				}
 
 				void FixedSizeMultiColumnItemArranger::CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end)
 				{
-					vint startRow=bounds.Top()/itemSize.y;
-					if(startRow<0) startRow=0;
-					vint endRow=(bounds.Bottom()-1)/itemSize.y;
-					vint cols=bounds.Width()/itemSize.x;
-					if(cols<1) cols=1;
+					vint startRow = bounds.Top() / itemSize.y;
+					if (startRow < 0) startRow = 0;
+					vint endRow = (bounds.Bottom() - 1) / itemSize.y;
+					vint cols = bounds.Width() / itemSize.x;
+					if (cols < 1) cols = 1;
 
-					start=startRow*cols;
-					end=(endRow+1)*cols-1;
-					if(end>=count) end=count-1;
+					start = startRow*cols;
+					end = (endRow + 1)*cols - 1;
+					if (end >= count) end = count - 1;
 				}
 
 				void FixedSizeMultiColumnItemArranger::OnStylesCleared()
 				{
-					itemSize=Size(1, 1);
+					itemSize = Size(1, 1);
 					InvalidateAdoptedSize();
 				}
 
 				Size FixedSizeMultiColumnItemArranger::OnCalculateTotalSize()
 				{
-					if(callback)
+					if (callback)
 					{
-						vint rowItems=viewBounds.Width()/itemSize.x;
-						if(rowItems<1) rowItems=1;
-						vint rows=itemProvider->Count()/rowItems;
-						if(itemProvider->Count()%rowItems) rows++;
+						vint rowItems = viewBounds.Width() / itemSize.x;
+						if (rowItems < 1) rowItems = 1;
+						vint rows = itemProvider->Count() / rowItems;
+						if (itemProvider->Count() % rowItems) rows++;
 
 						return Size(itemSize.x*rowItems, itemSize.y*rows);
 					}
@@ -580,7 +580,7 @@ FixedSizeMultiColumnItemArranger
 
 				FixedSizeMultiColumnItemArranger::FixedSizeMultiColumnItemArranger()
 					:itemSize(1, 1)
-					,suppressOnViewChanged(false)
+					, suppressOnViewChanged(false)
 				{
 				}
 
@@ -590,19 +590,19 @@ FixedSizeMultiColumnItemArranger
 
 				vint FixedSizeMultiColumnItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
 				{
-					vint count=itemProvider->Count();
-					vint columnCount=viewBounds.Width()/itemSize.x;
-					if(columnCount==0) columnCount=1;
-					vint rowCount=viewBounds.Height()/itemSize.y;
-					if(rowCount==0) rowCount=1;
+					vint count = itemProvider->Count();
+					vint columnCount = viewBounds.Width() / itemSize.x;
+					if (columnCount == 0) columnCount = 1;
+					vint rowCount = viewBounds.Height() / itemSize.y;
+					if (rowCount == 0) rowCount = 1;
 
-					switch(key)
+					switch (key)
 					{
 					case KeyDirection::Up:
-						itemIndex-=columnCount;
+						itemIndex -= columnCount;
 						break;
 					case KeyDirection::Down:
-						itemIndex+=columnCount;
+						itemIndex += columnCount;
 						break;
 					case KeyDirection::Left:
 						itemIndex--;
@@ -611,66 +611,66 @@ FixedSizeMultiColumnItemArranger
 						itemIndex++;
 						break;
 					case KeyDirection::Home:
-						itemIndex=0;
+						itemIndex = 0;
 						break;
 					case KeyDirection::End:
-						itemIndex=count;
+						itemIndex = count;
 						break;
 					case KeyDirection::PageUp:
-						itemIndex-=columnCount*rowCount;
+						itemIndex -= columnCount*rowCount;
 						break;
 					case KeyDirection::PageDown:
-						itemIndex+=columnCount*rowCount;
+						itemIndex += columnCount*rowCount;
 						break;
 					case KeyDirection::PageLeft:
-						itemIndex-=itemIndex%columnCount;
+						itemIndex -= itemIndex%columnCount;
 						break;
 					case KeyDirection::PageRight:
-						itemIndex+=columnCount-itemIndex%columnCount-1;
+						itemIndex += columnCount - itemIndex%columnCount - 1;
 						break;
 					default:
 						return -1;
 					}
-					
-					if(itemIndex<0) return 0;
-					else if(itemIndex>=count) return count-1;
+
+					if (itemIndex < 0) return 0;
+					else if (itemIndex >= count) return count - 1;
 					else return itemIndex;
 				}
 
 				bool FixedSizeMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
 				{
-					if(callback)
+					if (callback)
 					{
-						if(itemIndex<0 || itemIndex>=itemProvider->Count())
+						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
 							return false;
 						}
-						while(true)
+						while (true)
 						{
-							vint rowHeight=itemSize.y;
-							vint columnCount=viewBounds.Width()/itemSize.x;
-							if(columnCount==0) columnCount=1;
-							vint rowIndex=itemIndex/columnCount;
+							vint rowHeight = itemSize.y;
+							vint columnCount = viewBounds.Width() / itemSize.x;
+							if (columnCount == 0) columnCount = 1;
+							vint rowIndex = itemIndex / columnCount;
 
-							vint top=rowIndex*rowHeight;
-							vint bottom=top+rowHeight;
+							vint top = rowIndex*rowHeight;
+							vint bottom = top + rowHeight;
 
-							if(viewBounds.Height()<rowHeight)
+							if (viewBounds.Height() < rowHeight)
 							{
-								if(viewBounds.Top()<bottom && top<viewBounds.Bottom())
+								if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
 								{
 									break;
 								}
 							}
 
-							Point location=viewBounds.LeftTop();
-							if(top<viewBounds.Top())
+							Point location = viewBounds.LeftTop();
+							if (top < viewBounds.Top())
 							{
-								location.y=top;
+								location.y = top;
 							}
-							else if(viewBounds.Bottom()<bottom)
+							else if (viewBounds.Bottom() < bottom)
 							{
-								location.y=bottom-viewBounds.Height();
+								location.y = bottom - viewBounds.Height();
 							}
 							else
 							{
@@ -693,7 +693,7 @@ FixedSizeMultiColumnItemArranger
 						return Size(
 							CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
 							CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
-							);
+						);
 					}
 					return expectedSize;
 				}
@@ -704,45 +704,47 @@ FixedHeightMultiColumnItemArranger
 
 				void FixedHeightMultiColumnItemArranger::RearrangeItemBounds()
 				{
-					vint rows=0;
-					vint startColumn=0;
+					vint rows = 0;
+					vint startColumn = 0;
 					CalculateRange(itemHeight, viewBounds, rows, startColumn);
-					vint currentWidth=0;
-					vint totalWidth=0;
-					for(vint i=0;i<visibleStyles.Count();i++)
+					vint currentWidth = 0;
+					vint totalWidth = 0;
+					for (vint i = 0; i < visibleStyles.Count(); i++)
 					{
-						vint column=i%rows;
-						if(column==0)
+						vint column = i%rows;
+						if (column == 0)
 						{
-							totalWidth+=currentWidth;
-							currentWidth=0;
+							totalWidth += currentWidth;
+							currentWidth = 0;
 						}
-						GuiListControl::IItemStyleController* style=visibleStyles[i];
-						callback->SetStyleBounds(style, Rect(Point(totalWidth, itemHeight*column), Size(0, 0)));
+						GuiListControl::IItemStyleController* style = visibleStyles[i];
+						Size styleSize = callback->GetStylePreferredSize(style);
+						if (currentWidth < styleSize.x) currentWidth = styleSize.x;
+						callback->SetStyleBounds(style, Rect(Point(totalWidth, itemHeight * column), Size(0, 0)));
 					}
 				}
 
 				void FixedHeightMultiColumnItemArranger::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
 				{
-					rows=bounds.Height()/itemHeight;
-					if(rows<1) rows=1;
-					startColumn=bounds.Left()/bounds.Width();
+					rows = bounds.Height() / itemHeight;
+					if (rows < 1) rows = 1;
+					startColumn = bounds.Left() / bounds.Width();
 				}
 
 				void FixedHeightMultiColumnItemArranger::OnStylesCleared()
 				{
-					itemHeight=1;
+					itemHeight = 1;
 					InvalidateAdoptedSize();
 				}
 
 				Size FixedHeightMultiColumnItemArranger::OnCalculateTotalSize()
 				{
-					if(callback)
+					if (callback)
 					{
-						vint rows=viewBounds.Height()/itemHeight;
-						if(rows<1) rows=1;
-						vint columns=itemProvider->Count()/rows;
-						if(itemProvider->Count()%rows) columns+=1;
+						vint rows = viewBounds.Height() / itemHeight;
+						if (rows < 1) rows = 1;
+						vint columns = itemProvider->Count() / rows;
+						if (itemProvider->Count() % rows) columns += 1;
 						return Size(viewBounds.Width()*columns, 0);
 					}
 					else
@@ -857,7 +859,7 @@ FixedHeightMultiColumnItemArranger
 
 				FixedHeightMultiColumnItemArranger::FixedHeightMultiColumnItemArranger()
 					:itemHeight(1)
-					,suppressOnViewChanged(false)
+					, suppressOnViewChanged(false)
 				{
 				}
 
@@ -867,10 +869,10 @@ FixedHeightMultiColumnItemArranger
 
 				vint FixedHeightMultiColumnItemArranger::FindItem(vint itemIndex, compositions::KeyDirection key)
 				{
-					vint count=itemProvider->Count();
-					vint groupCount=viewBounds.Height()/itemHeight;
-					if(groupCount==0) groupCount=1;
-					switch(key)
+					vint count = itemProvider->Count();
+					vint groupCount = viewBounds.Height() / itemHeight;
+					if (groupCount == 0) groupCount = 1;
+					switch (key)
 					{
 					case KeyDirection::Up:
 						itemIndex--;
@@ -879,76 +881,76 @@ FixedHeightMultiColumnItemArranger
 						itemIndex++;
 						break;
 					case KeyDirection::Left:
-						itemIndex-=groupCount;
+						itemIndex -= groupCount;
 						break;
 					case KeyDirection::Right:
-						itemIndex+=groupCount;
+						itemIndex += groupCount;
 						break;
 					case KeyDirection::Home:
-						itemIndex=0;
+						itemIndex = 0;
 						break;
 					case KeyDirection::End:
-						itemIndex=count;
+						itemIndex = count;
 						break;
 					case KeyDirection::PageUp:
-						itemIndex-=itemIndex%groupCount;
+						itemIndex -= itemIndex%groupCount;
 						break;
 					case KeyDirection::PageDown:
-						itemIndex+=groupCount-itemIndex%groupCount-1;
+						itemIndex += groupCount - itemIndex%groupCount - 1;
 						break;
 					default:
 						return -1;
 					}
-					
-					if(itemIndex<0) return 0;
-					else if(itemIndex>=count) return count-1;
+
+					if (itemIndex < 0) return 0;
+					else if (itemIndex >= count) return count - 1;
 					else return itemIndex;
 				}
 
 				bool FixedHeightMultiColumnItemArranger::EnsureItemVisible(vint itemIndex)
 				{
-					if(callback)
+					if (callback)
 					{
-						if(itemIndex<0 || itemIndex>=itemProvider->Count())
+						if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 						{
 							return false;
 						}
-						while(true)
+						while (true)
 						{
-							vint rowCount=viewBounds.Height()/itemHeight;
-							if(rowCount==0) rowCount=1;
-							vint columnIndex=itemIndex/rowCount;
-							vint minIndex=startIndex;
-							vint maxIndex=startIndex+visibleStyles.Count()-1;
+							vint rowCount = viewBounds.Height() / itemHeight;
+							if (rowCount == 0) rowCount = 1;
+							vint columnIndex = itemIndex / rowCount;
+							vint minIndex = startIndex;
+							vint maxIndex = startIndex + visibleStyles.Count() - 1;
 
-							Point location=viewBounds.LeftTop();
-							if(minIndex<=itemIndex && itemIndex<=maxIndex)
+							Point location = viewBounds.LeftTop();
+							if (minIndex <= itemIndex && itemIndex <= maxIndex)
 							{
-								Rect bounds=callback->GetStyleBounds(visibleStyles[itemIndex-startIndex]);
-								if(0<bounds.Bottom() && bounds.Top()<viewBounds.Width() && bounds.Width()>viewBounds.Width())
+								Rect bounds = callback->GetStyleBounds(visibleStyles[itemIndex - startIndex]);
+								if (0 < bounds.Bottom() && bounds.Top() < viewBounds.Width() && bounds.Width() > viewBounds.Width())
 								{
 									break;
 								}
-								else if(bounds.Left()<0)
+								else if (bounds.Left() < 0)
 								{
-									location.x-=viewBounds.Width();
+									location.x -= viewBounds.Width();
 								}
-								else if(bounds.Right()>viewBounds.Width())
+								else if (bounds.Right() > viewBounds.Width())
 								{
-									location.x+=viewBounds.Width();
+									location.x += viewBounds.Width();
 								}
 								else
 								{
 									break;
 								}
 							}
-							else if(columnIndex<minIndex/rowCount)
+							else if (columnIndex < minIndex / rowCount)
 							{
-								location.x-=viewBounds.Width();
+								location.x -= viewBounds.Width();
 							}
-							else if(columnIndex>=maxIndex/rowCount)
+							else if (columnIndex >= maxIndex / rowCount)
 							{
-								location.x+=viewBounds.Width();
+								location.x += viewBounds.Width();
 							}
 							else
 							{

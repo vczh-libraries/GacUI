@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
 
 Source: Host.sln
@@ -66,7 +66,17 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
 		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
 		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_21 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_22 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_23 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_24 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_25 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_26 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_27 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_28 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_29 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_30 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		MainWindowConstructor();
