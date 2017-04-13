@@ -1670,16 +1670,6 @@ ListViewItemProvider
 					}
 				}
 
-				bool ListViewItemProvider::ContainsPrimaryText(vint itemIndex)
-				{
-					return true;
-				}
-
-				WString ListViewItemProvider::GetPrimaryTextViewText(vint itemIndex)
-				{
-					return Get(itemIndex)->text;
-				}
-
 				Ptr<GuiImageData> ListViewItemProvider::GetSmallImage(vint itemIndex)
 				{
 					return Get(itemIndex)->smallImage;
@@ -1806,6 +1796,11 @@ ListViewItemProvider
 					}
 				}
 
+				WString ListViewItemProvider::GetTextValue(vint itemIndex)
+				{
+					return GetText(itemIndex);
+				}
+
 				description::Value ListViewItemProvider::GetBindingValue(vint itemIndex)
 				{
 					return Value::From(Get(itemIndex));
@@ -1830,14 +1825,6 @@ ListViewItemProvider
 					else if(identifier==ListViewColumnItemArranger::IColumnItemView::Identifier)
 					{
 						return (ListViewColumnItemArranger::IColumnItemView*)this;
-					}
-					else if(identifier==GuiListControl::IItemPrimaryTextView::Identifier)
-					{
-						return (GuiListControl::IItemPrimaryTextView*)this;
-					}
-					else if(identifier==GuiListControl::IItemBindingView::Identifier)
-					{
-						return (GuiListControl::IItemBindingView*)this;
 					}
 					else
 					{

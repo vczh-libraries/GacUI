@@ -10,6 +10,7 @@ namespace vl
 			{
 				using namespace compositions;
 				using namespace collections;
+				using namespace description;
 
 				const wchar_t* const IDataProvider::Identifier = L"vl::presentation::controls::list::IDataProvider";
 
@@ -99,6 +100,16 @@ DataGridItemProvider
 					return dataProvider->GetRowCount();
 				}
 
+				WString DataGridItemProvider::GetTextValue(vint itemIndex)
+				{
+					return GetText(itemIndex);
+				}
+
+				description::Value DataGridItemProvider::GetBindingValue(vint itemIndex)
+				{
+					return Value();
+				}
+
 				IDescriptable* DataGridItemProvider::RequestView(const WString& identifier)
 				{
 					if(identifier==IDataProvider::Identifier)
@@ -113,10 +124,6 @@ DataGridItemProvider
 					{
 						return (ListViewColumnItemArranger::IColumnItemView*)this;
 					}
-					else if(identifier==GuiListControl::IItemPrimaryTextView::Identifier)
-					{
-						return (GuiListControl::IItemPrimaryTextView*)this;
-					}
 					else
 					{
 						return 0;
@@ -126,20 +133,6 @@ DataGridItemProvider
 				void DataGridItemProvider::ReleaseView(IDescriptable* view)
 				{
 				}
-
-// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-				WString DataGridItemProvider::GetPrimaryTextViewText(vint itemIndex)
-				{
-					return GetText(itemIndex);
-				}
-
-				bool DataGridItemProvider::ContainsPrimaryText(vint itemIndex)
-				{
-					return true;
-				}
-
-// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
 
 				Ptr<GuiImageData> DataGridItemProvider::GetSmallImage(vint itemIndex)
 				{

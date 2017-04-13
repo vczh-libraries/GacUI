@@ -169,7 +169,7 @@ ListView ItemStyleProvider
 				{
 				public:
 					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="ListViewItemStyleProvider"/>.</summary>
-					class IListViewItemView : public virtual GuiListControl::IItemPrimaryTextView, public Description<IListViewItemView>
+					class IListViewItemView : public virtual IDescriptable, public Description<IListViewItemView>
 					{
 					public:
 						/// <summary>The identifier for this view.</summary>
@@ -844,7 +844,6 @@ ListView
 					, protected virtual IListViewItemProvider
 					, protected virtual ListViewItemStyleProvider::IListViewItemView
 					, protected virtual ListViewColumnItemArranger::IColumnItemView
-					, protected GuiListControl::IItemBindingView
 					, public Description<ListViewItemProvider>
 				{
 					friend class ListViewItem;
@@ -862,8 +861,6 @@ ListView
 					void												NotifyAllItemsUpdate()override;
 					void												NotifyAllColumnsUpdate()override;
 
-					bool												ContainsPrimaryText(vint itemIndex)override;
-					WString												GetPrimaryTextViewText(vint itemIndex)override;
 					Ptr<GuiImageData>									GetSmallImage(vint itemIndex)override;
 					Ptr<GuiImageData>									GetLargeImage(vint itemIndex)override;
 					WString												GetText(vint itemIndex)override;
@@ -880,6 +877,7 @@ ListView
 					GuiMenu*											GetDropdownPopup(vint index)override;
 					GuiListViewColumnHeader::ColumnSortingState			GetSortingState(vint index)override;
 
+					WString												GetTextValue(vint itemIndex)override;
 					description::Value									GetBindingValue(vint itemIndex)override;
 				public:
 					ListViewItemProvider();

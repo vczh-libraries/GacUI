@@ -1078,8 +1078,6 @@ GuiTextListItemTemplate_ItemStyleProvider
 
 			GuiTextListItemTemplate_ItemStyleProvider::GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
 				:factory(_factory)
-				, listControl(0)
-				, bindingView(0)
 			{
 			}
 
@@ -1090,17 +1088,11 @@ GuiTextListItemTemplate_ItemStyleProvider
 			void GuiTextListItemTemplate_ItemStyleProvider::AttachListControl(controls::GuiListControl* value)
 			{
 				listControl = dynamic_cast<GuiVirtualTextList*>(value);
-				bindingView = dynamic_cast<GuiListControl::IItemBindingView*>(listControl->GetItemProvider()->RequestView(GuiListControl::IItemBindingView::Identifier));
 			}
 
 			void GuiTextListItemTemplate_ItemStyleProvider::DetachListControl()
 			{
-				if (listControl && bindingView)
-				{
-					listControl->GetItemProvider()->ReleaseView(bindingView);
-				}
-				listControl = 0;
-				bindingView = 0;
+				listControl = nullptr;
 			}
 
 			controls::GuiListControl::IItemStyleController* GuiTextListItemTemplate_ItemStyleProvider::CreateItemStyle()
@@ -1117,12 +1109,7 @@ GuiTextListItemTemplate_ItemStyleProvider
 			{
 				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
 				{
-					Value viewModel;
-					if (bindingView)
-					{
-						viewModel = bindingView->GetBindingValue(itemIndex);
-					}
-					
+					Value viewModel = listControl->GetItemProvider()->GetBindingValue(itemIndex);
 					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
 					if (auto listItemTemplate = dynamic_cast<GuiTextListItemTemplate*>(itemTemplate))
 					{
@@ -1275,9 +1262,6 @@ GuiTreeItemTemplate_ItemStyleProvider
 
 			GuiTreeItemTemplate_ItemStyleProvider::GuiTreeItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
 				:factory(_factory)
-				, treeListControl(0)
-				, bindingView(0)
-				, itemStyleProvider(0)
 			{
 
 			}
@@ -1302,7 +1286,6 @@ GuiTreeItemTemplate_ItemStyleProvider
 				if (treeListControl)
 				{
 					treeListControl->GetNodeRootProvider()->AttachCallback(this);
-					bindingView = dynamic_cast<tree::INodeItemBindingView*>(treeListControl->GetNodeRootProvider()->RequestView(tree::INodeItemBindingView::Identifier));
 				}
 			}
 
@@ -1311,13 +1294,8 @@ GuiTreeItemTemplate_ItemStyleProvider
 				if (treeListControl)
 				{
 					treeListControl->GetNodeRootProvider()->DetachCallback(this);
-					if (bindingView)
-					{
-						treeListControl->GetNodeRootProvider()->ReleaseView(bindingView);
-					}
 				}
-				treeListControl = 0;
-				bindingView = 0;
+				treeListControl = nullptr;
 			}
 
 			controls::tree::INodeItemStyleController* GuiTreeItemTemplate_ItemStyleProvider::CreateItemStyle()
@@ -1334,12 +1312,7 @@ GuiTreeItemTemplate_ItemStyleProvider
 			{
 				if (auto controller = dynamic_cast<GuiTreeItemTemplate_ItemStyleController*>(style))
 				{
-					Value viewModel;
-					if (bindingView)
-					{
-						viewModel = bindingView->GetBindingValue(node);
-					}
-					
+					Value viewModel = treeListControl->GetNodeRootProvider()->GetBindingValue(node);
 					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
 					if (auto treeItemTemplate = dynamic_cast<GuiTreeItemTemplate*>(itemTemplate))
 					{

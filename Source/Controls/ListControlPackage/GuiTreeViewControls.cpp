@@ -14,8 +14,6 @@ namespace vl
 			namespace tree
 			{
 				const wchar_t* const INodeItemView::Identifier = L"vl::presentation::controls::tree::INodeItemView";
-				const wchar_t* const INodeItemPrimaryTextView::Identifier = L"vl::presentation::cotnrols::tree::INodeItemPrimaryTextView";
-				const wchar_t* const INodeItemBindingView::Identifier = L"vl::presentation::cotnrols::tree::INodeItemBindingView";
 
 /***********************************************************************
 NodeItemProvider
@@ -193,36 +191,6 @@ NodeItemProvider
 					return result<0?-1:result;
 				}
 
-				bool NodeItemProvider::ContainsPrimaryText(vint itemIndex)
-				{
-					if(nodeItemPrimaryTextView)
-					{
-						INodeProvider* node=RequestNode(itemIndex);
-						if(node)
-						{
-							bool result=node->GetChildCount()==0;
-							ReleaseNode(node);
-							return result;
-						}
-					}
-					return true;
-				}
-
-				WString NodeItemProvider::GetPrimaryTextViewText(vint itemIndex)
-				{
-					if(nodeItemPrimaryTextView)
-					{
-						INodeProvider* node=RequestNode(itemIndex);
-						if(node)
-						{
-							WString result=nodeItemPrimaryTextView->GetPrimaryTextViewText(node);
-							ReleaseNode(node);
-							return result;
-						}
-					}
-					return L"";
-				}
-
 				INodeProvider* NodeItemProvider::RequestNode(vint index)
 				{
 					if(root->CanGetNodeByVisibleIndex())
@@ -247,15 +215,10 @@ NodeItemProvider
 					:root(_root)
 				{
 					root->AttachCallback(this);
-					nodeItemPrimaryTextView=dynamic_cast<INodeItemPrimaryTextView*>(root->RequestView(INodeItemPrimaryTextView::Identifier));
 				}
 
 				NodeItemProvider::~NodeItemProvider()
 				{
-					if(nodeItemPrimaryTextView)
-					{
-						root->ReleaseView(nodeItemPrimaryTextView);
-					}
 					root->DetachCallback(this);
 				}
 
@@ -269,15 +232,33 @@ NodeItemProvider
 					return root->GetRootNode()->CalculateTotalVisibleNodes()-1;
 				}
 
+				WString NodeItemProvider::GetTextValue(vint itemIndex)
+				{
+					if (auto node = RequestNode(itemIndex))
+					{
+						WString result = root->GetTextValue(node);
+						ReleaseNode(node);
+						return result;
+					}
+					return L"";
+				}
+
+				description::Value NodeItemProvider::GetBindingValue(vint itemIndex)
+				{
+					if (auto node = RequestNode(itemIndex))
+					{
+						Value result = root->GetBindingValue(node);
+						ReleaseNode(node);
+						return result;
+					}
+					return Value();
+				}
+
 				IDescriptable* NodeItemProvider::RequestView(const WString& identifier)
 				{
 					if(identifier==INodeItemView::Identifier)
 					{
 						return (INodeItemView*)this;
-					}
-					else if(identifier==GuiListControl::IItemPrimaryTextView::Identifier)
-					{
-						return (GuiListControl::IItemPrimaryTextView*)this;
 					}
 					else
 					{
@@ -893,11 +874,6 @@ TreeViewItem
 TreeViewItemRootProvider
 ***********************************************************************/
 
-				WString TreeViewItemRootProvider::GetPrimaryTextViewText(INodeProvider* node)
-				{
-					return GetNodeText(node);
-				}
-
 				Ptr<GuiImageData> TreeViewItemRootProvider::GetNodeImage(INodeProvider* node)
 				{
 					MemoryNodeProvider* memoryNode=dynamic_cast<MemoryNodeProvider*>(node);
@@ -926,6 +902,11 @@ TreeViewItemRootProvider
 					return L"";
 				}
 
+				WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
+				{
+					return GetNodeText(node);
+				}
+
 				description::Value TreeViewItemRootProvider::GetBindingValue(INodeProvider* node)
 				{
 					return Value::From(GetTreeViewData(node));
@@ -944,14 +925,6 @@ TreeViewItemRootProvider
 					if(identifier==ITreeViewItemView::Identifier)
 					{
 						return (ITreeViewItemView*)this;
-					}
-					else if(identifier==INodeItemPrimaryTextView::Identifier)
-					{
-						return (INodeItemPrimaryTextView*)this;
-					}
-					else if(identifier==INodeItemBindingView::Identifier)
-					{
-						return (INodeItemBindingView*)this;
 					}
 					else
 					{

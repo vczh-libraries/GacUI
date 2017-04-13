@@ -473,8 +473,7 @@ Item Template (GuiTextListItemTemplate)
 				friend class GuiTextListItemTemplate_ItemStyleController;
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
-				controls::GuiVirtualTextList*						listControl;
-				controls::GuiListControl::IItemBindingView*			bindingView;
+				controls::GuiVirtualTextList*						listControl = nullptr;
 
 			public:
 				GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
@@ -532,9 +531,8 @@ Item Template (GuiTreeItemTemplate)
 				friend class GuiTreeItemTemplate_ItemStyleController;
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
-				controls::GuiVirtualTreeListControl*				treeListControl;
-				controls::tree::INodeItemBindingView*				bindingView;
-				controls::GuiListControl::IItemStyleProvider*		itemStyleProvider;
+				controls::GuiVirtualTreeListControl*				treeListControl = nullptr;
+				controls::GuiListControl::IItemStyleProvider*		itemStyleProvider = nullptr;
 				
 				void												UpdateExpandingButton(controls::tree::INodeProvider* node);
 				void												OnAttached(controls::tree::INodeRootProvider* provider)override;

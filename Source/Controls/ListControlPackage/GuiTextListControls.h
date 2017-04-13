@@ -41,16 +41,12 @@ TextList Style Provider
 					};
 
 					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="TextItemStyleProvider"/>.</summary>
-					class ITextItemView : public virtual GuiListControl::IItemPrimaryTextView, public Description<ITextItemView>
+					class ITextItemView : public virtual IDescriptable, public Description<ITextItemView>
 					{
 					public:
 						/// <summary>The identifier for this view.</summary>
 						static const wchar_t* const				Identifier;
 
-						/// <summary>Get the text of an item.</summary>
-						/// <returns>The text of an item.</returns>
-						/// <param name="itemIndex">The index of an item.</param>
-						virtual WString							GetText(vint itemIndex)=0;
 						/// <summary>Get the check state of an item.</summary>
 						/// <returns>The check state of an item.</returns>
 						/// <param name="itemIndex">The index of an item.</param>
@@ -100,8 +96,8 @@ TextList Style Provider
 
 				protected:
 					Ptr<IBulletFactory>							bulletFactory;
-					ITextItemView*								textItemView;
-					GuiVirtualTextList*							listControl;
+					ITextItemView*								textItemView = nullptr;
+					GuiVirtualTextList*							listControl = nullptr;
 
 					void										OnStyleCheckedChanged(TextItemStyleController* style);
 				public:
@@ -165,7 +161,6 @@ TextList Data Source
 				class TextItemProvider
 					: public ListProvider<Ptr<TextItem>>
 					, protected TextItemStyleProvider::ITextItemView
-					, protected GuiListControl::IItemBindingView
 					, public Description<TextItemProvider>
 				{
 					friend class TextItem;
@@ -176,12 +171,10 @@ TextList Data Source
 					void										AfterInsert(vint item, const Ptr<TextItem>& value)override;
 					void										BeforeRemove(vint item, const Ptr<TextItem>& value)override;
 
-					bool										ContainsPrimaryText(vint itemIndex)override;
-					WString										GetPrimaryTextViewText(vint itemIndex)override;
-					WString										GetText(vint itemIndex)override;
+					WString										GetTextValue(vint itemIndex)override;
+					description::Value							GetBindingValue(vint itemIndex)override;
 					bool										GetChecked(vint itemIndex)override;
 					void										SetCheckedSilently(vint itemIndex, bool value)override;
-					description::Value							GetBindingValue(vint itemIndex)override;
 				public:
 					TextItemProvider();
 					~TextItemProvider();

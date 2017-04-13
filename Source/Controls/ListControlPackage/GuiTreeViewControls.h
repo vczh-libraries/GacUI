@@ -114,6 +114,14 @@ GuiVirtualTreeListControl NodeProvider
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The node provider callback.</param>
 					virtual bool					DetachCallback(INodeProviderCallback* value)=0;
+					/// <summary>Get the primary text of a node.</summary>
+					/// <returns>The primary text of a node.</returns>
+					/// <param name="node">The node.</param>
+					virtual WString					GetTextValue(INodeProvider* node) = 0;
+					/// <summary>Get the binding value of a node.</summary>
+					/// <returns>The binding value of a node.</returns>
+					/// <param name="node">The node.</param>
+					virtual description::Value		GetBindingValue(INodeProvider* node) = 0;
 					/// <summary>Request a view for this node provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, A call to the [M:vl.presentation.controls.tree.INodeRootProvider.ReleaseView] is needed.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
@@ -131,7 +139,7 @@ GuiVirtualTreeListControl NodeProvider
 				//-----------------------------------------------------------
 
 				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for [T:vl.presentation.controls.tree.NodeItemStyleProvider]. [T:vl.presentation.controls.tree.NodeItemProvider] provides this view. In most of the cases, the NodeItemProvider class and this view is not required users to create, or even to touch. [T:vl.presentation.controls.GuiVirtualTreeListControl] already handled all of this.</summary>
-				class INodeItemView : public virtual GuiListControl::IItemPrimaryTextView, public Description<INodeItemView>
+				class INodeItemView : public virtual IDescriptable, public Description<INodeItemView>
 				{
 				public:
 					/// <summary>The identifier of this view.</summary>
@@ -150,33 +158,7 @@ GuiVirtualTreeListControl NodeProvider
 					virtual vint					CalculateNodeVisibilityIndex(INodeProvider* node)=0;
 				};
 
-				/// <summary>The required <see cref="INodeRootProvider"/> view for [T:vl.presentation.controls.tree.NodeItemProvider]. This view is always needed to create any customized <see cref="INodeRootProvider"/> implementation.</summary>
-				class INodeItemPrimaryTextView : public virtual IDescriptable, public Description<INodeItemPrimaryTextView>
-				{
-				public:
-					/// <summary>The identifier of this view.</summary>
-					static const wchar_t* const		Identifier;
-					
-					/// <summary>Get the primary text of a node.</summary>
-					/// <returns>The primary text of a node.</returns>
-					/// <param name="node">The node.</param>
-					virtual WString					GetPrimaryTextViewText(INodeProvider* node)=0;
-				};
-
-				/// <summary>The Binding view for <see cref="INodeRootProvider"/>.</summary>
-				class INodeItemBindingView : public virtual IDescriptable, public Description<INodeItemPrimaryTextView>
-				{
-				public:
-					/// <summary>The identifier of this view.</summary>
-					static const wchar_t* const		Identifier;
-					
-					/// <summary>Get the binding value of a node.</summary>
-					/// <returns>The binding value of a node.</returns>
-					/// <param name="node">The node.</param>
-					virtual description::Value		GetBindingValue(INodeProvider* node)=0;
-				};
-
-				/// <summary>This is a general implementation to convert an <see cref="INodeRootProvider"/> to a <see cref="GuiListControl::IItemProvider"/>. It requires the <see cref="INodeItemPrimaryTextView"/> to provide a <see cref="GuiListControl::IItemPrimaryTextView"/>.</summary>
+				/// <summary>This is a general implementation to convert an <see cref="INodeRootProvider"/> to a <see cref="GuiListControl::IItemProvider"/>.</summary>
 				class NodeItemProvider
 					: public list::ItemProviderBase
 					, protected virtual INodeProviderCallback
@@ -186,7 +168,6 @@ GuiVirtualTreeListControl NodeProvider
 					typedef collections::Dictionary<INodeProvider*, vint>			NodeIntMap;
 				protected:
 					Ptr<INodeRootProvider>			root;
-					INodeItemPrimaryTextView*		nodeItemPrimaryTextView;
 					NodeIntMap						offsetBeforeChildModifieds;
 					
 
@@ -199,8 +180,6 @@ GuiVirtualTreeListControl NodeProvider
 					vint							CalculateNodeVisibilityIndexInternal(INodeProvider* node);
 					vint							CalculateNodeVisibilityIndex(INodeProvider* node)override;
 					
-					bool							ContainsPrimaryText(vint itemIndex)override;
-					WString							GetPrimaryTextViewText(vint itemIndex)override;
 					INodeProvider*					RequestNode(vint index)override;
 					void							ReleaseNode(INodeProvider* node)override;
 				public:
@@ -213,6 +192,8 @@ GuiVirtualTreeListControl NodeProvider
 					/// <returns>The node root provider.</returns>
 					Ptr<INodeRootProvider>			GetRoot();
 					vint							Count()override;
+					WString							GetTextValue(vint itemIndex)override;
+					description::Value				GetBindingValue(vint itemIndex)override;
 					IDescriptable*					RequestView(const WString& identifier)override;
 					void							ReleaseView(IDescriptable* view)override;
 				};
@@ -495,7 +476,7 @@ TreeView
 			namespace tree
 			{
 				/// <summary>The required <see cref="INodeRootProvider"/> view for [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider].</summary>
-				class ITreeViewItemView : public virtual INodeItemPrimaryTextView, public Description<ITreeViewItemView>
+				class ITreeViewItemView : public virtual IDescriptable, public Description<ITreeViewItemView>
 				{
 				public:
 					/// <summary>The identifier of this view.</summary>
@@ -534,14 +515,13 @@ TreeView
 				class TreeViewItemRootProvider
 					: public MemoryNodeRootProvider
 					, protected virtual ITreeViewItemView
-					, protected virtual INodeItemBindingView
 					, public Description<TreeViewItemRootProvider>
 				{
 				protected:
 
-					WString							GetPrimaryTextViewText(INodeProvider* node)override;
 					Ptr<GuiImageData>				GetNodeImage(INodeProvider* node)override;
 					WString							GetNodeText(INodeProvider* node)override;
+					WString							GetTextValue(INodeProvider* node)override;
 					description::Value				GetBindingValue(INodeProvider* node)override;
 				public:
 					/// <summary>Create a item root provider.</summary>

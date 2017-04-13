@@ -151,18 +151,22 @@ GuiBindableTextList::ItemSource
 				if (!itemSource) return 0;
 				return itemSource->GetCount();
 			}
+
+			WString GuiBindableTextList::ItemSource::GetTextValue(vint itemIndex)
+			{
+				if (itemSource)
+				{
+					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
+					{
+						return ReadProperty(itemSource->Get(itemIndex), textProperty);
+					}
+				}
+				return L"";
+			}
 			
 			IDescriptable* GuiBindableTextList::ItemSource::RequestView(const WString& identifier)
 			{
-				if (identifier == GuiListControl::IItemBindingView::Identifier)
-				{
-					return (GuiListControl::IItemBindingView*)this;
-				}
-				else if (identifier == GuiListControl::IItemPrimaryTextView::Identifier)
-				{
-					return (GuiListControl::IItemPrimaryTextView*)this;
-				}
-				else if (identifier == TextItemStyleProvider::ITextItemView::Identifier)
+				if (identifier == TextItemStyleProvider::ITextItemView::Identifier)
 				{
 					return (TextItemStyleProvider::ITextItemView*)this;
 				}
@@ -190,32 +194,7 @@ GuiBindableTextList::ItemSource
 				return Value();
 			}
 					
-			// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-			WString GuiBindableTextList::ItemSource::GetPrimaryTextViewText(vint itemIndex)
-			{
-				return GetText(itemIndex);
-			}
-			
-			bool GuiBindableTextList::ItemSource::ContainsPrimaryText(vint itemIndex)
-			{
-				if (!itemSource) return false;
-				return 0 <= itemIndex && itemIndex < itemSource->GetCount();
-			}
-					
 			// ===================== list::TextItemStyleProvider::ITextItemView =====================
-
-			WString GuiBindableTextList::ItemSource::GetText(vint itemIndex)
-			{
-				if (itemSource)
-				{
-					if (0 <= itemIndex && itemIndex < itemSource->GetCount())
-					{
-						return ReadProperty(itemSource->Get(itemIndex), textProperty);
-					}
-				}
-				return L"";
-			}
 			
 			bool GuiBindableTextList::ItemSource::GetChecked(vint itemIndex)
 			{
@@ -422,35 +401,10 @@ GuiBindableListView::ItemSource
 				return itemSource->GetCount();
 			}
 
-			IDescriptable* GuiBindableListView::ItemSource::RequestView(const WString& identifier)
+			WString GuiBindableListView::ItemSource::GetTextValue(vint itemIndex)
 			{
-				if (identifier == GuiListControl::IItemBindingView::Identifier)
-				{
-					return (GuiListControl::IItemBindingView*)this;
-				}
-				else if(identifier==ListViewItemStyleProvider::IListViewItemView::Identifier)
-				{
-					return (ListViewItemStyleProvider::IListViewItemView*)this;
-				}
-				else if(identifier==ListViewColumnItemArranger::IColumnItemView::Identifier)
-				{
-					return (ListViewColumnItemArranger::IColumnItemView*)this;
-				}
-				else if(identifier==GuiListControl::IItemPrimaryTextView::Identifier)
-				{
-					return (GuiListControl::IItemPrimaryTextView*)this;
-				}
-				else
-				{
-					return 0;
-				}
+				return GetText(itemIndex);
 			}
-
-			void GuiBindableListView::ItemSource::ReleaseView(IDescriptable* view)
-			{
-			}
-					
-			// ===================== GuiListControl::IItemBindingView =====================
 
 			description::Value GuiBindableListView::ItemSource::GetBindingValue(vint itemIndex)
 			{
@@ -464,16 +418,24 @@ GuiBindableListView::ItemSource
 				return Value();
 			}
 
-			// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-			WString GuiBindableListView::ItemSource::GetPrimaryTextViewText(vint itemIndex)
+			IDescriptable* GuiBindableListView::ItemSource::RequestView(const WString& identifier)
 			{
-				return GetText(itemIndex);
+				if(identifier==ListViewItemStyleProvider::IListViewItemView::Identifier)
+				{
+					return (ListViewItemStyleProvider::IListViewItemView*)this;
+				}
+				else if(identifier==ListViewColumnItemArranger::IColumnItemView::Identifier)
+				{
+					return (ListViewColumnItemArranger::IColumnItemView*)this;
+				}
+				else
+				{
+					return 0;
+				}
 			}
 
-			bool GuiBindableListView::ItemSource::ContainsPrimaryText(vint itemIndex)
+			void GuiBindableListView::ItemSource::ReleaseView(IDescriptable* view)
 			{
-				return true;
 			}
 
 			// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
@@ -910,17 +872,23 @@ GuiBindableTreeView::ItemSource
 				return rootNode.Obj();
 			}
 
+			WString GuiBindableTreeView::ItemSource::GetTextValue(tree::INodeProvider* node)
+			{
+				return ReadProperty(GetBindingValue(node), textProperty);
+			}
+
+			description::Value GuiBindableTreeView::ItemSource::GetBindingValue(tree::INodeProvider* node)
+			{
+				if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
+				{
+					return itemSourceNode->GetItemSource();
+				}
+				return Value();
+			}
+
 			IDescriptable* GuiBindableTreeView::ItemSource::RequestView(const WString& identifier)
 			{
-				if(identifier==INodeItemBindingView::Identifier)
-				{
-					return (INodeItemBindingView*)this;
-				}
-				else if(identifier==INodeItemPrimaryTextView::Identifier)
-				{
-					return (INodeItemPrimaryTextView*)this;
-				}
-				else if(identifier==ITreeViewItemView::Identifier)
+				if(identifier==ITreeViewItemView::Identifier)
 				{
 					return (ITreeViewItemView*)this;
 				}
@@ -932,24 +900,6 @@ GuiBindableTreeView::ItemSource
 
 			void GuiBindableTreeView::ItemSource::ReleaseView(IDescriptable* view)
 			{
-			}
-
-			// ===================== tree::INodeItemBindingView =====================
-
-			description::Value GuiBindableTreeView::ItemSource::GetBindingValue(tree::INodeProvider* node)
-			{
-				if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
-				{
-					return itemSourceNode->GetItemSource();
-				}
-				return Value();
-			}
-
-			// ===================== tree::INodeItemPrimaryTextView =====================
-
-			WString GuiBindableTreeView::ItemSource::GetPrimaryTextViewText(tree::INodeProvider* node)
-			{
-				return GetNodeText(node);
 			}
 
 			// ===================== tree::ITreeViewItemView =====================

@@ -31,7 +31,6 @@ GuiBindableTextList
 			protected:
 				class ItemSource
 					: public list::ItemProviderBase
-					, protected GuiListControl::IItemBindingView
 					, protected list::TextItemStyleProvider::ITextItemView
 				{
 				protected:
@@ -54,22 +53,14 @@ GuiBindableTextList
 					
 					// ===================== GuiListControl::IItemProvider =====================
 
+					WString											GetTextValue(vint itemIndex)override;
+					description::Value								GetBindingValue(vint itemIndex)override;
 					vint											Count()override;
 					IDescriptable*									RequestView(const WString& identifier)override;
 					void											ReleaseView(IDescriptable* view)override;
 					
-					// ===================== GuiListControl::IItemBindingView =====================
-
-					description::Value								GetBindingValue(vint itemIndex)override;
-					
-					// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-					WString											GetPrimaryTextViewText(vint itemIndex)override;
-					bool											ContainsPrimaryText(vint itemIndex)override;
-					
 					// ===================== list::TextItemStyleProvider::ITextItemView =====================
 
-					WString											GetText(vint itemIndex)override;
 					bool											GetChecked(vint itemIndex)override;
 					void											SetCheckedSilently(vint itemIndex, bool value)override;
 				};
@@ -126,7 +117,6 @@ GuiBindableListView
 				class ItemSource
 					: public list::ItemProviderBase
 					, protected virtual list::IListViewItemProvider
-					, protected GuiListControl::IItemBindingView
 					, protected virtual list::ListViewItemStyleProvider::IListViewItemView
 					, protected virtual list::ListViewColumnItemArranger::IColumnItemView
 				{
@@ -162,18 +152,11 @@ GuiBindableListView
 					
 					// ===================== GuiListControl::IItemProvider =====================
 
+					WString											GetTextValue(vint itemIndex)override;
+					description::Value								GetBindingValue(vint itemIndex)override;
 					vint											Count()override;
 					IDescriptable*									RequestView(const WString& identifier)override;
 					void											ReleaseView(IDescriptable* view)override;
-					
-					// ===================== GuiListControl::IItemBindingView =====================
-
-					description::Value								GetBindingValue(vint itemIndex)override;
-
-					// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-					WString											GetPrimaryTextViewText(vint itemIndex)override;
-					bool											ContainsPrimaryText(vint itemIndex)override;
 
 					// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
 
@@ -296,7 +279,6 @@ GuiBindableTreeView
 
 				class ItemSource
 					: public tree::NodeRootProviderBase
-					, protected virtual tree::INodeItemBindingView
 					, protected virtual tree::ITreeViewItemView
 				{
 					friend class ItemSourceNode;
@@ -318,16 +300,11 @@ GuiBindableTreeView
 					// ===================== tree::INodeRootProvider =====================
 
 					tree::INodeProvider*							GetRootNode()override;
+					WString											GetTextValue(tree::INodeProvider* node)override;
+					description::Value								GetBindingValue(tree::INodeProvider* node)override;
 					IDescriptable*									RequestView(const WString& identifier)override;
 					void											ReleaseView(IDescriptable* view)override;
 
-					// ===================== tree::INodeItemBindingView =====================
-
-					description::Value								GetBindingValue(tree::INodeProvider* node)override;
-
-					// ===================== tree::INodeItemPrimaryTextView =====================
-
-					WString											GetPrimaryTextViewText(tree::INodeProvider* node)override;
 
 					// ===================== tree::ITreeViewItemView =====================
 

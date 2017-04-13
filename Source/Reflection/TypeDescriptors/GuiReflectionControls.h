@@ -63,8 +63,6 @@ Type List
 			F(presentation::controls::GuiListControl)\
 			F(presentation::controls::GuiListControl::IItemProviderCallback)\
 			F(presentation::controls::GuiListControl::IItemArrangerCallback)\
-			F(presentation::controls::GuiListControl::IItemPrimaryTextView)\
-			F(presentation::controls::GuiListControl::IItemBindingView)\
 			F(presentation::controls::GuiListControl::IItemProvider)\
 			F(presentation::controls::GuiListControl::IItemStyleController)\
 			F(presentation::controls::GuiListControl::IItemStyleProvider)\
@@ -118,8 +116,6 @@ Type List
 			F(presentation::controls::tree::INodeProvider)\
 			F(presentation::controls::tree::INodeRootProvider)\
 			F(presentation::controls::tree::INodeItemView)\
-			F(presentation::controls::tree::INodeItemPrimaryTextView)\
-			F(presentation::controls::tree::INodeItemBindingView)\
 			F(presentation::controls::tree::INodeItemStyleController)\
 			F(presentation::controls::tree::INodeItemStyleProvider)\
 			F(presentation::controls::tree::NodeItemStyleProvider)\
@@ -451,29 +447,6 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemProviderCallback)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiListControl::IItemPrimaryTextView,
-				presentation::controls::GuiListControl::IItemProviderCallback
-				)
-
-				WString GetPrimaryTextViewText(vint itemIndex)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetPrimaryTextViewText, itemIndex);
-				}
-
-				bool ContainsPrimaryText(vint itemIndex)override
-				{
-					INVOKEGET_INTERFACE_PROXY(ContainsPrimaryText, itemIndex);
-				}
-			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemPrimaryTextView)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::GuiListControl::IItemBindingView)
-
-				description::Value GetBindingValue(vint itemIndex)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetBindingValue, itemIndex);
-				}
-			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemBindingView)
-
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::GuiListControl::IItemProvider)
 
 				bool AttachCallback(presentation::controls::GuiListControl::IItemProviderCallback* value)override
@@ -489,6 +462,16 @@ Interface Proxy
 				vint Count()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Count);
+				}
+
+				WString GetTextValue(vint itemIndex)override
+				{
+					INVOKEGET_INTERFACE_PROXY(GetTextValue, itemIndex);
+				}
+
+				description::Value GetBindingValue(vint itemIndex)override
+				{
+					INVOKEGET_INTERFACE_PROXY(GetBindingValue, itemIndex);
 				}
 
 				IDescriptable* RequestView(const WString& identifier)override
@@ -651,14 +634,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::IBulletFactory)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::TextItemStyleProvider::ITextItemView,
-				presentation::controls::GuiListControl::IItemPrimaryTextView
-				)
-
-				WString GetText(vint itemIndex)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetText, itemIndex);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::TextItemStyleProvider::ITextItemView)
 
 				bool GetChecked(vint itemIndex)override
 				{
@@ -716,9 +692,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListViewBase::IStyleProvider)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView,
-				presentation::controls::GuiListControl::IItemPrimaryTextView
-				)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView)
 
 				Ptr<presentation::GuiImageData> GetSmallImage(vint itemIndex)override
 				{
@@ -970,6 +944,16 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY(DetachCallback, value);
 				}
 
+				WString GetTextValue(presentation::controls::tree::INodeProvider* node)override
+				{
+					INVOKEGET_INTERFACE_PROXY(GetTextValue, node);
+				}
+
+				description::Value GetBindingValue(presentation::controls::tree::INodeProvider* node)override
+				{
+					INVOKEGET_INTERFACE_PROXY(GetBindingValue, node);
+				}
+
 				IDescriptable* RequestView(const WString& identifier)override
 				{
 					INVOKEGET_INTERFACE_PROXY(RequestView, identifier);
@@ -981,9 +965,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::tree::INodeRootProvider)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::tree::INodeItemView,
-				presentation::controls::GuiListControl::IItemPrimaryTextView
-				)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemView)
 
 				presentation::controls::tree::INodeProvider* RequestNode(vint index)override
 				{
@@ -1000,22 +982,6 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY(CalculateNodeVisibilityIndex, node);
 				}
 			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemView)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemPrimaryTextView)
-
-				WString GetPrimaryTextViewText(presentation::controls::tree::INodeProvider* node)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetPrimaryTextViewText, node);
-				}
-			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemPrimaryTextView)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemBindingView)
-
-				description::Value GetBindingValue(presentation::controls::tree::INodeProvider* node)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetBindingValue, node);
-				}
-			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemBindingView)
 
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::tree::INodeItemStyleController,
 				presentation::controls::GuiListControl::IItemStyleController
@@ -1078,9 +1044,7 @@ Interface Proxy
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::IMemoryNodeData)
 			END_INTERFACE_PROXY(presentation::controls::tree::IMemoryNodeData)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::tree::ITreeViewItemView,
-				presentation::controls::tree::INodeItemPrimaryTextView
-				)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::ITreeViewItemView)
 
 				Ptr<presentation::GuiImageData> GetNodeImage(presentation::controls::tree::INodeProvider* node)override
 				{

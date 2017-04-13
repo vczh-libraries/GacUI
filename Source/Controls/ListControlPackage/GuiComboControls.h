@@ -113,8 +113,6 @@ ComboBox with GuiListControl
 			protected:
 				IStyleController*							styleController;
 				GuiSelectableListControl*					containedListControl;
-				GuiListControl::IItemPrimaryTextView*		primaryTextView;
-				GuiListControl::IItemBindingView*			itemBindingView;
 				Ptr<IItemStyleProvider>						itemStyleProvider;
 				Ptr<GuiControl::IStyleController>			itemStyleController;
 

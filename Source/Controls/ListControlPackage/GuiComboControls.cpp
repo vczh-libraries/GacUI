@@ -84,11 +84,11 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::InstallStyleController(vint itemIndex)
 			{
-				if (itemBindingView != nullptr && itemStyleProvider)
+				if (itemStyleProvider)
 				{
 					if (itemIndex != -1)
 					{
-						auto item = itemBindingView->GetBindingValue(itemIndex);
+						auto item = containedListControl->GetItemProvider()->GetBindingValue(itemIndex);
 						if (!item.IsNull())
 						{
 							itemStyleController = itemStyleProvider->CreateItemStyle(item);
@@ -109,18 +109,15 @@ GuiComboBoxListControl
 
 			void GuiComboBoxListControl::DisplaySelectedContent(vint itemIndex)
 			{
-				if(primaryTextView)
+				if(itemIndex==-1)
 				{
-					if(itemIndex==-1)
-					{
-						SetText(L"");
-					}
-					else if(primaryTextView->ContainsPrimaryText(itemIndex))
-					{
-						WString text=primaryTextView->GetPrimaryTextViewText(itemIndex);
-						SetText(text);
-						GetSubMenu()->Hide();
-					}
+					SetText(L"");
+				}
+				else
+				{
+					WString text = containedListControl->GetItemProvider()->GetTextValue(itemIndex);
+					SetText(text);
+					GetSubMenu()->Hide();
 				}
 
 				RemoveStyleController();
@@ -190,8 +187,6 @@ GuiComboBoxListControl
 				containedListControl->SelectionChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlSelectionChanged);
 
 				auto itemProvider = containedListControl->GetItemProvider();
-				primaryTextView = dynamic_cast<GuiListControl::IItemPrimaryTextView*>(itemProvider->RequestView(GuiListControl::IItemPrimaryTextView::Identifier));
-				itemBindingView = dynamic_cast<GuiListControl::IItemBindingView*>(itemProvider->RequestView(GuiListControl::IItemBindingView::Identifier));
 
 				SelectedIndexChanged.SetAssociatedComposition(GetBoundsComposition());
 
@@ -202,10 +197,6 @@ GuiComboBoxListControl
 
 			GuiComboBoxListControl::~GuiComboBoxListControl()
 			{
-				if(primaryTextView)
-				{
-					containedListControl->GetItemProvider()->ReleaseView(primaryTextView);
-				}
 			}
 
 			GuiSelectableListControl* GuiComboBoxListControl::GetContainedListControl()
@@ -266,10 +257,7 @@ GuiComboBoxListControl
 				auto selectedIndex = GetSelectedIndex();
 				if (selectedIndex != -1)
 				{
-					if (itemBindingView)
-					{
-						return itemBindingView->GetBindingValue(selectedIndex);
-					}
+					return containedListControl->GetItemProvider()->GetBindingValue(selectedIndex);
 				}
 				return description::Value();
 			}

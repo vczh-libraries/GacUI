@@ -32,7 +32,6 @@ Datagrid ItemProvider
 				class DataGridItemProvider
 					: public Object
 					, public virtual GuiListControl::IItemProvider
-					, public virtual GuiListControl::IItemPrimaryTextView
 					, public virtual ListViewItemStyleProvider::IListViewItemView
 					, public virtual ListViewColumnItemArranger::IColumnItemView
 					, protected virtual IDataProviderCommandExecutor
@@ -61,13 +60,10 @@ Datagrid ItemProvider
 					bool												AttachCallback(GuiListControl::IItemProviderCallback* value)override;
 					bool												DetachCallback(GuiListControl::IItemProviderCallback* value)override;
 					vint												Count()override;
+					WString												GetTextValue(vint itemIndex)override;
+					description::Value									GetBindingValue(vint itemIndex)override;
 					IDescriptable*										RequestView(const WString& identifier)override;
 					void												ReleaseView(IDescriptable* view)override;
-
-					// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-					WString												GetPrimaryTextViewText(vint itemIndex)override;
-					bool												ContainsPrimaryText(vint itemIndex)override;
 
 					// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
 

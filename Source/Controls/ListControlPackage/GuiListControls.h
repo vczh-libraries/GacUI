@@ -86,40 +86,6 @@ List Control
 				};
 
 				//-----------------------------------------------------------
-				// Common Views
-				//-----------------------------------------------------------
-
-				/// <summary>Primary text view for <see cref="IItemProvider"/>.</summary>
-				class IItemPrimaryTextView : public virtual IDescriptable, public Description<IItemPrimaryTextView>
-				{
-				public:
-					/// <summary>The identifier for this view.</summary>
-					static const wchar_t* const					Identifier;
-
-					/// <summary>Get the text of an item.</summary>
-					/// <returns>The text of an item.</returns>
-					/// <param name="itemIndex">The index of the item.</param>
-					virtual WString								GetPrimaryTextViewText(vint itemIndex)=0;
-					/// <summary>Test does an item contain a text.</summary>
-					/// <returns>Returns true if an item contains a text.</returns>
-					/// <param name="itemIndex">The index of the item.</param>
-					virtual bool								ContainsPrimaryText(vint itemIndex)=0;
-				};
-
-				/// <summary>Binding view for <see cref="IItemProvider"/>.</summary>
-				class IItemBindingView : public virtual IDescriptable, public Description<IItemPrimaryTextView>
-				{
-				public:
-					/// <summary>The identifier for this view.</summary>
-					static const wchar_t* const					Identifier;
-
-					/// <summary>Get the binding value of an item.</summary>
-					/// <returns>The binding value of an item.</returns>
-					/// <param name="itemIndex">The index of the item.</param>
-					virtual description::Value					GetBindingValue(vint itemIndex)=0;
-				};
-
-				//-----------------------------------------------------------
 				// Provider Interfaces
 				//-----------------------------------------------------------
 
@@ -138,6 +104,16 @@ List Control
 					/// <summary>Get the number of items in this item proivder.</summary>
 					/// <returns>The number of items in this item proivder.</returns>
 					virtual vint								Count()=0;
+
+					/// <summary>Get the text representation of an item.</summary>
+					/// <returns>The text representation of an item.</returns>
+					/// <param name="itemIndex">The index of the item.</param>
+					virtual WString								GetTextValue(vint itemIndex) = 0;
+					/// <summary>Get the binding value of an item.</summary>
+					/// <returns>The binding value of an item.</returns>
+					/// <param name="itemIndex">The index of the item.</param>
+					virtual description::Value					GetBindingValue(vint itemIndex) = 0;
+
 					/// <summary>Request a view for this item provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, Calling to the [M:vl.presentation.controls.GuiListControl.IItemProvider.ReleaseView] is needed.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
@@ -467,7 +443,7 @@ Selectable List Control
 				/// <returns>Returns the index of the selected item. If there are multiple selected items, or there is no selected item, -1 will be returned.</returns>
 				vint											GetSelectedItemIndex();
 				/// <summary>Get the text of the selected item.</summary>
-				/// <returns>Returns the text of the selected item. If there are multiple selected items, or there is no selected item, or <see cref="GuiListControl::IItemPrimaryTextView"/> is not a valid view for the item provider, an empty string will be returned.</returns>
+				/// <returns>Returns the text of the selected item. If there are multiple selected items, or there is no selected item, an empty string will be returned.</returns>
 				WString											GetSelectedItemText();
 
 				/// <summary>Get the selection status of an item.</summary>

@@ -10,9 +10,6 @@ namespace vl
 			using namespace elements;
 			using namespace compositions;
 
-			const wchar_t* const GuiListControl::IItemPrimaryTextView::Identifier = L"vl::presnetation::controls::GuiListControl::IItemPrimaryTextView";
-			const wchar_t* const GuiListControl::IItemBindingView::Identifier = L"vl::presnetation::controls::GuiListControl::IItemBindingView";
-
 /***********************************************************************
 GuiListControl::ItemCallback
 ***********************************************************************/
@@ -626,12 +623,7 @@ GuiSelectableListControl
 				vint index = GetSelectedItemIndex();
 				if (index != -1)
 				{
-					if (auto view = dynamic_cast<IItemPrimaryTextView*>(itemProvider->RequestView(IItemPrimaryTextView::Identifier)))
-					{
-						WString result = view->GetPrimaryTextViewText(index);
-						itemProvider->ReleaseView(view);
-						return result;
-					}
+					return itemProvider->GetTextValue(index);
 				}
 				return L"";
 			}

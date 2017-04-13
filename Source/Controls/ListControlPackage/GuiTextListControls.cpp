@@ -137,8 +137,6 @@ TextItemStyleProvider
 
 				TextItemStyleProvider::TextItemStyleProvider(IBulletFactory* _bulletFactory)
 					:bulletFactory(_bulletFactory)
-					,textItemView(0)
-					,listControl(0)
 				{
 				}
 
@@ -148,8 +146,8 @@ TextItemStyleProvider
 
 				void TextItemStyleProvider::AttachListControl(GuiListControl* value)
 				{
-					listControl=dynamic_cast<GuiVirtualTextList*>(value);
-					textItemView=dynamic_cast<ITextItemView*>(value->GetItemProvider()->RequestView(ITextItemView::Identifier));
+					listControl = dynamic_cast<GuiVirtualTextList*>(value);
+					textItemView = dynamic_cast<ITextItemView*>(value->GetItemProvider()->RequestView(ITextItemView::Identifier));
 				}
 
 				void TextItemStyleProvider::DetachListControl()
@@ -171,8 +169,8 @@ TextItemStyleProvider
 
 				void TextItemStyleProvider::Install(GuiListControl::IItemStyleController* style, vint itemIndex)
 				{
-					TextItemStyleController* textStyle=dynamic_cast<TextItemStyleController*>(style);
-					textStyle->SetText(textItemView->GetText(itemIndex));
+					TextItemStyleController* textStyle = dynamic_cast<TextItemStyleController*>(style);
+					textStyle->SetText(listControl->GetItemProvider()->GetTextValue(itemIndex));
 					textStyle->SetChecked(textItemView->GetChecked(itemIndex));
 				}
 
@@ -267,19 +265,14 @@ TextItemProvider
 					ListProvider<Ptr<TextItem>>::BeforeRemove(item, value);
 				}
 
-				bool TextItemProvider::ContainsPrimaryText(vint itemIndex)
+				WString TextItemProvider::GetTextValue(vint itemIndex)
 				{
-					return true;
+					return Get(itemIndex)->GetText();
 				}
 
-				WString TextItemProvider::GetPrimaryTextViewText(vint itemIndex)
+				description::Value TextItemProvider::GetBindingValue(vint itemIndex)
 				{
-					return Get(itemIndex)->GetText();
-				}
-				
-				WString TextItemProvider::GetText(vint itemIndex)
-				{
-					return Get(itemIndex)->GetText();
+					return Value::From(Get(itemIndex));
 				}
 
 				bool TextItemProvider::GetChecked(vint itemIndex)
@@ -290,11 +283,6 @@ TextItemProvider
 				void TextItemProvider::SetCheckedSilently(vint itemIndex, bool value)
 				{
 					items[itemIndex]->checked=value;
-				}
-
-				description::Value TextItemProvider::GetBindingValue(vint itemIndex)
-				{
-					return Value::From(Get(itemIndex));
 				}
 
 				TextItemProvider::TextItemProvider()
@@ -312,17 +300,9 @@ TextItemProvider
 					{
 						return (TextItemStyleProvider::ITextItemView*)this;
 					}
-					else if(identifier==GuiListControl::IItemPrimaryTextView::Identifier)
-					{
-						return (GuiListControl::IItemPrimaryTextView*)this;
-					}
-					else if(identifier==GuiListControl::IItemBindingView::Identifier)
-					{
-						return (GuiListControl::IItemBindingView*)this;
-					}
 					else
 					{
-						return 0;
+						return nullptr;
 					}
 				}
 

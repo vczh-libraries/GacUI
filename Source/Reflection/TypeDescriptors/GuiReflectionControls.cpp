@@ -480,27 +480,14 @@ Type Declaration
 				CLASS_MEMBER_METHOD(OnTotalSizeChanged, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiListControl::IItemArrangerCallback)
 
-			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemPrimaryTextView)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_IDENTIFIER(GuiListControl::IItemPrimaryTextView)
-
-				CLASS_MEMBER_METHOD(GetPrimaryTextViewText, {L"itemIndex"})
-				CLASS_MEMBER_METHOD(ContainsPrimaryText, {L"itemIndex"})
-			END_INTERFACE_MEMBER(GuiListControl::IItemPrimaryTextView)
-
-			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemBindingView)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_IDENTIFIER(GuiListControl::IItemBindingView)
-
-				CLASS_MEMBER_METHOD(GetBindingValue, {L"itemIndex"})
-			END_INTERFACE_MEMBER(GuiListControl::IItemBindingView)
-
 			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_METHOD(AttachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(DetachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(Count, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetTextValue, { L"itemIndex" })
+				CLASS_MEMBER_METHOD(GetBindingValue, { L"itemIndex" })
 				CLASS_MEMBER_METHOD(RequestView, {L"identifier"})
 				CLASS_MEMBER_METHOD(ReleaseView, {L"view"})
 			END_INTERFACE_MEMBER(GuiListControl::IItemProvider)
@@ -601,10 +588,8 @@ Type Declaration
 			END_INTERFACE_MEMBER(TextItemStyleProvider::IBulletFactory)
 
 			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
-				CLASS_MEMBER_BASE(GuiListControl::IItemPrimaryTextView)
 				INTERFACE_IDENTIFIER(TextItemStyleProvider::ITextItemView)
 
-				CLASS_MEMBER_METHOD(GetText, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetChecked, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(SetCheckedSilently, {L"itemIndex" _ L"value"})
 			END_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
@@ -708,7 +693,6 @@ Type Declaration
 			END_CLASS_MEMBER(ListViewItemStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemView)
-				CLASS_MEMBER_BASE(GuiListControl::IItemPrimaryTextView)
 				INTERFACE_IDENTIFIER(ListViewItemStyleProvider::IListViewItemView)
 
 				CLASS_MEMBER_METHOD(GetSmallImage, {L"itemIndex"})
@@ -940,32 +924,19 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetNodeByVisibleIndex, {L"index"})
 				CLASS_MEMBER_METHOD(AttachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(DetachCallback, {L"value"})
+				CLASS_MEMBER_METHOD(GetTextValue, { L"node" })
+				CLASS_MEMBER_METHOD(GetBindingValue, { L"node" })
 				CLASS_MEMBER_METHOD(RequestView, {L"identifier"})
 				CLASS_MEMBER_METHOD(ReleaseView, {L"value"})
 			END_INTERFACE_MEMBER(INodeRootProvider)
 
 			BEGIN_INTERFACE_MEMBER(INodeItemView)
-				CLASS_MEMBER_BASE(GuiListControl::IItemPrimaryTextView)
 				INTERFACE_IDENTIFIER(INodeItemView)
 
 				CLASS_MEMBER_METHOD(RequestNode, {L"index"})
 				CLASS_MEMBER_METHOD(ReleaseNode, {L"node"})
 				CLASS_MEMBER_METHOD(CalculateNodeVisibilityIndex, {L"node"})
 			END_INTERFACE_MEMBER(INodeItemView)
-
-			BEGIN_INTERFACE_MEMBER(INodeItemPrimaryTextView)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_IDENTIFIER(INodeItemPrimaryTextView)
-
-				CLASS_MEMBER_METHOD(GetPrimaryTextViewText, {L"node"})
-			END_INTERFACE_MEMBER(INodeItemPrimaryTextView)
-
-			BEGIN_INTERFACE_MEMBER(INodeItemBindingView)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_IDENTIFIER(INodeItemBindingView)
-
-				CLASS_MEMBER_METHOD(GetBindingValue, {L"node"})
-			END_INTERFACE_MEMBER(INodeItemBindingView)
 
 			BEGIN_INTERFACE_MEMBER(INodeItemStyleController)
 				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)
@@ -1016,7 +987,6 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(MemoryNodeRootProvider)
 				CLASS_MEMBER_BASE(MemoryNodeProvider)
 				CLASS_MEMBER_BASE(NodeRootProviderBase)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<MemoryNodeRootProvider>(), NO_PARAMETER)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(RootNode)
 
@@ -1048,7 +1018,6 @@ Type Declaration
 			END_CLASS_MEMBER(GuiVirtualTreeListControl)
 
 			BEGIN_INTERFACE_MEMBER(ITreeViewItemView)
-				CLASS_MEMBER_BASE(INodeItemPrimaryTextView)
 				INTERFACE_IDENTIFIER(ITreeViewItemView)
 
 				CLASS_MEMBER_METHOD(GetNodeImage, {L"node"})
