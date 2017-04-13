@@ -60,6 +60,21 @@ RangedItemArrangerBase
 					OnStylesCleared();
 				}
 
+				void RangedItemArrangerBase::RearrangeItemBounds()
+				{
+					BeginPlaceItem();
+					for (vint i = 0; i < visibleStyles.Count(); i++)
+					{
+						auto style = visibleStyles[i];
+						Rect bounds;
+						Margin alignmentToParent(-1, -1, -1, -1);
+						PlaceItem(startIndex + i, style, bounds, alignmentToParent);
+						callback->SetStyleAlignmentToParent(style, alignmentToParent);
+						callback->SetStyleBounds(style, bounds);
+					}
+					EndPlaceItem();
+				}
+
 				RangedItemArrangerBase::RangedItemArrangerBase()
 				{
 				}
@@ -164,7 +179,7 @@ RangedItemArrangerBase
 
 				void RangedItemArrangerBase::SetCallback(GuiListControl::IItemArrangerCallback* value)
 				{
-					if (!value)
+					if (callback != value)
 					{
 						ClearStyles();
 					}
@@ -204,6 +219,7 @@ RangedItemArrangerBase
 						if (callback)
 						{
 							OnViewChangedInternal(oldBounds, viewBounds);
+							RearrangeItemBounds();
 						}
 						suppressOnViewChanged = false;
 					}
@@ -213,28 +229,6 @@ RangedItemArrangerBase
 FixedHeightItemArranger
 ***********************************************************************/
 
-				void FixedHeightItemArranger::RearrangeItemBounds()
-				{
-					vint x0 = -viewBounds.Left();
-					vint y0 = -viewBounds.Top() + GetYOffset();
-					vint width = GetWidth();
-					for (vint i = 0; i < visibleStyles.Count(); i++)
-					{
-						GuiListControl::IItemStyleController* style = visibleStyles[i];
-						vint top = y0 + (startIndex + i)*rowHeight;
-						if (width == -1)
-						{
-							callback->SetStyleAlignmentToParent(style, Margin(0, -1, 0, -1));
-							callback->SetStyleBounds(style, Rect(Point(0, top), Size(0, rowHeight)));
-						}
-						else
-						{
-							callback->SetStyleAlignmentToParent(style, Margin(-1, -1, -1, -1));
-							callback->SetStyleBounds(style, Rect(Point(x0, top), Size(width, rowHeight)));
-						}
-					}
-				}
-
 				vint FixedHeightItemArranger::GetWidth()
 				{
 					return -1;
@@ -243,6 +237,32 @@ FixedHeightItemArranger
 				vint FixedHeightItemArranger::GetYOffset()
 				{
 					return 0;
+				}
+
+				void FixedHeightItemArranger::BeginPlaceItem()
+				{
+					pi_x0 = -viewBounds.Left();
+					pi_y0 = -viewBounds.Top() + GetYOffset();
+					pi_width = GetWidth();
+				}
+
+				void FixedHeightItemArranger::PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)
+				{
+					vint top = pi_y0 + index * rowHeight;
+					if (pi_width == -1)
+					{
+						alignmentToParent = Margin(0, -1, 0, -1);
+						bounds = Rect(Point(0, top), Size(0, rowHeight));
+					}
+					else
+					{
+						alignmentToParent = Margin(-1, -1, -1, -1);
+						bounds = Rect(Point(pi_x0, top), Size(pi_width, rowHeight));
+					}
+				}
+
+				void FixedHeightItemArranger::EndPlaceItem()
+				{
 				}
 
 				void FixedHeightItemArranger::OnStylesCleared()
@@ -327,7 +347,6 @@ FixedHeightItemArranger
 							InvalidateAdoptedSize();
 						}
 						startIndex = newStartIndex;
-						RearrangeItemBounds();
 					}
 				}
 
@@ -433,19 +452,22 @@ FixedHeightItemArranger
 FixedSizeMultiColumnItemArranger
 ***********************************************************************/
 
-				void FixedSizeMultiColumnItemArranger::RearrangeItemBounds()
+				void FixedSizeMultiColumnItemArranger::BeginPlaceItem()
 				{
-					vint y0 = -viewBounds.Top();
-					vint rowItems = viewBounds.Width() / itemSize.x;
-					if (rowItems < 1) rowItems = 1;
+					pi_y0 = -viewBounds.Top();
+					pi_rowItems = viewBounds.Width() / itemSize.x;
+					if (pi_rowItems < 1) pi_rowItems = 1;
+				}
 
-					for (vint i = 0; i < visibleStyles.Count(); i++)
-					{
-						GuiListControl::IItemStyleController* style = visibleStyles[i];
-						vint row = (startIndex + i) / rowItems;
-						vint col = (startIndex + i) % rowItems;
-						callback->SetStyleBounds(style, Rect(Point(col*itemSize.x, y0 + row*itemSize.y), itemSize));
-					}
+				void FixedSizeMultiColumnItemArranger::PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)
+				{
+					vint row = index / pi_rowItems;
+					vint col = index % pi_rowItems;
+					bounds = Rect(Point(col * itemSize.x, pi_y0 + row * itemSize.y), itemSize);
+				}
+
+				void FixedSizeMultiColumnItemArranger::EndPlaceItem()
+				{
 				}
 
 				void FixedSizeMultiColumnItemArranger::CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end)
@@ -565,7 +587,6 @@ FixedSizeMultiColumnItemArranger
 							InvalidateAdoptedSize();
 						}
 						startIndex = newStartIndex;
-						RearrangeItemBounds();
 					}
 				}
 
@@ -692,26 +713,30 @@ FixedSizeMultiColumnItemArranger
 FixedHeightMultiColumnItemArranger
 ***********************************************************************/
 
-				void FixedHeightMultiColumnItemArranger::RearrangeItemBounds()
+				void FixedHeightMultiColumnItemArranger::BeginPlaceItem()
 				{
-					vint rows = 0;
-					vint startColumn = 0;
-					CalculateRange(itemHeight, viewBounds, rows, startColumn);
-					vint currentWidth = 0;
-					vint totalWidth = 0;
-					for (vint i = 0; i < visibleStyles.Count(); i++)
+					pi_rows = viewBounds.Height() / itemHeight;
+					if (pi_rows < 0) pi_rows = 0;
+					pi_currentWidth = 0;
+					pi_totalWidth = 0;
+				}
+
+				void FixedHeightMultiColumnItemArranger::PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)
+				{
+					vint row = (index - startIndex) % pi_rows;
+					if (row == 0)
 					{
-						vint column = i%rows;
-						if (column == 0)
-						{
-							totalWidth += currentWidth;
-							currentWidth = 0;
-						}
-						GuiListControl::IItemStyleController* style = visibleStyles[i];
-						Size styleSize = callback->GetStylePreferredSize(style);
-						if (currentWidth < styleSize.x) currentWidth = styleSize.x;
-						callback->SetStyleBounds(style, Rect(Point(totalWidth, itemHeight * column), Size(0, 0)));
+						pi_totalWidth += pi_currentWidth;
+						pi_currentWidth = 0;
 					}
+
+					Size styleSize = callback->GetStylePreferredSize(style);
+					if (pi_currentWidth < styleSize.x) pi_currentWidth = styleSize.x;
+					bounds = Rect(Point(pi_totalWidth, itemHeight * row), Size(0, 0));
+				}
+
+				void FixedHeightMultiColumnItemArranger::EndPlaceItem()
+				{
 				}
 
 				void FixedHeightMultiColumnItemArranger::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
@@ -838,7 +863,6 @@ FixedHeightMultiColumnItemArranger
 							InvalidateAdoptedSize();
 						}
 						startIndex = newStartIndex;
-						RearrangeItemBounds();
 					}
 				}
 

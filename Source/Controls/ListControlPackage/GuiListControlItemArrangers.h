@@ -39,11 +39,16 @@ Predefined ItemArranger
 
 					void										InvalidateAdoptedSize();
 					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
+					void										ClearStyles();
+					virtual void								RearrangeItemBounds();
 
-					virtual void								ClearStyles();
-					virtual void								OnStylesCleared()=0;
-					virtual Size								OnCalculateTotalSize()=0;
-					virtual void								OnViewChangedInternal(Rect oldBounds, Rect newBounds)=0;
+					virtual void								BeginPlaceItem() = 0;
+					virtual void								PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent) = 0;
+					virtual void								EndPlaceItem() = 0;
+
+					virtual void								OnStylesCleared() = 0;
+					virtual Size								OnCalculateTotalSize() = 0;
+					virtual void								OnViewChangedInternal(Rect oldBounds, Rect newBounds) = 0;
 				public:
 					/// <summary>Create the arranger.</summary>
 					RangedItemArrangerBase();
@@ -64,12 +69,21 @@ Predefined ItemArranger
 				/// <summary>Fixed height item arranger. This arranger lists all item with the same height value. This value is the maximum height of all minimum heights of displayed items.</summary>
 				class FixedHeightItemArranger : public RangedItemArrangerBase, public Description<FixedHeightItemArranger>
 				{
+				private:
+					vint										pi_x0 = 0;
+					vint										pi_y0 = 0;
+					vint										pi_width = 0;
+
 				protected:
 					vint										rowHeight;
 
-					virtual void								RearrangeItemBounds();
 					virtual vint								GetWidth();
 					virtual vint								GetYOffset();
+
+					void										BeginPlaceItem()override;
+					void										PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)override;
+					void										EndPlaceItem()override;
+
 					void										OnStylesCleared()override;
 					Size										OnCalculateTotalSize()override;
 					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
@@ -86,11 +100,19 @@ Predefined ItemArranger
 				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple lines with the same size. The width is the maximum width of all minimum widths of displayed items. The same to height.</summary>
 				class FixedSizeMultiColumnItemArranger : public RangedItemArrangerBase, public Description<FixedSizeMultiColumnItemArranger>
 				{
+				private:
+					vint										pi_y0 = 0;
+					vint										pi_rowItems = 0;
+
 				protected:
 					Size										itemSize;
 
-					virtual void								RearrangeItemBounds();
 					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
+
+					void										BeginPlaceItem()override;
+					void										PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)override;
+					void										EndPlaceItem()override;
+
 					void										OnStylesCleared()override;
 					Size										OnCalculateTotalSize()override;
 					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
@@ -107,11 +129,20 @@ Predefined ItemArranger
 				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple columns with the same height. The height is the maximum width of all minimum height of displayed items. Each item will displayed using its minimum width.</summary>
 				class FixedHeightMultiColumnItemArranger : public RangedItemArrangerBase, public Description<FixedHeightMultiColumnItemArranger>
 				{
+				private:
+					vint										pi_rows = 0;
+					vint										pi_currentWidth = 0;
+					vint										pi_totalWidth = 0;
+
 				protected:
 					vint										itemHeight;
 
-					virtual void								RearrangeItemBounds();
 					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
+
+					void										BeginPlaceItem()override;
+					void										PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)override;
+					void										EndPlaceItem()override;
+
 					void										OnStylesCleared()override;
 					Size										OnCalculateTotalSize()override;
 					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
