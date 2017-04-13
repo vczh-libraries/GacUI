@@ -93,7 +93,7 @@ RangedItemArrangerBase
 						bounds.y2 -= newBounds.y1;
 					}
 
-					vint newEndIndex = newStartIndex + newVisibleStyles.Count();
+					vint newEndIndex = newStartIndex + newVisibleStyles.Count() - 1;
 					for (vint i = 0; i < visibleStyles.Count(); i++)
 					{
 						vint index = startIndex + i;
