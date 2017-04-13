@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
 
 Source: Host.sln
@@ -24,6 +24,11 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::demo::ColorBomboItemTemplate)
+			DECL_TYPE_INFO(::demo::ColorBomboItemTemplateConstructor)
+			DECL_TYPE_INFO(::demo::ColorItem)
+			DECL_TYPE_INFO(::demo::ColorListItemTemplate)
+			DECL_TYPE_INFO(::demo::ColorListItemTemplateConstructor)
 			DECL_TYPE_INFO(::demo::MainWindow)
 			DECL_TYPE_INFO(::demo::MainWindowConstructor)
 #endif

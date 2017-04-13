@@ -106,7 +106,7 @@ void GuiMain_Resource()
 	}
 	{
 		List<GuiResourceError> errors;
-		auto resource = GuiResource::LoadFromXml(LR"(Resources/UI9_ListView.xml)", errors);
+		auto resource = GuiResource::LoadFromXml(LR"(Resources/UI7_ColorComboBox.xml)", errors);
 		resource->Precompile(nullptr, errors);
 
 		{

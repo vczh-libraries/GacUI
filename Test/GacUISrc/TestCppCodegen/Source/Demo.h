@@ -29,57 +29,185 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	struct __vwsno1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf3_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf4_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__;
+	struct __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+	class __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc13_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc14_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+	class __vwsnc15_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc16_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc3_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc4_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc5_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc6_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc7_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc8_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+	class __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
 }
 
 namespace demo
 {
+	class ColorBomboItemTemplateConstructor;
+	class ColorBomboItemTemplate;
+	class ColorListItemTemplateConstructor;
+	class ColorListItemTemplate;
 	class MainWindowConstructor;
 	class MainWindow;
+	class ColorItem;
+
+	class ColorBomboItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ColorBomboItemTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorBomboItemTemplateConstructor>;
+#endif
+	protected:
+		::vl::Ptr<::demo::ColorItem> Source = ::vl::Ptr<::demo::ColorItem>();
+		::demo::ColorBomboItemTemplate* self = static_cast<::demo::ColorBomboItemTemplate*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		void __vwsn_initialize_instance_(::demo::ColorBomboItemTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
+	public:
+		ColorBomboItemTemplateConstructor();
+	};
+
+	class ColorBomboItemTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::demo::ColorBomboItemTemplateConstructor, public ::vl::reflection::Description<ColorBomboItemTemplate>
+	{
+		friend class ::demo::ColorBomboItemTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorBomboItemTemplate>;
+#endif
+	protected:
+		::vl::presentation::Color textColor = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#000000", false));
+	public:
+		::vl::Event<void()> TextColorChanged;
+		::vl::presentation::Color GetTextColor();
+		void SetTextColor(::vl::presentation::Color value);
+		::vl::Ptr<::demo::ColorItem> __vwsn_parameter_Source = ::vl::Ptr<::demo::ColorItem>();
+		::vl::Ptr<::demo::ColorItem> GetSource();
+		ColorBomboItemTemplate(::vl::Ptr<::demo::ColorItem> __vwsn_ctor_parameter_Source);
+		~ColorBomboItemTemplate();
+	};
+
+	class ColorListItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<ColorListItemTemplateConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorListItemTemplateConstructor>;
+#endif
+	protected:
+		::vl::Ptr<::demo::ColorItem> Source = ::vl::Ptr<::demo::ColorItem>();
+		::demo::ColorListItemTemplate* self = static_cast<::demo::ColorListItemTemplate*>(nullptr);
+		::demo::ColorBomboItemTemplate* __vwsn_precompile_0 = static_cast<::demo::ColorBomboItemTemplate*>(nullptr);
+		void __vwsn_initialize_instance_(::demo::ColorListItemTemplate* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
+	public:
+		ColorListItemTemplateConstructor();
+	};
+
+	class ColorListItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::ColorListItemTemplateConstructor, public ::vl::reflection::Description<ColorListItemTemplate>
+	{
+		friend class ::demo::ColorListItemTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorListItemTemplate>;
+#endif
+	public:
+		::vl::Ptr<::demo::ColorItem> __vwsn_parameter_Source = ::vl::Ptr<::demo::ColorItem>();
+		::vl::Ptr<::demo::ColorItem> GetSource();
+		ColorListItemTemplate(::vl::Ptr<::demo::ColorItem> __vwsn_ctor_parameter_Source);
+		~ColorListItemTemplate();
+	};
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsno1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc13_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc14_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend class ::vl_workflow_global::__vwsnc15_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc16_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener;
+		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
-		::vl::presentation::controls::GuiComboBoxListControl* comboBox = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
-		::vl::presentation::controls::GuiListView* listView = static_cast<::vl::presentation::controls::GuiListView*>(nullptr);
+		::vl::presentation::controls::GuiComboBoxListControl* comboFew = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
+		::vl::presentation::controls::GuiComboBoxListControl* comboMany = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
+		::vl::presentation::controls::GuiBindableTextList* listFew = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr);
+		::vl::presentation::controls::GuiBindableTextList* listMany = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr);
 		::demo::MainWindow* __vwsn_precompile_0 = static_cast<::demo::MainWindow*>(nullptr);
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiTextList* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiTextList*>(nullptr);
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
-		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_12 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_13 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_14 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_15 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_21 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_22 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_23 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_24 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_25 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_26 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_27 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_28 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::Ptr<::vl::presentation::controls::list::ListViewItem> __vwsn_precompile_29 = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>();
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_30 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_6 = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		MainWindowConstructor();
+	};
+
+	class ColorItem : public ::vl::Object, public ::vl::reflection::Description<ColorItem>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ColorItem>;
+#endif
+	public:
+		bool checked = false;
+		::vl::WString name = ::vl::WString(L"", false);
+		::vl::presentation::Color color = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#000000", false));
+		ColorItem(const ::vl::WString& _name, const ::vl::WString& _color);
+		static ::vl::collections::LazyList<::vl::Ptr<::demo::ColorItem>> GetFewItems();
+		static ::vl::collections::LazyList<::vl::Ptr<::demo::ColorItem>> GetManyItems();
 	};
 
 }
@@ -100,14 +228,338 @@ namespace vl_workflow_global
 Closures
 ***********************************************************************/
 
-	struct __vwsno1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	struct __vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
 	{
-		::demo::MainWindow* __vwsn_this_;
 		::demo::MainWindowConstructor* __vwsnthis_0;
 
-		__vwsno1_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindow* __vwsnctor___vwsn_this_, ::demo::MainWindowConstructor* __vwsnctorthis_0);
+		__vwsnf10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* __vwsno_1, ::vl::presentation::compositions::GuiEventArgs* __vwsno_2) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__
+	{
+		::demo::ColorBomboItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__(::demo::ColorBomboItemTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__
+	{
+		::demo::ColorBomboItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__(::demo::ColorBomboItemTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf3_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__
+	{
+		::demo::ColorListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf3_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__(::demo::ColorListItemTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf4_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__
+	{
+		::demo::ColorListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf4_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__(::demo::ColorListItemTemplateConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf5_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		bool operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const;
+	};
+
+	struct __vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf6_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf7_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf8_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	struct __vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__
+	{
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnf9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+	};
+
+	class __vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc10_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc11_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc12_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc13_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc13_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc14_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc14_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
+	};
+
+	class __vwsnc15_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc15_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiComboBoxListControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::presentation::controls::GuiComboBoxListControl* __vwsn_bind_cache_1 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_1_0;
+		::vl::presentation::controls::GuiBindableTextList* __vwsn_bind_cache_2 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_2_0;
+		::vl::presentation::controls::GuiBindableTextList* __vwsn_bind_cache_3 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_3_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_1_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_2_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_3_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc16_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::demo::MainWindowConstructor* __vwsnthis_1;
+
+		__vwsnc16_Demo_demo_MainWindowConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::MainWindowConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ColorBomboItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc1_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ColorBomboItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::ColorBomboItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::demo::ColorBomboItemTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc2_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::ColorBomboItemTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc3_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ColorBomboItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc3_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ColorBomboItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::ColorBomboItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc4_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::demo::ColorBomboItemTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc4_Demo_demo_ColorBomboItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::ColorBomboItemTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc5_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ColorListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc5_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ColorListItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::ColorListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc6_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::demo::ColorListItemTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc6_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::ColorListItemTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc7_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::ColorListItemTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc7_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::ColorListItemTemplateConstructor* __vwsnctorthis_0);
+
+		::demo::ColorListItemTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_initialize_();
+		::vl::Ptr<::vl::reflection::description::IValueListener> Subscribe(const ::vl::Func<void(const ::vl::reflection::description::Value&)>& __vwsn_bind_callback_) override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc8_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener : public ::vl::Object, public virtual ::vl::reflection::description::IValueListener
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_bind_listeners_;
+		::vl::reflection::description::IValueSubscription* __vwsn_subscription_;
+		::vl::reflection::description::IValueSubscription* __vwsnthis_0;
+		::demo::ColorListItemTemplateConstructor* __vwsnthis_1;
+
+		__vwsnc8_Demo_demo_ColorListItemTemplateConstructor___vwsn_initialize_instance__Subscribe__vl_reflection_description_IValueListener(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnctor___vwsn_bind_listeners_, ::vl::reflection::description::IValueSubscription* __vwsnctor___vwsn_subscription_, ::vl::reflection::description::IValueSubscription* __vwsnctorthis_0, ::demo::ColorListItemTemplateConstructor* __vwsnctorthis_1);
+
+		::vl::reflection::description::IValueSubscription* GetSubscription() override;
+		bool GetStopped() override;
+		bool StopListening() override;
+	};
+
+	class __vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory : public ::vl::Object, public virtual ::vl::presentation::templates::GuiTemplate::IFactory
+	{
+	public:
+		::demo::MainWindowConstructor* __vwsnthis_0;
+
+		__vwsnc9_Demo_demo_MainWindowConstructor___vwsn_initialize_instance___vl_presentation_templates_GuiTemplate_IFactory(::demo::MainWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* CreateTemplate(const ::vl::reflection::description::Value& __vwsn_viewModel_) override;
 	};
 }
 
