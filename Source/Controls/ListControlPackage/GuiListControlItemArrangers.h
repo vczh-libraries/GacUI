@@ -32,23 +32,26 @@ Predefined ItemArranger
 					GuiListControl*								listControl = nullptr;
 					GuiListControl::IItemArrangerCallback*		callback = nullptr;
 					GuiListControl::IItemProvider*				itemProvider = nullptr;
+
 					bool										suppressOnViewChanged = false;
 					Rect										viewBounds;
 					vint										startIndex = 0;
 					StyleList									visibleStyles;
 
+				protected:
+
 					void										InvalidateAdoptedSize();
 					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
 					void										ClearStyles();
+					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds);
 					virtual void								RearrangeItemBounds();
 
-					virtual void								BeginPlaceItem() = 0;
-					virtual void								PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent) = 0;
-					virtual void								EndPlaceItem() = 0;
-
-					virtual void								OnStylesCleared() = 0;
+					virtual void								BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
+					virtual void								PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
+					virtual bool								IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds) = 0;
+					virtual bool								EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
+					virtual void								InvalidateItemSizeCache() = 0;
 					virtual Size								OnCalculateTotalSize() = 0;
-					virtual void								OnViewChangedInternal(Rect oldBounds, Rect newBounds) = 0;
 				public:
 					/// <summary>Create the arranger.</summary>
 					RangedItemArrangerBase();
@@ -70,9 +73,8 @@ Predefined ItemArranger
 				class FixedHeightItemArranger : public RangedItemArrangerBase, public Description<FixedHeightItemArranger>
 				{
 				private:
-					vint										pi_x0 = 0;
-					vint										pi_y0 = 0;
 					vint										pi_width = 0;
+					vint										pim_rowHeight = 0;
 
 				protected:
 					vint										rowHeight;
@@ -80,13 +82,12 @@ Predefined ItemArranger
 					virtual vint								GetWidth();
 					virtual vint								GetYOffset();
 
-					void										BeginPlaceItem()override;
-					void										PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)override;
-					void										EndPlaceItem()override;
-
-					void										OnStylesCleared()override;
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;
-					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
 				public:
 					/// <summary>Create the arranger.</summary>
 					FixedHeightItemArranger();
@@ -101,21 +102,19 @@ Predefined ItemArranger
 				class FixedSizeMultiColumnItemArranger : public RangedItemArrangerBase, public Description<FixedSizeMultiColumnItemArranger>
 				{
 				private:
-					vint										pi_y0 = 0;
-					vint										pi_rowItems = 0;
+					Size										pim_itemSize;
 
 				protected:
 					Size										itemSize;
 
 					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
 
-					void										BeginPlaceItem()override;
-					void										PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)override;
-					void										EndPlaceItem()override;
-
-					void										OnStylesCleared()override;
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;
-					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
 				public:
 					/// <summary>Create the arranger.</summary>
 					FixedSizeMultiColumnItemArranger();
@@ -130,22 +129,21 @@ Predefined ItemArranger
 				class FixedHeightMultiColumnItemArranger : public RangedItemArrangerBase, public Description<FixedHeightMultiColumnItemArranger>
 				{
 				private:
-					vint										pi_rows = 0;
 					vint										pi_currentWidth = 0;
 					vint										pi_totalWidth = 0;
+					vint										pim_itemHeight = 0;
 
 				protected:
 					vint										itemHeight;
 
 					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
 
-					void										BeginPlaceItem()override;
-					void										PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)override;
-					void										EndPlaceItem()override;
-
-					void										OnStylesCleared()override;
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;
-					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
 				public:
 					/// <summary>Create the arranger.</summary>
 					FixedHeightMultiColumnItemArranger();

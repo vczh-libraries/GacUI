@@ -51,28 +51,88 @@ RangedItemArrangerBase
 					{
 						for (vint i = 0; i < visibleStyles.Count(); i++)
 						{
-							GuiListControl::IItemStyleController* style = visibleStyles[i];
+							auto style = visibleStyles[i];
 							callback->ReleaseItem(style);
 						}
 					}
 					visibleStyles.Clear();
 					viewBounds = Rect(0, 0, 0, 0);
-					OnStylesCleared();
+					InvalidateItemSizeCache();
+					InvalidateAdoptedSize();
+				}
+
+				void RangedItemArrangerBase::OnViewChangedInternal(Rect oldBounds, Rect newBounds)
+				{
+					vint endIndex = startIndex + visibleStyles.Count() - 1;
+					vint newStartIndex = 0;
+					vint itemCount = itemProvider->Count();
+					BeginPlaceItem(true, newBounds, newStartIndex);
+					if (newStartIndex < 0) newStartIndex = 0;
+
+					StyleList newVisibleStyles;
+					for (vint i = newStartIndex; i < itemCount; i++)
+					{
+						auto style
+							= startIndex <= i && i <= endIndex
+							? visibleStyles[i - startIndex]
+							: callback->RequestItem(i)
+							;
+						newVisibleStyles.Add(style);
+
+						Rect bounds;
+						Margin alignmentToParent;
+						PlaceItem(true, i, style, newBounds, bounds, alignmentToParent);
+						if (IsItemOutOfViewBounds(i, style, bounds, newBounds))
+						{
+							break;
+						}
+
+						bounds.x1 -= newBounds.x1;
+						bounds.x2 -= newBounds.x1;
+						bounds.y1 -= newBounds.y1;
+						bounds.y2 -= newBounds.y1;
+					}
+
+					vint newEndIndex = newStartIndex + newVisibleStyles.Count();
+					for (vint i = 0; i < visibleStyles.Count(); i++)
+					{
+						vint index = startIndex + i;
+						if (index < newStartIndex || index > newEndIndex)
+						{
+							auto style = visibleStyles[i];
+							callback->ReleaseItem(style);
+						}
+					}
+					CopyFrom(visibleStyles, newVisibleStyles);
+
+					if (EndPlaceItem(true, newBounds, newStartIndex))
+					{
+						callback->OnTotalSizeChanged();
+						InvalidateAdoptedSize();
+					}
+					startIndex = newStartIndex;
 				}
 
 				void RangedItemArrangerBase::RearrangeItemBounds()
 				{
-					BeginPlaceItem();
+					vint newStartIndex = startIndex;
+					BeginPlaceItem(false, viewBounds, newStartIndex);
 					for (vint i = 0; i < visibleStyles.Count(); i++)
 					{
 						auto style = visibleStyles[i];
 						Rect bounds;
 						Margin alignmentToParent(-1, -1, -1, -1);
-						PlaceItem(startIndex + i, style, bounds, alignmentToParent);
+						PlaceItem(false, startIndex + i, style, viewBounds, bounds, alignmentToParent);
+
+						bounds.x1 -= viewBounds.x1;
+						bounds.x2 -= viewBounds.x1;
+						bounds.y1 -= viewBounds.y1;
+						bounds.y2 -= viewBounds.y1;
+
 						callback->SetStyleAlignmentToParent(style, alignmentToParent);
 						callback->SetStyleBounds(style, bounds);
 					}
-					EndPlaceItem();
+					EndPlaceItem(false, viewBounds, startIndex);
 				}
 
 				RangedItemArrangerBase::RangedItemArrangerBase()
@@ -188,7 +248,14 @@ RangedItemArrangerBase
 
 				Size RangedItemArrangerBase::GetTotalSize()
 				{
-					return OnCalculateTotalSize();
+					if (callback)
+					{
+						return OnCalculateTotalSize();
+					}
+					else
+					{
+						return Size(0, 0);
+					}
 				}
 
 				GuiListControl::IItemStyleController* RangedItemArrangerBase::GetVisibleStyle(vint itemIndex)
@@ -239,16 +306,19 @@ FixedHeightItemArranger
 					return 0;
 				}
 
-				void FixedHeightItemArranger::BeginPlaceItem()
+				void FixedHeightItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 				{
-					pi_x0 = -viewBounds.Left();
-					pi_y0 = -viewBounds.Top() + GetYOffset();
 					pi_width = GetWidth();
+					if (forMoving)
+					{
+						pim_rowHeight = rowHeight;
+						newStartIndex = (newBounds.Top() - GetYOffset()) / rowHeight;
+					}
 				}
 
-				void FixedHeightItemArranger::PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)
+				void FixedHeightItemArranger::PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
-					vint top = pi_y0 + index * rowHeight;
+					vint top = GetYOffset() + index * rowHeight;
 					if (pi_width == -1)
 					{
 						alignmentToParent = Margin(0, -1, 0, -1);
@@ -257,97 +327,48 @@ FixedHeightItemArranger
 					else
 					{
 						alignmentToParent = Margin(-1, -1, -1, -1);
-						bounds = Rect(Point(pi_x0, top), Size(pi_width, rowHeight));
+						bounds = Rect(Point(0, top), Size(pi_width, rowHeight));
+					}
+					if (forMoving)
+					{
+						vint styleHeight = callback->GetStylePreferredSize(style).y;
+						if (pim_rowHeight < styleHeight)
+						{
+							pim_rowHeight = styleHeight;
+						}
 					}
 				}
 
-				void FixedHeightItemArranger::EndPlaceItem()
+				bool FixedHeightItemArranger::IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)
 				{
+					return bounds.Top() >= viewBounds.Bottom();
 				}
 
-				void FixedHeightItemArranger::OnStylesCleared()
+				bool FixedHeightItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+				{
+					if (forMoving)
+					{
+						if (pim_rowHeight != rowHeight)
+						{
+							vint offset = (pim_rowHeight - rowHeight) * newStartIndex;
+							rowHeight = pim_rowHeight;
+							callback->SetViewLocation(Point(0, newBounds.Top() + offset));
+							return true;
+						}
+					}
+					return false;
+				}
+
+				void FixedHeightItemArranger::InvalidateItemSizeCache()
 				{
 					rowHeight = 1;
-					InvalidateAdoptedSize();
 				}
 
 				Size FixedHeightItemArranger::OnCalculateTotalSize()
 				{
-					if (callback)
-					{
-						vint width = GetWidth();
-						if (width < 0) width = 0;
-						return Size(width, rowHeight*itemProvider->Count() + GetYOffset());
-					}
-					else
-					{
-						return Size(0, 0);
-					}
-				}
-
-				void FixedHeightItemArranger::OnViewChangedInternal(Rect oldBounds, Rect newBounds)
-				{
-					if (callback)
-					{
-						vint oldVisibleCount = visibleStyles.Count();
-						vint newRowHeight = rowHeight;
-						vint newStartIndex = (newBounds.Top() - GetYOffset()) / rowHeight;
-						if (newStartIndex < 0) newStartIndex = 0;
-
-						vint endIndex = startIndex + visibleStyles.Count() - 1;
-						vint newEndIndex = (newBounds.Bottom() - 1) / newRowHeight;
-						vint itemCount = itemProvider->Count();
-
-						for (vint i = newStartIndex; i <= newEndIndex && i < itemCount; i++)
-						{
-							GuiListControl::IItemStyleController* style = nullptr;
-							if (startIndex <= i && i <= endIndex)
-							{
-								style = visibleStyles[i - startIndex];
-								visibleStyles.Add(style);
-							}
-							else
-							{
-								style = callback->RequestItem(i);
-								visibleStyles.Add(style);
-							}
-
-							if (style)
-							{
-								vint styleHeight = callback->GetStylePreferredSize(style).y;
-								if (newRowHeight < styleHeight)
-								{
-									newRowHeight = styleHeight;
-									newEndIndex = newStartIndex + (newBounds.Height() - 1) / newRowHeight + 1;
-									if (newEndIndex < i)
-									{
-										newEndIndex = i;
-									}
-								}
-							}
-						}
-
-						for (vint i = 0; i < oldVisibleCount; i++)
-						{
-							vint index = startIndex + i;
-							if (index < newStartIndex || newEndIndex < index)
-							{
-								GuiListControl::IItemStyleController* style = visibleStyles[i];
-								callback->ReleaseItem(style);
-							}
-						}
-						visibleStyles.RemoveRange(0, oldVisibleCount);
-
-						if (rowHeight != newRowHeight)
-						{
-							vint offset = oldBounds.Top() - rowHeight*startIndex;
-							rowHeight = newRowHeight;
-							callback->OnTotalSizeChanged();
-							callback->SetViewLocation(Point(0, rowHeight*newStartIndex + offset));
-							InvalidateAdoptedSize();
-						}
-						startIndex = newStartIndex;
-					}
+					vint width = GetWidth();
+					if (width < 0) width = 0;
+					return Size(width, rowHeight * itemProvider->Count() + GetYOffset());
 				}
 
 				FixedHeightItemArranger::FixedHeightItemArranger()
@@ -440,10 +461,10 @@ FixedHeightItemArranger
 				{
 					if (itemProvider)
 					{
-						vint offset = GetYOffset();
-						vint y = expectedSize.y - offset;
+						vint yOffset = GetYOffset();
+						vint y = expectedSize.y - yOffset;
 						vint itemCount = itemProvider->Count();
-						return Size(expectedSize.x, offset + CalculateAdoptedSize(y, itemCount, rowHeight));
+						return Size(expectedSize.x, yOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
 					}
 					return expectedSize;
 				}
@@ -452,22 +473,51 @@ FixedHeightItemArranger
 FixedSizeMultiColumnItemArranger
 ***********************************************************************/
 
-				void FixedSizeMultiColumnItemArranger::BeginPlaceItem()
+				void FixedSizeMultiColumnItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 				{
-					pi_y0 = -viewBounds.Top();
-					pi_rowItems = viewBounds.Width() / itemSize.x;
-					if (pi_rowItems < 1) pi_rowItems = 1;
+					if (forMoving)
+					{
+						pim_itemSize = itemSize;
+						vint rows = newBounds.Top() / itemSize.y;
+						if (rows < 0) rows = 0;
+						vint cols = newBounds.Width() / itemSize.x;
+						if (cols < 1) cols = 1;
+						newStartIndex = rows * cols;
+					}
 				}
 
-				void FixedSizeMultiColumnItemArranger::PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)
+				void FixedSizeMultiColumnItemArranger::PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
-					vint row = index / pi_rowItems;
-					vint col = index % pi_rowItems;
-					bounds = Rect(Point(col * itemSize.x, pi_y0 + row * itemSize.y), itemSize);
+					vint rowItems = viewBounds.Width() / itemSize.x;
+					if (rowItems < 1) rowItems = 1;
+
+					vint row = index / rowItems;
+					vint col = index % rowItems;
+					bounds = Rect(Point(col * itemSize.x, row * itemSize.y), itemSize);
+					if (forMoving)
+					{
+						Size styleSize = callback->GetStylePreferredSize(style);
+						if (pim_itemSize.x < styleSize.x) pim_itemSize.x = styleSize.x;
+						if (pim_itemSize.y < styleSize.y) pim_itemSize.y = styleSize.y;
+					}
 				}
 
-				void FixedSizeMultiColumnItemArranger::EndPlaceItem()
+				bool FixedSizeMultiColumnItemArranger::IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)
 				{
+					return bounds.Top() >= viewBounds.Bottom();
+				}
+
+				bool FixedSizeMultiColumnItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+				{
+					if (forMoving)
+					{
+						if (pim_itemSize != itemSize)
+						{
+							itemSize = pim_itemSize;
+							return true;
+						}
+					}
+					return false;
 				}
 
 				void FixedSizeMultiColumnItemArranger::CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end)
@@ -483,111 +533,19 @@ FixedSizeMultiColumnItemArranger
 					if (end >= count) end = count - 1;
 				}
 
-				void FixedSizeMultiColumnItemArranger::OnStylesCleared()
+				void FixedSizeMultiColumnItemArranger::InvalidateItemSizeCache()
 				{
 					itemSize = Size(1, 1);
-					InvalidateAdoptedSize();
 				}
 
 				Size FixedSizeMultiColumnItemArranger::OnCalculateTotalSize()
 				{
-					if (callback)
-					{
-						vint rowItems = viewBounds.Width() / itemSize.x;
-						if (rowItems < 1) rowItems = 1;
-						vint rows = itemProvider->Count() / rowItems;
-						if (itemProvider->Count() % rowItems) rows++;
+					vint rowItems = viewBounds.Width() / itemSize.x;
+					if (rowItems < 1) rowItems = 1;
+					vint rows = itemProvider->Count() / rowItems;
+					if (itemProvider->Count() % rowItems) rows++;
 
-						return Size(itemSize.x*rowItems, itemSize.y*rows);
-					}
-					else
-					{
-						return Size(0, 0);
-					}
-				}
-
-				void FixedSizeMultiColumnItemArranger::OnViewChangedInternal(Rect oldBounds, Rect newBounds)
-				{
-					if (callback)
-					{
-						vint oldVisibleCount = visibleStyles.Count();
-						Size newItemSize = itemSize;
-						vint endIndex = startIndex + visibleStyles.Count() - 1;
-
-						vint newStartIndex = 0;
-						vint newEndIndex = 0;
-						vint itemCount = itemProvider->Count();
-						CalculateRange(newItemSize, newBounds, itemCount, newStartIndex, newEndIndex);
-						if (newItemSize == Size(1, 1) && newStartIndex < newEndIndex)
-						{
-							newEndIndex = newStartIndex;
-						}
-
-						vint previousStartIndex = -1;
-						vint previousEndIndex = -1;
-
-						while (true)
-						{
-							for (vint i = newStartIndex; i <= newEndIndex; i++)
-							{
-								GuiListControl::IItemStyleController* style = nullptr;
-								if (startIndex <= i && i <= endIndex)
-								{
-									style = visibleStyles[i - startIndex];
-									visibleStyles.Add(style);
-								}
-								else if (i<previousStartIndex || i>previousEndIndex)
-								{
-									style = callback->RequestItem(i);
-
-									if (i < previousStartIndex)
-									{
-										visibleStyles.Insert(oldVisibleCount + (i - newStartIndex), style);
-									}
-									else
-									{
-										visibleStyles.Add(style);
-									}
-								}
-
-								if (style)
-								{
-									Size styleSize = callback->GetStylePreferredSize(style);
-									if (newItemSize.x < styleSize.x) newItemSize.x = styleSize.x;
-									if (newItemSize.y < styleSize.y) newItemSize.y = styleSize.y;
-								}
-							}
-
-							vint updatedStartIndex = 0;
-							vint updatedEndIndex = 0;
-							CalculateRange(newItemSize, newBounds, itemCount, updatedStartIndex, updatedEndIndex);
-							bool again = updatedStartIndex<newStartIndex || updatedEndIndex>newEndIndex;
-							previousStartIndex = newStartIndex;
-							previousEndIndex = newEndIndex;
-							if (updatedStartIndex < newStartIndex) newStartIndex = updatedStartIndex;
-							if (updatedEndIndex > newEndIndex) newEndIndex = updatedEndIndex;
-							if (!again) break;
-						}
-
-						for (vint i = 0; i < oldVisibleCount; i++)
-						{
-							vint index = startIndex + i;
-							if (index < newStartIndex || newEndIndex < index)
-							{
-								GuiListControl::IItemStyleController* style = visibleStyles[i];
-								callback->ReleaseItem(style);
-							}
-						}
-						visibleStyles.RemoveRange(0, oldVisibleCount);
-
-						if (itemSize != newItemSize)
-						{
-							itemSize = newItemSize;
-							callback->OnTotalSizeChanged();
-							InvalidateAdoptedSize();
-						}
-						startIndex = newStartIndex;
-					}
+					return Size(itemSize.x * rowItems, itemSize.y*rows);
 				}
 
 				FixedSizeMultiColumnItemArranger::FixedSizeMultiColumnItemArranger()
@@ -713,17 +671,26 @@ FixedSizeMultiColumnItemArranger
 FixedHeightMultiColumnItemArranger
 ***********************************************************************/
 
-				void FixedHeightMultiColumnItemArranger::BeginPlaceItem()
+				void FixedHeightMultiColumnItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 				{
-					pi_rows = viewBounds.Height() / itemHeight;
-					if (pi_rows < 0) pi_rows = 0;
 					pi_currentWidth = 0;
 					pi_totalWidth = 0;
+					if (forMoving)
+					{
+						pim_itemHeight = itemHeight;
+						vint rows = newBounds.Height() / itemHeight;
+						if (rows < 1) rows = 1;
+						vint columns = newBounds.Left() / newBounds.Width();
+						newStartIndex = rows * columns;
+					}
 				}
 
-				void FixedHeightMultiColumnItemArranger::PlaceItem(vint index, GuiListControl::IItemStyleController* style, Rect& bounds, Margin& alignmentToParent)
+				void FixedHeightMultiColumnItemArranger::PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
-					vint row = (index - startIndex) % pi_rows;
+					vint rows = viewBounds.Height() / itemHeight;
+					if (rows < 1) rows = 1;
+
+					vint row = index % rows;
 					if (row == 0)
 					{
 						pi_totalWidth += pi_currentWidth;
@@ -732,11 +699,29 @@ FixedHeightMultiColumnItemArranger
 
 					Size styleSize = callback->GetStylePreferredSize(style);
 					if (pi_currentWidth < styleSize.x) pi_currentWidth = styleSize.x;
-					bounds = Rect(Point(pi_totalWidth, itemHeight * row), Size(0, 0));
+					bounds = Rect(Point(pi_totalWidth + viewBounds.Left(), itemHeight * row), Size(0, 0));
+					if (forMoving)
+					{
+						if (pim_itemHeight < styleSize.y) pim_itemHeight = styleSize.y;
+					}
 				}
 
-				void FixedHeightMultiColumnItemArranger::EndPlaceItem()
+				bool FixedHeightMultiColumnItemArranger::IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)
 				{
+					return bounds.Left() >= viewBounds.Right();
+				}
+
+				bool FixedHeightMultiColumnItemArranger::EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+				{
+					if (forMoving)
+					{
+						if (pim_itemHeight != itemHeight)
+						{
+							itemHeight = pim_itemHeight;
+							return true;
+						}
+					}
+					return false;
 				}
 
 				void FixedHeightMultiColumnItemArranger::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
@@ -746,124 +731,18 @@ FixedHeightMultiColumnItemArranger
 					startColumn = bounds.Left() / bounds.Width();
 				}
 
-				void FixedHeightMultiColumnItemArranger::OnStylesCleared()
+				void FixedHeightMultiColumnItemArranger::InvalidateItemSizeCache()
 				{
 					itemHeight = 1;
-					InvalidateAdoptedSize();
 				}
 
 				Size FixedHeightMultiColumnItemArranger::OnCalculateTotalSize()
 				{
-					if (callback)
-					{
-						vint rows = viewBounds.Height() / itemHeight;
-						if (rows < 1) rows = 1;
-						vint columns = itemProvider->Count() / rows;
-						if (itemProvider->Count() % rows) columns += 1;
-						return Size(viewBounds.Width()*columns, 0);
-					}
-					else
-					{
-						return Size(0, 0);
-					}
-				}
-
-				void FixedHeightMultiColumnItemArranger::OnViewChangedInternal(Rect oldBounds, Rect newBounds)
-				{
-					if (callback)
-					{
-						vint oldVisibleCount = visibleStyles.Count();
-						vint endIndex = startIndex + oldVisibleCount - 1;
-
-						vint newItemHeight = itemHeight;
-						vint itemCount = itemProvider->Count();
-
-						vint previousStartIndex = -1;
-						vint previousEndIndex = -1;
-						vint newStartIndex = -1;
-						vint newEndIndex = -1;
-
-						while (true)
-						{
-							vint newRows = 0;
-							vint newStartColumn = 0;
-							vint currentWidth = 0;
-							vint totalWidth = 0;
-							CalculateRange(newItemHeight, newBounds, newRows, newStartColumn);
-							newStartIndex = newRows*newStartColumn;
-							vint currentItemHeight = newItemHeight;
-
-							for (vint i = newStartIndex; i < itemCount; i++)
-							{
-								if (i%newRows == 0)
-								{
-									totalWidth += currentWidth;
-									currentWidth = 0;
-									if (totalWidth >= newBounds.Width())
-									{
-										break;
-									}
-								}
-								newEndIndex = i;
-
-								GuiListControl::IItemStyleController* style = nullptr;
-								if (startIndex <= i && i <= endIndex)
-								{
-									style = visibleStyles[i - startIndex];
-									visibleStyles.Add(style);
-								}
-								else if (i<previousStartIndex || i>previousEndIndex)
-								{
-									style = callback->RequestItem(i);
-
-									if (i < previousStartIndex)
-									{
-										visibleStyles.Insert(oldVisibleCount + (i - newStartIndex), style);
-									}
-									else
-									{
-										visibleStyles.Add(style);
-									}
-								}
-
-								if (style)
-								{
-									Size styleSize = callback->GetStylePreferredSize(style);
-									if (currentWidth < styleSize.x) currentWidth = styleSize.x;
-									if (newItemHeight < styleSize.y) newItemHeight = styleSize.y;
-									if (currentItemHeight != newItemHeight) break;
-								}
-							}
-
-							if (previousStartIndex == -1 || previousStartIndex < newStartIndex) previousStartIndex = newStartIndex;
-							if (previousEndIndex == -1 || previousEndIndex > newEndIndex) previousEndIndex = newEndIndex;
-							if (currentItemHeight == newItemHeight)
-							{
-								break;
-							}
-						}
-						newStartIndex = previousStartIndex;
-						newEndIndex = previousEndIndex;
-
-						for (vint i = 0; i < oldVisibleCount; i++)
-						{
-							vint index = startIndex + i;
-							if (index < newStartIndex || newEndIndex < index)
-							{
-								GuiListControl::IItemStyleController* style = visibleStyles[i];
-								callback->ReleaseItem(style);
-							}
-						}
-						visibleStyles.RemoveRange(0, oldVisibleCount);
-
-						if (itemHeight != newItemHeight)
-						{
-							itemHeight = newItemHeight;
-							callback->OnTotalSizeChanged();
-							InvalidateAdoptedSize();
-						}
-						startIndex = newStartIndex;
-					}
+					vint rows = viewBounds.Height() / itemHeight;
+					if (rows < 1) rows = 1;
+					vint columns = itemProvider->Count() / rows;
+					if (itemProvider->Count() % rows) columns += 1;
+					return Size(viewBounds.Width() * columns, 0);
 				}
 
 				FixedHeightMultiColumnItemArranger::FixedHeightMultiColumnItemArranger()

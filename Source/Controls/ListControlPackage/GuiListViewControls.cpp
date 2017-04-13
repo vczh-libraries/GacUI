@@ -1069,8 +1069,8 @@ ListViewColumnItemArranger
 				void ListViewColumnItemArranger::RearrangeItemBounds()
 				{
 					FixedHeightItemArranger::RearrangeItemBounds();
-					vint count=columnHeaders->GetParent()->Children().Count();
-					columnHeaders->GetParent()->MoveChild(columnHeaders, count-1);
+					vint count = columnHeaders->GetParent()->Children().Count();
+					columnHeaders->GetParent()->MoveChild(columnHeaders, count - 1);
 					columnHeaders->SetBounds(Rect(Point(-viewBounds.Left(), 0), Size(0, 0)));
 				}
 
