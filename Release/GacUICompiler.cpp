@@ -135,48 +135,48 @@ GuiInstancePropertyInfo
 			return new GuiInstancePropertyInfo;
 		}
 
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Assign(description::ITypeDescriptor* typeDescriptor)
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Assign(Ptr<description::ITypeInfo> typeInfo)
 		{
-			Ptr<GuiInstancePropertyInfo> info = new GuiInstancePropertyInfo;
+			auto info = MakePtr<GuiInstancePropertyInfo>();
 			info->support = SupportAssign;
-			if (typeDescriptor) info->acceptableTypes.Add(typeDescriptor);
+			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
 		}
 
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::AssignWithParent(description::ITypeDescriptor* typeDescriptor)
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::AssignWithParent(Ptr<description::ITypeInfo> typeInfo)
 		{
-			Ptr<GuiInstancePropertyInfo> info = Assign(typeDescriptor);
+			auto info = Assign(typeInfo);
 			info->tryParent = true;
 			return info;
 		}
 
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Collection(description::ITypeDescriptor* typeDescriptor)
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Collection(Ptr<description::ITypeInfo> typeInfo)
 		{
-			Ptr<GuiInstancePropertyInfo> info = Assign(typeDescriptor);
+			auto info = Assign(typeInfo);
 			info->support = SupportCollection;
 			return info;
 		}
 
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::CollectionWithParent(description::ITypeDescriptor* typeDescriptor)
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::CollectionWithParent(Ptr<description::ITypeInfo> typeInfo)
 		{
-			Ptr<GuiInstancePropertyInfo> info = Collection(typeDescriptor);
+			auto info = Collection(typeInfo);
 			info->tryParent = true;
 			return info;
 		}
 
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Set(description::ITypeDescriptor* typeDescriptor)
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Set(Ptr<description::ITypeInfo> typeInfo)
 		{
-			Ptr<GuiInstancePropertyInfo> info = new GuiInstancePropertyInfo;
+			auto info = MakePtr<GuiInstancePropertyInfo>();
 			info->support = SupportSet;
-			if (typeDescriptor) info->acceptableTypes.Add(typeDescriptor);
+			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
 		}
 
-		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Array(description::ITypeDescriptor* typeDescriptor)
+		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Array(Ptr<description::ITypeInfo> typeInfo)
 		{
-			Ptr<GuiInstancePropertyInfo> info = new GuiInstancePropertyInfo;
+			auto info = MakePtr<GuiInstancePropertyInfo>();
 			info->support = SupportArray;
-			if (typeDescriptor) info->acceptableTypes.Add(typeDescriptor);
+			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
 		}
 
@@ -385,64 +385,63 @@ GuiDefaultInstanceLoader
 
 			//***********************************************************************************
 
-			void ProcessGenericType(ITypeInfo* propType, ITypeInfo*& genericType, ITypeInfo*& elementType, bool& readableList, bool& writableList, bool& collectionType)
+			ITypeInfo* ProcessGenericType(ITypeInfo* propType, bool& readableList, bool& writableList, bool& collectionType)
 			{
-				genericType = 0;
-				elementType = 0;
 				readableList = false;
 				writableList = false;
 				collectionType = false;
 				if (propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetElementType()->GetDecorator() == ITypeInfo::Generic)
 				{
-					propType = propType->GetElementType();
-					genericType = propType->GetElementType();
+					auto genericType = propType->GetElementType();
 					if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 					{
-						elementType = propType->GetGenericArgument(0);
 						readableList = true;
 						writableList = true;
 						collectionType = true;
+						return genericType->GetGenericArgument(0);
 					}
 					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerator>())
 					{
 						collectionType = true;
+						return genericType->GetGenericArgument(0);
 					}
 					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
 					{
-						elementType = propType->GetGenericArgument(0);
 						readableList = true;
 						collectionType = true;
+						return genericType->GetGenericArgument(0);
 					}
 					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>())
 					{
-						elementType = propType->GetGenericArgument(0);
 						readableList = true;
 						collectionType = true;
+						return genericType->GetGenericArgument(0);
 					}
 					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyDictionary>())
 					{
 						collectionType = true;
+						return nullptr;
 					}
 					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>())
 					{
 						collectionType = true;
+						return nullptr;
 					}
 				}
+				return propType;
 			}
 
 			ITypeInfo* GetPropertyReflectionTypeInfo(const PropertyInfo& propertyInfo, GuiInstancePropertyInfo::Support& support)
 			{
 				support = GuiInstancePropertyInfo::NotSupport;
-				IPropertyInfo* prop = propertyInfo.typeInfo.typeDescriptor->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
+				IPropertyInfo* prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
 				if (prop)
 				{
 					ITypeInfo* propType = prop->GetReturn();
-					ITypeInfo* genericType = 0;
-					ITypeInfo* elementType = 0;
 					bool readableList = false;
 					bool writableList = false;
 					bool collectionType = false;
-					ProcessGenericType(propType, genericType, elementType, readableList, writableList, collectionType);
+					auto propValueType = ProcessGenericType(propType, readableList, writableList, collectionType);
 
 					if (prop->IsWritable())
 					{
@@ -451,18 +450,13 @@ GuiDefaultInstanceLoader
 							if (readableList)
 							{
 								support = GuiInstancePropertyInfo::SupportArray;
-								return elementType;
+								return propValueType;
 							}
-						}
-						else if (genericType)
-						{
-							support = GuiInstancePropertyInfo::SupportAssign;
-							return genericType;
 						}
 						else
 						{
 							support = GuiInstancePropertyInfo::SupportAssign;
-							return propType;
+							return propValueType;
 						}
 					}
 					else if (prop->IsReadable())
@@ -472,36 +466,23 @@ GuiDefaultInstanceLoader
 							if (writableList)
 							{
 								support = GuiInstancePropertyInfo::SupportCollection;
-								return elementType;
+								return propValueType;
 							}
 						}
-						else if (!genericType)
+						else
 						{
 							if (propType->GetDecorator() == ITypeInfo::SharedPtr || propType->GetDecorator() == ITypeInfo::RawPtr)
 							{
-								support = GuiInstancePropertyInfo::SupportSet;
-								return propType;
+								if (propType->GetElementType()->GetDecorator() != ITypeInfo::Generic)
+								{
+									support = GuiInstancePropertyInfo::SupportSet;
+									return propValueType;
+								}
 							}
 						}
 					}
 				}
-				return 0;
-			}
-
-			bool FillPropertyInfo(Ptr<GuiInstancePropertyInfo> propertyInfo, ITypeInfo* propType)
-			{
-				switch (propType->GetDecorator())
-				{
-				case ITypeInfo::RawPtr:
-				case ITypeInfo::SharedPtr:
-				case ITypeInfo::Nullable:
-					return FillPropertyInfo(propertyInfo, propType->GetElementType());
-				case ITypeInfo::TypeDescriptor:
-					propertyInfo->acceptableTypes.Add(propType->GetTypeDescriptor());
-					return true;
-				default:;
-				}
-				return false;
+				return nullptr;
 			}
 
 			void CollectPropertyNames(const TypeInfo& typeInfo, ITypeDescriptor* typeDescriptor, collections::List<GlobalStringKey>& propertyNames)
@@ -531,14 +512,14 @@ GuiDefaultInstanceLoader
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
-				CollectPropertyNames(typeInfo, typeInfo.typeDescriptor, propertyNames);
+				CollectPropertyNames(typeInfo, typeInfo.typeInfo->GetTypeDescriptor(), propertyNames);
 			}
 
 			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
 				CTOR_PARAM_PREFIX
 
-				if (auto ctor = GetInstanceConstructor(typeInfo.typeDescriptor))
+				if (auto ctor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()))
 				{
 					vint count = ctor->GetParameterCount();
 					for (vint i = 0; i < count; i++)
@@ -548,65 +529,12 @@ GuiDefaultInstanceLoader
 					}
 				}
 			}
-			
-			bool IsItemPropertyName(IPropertyInfo* prop)
-			{
-				auto name = prop->GetName();
-				return name.Length() >= 8 && name.Right(8) == L"Property";
-			}
-
-			bool IsItemPropertyType(ITypeInfo* propType)
-			{
-				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
-				{
-					auto genericType = propType->GetElementType();
-					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 2)
-					{
-						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
-						{
-							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
-							{
-								return true;
-							}
-						}
-					}
-				}
-				return false;
-			}
-
-			bool IsWritableItemPropertyType(ITypeInfo* propType)
-			{
-				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
-				{
-					auto genericType = propType->GetElementType();
-					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 4)
-					{
-						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
-						{
-							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>()
-								&& genericType->GetGenericArgument(3)->GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
-							{
-								if (IsSameType(genericType->GetGenericArgument(0), genericType->GetGenericArgument(2)))
-								{
-									return true;
-								}
-							}
-						}
-					}
-				}
-				return false;
-			}
-
-			bool IsItemProperty(IPropertyInfo* prop)
-			{
-				return prop && IsItemPropertyName(prop) && (IsItemPropertyType(prop->GetReturn()) || IsWritableItemPropertyType(prop->GetReturn()));
-			}
 
 			PropertyType GetPropertyTypeCached(const PropertyInfo& propertyInfo)
 			{
 				CTOR_PARAM_PREFIX
 
-				FieldKey key(propertyInfo.typeInfo.typeDescriptor, propertyInfo.propertyName);
+				FieldKey key(propertyInfo.typeInfo.typeInfo->GetTypeDescriptor(), propertyInfo.propertyName);
 				vint index = propertyTypes.Keys().IndexOf(key);
 				if (index == -1)
 				{
@@ -615,8 +543,9 @@ GuiDefaultInstanceLoader
 					{
 						Ptr<GuiInstancePropertyInfo> result = new GuiInstancePropertyInfo;
 						result->support = support;
+						result->acceptableTypes.Add(CopyTypeInfo(propType));
 
-						if (auto ctor = GetInstanceConstructor(propertyInfo.typeInfo.typeDescriptor))
+						if (auto ctor = GetInstanceConstructor(propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()))
 						{
 							vint count = ctor->GetParameterCount();
 							for (vint i = 0; i < count; i++)
@@ -629,25 +558,17 @@ GuiDefaultInstanceLoader
 							}
 						}
 
-						IPropertyInfo* prop = propertyInfo.typeInfo.typeDescriptor->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
-						if (IsItemProperty(prop))
-						{
-							result->acceptableTypes.Add(description::GetTypeDescriptor<WString>());
-						}
-						else if (!FillPropertyInfo(result, propType))
-						{
-							goto UNSUPPORTED;
-						}
-
+						IPropertyInfo* prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true);
 						PropertyType value(result, prop);
 						propertyTypes.Add(key, value);
 						return value;
 					}
-					
-				UNSUPPORTED:
-					PropertyType value(GuiInstancePropertyInfo::Unsupported(), 0);
-					propertyTypes.Add(key, value);
-					return value;
+					else
+					{
+						PropertyType value(GuiInstancePropertyInfo::Unsupported(), 0);
+						propertyTypes.Add(key, value);
+						return value;
+					}
 				}
 				else
 				{
@@ -665,15 +586,15 @@ GuiDefaultInstanceLoader
 			bool CanCreate(const TypeInfo& typeInfo)override
 			{
 				return
-					GetDefaultConstructor(typeInfo.typeDescriptor) != nullptr ||
-					GetInstanceConstructor(typeInfo.typeDescriptor) != nullptr;
+					GetDefaultConstructor(typeInfo.typeInfo->GetTypeDescriptor()) != nullptr ||
+					GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()) != nullptr;
 			}
 
 			Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 			{
 				CTOR_PARAM_PREFIX
-				auto defaultCtor = GetDefaultConstructor(typeInfo.typeDescriptor);
-				auto instanceCtor = GetInstanceConstructor(typeInfo.typeDescriptor);
+				auto defaultCtor = GetDefaultConstructor(typeInfo.typeInfo->GetTypeDescriptor());
+				auto instanceCtor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor());
 
 				auto create = MakePtr<WfNewClassExpression>();
 				if (defaultCtor)
@@ -798,199 +719,25 @@ GuiDefaultInstanceLoader
 						case GuiInstancePropertyInfo::SupportAssign:
 							{
 								auto& propertyValue = arguments.GetByIndex(index)[0];
-								auto propertyValueExpression = propertyValue.expression;
-
-								if (IsItemPropertyName(propertyType.f1))
+								if (propertyValue.expression)
 								{
-									bool isItemProperty = IsItemPropertyType(propertyType.f1->GetReturn());
-									bool isWritableItemProperty = IsWritableItemPropertyType(propertyType.f1->GetReturn());
 
-									if (isItemProperty || isWritableItemProperty)
-									{
-										auto propertyDescription = propertyValueExpression.Cast<WfStringExpression>()->value.value;
-										Ptr<WfExpression> propertyExpression;
-										{
-											propertyExpression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, propertyDescription, propertyValue.valuePosition, errors);
-											if (!propertyExpression)
-											{
-												break;
-											}
-										};
+									auto refValue = MakePtr<WfReferenceExpression>();
+									refValue->name.value = variableName.ToString();
 
-										vint indexItemType = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemType"));
-										if (indexItemType == -1)
-										{
-											auto error
-												= L"Precompile: env.ItemType must be specified before assigning \""
-												+ propertyDescription
-												+ L"\" to property \""
-												+ propertyType.f1->GetName()
-												+ L"\" of type \""
-												+ propertyType.f1->GetOwnerTypeDescriptor()->GetTypeName()
-												+ L"\".";
-											errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition, error));
-											break;
-										}
+									auto refProp = MakePtr<WfMemberExpression>();
+									refProp->parent = refValue;
+									refProp->name.value = prop.ToString();
 
-										Ptr<WfType> itemType;
-										{
-											const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
-											auto itemTypeValue = values[values.Count() - 1];
+									auto assign = MakePtr<WfBinaryExpression>();
+									assign->op = WfBinaryOperator::Assign;
+									assign->first = refProp;
+									assign->second = propertyValue.expression;
 
-											itemType = Workflow_ParseType(precompileContext, { resolvingResult.resource }, itemTypeValue->value, itemTypeValue->valuePosition, errors);
-											if (!itemType)
-											{
-												break;
-											}
-										};
-
-										vint indexItemName = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemName"));
-										WString itemName(L"item", false);
-										if (indexItemName != -1)
-										{
-											const auto& values = resolvingResult.envVars.GetByIndex(indexItemName);
-											itemName = values[values.Count() - 1]->value;
-										}
-
-										if (auto refExpr = propertyExpression.Cast<WfReferenceExpression>())
-										{
-											if (refExpr->name.value != itemName)
-											{
-												auto refItem = MakePtr<WfReferenceExpression>();
-												refItem->name.value = itemName;
-
-												auto member = MakePtr<WfMemberExpression>();
-												member->parent = refItem;
-												member->name.value = refExpr->name.value;
-
-												propertyExpression = member;
-											}
-										}
-
-										auto funcDecl = MakePtr<WfFunctionDeclaration>();
-										funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
-										{
-											auto genericType = propertyType.f1->GetReturn()->GetElementType();
-											funcDecl->returnType = GetTypeFromTypeInfo(genericType->GetGenericArgument(0));
-											{
-												auto argument = MakePtr<WfFunctionArgument>();
-												argument->name.value = L"<item>";
-												argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(1));
-												funcDecl->arguments.Add(argument);
-											}
-
-											if (isWritableItemProperty)
-											{
-												{
-													auto argument = MakePtr<WfFunctionArgument>();
-													argument->name.value = L"<value>";
-													argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(2));
-													funcDecl->arguments.Add(argument);
-												}
-												{
-													auto argument = MakePtr<WfFunctionArgument>();
-													argument->name.value = L"<update>";
-													argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(3));
-													funcDecl->arguments.Add(argument);
-												}
-											}
-										}
-
-										auto funcBlock = MakePtr<WfBlockStatement>();
-										funcDecl->statement = funcBlock;
-
-										{
-											auto refItem = MakePtr<WfReferenceExpression>();
-											refItem->name.value = L"<item>";
-
-											auto refCast = MakePtr<WfTypeCastingExpression>();
-											refCast->strategy = WfTypeCastingStrategy::Strong;
-											refCast->type = itemType;
-											refCast->expression = refItem;
-
-											auto varDecl = MakePtr<WfVariableDeclaration>();
-											varDecl->name.value = itemName;
-											varDecl->expression = refCast;
-
-											auto varStat = MakePtr<WfVariableStatement>();
-											varStat->variable = varDecl;
-											funcBlock->statements.Add(varStat);
-										}
-
-										Ptr<WfReturnStatement> returnStat;
-										{
-											returnStat = MakePtr<WfReturnStatement>();
-											returnStat->expression = propertyExpression;
-										}
-
-										if (isItemProperty)
-										{
-											funcBlock->statements.Add(returnStat);
-										}
-										else if (isWritableItemProperty)
-										{
-											auto ifStat = MakePtr<WfIfStatement>();
-											funcBlock->statements.Add(ifStat);
-											{
-												auto refUpdate = MakePtr<WfReferenceExpression>();
-												refUpdate->name.value = L"<update>";
-
-												ifStat->expression = refUpdate;
-											}
-											{
-												auto block = MakePtr<WfBlockStatement>();
-												ifStat->trueBranch = block;
-
-												{
-													auto refValue = MakePtr<WfReferenceExpression>();
-													refValue->name.value = L"<value>";
-
-													auto assignExpr = MakePtr<WfBinaryExpression>();
-													assignExpr->op = WfBinaryOperator::Assign;
-													assignExpr->first = CopyExpression(propertyExpression);
-													assignExpr->second = refValue;
-
-													auto stat = MakePtr<WfExpressionStatement>();
-													stat->expression = assignExpr;
-													block->statements.Add(stat);
-												}
-												{
-													auto returnStat = MakePtr<WfReturnStatement>();
-													block->statements.Add(returnStat);
-
-													auto returnType = propertyType.f1->GetReturn()->GetElementType()->GetGenericArgument(0);
-													returnStat->expression = CreateDefaultValue(returnType);
-												}
-											}
-											{
-												auto block = MakePtr<WfBlockStatement>();
-												ifStat->falseBranch = block;
-
-												block->statements.Add(returnStat);
-											}
-										}
-
-										auto funcExpr = MakePtr<WfFunctionExpression>();
-										funcExpr->function = funcDecl;
-										propertyValueExpression = funcExpr;
-									}
+									auto stat = MakePtr<WfExpressionStatement>();
+									stat->expression = assign;
+									block->statements.Add(stat);
 								}
-
-								auto refValue = MakePtr<WfReferenceExpression>();
-								refValue->name.value = variableName.ToString();
-
-								auto refProp = MakePtr<WfMemberExpression>();
-								refProp->parent = refValue;
-								refProp->name.value = prop.ToString();
-
-								auto assign = MakePtr<WfBinaryExpression>();
-								assign->op = WfBinaryOperator::Assign;
-								assign->first = refProp;
-								assign->second = propertyValueExpression;
-
-								auto stat = MakePtr<WfExpressionStatement>();
-								stat->expression = assign;
-								block->statements.Add(stat);
 							}
 							break;
 						default:
@@ -1042,6 +789,7 @@ GuiInstanceLoaderManager
 		protected:
 			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceBinder>>				BinderMap;
 			typedef Dictionary<GlobalStringKey, Ptr<IGuiInstanceEventBinder>>			EventBinderMap;
+			typedef List<Ptr<IGuiInstanceDeserializer>>									DeserializerList;
 
 			struct VirtualTypeInfo
 			{
@@ -1059,6 +807,7 @@ GuiInstanceLoaderManager
 			Ptr<IGuiInstanceLoader>					rootLoader;
 			BinderMap								binders;
 			EventBinderMap							eventBinders;
+			DeserializerList						deserializers;
 			VirtualTypeInfoMap						typeInfos;
 
 			bool IsTypeExists(GlobalStringKey name)
@@ -1175,7 +924,7 @@ GuiInstanceLoaderManager
 			IGuiInstanceBinder* GetInstanceBinder(GlobalStringKey bindingName)override
 			{
 				vint index = binders.Keys().IndexOf(bindingName);
-				return index == -1 ? 0 : binders.Values()[index].Obj();
+				return index == -1 ? nullptr : binders.Values()[index].Obj();
 			}
 
 			bool AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder)override
@@ -1188,7 +937,26 @@ GuiInstanceLoaderManager
 			IGuiInstanceEventBinder* GetInstanceEventBinder(GlobalStringKey bindingName)override
 			{
 				vint index = eventBinders.Keys().IndexOf(bindingName);
-				return index == -1 ? 0 : eventBinders.Values()[index].Obj();
+				return index == -1 ? nullptr : eventBinders.Values()[index].Obj();
+			}
+
+			bool AddInstanceDeserializer(Ptr<IGuiInstanceDeserializer> deserializer)override
+			{
+				if (deserializers.Contains(deserializer.Obj())) return false;
+				deserializers.Add(deserializer);
+				return true;
+			}
+
+			IGuiInstanceDeserializer* GetInstanceDeserializer(description::ITypeInfo* typeInfo)override
+			{
+				FOREACH(Ptr<IGuiInstanceDeserializer>, deserializer, deserializers)
+				{
+					if (deserializer->CanDeserialize(typeInfo))
+					{
+						return deserializer.Obj();
+					}
+				}
+				return nullptr;
 			}
 
 			bool CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader)override
@@ -1263,12 +1031,22 @@ GuiInstanceLoaderManager
 				return 0;
 			}
 
-			description::ITypeDescriptor* GetTypeDescriptorForType(GlobalStringKey typeName)override
+			Ptr<description::ITypeInfo> GetTypeInfoForType(GlobalStringKey typeName)override
 			{
 				vint index = typeInfos.Keys().IndexOf(typeName);
-				return index == -1
+				auto td = index == -1
 					? GetGlobalTypeManager()->GetTypeDescriptor(typeName.ToString())
 					: typeInfos.Values()[index]->typeDescriptor;
+				if (!td) return nullptr;
+
+				if (auto ctor = td->GetConstructorGroup())
+				{
+					return CopyTypeInfo(ctor->GetMethod(0)->GetReturn());
+				}
+				else
+				{
+					return MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal));
+				}
 			}
 
 			void GetVirtualTypes(collections::List<GlobalStringKey>& typeNames)override
@@ -1610,6 +1388,287 @@ GuiPredefinedInstanceBindersPlugin
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiPredefinedInstanceBindersPlugin)
+	}
+}
+
+/***********************************************************************
+GUIINSTANCELOADER_PREDEFINEDINSTANCEDESERIALIZERS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+		using namespace reflection::description;
+		using namespace workflow;
+		using namespace workflow::analyzer;
+		using namespace controls;
+
+/***********************************************************************
+GuiItemPropertyDeserializer
+***********************************************************************/
+
+		class GuiItemPropertyDeserializer : public Object, public IGuiInstanceDeserializer
+		{
+		protected:
+			Ptr<ITypeInfo>						stringType;
+
+			bool IsItemPropertyType(ITypeInfo* propType)
+			{
+				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					auto genericType = propType->GetElementType();
+					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 2)
+					{
+						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+						{
+							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>())
+							{
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+			bool IsWritableItemPropertyType(ITypeInfo* propType)
+			{
+				if (propType->GetDecorator() == ITypeInfo::SharedPtr)
+				{
+					auto genericType = propType->GetElementType();
+					if (genericType->GetDecorator() == ITypeInfo::Generic && genericType->GetGenericArgumentCount() == 4)
+					{
+						if (genericType->GetElementType()->GetTypeDescriptor() == description::GetTypeDescriptor<IValueFunctionProxy>())
+						{
+							if (genericType->GetGenericArgument(1)->GetTypeDescriptor() == description::GetTypeDescriptor<Value>()
+								&& genericType->GetGenericArgument(3)->GetTypeDescriptor() == description::GetTypeDescriptor<bool>())
+							{
+								if (IsSameType(genericType->GetGenericArgument(0), genericType->GetGenericArgument(2)))
+								{
+									return true;
+								}
+							}
+						}
+					}
+				}
+				return false;
+			}
+
+		public:
+			GuiItemPropertyDeserializer()
+			{
+				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+			}
+
+			bool CanDeserialize(description::ITypeInfo* typeInfo)override
+			{
+				return IsItemPropertyType(typeInfo) || IsWritableItemPropertyType(typeInfo);
+			}
+
+			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
+			{
+				return stringType.Obj();
+			}
+
+			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+			{
+				auto stringExpr = valueExpression.Cast<WfStringExpression>();
+				Ptr<WfExpression> propertyExpression;
+				{
+					propertyExpression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, stringExpr->value.value, tagPosition, errors);
+					if (!propertyExpression)
+					{
+						return nullptr;
+					}
+				};
+
+				vint indexItemType = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemType"));
+				if (indexItemType == -1)
+				{
+					auto error
+						= L"Precompile: env.ItemType must be specified before deserializing \""
+						+ stringExpr->value.value
+						+ L"\" to value of type \""
+						+ typeInfo->GetTypeFriendlyName()
+						+ L"\".";
+					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition, error));
+					return nullptr;
+				}
+
+				Ptr<WfType> itemType;
+				{
+					const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
+					auto itemTypeValue = values[values.Count() - 1];
+
+					itemType = Workflow_ParseType(precompileContext, { resolvingResult.resource }, itemTypeValue->value, itemTypeValue->valuePosition, errors);
+					if (!itemType)
+					{
+						return nullptr;
+					}
+				};
+
+				vint indexItemName = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemName"));
+				WString itemName(L"item", false);
+				if (indexItemName != -1)
+				{
+					const auto& values = resolvingResult.envVars.GetByIndex(indexItemName);
+					itemName = values[values.Count() - 1]->value;
+				}
+
+				if (auto refExpr = propertyExpression.Cast<WfReferenceExpression>())
+				{
+					if (refExpr->name.value != itemName)
+					{
+						auto refItem = MakePtr<WfReferenceExpression>();
+						refItem->name.value = itemName;
+
+						auto member = MakePtr<WfMemberExpression>();
+						member->parent = refItem;
+						member->name.value = refExpr->name.value;
+
+						propertyExpression = member;
+					}
+				}
+
+				bool isWritableItemProperty = IsWritableItemPropertyType(typeInfo);
+
+				auto funcDecl = MakePtr<WfFunctionDeclaration>();
+				funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
+				{
+					auto genericType = typeInfo->GetElementType();
+					funcDecl->returnType = GetTypeFromTypeInfo(genericType->GetGenericArgument(0));
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						argument->name.value = L"<item>";
+						argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(1));
+						funcDecl->arguments.Add(argument);
+					}
+
+					if (isWritableItemProperty)
+					{
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<value>";
+							argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(2));
+							funcDecl->arguments.Add(argument);
+						}
+						{
+							auto argument = MakePtr<WfFunctionArgument>();
+							argument->name.value = L"<update>";
+							argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(3));
+							funcDecl->arguments.Add(argument);
+						}
+					}
+				}
+
+				auto funcBlock = MakePtr<WfBlockStatement>();
+				funcDecl->statement = funcBlock;
+
+				{
+					auto refItem = MakePtr<WfReferenceExpression>();
+					refItem->name.value = L"<item>";
+
+					auto refCast = MakePtr<WfTypeCastingExpression>();
+					refCast->strategy = WfTypeCastingStrategy::Strong;
+					refCast->type = itemType;
+					refCast->expression = refItem;
+
+					auto varDecl = MakePtr<WfVariableDeclaration>();
+					varDecl->name.value = itemName;
+					varDecl->expression = refCast;
+
+					auto varStat = MakePtr<WfVariableStatement>();
+					varStat->variable = varDecl;
+					funcBlock->statements.Add(varStat);
+				}
+
+				Ptr<WfReturnStatement> returnStat;
+				{
+					returnStat = MakePtr<WfReturnStatement>();
+					returnStat->expression = propertyExpression;
+				}
+
+				if (isWritableItemProperty)
+				{
+					auto ifStat = MakePtr<WfIfStatement>();
+					funcBlock->statements.Add(ifStat);
+					{
+						auto refUpdate = MakePtr<WfReferenceExpression>();
+						refUpdate->name.value = L"<update>";
+
+						ifStat->expression = refUpdate;
+					}
+					{
+						auto block = MakePtr<WfBlockStatement>();
+						ifStat->trueBranch = block;
+
+						{
+							auto refValue = MakePtr<WfReferenceExpression>();
+							refValue->name.value = L"<value>";
+
+							auto assignExpr = MakePtr<WfBinaryExpression>();
+							assignExpr->op = WfBinaryOperator::Assign;
+							assignExpr->first = CopyExpression(propertyExpression);
+							assignExpr->second = refValue;
+
+							auto stat = MakePtr<WfExpressionStatement>();
+							stat->expression = assignExpr;
+							block->statements.Add(stat);
+						}
+						{
+							auto returnStat = MakePtr<WfReturnStatement>();
+							block->statements.Add(returnStat);
+
+							auto returnType = typeInfo->GetElementType()->GetGenericArgument(0);
+							returnStat->expression = CreateDefaultValue(returnType);
+						}
+					}
+					{
+						auto block = MakePtr<WfBlockStatement>();
+						ifStat->falseBranch = block;
+
+						block->statements.Add(returnStat);
+					}
+				}
+				else
+				{
+					funcBlock->statements.Add(returnStat);
+				}
+
+				auto funcExpr = MakePtr<WfFunctionExpression>();
+				funcExpr->function = funcDecl;
+				return funcExpr;
+			}
+		};
+
+/***********************************************************************
+GuiPredefinedInstanceDeserializersPlugin
+***********************************************************************/
+
+		class GuiPredefinedInstanceDeserializersPlugin : public Object, public IGuiPlugin
+		{
+		public:
+			GuiPredefinedInstanceDeserializersPlugin()
+			{
+			}
+
+			void Load()override
+			{
+			}
+
+			void AfterLoad()override
+			{
+				IGuiInstanceLoaderManager* manager = GetInstanceLoaderManager();
+				manager->AddInstanceDeserializer(new GuiItemPropertyDeserializer);
+			}
+
+			void Unload()override
+			{
+			}
+		};
+		GUI_REGISTER_PLUGIN(GuiPredefinedInstanceDeserializersPlugin)
 	}
 }
 
@@ -2032,7 +2091,7 @@ Instance Type Resolver (Instance)
 							types::ResolvingResult resolvingResult;
 							resolvingResult.resource = resource;
 							resolvingResult.context = obj;
-							resolvingResult.rootTypeDescriptor = Workflow_CollectReferences(context, resolvingResult, errors);
+							resolvingResult.rootTypeInfo = Workflow_CollectReferences(context, resolvingResult, errors);
 
 							if (errors.Count() == previousErrorCount)
 							{
@@ -3328,7 +3387,7 @@ GuiAxisInstanceLoader
 				{
 					if (propertyInfo.propertyName == _AxisDirection)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<AxisDirection>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<AxisDirection>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
 						return info;
@@ -3398,10 +3457,10 @@ GuiCompositionInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						auto info = GuiInstancePropertyInfo::Collection();
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<IGuiGraphicsElement>());
+						auto info = GuiInstancePropertyInfo::Collection(nullptr);
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<Ptr<IGuiGraphicsElement>>::CreateTypeInfo());
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -3417,10 +3476,10 @@ GuiCompositionInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
 							{
 								auto refComposition = MakePtr<WfReferenceExpression>();
 								refComposition->name.value = variableName.ToString();
@@ -3436,7 +3495,7 @@ GuiCompositionInstanceLoader
 
 								expr = assign;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
 								auto refBoundsComposition = MakePtr<WfMemberExpression>();
 								refBoundsComposition->parent = value;
@@ -3455,7 +3514,7 @@ GuiCompositionInstanceLoader
 
 								expr = call;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
 								auto refComposition = MakePtr<WfReferenceExpression>();
 								refComposition->name.value = variableName.ToString();
@@ -3530,7 +3589,7 @@ GuiTableCompositionInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Rows || propertyInfo.propertyName == _Columns)
 					{
-						return GuiInstancePropertyInfo::Array(description::GetTypeDescriptor<GuiCellOption>());
+						return GuiInstancePropertyInfo::Array(TypeInfoRetriver<GuiCellOption>::CreateTypeInfo());
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
@@ -3659,7 +3718,7 @@ GuiCellCompositionInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Site)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<SiteValue>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<SiteValue>::CreateTypeInfo());
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
@@ -3852,14 +3911,14 @@ GuiDocumentItemInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						auto info = GuiInstancePropertyInfo::Collection();
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
+						auto info = GuiInstancePropertyInfo::Collection(nullptr);
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
 						return info;
 					}
 					else if (propertyInfo.propertyName == _Name)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
 						return info;
@@ -3911,17 +3970,17 @@ GuiDocumentItemInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> compositionExpr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
 								auto member = MakePtr<WfMemberExpression>();
 								member->parent = value;
 								member->name.value = L"BoundsComposition";
 								compositionExpr = member;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
 								compositionExpr = value;
 							}
@@ -3981,7 +4040,7 @@ GuiDocumentViewerInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiDocumentItem>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -3995,8 +4054,6 @@ GuiDocumentViewerInstanceLoader
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
 						{
-							auto type = values[0].type;
-
 							auto refControl = MakePtr<WfReferenceExpression>();
 							refControl->name.value = variableName.ToString();
 
@@ -4046,7 +4103,7 @@ GuiDocumentLabelInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiDocumentItem>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -4060,8 +4117,6 @@ GuiDocumentLabelInstanceLoader
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
 						{
-							auto type = values[0].type;
-
 							auto refControl = MakePtr<WfReferenceExpression>();
 							refControl->name.value = variableName.ToString();
 
@@ -4180,7 +4235,7 @@ GuiSelectableListControlInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -4239,7 +4294,7 @@ GuiVirtualTreeViewInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -4299,7 +4354,7 @@ GuiComboBoxInstanceLoader
 					if (typeInfo.typeName == GetTypeName())
 					{
 						propertyNames.Add(_ListControl);
-					propertyNames.Add(GlobalStringKey::_ItemTemplate);
+						propertyNames.Add(GlobalStringKey::_ItemTemplate);
 					}
 					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
@@ -4308,14 +4363,14 @@ GuiComboBoxInstanceLoader
 				{
 					if (propertyInfo.propertyName == _ListControl)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<GuiSelectableListControl>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiSelectableListControl*>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
 						return info;
 					}
 					else if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						return info;
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
@@ -4502,13 +4557,13 @@ GuiListViewInstanceLoader
 				{
 					if (propertyInfo.propertyName == _View)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<ListViewViewType>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<ListViewViewType>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}
 					else if (propertyInfo.propertyName == _IconSize)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Size>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Size>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}
@@ -4606,12 +4661,12 @@ GuiTreeViewInstanceLoader
 					{
 						if (!bindable)
 						{
-							return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<tree::MemoryNodeProvider>());
+							return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
 						}
 					}
 					else if (propertyInfo.propertyName == _IconSize)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Size>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Size>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}
@@ -4732,11 +4787,11 @@ GuiBindableDataColumnInstanceLoader
 				{
 					if (propertyInfo.propertyName == _VisualizerTemplates)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == _EditorTemplate)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
@@ -4914,11 +4969,11 @@ GuiBindableDataGridInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Columns)
 					{
-						return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<list::BindableDataColumn>());
+						return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<list::BindableDataColumn>>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == _ViewModelContext)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Value>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->bindable = true;
 						return info;
@@ -4996,19 +5051,19 @@ GuiTreeNodeInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Text)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == _Image)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<GuiImageData>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Ptr<GuiImageData>>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == _Tag)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Value>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<tree::MemoryNodeProvider>());
+						return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
@@ -5216,12 +5271,12 @@ GuiControlInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						auto info = GuiInstancePropertyInfo::Collection();
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
-						if (propertyInfo.typeInfo.typeDescriptor->CanConvertTo(description::GetTypeDescriptor<GuiInstanceRootObject>()))
+						auto info = GuiInstancePropertyInfo::Collection(nullptr);
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
+						if (propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiInstanceRootObject>()))
 						{
-							info->acceptableTypes.Add(description::GetTypeDescriptor<GuiComponent>());
+							info->acceptableTypes.Add(TypeInfoRetriver<GuiComponent*>::CreateTypeInfo());
 						}
 						return info;
 					}
@@ -5238,10 +5293,10 @@ GuiControlInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -5256,7 +5311,7 @@ GuiControlInstanceLoader
 
 								expr = call;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -5271,7 +5326,7 @@ GuiControlInstanceLoader
 
 								expr = call;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -5286,7 +5341,7 @@ GuiControlInstanceLoader
 
 								expr = call;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -5535,7 +5590,7 @@ GuiTabInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiTabPage>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiTabPage*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -5550,10 +5605,10 @@ GuiTabInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<GuiTabPage>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiTabPage>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -5620,9 +5675,9 @@ GuiTabPageInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						auto info = GuiInstancePropertyInfo::Collection();
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
+						auto info = GuiInstancePropertyInfo::Collection(nullptr);
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -5638,10 +5693,10 @@ GuiTabPageInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
 								auto refBoundsComposition = MakePtr<WfMemberExpression>();
 								refBoundsComposition->parent = value;
@@ -5649,7 +5704,7 @@ GuiTabPageInstanceLoader
 
 								expr = refBoundsComposition;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
 								expr = value;
 							}
@@ -5737,7 +5792,7 @@ GuiTemplateInstanceLoader
 				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					List<ITypeDescriptor*> tds;
-					tds.Add(typeInfo.typeDescriptor);
+					tds.Add(typeInfo.typeInfo->GetTypeDescriptor());
 
 					for (vint i = 0; i < tds.Count(); i++)
 					{
@@ -5766,11 +5821,11 @@ GuiTemplateInstanceLoader
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
-					if (auto prop = propertyInfo.typeInfo.typeDescriptor->GetPropertyByName(propertyInfo.propertyName.ToString(), true))
+					if (auto prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true))
 					{
 						if (prop->IsWritable() && prop->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<GuiTemplate::IFactory>())
 						{
-							auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+							auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 							info->scope = GuiInstancePropertyInfo::Constructor;
 							info->bindable = false;
 
@@ -5786,9 +5841,9 @@ GuiTemplateInstanceLoader
 
 				bool CanCreate(const TypeInfo& typeInfo)override
 				{
-					if (typeInfo.typeDescriptor->CanConvertTo(description::GetTypeDescriptor<GuiTemplate>()))
+					if (typeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiTemplate>()))
 					{
-						auto group = typeInfo.typeDescriptor->GetConstructorGroup();
+						auto group = typeInfo.typeInfo->GetTypeDescriptor()->GetConstructorGroup();
 						if (group && group->GetMethodCount() == 1)
 						{
 							auto ctor = group->GetMethod(0);
@@ -5811,7 +5866,7 @@ GuiTemplateInstanceLoader
 					auto block = MakePtr<WfBlockStatement>();
 					{
 						auto createExpr = MakePtr<WfNewClassExpression>();
-						createExpr->type = GetTypeFromTypeInfo(MakePtr<TypeDescriptorTypeInfo>(typeInfo.typeDescriptor, TypeInfoHint::Normal).Obj());
+						createExpr->type = GetTypeFromTypeInfo(MakePtr<TypeDescriptorTypeInfo>(typeInfo.typeInfo->GetTypeDescriptor(), TypeInfoHint::Normal).Obj());
 
 						auto refVariable = MakePtr<WfReferenceExpression>();
 						refVariable->name.value = variableName.ToString();
@@ -5908,10 +5963,10 @@ namespace vl
 					if (prop == GlobalStringKey::Empty)
 					{
 						auto value = values[0].expression;
-						auto type = values[0].type;
+						auto td = values[0].typeInfo->GetTypeDescriptor();
 
 						Ptr<WfExpression> expr;
-						if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+						if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 						{
 							auto refControl = MakePtr<WfReferenceExpression>();
 							refControl->name.value = variableName.ToString();
@@ -5977,7 +6032,7 @@ GuiToolstripMenuInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -6019,7 +6074,7 @@ GuiToolstripMenuBarInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -6061,7 +6116,7 @@ GuiToolstripToolBarInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -6107,7 +6162,7 @@ GuiToolstripButtonInstanceLoader
 				{
 					if (propertyInfo.propertyName == _SubMenu)
 					{
-						return GuiInstancePropertyInfo::Set(description::GetTypeDescriptor<GuiToolstripMenu>());
+						return GuiInstancePropertyInfo::Set(TypeInfoRetriver<GuiToolstripMenu*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -7045,7 +7100,7 @@ WorkflowEventNamesVisitor
 				GlobalStringKey propertyName
 				)
 			{
-				if (auto eventInfo = resolvedTypeInfo.typeDescriptor->GetEventByName(propertyName.ToString(), true))
+				if (auto eventInfo = resolvedTypeInfo.typeInfo->GetTypeDescriptor()->GetEventByName(propertyName.ToString(), true))
 				{
 					auto decl = Workflow_GenerateEventHandler(precompileContext, eventInfo);
 					decl->anonymity = WfFunctionAnonymity::Named;
@@ -7119,9 +7174,9 @@ WorkflowEventNamesVisitor
 
 								List<types::PropertyResolving> infos;
 								WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, infos, instanceClass, errors);
-								auto td = possibleInfos[0].info->acceptableTypes[0];
-								visitor.resolvedTypeInfo.typeDescriptor = td;
-								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+								auto typeInfo = possibleInfos[0].info->acceptableTypes[0];
+								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(typeInfo->GetTypeDescriptor()->GetTypeName());
+								visitor.resolvedTypeInfo.typeInfo = typeInfo;
 								setTarget->Accept(&visitor);
 							}
 							else
@@ -7168,9 +7223,9 @@ WorkflowEventNamesVisitor
 						auto info = candidatePropertyTypeInfos[0].info;
 						if (info->acceptableTypes.Count() == 1)
 						{
-							auto td = info->acceptableTypes[0];
-							resolvedTypeInfo.typeDescriptor = td;
-							resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+							auto typeInfo = info->acceptableTypes[0];
+							resolvedTypeInfo.typeName = GlobalStringKey::Get(typeInfo->GetTypeDescriptor()->GetTypeName());
+							resolvedTypeInfo.typeInfo = typeInfo;
 						}
 						else if (info->acceptableTypes.Count() == 0)
 						{
@@ -7187,21 +7242,21 @@ WorkflowEventNamesVisitor
 					if (repr == context->instance.Obj())
 					{
 						auto fullName = GlobalStringKey::Get(context->className);
-						if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
+						if (auto reprType = GetInstanceLoaderManager()->GetTypeInfoForType(fullName))
 						{
 							resolvedTypeInfo.typeName = fullName;
-							resolvedTypeInfo.typeDescriptor = reprTd;
+							resolvedTypeInfo.typeInfo = reprType;
 						}
 					}
-					if (!resolvedTypeInfo.typeDescriptor)
+					if (!resolvedTypeInfo.typeInfo)
 					{
 						auto source = FindInstanceLoadingSource(context, repr);
 						resolvedTypeInfo.typeName = source.typeName;
-						resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+						resolvedTypeInfo.typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
 					}
 				}
 
-				if (resolvedTypeInfo.typeDescriptor)
+				if (resolvedTypeInfo.typeInfo)
 				{
 					if (repr->setters.Count() == 1 && repr->setters.Keys()[0] == GlobalStringKey::Empty)
 					{
@@ -7308,8 +7363,8 @@ Workflow_GenerateInstanceClass
 
 			auto context = resolvingResult.context;
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
-			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
-			if (!baseTd)
+			auto baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+			if (!baseType)
 			{
 				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
 					L"Precompile: Failed to find type \"" +
@@ -7328,7 +7383,7 @@ Workflow_GenerateInstanceClass
 			auto module = Workflow_CreateModuleWithUsings(context);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
-				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
+				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
 				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
 				instanceClass->baseTypes.Add(baseType);
 
@@ -7436,7 +7491,7 @@ Workflow_GenerateInstanceClass
 			auto ctorBlock = (beforePrecompile ? notImplemented() : MakePtr<WfBlockStatement>());
 			ctor->statement = ctorBlock;
 
-			if (auto group = baseTd->GetConstructorGroup())
+			if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
 			{
 				vint count = group->GetMethod(0)->GetParameterCount();
 				if (count > 0)
@@ -7936,7 +7991,18 @@ WorkflowReferenceNamesVisitor
 				
 				auto candidate = candidatePropertyTypeInfos[selectedPropertyTypeInfo];
 				auto propertyInfo = candidate.propertyInfo;
-				auto td = candidate.info->acceptableTypes[0];
+				ITypeDescriptor* td = nullptr;
+				{
+					auto typeInfo = candidate.info->acceptableTypes[0];
+					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(typeInfo.Obj()))
+					{
+						td = deserializer->DeserializeAs(typeInfo.Obj())->GetTypeDescriptor();
+					}
+					else
+					{
+						td = typeInfo->GetTypeDescriptor();
+					}
+				}
 
 				if (auto st = td->GetSerializableType())
 				{
@@ -7999,7 +8065,7 @@ WorkflowReferenceNamesVisitor
 					resolvingResult.propertyResolvings.Add(repr, candidatePropertyTypeInfos[selectedPropertyTypeInfo]);
 				}
 
-				bool isReferenceType = (resolvedTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
+				bool isReferenceType = (resolvedTypeInfo.typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
 				if (repr->instanceName == GlobalStringKey::Empty)
 				{
 					if (isReferenceType)
@@ -8058,49 +8124,11 @@ WorkflowReferenceNamesVisitor
 								auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
 
 								WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, generatedNameCount, errors);
-								auto td = possibleInfos[0].info->acceptableTypes[0];
+								auto typeInfo = possibleInfos[0].info->acceptableTypes[0];
 								visitor.selectedPropertyTypeInfo = 0;
-								visitor.resolvedTypeInfo.typeDescriptor = td;
-								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(typeInfo->GetTypeDescriptor()->GetTypeName());
+								visitor.resolvedTypeInfo.typeInfo = typeInfo;
 								setTarget->Accept(&visitor);
-
-								if (auto propInfo = resolvedTypeInfo.typeDescriptor->GetPropertyByName(prop.ToString(), true))
-								{
-									auto propType = propInfo->GetReturn();
-									if (propType->GetTypeDescriptor() == td)
-									{
-										resolvingResult.typeOverrides.Add(setTarget->instanceName, CopyTypeInfo(propInfo->GetReturn()));
-									}
-									else
-									{
-										switch (propType->GetDecorator())
-										{
-										case ITypeInfo::Nullable:
-											{
-												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-												auto decoratedType = MakePtr<NullableTypeInfo>(elementType);
-												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
-											}
-											break;
-										case ITypeInfo::RawPtr:
-											{
-												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-												auto decoratedType = MakePtr<RawPtrTypeInfo>(elementType);
-												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
-											}
-											break;
-										case ITypeInfo::SharedPtr:
-											{
-												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-												auto decoratedType = MakePtr<SharedPtrTypeInfo>(elementType);
-												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
-											}
-											break;
-										default:
-											resolvingResult.typeOverrides.Add(setTarget->instanceName, CopyTypeInfo(propInfo->GetReturn()));
-										}
-									}
-								}
 							}
 							else
 							{
@@ -8264,7 +8292,7 @@ WorkflowReferenceNamesVisitor
 			{
 				bool found = false;
 
-				bool inferType = repr->typeNamespace == GlobalStringKey::Empty&&repr->typeName == GlobalStringKey::_InferType;
+				bool inferType = repr->typeNamespace == GlobalStringKey::Empty && repr->typeName == GlobalStringKey::_InferType;
 				if (inferType)
 				{
 					if (candidatePropertyTypeInfos.Count() == 1)
@@ -8272,9 +8300,9 @@ WorkflowReferenceNamesVisitor
 						auto info = candidatePropertyTypeInfos[0].info;
 						if (info->acceptableTypes.Count() == 1)
 						{
-							auto td = info->acceptableTypes[0];
-							resolvedTypeInfo.typeDescriptor = td;
-							resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+							auto typeInfo = info->acceptableTypes[0];
+							resolvedTypeInfo.typeName = GlobalStringKey::Get(typeInfo->GetTypeDescriptor()->GetTypeName());
+							resolvedTypeInfo.typeInfo = typeInfo;
 						}
 					}
 				}
@@ -8283,12 +8311,11 @@ WorkflowReferenceNamesVisitor
 					if (repr == resolvingResult.context->instance.Obj())
 					{
 						auto fullName = GlobalStringKey::Get(resolvingResult.context->className);
-						auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName);
-						if (td)
+						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(fullName))
 						{
-							found = true;
 							resolvedTypeInfo.typeName = fullName;
-							resolvedTypeInfo.typeDescriptor = td;
+							resolvedTypeInfo.typeInfo = typeInfo;
+							found = true;
 						}
 					}
 
@@ -8296,18 +8323,18 @@ WorkflowReferenceNamesVisitor
 					{
 						auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 						resolvedTypeInfo.typeName = source.typeName;
-						resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+						resolvedTypeInfo.typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
 					}
 				}
 
-				if (resolvedTypeInfo.typeDescriptor)
+				if (resolvedTypeInfo.typeInfo)
 				{
 					for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
 					{
-						const auto& tds = candidatePropertyTypeInfos[i].info->acceptableTypes;
-						for (vint j = 0; j < tds.Count(); j++)
+						const auto& typeInfos = candidatePropertyTypeInfos[i].info->acceptableTypes;
+						for (vint j = 0; j < typeInfos.Count(); j++)
 						{
-							if (resolvedTypeInfo.typeDescriptor->CanConvertTo(tds[j]))
+							if (resolvedTypeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(typeInfos[j]->GetTypeDescriptor()))
 							{
 								selectedPropertyTypeInfo = i;
 								goto FINISH_MATCHING;
@@ -8330,14 +8357,14 @@ WorkflowReferenceNamesVisitor
 						
 						for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
 						{
-							const auto& tds = candidatePropertyTypeInfos[i].info->acceptableTypes;
-							for (vint j = 0; j < tds.Count(); j++)
+							const auto& typeInfos = candidatePropertyTypeInfos[i].info->acceptableTypes;
+							for (vint j = 0; j < typeInfos.Count(); j++)
 							{
 								if (i != 0 || j != 0)
 								{
 									error += L", ";
 								}
-								error += L"\"" + tds[j]->GetTypeName() + L"\"";
+								error += L"\"" + typeInfos[j]->GetTypeFriendlyName() + L"\"";
 							}
 						}
 
@@ -8436,7 +8463,7 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
-		ITypeDescriptor* Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
+		IGuiInstanceLoader::TypeInfo Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
 			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 			{
@@ -8457,18 +8484,9 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					{
-						IGuiInstanceLoader::TypeInfo typeInfo;
-						typeInfo.typeDescriptor = type;
-						typeInfo.typeName = GlobalStringKey::Get(type->GetTypeName());
-						resolvingResult.typeInfos.Add(parameter->name, typeInfo);
-					}
-					{
-						auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
-						auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
-
-						resolvingResult.typeOverrides.Add(parameter->name, pointerType);
-					}
+					auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
+					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
+					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),pointerType });
 				}
 			}
 			
@@ -8476,7 +8494,7 @@ WorkflowReferenceNamesVisitor
 			vint generatedNameCount = 0;
 			WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, infos, generatedNameCount, errors);
 			resolvingResult.context->instance->Accept(&visitor);
-			return visitor.resolvedTypeInfo.typeDescriptor;
+			return visitor.resolvedTypeInfo;
 		}
 	}
 }
@@ -8528,7 +8546,7 @@ WorkflowGenerateBindingVisitor
 					if (propertyResolving.info->scope == GuiInstancePropertyInfo::Property)
 					{
 						WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
-						auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
+						auto instancePropertyInfo = reprTypeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyName.ToString(), true);
 
 						if (instancePropertyInfo || !binder->RequirePropertyExist())
 						{
@@ -8579,7 +8597,7 @@ WorkflowGenerateBindingVisitor
 				GlobalStringKey propertyName
 				)
 			{
-				auto td = reprTypeInfo.typeDescriptor;
+				auto td = reprTypeInfo.typeInfo->GetTypeDescriptor();
 				auto eventInfo = td->GetEventByName(propertyName.ToString(), true);
 
 				if (!eventInfo)
@@ -8630,7 +8648,7 @@ WorkflowGenerateBindingVisitor
 					reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				}
 				
-				if (reprTypeInfo.typeDescriptor && (reprTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+				if (reprTypeInfo.typeInfo && (reprTypeInfo.typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 				{
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
@@ -8656,7 +8674,7 @@ WorkflowGenerateBindingVisitor
 
 					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
 					{
-						if (reprTypeInfo.typeDescriptor)
+						if (reprTypeInfo.typeInfo)
 						{
 							GlobalStringKey propertyName = repr->eventHandlers.Keys()[index];
 							if (auto statement = ProcessEventBinding(repr, reprTypeInfo, handler, propertyName))
@@ -8723,7 +8741,7 @@ WorkflowGenerateCreatingVisitor
 
 			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(GuiResourceTextPos attPosition, GuiValueRepr* repr)
 			{
-				ITypeDescriptor* td = nullptr;
+				Ptr<ITypeInfo> typeInfo = nullptr;
 				bool serializable = false;
 				WString textValue;
 				GuiResourceTextPos textValuePosition;
@@ -8731,7 +8749,7 @@ WorkflowGenerateCreatingVisitor
 
 				if (auto text = dynamic_cast<GuiTextRepr*>(repr))
 				{
-					td = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+					typeInfo = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
 					serializable = true;
 					textValue = text->text;
 					textValuePosition = text->tagPosition;
@@ -8740,13 +8758,14 @@ WorkflowGenerateCreatingVisitor
 				{
 					if (ctor->instanceName == GlobalStringKey::Empty)
 					{
-						td = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+						typeInfo = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
 					}
 					else
 					{
-						td = resolvingResult.typeInfos[ctor->instanceName].typeDescriptor;
+						typeInfo = resolvingResult.typeInfos[ctor->instanceName].typeInfo;
 					}
-					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
+
+					if ((typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
 					{
 						serializable = true;
 						auto value = ctor->setters.Values()[0]->values[0].Cast<GuiTextRepr>();
@@ -8756,12 +8775,23 @@ WorkflowGenerateCreatingVisitor
 				}
 
 				IGuiInstanceLoader::ArgumentInfo argumentInfo;
-				argumentInfo.type = td;
+				argumentInfo.typeInfo = typeInfo;
 				argumentInfo.attPosition = attPosition;
 
 				if (serializable)
 				{
-					argumentInfo.expression = Workflow_ParseTextValue(precompileContext, td, { resolvingResult.resource }, textValue, textValuePosition, errors);
+					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(typeInfo.Obj()))
+					{
+						auto typeInfoAs = deserializer->DeserializeAs(typeInfo.Obj());
+						if (auto expression = Workflow_ParseTextValue(precompileContext, typeInfoAs->GetTypeDescriptor(), { resolvingResult.resource }, textValue, textValuePosition, errors))
+						{
+							argumentInfo.expression = deserializer->Deserialize(precompileContext, resolvingResult, typeInfo.Obj(), expression, textValuePosition, errors);
+						}
+					}
+					else
+					{
+						argumentInfo.expression = Workflow_ParseTextValue(precompileContext, typeInfo->GetTypeDescriptor(), { resolvingResult.resource }, textValue, textValuePosition, errors);
+					}
 					argumentInfo.valuePosition = textValuePosition;
 				}
 				else
@@ -8871,6 +8901,7 @@ WorkflowGenerateCreatingVisitor
 					pairedProps.Add(propInfo.propertyName);
 				}
 
+				vint errorCount = errors.Count();
 				IGuiInstanceLoader::ArgumentMap arguments;
 				FOREACH(GlobalStringKey, pairedProp, pairedProps)
 				{
@@ -8886,7 +8917,6 @@ WorkflowGenerateCreatingVisitor
 					}
 				}
 
-				vint errorCount = errors.Count();
 				if (auto stat = info.loader->AssignParameters(precompileContext, resolvingResult, propInfo.typeInfo, repr->instanceName, arguments, setter->attPosition, errors))
 				{
 					return stat;
@@ -8919,7 +8949,7 @@ WorkflowGenerateCreatingVisitor
 			{
 				auto reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				
-				if (reprTypeInfo.typeDescriptor && (reprTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+				if (reprTypeInfo.typeInfo && (reprTypeInfo.typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 				{
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
@@ -8988,7 +9018,7 @@ WorkflowGenerateCreatingVisitor
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
 								auto argument = GetArgumentInfo(setter->attPosition, value.Obj());
-								if (argument.type && argument.expression)
+								if (argument.typeInfo && argument.expression)
 								{
 									arguments.Add(prop, argument);
 								}
@@ -9005,7 +9035,7 @@ WorkflowGenerateCreatingVisitor
 
 								IGuiInstanceLoader::ArgumentInfo argument;
 								argument.expression = expression;
-								argument.type = resolvedPropInfo->acceptableTypes[0];
+								argument.typeInfo = resolvedPropInfo->acceptableTypes[0];
 								argument.attPosition = setter->attPosition;
 								arguments.Add(prop, argument);
 							}
@@ -9030,7 +9060,9 @@ WorkflowGenerateCreatingVisitor
 				{
 					auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 					ctorTypeInfo.typeName = source.typeName;
-					ctorTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+
+					auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+					ctorTypeInfo.typeInfo = typeInfo;
 				}
 				else
 				{
@@ -9050,7 +9082,6 @@ WorkflowGenerateCreatingVisitor
 				if (resolvingResult.context->instance.Obj() == repr)
 				{
 					resolvingResult.rootLoader = ctorLoader;
-					resolvingResult.rootTypeInfo = ctorTypeInfo;
 					FillCtorArguments(repr, ctorLoader, ctorTypeInfo, resolvingResult.rootCtorArguments);
 
 					{
@@ -9208,7 +9239,7 @@ Workflow_InstallBindProperty
 				subBlock->statements.Add(ifStat);
 			}
 
-			auto td = propInfo->acceptableTypes[0];
+			auto td = propInfo->acceptableTypes[0]->GetTypeDescriptor();
 			Ptr<ITypeInfo> convertedType;
 			if (td->GetSerializableType())
 			{
@@ -9251,7 +9282,7 @@ Workflow_InstallBindProperty
 				isNull->test = WfTypeTesting::IsNull;
 
 				auto valueException = MakePtr<WfStringExpression>();
-				valueException->value.value = L"Resource \"" + protocol + L"://" + path + L"\" cannot be read as type \"" + convertedType->GetTypeDescriptor()->GetTypeName() + L"\".";
+				valueException->value.value = L"Resource \"" + protocol + L"://" + path + L"\" cannot be read as type \"" + convertedType->GetTypeFriendlyName() + L"\".";
 
 				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
 				raiseStat->expression = valueException;
@@ -9307,7 +9338,7 @@ Workflow_InstallBindProperty
 				IGuiInstanceLoader::ArgumentMap arguments;
 				{
 					IGuiInstanceLoader::ArgumentInfo argumentInfo;
-					argumentInfo.type = td;
+					argumentInfo.typeInfo = propInfo->acceptableTypes[0];
 					argumentInfo.expression = evalExpression;
 					argumentInfo.attPosition = attPosition;
 					arguments.Add(prop.propertyName, argumentInfo);
@@ -9488,7 +9519,7 @@ Workflow_InstallEvalProperty
 			IGuiInstanceLoader::ArgumentMap arguments;
 			{
 				IGuiInstanceLoader::ArgumentInfo argumentInfo;
-				argumentInfo.type = propInfo->acceptableTypes[0];
+				argumentInfo.typeInfo = propInfo->acceptableTypes[0];
 				argumentInfo.expression = evalExpression;
 				argumentInfo.attPosition = attPosition;
 				arguments.Add(prop.propertyName, argumentInfo);
@@ -9808,12 +9839,7 @@ Workflow_InstallCtorClass
 
 			auto thisParam = MakePtr<WfFunctionArgument>();
 			thisParam->name.value = L"<this>";
-			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(resolvingResult.rootTypeDescriptor, TypeInfoHint::Normal);
-				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
-
-				thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
-			}
+			thisParam->type = GetTypeFromTypeInfo(resolvingResult.rootTypeInfo.typeInfo.Obj());
 
 			auto resolverParam = MakePtr<WfFunctionArgument>();
 			resolverParam->name.value = L"<resolver>";
@@ -9852,10 +9878,11 @@ Workflow_InstallCtorClass
 Variable
 ***********************************************************************/
 
-		void Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride)
+		void Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeInfo* typeInfo)
 		{
 			auto var = MakePtr<WfVariableDeclaration>();
 			var->name.value = name.ToString();
+			var->type = GetTypeFromTypeInfo(typeInfo);
 
 			{
 				auto att = MakePtr<WfAttribute>();
@@ -9864,14 +9891,9 @@ Variable
 				var->attributes.Add(att);
 			}
 
-			if (typeOverride)
-			{
-				var->type = GetTypeFromTypeInfo(typeOverride);
-			}
-
 			if (!var->type)
 			{
-				if (auto ctors = type->GetConstructorGroup())
+				if (auto ctors = typeInfo->GetTypeDescriptor()->GetConstructorGroup())
 				{
 					if (ctors->GetMethodCount() > 0)
 					{
@@ -9879,14 +9901,6 @@ Variable
 						var->type = GetTypeFromTypeInfo(ctor->GetReturn());
 					}
 				}
-			}
-
-			if (!var->type)
-			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
-				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
-
-				var->type = GetTypeFromTypeInfo(pointerType.Obj());
 			}
 
 			auto literal = MakePtr<WfLiteralExpression>();
@@ -9904,15 +9918,8 @@ Variable
 			for (vint i = 0; i < typeInfos.Count(); i++)
 			{
 				auto key = typeInfos.Keys()[i];
-				auto value = typeInfos.Values()[i].typeDescriptor;
-
-				ITypeInfo* typeOverride = nullptr;
-				vint index = resolvingResult.typeOverrides.Keys().IndexOf(key);
-				if (index != -1)
-				{
-					typeOverride = resolvingResult.typeOverrides.Values()[index].Obj();
-				}
-				Workflow_CreatePointerVariable(ctorClass, key, value, typeOverride);
+				auto value = typeInfos.Values()[i].typeInfo.Obj();
+				Workflow_CreatePointerVariable(ctorClass, key, value);
 			}
 		}
 	}

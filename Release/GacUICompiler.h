@@ -472,7 +472,7 @@ Instance Loader
 
 		class GuiInstancePropertyInfo : public IDescriptable, public Description<GuiInstancePropertyInfo>
 		{
-			typedef collections::List<description::ITypeDescriptor*>		TypeDescriptorList;
+			typedef collections::List<Ptr<description::ITypeInfo>>		TypeInfoList;
 		public:
 			enum Support
 			{
@@ -495,15 +495,15 @@ Instance Loader
 			bool									required = false;			// only apply to constructor
 			bool									bindable = false;			// only apply to constructor
 			PropertyScope							scope = Property;
-			TypeDescriptorList						acceptableTypes;
+			TypeInfoList							acceptableTypes;
 
 			static Ptr<GuiInstancePropertyInfo>		Unsupported();
-			static Ptr<GuiInstancePropertyInfo>		Assign(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		AssignWithParent(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		Collection(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		CollectionWithParent(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		Set(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		Array(description::ITypeDescriptor* typeDescriptor = 0);
+			static Ptr<GuiInstancePropertyInfo>		Assign(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		AssignWithParent(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		Collection(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		CollectionWithParent(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		Set(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		Array(Ptr<description::ITypeInfo> typeInfo);
 		};
 
 		class IGuiInstanceLoader : public IDescriptable, public Description<IGuiInstanceLoader>
@@ -512,12 +512,15 @@ Instance Loader
 			struct TypeInfo
 			{
 				GlobalStringKey						typeName;
-				description::ITypeDescriptor*		typeDescriptor;
+				Ptr<description::ITypeInfo>			typeInfo = nullptr;
 
-				TypeInfo() :typeDescriptor(0){}
-				TypeInfo(GlobalStringKey _typeName, description::ITypeDescriptor* _typeDescriptor)
+				TypeInfo()
+				{
+				}
+
+				TypeInfo(GlobalStringKey _typeName, Ptr<description::ITypeInfo> _typeInfo)
 					:typeName(_typeName)
-					, typeDescriptor(_typeDescriptor)
+					, typeInfo(_typeInfo)
 				{
 				}
 			};
@@ -552,7 +555,7 @@ Instance Loader
 			struct ArgumentInfo
 			{
 				Ptr<workflow::WfExpression>			expression;
-				description::ITypeDescriptor*		type;
+				Ptr<description::ITypeInfo>			typeInfo;
 				GuiResourceTextPos					attPosition;
 				GuiResourceTextPos					valuePosition;				// only apply to text value
 			};
@@ -596,6 +599,14 @@ Instance Binder
 			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
 		};
 
+		class IGuiInstanceDeserializer : public IDescriptable, public Description<IGuiInstanceDeserializer>
+		{
+		public:
+			virtual bool							CanDeserialize(description::ITypeInfo* typeInfo) = 0;
+			virtual description::ITypeInfo*			DeserializeAs(description::ITypeInfo* typeInfo) = 0;
+			virtual Ptr<workflow::WfExpression>		Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors) = 0;
+		};
+
 /***********************************************************************
 Instance Loader Manager
 ***********************************************************************/
@@ -607,11 +618,14 @@ Instance Loader Manager
 			virtual IGuiInstanceBinder*					GetInstanceBinder(GlobalStringKey bindingName) = 0;
 			virtual bool								AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder) = 0;
 			virtual IGuiInstanceEventBinder*			GetInstanceEventBinder(GlobalStringKey bindingName) = 0;
+			virtual bool								AddInstanceDeserializer(Ptr<IGuiInstanceDeserializer> deserializer) = 0;
+			virtual IGuiInstanceDeserializer*			GetInstanceDeserializer(description::ITypeInfo* typeInfo) = 0;
+
 			virtual bool								CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual bool								SetLoader(Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual IGuiInstanceLoader*					GetLoader(GlobalStringKey typeName) = 0;
 			virtual IGuiInstanceLoader*					GetParentLoader(IGuiInstanceLoader* loader) = 0;
-			virtual description::ITypeDescriptor*		GetTypeDescriptorForType(GlobalStringKey typeName) = 0;
+			virtual Ptr<description::ITypeInfo>			GetTypeInfoForType(GlobalStringKey typeName) = 0;
 			virtual void								GetVirtualTypes(collections::List<GlobalStringKey>& typeNames) = 0;
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
 			virtual void								ClearReflectionCache() = 0;
@@ -744,16 +758,14 @@ namespace vl
 			{
 				Ptr<GuiResourceItem>							resource;						// compiling resource
 				Ptr<GuiInstanceContext>							context;						// compiling context
-				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;	// type of the context
+				IGuiInstanceLoader::TypeInfo					rootTypeInfo;					// type of the context
 				EnvironmentVariableGroup						envVars;						// current environment variable value stacks
 
 				collections::List<GlobalStringKey>				referenceNames;					// all reference names
 				IGuiInstanceLoader::ArgumentMap					rootCtorArguments;
 				IGuiInstanceLoader*								rootLoader = nullptr;
-				IGuiInstanceLoader::TypeInfo					rootTypeInfo;
 
 				VariableTypeInfoMap								typeInfos;						// type of references
-				TypeOverrideMap									typeOverrides;					// extra type information of references
 				PropertyResolvingMap							propertyResolvings;				// information of property values which are calling constructors
 			};
 		}
@@ -793,7 +805,7 @@ WorkflowCompiler (Compile)
 		extern Ptr<workflow::WfClassDeclaration>				Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(types::ResolvingResult& resolvingResult, Ptr<workflow::WfModule> module);
 
-		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride);
+		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeInfo* typeInfo);
 		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult);
 		
 		struct InstanceLoadingSource
@@ -828,7 +840,7 @@ WorkflowCompiler (Compile)
 		};
 
 		extern bool												Workflow_GetPropertyTypes(WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors);
-		extern description::ITypeDescriptor*					Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
+		extern IGuiInstanceLoader::TypeInfo						Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
 		extern void												Workflow_GenerateCreating(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 		extern void												Workflow_GenerateBindings(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 
@@ -1342,7 +1354,7 @@ GuiVrtualTypeInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}

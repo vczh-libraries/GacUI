@@ -55,7 +55,7 @@ GuiInstancePropertyInfo
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::CollectionWithParent(Ptr<description::ITypeInfo> typeInfo)
 		{
-			auto info = Assign(typeInfo);
+			auto info = Collection(typeInfo);
 			info->tryParent = true;
 			return info;
 		}

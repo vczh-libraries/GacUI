@@ -10647,40 +10647,6 @@ List Control
 				};
 
 				//-----------------------------------------------------------
-				// Common Views
-				//-----------------------------------------------------------
-
-				/// <summary>Primary text view for <see cref="IItemProvider"/>.</summary>
-				class IItemPrimaryTextView : public virtual IDescriptable, public Description<IItemPrimaryTextView>
-				{
-				public:
-					/// <summary>The identifier for this view.</summary>
-					static const wchar_t* const					Identifier;
-
-					/// <summary>Get the text of an item.</summary>
-					/// <returns>The text of an item.</returns>
-					/// <param name="itemIndex">The index of the item.</param>
-					virtual WString								GetPrimaryTextViewText(vint itemIndex)=0;
-					/// <summary>Test does an item contain a text.</summary>
-					/// <returns>Returns true if an item contains a text.</returns>
-					/// <param name="itemIndex">The index of the item.</param>
-					virtual bool								ContainsPrimaryText(vint itemIndex)=0;
-				};
-
-				/// <summary>Binding view for <see cref="IItemProvider"/>.</summary>
-				class IItemBindingView : public virtual IDescriptable, public Description<IItemPrimaryTextView>
-				{
-				public:
-					/// <summary>The identifier for this view.</summary>
-					static const wchar_t* const					Identifier;
-
-					/// <summary>Get the binding value of an item.</summary>
-					/// <returns>The binding value of an item.</returns>
-					/// <param name="itemIndex">The index of the item.</param>
-					virtual description::Value					GetBindingValue(vint itemIndex)=0;
-				};
-
-				//-----------------------------------------------------------
 				// Provider Interfaces
 				//-----------------------------------------------------------
 
@@ -10699,6 +10665,16 @@ List Control
 					/// <summary>Get the number of items in this item proivder.</summary>
 					/// <returns>The number of items in this item proivder.</returns>
 					virtual vint								Count()=0;
+
+					/// <summary>Get the text representation of an item.</summary>
+					/// <returns>The text representation of an item.</returns>
+					/// <param name="itemIndex">The index of the item.</param>
+					virtual WString								GetTextValue(vint itemIndex) = 0;
+					/// <summary>Get the binding value of an item.</summary>
+					/// <returns>The binding value of an item.</returns>
+					/// <param name="itemIndex">The index of the item.</param>
+					virtual description::Value					GetBindingValue(vint itemIndex) = 0;
+
 					/// <summary>Request a view for this item provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, Calling to the [M:vl.presentation.controls.GuiListControl.IItemProvider.ReleaseView] is needed.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
@@ -10742,14 +10718,9 @@ List Control
 					virtual void								AttachListControl(GuiListControl* value)=0;
 					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
 					virtual void								DetachListControl()=0;
-					/// <summary>Get a item style id from an item index.</summary>
-					/// <returns>The item style id.</returns>
-					/// <param name="itemIndex">The item index.</param>
-					virtual vint								GetItemStyleId(vint itemIndex)=0;
 					/// <summary>Create an item style controller from an item style id.</summary>
 					/// <returns>The created item style controller.</returns>
-					/// <param name="styleId">The item style id.</param>
-					virtual IItemStyleController*				CreateItemStyle(vint styleId)=0;
+					virtual IItemStyleController*				CreateItemStyle()=0;
 					/// <summary>Destroy an item style controller.</summary>
 					/// <param name="style">The item style controller.</param>
 					virtual void								DestroyItemStyle(IItemStyleController* style)=0;
@@ -11033,7 +11004,7 @@ Selectable List Control
 				/// <returns>Returns the index of the selected item. If there are multiple selected items, or there is no selected item, -1 will be returned.</returns>
 				vint											GetSelectedItemIndex();
 				/// <summary>Get the text of the selected item.</summary>
-				/// <returns>Returns the text of the selected item. If there are multiple selected items, or there is no selected item, or <see cref="GuiListControl::IItemPrimaryTextView"/> is not a valid view for the item provider, an empty string will be returned.</returns>
+				/// <returns>Returns the text of the selected item. If there are multiple selected items, or there is no selected item, an empty string will be returned.</returns>
 				WString											GetSelectedItemText();
 
 				/// <summary>Get the selection status of an item.</summary>
@@ -11060,116 +11031,6 @@ Selectable List Control
 				/// <summary>Unselect all items.</summary>
 				void											ClearSelection();
 			};
-
-/***********************************************************************
-Predefined ItemArranger
-***********************************************************************/
-
-			namespace list
-			{
-				/// <summary>Ranged item arranger. This arranger implements most of the common functionality for those arrangers that display a continuing subset of item at a time.</summary>
-				class RangedItemArrangerBase : public Object, virtual public GuiListControl::IItemArranger, public Description<RangedItemArrangerBase>
-				{
-					typedef collections::List<GuiListControl::IItemStyleController*>		StyleList;
-				protected:
-					GuiListControl*								listControl;
-					GuiListControl::IItemArrangerCallback*		callback;
-					GuiListControl::IItemProvider*				itemProvider;
-					Rect										viewBounds;
-					vint										startIndex;
-					StyleList									visibleStyles;
-
-					void										InvalidateAdoptedSize();
-					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
-
-					virtual void								ClearStyles();
-					virtual void								OnStylesCleared()=0;
-					virtual Size								OnCalculateTotalSize()=0;
-					virtual void								OnViewChangedInternal(Rect oldBounds, Rect newBounds)=0;
-				public:
-					/// <summary>Create the arranger.</summary>
-					RangedItemArrangerBase();
-					~RangedItemArrangerBase();
-
-					void										OnAttached(GuiListControl::IItemProvider* provider)override;
-					void										OnItemModified(vint start, vint count, vint newCount)override;
-					void										AttachListControl(GuiListControl* value)override;
-					void										DetachListControl()override;
-					GuiListControl::IItemArrangerCallback*		GetCallback()override;
-					void										SetCallback(GuiListControl::IItemArrangerCallback* value)override;
-					Size										GetTotalSize()override;
-					GuiListControl::IItemStyleController*		GetVisibleStyle(vint itemIndex)override;
-					vint										GetVisibleIndex(GuiListControl::IItemStyleController* style)override;
-					void										OnViewChanged(Rect bounds)override;
-				};
-				
-				/// <summary>Fixed height item arranger. This arranger lists all item with the same height value. This value is the maximum height of all minimum heights of displayed items.</summary>
-				class FixedHeightItemArranger : public RangedItemArrangerBase, public Description<FixedHeightItemArranger>
-				{
-				protected:
-					vint										rowHeight;
-					bool										suppressOnViewChanged;
-
-					virtual void								RearrangeItemBounds();
-					virtual vint								GetWidth();
-					virtual vint								GetYOffset();
-					void										OnStylesCleared()override;
-					Size										OnCalculateTotalSize()override;
-					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
-				public:
-					/// <summary>Create the arranger.</summary>
-					FixedHeightItemArranger();
-					~FixedHeightItemArranger();
-
-					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
-					Size										GetAdoptedSize(Size expectedSize)override;
-				};
-
-				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple lines with the same size. The width is the maximum width of all minimum widths of displayed items. The same to height.</summary>
-				class FixedSizeMultiColumnItemArranger : public RangedItemArrangerBase, public Description<FixedSizeMultiColumnItemArranger>
-				{
-				protected:
-					Size										itemSize;
-					bool										suppressOnViewChanged;
-
-					virtual void								RearrangeItemBounds();
-					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
-					void										OnStylesCleared()override;
-					Size										OnCalculateTotalSize()override;
-					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
-				public:
-					/// <summary>Create the arranger.</summary>
-					FixedSizeMultiColumnItemArranger();
-					~FixedSizeMultiColumnItemArranger();
-
-					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
-					Size										GetAdoptedSize(Size expectedSize)override;
-				};
-				
-				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple columns with the same height. The height is the maximum width of all minimum height of displayed items. Each item will displayed using its minimum width.</summary>
-				class FixedHeightMultiColumnItemArranger : public RangedItemArrangerBase, public Description<FixedHeightMultiColumnItemArranger>
-				{
-				protected:
-					vint										itemHeight;
-					bool										suppressOnViewChanged;
-
-					virtual void								RearrangeItemBounds();
-					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
-					void										OnStylesCleared()override;
-					Size										OnCalculateTotalSize()override;
-					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds)override;
-				public:
-					/// <summary>Create the arranger.</summary>
-					FixedHeightMultiColumnItemArranger();
-					~FixedHeightMultiColumnItemArranger();
-
-					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					bool										EnsureItemVisible(vint itemIndex)override;
-					Size										GetAdoptedSize(Size expectedSize)override;
-				};
-			}
 
 /***********************************************************************
 Predefined ItemStyleController
@@ -11295,16 +11156,12 @@ TextList Style Provider
 					};
 
 					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="TextItemStyleProvider"/>.</summary>
-					class ITextItemView : public virtual GuiListControl::IItemPrimaryTextView, public Description<ITextItemView>
+					class ITextItemView : public virtual IDescriptable, public Description<ITextItemView>
 					{
 					public:
 						/// <summary>The identifier for this view.</summary>
 						static const wchar_t* const				Identifier;
 
-						/// <summary>Get the text of an item.</summary>
-						/// <returns>The text of an item.</returns>
-						/// <param name="itemIndex">The index of an item.</param>
-						virtual WString							GetText(vint itemIndex)=0;
 						/// <summary>Get the check state of an item.</summary>
 						/// <returns>The check state of an item.</returns>
 						/// <param name="itemIndex">The index of an item.</param>
@@ -11354,8 +11211,8 @@ TextList Style Provider
 
 				protected:
 					Ptr<IBulletFactory>							bulletFactory;
-					ITextItemView*								textItemView;
-					GuiVirtualTextList*							listControl;
+					ITextItemView*								textItemView = nullptr;
+					GuiVirtualTextList*							listControl = nullptr;
 
 					void										OnStyleCheckedChanged(TextItemStyleController* style);
 				public:
@@ -11366,8 +11223,7 @@ TextList Style Provider
 
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
-					vint										GetItemStyleId(vint itemIndex)override;
-					GuiListControl::IItemStyleController*		CreateItemStyle(vint styleId)override;
+					GuiListControl::IItemStyleController*		CreateItemStyle()override;
 					void										DestroyItemStyle(GuiListControl::IItemStyleController* style)override;
 					void										Install(GuiListControl::IItemStyleController* style, vint itemIndex)override;
 					void										SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)override;
@@ -11420,7 +11276,6 @@ TextList Data Source
 				class TextItemProvider
 					: public ListProvider<Ptr<TextItem>>
 					, protected TextItemStyleProvider::ITextItemView
-					, protected GuiListControl::IItemBindingView
 					, public Description<TextItemProvider>
 				{
 					friend class TextItem;
@@ -11431,12 +11286,10 @@ TextList Data Source
 					void										AfterInsert(vint item, const Ptr<TextItem>& value)override;
 					void										BeforeRemove(vint item, const Ptr<TextItem>& value)override;
 
-					bool										ContainsPrimaryText(vint itemIndex)override;
-					WString										GetPrimaryTextViewText(vint itemIndex)override;
-					WString										GetText(vint itemIndex)override;
+					WString										GetTextValue(vint itemIndex)override;
+					description::Value							GetBindingValue(vint itemIndex)override;
 					bool										GetChecked(vint itemIndex)override;
 					void										SetCheckedSilently(vint itemIndex, bool value)override;
-					description::Value							GetBindingValue(vint itemIndex)override;
 				public:
 					TextItemProvider();
 					~TextItemProvider();
@@ -11507,6 +11360,170 @@ TextList Control
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
 				Ptr<list::TextItem>										GetSelectedItem();
 			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+CONTROLS\LISTCONTROLPACKAGE\GUILISTCONTROLITEMARRANGERS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLITEMARRANGERS
+#define VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLITEMARRANGERS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+Predefined ItemArranger
+***********************************************************************/
+
+			namespace list
+			{
+				/// <summary>Ranged item arranger. This arranger implements most of the common functionality for those arrangers that display a continuing subset of item at a time.</summary>
+				class RangedItemArrangerBase : public Object, virtual public GuiListControl::IItemArranger, public Description<RangedItemArrangerBase>
+				{
+					typedef collections::List<GuiListControl::IItemStyleController*>		StyleList;
+				protected:
+					GuiListControl*								listControl = nullptr;
+					GuiListControl::IItemArrangerCallback*		callback = nullptr;
+					GuiListControl::IItemProvider*				itemProvider = nullptr;
+
+					bool										suppressOnViewChanged = false;
+					Rect										viewBounds;
+					vint										startIndex = 0;
+					StyleList									visibleStyles;
+
+				protected:
+
+					void										InvalidateAdoptedSize();
+					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
+					void										ClearStyles();
+					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds);
+					virtual void								RearrangeItemBounds();
+
+					virtual void								BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
+					virtual void								PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
+					virtual bool								IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds) = 0;
+					virtual bool								EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
+					virtual void								InvalidateItemSizeCache() = 0;
+					virtual Size								OnCalculateTotalSize() = 0;
+				public:
+					/// <summary>Create the arranger.</summary>
+					RangedItemArrangerBase();
+					~RangedItemArrangerBase();
+
+					void										OnAttached(GuiListControl::IItemProvider* provider)override;
+					void										OnItemModified(vint start, vint count, vint newCount)override;
+					void										AttachListControl(GuiListControl* value)override;
+					void										DetachListControl()override;
+					GuiListControl::IItemArrangerCallback*		GetCallback()override;
+					void										SetCallback(GuiListControl::IItemArrangerCallback* value)override;
+					Size										GetTotalSize()override;
+					GuiListControl::IItemStyleController*		GetVisibleStyle(vint itemIndex)override;
+					vint										GetVisibleIndex(GuiListControl::IItemStyleController* style)override;
+					void										OnViewChanged(Rect bounds)override;
+				};
+				
+				/// <summary>Fixed height item arranger. This arranger lists all item with the same height value. This value is the maximum height of all minimum heights of displayed items.</summary>
+				class FixedHeightItemArranger : public RangedItemArrangerBase, public Description<FixedHeightItemArranger>
+				{
+				private:
+					vint										pi_width = 0;
+					vint										pim_rowHeight = 0;
+
+				protected:
+					vint										rowHeight;
+
+					virtual vint								GetWidth();
+					virtual vint								GetYOffset();
+
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
+					Size										OnCalculateTotalSize()override;
+				public:
+					/// <summary>Create the arranger.</summary>
+					FixedHeightItemArranger();
+					~FixedHeightItemArranger();
+
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
+					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
+				};
+
+				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple lines with the same size. The width is the maximum width of all minimum widths of displayed items. The same to height.</summary>
+				class FixedSizeMultiColumnItemArranger : public RangedItemArrangerBase, public Description<FixedSizeMultiColumnItemArranger>
+				{
+				private:
+					Size										pim_itemSize;
+
+				protected:
+					Size										itemSize;
+
+					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
+
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
+					Size										OnCalculateTotalSize()override;
+				public:
+					/// <summary>Create the arranger.</summary>
+					FixedSizeMultiColumnItemArranger();
+					~FixedSizeMultiColumnItemArranger();
+
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
+					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
+				};
+				
+				/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple columns with the same height. The height is the maximum width of all minimum height of displayed items. Each item will displayed using its minimum width.</summary>
+				class FixedHeightMultiColumnItemArranger : public RangedItemArrangerBase, public Description<FixedHeightMultiColumnItemArranger>
+				{
+				private:
+					vint										pi_currentWidth = 0;
+					vint										pi_totalWidth = 0;
+					vint										pim_itemHeight = 0;
+
+				protected:
+					vint										itemHeight;
+
+					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
+
+					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+					void										PlaceItem(bool forMoving, vint index, GuiListControl::IItemStyleController* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, GuiListControl::IItemStyleController* style, Rect bounds, Rect viewBounds)override;
+					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+					void										InvalidateItemSizeCache()override;
+					Size										OnCalculateTotalSize()override;
+				public:
+					/// <summary>Create the arranger.</summary>
+					FixedHeightMultiColumnItemArranger();
+					~FixedHeightMultiColumnItemArranger();
+
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
+					bool										EnsureItemVisible(vint itemIndex)override;
+					Size										GetAdoptedSize(Size expectedSize)override;
+				};
+			}
 		}
 	}
 }
@@ -11833,7 +11850,6 @@ ListView Base
 
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
-					vint										GetItemStyleId(vint itemIndex)override;
 					void										SetStyleSelected(GuiListControl::IItemStyleController* style, bool value)override;
 				};
 			}
@@ -11937,7 +11953,7 @@ ListView ItemStyleProvider
 				{
 				public:
 					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="ListViewItemStyleProvider"/>.</summary>
-					class IListViewItemView : public virtual GuiListControl::IItemPrimaryTextView, public Description<IListViewItemView>
+					class IListViewItemView : public virtual IDescriptable, public Description<IListViewItemView>
 					{
 					public:
 						/// <summary>The identifier for this view.</summary>
@@ -12056,7 +12072,7 @@ ListView ItemStyleProvider
 
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
-					GuiListControl::IItemStyleController*		CreateItemStyle(vint styleId)override;
+					GuiListControl::IItemStyleController*		CreateItemStyle()override;
 					void										DestroyItemStyle(GuiListControl::IItemStyleController* style)override;
 					void										Install(GuiListControl::IItemStyleController* style, vint itemIndex)override;
 					void										SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)override;
@@ -12612,7 +12628,6 @@ ListView
 					, protected virtual IListViewItemProvider
 					, protected virtual ListViewItemStyleProvider::IListViewItemView
 					, protected virtual ListViewColumnItemArranger::IColumnItemView
-					, protected GuiListControl::IItemBindingView
 					, public Description<ListViewItemProvider>
 				{
 					friend class ListViewItem;
@@ -12630,8 +12645,6 @@ ListView
 					void												NotifyAllItemsUpdate()override;
 					void												NotifyAllColumnsUpdate()override;
 
-					bool												ContainsPrimaryText(vint itemIndex)override;
-					WString												GetPrimaryTextViewText(vint itemIndex)override;
 					Ptr<GuiImageData>									GetSmallImage(vint itemIndex)override;
 					Ptr<GuiImageData>									GetLargeImage(vint itemIndex)override;
 					WString												GetText(vint itemIndex)override;
@@ -12648,6 +12661,7 @@ ListView
 					GuiMenu*											GetDropdownPopup(vint index)override;
 					GuiListViewColumnHeader::ColumnSortingState			GetSortingState(vint index)override;
 
+					WString												GetTextValue(vint itemIndex)override;
 					description::Value									GetBindingValue(vint itemIndex)override;
 				public:
 					ListViewItemProvider();
@@ -12830,6 +12844,14 @@ GuiVirtualTreeListControl NodeProvider
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The node provider callback.</param>
 					virtual bool					DetachCallback(INodeProviderCallback* value)=0;
+					/// <summary>Get the primary text of a node.</summary>
+					/// <returns>The primary text of a node.</returns>
+					/// <param name="node">The node.</param>
+					virtual WString					GetTextValue(INodeProvider* node) = 0;
+					/// <summary>Get the binding value of a node.</summary>
+					/// <returns>The binding value of a node.</returns>
+					/// <param name="node">The node.</param>
+					virtual description::Value		GetBindingValue(INodeProvider* node) = 0;
 					/// <summary>Request a view for this node provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, A call to the [M:vl.presentation.controls.tree.INodeRootProvider.ReleaseView] is needed.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
@@ -12847,7 +12869,7 @@ GuiVirtualTreeListControl NodeProvider
 				//-----------------------------------------------------------
 
 				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for [T:vl.presentation.controls.tree.NodeItemStyleProvider]. [T:vl.presentation.controls.tree.NodeItemProvider] provides this view. In most of the cases, the NodeItemProvider class and this view is not required users to create, or even to touch. [T:vl.presentation.controls.GuiVirtualTreeListControl] already handled all of this.</summary>
-				class INodeItemView : public virtual GuiListControl::IItemPrimaryTextView, public Description<INodeItemView>
+				class INodeItemView : public virtual IDescriptable, public Description<INodeItemView>
 				{
 				public:
 					/// <summary>The identifier of this view.</summary>
@@ -12866,33 +12888,7 @@ GuiVirtualTreeListControl NodeProvider
 					virtual vint					CalculateNodeVisibilityIndex(INodeProvider* node)=0;
 				};
 
-				/// <summary>The required <see cref="INodeRootProvider"/> view for [T:vl.presentation.controls.tree.NodeItemProvider]. This view is always needed to create any customized <see cref="INodeRootProvider"/> implementation.</summary>
-				class INodeItemPrimaryTextView : public virtual IDescriptable, public Description<INodeItemPrimaryTextView>
-				{
-				public:
-					/// <summary>The identifier of this view.</summary>
-					static const wchar_t* const		Identifier;
-					
-					/// <summary>Get the primary text of a node.</summary>
-					/// <returns>The primary text of a node.</returns>
-					/// <param name="node">The node.</param>
-					virtual WString					GetPrimaryTextViewText(INodeProvider* node)=0;
-				};
-
-				/// <summary>The Binding view for <see cref="INodeRootProvider"/>.</summary>
-				class INodeItemBindingView : public virtual IDescriptable, public Description<INodeItemPrimaryTextView>
-				{
-				public:
-					/// <summary>The identifier of this view.</summary>
-					static const wchar_t* const		Identifier;
-					
-					/// <summary>Get the binding value of a node.</summary>
-					/// <returns>The binding value of a node.</returns>
-					/// <param name="node">The node.</param>
-					virtual description::Value		GetBindingValue(INodeProvider* node)=0;
-				};
-
-				/// <summary>This is a general implementation to convert an <see cref="INodeRootProvider"/> to a <see cref="GuiListControl::IItemProvider"/>. It requires the <see cref="INodeItemPrimaryTextView"/> to provide a <see cref="GuiListControl::IItemPrimaryTextView"/>.</summary>
+				/// <summary>This is a general implementation to convert an <see cref="INodeRootProvider"/> to a <see cref="GuiListControl::IItemProvider"/>.</summary>
 				class NodeItemProvider
 					: public list::ItemProviderBase
 					, protected virtual INodeProviderCallback
@@ -12902,7 +12898,6 @@ GuiVirtualTreeListControl NodeProvider
 					typedef collections::Dictionary<INodeProvider*, vint>			NodeIntMap;
 				protected:
 					Ptr<INodeRootProvider>			root;
-					INodeItemPrimaryTextView*		nodeItemPrimaryTextView;
 					NodeIntMap						offsetBeforeChildModifieds;
 					
 
@@ -12915,8 +12910,6 @@ GuiVirtualTreeListControl NodeProvider
 					vint							CalculateNodeVisibilityIndexInternal(INodeProvider* node);
 					vint							CalculateNodeVisibilityIndex(INodeProvider* node)override;
 					
-					bool							ContainsPrimaryText(vint itemIndex)override;
-					WString							GetPrimaryTextViewText(vint itemIndex)override;
 					INodeProvider*					RequestNode(vint index)override;
 					void							ReleaseNode(INodeProvider* node)override;
 				public:
@@ -12929,6 +12922,8 @@ GuiVirtualTreeListControl NodeProvider
 					/// <returns>The node root provider.</returns>
 					Ptr<INodeRootProvider>			GetRoot();
 					vint							Count()override;
+					WString							GetTextValue(vint itemIndex)override;
+					description::Value				GetBindingValue(vint itemIndex)override;
 					IDescriptable*					RequestView(const WString& identifier)override;
 					void							ReleaseView(IDescriptable* view)override;
 				};
@@ -12963,14 +12958,9 @@ GuiVirtualTreeListControl NodeProvider
 					virtual void									AttachListControl(GuiListControl* value)=0;
 					/// <summary>Called when a node item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
 					virtual void									DetachListControl()=0;
-					/// <summary>Get a node item style id from a node.</summary>
-					/// <returns>The node item style id.</returns>
-					/// <param name="node">The node.</param>
-					virtual vint									GetItemStyleId(INodeProvider* node)=0;
 					/// <summary>Create a node item style controller from a node item style id.</summary>
 					/// <returns>The created node item style controller.</returns>
-					/// <param name="styleId">The node item style id.</param>
-					virtual INodeItemStyleController*				CreateItemStyle(vint styleId)=0;
+					virtual INodeItemStyleController*				CreateItemStyle()=0;
 					/// <summary>Destroy a node item style controller.</summary>
 					/// <param name="style">The node item style controller.</param>
 					virtual void									DestroyItemStyle(INodeItemStyleController* style)=0;
@@ -13004,8 +12994,7 @@ GuiVirtualTreeListControl NodeProvider
 
 					void											AttachListControl(GuiListControl* value)override;
 					void											DetachListControl()override;
-					vint											GetItemStyleId(vint itemIndex)override;
-					GuiListControl::IItemStyleController*			CreateItemStyle(vint styleId)override;
+					GuiListControl::IItemStyleController*			CreateItemStyle()override;
 					void											DestroyItemStyle(GuiListControl::IItemStyleController* style)override;
 					void											Install(GuiListControl::IItemStyleController* style, vint itemIndex)override;
 					void											SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)override;
@@ -13217,7 +13206,7 @@ TreeView
 			namespace tree
 			{
 				/// <summary>The required <see cref="INodeRootProvider"/> view for [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider].</summary>
-				class ITreeViewItemView : public virtual INodeItemPrimaryTextView, public Description<ITreeViewItemView>
+				class ITreeViewItemView : public virtual IDescriptable, public Description<ITreeViewItemView>
 				{
 				public:
 					/// <summary>The identifier of this view.</summary>
@@ -13256,14 +13245,13 @@ TreeView
 				class TreeViewItemRootProvider
 					: public MemoryNodeRootProvider
 					, protected virtual ITreeViewItemView
-					, protected virtual INodeItemBindingView
 					, public Description<TreeViewItemRootProvider>
 				{
 				protected:
 
-					WString							GetPrimaryTextViewText(INodeProvider* node)override;
 					Ptr<GuiImageData>				GetNodeImage(INodeProvider* node)override;
 					WString							GetNodeText(INodeProvider* node)override;
+					WString							GetTextValue(INodeProvider* node)override;
 					description::Value				GetBindingValue(INodeProvider* node)override;
 				public:
 					/// <summary>Create a item root provider.</summary>
@@ -13402,8 +13390,7 @@ TreeView
 					GuiListControl::IItemStyleProvider*		GetBindedItemStyleProvider()override;
 					void									AttachListControl(GuiListControl* value)override;
 					void									DetachListControl()override;
-					vint									GetItemStyleId(INodeProvider* node)override;
-					INodeItemStyleController*				CreateItemStyle(vint styleId)override;
+					INodeItemStyleController*				CreateItemStyle()override;
 					void									DestroyItemStyle(INodeItemStyleController* style)override;
 					void									Install(INodeItemStyleController* style, INodeProvider* node, vint itemIndex)override;
 					void									SetStyleIndex(INodeItemStyleController* style, vint value)override;
@@ -13543,8 +13530,6 @@ ComboBox with GuiListControl
 			protected:
 				IStyleController*							styleController;
 				GuiSelectableListControl*					containedListControl;
-				GuiListControl::IItemPrimaryTextView*		primaryTextView;
-				GuiListControl::IItemBindingView*			itemBindingView;
 				Ptr<IItemStyleProvider>						itemStyleProvider;
 				Ptr<GuiControl::IStyleController>			itemStyleController;
 
@@ -16455,7 +16440,6 @@ Datagrid ItemProvider
 				class DataGridItemProvider
 					: public Object
 					, public virtual GuiListControl::IItemProvider
-					, public virtual GuiListControl::IItemPrimaryTextView
 					, public virtual ListViewItemStyleProvider::IListViewItemView
 					, public virtual ListViewColumnItemArranger::IColumnItemView
 					, protected virtual IDataProviderCommandExecutor
@@ -16484,13 +16468,10 @@ Datagrid ItemProvider
 					bool												AttachCallback(GuiListControl::IItemProviderCallback* value)override;
 					bool												DetachCallback(GuiListControl::IItemProviderCallback* value)override;
 					vint												Count()override;
+					WString												GetTextValue(vint itemIndex)override;
+					description::Value									GetBindingValue(vint itemIndex)override;
 					IDescriptable*										RequestView(const WString& identifier)override;
 					void												ReleaseView(IDescriptable* view)override;
-
-					// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-					WString												GetPrimaryTextViewText(vint itemIndex)override;
-					bool												ContainsPrimaryText(vint itemIndex)override;
 
 					// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
 
@@ -16842,7 +16823,6 @@ GuiBindableTextList
 			protected:
 				class ItemSource
 					: public list::ItemProviderBase
-					, protected GuiListControl::IItemBindingView
 					, protected list::TextItemStyleProvider::ITextItemView
 				{
 				protected:
@@ -16865,22 +16845,14 @@ GuiBindableTextList
 					
 					// ===================== GuiListControl::IItemProvider =====================
 
+					WString											GetTextValue(vint itemIndex)override;
+					description::Value								GetBindingValue(vint itemIndex)override;
 					vint											Count()override;
 					IDescriptable*									RequestView(const WString& identifier)override;
 					void											ReleaseView(IDescriptable* view)override;
 					
-					// ===================== GuiListControl::IItemBindingView =====================
-
-					description::Value								GetBindingValue(vint itemIndex)override;
-					
-					// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-					WString											GetPrimaryTextViewText(vint itemIndex)override;
-					bool											ContainsPrimaryText(vint itemIndex)override;
-					
 					// ===================== list::TextItemStyleProvider::ITextItemView =====================
 
-					WString											GetText(vint itemIndex)override;
 					bool											GetChecked(vint itemIndex)override;
 					void											SetCheckedSilently(vint itemIndex, bool value)override;
 				};
@@ -16937,7 +16909,6 @@ GuiBindableListView
 				class ItemSource
 					: public list::ItemProviderBase
 					, protected virtual list::IListViewItemProvider
-					, protected GuiListControl::IItemBindingView
 					, protected virtual list::ListViewItemStyleProvider::IListViewItemView
 					, protected virtual list::ListViewColumnItemArranger::IColumnItemView
 				{
@@ -16973,18 +16944,11 @@ GuiBindableListView
 					
 					// ===================== GuiListControl::IItemProvider =====================
 
+					WString											GetTextValue(vint itemIndex)override;
+					description::Value								GetBindingValue(vint itemIndex)override;
 					vint											Count()override;
 					IDescriptable*									RequestView(const WString& identifier)override;
 					void											ReleaseView(IDescriptable* view)override;
-					
-					// ===================== GuiListControl::IItemBindingView =====================
-
-					description::Value								GetBindingValue(vint itemIndex)override;
-
-					// ===================== GuiListControl::IItemPrimaryTextView =====================
-
-					WString											GetPrimaryTextViewText(vint itemIndex)override;
-					bool											ContainsPrimaryText(vint itemIndex)override;
 
 					// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
 
@@ -17107,7 +17071,6 @@ GuiBindableTreeView
 
 				class ItemSource
 					: public tree::NodeRootProviderBase
-					, protected virtual tree::INodeItemBindingView
 					, protected virtual tree::ITreeViewItemView
 				{
 					friend class ItemSourceNode;
@@ -17129,16 +17092,11 @@ GuiBindableTreeView
 					// ===================== tree::INodeRootProvider =====================
 
 					tree::INodeProvider*							GetRootNode()override;
+					WString											GetTextValue(tree::INodeProvider* node)override;
+					description::Value								GetBindingValue(tree::INodeProvider* node)override;
 					IDescriptable*									RequestView(const WString& identifier)override;
 					void											ReleaseView(IDescriptable* view)override;
 
-					// ===================== tree::INodeItemBindingView =====================
-
-					description::Value								GetBindingValue(tree::INodeProvider* node)override;
-
-					// ===================== tree::INodeItemPrimaryTextView =====================
-
-					WString											GetPrimaryTextViewText(tree::INodeProvider* node)override;
 
 					// ===================== tree::ITreeViewItemView =====================
 
@@ -19126,8 +19084,7 @@ Item Template (GuiTextListItemTemplate)
 				friend class GuiTextListItemTemplate_ItemStyleController;
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
-				controls::GuiVirtualTextList*						listControl;
-				controls::GuiListControl::IItemBindingView*			bindingView;
+				controls::GuiVirtualTextList*						listControl = nullptr;
 
 			public:
 				GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
@@ -19135,8 +19092,7 @@ Item Template (GuiTextListItemTemplate)
 
 				void												AttachListControl(controls::GuiListControl* value)override;
 				void												DetachListControl()override;
-				vint												GetItemStyleId(vint itemIndex)override;
-				controls::GuiListControl::IItemStyleController*		CreateItemStyle(vint styleId)override;
+				controls::GuiListControl::IItemStyleController*		CreateItemStyle()override;
 				void												DestroyItemStyle(controls::GuiListControl::IItemStyleController* style)override;
 				void												Install(controls::GuiListControl::IItemStyleController* style, vint itemIndex)override;
 				void												SetStyleIndex(controls::GuiListControl::IItemStyleController* style, vint value)override;
@@ -19186,9 +19142,8 @@ Item Template (GuiTreeItemTemplate)
 				friend class GuiTreeItemTemplate_ItemStyleController;
 			protected:
 				Ptr<GuiTemplate::IFactory>							factory;
-				controls::GuiVirtualTreeListControl*				treeListControl;
-				controls::tree::INodeItemBindingView*				bindingView;
-				controls::GuiListControl::IItemStyleProvider*		itemStyleProvider;
+				controls::GuiVirtualTreeListControl*				treeListControl = nullptr;
+				controls::GuiListControl::IItemStyleProvider*		itemStyleProvider = nullptr;
 				
 				void												UpdateExpandingButton(controls::tree::INodeProvider* node);
 				void												OnAttached(controls::tree::INodeRootProvider* provider)override;
@@ -19205,8 +19160,7 @@ Item Template (GuiTreeItemTemplate)
 				controls::GuiListControl::IItemStyleProvider*		GetBindedItemStyleProvider()override;
 				void												AttachListControl(controls::GuiListControl* value)override;
 				void												DetachListControl()override;
-				vint												GetItemStyleId(controls::tree::INodeProvider* node)override;
-				controls::tree::INodeItemStyleController*			CreateItemStyle(vint styleId)override;
+				controls::tree::INodeItemStyleController*			CreateItemStyle()override;
 				void												DestroyItemStyle(controls::tree::INodeItemStyleController* style)override;
 				void												Install(controls::tree::INodeItemStyleController* style, controls::tree::INodeProvider* node, vint itemIndex)override;
 				void												SetStyleIndex(controls::tree::INodeItemStyleController* style, vint value)override;
