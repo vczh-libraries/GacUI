@@ -85,7 +85,7 @@ WorkflowEventNamesVisitor
 				GlobalStringKey propertyName
 				)
 			{
-				if (auto eventInfo = resolvedTypeInfo.typeDescriptor->GetEventByName(propertyName.ToString(), true))
+				if (auto eventInfo = resolvedTypeInfo.typeInfo->GetTypeDescriptor()->GetEventByName(propertyName.ToString(), true))
 				{
 					auto decl = Workflow_GenerateEventHandler(precompileContext, eventInfo);
 					decl->anonymity = WfFunctionAnonymity::Named;
@@ -159,9 +159,9 @@ WorkflowEventNamesVisitor
 
 								List<types::PropertyResolving> infos;
 								WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, infos, instanceClass, errors);
-								auto td = possibleInfos[0].info->acceptableTypes[0];
-								visitor.resolvedTypeInfo.typeDescriptor = td;
-								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+								auto typeInfo = possibleInfos[0].info->acceptableTypes[0];
+								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(typeInfo->GetTypeDescriptor()->GetTypeName());
+								visitor.resolvedTypeInfo.typeInfo = typeInfo;
 								setTarget->Accept(&visitor);
 							}
 							else
@@ -208,9 +208,9 @@ WorkflowEventNamesVisitor
 						auto info = candidatePropertyTypeInfos[0].info;
 						if (info->acceptableTypes.Count() == 1)
 						{
-							auto td = info->acceptableTypes[0];
-							resolvedTypeInfo.typeDescriptor = td;
-							resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+							auto typeInfo = info->acceptableTypes[0];
+							resolvedTypeInfo.typeName = GlobalStringKey::Get(typeInfo->GetTypeDescriptor()->GetTypeName());
+							resolvedTypeInfo.typeInfo = typeInfo;
 						}
 						else if (info->acceptableTypes.Count() == 0)
 						{
@@ -227,21 +227,21 @@ WorkflowEventNamesVisitor
 					if (repr == context->instance.Obj())
 					{
 						auto fullName = GlobalStringKey::Get(context->className);
-						if (auto reprTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName))
+						if (auto reprType = GetInstanceLoaderManager()->GetTypeInfoForType(fullName))
 						{
 							resolvedTypeInfo.typeName = fullName;
-							resolvedTypeInfo.typeDescriptor = reprTd;
+							resolvedTypeInfo.typeInfo = reprType;
 						}
 					}
-					if (!resolvedTypeInfo.typeDescriptor)
+					if (!resolvedTypeInfo.typeInfo)
 					{
 						auto source = FindInstanceLoadingSource(context, repr);
 						resolvedTypeInfo.typeName = source.typeName;
-						resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+						resolvedTypeInfo.typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
 					}
 				}
 
-				if (resolvedTypeInfo.typeDescriptor)
+				if (resolvedTypeInfo.typeInfo)
 				{
 					if (repr->setters.Count() == 1 && repr->setters.Keys()[0] == GlobalStringKey::Empty)
 					{
@@ -348,8 +348,8 @@ Workflow_GenerateInstanceClass
 
 			auto context = resolvingResult.context;
 			auto source = FindInstanceLoadingSource(context, context->instance.Obj());
-			auto baseTd = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
-			if (!baseTd)
+			auto baseType = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+			if (!baseType)
 			{
 				errors.Add(GuiResourceError({ resolvingResult.resource }, context->instance->tagPosition,
 					L"Precompile: Failed to find type \"" +
@@ -368,7 +368,7 @@ Workflow_GenerateInstanceClass
 			auto module = Workflow_CreateModuleWithUsings(context);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
-				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
+				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
 				auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
 				instanceClass->baseTypes.Add(baseType);
 
@@ -476,7 +476,7 @@ Workflow_GenerateInstanceClass
 			auto ctorBlock = (beforePrecompile ? notImplemented() : MakePtr<WfBlockStatement>());
 			ctor->statement = ctorBlock;
 
-			if (auto group = baseTd->GetConstructorGroup())
+			if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
 			{
 				vint count = group->GetMethod(0)->GetParameterCount();
 				if (count > 0)

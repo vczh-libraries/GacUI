@@ -33,16 +33,14 @@ namespace vl
 			{
 				Ptr<GuiResourceItem>							resource;						// compiling resource
 				Ptr<GuiInstanceContext>							context;						// compiling context
-				reflection::description::ITypeDescriptor*		rootTypeDescriptor = nullptr;	// type of the context
+				IGuiInstanceLoader::TypeInfo					rootTypeInfo;					// type of the context
 				EnvironmentVariableGroup						envVars;						// current environment variable value stacks
 
 				collections::List<GlobalStringKey>				referenceNames;					// all reference names
 				IGuiInstanceLoader::ArgumentMap					rootCtorArguments;
 				IGuiInstanceLoader*								rootLoader = nullptr;
-				IGuiInstanceLoader::TypeInfo					rootTypeInfo;
 
 				VariableTypeInfoMap								typeInfos;						// type of references
-				TypeOverrideMap									typeOverrides;					// extra type information of references
 				PropertyResolvingMap							propertyResolvings;				// information of property values which are calling constructors
 			};
 		}
@@ -82,7 +80,7 @@ WorkflowCompiler (Compile)
 		extern Ptr<workflow::WfClassDeclaration>				Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(types::ResolvingResult& resolvingResult, Ptr<workflow::WfModule> module);
 
-		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride);
+		extern void												Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeInfo* typeInfo);
 		extern void												Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult);
 		
 		struct InstanceLoadingSource
@@ -117,7 +115,7 @@ WorkflowCompiler (Compile)
 		};
 
 		extern bool												Workflow_GetPropertyTypes(WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors);
-		extern description::ITypeDescriptor*					Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
+		extern IGuiInstanceLoader::TypeInfo						Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
 		extern void												Workflow_GenerateCreating(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 		extern void												Workflow_GenerateBindings(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 

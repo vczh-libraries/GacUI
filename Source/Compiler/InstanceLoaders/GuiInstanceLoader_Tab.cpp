@@ -32,7 +32,7 @@ GuiTabInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiTabPage>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiTabPage*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -47,10 +47,10 @@ GuiTabInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<GuiTabPage>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiTabPage>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -117,9 +117,9 @@ GuiTabPageInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						auto info = GuiInstancePropertyInfo::Collection();
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
+						auto info = GuiInstancePropertyInfo::Collection(nullptr);
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -135,10 +135,10 @@ GuiTabPageInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
 								auto refBoundsComposition = MakePtr<WfMemberExpression>();
 								refBoundsComposition->parent = value;
@@ -146,7 +146,7 @@ GuiTabPageInstanceLoader
 
 								expr = refBoundsComposition;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
 								expr = value;
 							}

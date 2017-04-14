@@ -72,7 +72,7 @@ GuiSelectableListControlInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -131,7 +131,7 @@ GuiVirtualTreeViewInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -191,7 +191,7 @@ GuiComboBoxInstanceLoader
 					if (typeInfo.typeName == GetTypeName())
 					{
 						propertyNames.Add(_ListControl);
-					propertyNames.Add(GlobalStringKey::_ItemTemplate);
+						propertyNames.Add(GlobalStringKey::_ItemTemplate);
 					}
 					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
@@ -200,14 +200,14 @@ GuiComboBoxInstanceLoader
 				{
 					if (propertyInfo.propertyName == _ListControl)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<GuiSelectableListControl>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiSelectableListControl*>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
 						return info;
 					}
 					else if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						return info;
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
@@ -394,13 +394,13 @@ GuiListViewInstanceLoader
 				{
 					if (propertyInfo.propertyName == _View)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<ListViewViewType>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<ListViewViewType>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}
 					else if (propertyInfo.propertyName == _IconSize)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Size>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Size>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}
@@ -498,12 +498,12 @@ GuiTreeViewInstanceLoader
 					{
 						if (!bindable)
 						{
-							return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<tree::MemoryNodeProvider>());
+							return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
 						}
 					}
 					else if (propertyInfo.propertyName == _IconSize)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Size>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Size>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}
@@ -624,11 +624,11 @@ GuiBindableDataColumnInstanceLoader
 				{
 					if (propertyInfo.propertyName == _VisualizerTemplates)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == _EditorTemplate)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
@@ -806,11 +806,11 @@ GuiBindableDataGridInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Columns)
 					{
-						return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<list::BindableDataColumn>());
+						return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<list::BindableDataColumn>>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == _ViewModelContext)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Value>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->bindable = true;
 						return info;
@@ -888,19 +888,19 @@ GuiTreeNodeInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Text)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == _Image)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<GuiImageData>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Ptr<GuiImageData>>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == _Tag)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<Value>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Value>::CreateTypeInfo());
 					}
 					else if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::Collection(description::GetTypeDescriptor<tree::MemoryNodeProvider>());
+						return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}

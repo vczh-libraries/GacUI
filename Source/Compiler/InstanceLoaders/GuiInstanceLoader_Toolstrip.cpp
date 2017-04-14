@@ -18,10 +18,10 @@ namespace vl
 					if (prop == GlobalStringKey::Empty)
 					{
 						auto value = values[0].expression;
-						auto type = values[0].type;
+						auto td = values[0].typeInfo->GetTypeDescriptor();
 
 						Ptr<WfExpression> expr;
-						if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+						if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 						{
 							auto refControl = MakePtr<WfReferenceExpression>();
 							refControl->name.value = variableName.ToString();
@@ -87,7 +87,7 @@ GuiToolstripMenuInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -129,7 +129,7 @@ GuiToolstripMenuBarInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -171,7 +171,7 @@ GuiToolstripToolBarInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiControl>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -217,7 +217,7 @@ GuiToolstripButtonInstanceLoader
 				{
 					if (propertyInfo.propertyName == _SubMenu)
 					{
-						return GuiInstancePropertyInfo::Set(description::GetTypeDescriptor<GuiToolstripMenu>());
+						return GuiInstancePropertyInfo::Set(TypeInfoRetriver<GuiToolstripMenu*>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}

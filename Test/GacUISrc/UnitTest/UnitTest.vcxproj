@@ -167,6 +167,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\..\Resources\Resource.FailedInstance.Control.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml.txt" />
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt" />
@@ -181,6 +182,7 @@
     <Text Include="..\..\Resources\Resource.WrongSyntax2.xml.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Control.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor1.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor2.xml" />
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml" />

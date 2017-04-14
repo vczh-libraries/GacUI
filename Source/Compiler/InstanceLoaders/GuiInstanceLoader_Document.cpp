@@ -48,14 +48,14 @@ GuiDocumentItemInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						auto info = GuiInstancePropertyInfo::Collection();
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
+						auto info = GuiInstancePropertyInfo::Collection(nullptr);
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
 						return info;
 					}
 					else if (propertyInfo.propertyName == _Name)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
 						return info;
@@ -107,17 +107,17 @@ GuiDocumentItemInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> compositionExpr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
 								auto member = MakePtr<WfMemberExpression>();
 								member->parent = value;
 								member->name.value = L"BoundsComposition";
 								compositionExpr = member;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
 								compositionExpr = value;
 							}
@@ -177,7 +177,7 @@ GuiDocumentViewerInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiDocumentItem>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -191,8 +191,6 @@ GuiDocumentViewerInstanceLoader
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
 						{
-							auto type = values[0].type;
-
 							auto refControl = MakePtr<WfReferenceExpression>();
 							refControl->name.value = variableName.ToString();
 
@@ -242,7 +240,7 @@ GuiDocumentLabelInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						return GuiInstancePropertyInfo::CollectionWithParent(description::GetTypeDescriptor<GuiDocumentItem>());
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -256,8 +254,6 @@ GuiDocumentLabelInstanceLoader
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
 						{
-							auto type = values[0].type;
-
 							auto refControl = MakePtr<WfReferenceExpression>();
 							refControl->name.value = variableName.ToString();
 

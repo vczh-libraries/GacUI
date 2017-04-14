@@ -105,7 +105,18 @@ WorkflowReferenceNamesVisitor
 				
 				auto candidate = candidatePropertyTypeInfos[selectedPropertyTypeInfo];
 				auto propertyInfo = candidate.propertyInfo;
-				auto td = candidate.info->acceptableTypes[0];
+				ITypeDescriptor* td = nullptr;
+				{
+					auto typeInfo = candidate.info->acceptableTypes[0];
+					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(typeInfo.Obj()))
+					{
+						td = deserializer->DeserializeAs(typeInfo.Obj())->GetTypeDescriptor();
+					}
+					else
+					{
+						td = typeInfo->GetTypeDescriptor();
+					}
+				}
 
 				if (auto st = td->GetSerializableType())
 				{
@@ -168,7 +179,7 @@ WorkflowReferenceNamesVisitor
 					resolvingResult.propertyResolvings.Add(repr, candidatePropertyTypeInfos[selectedPropertyTypeInfo]);
 				}
 
-				bool isReferenceType = (resolvedTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
+				bool isReferenceType = (resolvedTypeInfo.typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
 				if (repr->instanceName == GlobalStringKey::Empty)
 				{
 					if (isReferenceType)
@@ -227,49 +238,11 @@ WorkflowReferenceNamesVisitor
 								auto setTarget = dynamic_cast<GuiAttSetterRepr*>(setter->values[0].Obj());
 
 								WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, generatedNameCount, errors);
-								auto td = possibleInfos[0].info->acceptableTypes[0];
+								auto typeInfo = possibleInfos[0].info->acceptableTypes[0];
 								visitor.selectedPropertyTypeInfo = 0;
-								visitor.resolvedTypeInfo.typeDescriptor = td;
-								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+								visitor.resolvedTypeInfo.typeName = GlobalStringKey::Get(typeInfo->GetTypeDescriptor()->GetTypeName());
+								visitor.resolvedTypeInfo.typeInfo = typeInfo;
 								setTarget->Accept(&visitor);
-
-								if (auto propInfo = resolvedTypeInfo.typeDescriptor->GetPropertyByName(prop.ToString(), true))
-								{
-									auto propType = propInfo->GetReturn();
-									if (propType->GetTypeDescriptor() == td)
-									{
-										resolvingResult.typeOverrides.Add(setTarget->instanceName, CopyTypeInfo(propInfo->GetReturn()));
-									}
-									else
-									{
-										switch (propType->GetDecorator())
-										{
-										case ITypeInfo::Nullable:
-											{
-												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-												auto decoratedType = MakePtr<NullableTypeInfo>(elementType);
-												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
-											}
-											break;
-										case ITypeInfo::RawPtr:
-											{
-												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-												auto decoratedType = MakePtr<RawPtrTypeInfo>(elementType);
-												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
-											}
-											break;
-										case ITypeInfo::SharedPtr:
-											{
-												auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-												auto decoratedType = MakePtr<SharedPtrTypeInfo>(elementType);
-												resolvingResult.typeOverrides.Add(setTarget->instanceName, decoratedType);
-											}
-											break;
-										default:
-											resolvingResult.typeOverrides.Add(setTarget->instanceName, CopyTypeInfo(propInfo->GetReturn()));
-										}
-									}
-								}
 							}
 							else
 							{
@@ -433,7 +406,7 @@ WorkflowReferenceNamesVisitor
 			{
 				bool found = false;
 
-				bool inferType = repr->typeNamespace == GlobalStringKey::Empty&&repr->typeName == GlobalStringKey::_InferType;
+				bool inferType = repr->typeNamespace == GlobalStringKey::Empty && repr->typeName == GlobalStringKey::_InferType;
 				if (inferType)
 				{
 					if (candidatePropertyTypeInfos.Count() == 1)
@@ -441,9 +414,9 @@ WorkflowReferenceNamesVisitor
 						auto info = candidatePropertyTypeInfos[0].info;
 						if (info->acceptableTypes.Count() == 1)
 						{
-							auto td = info->acceptableTypes[0];
-							resolvedTypeInfo.typeDescriptor = td;
-							resolvedTypeInfo.typeName = GlobalStringKey::Get(td->GetTypeName());
+							auto typeInfo = info->acceptableTypes[0];
+							resolvedTypeInfo.typeName = GlobalStringKey::Get(typeInfo->GetTypeDescriptor()->GetTypeName());
+							resolvedTypeInfo.typeInfo = typeInfo;
 						}
 					}
 				}
@@ -452,12 +425,11 @@ WorkflowReferenceNamesVisitor
 					if (repr == resolvingResult.context->instance.Obj())
 					{
 						auto fullName = GlobalStringKey::Get(resolvingResult.context->className);
-						auto td = GetInstanceLoaderManager()->GetTypeDescriptorForType(fullName);
-						if (td)
+						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(fullName))
 						{
-							found = true;
 							resolvedTypeInfo.typeName = fullName;
-							resolvedTypeInfo.typeDescriptor = td;
+							resolvedTypeInfo.typeInfo = typeInfo;
+							found = true;
 						}
 					}
 
@@ -465,18 +437,18 @@ WorkflowReferenceNamesVisitor
 					{
 						auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 						resolvedTypeInfo.typeName = source.typeName;
-						resolvedTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+						resolvedTypeInfo.typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
 					}
 				}
 
-				if (resolvedTypeInfo.typeDescriptor)
+				if (resolvedTypeInfo.typeInfo)
 				{
 					for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
 					{
-						const auto& tds = candidatePropertyTypeInfos[i].info->acceptableTypes;
-						for (vint j = 0; j < tds.Count(); j++)
+						const auto& typeInfos = candidatePropertyTypeInfos[i].info->acceptableTypes;
+						for (vint j = 0; j < typeInfos.Count(); j++)
 						{
-							if (resolvedTypeInfo.typeDescriptor->CanConvertTo(tds[j]))
+							if (resolvedTypeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(typeInfos[j]->GetTypeDescriptor()))
 							{
 								selectedPropertyTypeInfo = i;
 								goto FINISH_MATCHING;
@@ -499,14 +471,14 @@ WorkflowReferenceNamesVisitor
 						
 						for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
 						{
-							const auto& tds = candidatePropertyTypeInfos[i].info->acceptableTypes;
-							for (vint j = 0; j < tds.Count(); j++)
+							const auto& typeInfos = candidatePropertyTypeInfos[i].info->acceptableTypes;
+							for (vint j = 0; j < typeInfos.Count(); j++)
 							{
 								if (i != 0 || j != 0)
 								{
 									error += L", ";
 								}
-								error += L"\"" + tds[j]->GetTypeName() + L"\"";
+								error += L"\"" + typeInfos[j]->GetTypeFriendlyName() + L"\"";
 							}
 						}
 
@@ -605,7 +577,7 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
-		ITypeDescriptor* Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
+		IGuiInstanceLoader::TypeInfo Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
 			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
 			{
@@ -626,18 +598,9 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					{
-						IGuiInstanceLoader::TypeInfo typeInfo;
-						typeInfo.typeDescriptor = type;
-						typeInfo.typeName = GlobalStringKey::Get(type->GetTypeName());
-						resolvingResult.typeInfos.Add(parameter->name, typeInfo);
-					}
-					{
-						auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
-						auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
-
-						resolvingResult.typeOverrides.Add(parameter->name, pointerType);
-					}
+					auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
+					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
+					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),pointerType });
 				}
 			}
 			
@@ -645,7 +608,7 @@ WorkflowReferenceNamesVisitor
 			vint generatedNameCount = 0;
 			WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, infos, generatedNameCount, errors);
 			resolvingResult.context->instance->Accept(&visitor);
-			return visitor.resolvedTypeInfo.typeDescriptor;
+			return visitor.resolvedTypeInfo;
 		}
 	}
 }

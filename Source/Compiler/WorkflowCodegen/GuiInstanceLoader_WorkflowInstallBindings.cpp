@@ -71,7 +71,7 @@ Workflow_InstallBindProperty
 				subBlock->statements.Add(ifStat);
 			}
 
-			auto td = propInfo->acceptableTypes[0];
+			auto td = propInfo->acceptableTypes[0]->GetTypeDescriptor();
 			Ptr<ITypeInfo> convertedType;
 			if (td->GetSerializableType())
 			{
@@ -114,7 +114,7 @@ Workflow_InstallBindProperty
 				isNull->test = WfTypeTesting::IsNull;
 
 				auto valueException = MakePtr<WfStringExpression>();
-				valueException->value.value = L"Resource \"" + protocol + L"://" + path + L"\" cannot be read as type \"" + convertedType->GetTypeDescriptor()->GetTypeName() + L"\".";
+				valueException->value.value = L"Resource \"" + protocol + L"://" + path + L"\" cannot be read as type \"" + convertedType->GetTypeFriendlyName() + L"\".";
 
 				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
 				raiseStat->expression = valueException;
@@ -170,7 +170,7 @@ Workflow_InstallBindProperty
 				IGuiInstanceLoader::ArgumentMap arguments;
 				{
 					IGuiInstanceLoader::ArgumentInfo argumentInfo;
-					argumentInfo.type = td;
+					argumentInfo.typeInfo = propInfo->acceptableTypes[0];
 					argumentInfo.expression = evalExpression;
 					argumentInfo.attPosition = attPosition;
 					arguments.Add(prop.propertyName, argumentInfo);
@@ -351,7 +351,7 @@ Workflow_InstallEvalProperty
 			IGuiInstanceLoader::ArgumentMap arguments;
 			{
 				IGuiInstanceLoader::ArgumentInfo argumentInfo;
-				argumentInfo.type = propInfo->acceptableTypes[0];
+				argumentInfo.typeInfo = propInfo->acceptableTypes[0];
 				argumentInfo.expression = evalExpression;
 				argumentInfo.attPosition = attPosition;
 				arguments.Add(prop.propertyName, argumentInfo);

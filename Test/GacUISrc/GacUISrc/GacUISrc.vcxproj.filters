@@ -483,6 +483,9 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceDeserializers.cpp">
+      <Filter>GacUI\Compiler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">

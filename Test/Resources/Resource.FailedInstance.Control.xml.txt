@@ -2,7 +2,7 @@ i1 # .\Resource.FailedInstance.Control.xml
 (5, 9): Precompile: Property "BoundsComposition" of type "I1" is not assignable.
 (9, 46): Unrecognizable token: "!".
 (10, 11): Precompile: Type "T1" will never be tried, because "T1", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.
-(12, 27): Precompile: env.ItemType must be specified before assigning "NoItemType" to property "TextProperty" of type "presentation::controls::GuiBindableTextList".
+(12, 41): Precompile: env.ItemType must be specified before deserializing "NoItemType" to value of type "system::Function<system::String, system::Object>^".
 (13, 11): Precompile: To use type "T2" as a control template or item template, its constructor cannot have more than one parameter.
 (15, 46): Unrecognizable token: "!".
 (16, 11): Precompile: To use type "presentation::GuiImageData" as a control template or item template, it should have exactly one constructor.

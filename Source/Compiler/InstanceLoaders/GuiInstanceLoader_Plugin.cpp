@@ -38,12 +38,12 @@ GuiControlInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						auto info = GuiInstancePropertyInfo::Collection();
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
-						if (propertyInfo.typeInfo.typeDescriptor->CanConvertTo(description::GetTypeDescriptor<GuiInstanceRootObject>()))
+						auto info = GuiInstancePropertyInfo::Collection(nullptr);
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
+						if (propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiInstanceRootObject>()))
 						{
-							info->acceptableTypes.Add(description::GetTypeDescriptor<GuiComponent>());
+							info->acceptableTypes.Add(TypeInfoRetriver<GuiComponent*>::CreateTypeInfo());
 						}
 						return info;
 					}
@@ -60,10 +60,10 @@ GuiControlInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -78,7 +78,7 @@ GuiControlInstanceLoader
 
 								expr = call;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -93,7 +93,7 @@ GuiControlInstanceLoader
 
 								expr = call;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();
@@ -108,7 +108,7 @@ GuiControlInstanceLoader
 
 								expr = call;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
 								auto refControl = MakePtr<WfReferenceExpression>();
 								refControl->name.value = variableName.ToString();

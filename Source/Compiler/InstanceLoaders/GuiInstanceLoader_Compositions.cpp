@@ -43,7 +43,7 @@ GuiAxisInstanceLoader
 				{
 					if (propertyInfo.propertyName == _AxisDirection)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<AxisDirection>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<AxisDirection>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						info->required = true;
 						return info;
@@ -113,10 +113,10 @@ GuiCompositionInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
-						auto info = GuiInstancePropertyInfo::Collection();
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiControl>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<GuiGraphicsComposition>());
-						info->acceptableTypes.Add(description::GetTypeDescriptor<IGuiGraphicsElement>());
+						auto info = GuiInstancePropertyInfo::Collection(nullptr);
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<GuiGraphicsComposition*>::CreateTypeInfo());
+						info->acceptableTypes.Add(TypeInfoRetriver<Ptr<IGuiGraphicsElement>>::CreateTypeInfo());
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -132,10 +132,10 @@ GuiCompositionInstanceLoader
 						if (prop == GlobalStringKey::Empty)
 						{
 							auto value = values[0].expression;
-							auto type = values[0].type;
+							auto td = values[0].typeInfo->GetTypeDescriptor();
 
 							Ptr<WfExpression> expr;
-							if (type->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
+							if (td->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
 							{
 								auto refComposition = MakePtr<WfReferenceExpression>();
 								refComposition->name.value = variableName.ToString();
@@ -151,7 +151,7 @@ GuiCompositionInstanceLoader
 
 								expr = assign;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
 								auto refBoundsComposition = MakePtr<WfMemberExpression>();
 								refBoundsComposition->parent = value;
@@ -170,7 +170,7 @@ GuiCompositionInstanceLoader
 
 								expr = call;
 							}
-							else if (type->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
+							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
 								auto refComposition = MakePtr<WfReferenceExpression>();
 								refComposition->name.value = variableName.ToString();
@@ -245,7 +245,7 @@ GuiTableCompositionInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Rows || propertyInfo.propertyName == _Columns)
 					{
-						return GuiInstancePropertyInfo::Array(description::GetTypeDescriptor<GuiCellOption>());
+						return GuiInstancePropertyInfo::Array(TypeInfoRetriver<GuiCellOption>::CreateTypeInfo());
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}
@@ -374,7 +374,7 @@ GuiCellCompositionInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Site)
 					{
-						return GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<SiteValue>());
+						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<SiteValue>::CreateTypeInfo());
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
 				}

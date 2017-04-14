@@ -245,6 +245,7 @@
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceBinders.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceDeserializers.cpp" />
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedTypeResolvers.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
     </ClCompile>

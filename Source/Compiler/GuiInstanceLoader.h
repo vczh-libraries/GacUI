@@ -35,7 +35,7 @@ Instance Loader
 
 		class GuiInstancePropertyInfo : public IDescriptable, public Description<GuiInstancePropertyInfo>
 		{
-			typedef collections::List<description::ITypeDescriptor*>		TypeDescriptorList;
+			typedef collections::List<Ptr<description::ITypeInfo>>		TypeInfoList;
 		public:
 			enum Support
 			{
@@ -58,15 +58,15 @@ Instance Loader
 			bool									required = false;			// only apply to constructor
 			bool									bindable = false;			// only apply to constructor
 			PropertyScope							scope = Property;
-			TypeDescriptorList						acceptableTypes;
+			TypeInfoList							acceptableTypes;
 
 			static Ptr<GuiInstancePropertyInfo>		Unsupported();
-			static Ptr<GuiInstancePropertyInfo>		Assign(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		AssignWithParent(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		Collection(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		CollectionWithParent(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		Set(description::ITypeDescriptor* typeDescriptor = 0);
-			static Ptr<GuiInstancePropertyInfo>		Array(description::ITypeDescriptor* typeDescriptor = 0);
+			static Ptr<GuiInstancePropertyInfo>		Assign(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		AssignWithParent(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		Collection(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		CollectionWithParent(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		Set(Ptr<description::ITypeInfo> typeInfo);
+			static Ptr<GuiInstancePropertyInfo>		Array(Ptr<description::ITypeInfo> typeInfo);
 		};
 
 		class IGuiInstanceLoader : public IDescriptable, public Description<IGuiInstanceLoader>
@@ -75,12 +75,15 @@ Instance Loader
 			struct TypeInfo
 			{
 				GlobalStringKey						typeName;
-				description::ITypeDescriptor*		typeDescriptor;
+				Ptr<description::ITypeInfo>			typeInfo = nullptr;
 
-				TypeInfo() :typeDescriptor(0){}
-				TypeInfo(GlobalStringKey _typeName, description::ITypeDescriptor* _typeDescriptor)
+				TypeInfo()
+				{
+				}
+
+				TypeInfo(GlobalStringKey _typeName, Ptr<description::ITypeInfo> _typeInfo)
 					:typeName(_typeName)
-					, typeDescriptor(_typeDescriptor)
+					, typeInfo(_typeInfo)
 				{
 				}
 			};
@@ -115,7 +118,7 @@ Instance Loader
 			struct ArgumentInfo
 			{
 				Ptr<workflow::WfExpression>			expression;
-				description::ITypeDescriptor*		type;
+				Ptr<description::ITypeInfo>			typeInfo;
 				GuiResourceTextPos					attPosition;
 				GuiResourceTextPos					valuePosition;				// only apply to text value
 			};
@@ -159,6 +162,14 @@ Instance Binder
 			virtual Ptr<workflow::WfStatement>		GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IEventInfo* eventInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors) = 0;
 		};
 
+		class IGuiInstanceDeserializer : public IDescriptable, public Description<IGuiInstanceDeserializer>
+		{
+		public:
+			virtual bool							CanDeserialize(description::ITypeInfo* typeInfo) = 0;
+			virtual description::ITypeInfo*			DeserializeAs(description::ITypeInfo* typeInfo) = 0;
+			virtual Ptr<workflow::WfExpression>		Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors) = 0;
+		};
+
 /***********************************************************************
 Instance Loader Manager
 ***********************************************************************/
@@ -170,11 +181,14 @@ Instance Loader Manager
 			virtual IGuiInstanceBinder*					GetInstanceBinder(GlobalStringKey bindingName) = 0;
 			virtual bool								AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder) = 0;
 			virtual IGuiInstanceEventBinder*			GetInstanceEventBinder(GlobalStringKey bindingName) = 0;
+			virtual bool								AddInstanceDeserializer(Ptr<IGuiInstanceDeserializer> deserializer) = 0;
+			virtual IGuiInstanceDeserializer*			GetInstanceDeserializer(description::ITypeInfo* typeInfo) = 0;
+
 			virtual bool								CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual bool								SetLoader(Ptr<IGuiInstanceLoader> loader) = 0;
 			virtual IGuiInstanceLoader*					GetLoader(GlobalStringKey typeName) = 0;
 			virtual IGuiInstanceLoader*					GetParentLoader(IGuiInstanceLoader* loader) = 0;
-			virtual description::ITypeDescriptor*		GetTypeDescriptorForType(GlobalStringKey typeName) = 0;
+			virtual Ptr<description::ITypeInfo>			GetTypeInfoForType(GlobalStringKey typeName) = 0;
 			virtual void								GetVirtualTypes(collections::List<GlobalStringKey>& typeNames) = 0;
 			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
 			virtual void								ClearReflectionCache() = 0;

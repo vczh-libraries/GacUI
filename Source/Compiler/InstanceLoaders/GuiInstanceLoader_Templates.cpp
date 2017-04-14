@@ -32,7 +32,7 @@ GuiTemplateInstanceLoader
 				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					List<ITypeDescriptor*> tds;
-					tds.Add(typeInfo.typeDescriptor);
+					tds.Add(typeInfo.typeInfo->GetTypeDescriptor());
 
 					for (vint i = 0; i < tds.Count(); i++)
 					{
@@ -61,11 +61,11 @@ GuiTemplateInstanceLoader
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
-					if (auto prop = propertyInfo.typeInfo.typeDescriptor->GetPropertyByName(propertyInfo.propertyName.ToString(), true))
+					if (auto prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true))
 					{
 						if (prop->IsWritable() && prop->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<GuiTemplate::IFactory>())
 						{
-							auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+							auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 							info->scope = GuiInstancePropertyInfo::Constructor;
 							info->bindable = false;
 
@@ -81,9 +81,9 @@ GuiTemplateInstanceLoader
 
 				bool CanCreate(const TypeInfo& typeInfo)override
 				{
-					if (typeInfo.typeDescriptor->CanConvertTo(description::GetTypeDescriptor<GuiTemplate>()))
+					if (typeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiTemplate>()))
 					{
-						auto group = typeInfo.typeDescriptor->GetConstructorGroup();
+						auto group = typeInfo.typeInfo->GetTypeDescriptor()->GetConstructorGroup();
 						if (group && group->GetMethodCount() == 1)
 						{
 							auto ctor = group->GetMethod(0);
@@ -106,7 +106,7 @@ GuiTemplateInstanceLoader
 					auto block = MakePtr<WfBlockStatement>();
 					{
 						auto createExpr = MakePtr<WfNewClassExpression>();
-						createExpr->type = GetTypeFromTypeInfo(MakePtr<TypeDescriptorTypeInfo>(typeInfo.typeDescriptor, TypeInfoHint::Normal).Obj());
+						createExpr->type = GetTypeFromTypeInfo(MakePtr<TypeDescriptorTypeInfo>(typeInfo.typeInfo->GetTypeDescriptor(), TypeInfoHint::Normal).Obj());
 
 						auto refVariable = MakePtr<WfReferenceExpression>();
 						refVariable->name.value = variableName.ToString();

@@ -395,7 +395,7 @@ GuiVrtualTypeInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(description::GetTypeDescriptor<WString>());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						info->scope = GuiInstancePropertyInfo::Constructor;
 						return info;
 					}

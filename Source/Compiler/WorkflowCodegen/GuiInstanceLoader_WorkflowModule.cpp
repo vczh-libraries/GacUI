@@ -127,12 +127,7 @@ Workflow_InstallCtorClass
 
 			auto thisParam = MakePtr<WfFunctionArgument>();
 			thisParam->name.value = L"<this>";
-			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(resolvingResult.rootTypeDescriptor, TypeInfoHint::Normal);
-				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
-
-				thisParam->type = GetTypeFromTypeInfo(pointerType.Obj());
-			}
+			thisParam->type = GetTypeFromTypeInfo(resolvingResult.rootTypeInfo.typeInfo.Obj());
 
 			auto resolverParam = MakePtr<WfFunctionArgument>();
 			resolverParam->name.value = L"<resolver>";
@@ -171,10 +166,11 @@ Workflow_InstallCtorClass
 Variable
 ***********************************************************************/
 
-		void Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeDescriptor* type, description::ITypeInfo* typeOverride)
+		void Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeInfo* typeInfo)
 		{
 			auto var = MakePtr<WfVariableDeclaration>();
 			var->name.value = name.ToString();
+			var->type = GetTypeFromTypeInfo(typeInfo);
 
 			{
 				auto att = MakePtr<WfAttribute>();
@@ -183,14 +179,9 @@ Variable
 				var->attributes.Add(att);
 			}
 
-			if (typeOverride)
-			{
-				var->type = GetTypeFromTypeInfo(typeOverride);
-			}
-
 			if (!var->type)
 			{
-				if (auto ctors = type->GetConstructorGroup())
+				if (auto ctors = typeInfo->GetTypeDescriptor()->GetConstructorGroup())
 				{
 					if (ctors->GetMethodCount() > 0)
 					{
@@ -198,14 +189,6 @@ Variable
 						var->type = GetTypeFromTypeInfo(ctor->GetReturn());
 					}
 				}
-			}
-
-			if (!var->type)
-			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
-				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
-
-				var->type = GetTypeFromTypeInfo(pointerType.Obj());
 			}
 
 			auto literal = MakePtr<WfLiteralExpression>();
@@ -223,15 +206,8 @@ Variable
 			for (vint i = 0; i < typeInfos.Count(); i++)
 			{
 				auto key = typeInfos.Keys()[i];
-				auto value = typeInfos.Values()[i].typeDescriptor;
-
-				ITypeInfo* typeOverride = nullptr;
-				vint index = resolvingResult.typeOverrides.Keys().IndexOf(key);
-				if (index != -1)
-				{
-					typeOverride = resolvingResult.typeOverrides.Values()[index].Obj();
-				}
-				Workflow_CreatePointerVariable(ctorClass, key, value, typeOverride);
+				auto value = typeInfos.Values()[i].typeInfo.Obj();
+				Workflow_CreatePointerVariable(ctorClass, key, value);
 			}
 		}
 	}

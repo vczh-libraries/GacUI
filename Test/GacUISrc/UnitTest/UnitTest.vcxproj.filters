@@ -59,6 +59,9 @@
     <Text Include="..\..\Resources\Resource.FailedScript.Properties.xml.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="..\..\Resources\Resource.FailedInstance.Control.xml.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor4.xml">
@@ -95,6 +98,9 @@
       <Filter>Resource Files</Filter>
     </Xml>
     <Xml Include="..\..\Resources\Resource.FailedInstance.Ctor5.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\Resources\Resource.FailedInstance.Control.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

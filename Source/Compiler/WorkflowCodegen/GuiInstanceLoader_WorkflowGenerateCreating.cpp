@@ -36,7 +36,7 @@ WorkflowGenerateCreatingVisitor
 
 			IGuiInstanceLoader::ArgumentInfo GetArgumentInfo(GuiResourceTextPos attPosition, GuiValueRepr* repr)
 			{
-				ITypeDescriptor* td = nullptr;
+				Ptr<ITypeInfo> typeInfo = nullptr;
 				bool serializable = false;
 				WString textValue;
 				GuiResourceTextPos textValuePosition;
@@ -44,7 +44,7 @@ WorkflowGenerateCreatingVisitor
 
 				if (auto text = dynamic_cast<GuiTextRepr*>(repr))
 				{
-					td = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+					typeInfo = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
 					serializable = true;
 					textValue = text->text;
 					textValuePosition = text->tagPosition;
@@ -53,13 +53,14 @@ WorkflowGenerateCreatingVisitor
 				{
 					if (ctor->instanceName == GlobalStringKey::Empty)
 					{
-						td = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
+						typeInfo = resolvingResult.propertyResolvings[repr].info->acceptableTypes[0];
 					}
 					else
 					{
-						td = resolvingResult.typeInfos[ctor->instanceName].typeDescriptor;
+						typeInfo = resolvingResult.typeInfos[ctor->instanceName].typeInfo;
 					}
-					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
+
+					if ((typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::StructType) != TypeDescriptorFlags::Undefined)
 					{
 						serializable = true;
 						auto value = ctor->setters.Values()[0]->values[0].Cast<GuiTextRepr>();
@@ -69,12 +70,23 @@ WorkflowGenerateCreatingVisitor
 				}
 
 				IGuiInstanceLoader::ArgumentInfo argumentInfo;
-				argumentInfo.type = td;
+				argumentInfo.typeInfo = typeInfo;
 				argumentInfo.attPosition = attPosition;
 
 				if (serializable)
 				{
-					argumentInfo.expression = Workflow_ParseTextValue(precompileContext, td, { resolvingResult.resource }, textValue, textValuePosition, errors);
+					if (auto deserializer = GetInstanceLoaderManager()->GetInstanceDeserializer(typeInfo.Obj()))
+					{
+						auto typeInfoAs = deserializer->DeserializeAs(typeInfo.Obj());
+						if (auto expression = Workflow_ParseTextValue(precompileContext, typeInfoAs->GetTypeDescriptor(), { resolvingResult.resource }, textValue, textValuePosition, errors))
+						{
+							argumentInfo.expression = deserializer->Deserialize(precompileContext, resolvingResult, typeInfo.Obj(), expression, textValuePosition, errors);
+						}
+					}
+					else
+					{
+						argumentInfo.expression = Workflow_ParseTextValue(precompileContext, typeInfo->GetTypeDescriptor(), { resolvingResult.resource }, textValue, textValuePosition, errors);
+					}
 					argumentInfo.valuePosition = textValuePosition;
 				}
 				else
@@ -184,6 +196,7 @@ WorkflowGenerateCreatingVisitor
 					pairedProps.Add(propInfo.propertyName);
 				}
 
+				vint errorCount = errors.Count();
 				IGuiInstanceLoader::ArgumentMap arguments;
 				FOREACH(GlobalStringKey, pairedProp, pairedProps)
 				{
@@ -199,7 +212,6 @@ WorkflowGenerateCreatingVisitor
 					}
 				}
 
-				vint errorCount = errors.Count();
 				if (auto stat = info.loader->AssignParameters(precompileContext, resolvingResult, propInfo.typeInfo, repr->instanceName, arguments, setter->attPosition, errors))
 				{
 					return stat;
@@ -232,7 +244,7 @@ WorkflowGenerateCreatingVisitor
 			{
 				auto reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				
-				if (reprTypeInfo.typeDescriptor && (reprTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+				if (reprTypeInfo.typeInfo && (reprTypeInfo.typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 				{
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
@@ -301,7 +313,7 @@ WorkflowGenerateCreatingVisitor
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
 								auto argument = GetArgumentInfo(setter->attPosition, value.Obj());
-								if (argument.type && argument.expression)
+								if (argument.typeInfo && argument.expression)
 								{
 									arguments.Add(prop, argument);
 								}
@@ -318,7 +330,7 @@ WorkflowGenerateCreatingVisitor
 
 								IGuiInstanceLoader::ArgumentInfo argument;
 								argument.expression = expression;
-								argument.type = resolvedPropInfo->acceptableTypes[0];
+								argument.typeInfo = resolvedPropInfo->acceptableTypes[0];
 								argument.attPosition = setter->attPosition;
 								arguments.Add(prop, argument);
 							}
@@ -343,7 +355,9 @@ WorkflowGenerateCreatingVisitor
 				{
 					auto source = FindInstanceLoadingSource(resolvingResult.context, repr);
 					ctorTypeInfo.typeName = source.typeName;
-					ctorTypeInfo.typeDescriptor = GetInstanceLoaderManager()->GetTypeDescriptorForType(source.typeName);
+
+					auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName);
+					ctorTypeInfo.typeInfo = typeInfo;
 				}
 				else
 				{
@@ -363,7 +377,6 @@ WorkflowGenerateCreatingVisitor
 				if (resolvingResult.context->instance.Obj() == repr)
 				{
 					resolvingResult.rootLoader = ctorLoader;
-					resolvingResult.rootTypeInfo = ctorTypeInfo;
 					FillCtorArguments(repr, ctorLoader, ctorTypeInfo, resolvingResult.rootCtorArguments);
 
 					{

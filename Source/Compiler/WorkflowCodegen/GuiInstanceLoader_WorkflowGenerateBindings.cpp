@@ -45,7 +45,7 @@ WorkflowGenerateBindingVisitor
 					if (propertyResolving.info->scope == GuiInstancePropertyInfo::Property)
 					{
 						WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
-						auto instancePropertyInfo = reprTypeInfo.typeDescriptor->GetPropertyByName(propertyName.ToString(), true);
+						auto instancePropertyInfo = reprTypeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyName.ToString(), true);
 
 						if (instancePropertyInfo || !binder->RequirePropertyExist())
 						{
@@ -96,7 +96,7 @@ WorkflowGenerateBindingVisitor
 				GlobalStringKey propertyName
 				)
 			{
-				auto td = reprTypeInfo.typeDescriptor;
+				auto td = reprTypeInfo.typeInfo->GetTypeDescriptor();
 				auto eventInfo = td->GetEventByName(propertyName.ToString(), true);
 
 				if (!eventInfo)
@@ -147,7 +147,7 @@ WorkflowGenerateBindingVisitor
 					reprTypeInfo = resolvingResult.typeInfos[repr->instanceName];
 				}
 				
-				if (reprTypeInfo.typeDescriptor && (reprTypeInfo.typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+				if (reprTypeInfo.typeInfo && (reprTypeInfo.typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 				{
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
@@ -173,7 +173,7 @@ WorkflowGenerateBindingVisitor
 
 					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
 					{
-						if (reprTypeInfo.typeDescriptor)
+						if (reprTypeInfo.typeInfo)
 						{
 							GlobalStringKey propertyName = repr->eventHandlers.Keys()[index];
 							if (auto statement = ProcessEventBinding(repr, reprTypeInfo, handler, propertyName))
