@@ -58,11 +58,55 @@ namespace vl
 			}
 
 /***********************************************************************
+GuiToolstripInstanceLoaderBase
+***********************************************************************/
+
+			template<typename TBaseType>
+			class GuiToolstripInstanceLoaderBase : public TBaseType
+			{
+			public:
+				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
+				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
+
+				GuiToolstripInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod, Ptr<WfExpression>(*_argumentFunction)(ArgumentMap&) = nullptr)
+					:TBaseType(_typeName, _styleMethod, _argumentFunction)
+				{
+				}
+
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					propertyNames.Add(GlobalStringKey::Empty);
+					TBaseType::GetPropertyNames(typeInfo, propertyNames);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == GlobalStringKey::Empty)
+					{
+						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+					}
+					return TBaseType::GetPropertyType(propertyInfo);
+				}
+
+				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
+				{
+					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
+					{
+						return statement;
+					}
+					else
+					{
+						return TBaseType::AssignParameters(precompileContext, resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
+					}
+				}
+			};
+
+/***********************************************************************
 GuiToolstripMenuInstanceLoader
 ***********************************************************************/
 
 #define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenu, GuiMenuTemplate_StyleProvider, GuiMenuTemplate>
-			class GuiToolstripMenuInstanceLoader : public BASE_TYPE
+			class GuiToolstripMenuInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				static Ptr<WfExpression> ArgumentFunction(ArgumentMap&)
@@ -73,35 +117,8 @@ GuiToolstripMenuInstanceLoader
 				}
 			public:
 				GuiToolstripMenuInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiToolstripMenu>::content.typeName, L"CreateMenuStyle", ArgumentFunction)
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenu>::content.typeName, L"CreateMenuStyle", ArgumentFunction)
 				{
-				}
-
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					propertyNames.Add(GlobalStringKey::Empty);
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == GlobalStringKey::Empty)
-					{
-						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
-					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
-				}
-
-				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
-				{
-					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
-					{
-						return statement;
-					}
-					else
-					{
-						return BASE_TYPE::AssignParameters(precompileContext, resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
-					}
 				}
 			};
 #undef BASE_TYPE
@@ -111,39 +128,12 @@ GuiToolstripMenuBarInstanceLoader
 ***********************************************************************/
 
 #define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenuBar, GuiControlTemplate_StyleProvider, GuiControlTemplate>
-			class GuiToolstripMenuBarInstanceLoader : public BASE_TYPE
+			class GuiToolstripMenuBarInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiToolstripMenuBarInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiToolstripMenuBar>::content.typeName, L"CreateMenuBarStyle")
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripMenuBar>::content.typeName, L"CreateMenuBarStyle")
 				{
-				}
-
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					propertyNames.Add(GlobalStringKey::Empty);
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == GlobalStringKey::Empty)
-					{
-						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
-					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
-				}
-
-				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
-				{
-					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
-					{
-						return statement;
-					}
-					else
-					{
-						return BASE_TYPE::AssignParameters(precompileContext, resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
-					}
 				}
 			};
 #undef BASE_TYPE
@@ -153,39 +143,12 @@ GuiToolstripToolBarInstanceLoader
 ***********************************************************************/
 
 #define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripToolBar, GuiControlTemplate_StyleProvider, GuiControlTemplate>
-			class GuiToolstripToolBarInstanceLoader : public BASE_TYPE
+			class GuiToolstripToolBarInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiToolstripToolBarInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiToolstripToolBar>::content.typeName, L"CreateToolBarStyle")
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripToolBar>::content.typeName, L"CreateToolBarStyle")
 				{
-				}
-
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					propertyNames.Add(GlobalStringKey::Empty);
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == GlobalStringKey::Empty)
-					{
-						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
-					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
-				}
-
-				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
-				{
-					if (auto statement = AddControlToToolstrip(variableName, arguments, errors))
-					{
-						return statement;
-					}
-					else
-					{
-						return BASE_TYPE::AssignParameters(precompileContext, resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
-					}
 				}
 			};
 #undef BASE_TYPE

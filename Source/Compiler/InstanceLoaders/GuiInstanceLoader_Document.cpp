@@ -155,22 +155,25 @@ GuiDocumentItemInstanceLoader
 			};
 
 /***********************************************************************
-GuiDocumentViewerInstanceLoader
+GuiDocumentInstanceLoaderBase
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer, GuiDocumentViewerTemplate_StyleProvider, GuiDocumentViewerTemplate>
-			class GuiDocumentViewerInstanceLoader : public BASE_TYPE
+			template<typename TBaseType>
+			class GuiDocumentInstanceLoaderBase : public TBaseType
 			{
 			public:
-				GuiDocumentViewerInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiDocumentViewer>::content.typeName, L"CreateDocumentViewerStyle")
+				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
+				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
+
+				GuiDocumentInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod)
+					:TBaseType(_typeName, _styleMethod)
 				{
 				}
 
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
+					TBaseType::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -179,7 +182,7 @@ GuiDocumentViewerInstanceLoader
 					{
 						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
 					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
+					return TBaseType::GetPropertyType(propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
@@ -212,7 +215,21 @@ GuiDocumentViewerInstanceLoader
 					{
 						return block;
 					}
-					return BASE_TYPE::AssignParameters(precompileContext, resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
+					return TBaseType::AssignParameters(precompileContext, resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
+				}
+			};
+
+/***********************************************************************
+GuiDocumentViewerInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer, GuiDocumentViewerTemplate_StyleProvider, GuiDocumentViewerTemplate>
+			class GuiDocumentViewerInstanceLoader : public GuiDocumentInstanceLoaderBase<BASE_TYPE>
+			{
+			public:
+				GuiDocumentViewerInstanceLoader()
+					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentViewer>::content.typeName, L"CreateDocumentViewerStyle")
+				{
 				}
 			};
 #undef BASE_TYPE
@@ -222,60 +239,12 @@ GuiDocumentLabelInstanceLoader
 ***********************************************************************/
 		
 #define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentLabel, GuiDocumentLabelTemplate_StyleProvider, GuiDocumentLabelTemplate>
-			class GuiDocumentLabelInstanceLoader : public BASE_TYPE
+			class GuiDocumentLabelInstanceLoader : public GuiDocumentInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
 				GuiDocumentLabelInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiDocumentLabel>::content.typeName, L"CreateDocumentLabelStyle")
+					:GuiDocumentInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiDocumentLabel>::content.typeName, L"CreateDocumentLabelStyle")
 				{
-				}
-
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					propertyNames.Add(GlobalStringKey::Empty);
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == GlobalStringKey::Empty)
-					{
-						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
-					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
-				}
-
-				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
-				{
-					auto block = MakePtr<WfBlockStatement>();
-
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
-					{
-						const auto& values = arguments.GetByIndex(index);
-						if (prop == GlobalStringKey::Empty)
-						{
-							auto refControl = MakePtr<WfReferenceExpression>();
-							refControl->name.value = variableName.ToString();
-
-							auto refAddDocumentItem = MakePtr<WfMemberExpression>();
-							refAddDocumentItem->parent = refControl;
-							refAddDocumentItem->name.value = L"AddDocumentItem";
-
-							auto call = MakePtr<WfCallExpression>();
-							call->function = refAddDocumentItem;
-							call->arguments.Add(values[0].expression);
-
-							auto stat = MakePtr<WfExpressionStatement>();
-							stat->expression = call;
-							block->statements.Add(stat);
-						}
-					}
-
-					if (block->statements.Count() > 0)
-					{
-						return block;
-					}
-					return BASE_TYPE::AssignParameters(precompileContext, resolvingResult, typeInfo, variableName, arguments, attPosition, errors);
 				}
 			};
 #undef BASE_TYPE

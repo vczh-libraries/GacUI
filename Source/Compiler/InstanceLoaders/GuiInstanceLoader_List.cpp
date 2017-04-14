@@ -186,12 +186,20 @@ GuiComboBoxInstanceLoader
 					_ListControl = GlobalStringKey::Get(L"ListControl");
 				}
 
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (typeInfo.typeName == GetTypeName())
+					{
+						propertyNames.Add(GlobalStringKey::_ItemTemplate);
+					}
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
+				}
+
 				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (typeInfo.typeName == GetTypeName())
 					{
 						propertyNames.Add(_ListControl);
-						propertyNames.Add(GlobalStringKey::_ItemTemplate);
 					}
 					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
@@ -569,26 +577,6 @@ GuiTreeViewInstanceLoader
 				{
 				}
 			};
-
-/***********************************************************************
-GuiBindableTextListInstanceLoader
-***********************************************************************/
-
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableTextList, GuiTextListTemplate_StyleProvider, GuiTextListTemplate>
-			class GuiBindableTextListInstanceLoader : public BASE_TYPE
-			{
-			public:
-				GuiBindableTextListInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableTextList>::content.typeName, L"CreateTextListStyle", L"CreateTextListItemStyle")
-				{
-				}
-
-				GlobalStringKey GetTypeName()override
-				{
-					return typeName;
-				}
-			};
-#undef BASE_TYPE
 
 /***********************************************************************
 GuiBindableDataColumnInstanceLoader
@@ -1049,8 +1037,6 @@ Initialization
 
 				manager->SetLoader(new GuiTreeViewInstanceLoader);
 				manager->SetLoader(new GuiBindableTreeViewInstanceLoader);
-
-				manager->SetLoader(new GuiBindableTextListInstanceLoader);
 
 				manager->SetLoader(new GuiBindableDataColumnInstanceLoader);
 				manager->SetLoader(new GuiBindableDataGridInstanceLoader);
