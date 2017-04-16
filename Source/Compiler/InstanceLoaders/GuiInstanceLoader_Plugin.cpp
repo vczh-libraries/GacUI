@@ -1,3 +1,61 @@
+/*
+GuiInstanceLoader_Plugin.cpp
+	GuiControl
+		default: GuiControl*, GuiGraphicsComposition*
+	GuiInstanceRootObject
+		default: GuiComponent*
+GuiInstanceLoader_TemplateControl
+	GuiControl
+		ctor: ControlTemplate
+GuiInstanceLoader_Compositions.cpp
+	GuiAxis
+		ctor: AxisDirection
+	GuiComposition
+		default: GuiControl*, GuiGraphicsComposition*, Ptr<IGuiGraphicsElement>
+	GuiTableComposition
+		Rows, Columns: array(GuiCellOption)
+	GuiCellComposition
+		Site: SiteValue
+GuiInstanceLoader_Document.cpp
+	GuiDocumentItem
+		default: GuiControl*, GuiGraphicsComposition*
+	GuiDocumentViewer, GuiDocumentLable
+		default: Ptr<GuiDocumentItem>
+GuiInstanceLoader_List.cpp
+	GuiSelectableListControl
+		ItemTemplate
+	GuiVirtualTreeView
+		ItemTemplate
+	GuiComboBox
+		ItemTemplate
+	GuiListView, GuiBindableListView
+		ctor: View(ListViewViewType), IconSize(Size)
+	GuiTreeView, GuiBindableTreeView
+		ctor: IconSize(Size)
+		Nodes: array(Ptr<tree::MemoryNodeProvider>)
+	list::BindableDataColumn
+		VisualizerTemplates
+		EditorTemplate
+	GuiBindableDataGrid
+		ctor: ViewModelContext
+		Columns: collection(Ptr<list::BindableDataColumn>)
+	tree::TreeNode
+		Text, Image, Tag
+GuiInstanceLoader_Tab.cpp
+	GuiTab
+		default: GuiTabPage*
+	GuiTabPage
+		default: GuiControl*, GuiGraphicsComposition*
+GuiInstanceLoader_Templates.cpp
+	GuiTemplate
+		ctor: \w+(Ptr<GuiTemplate::IFactory>)
+GuiInstanceLoader_Toolstrip.cpp
+	GuiToolstripMenu, GuiToolstripMenuBar, GuiToolstripToolBar
+		default: collection(GuiControl*)
+	GuiToolstripButton
+		SubMenu-set: GuiToolstripMenu*
+*/
+
 #include "GuiInstanceLoader_TemplateControl.h"
 
 namespace vl
