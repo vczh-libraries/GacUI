@@ -52,13 +52,6 @@ Instance Loader
 				Property,
 			};
 
-			enum PropertyRequirement
-			{
-				// A constructor argument is required only if the loader, whose CanCreate()==true, returns this property
-				Required,
-				Optional,
-			};
-
 			enum PropertyBindability
 			{
 				Bindable,
@@ -73,7 +66,6 @@ Instance Loader
 
 			Support									support = NotSupport;
 			PropertyUsage							usage = Property;
-			PropertyRequirement						requirement = Optional;
 			PropertyBindability						bindability = NotBindable;
 			PropertyMergability						mergability = NotMerge;
 			TypeInfoList							acceptableTypes;
@@ -146,6 +138,7 @@ Instance Loader
 			virtual GlobalStringKey							GetTypeName() = 0;
 			virtual void									ClearReflectionCache();
 
+			virtual void									GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual void									GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual void									GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);

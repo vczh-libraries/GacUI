@@ -31,9 +31,17 @@ GuiDocumentItemInstanceLoader
 					return typeName;
 				}
 
+				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_Name);
+					}
+				}
+
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					propertyNames.Add(_Name);
+					GetRequiredPropertyNames(typeInfo, propertyNames);
 					propertyNames.Add(GlobalStringKey::Empty);
 				}
 
@@ -50,7 +58,6 @@ GuiDocumentItemInstanceLoader
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
-						info->requirement = GuiInstancePropertyInfo::Required;
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);

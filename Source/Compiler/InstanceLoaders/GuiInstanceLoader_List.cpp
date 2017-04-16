@@ -117,9 +117,18 @@ GuiComboBoxInstanceLoader
 					_ListControl = GlobalStringKey::Get(L"ListControl");
 				}
 
+				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_ListControl);
+					}
+					BASE_TYPE::GetRequiredPropertyNames(typeInfo, propertyNames);
+				}
+
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					propertyNames.Add(_ListControl);
+					GetRequiredPropertyNames(typeInfo, propertyNames);
 					propertyNames.Add(GlobalStringKey::_ItemTemplate);
 					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
@@ -130,7 +139,6 @@ GuiComboBoxInstanceLoader
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiSelectableListControl*>::CreateTypeInfo());
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
-						info->requirement = GuiInstancePropertyInfo::Required;
 						return info;
 					}
 					else if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
@@ -310,8 +318,11 @@ GuiListViewInstanceLoader
 
 				void GetPropertyNames(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					propertyNames.Add(_View);
-					propertyNames.Add(_IconSize);
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_View);
+						propertyNames.Add(_IconSize);
+					}
 					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
@@ -460,7 +471,10 @@ GuiTreeViewInstanceLoader
 
 				void GetPropertyNames(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					propertyNames.Add(_IconSize);
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_IconSize);
+					}
 					if (!bindable)
 					{
 						propertyNames.Add(_Nodes);

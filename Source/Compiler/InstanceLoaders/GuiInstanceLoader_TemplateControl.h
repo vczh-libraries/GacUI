@@ -143,7 +143,10 @@ GuiVrtualTypeInstanceLoader
 
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					propertyNames.Add(GlobalStringKey::_ControlTemplate);
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(GlobalStringKey::_ControlTemplate);
+					}
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override

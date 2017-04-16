@@ -29,7 +29,7 @@ GuiTemplateInstanceLoader
 					return typeName;
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					List<ITypeDescriptor*> tds;
 					tds.Add(typeInfo.typeInfo->GetTypeDescriptor());
@@ -37,89 +37,29 @@ GuiTemplateInstanceLoader
 					for (vint i = 0; i < tds.Count(); i++)
 					{
 						auto td = tds[i];
-						vint propCount = td->GetPropertyCount();
-						for (vint i = 0; i < propCount; i++)
+						if (td != description::GetTypeDescriptor<GuiWindowTemplate>())
 						{
-							auto prop = td->GetProperty(i);
-							if (prop->IsWritable() && INVLOC.EndsWith(prop->GetName(),L"Template",Locale::None))
+							vint propCount = td->GetPropertyCount();
+							for (vint i = 0; i < propCount; i++)
 							{
-								propertyNames.Add(GlobalStringKey::Get(prop->GetName()));
+								auto prop = td->GetProperty(i);
+								if (prop->IsWritable() && INVLOC.EndsWith(prop->GetName(), L"Template", Locale::None))
+								{
+									propertyNames.Add(GlobalStringKey::Get(prop->GetName()));
+								}
 							}
-						}
 
-						vint baseCount = td->GetBaseTypeDescriptorCount();
-						for (vint i = 0; i < baseCount; i++)
-						{
-							auto baseTd = td->GetBaseTypeDescriptor(i);
-							if (!tds.Contains(baseTd))
+							vint baseCount = td->GetBaseTypeDescriptorCount();
+							for (vint i = 0; i < baseCount; i++)
 							{
-								tds.Add(baseTd);
-							}
-						}
-					}
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (auto prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true))
-					{
-						if (prop->IsWritable() && INVLOC.EndsWith(prop->GetName(), L"Template", Locale::None))
-						{
-							auto info = GuiInstancePropertyInfo::Assign(CopyTypeInfo(prop->GetReturn()));
-							info->usage = GuiInstancePropertyInfo::Property;
-
-							if (prop->GetOwnerTypeDescriptor() != description::GetTypeDescriptor<GuiWindowTemplate>())
-							{
-								info->requirement = GuiInstancePropertyInfo::Required;
-							}
-							return info;
-						}
-					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
-				}
-
-				bool CanCreate(const TypeInfo& typeInfo)override
-				{
-					if (typeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<GuiTemplate>()))
-					{
-						auto group = typeInfo.typeInfo->GetTypeDescriptor()->GetConstructorGroup();
-						if (group && group->GetMethodCount() == 1)
-						{
-							auto ctor = group->GetMethod(0);
-							if (ctor->GetParameterCount() == 0)
-							{
-								return true;
+								auto baseTd = td->GetBaseTypeDescriptor(i);
+								if (!tds.Contains(baseTd))
+								{
+									tds.Add(baseTd);
+								}
 							}
 						}
 					}
-					return false;
-				}
-
-				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
-				{
-					if (!CanCreate(typeInfo))
-					{
-						return nullptr;
-					}
-
-					auto block = MakePtr<WfBlockStatement>();
-					{
-						auto createExpr = MakePtr<WfNewClassExpression>();
-						createExpr->type = GetTypeFromTypeInfo(MakePtr<TypeDescriptorTypeInfo>(typeInfo.typeInfo->GetTypeDescriptor(), TypeInfoHint::Normal).Obj());
-
-						auto refVariable = MakePtr<WfReferenceExpression>();
-						refVariable->name.value = variableName.ToString();
-
-						auto assignExpr = MakePtr<WfBinaryExpression>();
-						assignExpr->op = WfBinaryOperator::Assign;
-						assignExpr->first = refVariable;
-						assignExpr->second = createExpr;
-
-						auto assignStat = MakePtr<WfExpressionStatement>();
-						assignStat->expression = assignExpr;
-						block->statements.Add(assignStat);
-					}
-					return block;
 				}
 			};
 

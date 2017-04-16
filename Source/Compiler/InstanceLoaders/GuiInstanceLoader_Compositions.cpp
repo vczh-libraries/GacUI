@@ -31,9 +31,17 @@ GuiAxisInstanceLoader
 					return typeName;
 				}
 
+				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_AxisDirection);
+					}
+				}
+
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					propertyNames.Add(_AxisDirection);
+					GetRequiredPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -42,7 +50,6 @@ GuiAxisInstanceLoader
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<AxisDirection>::CreateTypeInfo());
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
-						info->requirement = GuiInstancePropertyInfo::Required;
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);

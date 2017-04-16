@@ -84,6 +84,10 @@ IGuiInstanceLoader
 		{
 		}
 
+		void IGuiInstanceLoader::GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
+		{
+		}
+
 		void IGuiInstanceLoader::GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
 		{
 		}
@@ -402,20 +406,27 @@ GuiDefaultInstanceLoader
 
 			//***********************************************************************************
 
-			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
-				CTOR_PARAM_PREFIX
-
-				if (auto ctor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()))
+				if (CanCreate(typeInfo))
 				{
-					vint count = ctor->GetParameterCount();
-					for (vint i = 0; i < count; i++)
+					CTOR_PARAM_PREFIX
+
+					if (auto ctor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()))
 					{
-						const auto& name = ctor->GetParameter(i)->GetName();
-						propertyNames.Add(GlobalStringKey::Get(CTOR_PARAM_NAME(name)));
+						vint count = ctor->GetParameterCount();
+						for (vint i = 0; i < count; i++)
+						{
+							const auto& name = ctor->GetParameter(i)->GetName();
+							propertyNames.Add(GlobalStringKey::Get(CTOR_PARAM_NAME(name)));
+						}
 					}
 				}
+			}
 
+			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			{
+				GetRequiredPropertyNames(typeInfo, propertyNames);
 				CollectPropertyNames(typeInfo, typeInfo.typeInfo->GetTypeDescriptor(), propertyNames);
 			}
 
