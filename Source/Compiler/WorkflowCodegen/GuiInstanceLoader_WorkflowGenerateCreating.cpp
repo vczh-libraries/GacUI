@@ -268,7 +268,7 @@ WorkflowGenerateCreatingVisitor
 							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
 							{
 								auto info = resolvingResult.propertyResolvings[value.Obj()];
-								if (info.info->scope == GuiInstancePropertyInfo::Property)
+								if (info.info->usage == GuiInstancePropertyInfo::Property)
 								{
 									if (info.info->support == GuiInstancePropertyInfo::SupportCollection)
 									{
@@ -298,50 +298,52 @@ WorkflowGenerateCreatingVisitor
 			void FillCtorArguments(GuiConstructorRepr* repr, IGuiInstanceLoader* loader, const IGuiInstanceLoader::TypeInfo& typeInfo, IGuiInstanceLoader::ArgumentMap& arguments)
 			{
 				List<GlobalStringKey> ctorProps;
-				loader->GetConstructorParameters(typeInfo, ctorProps);
+				loader->GetPropertyNames(typeInfo, ctorProps);
 
 				WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
 				FOREACH(GlobalStringKey, prop, ctorProps)
 				{
-					auto index = repr->setters.Keys().IndexOf(prop);
-					if (index != -1)
-					{
-						auto setter = repr->setters.Values()[index];
-						if (setter->binding == GlobalStringKey::Empty)
-						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
-							{
-								auto argument = GetArgumentInfo(setter->attPosition, value.Obj());
-								if (argument.typeInfo && argument.expression)
-								{
-									arguments.Add(prop, argument);
-								}
-							}
-						}
-						else if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
-						{
-							auto propInfo = IGuiInstanceLoader::PropertyInfo(typeInfo, prop);
-							auto resolvedPropInfo = loader->GetPropertyType(propInfo);
-							auto value = setter->values[0].Cast<GuiTextRepr>();
-							if (auto expression = binder->GenerateConstructorArgument(precompileContext, resolvingResult, loader, propInfo, resolvedPropInfo, value->text, value->tagPosition, errors))
-							{
-								Workflow_RecordScriptPosition(precompileContext, value->tagPosition, expression);
+					auto propInfo = loader->GetPropertyType({ typeInfo,prop });
+					if (propInfo->usage != GuiInstancePropertyInfo::ConstructorArgument) continue;
 
-								IGuiInstanceLoader::ArgumentInfo argument;
-								argument.expression = expression;
-								argument.typeInfo = resolvedPropInfo->acceptableTypes[0];
-								argument.attPosition = setter->attPosition;
+					auto index = repr->setters.Keys().IndexOf(prop);
+					if (index == -1) continue;
+
+					auto setter = repr->setters.Values()[index];
+					if (setter->binding == GlobalStringKey::Empty)
+					{
+						FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+						{
+							auto argument = GetArgumentInfo(setter->attPosition, value.Obj());
+							if (argument.typeInfo && argument.expression)
+							{
 								arguments.Add(prop, argument);
 							}
 						}
-						else
+					}
+					else if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
+					{
+						auto propInfo = IGuiInstanceLoader::PropertyInfo(typeInfo, prop);
+						auto resolvedPropInfo = loader->GetPropertyType(propInfo);
+						auto value = setter->values[0].Cast<GuiTextRepr>();
+						if (auto expression = binder->GenerateConstructorArgument(precompileContext, resolvingResult, loader, propInfo, resolvedPropInfo, value->text, value->tagPosition, errors))
 						{
-							errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
-								L"[INTERNAL ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
-								setter->binding.ToString() +
-								L"\" cannot be found."));
+							Workflow_RecordScriptPosition(precompileContext, value->tagPosition, expression);
+
+							IGuiInstanceLoader::ArgumentInfo argument;
+							argument.expression = expression;
+							argument.typeInfo = resolvedPropInfo->acceptableTypes[0];
+							argument.attPosition = setter->attPosition;
+							arguments.Add(prop, argument);
 						}
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
+							L"[INTERNAL ERROR] Precompile: The appropriate IGuiInstanceBinder of binding \"-" +
+							setter->binding.ToString() +
+							L"\" cannot be found."));
 					}
 				}
 

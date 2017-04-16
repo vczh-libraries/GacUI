@@ -42,7 +42,7 @@ WorkflowGenerateBindingVisitor
 				if (auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding))
 				{
 					auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
-					if (propertyResolving.info->scope == GuiInstancePropertyInfo::Property)
+					if (propertyResolving.info->usage == GuiInstancePropertyInfo::Property)
 					{
 						WString expressionCode = setter->values[0].Cast<GuiTextRepr>()->text;
 						auto instancePropertyInfo = reprTypeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyName.ToString(), true);

@@ -42,7 +42,7 @@ GuiInstancePropertyInfo
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::AssignWithParent(Ptr<description::ITypeInfo> typeInfo)
 		{
 			auto info = Assign(typeInfo);
-			info->tryParent = true;
+			info->mergability = MergeWithParent;
 			return info;
 		}
 
@@ -56,7 +56,7 @@ GuiInstancePropertyInfo
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::CollectionWithParent(Ptr<description::ITypeInfo> typeInfo)
 		{
 			auto info = Collection(typeInfo);
-			info->tryParent = true;
+			info->mergability = MergeWithParent;
 			return info;
 		}
 
@@ -85,10 +85,6 @@ IGuiInstanceLoader
 		}
 
 		void IGuiInstanceLoader::GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
-		{
-		}
-
-		void IGuiInstanceLoader::GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
 		{
 		}
 
@@ -408,11 +404,6 @@ GuiDefaultInstanceLoader
 
 			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
-				CollectPropertyNames(typeInfo, typeInfo.typeInfo->GetTypeDescriptor(), propertyNames);
-			}
-
-			void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-			{
 				CTOR_PARAM_PREFIX
 
 				if (auto ctor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor()))
@@ -424,6 +415,8 @@ GuiDefaultInstanceLoader
 						propertyNames.Add(GlobalStringKey::Get(CTOR_PARAM_NAME(name)));
 					}
 				}
+
+				CollectPropertyNames(typeInfo, typeInfo.typeInfo->GetTypeDescriptor(), propertyNames);
 			}
 
 			PropertyType GetPropertyTypeCached(const PropertyInfo& propertyInfo)
@@ -449,7 +442,7 @@ GuiDefaultInstanceLoader
 								const auto& name = ctor->GetParameter(i)->GetName();
 								if (CTOR_PARAM_NAME(name) == propertyInfo.propertyName.ToString())
 								{
-									result->scope = GuiInstancePropertyInfo::ViewModel;
+									result->usage = GuiInstancePropertyInfo::ConstructorArgument;
 								}
 							}
 						}
