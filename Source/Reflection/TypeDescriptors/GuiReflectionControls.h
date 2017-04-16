@@ -1132,9 +1132,9 @@ Interface Proxy
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataVisualizerFactory)
 
-				Ptr<presentation::controls::list::IDataVisualizer> CreateVisualizer(const presentation::FontProperties& font, presentation::controls::GuiListViewBase::IStyleProvider* styleProvider)override
+				Ptr<presentation::controls::list::IDataVisualizer> CreateVisualizer(const presentation::FontProperties& font, presentation::controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override
 				{
-					INVOKEGET_INTERFACE_PROXY(CreateVisualizer, font, styleProvider);
+					INVOKEGET_INTERFACE_PROXY(CreateVisualizer, font, styleProvider, viewModelContext);
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::IDataVisualizerFactory)
 
@@ -1168,9 +1168,9 @@ Interface Proxy
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataEditorFactory)
 
-				Ptr<presentation::controls::list::IDataEditor> CreateEditor(presentation::controls::list::IDataEditorCallback* callback)
+				Ptr<presentation::controls::list::IDataEditor> CreateEditor(presentation::controls::list::IDataEditorCallback* callback, const description::Value& viewModelContext)
 				{
-					INVOKEGET_INTERFACE_PROXY(CreateEditor, callback);
+					INVOKEGET_INTERFACE_PROXY(CreateEditor, callback, viewModelContext);
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::IDataEditorFactory)
 
@@ -1202,6 +1202,11 @@ Interface Proxy
 				void SetCommandExecutor(presentation::controls::list::IDataProviderCommandExecutor* value)override
 				{
 					INVOKE_INTERFACE_PROXY(SetCommandExecutor, value);
+				}
+
+				description::Value GetViewModelContext()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetViewModelContext);
 				}
 
 				vint GetColumnCount()override
@@ -1399,6 +1404,11 @@ Interface Proxy
 				void SetCommandExecutor(presentation::controls::list::IDataProviderCommandExecutor* value)
 				{
 					INVOKE_INTERFACE_PROXY(SetCommandExecutor, value);
+				}
+
+				description::Value GetViewModelContext()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetViewModelContext);
 				}
 
 				vint GetColumnCount()

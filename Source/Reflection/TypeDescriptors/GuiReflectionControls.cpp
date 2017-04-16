@@ -1316,7 +1316,7 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER(IDataVisualizerFactory)
 				CLASS_MEMBER_BASE(IDescriptable)
 
-				CLASS_MEMBER_METHOD(CreateVisualizer, {L"font" _ L"styleProvider"})
+				CLASS_MEMBER_METHOD(CreateVisualizer, {L"font" _ L"styleProvider" _ L"viewModelContext"})
 			END_INTERFACE_MEMBER(IDataVisualizerFactory)
 
 			BEGIN_INTERFACE_MEMBER(IDataVisualizer)
@@ -1339,7 +1339,7 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER(IDataEditorFactory)
 				CLASS_MEMBER_BASE(IDescriptable)
 
-				CLASS_MEMBER_METHOD(CreateEditor, {L"callback"})
+				CLASS_MEMBER_METHOD(CreateEditor, {L"callback" _ L"viewModelContext"})
 			END_INTERFACE_MEMBER(IDataEditorFactory)
 
 			BEGIN_INTERFACE_MEMBER(IDataEditor)
@@ -1363,6 +1363,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(IDescriptable)
 				INTERFACE_IDENTIFIER(IDataProvider)
 
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SortedColumn)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(RowCount)
@@ -1425,6 +1426,7 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER(IStructuredDataProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
 
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(RowCount)
 

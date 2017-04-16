@@ -40,7 +40,7 @@ Datagrid Interfaces
 					/// <returns>The created data visualizer.</returns>
 					/// <param name="font">The font for the list view control.</param>
 					/// <param name="styleProvider">The style provider for the list view control.</param>
-					virtual Ptr<IDataVisualizer>						CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider)=0;
+					virtual Ptr<IDataVisualizer>						CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)=0;
 				};
 
 				/// <summary>The visualizer for each cell in [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>
@@ -98,7 +98,7 @@ Datagrid Interfaces
 					/// <summary>Create a data editor.</summary>
 					/// <returns>The created data editor.</returns>
 					/// <param name="callback">The callback for the created editor to send notification.</param>
-					virtual Ptr<IDataEditor>							CreateEditor(IDataEditorCallback* callback)=0;
+					virtual Ptr<IDataEditor>							CreateEditor(IDataEditorCallback* callback, const description::Value& viewModelContext)=0;
 				};
 
 				/// <summary>The editor for each cell in [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>
@@ -143,90 +143,93 @@ Datagrid Interfaces
 				public:
 					/// <summary>The identifier for this view.</summary>
 					static const wchar_t* const							Identifier;
-					
+
 					/// <summary>Set the command executor.</summary>
 					/// <param name="value">The command executor.</param>
-					virtual void										SetCommandExecutor(IDataProviderCommandExecutor* value)=0;
+					virtual void										SetCommandExecutor(IDataProviderCommandExecutor* value) = 0;
+					/// <summary>Get the view model context. It is used to create data visualizers and data editors.</summary>
+					/// <returns>The view model context.</returns>
+					virtual description::Value							GetViewModelContext() = 0;
 					/// <summary>Get the number of all columns.</summary>
 					/// <returns>The number of all columns.</returns>
-					virtual vint										GetColumnCount()=0;
+					virtual vint										GetColumnCount() = 0;
 					/// <summary>Get the text for the column.</summary>
 					/// <returns>The text for the column.</returns>
 					/// <param name="column">The index for the column.</param>
-					virtual WString										GetColumnText(vint column)=0;
+					virtual WString										GetColumnText(vint column) = 0;
 					/// <summary>Get the size for the column.</summary>
 					/// <returns>The size for the column.</returns>
 					/// <param name="column">The index for the column.</param>
-					virtual vint										GetColumnSize(vint column)=0;
+					virtual vint										GetColumnSize(vint column) = 0;
 					/// <summary>Set the size for the column.</summary>
 					/// <param name="column">The index for the column.</param>
 					/// <param name="value">The new size for the column.</param>
-					virtual void										SetColumnSize(vint column, vint value)=0;
+					virtual void										SetColumnSize(vint column, vint value) = 0;
 					/// <summary>Get the popup binded to the column.</summary>
 					/// <returns>The popup binded to the column.</returns>
 					/// <param name="column">The index of the column.</param>
-					virtual GuiMenu*									GetColumnPopup(vint column)=0;
+					virtual GuiMenu*									GetColumnPopup(vint column) = 0;
 					/// <summary>Test is a column sortable.</summary>
 					/// <returns>Returns true if this column is sortable.</returns>
 					/// <param name="column">The index of the column.</param>
-					virtual bool										IsColumnSortable(vint column)=0;
+					virtual bool										IsColumnSortable(vint column) = 0;
 					/// <summary>Set the column sorting state to update the data.</summary>
 					/// <param name="column">The index of the column. Set to -1 means go back to the unsorted state.</param>
 					/// <param name="ascending">Set to true if the data is sorted in ascending order.</param>
-					virtual void										SortByColumn(vint column, bool ascending)=0;
+					virtual void										SortByColumn(vint column, bool ascending) = 0;
 					/// <summary>Get the sorted columm. If no column is under a sorted state, it returns -1.</summary>
 					/// <returns>The column number.</returns>
-					virtual vint										GetSortedColumn()=0;
+					virtual vint										GetSortedColumn() = 0;
 					/// <summary>Test is the sort order ascending. </summary>
 					/// <returns>Returns true if the sort order is ascending.</returns>
-					virtual bool										IsSortOrderAscending()=0;
-					
+					virtual bool										IsSortOrderAscending() = 0;
+
 					/// <summary>Get the number of all rows.</summary>
 					/// <returns>The number of all rows.</returns>
-					virtual vint										GetRowCount()=0;
+					virtual vint										GetRowCount() = 0;
 					/// <summary>Get the large image for the row.</summary>
 					/// <returns>The large image.</returns>
 					/// <param name="row">The row number.</param>
-					virtual Ptr<GuiImageData>							GetRowLargeImage(vint row)=0;
+					virtual Ptr<GuiImageData>							GetRowLargeImage(vint row) = 0;
 					/// <summary>Get the small image for the row.</summary>
 					/// <returns>The small image.</returns>
 					/// <param name="row">The row number.</param>
-					virtual Ptr<GuiImageData>							GetRowSmallImage(vint row)=0;
+					virtual Ptr<GuiImageData>							GetRowSmallImage(vint row) = 0;
 					/// <summary>Get the column span for the cell.</summary>
 					/// <returns>The column span for the cell.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
-					virtual vint										GetCellSpan(vint row, vint column)=0;
+					virtual vint										GetCellSpan(vint row, vint column) = 0;
 					/// <summary>Get the text for the cell.</summary>
 					/// <returns>The text for the cell.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
-					virtual WString										GetCellText(vint row, vint column)=0;
+					virtual WString										GetCellText(vint row, vint column) = 0;
 					/// <summary>Get the data visualizer factory that creates data visualizers for visualizing the cell.</summary>
 					/// <returns>The data visualizer factory. The data grid control to use the predefined data visualizer if this function returns null.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
-					virtual IDataVisualizerFactory*						GetCellDataVisualizerFactory(vint row, vint column)=0;
+					virtual IDataVisualizerFactory*						GetCellDataVisualizerFactory(vint row, vint column) = 0;
 					/// <summary>Called before visualizing the cell.</summary>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					/// <param name="dataVisualizer">The data visualizer to be updated.</param>
-					virtual void										VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)=0;
+					virtual void										VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer) = 0;
 					/// <summary>Get the data editor factory that creates data editors for editing the cell.</summary>
 					/// <returns>The data editor factory. Returns null to disable editing.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
-					virtual IDataEditorFactory*							GetCellDataEditorFactory(vint row, vint column)=0;
+					virtual IDataEditorFactory*							GetCellDataEditorFactory(vint row, vint column) = 0;
 					/// <summary>Called before editing the cell.</summary>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					/// <param name="dataEditor">The data editor.</param>
-					virtual void										BeforeEditCell(vint row, vint column, IDataEditor* dataEditor)=0;
+					virtual void										BeforeEditCell(vint row, vint column, IDataEditor* dataEditor) = 0;
 					/// <summary>Called when saving data for the editing cell.</summary>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					/// <param name="dataEditor">The data editor.</param>
-					virtual void										SaveCellData(vint row, vint column, IDataEditor* dataEditor)=0;
+					virtual void										SaveCellData(vint row, vint column, IDataEditor* dataEditor) = 0;
 				};
 
 /***********************************************************************
@@ -327,6 +330,9 @@ DataSource Extensions
 					/// <summary>Set the command executor.</summary>
 					/// <param name="value">The command executor.</param>
 					virtual void										SetCommandExecutor(IDataProviderCommandExecutor* value)=0;
+					/// <summary>Get the view model context. It is used to create data visualizers and data editors.</summary>
+					/// <returns>The view model context.</returns>
+					virtual description::Value							GetViewModelContext() = 0;
 					/// <summary>Get the number of all columns.</summary>
 					/// <returns>The number of all columns.</returns>
 					virtual vint										GetColumnCount()=0;

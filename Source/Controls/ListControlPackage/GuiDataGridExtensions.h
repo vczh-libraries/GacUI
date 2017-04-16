@@ -36,17 +36,18 @@ Extension Bases
 					template<typename T>
 					friend class DataDecoratableVisualizerFactory;
 				protected:
-					IDataVisualizerFactory*								factory;
+					IDataVisualizerFactory*								factory = nullptr;
 					FontProperties										font;
-					GuiListViewBase::IStyleProvider*					styleProvider;
-					compositions::GuiBoundsComposition*					boundsComposition;
+					GuiListViewBase::IStyleProvider*					styleProvider = nullptr;
+					description::Value									viewModelContext;
+					compositions::GuiBoundsComposition*					boundsComposition = nullptr;
 					Ptr<IDataVisualizer>								decoratedDataVisualizer;
 
 					virtual compositions::GuiBoundsComposition*			CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)=0;
 				public:
 					/// <summary>Create the data visualizer.</summary>
 					/// <param name="_decoratedDataVisualizer">The decorated data visualizer inside the current data visualizer.</param>
-					DataVisualizerBase(Ptr<IDataVisualizer> _decoratedDataVisualizer=0);
+					DataVisualizerBase(Ptr<IDataVisualizer> _decoratedDataVisualizer = nullptr);
 					~DataVisualizerBase();
 
 					IDataVisualizerFactory*								GetFactory()override;
@@ -60,12 +61,13 @@ Extension Bases
 				class DataVisualizerFactory : public Object, public virtual IDataVisualizerFactory, public Description<DataVisualizerFactory<TVisualizer>>
 				{
 				public:
-					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider)override
+					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override
 					{
-						DataVisualizerBase* dataVisualizer=new TVisualizer;
-						dataVisualizer->factory=this;
-						dataVisualizer->font=font;
-						dataVisualizer->styleProvider=styleProvider;
+						DataVisualizerBase* dataVisualizer = new TVisualizer;
+						dataVisualizer->factory = this;
+						dataVisualizer->font = font;
+						dataVisualizer->styleProvider = styleProvider;
+						dataVisualizer->viewModelContext = viewModelContext;
 						return dataVisualizer;
 					}
 				};
@@ -81,13 +83,14 @@ Extension Bases
 					{
 					}
 
-					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider)override
+					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override
 					{
-						Ptr<IDataVisualizer> decoratedDataVisualizer=decoratedFactory->CreateVisualizer(font, styleProvider);
-						DataVisualizerBase* dataVisualizer=new TVisualizer(decoratedDataVisualizer);
-						dataVisualizer->factory=this;
-						dataVisualizer->font=font;
-						dataVisualizer->styleProvider=styleProvider;
+						Ptr<IDataVisualizer> decoratedDataVisualizer = decoratedFactory->CreateVisualizer(font, styleProvider, viewModelContext);
+						DataVisualizerBase* dataVisualizer = new TVisualizer(decoratedDataVisualizer);
+						dataVisualizer->factory = this;
+						dataVisualizer->font = font;
+						dataVisualizer->styleProvider = styleProvider;
+						dataVisualizer->viewModelContext = viewModelContext;
 						return dataVisualizer;
 					}
 				};
@@ -98,9 +101,10 @@ Extension Bases
 					template<typename T>
 					friend class DataEditorFactory;
 				protected:
-					IDataEditorFactory*									factory;
-					IDataEditorCallback*								callback;
-					compositions::GuiBoundsComposition*					boundsComposition;
+					IDataEditorFactory*									factory = nullptr;
+					IDataEditorCallback*								callback = nullptr;
+					description::Value									viewModelContext;
+					compositions::GuiBoundsComposition*					boundsComposition = nullptr;
 
 					virtual compositions::GuiBoundsComposition*			CreateBoundsCompositionInternal()=0;
 				public:
@@ -118,11 +122,12 @@ Extension Bases
 				class DataEditorFactory : public Object, public virtual IDataEditorFactory, public Description<DataEditorFactory<TEditor>>
 				{
 				public:
-					Ptr<IDataEditor> CreateEditor(IDataEditorCallback* callback)override
+					Ptr<IDataEditor> CreateEditor(IDataEditorCallback* callback, const description::Value& viewModelContext)override
 					{
-						DataEditorBase* dataEditor=new TEditor;
-						dataEditor->factory=this;
-						dataEditor->callback=callback;
+						DataEditorBase* dataEditor = new TEditor;
+						dataEditor->factory = this;
+						dataEditor->callback = callback;
+						dataEditor->viewModelContext = viewModelContext;
 						return dataEditor;
 					}
 				};

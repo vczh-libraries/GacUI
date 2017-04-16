@@ -1113,7 +1113,7 @@ GuiBindableDataColumn
 					}
 				}
 
-				const description::Value& BindableDataColumn::GetViewModelContext()
+				description::Value BindableDataColumn::GetViewModelContext()
 				{
 					return dataProvider->viewModelContext;
 				}
@@ -1254,7 +1254,7 @@ GuiBindableDataProvider
 					}
 				}
 
-				const description::Value& BindableDataProvider::GetViewModelContext()
+				description::Value BindableDataProvider::GetViewModelContext()
 				{
 					return viewModelContext;
 				}

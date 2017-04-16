@@ -478,7 +478,7 @@ DataGridContentProvider::ItemContent
 						for(vint i=0;i<dataVisualizers.Count();i++)
 						{
 							IDataVisualizerFactory* factory=GetDataVisualizerFactory(itemIndex, i);
-							dataVisualizers[i]=factory->CreateVisualizer(font, styleProvider);
+							dataVisualizers[i] = factory->CreateVisualizer(font, styleProvider, contentProvider->dataProvider->GetViewModelContext());
 						}
 
 						textTable->SetRowsAndColumns(1, columnCount);
@@ -651,7 +651,7 @@ DataGridContentProvider
 					if(editorFactory)
 					{
 						currentEditorOpening=true;
-						currentEditor=editorFactory->CreateEditor(this);
+						currentEditor = editorFactory->CreateEditor(this, dataProvider->GetViewModelContext());
 						currentEditor->BeforeEditCell(dataProvider, row, column);
 						dataProvider->BeforeEditCell(row, column, currentEditor.Obj());
 						currentEditorOpening=false;

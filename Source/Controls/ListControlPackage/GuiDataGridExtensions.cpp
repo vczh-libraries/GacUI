@@ -19,10 +19,7 @@ DataVisualizerBase
 ***********************************************************************/
 
 				DataVisualizerBase::DataVisualizerBase(Ptr<IDataVisualizer> _decoratedDataVisualizer)
-					:factory(0)
-					,styleProvider(0)
-					,boundsComposition(0)
-					,decoratedDataVisualizer(_decoratedDataVisualizer)
+					:decoratedDataVisualizer(_decoratedDataVisualizer)
 				{
 				}
 
@@ -88,9 +85,6 @@ DataEditorBase
 ***********************************************************************/
 
 				DataEditorBase::DataEditorBase()
-					:factory(0)
-					,callback(0)
-					,boundsComposition(0)
 				{
 				}
 

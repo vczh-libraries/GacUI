@@ -416,7 +416,7 @@ GuiBindableDataGrid
 					
 					/// <summary>Get the view model context which will be used as a view model to create visualizers and editors.</summary>
 					/// <returns>The value model context.</returns>
-					const description::Value&						GetViewModelContext();
+					description::Value								GetViewModelContext();
 				};
 			
 				/// <summary>Data provider object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
@@ -438,7 +438,7 @@ GuiBindableDataGrid
 					vint											GetRowCount()override;
 					description::Value								GetRowValue(vint row);
 
-					const description::Value&						GetViewModelContext();
+					description::Value								GetViewModelContext()override;
 					bool											InsertBindableColumn(vint index, Ptr<BindableDataColumn> column);
 					bool											AddBindableColumn(Ptr<BindableDataColumn> column);
 					bool											RemoveBindableColumn(Ptr<BindableDataColumn> column);

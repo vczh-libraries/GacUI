@@ -179,6 +179,7 @@ Structured DataSource Extensions
 					void												SetAdditionalFilter(Ptr<IStructuredDataFilter> value);
 
 					void												SetCommandExecutor(IDataProviderCommandExecutor* value)override;
+					description::Value									GetViewModelContext()override;
 					vint												GetColumnCount()override;
 					WString												GetColumnText(vint column)override;
 					vint												GetColumnSize(vint column)override;
@@ -302,6 +303,7 @@ Structured DataSource Extensions
 					~StructuredDataProviderBase();
 
 					void												SetCommandExecutor(IDataProviderCommandExecutor* value)override;
+					description::Value									GetViewModelContext()override;
 					vint												GetColumnCount()override;
 					IStructuredColumnProvider*							GetColumn(vint column)override;
 					Ptr<GuiImageData>									GetRowLargeImage(vint row)override;

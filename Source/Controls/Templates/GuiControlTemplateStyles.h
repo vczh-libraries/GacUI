@@ -599,7 +599,7 @@ Item Template (GuiGridVisualizerTemplate)
 					Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory);
 					~Factory();
 
-					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)override;
+					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override;
 				};
 
 				class DecoratedFactory : public controls::list::DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>
@@ -611,7 +611,7 @@ Item Template (GuiGridVisualizerTemplate)
 					DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory);
 					~DecoratedFactory();
 
-					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)override;
+					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override;
 				};
 
 			protected:
@@ -644,7 +644,7 @@ Item Template (GuiGridEditorTemplate)
 					Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory);
 					~Factory();
 
-					Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataEditorCallback* callback)override;
+					Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataEditorCallback* callback, const description::Value& viewModelContext)override;
 				};
 
 			protected:

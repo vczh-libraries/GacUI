@@ -351,6 +351,11 @@ StructuredDataProvider
 					commandExecutor=value;
 				}
 
+				description::Value StructuredDataProvider::GetViewModelContext()
+				{
+					return structuredDataProvider->GetViewModelContext();
+				}
+
 				vint StructuredDataProvider::GetColumnCount()
 				{
 					return structuredDataProvider->GetColumnCount();
@@ -705,6 +710,11 @@ StructuredDataProviderBase
 					{
 						column->SetCommandExecutor(commandExecutor);
 					}
+				}
+
+				description::Value StructuredDataProviderBase::GetViewModelContext()
+				{
+					return description::Value();
 				}
 
 				vint StructuredDataProviderBase::GetColumnCount()

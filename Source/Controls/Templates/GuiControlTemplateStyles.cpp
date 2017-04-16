@@ -1411,9 +1411,9 @@ GuiBindableDataVisualizer::Factory
 			{
 			}
 
-			Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::Factory::CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)
+			Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::Factory::CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)
 			{
-				auto visualizer = DataVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(font, styleProvider).Cast<GuiBindableDataVisualizer>();
+				auto visualizer = DataVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(font, styleProvider, viewModelContext).Cast<GuiBindableDataVisualizer>();
 				if (visualizer)
 				{
 					visualizer->templateFactory = templateFactory;
@@ -1435,9 +1435,9 @@ GuiBindableDataVisualizer::DecoratedFactory
 			{
 			}
 
-			Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::DecoratedFactory::CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)
+			Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::DecoratedFactory::CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)
 			{
-				auto visualizer = DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(font, styleProvider).Cast<GuiBindableDataVisualizer>();
+				auto visualizer = DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(font, styleProvider, viewModelContext).Cast<GuiBindableDataVisualizer>();
 				if (visualizer)
 				{
 					visualizer->templateFactory = templateFactory;
@@ -1451,7 +1451,7 @@ GuiBindableDataVisualizer
 
 			compositions::GuiBoundsComposition* GuiBindableDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
 			{
-				visualizerTemplate = templateFactory(ownerColumn->GetViewModelContext());
+				visualizerTemplate = templateFactory(viewModelContext);
 				CHECK_ERROR(visualizerTemplate, L"GuiBindableDataVisualizer::CreateBoundsCompositionInternal()#An instance of GuiGridVisualizerTemplate is expected.");
 
 				if (decoratedComposition)
@@ -1517,9 +1517,9 @@ GuiBindableDataEditor::Factory
 			{
 			}
 
-			Ptr<controls::list::IDataEditor> GuiBindableDataEditor::Factory::CreateEditor(controls::list::IDataEditorCallback* callback)
+			Ptr<controls::list::IDataEditor> GuiBindableDataEditor::Factory::CreateEditor(controls::list::IDataEditorCallback* callback, const description::Value& viewModelContext)
 			{
-				auto editor = DataEditorFactory<GuiBindableDataEditor>::CreateEditor(callback).Cast<GuiBindableDataEditor>();
+				auto editor = DataEditorFactory<GuiBindableDataEditor>::CreateEditor(callback, viewModelContext).Cast<GuiBindableDataEditor>();
 				if (editor)
 				{
 					editor->templateFactory = templateFactory;
@@ -1537,7 +1537,7 @@ GuiBindableDataEditor
 
 			compositions::GuiBoundsComposition* GuiBindableDataEditor::CreateBoundsCompositionInternal()
 			{
-				editorTemplate = templateFactory(ownerColumn->GetViewModelContext());
+				editorTemplate = templateFactory(viewModelContext);
 				CHECK_ERROR(editorTemplate, L"GuiBindableDataEditor::CreateBoundsCompositionInternal()#An instance of GuiGridEditorTemplate is expected.");
 
 				editorTemplate->CellValueChanged.AttachMethod(this, &GuiBindableDataEditor::editorTemplate_CellValueChanged);
