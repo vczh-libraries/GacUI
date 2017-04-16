@@ -48,7 +48,7 @@ Workflow_GetPropertyTypes
 							}
 						}
 
-						if (!propertyTypeInfo->tryParent)
+						if (propertyTypeInfo->mergability == GuiInstancePropertyInfo::NotMerge)
 						{
 							break;
 						}
@@ -254,9 +254,9 @@ WorkflowReferenceNamesVisitor
 							auto binder = GetInstanceLoaderManager()->GetInstanceBinder(setter->binding);
 							if (binder)
 							{
-								if (possibleInfos[0].info->scope == GuiInstancePropertyInfo::Constructor)
+								if (possibleInfos[0].info->usage == GuiInstancePropertyInfo::ConstructorArgument)
 								{
-									if (!possibleInfos[0].info->bindable)
+									if (possibleInfos[0].info->bindability == GuiInstancePropertyInfo::NotBindable)
 									{
 										errors.Add(GuiResourceError({ resolvingResult.resource }, setter->attPosition,
 											errorPrefix +
@@ -322,15 +322,24 @@ WorkflowReferenceNamesVisitor
 
 				if (resolvingResult.context->instance.Obj() != repr)
 				{
-					List<GlobalStringKey> ctorProps;
-					loader->GetConstructorParameters(resolvedTypeInfo, ctorProps);
-					FOREACH(GlobalStringKey, prop, ctorProps)
+					List<GlobalStringKey> requiredProps;
 					{
-						auto info = loader->GetPropertyType(IGuiInstanceLoader::PropertyInfo(resolvedTypeInfo, prop));
-						if (info->required && !properties.Contains(prop, loader))
+						auto currentLoader = loader;
+						while (currentLoader)
+						{
+							currentLoader->GetRequiredPropertyNames(resolvedTypeInfo, requiredProps);
+							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
+						}
+					}
+					FOREACH(GlobalStringKey, prop, From(requiredProps).Distinct())
+					{
+						auto info = loader->GetPropertyType({ resolvedTypeInfo, prop });
+						if (!properties.Contains(prop, loader))
 						{
 							errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
-								L"Precompile: Missing constructor argument \"" +
+								L"Precompile: Missing required " +
+								WString(info->usage == GuiInstancePropertyInfo::ConstructorArgument ? L"constructor argument" : L"required property") +
+								L" \"" +
 								prop.ToString() +
 								L"\" of type \"" +
 								resolvedTypeInfo.typeName.ToString() +
@@ -533,7 +542,16 @@ WorkflowReferenceNamesVisitor
 								if (repr == resolvingResult.context->instance.Obj())
 								{
 									List<GlobalStringKey> propertyNames;
-									loader->GetConstructorParameters(resolvedTypeInfo, propertyNames);
+									loader->GetPropertyNames(resolvedTypeInfo, propertyNames);
+									for (vint i = propertyNames.Count() - 1; i >= 0; i--)
+									{
+										auto info = loader->GetPropertyType({ resolvedTypeInfo, propertyNames[i] });
+										if (!info || info->usage == GuiInstancePropertyInfo::Property)
+										{
+											propertyNames.RemoveAt(i);
+										}
+									}
+
 									if (propertyNames.Count() == 1)
 									{
 										if (propertyNames[0] != GlobalStringKey::_ControlTemplate)
