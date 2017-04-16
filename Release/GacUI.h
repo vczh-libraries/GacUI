@@ -8228,6 +8228,15 @@ namespace vl
 {
 	namespace presentation
 	{
+		template<typename T>
+		using ItemProperty = Func<T(const reflection::description::Value&)>;
+
+		template<typename T>
+		using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
+
+		template<typename T>
+		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
+
 		namespace controls
 		{
 
@@ -11804,12 +11813,6 @@ namespace vl
 		{
 			class GuiListViewBase;
 
-			template<typename T>
-			using ItemProperty = Func<T(const reflection::description::Value&)>;
-
-			template<typename T>
-			using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
-
 			namespace list
 			{
 
@@ -15268,7 +15271,7 @@ Datagrid Interfaces
 					/// <returns>The created data visualizer.</returns>
 					/// <param name="font">The font for the list view control.</param>
 					/// <param name="styleProvider">The style provider for the list view control.</param>
-					virtual Ptr<IDataVisualizer>						CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider)=0;
+					virtual Ptr<IDataVisualizer>						CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)=0;
 				};
 
 				/// <summary>The visualizer for each cell in [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>
@@ -15326,7 +15329,7 @@ Datagrid Interfaces
 					/// <summary>Create a data editor.</summary>
 					/// <returns>The created data editor.</returns>
 					/// <param name="callback">The callback for the created editor to send notification.</param>
-					virtual Ptr<IDataEditor>							CreateEditor(IDataEditorCallback* callback)=0;
+					virtual Ptr<IDataEditor>							CreateEditor(IDataEditorCallback* callback, const description::Value& viewModelContext)=0;
 				};
 
 				/// <summary>The editor for each cell in [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>
@@ -15371,90 +15374,93 @@ Datagrid Interfaces
 				public:
 					/// <summary>The identifier for this view.</summary>
 					static const wchar_t* const							Identifier;
-					
+
 					/// <summary>Set the command executor.</summary>
 					/// <param name="value">The command executor.</param>
-					virtual void										SetCommandExecutor(IDataProviderCommandExecutor* value)=0;
+					virtual void										SetCommandExecutor(IDataProviderCommandExecutor* value) = 0;
+					/// <summary>Get the view model context. It is used to create data visualizers and data editors.</summary>
+					/// <returns>The view model context.</returns>
+					virtual description::Value							GetViewModelContext() = 0;
 					/// <summary>Get the number of all columns.</summary>
 					/// <returns>The number of all columns.</returns>
-					virtual vint										GetColumnCount()=0;
+					virtual vint										GetColumnCount() = 0;
 					/// <summary>Get the text for the column.</summary>
 					/// <returns>The text for the column.</returns>
 					/// <param name="column">The index for the column.</param>
-					virtual WString										GetColumnText(vint column)=0;
+					virtual WString										GetColumnText(vint column) = 0;
 					/// <summary>Get the size for the column.</summary>
 					/// <returns>The size for the column.</returns>
 					/// <param name="column">The index for the column.</param>
-					virtual vint										GetColumnSize(vint column)=0;
+					virtual vint										GetColumnSize(vint column) = 0;
 					/// <summary>Set the size for the column.</summary>
 					/// <param name="column">The index for the column.</param>
 					/// <param name="value">The new size for the column.</param>
-					virtual void										SetColumnSize(vint column, vint value)=0;
+					virtual void										SetColumnSize(vint column, vint value) = 0;
 					/// <summary>Get the popup binded to the column.</summary>
 					/// <returns>The popup binded to the column.</returns>
 					/// <param name="column">The index of the column.</param>
-					virtual GuiMenu*									GetColumnPopup(vint column)=0;
+					virtual GuiMenu*									GetColumnPopup(vint column) = 0;
 					/// <summary>Test is a column sortable.</summary>
 					/// <returns>Returns true if this column is sortable.</returns>
 					/// <param name="column">The index of the column.</param>
-					virtual bool										IsColumnSortable(vint column)=0;
+					virtual bool										IsColumnSortable(vint column) = 0;
 					/// <summary>Set the column sorting state to update the data.</summary>
 					/// <param name="column">The index of the column. Set to -1 means go back to the unsorted state.</param>
 					/// <param name="ascending">Set to true if the data is sorted in ascending order.</param>
-					virtual void										SortByColumn(vint column, bool ascending)=0;
+					virtual void										SortByColumn(vint column, bool ascending) = 0;
 					/// <summary>Get the sorted columm. If no column is under a sorted state, it returns -1.</summary>
 					/// <returns>The column number.</returns>
-					virtual vint										GetSortedColumn()=0;
+					virtual vint										GetSortedColumn() = 0;
 					/// <summary>Test is the sort order ascending. </summary>
 					/// <returns>Returns true if the sort order is ascending.</returns>
-					virtual bool										IsSortOrderAscending()=0;
-					
+					virtual bool										IsSortOrderAscending() = 0;
+
 					/// <summary>Get the number of all rows.</summary>
 					/// <returns>The number of all rows.</returns>
-					virtual vint										GetRowCount()=0;
+					virtual vint										GetRowCount() = 0;
 					/// <summary>Get the large image for the row.</summary>
 					/// <returns>The large image.</returns>
 					/// <param name="row">The row number.</param>
-					virtual Ptr<GuiImageData>							GetRowLargeImage(vint row)=0;
+					virtual Ptr<GuiImageData>							GetRowLargeImage(vint row) = 0;
 					/// <summary>Get the small image for the row.</summary>
 					/// <returns>The small image.</returns>
 					/// <param name="row">The row number.</param>
-					virtual Ptr<GuiImageData>							GetRowSmallImage(vint row)=0;
+					virtual Ptr<GuiImageData>							GetRowSmallImage(vint row) = 0;
 					/// <summary>Get the column span for the cell.</summary>
 					/// <returns>The column span for the cell.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
-					virtual vint										GetCellSpan(vint row, vint column)=0;
+					virtual vint										GetCellSpan(vint row, vint column) = 0;
 					/// <summary>Get the text for the cell.</summary>
 					/// <returns>The text for the cell.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
-					virtual WString										GetCellText(vint row, vint column)=0;
+					virtual WString										GetCellText(vint row, vint column) = 0;
 					/// <summary>Get the data visualizer factory that creates data visualizers for visualizing the cell.</summary>
 					/// <returns>The data visualizer factory. The data grid control to use the predefined data visualizer if this function returns null.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
-					virtual IDataVisualizerFactory*						GetCellDataVisualizerFactory(vint row, vint column)=0;
+					virtual IDataVisualizerFactory*						GetCellDataVisualizerFactory(vint row, vint column) = 0;
 					/// <summary>Called before visualizing the cell.</summary>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					/// <param name="dataVisualizer">The data visualizer to be updated.</param>
-					virtual void										VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)=0;
+					virtual void										VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer) = 0;
 					/// <summary>Get the data editor factory that creates data editors for editing the cell.</summary>
 					/// <returns>The data editor factory. Returns null to disable editing.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
-					virtual IDataEditorFactory*							GetCellDataEditorFactory(vint row, vint column)=0;
+					virtual IDataEditorFactory*							GetCellDataEditorFactory(vint row, vint column) = 0;
 					/// <summary>Called before editing the cell.</summary>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					/// <param name="dataEditor">The data editor.</param>
-					virtual void										BeforeEditCell(vint row, vint column, IDataEditor* dataEditor)=0;
+					virtual void										BeforeEditCell(vint row, vint column, IDataEditor* dataEditor) = 0;
 					/// <summary>Called when saving data for the editing cell.</summary>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					/// <param name="dataEditor">The data editor.</param>
-					virtual void										SaveCellData(vint row, vint column, IDataEditor* dataEditor)=0;
+					virtual void										SaveCellData(vint row, vint column, IDataEditor* dataEditor) = 0;
 				};
 
 /***********************************************************************
@@ -15555,6 +15561,9 @@ DataSource Extensions
 					/// <summary>Set the command executor.</summary>
 					/// <param name="value">The command executor.</param>
 					virtual void										SetCommandExecutor(IDataProviderCommandExecutor* value)=0;
+					/// <summary>Get the view model context. It is used to create data visualizers and data editors.</summary>
+					/// <returns>The view model context.</returns>
+					virtual description::Value							GetViewModelContext() = 0;
 					/// <summary>Get the number of all columns.</summary>
 					/// <returns>The number of all columns.</returns>
 					virtual vint										GetColumnCount()=0;
@@ -15764,6 +15773,7 @@ Structured DataSource Extensions
 					void												SetAdditionalFilter(Ptr<IStructuredDataFilter> value);
 
 					void												SetCommandExecutor(IDataProviderCommandExecutor* value)override;
+					description::Value									GetViewModelContext()override;
 					vint												GetColumnCount()override;
 					WString												GetColumnText(vint column)override;
 					vint												GetColumnSize(vint column)override;
@@ -15887,6 +15897,7 @@ Structured DataSource Extensions
 					~StructuredDataProviderBase();
 
 					void												SetCommandExecutor(IDataProviderCommandExecutor* value)override;
+					description::Value									GetViewModelContext()override;
 					vint												GetColumnCount()override;
 					IStructuredColumnProvider*							GetColumn(vint column)override;
 					Ptr<GuiImageData>									GetRowLargeImage(vint row)override;
@@ -16113,17 +16124,18 @@ Extension Bases
 					template<typename T>
 					friend class DataDecoratableVisualizerFactory;
 				protected:
-					IDataVisualizerFactory*								factory;
+					IDataVisualizerFactory*								factory = nullptr;
 					FontProperties										font;
-					GuiListViewBase::IStyleProvider*					styleProvider;
-					compositions::GuiBoundsComposition*					boundsComposition;
+					GuiListViewBase::IStyleProvider*					styleProvider = nullptr;
+					description::Value									viewModelContext;
+					compositions::GuiBoundsComposition*					boundsComposition = nullptr;
 					Ptr<IDataVisualizer>								decoratedDataVisualizer;
 
 					virtual compositions::GuiBoundsComposition*			CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)=0;
 				public:
 					/// <summary>Create the data visualizer.</summary>
 					/// <param name="_decoratedDataVisualizer">The decorated data visualizer inside the current data visualizer.</param>
-					DataVisualizerBase(Ptr<IDataVisualizer> _decoratedDataVisualizer=0);
+					DataVisualizerBase(Ptr<IDataVisualizer> _decoratedDataVisualizer = nullptr);
 					~DataVisualizerBase();
 
 					IDataVisualizerFactory*								GetFactory()override;
@@ -16137,12 +16149,13 @@ Extension Bases
 				class DataVisualizerFactory : public Object, public virtual IDataVisualizerFactory, public Description<DataVisualizerFactory<TVisualizer>>
 				{
 				public:
-					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider)override
+					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override
 					{
-						DataVisualizerBase* dataVisualizer=new TVisualizer;
-						dataVisualizer->factory=this;
-						dataVisualizer->font=font;
-						dataVisualizer->styleProvider=styleProvider;
+						DataVisualizerBase* dataVisualizer = new TVisualizer;
+						dataVisualizer->factory = this;
+						dataVisualizer->font = font;
+						dataVisualizer->styleProvider = styleProvider;
+						dataVisualizer->viewModelContext = viewModelContext;
 						return dataVisualizer;
 					}
 				};
@@ -16158,13 +16171,14 @@ Extension Bases
 					{
 					}
 
-					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider)override
+					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override
 					{
-						Ptr<IDataVisualizer> decoratedDataVisualizer=decoratedFactory->CreateVisualizer(font, styleProvider);
-						DataVisualizerBase* dataVisualizer=new TVisualizer(decoratedDataVisualizer);
-						dataVisualizer->factory=this;
-						dataVisualizer->font=font;
-						dataVisualizer->styleProvider=styleProvider;
+						Ptr<IDataVisualizer> decoratedDataVisualizer = decoratedFactory->CreateVisualizer(font, styleProvider, viewModelContext);
+						DataVisualizerBase* dataVisualizer = new TVisualizer(decoratedDataVisualizer);
+						dataVisualizer->factory = this;
+						dataVisualizer->font = font;
+						dataVisualizer->styleProvider = styleProvider;
+						dataVisualizer->viewModelContext = viewModelContext;
 						return dataVisualizer;
 					}
 				};
@@ -16175,9 +16189,10 @@ Extension Bases
 					template<typename T>
 					friend class DataEditorFactory;
 				protected:
-					IDataEditorFactory*									factory;
-					IDataEditorCallback*								callback;
-					compositions::GuiBoundsComposition*					boundsComposition;
+					IDataEditorFactory*									factory = nullptr;
+					IDataEditorCallback*								callback = nullptr;
+					description::Value									viewModelContext;
+					compositions::GuiBoundsComposition*					boundsComposition = nullptr;
 
 					virtual compositions::GuiBoundsComposition*			CreateBoundsCompositionInternal()=0;
 				public:
@@ -16195,11 +16210,12 @@ Extension Bases
 				class DataEditorFactory : public Object, public virtual IDataEditorFactory, public Description<DataEditorFactory<TEditor>>
 				{
 				public:
-					Ptr<IDataEditor> CreateEditor(IDataEditorCallback* callback)override
+					Ptr<IDataEditor> CreateEditor(IDataEditorCallback* callback, const description::Value& viewModelContext)override
 					{
-						DataEditorBase* dataEditor=new TEditor;
-						dataEditor->factory=this;
-						dataEditor->callback=callback;
+						DataEditorBase* dataEditor = new TEditor;
+						dataEditor->factory = this;
+						dataEditor->callback = callback;
+						dataEditor->viewModelContext = viewModelContext;
 						return dataEditor;
 					}
 				};
@@ -17208,7 +17224,7 @@ GuiBindableDataGrid
 					
 					/// <summary>Get the view model context which will be used as a view model to create visualizers and editors.</summary>
 					/// <returns>The value model context.</returns>
-					const description::Value&						GetViewModelContext();
+					description::Value								GetViewModelContext();
 				};
 			
 				/// <summary>Data provider object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
@@ -17230,7 +17246,7 @@ GuiBindableDataGrid
 					vint											GetRowCount()override;
 					description::Value								GetRowValue(vint row);
 
-					const description::Value&						GetViewModelContext();
+					description::Value								GetViewModelContext()override;
 					bool											InsertBindableColumn(vint index, Ptr<BindableDataColumn> column);
 					bool											AddBindableColumn(Ptr<BindableDataColumn> column);
 					bool											RemoveBindableColumn(Ptr<BindableDataColumn> column);
@@ -18205,16 +18221,6 @@ namespace vl
 			class GuiTemplate : public compositions::GuiBoundsComposition, public controls::GuiInstanceRootObject, public Description<GuiTemplate>
 			{
 			public:
-				/// <summary>Factory interface for creating <see cref="GuiTemplate"/> instances.</summary>
-				class IFactory : public IDescriptable, public Description<IFactory>
-				{
-				public:
-					/// <summary>Create a <see cref="GuiTemplate"/> instance.</summary>
-					/// <returns>The created template.</returns>
-					/// <param name="viewModel">The view model for binding.</param>
-					virtual GuiTemplate*				CreateTemplate(const description::Value& viewModel) = 0;
-				};
-
 				/// <summary>Create a template.</summary>
 				GuiTemplate();
 				~GuiTemplate();
@@ -18317,8 +18323,8 @@ Control Template
 				F(GuiWindowTemplate, bool, TitleBar)\
 				F(GuiWindowTemplate, bool, CustomizedBorder)\
 				F(GuiWindowTemplate, bool, Maximized)\
-				F(GuiWindowTemplate, Ptr<GuiTemplate::IFactory>, TooltipTemplate)\
-				F(GuiWindowTemplate, Ptr<GuiTemplate::IFactory>, ShortcutKeyTemplate)
+				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate)\
+				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate)
 
 				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -18354,7 +18360,7 @@ Control Template
 				~GuiToolstripButtonTemplate();
 
 #define GuiToolstripButtonTemplate_PROPERTIES(F)\
-				F(GuiToolstripButtonTemplate, Ptr<GuiTemplate::IFactory>, SubMenuTemplate)\
+				F(GuiToolstripButtonTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate)\
 				F(GuiToolstripButtonTemplate, bool, SubMenuExisting)\
 				F(GuiToolstripButtonTemplate, bool, SubMenuOpening)\
 				F(GuiToolstripButtonTemplate, controls::GuiButton*, SubMenuHost)\
@@ -18389,35 +18395,6 @@ Control Template
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
-			{
-			public:
-				GuiDatePickerTemplate();
-				~GuiDatePickerTemplate();
-
-#define GuiDatePickerTemplate_PROPERTIES(F)\
-				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateButtonTemplate)\
-				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateTextListTemplate)\
-				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateComboBoxTemplate)\
-				F(GuiDatePickerTemplate, Color, BackgroundColor)\
-				F(GuiDatePickerTemplate, Color, PrimaryTextColor)\
-				F(GuiDatePickerTemplate, Color, SecondaryTextColor)\
-
-				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>
-			{
-			public:
-				GuiDateComboBoxTemplate();
-				~GuiDateComboBoxTemplate();
-
-#define GuiDateComboBoxTemplate_PROPERTIES(F)\
-				F(GuiDateComboBoxTemplate, Ptr<GuiTemplate::IFactory>, DatePickerTemplate)\
-
-				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
 			class GuiScrollTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollTemplate>
 			{
 			public:
@@ -18440,8 +18417,8 @@ Control Template
 				~GuiScrollViewTemplate();
 
 #define GuiScrollViewTemplate_PROPERTIES(F)\
-				F(GuiScrollViewTemplate, Ptr<GuiTemplate::IFactory>, HScrollTemplate)\
-				F(GuiScrollViewTemplate, Ptr<GuiTemplate::IFactory>, VScrollTemplate)\
+				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, HScrollTemplate)\
+				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, VScrollTemplate)\
 				F(GuiScrollViewTemplate, vint, DefaultScrollSize)\
 
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -18480,8 +18457,8 @@ Control Template
 				~GuiTextListTemplate();
 
 #define GuiTextListTemplate_PROPERTIES(F)\
-				F(GuiTextListTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
-				F(GuiTextListTemplate, Ptr<GuiTemplate::IFactory>, BulletTemplate)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BulletTemplate)\
 				F(GuiTextListTemplate, Color, TextColor)\
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -18494,8 +18471,8 @@ Control Template
 				~GuiListViewTemplate();
 
 #define GuiListViewTemplate_PROPERTIES(F)\
-				F(GuiListViewTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
-				F(GuiListViewTemplate, Ptr<GuiTemplate::IFactory>, ColumnHeaderTemplate)\
+				F(GuiListViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+				F(GuiListViewTemplate, TemplateProperty<GuiListViewColumnHeaderTemplate>, ColumnHeaderTemplate)\
 				F(GuiListViewTemplate, Color, PrimaryTextColor)\
 				F(GuiListViewTemplate, Color, SecondaryTextColor)\
 				F(GuiListViewTemplate, Color, ItemSeparatorColor)\
@@ -18510,8 +18487,8 @@ Control Template
 				~GuiTreeViewTemplate();
 
 #define GuiTreeViewTemplate_PROPERTIES(F)\
-				F(GuiTreeViewTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
-				F(GuiTreeViewTemplate, Ptr<GuiTemplate::IFactory>, ExpandingDecoratorTemplate)\
+				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, ExpandingDecoratorTemplate)\
 				F(GuiTreeViewTemplate, Color, TextColor)\
 
 				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -18524,14 +18501,43 @@ Control Template
 				~GuiTabTemplate();
 
 #define GuiTabTemplate_PROPERTIES(F)\
-				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, HeaderTemplate)\
-				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, DropdownTemplate)\
-				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, MenuTemplate)\
-				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, MenuItemTemplate)\
+				F(GuiTabTemplate, TemplateProperty<GuiSelectableButtonTemplate>, HeaderTemplate)\
+				F(GuiTabTemplate, TemplateProperty<GuiButtonTemplate>, DropdownTemplate)\
+				F(GuiTabTemplate, TemplateProperty<GuiMenuTemplate>, MenuTemplate)\
+				F(GuiTabTemplate, TemplateProperty<GuiToolstripButtonTemplate>, MenuItemTemplate)\
 				F(GuiTabTemplate, vint, HeaderPadding)\
 				F(GuiTabTemplate, compositions::GuiGraphicsComposition*, HeaderComposition)\
 
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
+			{
+			public:
+				GuiDatePickerTemplate();
+				~GuiDatePickerTemplate();
+
+#define GuiDatePickerTemplate_PROPERTIES(F)\
+				F(GuiDatePickerTemplate, TemplateProperty<GuiSelectableButtonTemplate>, DateButtonTemplate)\
+				F(GuiDatePickerTemplate, TemplateProperty<GuiTextListTemplate>, DateTextListTemplate)\
+				F(GuiDatePickerTemplate, TemplateProperty<GuiComboBoxTemplate>, DateComboBoxTemplate)\
+				F(GuiDatePickerTemplate, Color, BackgroundColor)\
+				F(GuiDatePickerTemplate, Color, PrimaryTextColor)\
+				F(GuiDatePickerTemplate, Color, SecondaryTextColor)\
+
+				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>
+			{
+			public:
+				GuiDateComboBoxTemplate();
+				~GuiDateComboBoxTemplate();
+
+#define GuiDateComboBoxTemplate_PROPERTIES(F)\
+				F(GuiDateComboBoxTemplate, TemplateProperty<GuiDatePickerTemplate>, DatePickerTemplate)\
+
+				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
 /***********************************************************************
@@ -18646,7 +18652,7 @@ Control Template
 				GuiControlTemplate*												controlTemplate;
 
 			public:
-				GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory, description::Value viewModel = description::Value());
+				GuiControlTemplate_StyleProvider(TemplateProperty<GuiControlTemplate> factory, description::Value viewModel = description::Value());
 				~GuiControlTemplate_StyleProvider();
 
 				compositions::GuiBoundsComposition*								GetBoundsComposition()override;
@@ -18667,7 +18673,7 @@ Control Template
 				GuiLabelTemplate*												controlTemplate;
 
 			public:
-				GuiLabelTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiLabelTemplate_StyleProvider(TemplateProperty<GuiLabelTemplate> factory);
 				~GuiLabelTemplate_StyleProvider();
 
 				Color															GetDefaultTextColor()override;
@@ -18683,7 +18689,7 @@ Control Template
 				GuiSinglelineTextBoxTemplate*									controlTemplate;
 				
 			public:
-				GuiSinglelineTextBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiSinglelineTextBoxTemplate_StyleProvider(TemplateProperty<GuiSinglelineTextBoxTemplate> factory);
 				~GuiSinglelineTextBoxTemplate_StyleProvider();
 				
 				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
@@ -18699,7 +18705,7 @@ Control Template
 				GuiDocumentLabelTemplate*										controlTemplate;
 				
 			public:
-				GuiDocumentLabelTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiDocumentLabelTemplate_StyleProvider(TemplateProperty<GuiDocumentLabelTemplate> factory);
 				~GuiDocumentLabelTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
@@ -18711,7 +18717,7 @@ Control Template
 				, public Description<GuiMenuTemplate_StyleProvider>
 			{
 			public:
-				GuiMenuTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiMenuTemplate_StyleProvider(TemplateProperty<GuiMenuTemplate> factory);
 				~GuiMenuTemplate_StyleProvider();
 			};
 
@@ -18725,7 +18731,7 @@ Control Template
 				controls::GuiWindow*											window;
 
 			public:
-				GuiWindowTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiWindowTemplate_StyleProvider(TemplateProperty<GuiWindowTemplate> factory);
 				~GuiWindowTemplate_StyleProvider();
 
 				void															AttachWindow(controls::GuiWindow* _window)override;
@@ -18756,7 +18762,7 @@ Control Template
 				GuiButtonTemplate*												controlTemplate;
 
 			public:
-				GuiButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiButtonTemplate_StyleProvider(TemplateProperty<GuiButtonTemplate> factory);
 				~GuiButtonTemplate_StyleProvider();
 
 				void															Transfer(controls::GuiButton::ControlState value)override;
@@ -18771,7 +18777,7 @@ Control Template
 				GuiSelectableButtonTemplate*									controlTemplate;
 
 			public:
-				GuiSelectableButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiSelectableButtonTemplate_StyleProvider(TemplateProperty<GuiSelectableButtonTemplate> factory);
 				~GuiSelectableButtonTemplate_StyleProvider();
 
 				void															SetSelected(bool value)override;
@@ -18786,7 +18792,7 @@ Control Template
 				GuiToolstripButtonTemplate*										controlTemplate;
 
 			public:
-				GuiToolstripButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiToolstripButtonTemplate_StyleProvider(TemplateProperty<GuiToolstripButtonTemplate> factory);
 				~GuiToolstripButtonTemplate_StyleProvider();
 				
 				controls::GuiMenu::IStyleController*							CreateSubMenuStyleController()override;
@@ -18806,7 +18812,7 @@ Control Template
 				GuiListViewColumnHeaderTemplate*								controlTemplate;
 
 			public:
-				GuiListViewColumnHeaderTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiListViewColumnHeaderTemplate_StyleProvider(TemplateProperty<GuiListViewColumnHeaderTemplate> factory);
 				~GuiListViewColumnHeaderTemplate_StyleProvider();
 
 				void															SetColumnSortingState(controls::GuiListViewColumnHeader::ColumnSortingState value)override;
@@ -18821,50 +18827,12 @@ Control Template
 				GuiComboBoxTemplate*											controlTemplate;
 
 			public:
-				GuiComboBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiComboBoxTemplate_StyleProvider(TemplateProperty<GuiComboBoxTemplate> factory);
 				~GuiComboBoxTemplate_StyleProvider();
 				
 				void															SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
 				void															OnItemSelected()override;
 				void															SetTextVisible(bool value)override;
-			};
-
-			class GuiTextListTemplate_StyleProvider;
-
-			class GuiDatePickerTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiDatePicker::IStyleProvider
-				, public Description<GuiDatePickerTemplate_StyleProvider>
-			{
-			protected:
-				GuiDatePickerTemplate*											controlTemplate;
-
-			public:
-				GuiDatePickerTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
-				~GuiDatePickerTemplate_StyleProvider();
-
-				controls::GuiSelectableButton::IStyleController*				CreateDateButtonStyle()override;
-				GuiTextListTemplate_StyleProvider*								CreateTextListStyle();
-				controls::GuiTextList*											CreateTextList()override;
-				controls::GuiComboBoxListControl::IStyleController*				CreateComboBoxStyle()override;
-				Color															GetBackgroundColor()override;
-				Color															GetPrimaryTextColor()override;
-				Color															GetSecondaryTextColor()override;
-			};
-
-			class GuiDateComboBoxTemplate_StyleProvider
-				: public GuiComboBoxTemplate_StyleProvider
-				, public Description<GuiDateComboBoxTemplate_StyleProvider>
-			{
-			protected:
-				GuiDateComboBoxTemplate*										controlTemplate;
-
-			public:
-				GuiDateComboBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
-				~GuiDateComboBoxTemplate_StyleProvider();
-
-				controls::GuiDatePicker*										CreateArgument();
-				controls::GuiDatePicker::IStyleProvider*						CreateDatePickerStyle();
 			};
 
 			class GuiScrollTemplate_StyleProvider
@@ -18876,7 +18844,7 @@ Control Template
 				GuiScrollTemplate*												controlTemplate;
 
 			public:
-				GuiScrollTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiScrollTemplate_StyleProvider(TemplateProperty<GuiScrollTemplate> factory);
 				~GuiScrollTemplate_StyleProvider();
 
 				void															SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)override;
@@ -18894,7 +18862,7 @@ Control Template
 				GuiScrollViewTemplate*											controlTemplate;
 				
 			public:
-				GuiScrollViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiScrollViewTemplate_StyleProvider(TemplateProperty<GuiScrollViewTemplate> factory);
 				~GuiScrollViewTemplate_StyleProvider();
 				
 				controls::GuiScroll::IStyleController*							CreateHorizontalScrollStyle()override;
@@ -18911,7 +18879,7 @@ Control Template
 				GuiMultilineTextBoxTemplate*									controlTemplate;
 				
 			public:
-				GuiMultilineTextBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiMultilineTextBoxTemplate_StyleProvider(TemplateProperty<GuiMultilineTextBoxTemplate> factory);
 				~GuiMultilineTextBoxTemplate_StyleProvider();
 				
 				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
@@ -18926,7 +18894,7 @@ Control Template
 				GuiDocumentViewerTemplate*										controlTemplate;
 				
 			public:
-				GuiDocumentViewerTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiDocumentViewerTemplate_StyleProvider(TemplateProperty<GuiDocumentViewerTemplate> factory);
 				~GuiDocumentViewerTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
@@ -18955,7 +18923,7 @@ Control Template
 					controls::GuiSelectableButton::IStyleController*			CreateBulletStyleController()override;
 				};
 			public:
-				GuiTextListTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiTextListTemplate_StyleProvider(TemplateProperty<GuiTextListTemplate> factory);
 				~GuiTextListTemplate_StyleProvider();
 				
 				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
@@ -18974,7 +18942,7 @@ Control Template
 				GuiListViewTemplate*											controlTemplate;
 				
 			public:
-				GuiListViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiListViewTemplate_StyleProvider(TemplateProperty<GuiListViewTemplate> factory);
 				~GuiListViewTemplate_StyleProvider();
 				
 				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
@@ -18993,7 +18961,7 @@ Control Template
 				GuiTreeViewTemplate*											controlTemplate;
 				
 			public:
-				GuiTreeViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiTreeViewTemplate_StyleProvider(TemplateProperty<GuiTreeViewTemplate> factory);
 				~GuiTreeViewTemplate_StyleProvider();
 				
 				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
@@ -19036,7 +19004,7 @@ Control Template
 
 				void															Initialize();
 			public:
-				GuiTabTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiTabTemplate_StyleProvider(TemplateProperty<GuiTabTemplate> factory);
 				~GuiTabTemplate_StyleProvider();
 
 				void															SetCommandExecutor(controls::GuiTab::ICommandExecutor* value)override;
@@ -19049,6 +19017,42 @@ Control Template
 				compositions::IGuiAltAction*									GetTabAltAction(vint index)override;
 			};
 
+			class GuiDatePickerTemplate_StyleProvider
+				: public GuiControlTemplate_StyleProvider
+				, public virtual controls::GuiDatePicker::IStyleProvider
+				, public Description<GuiDatePickerTemplate_StyleProvider>
+			{
+			protected:
+				GuiDatePickerTemplate*											controlTemplate;
+
+			public:
+				GuiDatePickerTemplate_StyleProvider(TemplateProperty<GuiDatePickerTemplate> factory);
+				~GuiDatePickerTemplate_StyleProvider();
+
+				controls::GuiSelectableButton::IStyleController*				CreateDateButtonStyle()override;
+				GuiTextListTemplate_StyleProvider*								CreateTextListStyle();
+				controls::GuiTextList*											CreateTextList()override;
+				controls::GuiComboBoxListControl::IStyleController*				CreateComboBoxStyle()override;
+				Color															GetBackgroundColor()override;
+				Color															GetPrimaryTextColor()override;
+				Color															GetSecondaryTextColor()override;
+			};
+
+			class GuiDateComboBoxTemplate_StyleProvider
+				: public GuiComboBoxTemplate_StyleProvider
+				, public Description<GuiDateComboBoxTemplate_StyleProvider>
+			{
+			protected:
+				GuiDateComboBoxTemplate*										controlTemplate;
+
+			public:
+				GuiDateComboBoxTemplate_StyleProvider(TemplateProperty<GuiDateComboBoxTemplate> factory);
+				~GuiDateComboBoxTemplate_StyleProvider();
+
+				controls::GuiDatePicker*										CreateArgument();
+				controls::GuiDatePicker::IStyleProvider*						CreateDatePickerStyle();
+			};
+
 /***********************************************************************
 Item Template (GuiControlTemplate)
 ***********************************************************************/
@@ -19059,10 +19063,10 @@ Item Template (GuiControlTemplate)
 				, public Description<GuiControlTemplate_ItemStyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>							factory;
+				TemplateProperty<GuiControlTemplate>				factory;
 
 			public:
-				GuiControlTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				GuiControlTemplate_ItemStyleProvider(TemplateProperty<GuiControlTemplate> _factory);
 				~GuiControlTemplate_ItemStyleProvider();
 
 				void												AttachComboBox(controls::GuiComboBoxListControl* value)override;
@@ -19083,11 +19087,11 @@ Item Template (GuiTextListItemTemplate)
 			{
 				friend class GuiTextListItemTemplate_ItemStyleController;
 			protected:
-				Ptr<GuiTemplate::IFactory>							factory;
+				TemplateProperty<GuiTextListItemTemplate>			factory;
 				controls::GuiVirtualTextList*						listControl = nullptr;
 
 			public:
-				GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				GuiTextListItemTemplate_ItemStyleProvider(TemplateProperty<GuiTextListItemTemplate> _factory);
 				~GuiTextListItemTemplate_ItemStyleProvider();
 
 				void												AttachListControl(controls::GuiListControl* value)override;
@@ -19141,7 +19145,7 @@ Item Template (GuiTreeItemTemplate)
 			{
 				friend class GuiTreeItemTemplate_ItemStyleController;
 			protected:
-				Ptr<GuiTemplate::IFactory>							factory;
+				TemplateProperty<GuiTreeItemTemplate>				factory;
 				controls::GuiVirtualTreeListControl*				treeListControl = nullptr;
 				controls::GuiListControl::IItemStyleProvider*		itemStyleProvider = nullptr;
 				
@@ -19153,7 +19157,7 @@ Item Template (GuiTreeItemTemplate)
 				void												OnItemCollapsed(controls::tree::INodeProvider* node)override;
 
 			public:
-				GuiTreeItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				GuiTreeItemTemplate_ItemStyleProvider(TemplateProperty<GuiTreeItemTemplate> _factory);
 				~GuiTreeItemTemplate_ItemStyleProvider();
 				
 				void												BindItemStyleProvider(controls::GuiListControl::IItemStyleProvider* styleProvider)override;
@@ -19206,32 +19210,29 @@ Item Template (GuiGridVisualizerTemplate)
 				class Factory : public controls::list::DataVisualizerFactory<GuiBindableDataVisualizer>
 				{
 				protected:
-					Ptr<GuiTemplate::IFactory>						templateFactory;
-					controls::list::BindableDataColumn*				ownerColumn;
+					TemplateProperty<GuiGridVisualizerTemplate>		templateFactory;
 
 				public:
-					Factory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn);
+					Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory);
 					~Factory();
 
-					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)override;
+					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override;
 				};
 
 				class DecoratedFactory : public controls::list::DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>
 				{
 				protected:
-					Ptr<GuiTemplate::IFactory>						templateFactory;
-					controls::list::BindableDataColumn*				ownerColumn;
+					TemplateProperty<GuiGridVisualizerTemplate>		templateFactory;
 
 				public:
-					DecoratedFactory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory);
+					DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory);
 					~DecoratedFactory();
 
-					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)override;
+					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override;
 				};
 
 			protected:
-				Ptr<GuiTemplate::IFactory>							templateFactory;
-				controls::list::BindableDataColumn*					ownerColumn = nullptr;
+				TemplateProperty<GuiGridVisualizerTemplate>			templateFactory;
 				GuiGridVisualizerTemplate*							visualizerTemplate = nullptr;
 
 				compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)override;
@@ -19254,19 +19255,17 @@ Item Template (GuiGridEditorTemplate)
 				class Factory : public controls::list::DataEditorFactory<GuiBindableDataEditor>
 				{
 				protected:
-					Ptr<GuiTemplate::IFactory>						templateFactory;
-					controls::list::BindableDataColumn*				ownerColumn;
+					TemplateProperty<GuiGridEditorTemplate>			templateFactory;
 
 				public:
-					Factory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn);
+					Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory);
 					~Factory();
 
-					Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataEditorCallback* callback)override;
+					Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataEditorCallback* callback, const description::Value& viewModelContext)override;
 				};
 
 			protected:
-				Ptr<GuiTemplate::IFactory>							templateFactory;
-				controls::list::BindableDataColumn*					ownerColumn = nullptr;
+				TemplateProperty<GuiGridEditorTemplate>				templateFactory;
 				GuiGridEditorTemplate*								editorTemplate = nullptr;
 
 				compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal()override;

@@ -68,8 +68,13 @@ GuiToolstripInstanceLoaderBase
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 
-				GuiToolstripInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod, Ptr<WfExpression>(*_argumentFunction)(ArgumentMap&) = nullptr)
+				GuiToolstripInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod, Ptr<WfExpression>(*_argumentFunction)(ArgumentMap&))
 					:TBaseType(_typeName, _styleMethod, _argumentFunction)
+				{
+				}
+
+				GuiToolstripInstanceLoaderBase(const WString& _typeName, const WString& _styleMethod)
+					:TBaseType(_typeName, _styleMethod)
 				{
 				}
 
