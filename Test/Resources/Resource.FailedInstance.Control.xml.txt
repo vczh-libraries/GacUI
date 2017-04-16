@@ -1,19 +1,22 @@
 i1 # .\Resource.FailedInstance.Control.xml
 (5, 9): Precompile: Property "BoundsComposition" of type "I1" is not assignable.
 (9, 46): Unrecognizable token: "!".
-(10, 11): Precompile: Type "T1" will never be tried, because "T1", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.
+(10, 29): Precompile: Type "T1" cannot be used here because it requires "presentation::templates::GuiTextListItemTemplate" or its derived classes.
+(10, 29): Precompile: Type "T2" cannot be used here because it requires "presentation::templates::GuiTextListItemTemplate" or its derived classes.
+(10, 29): Precompile: Type "T2" will never be tried, because "T1", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.
 (12, 41): Precompile: env.ItemType must be specified before deserializing "NoItemType" to value of type "system::Function<system::String, system::Object>^".
-(13, 11): Precompile: To use type "T2" as a control template or item template, its constructor cannot have more than one parameter.
+(13, 29): Precompile: Type "T2" cannot be used here because it requires "presentation::templates::GuiTextListItemTemplate" or its derived classes.
+(13, 29): Precompile: To use type "T2" as a control template or item template, its constructor cannot have more than one parameter.
 (15, 46): Unrecognizable token: "!".
-(16, 11): Precompile: To use type "presentation::GuiImageData" as a control template or item template, it should have exactly one constructor.
-(19, 11): Precompile: Type "NotExists", which is assigned to contructor parameter "ItemTemplate of type "presentation::controls::GuiBindableTextList", does not exist.
-(22, 34): Precompile: The value of contructor parameter "ItemTemplate" of type "presentation::controls::GuiBindableTextList" should be a constant representing control template type names.
+(16, 29): Precompile: Type "presentation::GuiImageData" cannot be used here because it requires "presentation::templates::GuiTextListItemTemplate" or its derived classes.
+(16, 29): Precompile: To use type "presentation::GuiImageData" as a control template or item template, it should have exactly one constructor.
+(19, 29): Precompile: Type "NotExists" does not exist.
 (25, 43): Unrecognizable token: "!".
 (26, 43): Unrecognizable token: "!".
 (29, 26): Precompile: "Wrong URI" is not a valid resource uri.
-(30, 11): Precompile: "T3;T3", which is assigned to contructor parameter "ControlTemplate of type "presentation::controls::GuiLabel", is illegal because control template should not have multiple choices.
+(30, 32): Precompile: Type "T3" will never be tried, because "T3", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.
 (32, 32): Unrecognizable token: "!".
-(33, 11): Precompile: Type "NotExists", which is assigned to contructor parameter "ControlTemplate of type "presentation::controls::GuiLabel", does not exist.
+(33, 32): Precompile: Type "NotExists" does not exist.
 (35, 19): Precompile: The value of property "View" of type "presentation::controls::GuiListView" is not in a correct format: "BigIcon | SmallIcon | List | Tile | Information | Detail".
 (35, 50): Unrecognizable token: "")".
 (38, 20): Unrecognizable token: "!".

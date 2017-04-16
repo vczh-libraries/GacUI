@@ -7,7 +7,7 @@
         </att.BoundsComposition>
         
         <BindableTextList TextProperty="Wrong!">
-          <att.ItemTemplate>T1;T1</att.ItemTemplate>
+          <att.ItemTemplate>T1;T2</att.ItemTemplate>
         </BindableTextList>
         <BindableTextList TextProperty="NoItemType">
           <att.ItemTemplate>T2</att.ItemTemplate>
