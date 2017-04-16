@@ -454,6 +454,7 @@ GuiDefaultInstanceLoader
 								if (CTOR_PARAM_NAME(name) == propertyInfo.propertyName.ToString())
 								{
 									result->usage = GuiInstancePropertyInfo::ConstructorArgument;
+									result->bindability = GuiInstancePropertyInfo::Bindable;
 								}
 							}
 						}

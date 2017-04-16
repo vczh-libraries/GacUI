@@ -333,9 +333,18 @@ WorkflowReferenceNamesVisitor
 					}
 					FOREACH(GlobalStringKey, prop, From(requiredProps).Distinct())
 					{
-						auto info = loader->GetPropertyType({ resolvedTypeInfo, prop });
-						if (!properties.Contains(prop, loader))
+						if (!properties.Keys().Contains(prop))
 						{
+							Ptr<GuiInstancePropertyInfo> info;
+							{
+								auto currentLoader = loader;
+								while (currentLoader && !info)
+								{
+									info = currentLoader->GetPropertyType({ resolvedTypeInfo, prop });
+									currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
+								}
+							}
+
 							errors.Add(GuiResourceError({ resolvingResult.resource }, repr->tagPosition,
 								L"Precompile: Missing required " +
 								WString(info->usage == GuiInstancePropertyInfo::ConstructorArgument ? L"constructor argument" : L"required property") +
