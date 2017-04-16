@@ -188,20 +188,9 @@ GuiComboBoxInstanceLoader
 
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(GlobalStringKey::_ItemTemplate);
-					}
+					propertyNames.Add(_ListControl);
+					propertyNames.Add(GlobalStringKey::_ItemTemplate);
 					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
-				}
-
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(_ListControl);
-					}
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -209,8 +198,8 @@ GuiComboBoxInstanceLoader
 					if (propertyInfo.propertyName == _ListControl)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiSelectableListControl*>::CreateTypeInfo());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						info->required = true;
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						info->requirement = GuiInstancePropertyInfo::Required;
 						return info;
 					}
 					else if (propertyInfo.propertyName == GlobalStringKey::_ItemTemplate)
@@ -388,14 +377,11 @@ GuiListViewInstanceLoader
 					_IconSize = GlobalStringKey::Get(L"IconSize");
 				}
 
-				void GetConstructorParameters(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					if (typeInfo.typeName == BASE_TYPE::GetTypeName())
-					{
-						propertyNames.Add(_View);
-						propertyNames.Add(_IconSize);
-					}
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
+					propertyNames.Add(_View);
+					propertyNames.Add(_IconSize);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const typename BASE_TYPE::PropertyInfo& propertyInfo)override
@@ -403,13 +389,13 @@ GuiListViewInstanceLoader
 					if (propertyInfo.propertyName == _View)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<ListViewViewType>::CreateTypeInfo());
-						info->scope = GuiInstancePropertyInfo::Constructor;
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
 					else if (propertyInfo.propertyName == _IconSize)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Size>::CreateTypeInfo());
-						info->scope = GuiInstancePropertyInfo::Constructor;
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
@@ -484,6 +470,7 @@ GuiTreeViewInstanceLoader
 
 				void GetPropertyNames(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
+					propertyNames.Add(_IconSize);
 					if (!bindable)
 					{
 						propertyNames.Add(_Nodes);
@@ -491,29 +478,20 @@ GuiTreeViewInstanceLoader
 					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
-				void GetConstructorParameters(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (typeInfo.typeName == BASE_TYPE::GetTypeName())
-					{
-						propertyNames.Add(_IconSize);
-					}
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
-				}
-
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const typename BASE_TYPE::PropertyInfo& propertyInfo)override
 				{
-					if (propertyInfo.propertyName == _Nodes)
+					if (propertyInfo.propertyName == _IconSize)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Size>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						return info;
+					}
+					else if (propertyInfo.propertyName == _Nodes)
 					{
 						if (!bindable)
 						{
 							return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
 						}
-					}
-					else if (propertyInfo.propertyName == _IconSize)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Size>::CreateTypeInfo());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						return info;
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -777,31 +755,23 @@ GuiBindableDataGridInstanceLoader
 
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
+					propertyNames.Add(_ViewModelContext);
 					propertyNames.Add(_Columns);
 					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
 				}
 
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(_ViewModelContext);
-					}
-					BASE_TYPE::GetConstructorParameters(typeInfo, propertyNames);
-				}
-
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
 				{
-					if (propertyInfo.propertyName == _Columns)
-					{
-						return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<list::BindableDataColumn>>::CreateTypeInfo());
-					}
-					else if (propertyInfo.propertyName == _ViewModelContext)
+					if (propertyInfo.propertyName == _ViewModelContext)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Value>::CreateTypeInfo());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						info->bindable = true;
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						info->bindability = GuiInstancePropertyInfo::Bindable;
 						return info;
+					}
+					else if (propertyInfo.propertyName == _Columns)
+					{
+						return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<list::BindableDataColumn>>::CreateTypeInfo());
 					}
 					return BASE_TYPE::GetPropertyType(propertyInfo);
 				}
@@ -900,7 +870,7 @@ GuiTreeNodeInstanceLoader
 
 				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					if (CanCreate(typeInfo))
 					{
 						auto createItem = MakePtr<WfNewClassExpression>();
 						createItem->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());

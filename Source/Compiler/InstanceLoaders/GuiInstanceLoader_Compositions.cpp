@@ -31,12 +31,9 @@ GuiAxisInstanceLoader
 					return typeName;
 				}
 
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(_AxisDirection);
-					}
+					propertyNames.Add(_AxisDirection);
 				}
 
 				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
@@ -44,8 +41,8 @@ GuiAxisInstanceLoader
 					if (propertyInfo.propertyName == _AxisDirection)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<AxisDirection>::CreateTypeInfo());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						info->required = true;
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						info->requirement = GuiInstancePropertyInfo::Required;
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -58,7 +55,7 @@ GuiAxisInstanceLoader
 
 				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
-					if (typeName == typeInfo.typeName)
+					if (CanCreate(typeInfo))
 					{
 						vint indexAxisDirection = arguments.Keys().IndexOf(_AxisDirection);
 						if (indexAxisDirection != -1)

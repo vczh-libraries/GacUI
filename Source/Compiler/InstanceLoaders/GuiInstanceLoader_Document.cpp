@@ -31,16 +31,9 @@ GuiDocumentItemInstanceLoader
 					return typeName;
 				}
 
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					if (typeInfo.typeName == GetTypeName())
-					{
-						propertyNames.Add(_Name);
-					}
-				}
-
 				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
+					propertyNames.Add(_Name);
 					propertyNames.Add(GlobalStringKey::Empty);
 				}
 
@@ -56,8 +49,8 @@ GuiDocumentItemInstanceLoader
 					else if (propertyInfo.propertyName == _Name)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
-						info->scope = GuiInstancePropertyInfo::Constructor;
-						info->required = true;
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						info->requirement = GuiInstancePropertyInfo::Required;
 						return info;
 					}
 					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
@@ -71,7 +64,7 @@ GuiDocumentItemInstanceLoader
 
 				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
-					if (typeInfo.typeName == GetTypeName())
+					if (CanCreate(typeInfo))
 					{
 						vint indexName = arguments.Keys().IndexOf(_Name);	
 						if (indexName != -1)

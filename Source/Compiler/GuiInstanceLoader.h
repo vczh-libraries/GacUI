@@ -46,18 +46,36 @@ Instance Loader
 				SupportSet,
 			};
 
-			enum PropertyScope
+			enum PropertyUsage
 			{
-				ViewModel,		// <ref.Parameter/>
-				Constructor,	// constructor parameter that is not ViewModel
-				Property,		// property of the class
+				ConstructorArgument,
+				Property,
+			};
+
+			enum PropertyRequirement
+			{
+				// A constructor argument is required only if the loader, whose CanCreate()==true, returns this property
+				Required,
+				Optional,
+			};
+
+			enum PropertyBindability
+			{
+				Bindable,
+				NotBindable,
+			};
+
+			enum PropertyMergability
+			{
+				MergeWithParent,
+				NotMerge,
 			};
 
 			Support									support = NotSupport;
-			bool									tryParent = false;
-			bool									required = false;			// only apply to constructor
-			bool									bindable = false;			// only apply to constructor
-			PropertyScope							scope = Property;
+			PropertyUsage							usage = Property;
+			PropertyRequirement						requirement = Optional;
+			PropertyBindability						bindability = NotBindable;
+			PropertyMergability						mergability = NotMerge;
 			TypeInfoList							acceptableTypes;
 
 			static Ptr<GuiInstancePropertyInfo>		Unsupported();
@@ -129,7 +147,6 @@ Instance Loader
 			virtual void									ClearReflectionCache();
 
 			virtual void									GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual void									GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual void									GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
 			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
 

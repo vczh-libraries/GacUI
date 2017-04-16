@@ -29,7 +29,7 @@ GuiTemplateInstanceLoader
 					return typeName;
 				}
 
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					List<ITypeDescriptor*> tds;
 					tds.Add(typeInfo.typeInfo->GetTypeDescriptor());
@@ -66,12 +66,11 @@ GuiTemplateInstanceLoader
 						if (prop->IsWritable() && prop->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<GuiTemplate::IFactory>())
 						{
 							auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
-							info->scope = GuiInstancePropertyInfo::Constructor;
-							info->bindable = false;
+							info->usage = GuiInstancePropertyInfo::Property;
 
 							if (prop->GetOwnerTypeDescriptor() != description::GetTypeDescriptor<GuiWindowTemplate>())
 							{
-								info->required = true;
+								info->requirement = GuiInstancePropertyInfo::Required;
 							}
 							return info;
 						}
@@ -120,50 +119,7 @@ GuiTemplateInstanceLoader
 						assignStat->expression = assignExpr;
 						block->statements.Add(assignStat);
 					}
-
-					if (auto stat = InitializeRootInstance(precompileContext, resolvingResult, typeInfo, variableName, arguments, errors))
-					{
-						CopyFrom(block->statements, stat.Cast<WfBlockStatement>()->statements, true);
-					}
 					return block;
-				}
-
-				Ptr<workflow::WfStatement> InitializeRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors)override
-				{
-					if (arguments.Count() > 0)
-					{
-						auto block = MakePtr<WfBlockStatement>();
-						using Helper = GuiTemplateControlInstanceLoader<Value, Value, GuiTemplate>;
-
-						FOREACH_INDEXER(GlobalStringKey, propKey, index, arguments.Keys())
-						{
-							List<ITypeDescriptor*> tds;
-							auto argument = arguments.GetByIndex(index)[0];
-							Helper::GetItemTemplateType(resolvingResult, argument.expression, tds, typeInfo, propKey.ToString(), argument.attPosition, errors);
-							auto refFactory = Helper::CreateTemplateFactory(resolvingResult, tds, argument.attPosition, errors);
-
-							auto refVariable = MakePtr<WfReferenceExpression>();
-							refVariable->name.value = variableName.ToString();
-
-							auto member = MakePtr<WfMemberExpression>();
-							member->parent = refVariable;
-							member->name.value = propKey.ToString();
-
-							auto assignExpr = MakePtr<WfBinaryExpression>();
-							assignExpr->op = WfBinaryOperator::Assign;
-							assignExpr->first = member;
-							assignExpr->second = refFactory;
-
-							auto assignStat = MakePtr<WfExpressionStatement>();
-							assignStat->expression = assignExpr;
-							block->statements.Add(assignStat);
-						}
-						return block;
-					}
-					else
-					{
-						return nullptr;
-					}
 				}
 			};
 

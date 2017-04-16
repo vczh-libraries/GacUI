@@ -386,7 +386,7 @@ GuiVrtualTypeInstanceLoader
 					return typeName;
 				}
 
-				void GetConstructorParameters(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::_ControlTemplate);
 				}
@@ -396,7 +396,7 @@ GuiVrtualTypeInstanceLoader
 					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
 					{
 						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
-						info->scope = GuiInstancePropertyInfo::Constructor;
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
 					return 0;
@@ -459,7 +459,7 @@ GuiVrtualTypeInstanceLoader
 
 				Ptr<workflow::WfStatement> CreateInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 				{
-					CHECK_ERROR(typeName == typeInfo.typeName, L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
+					CHECK_ERROR(CanCreate(typeInfo), L"GuiTemplateControlInstanceLoader::CreateInstance# Wrong type info is provided.");
 					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
 
 					auto createStyleExpr = CreateInstance_ControlTemplate(resolvingResult, typeInfo, arguments, errors);
