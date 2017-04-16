@@ -42,7 +42,7 @@ Type Declaration
 	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(CONTROL::IStyleProvider*), {L"styleProvider"})
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
-	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<INTERFACE>)
+	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<::INTERFACE>)
 
 			BEGIN_CLASS_MEMBER(GuiApplication)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetApplication, NO_PARAMETER, GuiApplication*(*)(), vl::presentation::controls::GetApplication)
@@ -588,7 +588,7 @@ Type Declaration
 			END_INTERFACE_MEMBER(TextItemStyleProvider::IBulletFactory)
 
 			BEGIN_INTERFACE_MEMBER(TextItemStyleProvider::ITextItemView)
-				INTERFACE_IDENTIFIER(TextItemStyleProvider::ITextItemView)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::list::TextItemStyleProvider::ITextItemView)
 
 				CLASS_MEMBER_METHOD(GetChecked, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(SetCheckedSilently, {L"itemIndex" _ L"value"})
@@ -693,7 +693,7 @@ Type Declaration
 			END_CLASS_MEMBER(ListViewItemStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(ListViewItemStyleProvider::IListViewItemView)
-				INTERFACE_IDENTIFIER(ListViewItemStyleProvider::IListViewItemView)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::list::ListViewItemStyleProvider::IListViewItemView)
 
 				CLASS_MEMBER_METHOD(GetSmallImage, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetLargeImage, {L"itemIndex"})
@@ -774,7 +774,7 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER(ListViewColumnItemArranger::IColumnItemView)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_IDENTIFIER(ListViewColumnItemArranger::IColumnItemView)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::list::ListViewColumnItemArranger::IColumnItemView)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
 
@@ -833,7 +833,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiListView)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiMenuService)
-				INTERFACE_IDENTIFIER(IGuiMenuService)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::IGuiMenuService)
 
 				CLASS_MEMBER_METHOD(GetParentMenuService, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetPreferredDirection, NO_PARAMETER)
@@ -931,7 +931,7 @@ Type Declaration
 			END_INTERFACE_MEMBER(INodeRootProvider)
 
 			BEGIN_INTERFACE_MEMBER(INodeItemView)
-				INTERFACE_IDENTIFIER(INodeItemView)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::tree::INodeItemView)
 
 				CLASS_MEMBER_METHOD(RequestNode, {L"index"})
 				CLASS_MEMBER_METHOD(ReleaseNode, {L"node"})
@@ -1018,7 +1018,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiVirtualTreeListControl)
 
 			BEGIN_INTERFACE_MEMBER(ITreeViewItemView)
-				INTERFACE_IDENTIFIER(ITreeViewItemView)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::tree::ITreeViewItemView)
 
 				CLASS_MEMBER_METHOD(GetNodeImage, {L"node"})
 				CLASS_MEMBER_METHOD(GetNodeText, {L"node"})
@@ -1361,7 +1361,7 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER(IDataProvider)
 				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_IDENTIFIER(IDataProvider)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::list::IDataProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)

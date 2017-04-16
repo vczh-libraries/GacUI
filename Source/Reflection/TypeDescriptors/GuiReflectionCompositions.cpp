@@ -21,7 +21,7 @@ Type Declaration
 #define _ ,
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
-	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<INTERFACE>)
+	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<::INTERFACE>)
 
 			BEGIN_ENUM_ITEM(KeyDirection)
 				ENUM_CLASS_ITEM(Up)
@@ -279,7 +279,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiShortcutKeyManager)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltAction)
-				INTERFACE_IDENTIFIER(IGuiAltAction)
+				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltAction)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Alt)
 
@@ -291,7 +291,7 @@ Type Declaration
 			END_INTERFACE_MEMBER(IGuiAltAction)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionContainer)
-				INTERFACE_IDENTIFIER(IGuiAltActionContainer)
+				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltActionContainer)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(AltActionCount)
 				
@@ -299,7 +299,7 @@ Type Declaration
 			END_INTERFACE_MEMBER(IGuiAltActionContainer)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltActionHost)
-				INTERFACE_IDENTIFIER(IGuiAltActionHost)
+				INTERFACE_IDENTIFIER(vl::presentation::compositions::IGuiAltActionHost)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreviousAltHost)
 
