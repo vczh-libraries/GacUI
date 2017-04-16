@@ -17,7 +17,7 @@ namespace vl
 	return new TEMPLATE##_StyleProvider(controlTemplate->Get##PROPERTY());\
 
 #define GET_FACTORY_FROM_TEMPLATE_OPT(TEMPLATE, PROPERTY)\
-	if (controlTemplate->Get##PROPERTY() == nullptr)\
+	if (!controlTemplate->Get##PROPERTY())\
 	{\
 		return nullptr;\
 	}\
@@ -27,16 +27,10 @@ namespace vl
 GuiControlTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory, description::Value viewModel)
+			GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider(TemplateProperty<GuiControlTemplate> factory, description::Value viewModel)
 				:associatedStyleController(0)
-				, controlTemplate(0)
+				, controlTemplate(factory(viewModel))
 			{
-				GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
-				if (!(controlTemplate = dynamic_cast<GuiControlTemplate*>(itemTemplate)))
-				{
-					delete itemTemplate;
-					CHECK_FAIL(L"GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider()#An instance of GuiTemplate is expected.");
-				}
 			}
 
 			GuiControlTemplate_StyleProvider::~GuiControlTemplate_StyleProvider()
@@ -82,7 +76,7 @@ GuiControlTemplate_StyleProvider
 GuiLabelTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiLabelTemplate_StyleProvider::GuiLabelTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiLabelTemplate_StyleProvider::GuiLabelTemplate_StyleProvider(TemplateProperty<GuiLabelTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiLabelTemplate*>(GetBoundsComposition())))
@@ -109,7 +103,7 @@ GuiLabelTemplate_StyleProvider
 GuiSinglelineTextBoxTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiSinglelineTextBoxTemplate_StyleProvider::GuiSinglelineTextBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiSinglelineTextBoxTemplate_StyleProvider::GuiSinglelineTextBoxTemplate_StyleProvider(TemplateProperty<GuiSinglelineTextBoxTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiSinglelineTextBoxTemplate*>(GetBoundsComposition())))
@@ -146,7 +140,7 @@ GuiSinglelineTextBoxTemplate_StyleProvider
 GuiDocumentLabelTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiDocumentLabelTemplate_StyleProvider::GuiDocumentLabelTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiDocumentLabelTemplate_StyleProvider::GuiDocumentLabelTemplate_StyleProvider(TemplateProperty<GuiDocumentLabelTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiDocumentLabelTemplate*>(GetBoundsComposition())))
@@ -168,7 +162,7 @@ GuiDocumentLabelTemplate_StyleProvider
 GuiMenuTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiMenuTemplate_StyleProvider::GuiMenuTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiMenuTemplate_StyleProvider::GuiMenuTemplate_StyleProvider(TemplateProperty<GuiMenuTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
 			}
@@ -181,7 +175,7 @@ GuiMenuTemplate_StyleProvider
 GuiWindowTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiWindowTemplate_StyleProvider::GuiWindowTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiWindowTemplate_StyleProvider::GuiWindowTemplate_StyleProvider(TemplateProperty<GuiWindowTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 				, window(0)
 			{
@@ -309,7 +303,7 @@ GuiWindowTemplate_StyleProvider
 GuiButtonTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiButtonTemplate_StyleProvider::GuiButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiButtonTemplate_StyleProvider::GuiButtonTemplate_StyleProvider(TemplateProperty<GuiButtonTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiButtonTemplate*>(GetBoundsComposition())))
@@ -331,7 +325,7 @@ GuiButtonTemplate_StyleProvider
 GuiSelectableButtonTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiSelectableButtonTemplate_StyleProvider::GuiSelectableButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiSelectableButtonTemplate_StyleProvider::GuiSelectableButtonTemplate_StyleProvider(TemplateProperty<GuiSelectableButtonTemplate> factory)
 				:GuiButtonTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiSelectableButtonTemplate*>(GetBoundsComposition())))
@@ -353,7 +347,7 @@ GuiSelectableButtonTemplate_StyleProvider
 GuiToolstripButtonTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiToolstripButtonTemplate_StyleProvider::GuiToolstripButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiToolstripButtonTemplate_StyleProvider::GuiToolstripButtonTemplate_StyleProvider(TemplateProperty<GuiToolstripButtonTemplate> factory)
 				:GuiSelectableButtonTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiToolstripButtonTemplate*>(GetBoundsComposition())))
@@ -400,7 +394,7 @@ GuiToolstripButtonTemplate_StyleProvider
 GuiListViewColumnHeaderTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiListViewColumnHeaderTemplate_StyleProvider::GuiListViewColumnHeaderTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiListViewColumnHeaderTemplate_StyleProvider::GuiListViewColumnHeaderTemplate_StyleProvider(TemplateProperty<GuiListViewColumnHeaderTemplate> factory)
 				:GuiToolstripButtonTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiListViewColumnHeaderTemplate*>(GetBoundsComposition())))
@@ -422,7 +416,7 @@ GuiListViewColumnHeaderTemplate_StyleProvider
 GuiComboBoxTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiComboBoxTemplate_StyleProvider::GuiComboBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiComboBoxTemplate_StyleProvider::GuiComboBoxTemplate_StyleProvider(TemplateProperty<GuiComboBoxTemplate> factory)
 				:GuiToolstripButtonTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiComboBoxTemplate*>(GetBoundsComposition())))
@@ -450,91 +444,10 @@ GuiComboBoxTemplate_StyleProvider
 			}
 
 /***********************************************************************
-GuiDatePickerTemplate_StyleProvider
-***********************************************************************/
-
-			GuiDatePickerTemplate_StyleProvider::GuiDatePickerTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
-				:GuiControlTemplate_StyleProvider(factory)
-			{
-				if (!(controlTemplate = dynamic_cast<GuiDatePickerTemplate*>(GetBoundsComposition())))
-				{
-					CHECK_FAIL(L"GuiDatePickerTemplate_StyleProvider::GuiDatePickerTemplate_StyleProvider()#An instance of GuiDatePickerTemplate is expected.");
-				}
-			}
-
-			GuiDatePickerTemplate_StyleProvider::~GuiDatePickerTemplate_StyleProvider()
-			{
-				delete controlTemplate;
-			}
-
-			controls::GuiSelectableButton::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateDateButtonStyle()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, DateButtonTemplate);
-			}
-
-			GuiTextListTemplate_StyleProvider* GuiDatePickerTemplate_StyleProvider::CreateTextListStyle()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiTextListTemplate, DateTextListTemplate);
-			}
-
-			controls::GuiTextList* GuiDatePickerTemplate_StyleProvider::CreateTextList()
-			{
-				auto style = CreateTextListStyle();
-				return new GuiTextList(style, style->CreateArgument());
-			}
-
-			controls::GuiComboBoxListControl::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateComboBoxStyle()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiComboBoxTemplate, DateComboBoxTemplate);
-			}
-
-			Color GuiDatePickerTemplate_StyleProvider::GetBackgroundColor()
-			{
-				return controlTemplate->GetBackgroundColor();
-			}
-
-			Color GuiDatePickerTemplate_StyleProvider::GetPrimaryTextColor()
-			{
-				return controlTemplate->GetPrimaryTextColor();
-			}
-
-			Color GuiDatePickerTemplate_StyleProvider::GetSecondaryTextColor()
-			{
-				return controlTemplate->GetSecondaryTextColor();
-			}
-
-/***********************************************************************
-GuiDateComboBoxTemplate_StyleProvider
-***********************************************************************/
-
-			GuiDateComboBoxTemplate_StyleProvider::GuiDateComboBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
-				:GuiComboBoxTemplate_StyleProvider(factory)
-			{
-				if (!(controlTemplate = dynamic_cast<GuiDateComboBoxTemplate*>(GetBoundsComposition())))
-				{
-					CHECK_FAIL(L"GuiDateComboBoxTemplate_StyleProvider::GuiDateComboBoxTemplate_StyleProvider()#An instance of GuiDateComboBoxTemplate is expected.");
-				}
-			}
-
-			GuiDateComboBoxTemplate_StyleProvider::~GuiDateComboBoxTemplate_StyleProvider()
-			{
-			}
-
-			controls::GuiDatePicker* GuiDateComboBoxTemplate_StyleProvider::CreateArgument()
-			{
-				return new GuiDatePicker(CreateDatePickerStyle());
-			}
-
-			controls::GuiDatePicker::IStyleProvider* GuiDateComboBoxTemplate_StyleProvider::CreateDatePickerStyle()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiDatePickerTemplate, DatePickerTemplate);
-			}
-
-/***********************************************************************
 GuiScrollTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiScrollTemplate_StyleProvider::GuiScrollTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiScrollTemplate_StyleProvider::GuiScrollTemplate_StyleProvider(TemplateProperty<GuiScrollTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiScrollTemplate*>(GetBoundsComposition())))
@@ -571,7 +484,7 @@ GuiScrollTemplate_StyleProvider
 GuiScrollViewTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiScrollViewTemplate_StyleProvider::GuiScrollViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiScrollViewTemplate_StyleProvider::GuiScrollViewTemplate_StyleProvider(TemplateProperty<GuiScrollViewTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiScrollViewTemplate*>(GetBoundsComposition())))
@@ -610,7 +523,7 @@ GuiScrollViewTemplate_StyleProvider
 GuiSinglelineTextBoxTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiMultilineTextBoxTemplate_StyleProvider::GuiMultilineTextBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiMultilineTextBoxTemplate_StyleProvider::GuiMultilineTextBoxTemplate_StyleProvider(TemplateProperty<GuiMultilineTextBoxTemplate> factory)
 				:GuiScrollViewTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiMultilineTextBoxTemplate*>(GetBoundsComposition())))
@@ -640,7 +553,7 @@ GuiSinglelineTextBoxTemplate_StyleProvider
 GuiDocumentViewerTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiDocumentViewerTemplate_StyleProvider::GuiDocumentViewerTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiDocumentViewerTemplate_StyleProvider::GuiDocumentViewerTemplate_StyleProvider(TemplateProperty<GuiDocumentViewerTemplate> factory)
 				:GuiScrollViewTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiDocumentViewerTemplate*>(GetBoundsComposition())))
@@ -685,7 +598,7 @@ GuiTextListTemplate_StyleProvider::ItemStyleProvider
 GuiTextListTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiTextListTemplate_StyleProvider::GuiTextListTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiTextListTemplate_StyleProvider::GuiTextListTemplate_StyleProvider(TemplateProperty<GuiTextListTemplate> factory)
 				:GuiScrollViewTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiTextListTemplate*>(GetBoundsComposition())))
@@ -722,7 +635,7 @@ GuiTextListTemplate_StyleProvider
 GuiListViewTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiListViewTemplate_StyleProvider::GuiListViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiListViewTemplate_StyleProvider::GuiListViewTemplate_StyleProvider(TemplateProperty<GuiListViewTemplate> factory)
 				:GuiScrollViewTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiListViewTemplate*>(GetBoundsComposition())))
@@ -764,7 +677,7 @@ GuiListViewTemplate_StyleProvider
 GuiTreeViewTemplate_StyleProvider
 ***********************************************************************/
 
-			GuiTreeViewTemplate_StyleProvider::GuiTreeViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiTreeViewTemplate_StyleProvider::GuiTreeViewTemplate_StyleProvider(TemplateProperty<GuiTreeViewTemplate> factory)
 				:GuiScrollViewTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiTreeViewTemplate*>(GetBoundsComposition())))
@@ -795,6 +708,26 @@ GuiTreeViewTemplate_StyleProvider
 /***********************************************************************
 GuiTabTemplate_StyleProvider
 ***********************************************************************/
+
+			controls::GuiSelectableButton::IStyleController* GuiTabTemplate_StyleProvider::CreateHeaderTemplate()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, HeaderTemplate);
+			}
+
+			controls::GuiButton::IStyleController* GuiTabTemplate_StyleProvider::CreateDropdownTemplate()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiButtonTemplate, DropdownTemplate);
+			}
+
+			controls::GuiMenu::IStyleController* GuiTabTemplate_StyleProvider::CreateMenuTemplate()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiMenuTemplate, MenuTemplate);
+			}
+
+			controls::GuiToolstripButton::IStyleController* GuiTabTemplate_StyleProvider::CreateMenuItemTemplate()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiToolstripButtonTemplate, MenuItemTemplate);
+			}
 
 			void GuiTabTemplate_StyleProvider::OnHeaderButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
@@ -930,27 +863,7 @@ GuiTabTemplate_StyleProvider
 				headerController=new GuiSelectableButton::MutexGroupController;
 			}
 
-			controls::GuiSelectableButton::IStyleController* GuiTabTemplate_StyleProvider::CreateHeaderTemplate()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, HeaderTemplate);
-			}
-
-			controls::GuiButton::IStyleController* GuiTabTemplate_StyleProvider::CreateDropdownTemplate()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiButtonTemplate, DropdownTemplate);
-			}
-
-			controls::GuiMenu::IStyleController* GuiTabTemplate_StyleProvider::CreateMenuTemplate()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiMenuTemplate, MenuTemplate);
-			}
-
-			controls::GuiToolstripButton::IStyleController* GuiTabTemplate_StyleProvider::CreateMenuItemTemplate()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiToolstripButtonTemplate, MenuItemTemplate);
-			}
-
-			GuiTabTemplate_StyleProvider::GuiTabTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory)
+			GuiTabTemplate_StyleProvider::GuiTabTemplate_StyleProvider(TemplateProperty<GuiTabTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
 				if (!(controlTemplate = dynamic_cast<GuiTabTemplate*>(GetBoundsComposition())))
@@ -1047,10 +960,91 @@ GuiTabTemplate_StyleProvider
 			}
 
 /***********************************************************************
+GuiDatePickerTemplate_StyleProvider
+***********************************************************************/
+
+			GuiDatePickerTemplate_StyleProvider::GuiDatePickerTemplate_StyleProvider(TemplateProperty<GuiDatePickerTemplate> factory)
+				:GuiControlTemplate_StyleProvider(factory)
+			{
+				if (!(controlTemplate = dynamic_cast<GuiDatePickerTemplate*>(GetBoundsComposition())))
+				{
+					CHECK_FAIL(L"GuiDatePickerTemplate_StyleProvider::GuiDatePickerTemplate_StyleProvider()#An instance of GuiDatePickerTemplate is expected.");
+				}
+			}
+
+			GuiDatePickerTemplate_StyleProvider::~GuiDatePickerTemplate_StyleProvider()
+			{
+				delete controlTemplate;
+			}
+
+			controls::GuiSelectableButton::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateDateButtonStyle()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, DateButtonTemplate);
+			}
+
+			GuiTextListTemplate_StyleProvider* GuiDatePickerTemplate_StyleProvider::CreateTextListStyle()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiTextListTemplate, DateTextListTemplate);
+			}
+
+			controls::GuiTextList* GuiDatePickerTemplate_StyleProvider::CreateTextList()
+			{
+				auto style = CreateTextListStyle();
+				return new GuiTextList(style, style->CreateArgument());
+			}
+
+			controls::GuiComboBoxListControl::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateComboBoxStyle()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiComboBoxTemplate, DateComboBoxTemplate);
+			}
+
+			Color GuiDatePickerTemplate_StyleProvider::GetBackgroundColor()
+			{
+				return controlTemplate->GetBackgroundColor();
+			}
+
+			Color GuiDatePickerTemplate_StyleProvider::GetPrimaryTextColor()
+			{
+				return controlTemplate->GetPrimaryTextColor();
+			}
+
+			Color GuiDatePickerTemplate_StyleProvider::GetSecondaryTextColor()
+			{
+				return controlTemplate->GetSecondaryTextColor();
+			}
+
+/***********************************************************************
+GuiDateComboBoxTemplate_StyleProvider
+***********************************************************************/
+
+			GuiDateComboBoxTemplate_StyleProvider::GuiDateComboBoxTemplate_StyleProvider(TemplateProperty<GuiDateComboBoxTemplate> factory)
+				:GuiComboBoxTemplate_StyleProvider(factory)
+			{
+				if (!(controlTemplate = dynamic_cast<GuiDateComboBoxTemplate*>(GetBoundsComposition())))
+				{
+					CHECK_FAIL(L"GuiDateComboBoxTemplate_StyleProvider::GuiDateComboBoxTemplate_StyleProvider()#An instance of GuiDateComboBoxTemplate is expected.");
+				}
+			}
+
+			GuiDateComboBoxTemplate_StyleProvider::~GuiDateComboBoxTemplate_StyleProvider()
+			{
+			}
+
+			controls::GuiDatePicker* GuiDateComboBoxTemplate_StyleProvider::CreateArgument()
+			{
+				return new GuiDatePicker(CreateDatePickerStyle());
+			}
+
+			controls::GuiDatePicker::IStyleProvider* GuiDateComboBoxTemplate_StyleProvider::CreateDatePickerStyle()
+			{
+				GET_FACTORY_FROM_TEMPLATE(GuiDatePickerTemplate, DatePickerTemplate);
+			}
+
+/***********************************************************************
 GuiControlTemplate_ItemStyleProvider
 ***********************************************************************/
 
-			GuiControlTemplate_ItemStyleProvider::GuiControlTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
+			GuiControlTemplate_ItemStyleProvider::GuiControlTemplate_ItemStyleProvider(TemplateProperty<GuiControlTemplate> _factory)
 				:factory(_factory)
 			{
 			}
@@ -1076,7 +1070,7 @@ GuiControlTemplate_ItemStyleProvider
 GuiTextListItemTemplate_ItemStyleProvider
 ***********************************************************************/
 
-			GuiTextListItemTemplate_ItemStyleProvider::GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
+			GuiTextListItemTemplate_ItemStyleProvider::GuiTextListItemTemplate_ItemStyleProvider(TemplateProperty<GuiTextListItemTemplate> _factory)
 				:factory(_factory)
 			{
 			}
@@ -1110,17 +1104,12 @@ GuiTextListItemTemplate_ItemStyleProvider
 				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
 				{
 					Value viewModel = listControl->GetItemProvider()->GetBindingValue(itemIndex);
-					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
-					if (auto listItemTemplate = dynamic_cast<GuiTextListItemTemplate*>(itemTemplate))
+					if (auto listItemTemplate = factory(viewModel))
 					{
 						listItemTemplate->SetFont(listControl->GetFont());
 						listItemTemplate->SetIndex(itemIndex);
 						listItemTemplate->SetTextColor(listControl->GetTextListStyleProvider()->GetTextColor());
 						controller->SetTemplate(listItemTemplate);
-					}
-					else
-					{
-						delete itemTemplate;
 					}
 				}
 			}
@@ -1260,7 +1249,7 @@ GuiTreeItemTemplate_ItemStyleProvider
 				UpdateExpandingButton(node);
 			}
 
-			GuiTreeItemTemplate_ItemStyleProvider::GuiTreeItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory)
+			GuiTreeItemTemplate_ItemStyleProvider::GuiTreeItemTemplate_ItemStyleProvider(TemplateProperty<GuiTreeItemTemplate> _factory)
 				:factory(_factory)
 			{
 
@@ -1313,16 +1302,11 @@ GuiTreeItemTemplate_ItemStyleProvider
 				if (auto controller = dynamic_cast<GuiTreeItemTemplate_ItemStyleController*>(style))
 				{
 					Value viewModel = treeListControl->GetNodeRootProvider()->GetBindingValue(node);
-					GuiTemplate* itemTemplate = factory->CreateTemplate(viewModel);
-					if (auto treeItemTemplate = dynamic_cast<GuiTreeItemTemplate*>(itemTemplate))
+					if (auto treeItemTemplate = factory(viewModel))
 					{
 						treeItemTemplate->SetFont(treeListControl->GetFont());
 						treeItemTemplate->SetIndex(itemIndex);
 						controller->SetTemplate(treeItemTemplate);
-					}
-					else
-					{
-						delete itemTemplate;
 					}
 				}
 			}
@@ -1419,7 +1403,7 @@ GuiTreeItemTemplate_ItemStyleController
 GuiBindableDataVisualizer::Factory
 ***********************************************************************/
 
-			GuiBindableDataVisualizer::Factory::Factory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn)
+			GuiBindableDataVisualizer::Factory::Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn)
 				:templateFactory(_templateFactory)
 				, ownerColumn(_ownerColumn)
 			{
@@ -1444,7 +1428,7 @@ GuiBindableDataVisualizer::Factory
 GuiBindableDataVisualizer::DecoratedFactory
 ***********************************************************************/
 
-			GuiBindableDataVisualizer::DecoratedFactory::DecoratedFactory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory)
+			GuiBindableDataVisualizer::DecoratedFactory::DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory)
 				:DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>(_decoratedFactory)
 				, templateFactory(_templateFactory)
 				, ownerColumn(_ownerColumn)
@@ -1472,12 +1456,7 @@ GuiBindableDataVisualizer
 
 			compositions::GuiBoundsComposition* GuiBindableDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
 			{
-				GuiTemplate* itemTemplate = templateFactory->CreateTemplate(ownerColumn->GetViewModelContext());
-				if (!(visualizerTemplate = dynamic_cast<GuiGridVisualizerTemplate*>(itemTemplate)))
-				{
-					delete itemTemplate;
-					CHECK_FAIL(L"GuiBindableDataVisualizer::CreateBoundsCompositionInternal(presentation::compositions::GuiBoundsComposition*)#An instance of GuiGridVisualizerTemplate is expected.");
-				}
+				visualizerTemplate = templateFactory(ownerColumn->GetViewModelContext());
 
 				if (decoratedComposition)
 				{
@@ -1533,7 +1512,7 @@ GuiBindableDataVisualizer
 GuiBindableDataEditor::Factory
 ***********************************************************************/
 
-			GuiBindableDataEditor::Factory::Factory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn)
+			GuiBindableDataEditor::Factory::Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn)
 				:templateFactory(_templateFactory)
 				, ownerColumn(_ownerColumn)
 			{
@@ -1564,12 +1543,7 @@ GuiBindableDataEditor
 
 			compositions::GuiBoundsComposition* GuiBindableDataEditor::CreateBoundsCompositionInternal()
 			{
-				GuiTemplate* itemTemplate = templateFactory->CreateTemplate(ownerColumn->GetViewModelContext());
-				if (!(editorTemplate = dynamic_cast<GuiGridEditorTemplate*>(itemTemplate)))
-				{
-					delete itemTemplate;
-					CHECK_FAIL(L"GuiBindableDataEditor::CreateBoundsCompositionInternal()#An instance of GuiGridEditorTemplate is expected.");
-				}
+				editorTemplate = templateFactory(ownerColumn->GetViewModelContext());
 
 				editorTemplate->CellValueChanged.AttachMethod(this, &GuiBindableDataEditor::editorTemplate_CellValueChanged);
 				return editorTemplate;

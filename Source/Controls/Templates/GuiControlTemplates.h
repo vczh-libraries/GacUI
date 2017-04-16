@@ -159,8 +159,8 @@ Control Template
 				F(GuiWindowTemplate, bool, TitleBar)\
 				F(GuiWindowTemplate, bool, CustomizedBorder)\
 				F(GuiWindowTemplate, bool, Maximized)\
-				F(GuiWindowTemplate, Ptr<GuiTemplate::IFactory>, TooltipTemplate)\
-				F(GuiWindowTemplate, Ptr<GuiTemplate::IFactory>, ShortcutKeyTemplate)
+				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate)\
+				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate)
 
 				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -196,7 +196,7 @@ Control Template
 				~GuiToolstripButtonTemplate();
 
 #define GuiToolstripButtonTemplate_PROPERTIES(F)\
-				F(GuiToolstripButtonTemplate, Ptr<GuiTemplate::IFactory>, SubMenuTemplate)\
+				F(GuiToolstripButtonTemplate, TemplateProperty<GuiMenuTemplate>, SubMenuTemplate)\
 				F(GuiToolstripButtonTemplate, bool, SubMenuExisting)\
 				F(GuiToolstripButtonTemplate, bool, SubMenuOpening)\
 				F(GuiToolstripButtonTemplate, controls::GuiButton*, SubMenuHost)\
@@ -231,35 +231,6 @@ Control Template
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
-			{
-			public:
-				GuiDatePickerTemplate();
-				~GuiDatePickerTemplate();
-
-#define GuiDatePickerTemplate_PROPERTIES(F)\
-				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateButtonTemplate)\
-				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateTextListTemplate)\
-				F(GuiDatePickerTemplate, Ptr<GuiTemplate::IFactory>, DateComboBoxTemplate)\
-				F(GuiDatePickerTemplate, Color, BackgroundColor)\
-				F(GuiDatePickerTemplate, Color, PrimaryTextColor)\
-				F(GuiDatePickerTemplate, Color, SecondaryTextColor)\
-
-				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>
-			{
-			public:
-				GuiDateComboBoxTemplate();
-				~GuiDateComboBoxTemplate();
-
-#define GuiDateComboBoxTemplate_PROPERTIES(F)\
-				F(GuiDateComboBoxTemplate, Ptr<GuiTemplate::IFactory>, DatePickerTemplate)\
-
-				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
 			class GuiScrollTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollTemplate>
 			{
 			public:
@@ -282,8 +253,8 @@ Control Template
 				~GuiScrollViewTemplate();
 
 #define GuiScrollViewTemplate_PROPERTIES(F)\
-				F(GuiScrollViewTemplate, Ptr<GuiTemplate::IFactory>, HScrollTemplate)\
-				F(GuiScrollViewTemplate, Ptr<GuiTemplate::IFactory>, VScrollTemplate)\
+				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, HScrollTemplate)\
+				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, VScrollTemplate)\
 				F(GuiScrollViewTemplate, vint, DefaultScrollSize)\
 
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -322,8 +293,8 @@ Control Template
 				~GuiTextListTemplate();
 
 #define GuiTextListTemplate_PROPERTIES(F)\
-				F(GuiTextListTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
-				F(GuiTextListTemplate, Ptr<GuiTemplate::IFactory>, BulletTemplate)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BulletTemplate)\
 				F(GuiTextListTemplate, Color, TextColor)\
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -336,8 +307,8 @@ Control Template
 				~GuiListViewTemplate();
 
 #define GuiListViewTemplate_PROPERTIES(F)\
-				F(GuiListViewTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
-				F(GuiListViewTemplate, Ptr<GuiTemplate::IFactory>, ColumnHeaderTemplate)\
+				F(GuiListViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+				F(GuiListViewTemplate, TemplateProperty<GuiListViewColumnHeaderTemplate>, ColumnHeaderTemplate)\
 				F(GuiListViewTemplate, Color, PrimaryTextColor)\
 				F(GuiListViewTemplate, Color, SecondaryTextColor)\
 				F(GuiListViewTemplate, Color, ItemSeparatorColor)\
@@ -352,8 +323,8 @@ Control Template
 				~GuiTreeViewTemplate();
 
 #define GuiTreeViewTemplate_PROPERTIES(F)\
-				F(GuiTreeViewTemplate, Ptr<GuiTemplate::IFactory>, BackgroundTemplate)\
-				F(GuiTreeViewTemplate, Ptr<GuiTemplate::IFactory>, ExpandingDecoratorTemplate)\
+				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, ExpandingDecoratorTemplate)\
 				F(GuiTreeViewTemplate, Color, TextColor)\
 
 				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -366,14 +337,43 @@ Control Template
 				~GuiTabTemplate();
 
 #define GuiTabTemplate_PROPERTIES(F)\
-				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, HeaderTemplate)\
-				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, DropdownTemplate)\
-				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, MenuTemplate)\
-				F(GuiTabTemplate, Ptr<GuiTemplate::IFactory>, MenuItemTemplate)\
+				F(GuiTabTemplate, TemplateProperty<GuiSelectableButtonTemplate>, HeaderTemplate)\
+				F(GuiTabTemplate, TemplateProperty<GuiButtonTemplate>, DropdownTemplate)\
+				F(GuiTabTemplate, TemplateProperty<GuiMenuTemplate>, MenuTemplate)\
+				F(GuiTabTemplate, TemplateProperty<GuiToolstripButtonTemplate>, MenuItemTemplate)\
 				F(GuiTabTemplate, vint, HeaderPadding)\
 				F(GuiTabTemplate, compositions::GuiGraphicsComposition*, HeaderComposition)\
 
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
+			{
+			public:
+				GuiDatePickerTemplate();
+				~GuiDatePickerTemplate();
+
+#define GuiDatePickerTemplate_PROPERTIES(F)\
+				F(GuiDatePickerTemplate, TemplateProperty<GuiSelectableButtonTemplate>, DateButtonTemplate)\
+				F(GuiDatePickerTemplate, TemplateProperty<GuiTextListTemplate>, DateTextListTemplate)\
+				F(GuiDatePickerTemplate, TemplateProperty<GuiComboBoxTemplate>, DateComboBoxTemplate)\
+				F(GuiDatePickerTemplate, Color, BackgroundColor)\
+				F(GuiDatePickerTemplate, Color, PrimaryTextColor)\
+				F(GuiDatePickerTemplate, Color, SecondaryTextColor)\
+
+				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>
+			{
+			public:
+				GuiDateComboBoxTemplate();
+				~GuiDateComboBoxTemplate();
+
+#define GuiDateComboBoxTemplate_PROPERTIES(F)\
+				F(GuiDateComboBoxTemplate, TemplateProperty<GuiDatePickerTemplate>, DatePickerTemplate)\
+
+				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
 /***********************************************************************

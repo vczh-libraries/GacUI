@@ -15,6 +15,15 @@ namespace vl
 {
 	namespace presentation
 	{
+		template<typename T>
+		using ItemProperty = Func<T(const reflection::description::Value&)>;
+
+		template<typename T>
+		using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
+
+		template<typename T>
+		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
+
 		namespace controls
 		{
 

@@ -225,38 +225,6 @@ GuiComboBoxTemplate
 			}
 
 /***********************************************************************
-GuiDatePickerTemplate
-***********************************************************************/
-
-			GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiDatePickerTemplate::GuiDatePickerTemplate()
-			{
-				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiDatePickerTemplate::~GuiDatePickerTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
-GuiDateComboBoxTemplate
-***********************************************************************/
-
-			GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
-
-			GuiDateComboBoxTemplate::GuiDateComboBoxTemplate()
-			{
-				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
-			}
-
-			GuiDateComboBoxTemplate::~GuiDateComboBoxTemplate()
-			{
-				FinalizeAggregation();
-			}
-
-/***********************************************************************
 GuiScrollTemplate
 ***********************************************************************/
 
@@ -387,6 +355,38 @@ GuiTabTemplate
 			}
 
 			GuiTabTemplate::~GuiTabTemplate()
+			{
+				FinalizeAggregation();
+			}
+
+/***********************************************************************
+GuiDatePickerTemplate
+***********************************************************************/
+
+			GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
+
+				GuiDatePickerTemplate::GuiDatePickerTemplate()
+			{
+				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
+			}
+
+			GuiDatePickerTemplate::~GuiDatePickerTemplate()
+			{
+				FinalizeAggregation();
+			}
+
+/***********************************************************************
+GuiDateComboBoxTemplate
+***********************************************************************/
+
+			GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
+
+				GuiDateComboBoxTemplate::GuiDateComboBoxTemplate()
+			{
+				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
+			}
+
+			GuiDateComboBoxTemplate::~GuiDateComboBoxTemplate()
 			{
 				FinalizeAggregation();
 			}

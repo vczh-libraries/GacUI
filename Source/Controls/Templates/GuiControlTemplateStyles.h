@@ -35,7 +35,7 @@ Control Template
 				GuiControlTemplate*												controlTemplate;
 
 			public:
-				GuiControlTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory, description::Value viewModel = description::Value());
+				GuiControlTemplate_StyleProvider(TemplateProperty<GuiControlTemplate> factory, description::Value viewModel = description::Value());
 				~GuiControlTemplate_StyleProvider();
 
 				compositions::GuiBoundsComposition*								GetBoundsComposition()override;
@@ -56,7 +56,7 @@ Control Template
 				GuiLabelTemplate*												controlTemplate;
 
 			public:
-				GuiLabelTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiLabelTemplate_StyleProvider(TemplateProperty<GuiLabelTemplate> factory);
 				~GuiLabelTemplate_StyleProvider();
 
 				Color															GetDefaultTextColor()override;
@@ -72,7 +72,7 @@ Control Template
 				GuiSinglelineTextBoxTemplate*									controlTemplate;
 				
 			public:
-				GuiSinglelineTextBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiSinglelineTextBoxTemplate_StyleProvider(TemplateProperty<GuiSinglelineTextBoxTemplate> factory);
 				~GuiSinglelineTextBoxTemplate_StyleProvider();
 				
 				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
@@ -88,7 +88,7 @@ Control Template
 				GuiDocumentLabelTemplate*										controlTemplate;
 				
 			public:
-				GuiDocumentLabelTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiDocumentLabelTemplate_StyleProvider(TemplateProperty<GuiDocumentLabelTemplate> factory);
 				~GuiDocumentLabelTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
@@ -100,7 +100,7 @@ Control Template
 				, public Description<GuiMenuTemplate_StyleProvider>
 			{
 			public:
-				GuiMenuTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiMenuTemplate_StyleProvider(TemplateProperty<GuiMenuTemplate> factory);
 				~GuiMenuTemplate_StyleProvider();
 			};
 
@@ -114,7 +114,7 @@ Control Template
 				controls::GuiWindow*											window;
 
 			public:
-				GuiWindowTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiWindowTemplate_StyleProvider(TemplateProperty<GuiWindowTemplate> factory);
 				~GuiWindowTemplate_StyleProvider();
 
 				void															AttachWindow(controls::GuiWindow* _window)override;
@@ -145,7 +145,7 @@ Control Template
 				GuiButtonTemplate*												controlTemplate;
 
 			public:
-				GuiButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiButtonTemplate_StyleProvider(TemplateProperty<GuiButtonTemplate> factory);
 				~GuiButtonTemplate_StyleProvider();
 
 				void															Transfer(controls::GuiButton::ControlState value)override;
@@ -160,7 +160,7 @@ Control Template
 				GuiSelectableButtonTemplate*									controlTemplate;
 
 			public:
-				GuiSelectableButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiSelectableButtonTemplate_StyleProvider(TemplateProperty<GuiSelectableButtonTemplate> factory);
 				~GuiSelectableButtonTemplate_StyleProvider();
 
 				void															SetSelected(bool value)override;
@@ -175,7 +175,7 @@ Control Template
 				GuiToolstripButtonTemplate*										controlTemplate;
 
 			public:
-				GuiToolstripButtonTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiToolstripButtonTemplate_StyleProvider(TemplateProperty<GuiToolstripButtonTemplate> factory);
 				~GuiToolstripButtonTemplate_StyleProvider();
 				
 				controls::GuiMenu::IStyleController*							CreateSubMenuStyleController()override;
@@ -195,7 +195,7 @@ Control Template
 				GuiListViewColumnHeaderTemplate*								controlTemplate;
 
 			public:
-				GuiListViewColumnHeaderTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiListViewColumnHeaderTemplate_StyleProvider(TemplateProperty<GuiListViewColumnHeaderTemplate> factory);
 				~GuiListViewColumnHeaderTemplate_StyleProvider();
 
 				void															SetColumnSortingState(controls::GuiListViewColumnHeader::ColumnSortingState value)override;
@@ -210,50 +210,12 @@ Control Template
 				GuiComboBoxTemplate*											controlTemplate;
 
 			public:
-				GuiComboBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiComboBoxTemplate_StyleProvider(TemplateProperty<GuiComboBoxTemplate> factory);
 				~GuiComboBoxTemplate_StyleProvider();
 				
 				void															SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
 				void															OnItemSelected()override;
 				void															SetTextVisible(bool value)override;
-			};
-
-			class GuiTextListTemplate_StyleProvider;
-
-			class GuiDatePickerTemplate_StyleProvider
-				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiDatePicker::IStyleProvider
-				, public Description<GuiDatePickerTemplate_StyleProvider>
-			{
-			protected:
-				GuiDatePickerTemplate*											controlTemplate;
-
-			public:
-				GuiDatePickerTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
-				~GuiDatePickerTemplate_StyleProvider();
-
-				controls::GuiSelectableButton::IStyleController*				CreateDateButtonStyle()override;
-				GuiTextListTemplate_StyleProvider*								CreateTextListStyle();
-				controls::GuiTextList*											CreateTextList()override;
-				controls::GuiComboBoxListControl::IStyleController*				CreateComboBoxStyle()override;
-				Color															GetBackgroundColor()override;
-				Color															GetPrimaryTextColor()override;
-				Color															GetSecondaryTextColor()override;
-			};
-
-			class GuiDateComboBoxTemplate_StyleProvider
-				: public GuiComboBoxTemplate_StyleProvider
-				, public Description<GuiDateComboBoxTemplate_StyleProvider>
-			{
-			protected:
-				GuiDateComboBoxTemplate*										controlTemplate;
-
-			public:
-				GuiDateComboBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
-				~GuiDateComboBoxTemplate_StyleProvider();
-
-				controls::GuiDatePicker*										CreateArgument();
-				controls::GuiDatePicker::IStyleProvider*						CreateDatePickerStyle();
 			};
 
 			class GuiScrollTemplate_StyleProvider
@@ -265,7 +227,7 @@ Control Template
 				GuiScrollTemplate*												controlTemplate;
 
 			public:
-				GuiScrollTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiScrollTemplate_StyleProvider(TemplateProperty<GuiScrollTemplate> factory);
 				~GuiScrollTemplate_StyleProvider();
 
 				void															SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)override;
@@ -283,7 +245,7 @@ Control Template
 				GuiScrollViewTemplate*											controlTemplate;
 				
 			public:
-				GuiScrollViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiScrollViewTemplate_StyleProvider(TemplateProperty<GuiScrollViewTemplate> factory);
 				~GuiScrollViewTemplate_StyleProvider();
 				
 				controls::GuiScroll::IStyleController*							CreateHorizontalScrollStyle()override;
@@ -300,7 +262,7 @@ Control Template
 				GuiMultilineTextBoxTemplate*									controlTemplate;
 				
 			public:
-				GuiMultilineTextBoxTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiMultilineTextBoxTemplate_StyleProvider(TemplateProperty<GuiMultilineTextBoxTemplate> factory);
 				~GuiMultilineTextBoxTemplate_StyleProvider();
 				
 				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
@@ -315,7 +277,7 @@ Control Template
 				GuiDocumentViewerTemplate*										controlTemplate;
 				
 			public:
-				GuiDocumentViewerTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiDocumentViewerTemplate_StyleProvider(TemplateProperty<GuiDocumentViewerTemplate> factory);
 				~GuiDocumentViewerTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
@@ -344,7 +306,7 @@ Control Template
 					controls::GuiSelectableButton::IStyleController*			CreateBulletStyleController()override;
 				};
 			public:
-				GuiTextListTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiTextListTemplate_StyleProvider(TemplateProperty<GuiTextListTemplate> factory);
 				~GuiTextListTemplate_StyleProvider();
 				
 				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
@@ -363,7 +325,7 @@ Control Template
 				GuiListViewTemplate*											controlTemplate;
 				
 			public:
-				GuiListViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiListViewTemplate_StyleProvider(TemplateProperty<GuiListViewTemplate> factory);
 				~GuiListViewTemplate_StyleProvider();
 				
 				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
@@ -382,7 +344,7 @@ Control Template
 				GuiTreeViewTemplate*											controlTemplate;
 				
 			public:
-				GuiTreeViewTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiTreeViewTemplate_StyleProvider(TemplateProperty<GuiTreeViewTemplate> factory);
 				~GuiTreeViewTemplate_StyleProvider();
 				
 				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
@@ -425,7 +387,7 @@ Control Template
 
 				void															Initialize();
 			public:
-				GuiTabTemplate_StyleProvider(Ptr<GuiTemplate::IFactory> factory);
+				GuiTabTemplate_StyleProvider(TemplateProperty<GuiTabTemplate> factory);
 				~GuiTabTemplate_StyleProvider();
 
 				void															SetCommandExecutor(controls::GuiTab::ICommandExecutor* value)override;
@@ -438,6 +400,42 @@ Control Template
 				compositions::IGuiAltAction*									GetTabAltAction(vint index)override;
 			};
 
+			class GuiDatePickerTemplate_StyleProvider
+				: public GuiControlTemplate_StyleProvider
+				, public virtual controls::GuiDatePicker::IStyleProvider
+				, public Description<GuiDatePickerTemplate_StyleProvider>
+			{
+			protected:
+				GuiDatePickerTemplate*											controlTemplate;
+
+			public:
+				GuiDatePickerTemplate_StyleProvider(TemplateProperty<GuiDatePickerTemplate> factory);
+				~GuiDatePickerTemplate_StyleProvider();
+
+				controls::GuiSelectableButton::IStyleController*				CreateDateButtonStyle()override;
+				GuiTextListTemplate_StyleProvider*								CreateTextListStyle();
+				controls::GuiTextList*											CreateTextList()override;
+				controls::GuiComboBoxListControl::IStyleController*				CreateComboBoxStyle()override;
+				Color															GetBackgroundColor()override;
+				Color															GetPrimaryTextColor()override;
+				Color															GetSecondaryTextColor()override;
+			};
+
+			class GuiDateComboBoxTemplate_StyleProvider
+				: public GuiComboBoxTemplate_StyleProvider
+				, public Description<GuiDateComboBoxTemplate_StyleProvider>
+			{
+			protected:
+				GuiDateComboBoxTemplate*										controlTemplate;
+
+			public:
+				GuiDateComboBoxTemplate_StyleProvider(TemplateProperty<GuiDateComboBoxTemplate> factory);
+				~GuiDateComboBoxTemplate_StyleProvider();
+
+				controls::GuiDatePicker*										CreateArgument();
+				controls::GuiDatePicker::IStyleProvider*						CreateDatePickerStyle();
+			};
+
 /***********************************************************************
 Item Template (GuiControlTemplate)
 ***********************************************************************/
@@ -448,10 +446,10 @@ Item Template (GuiControlTemplate)
 				, public Description<GuiControlTemplate_ItemStyleProvider>
 			{
 			protected:
-				Ptr<GuiTemplate::IFactory>							factory;
+				TemplateProperty<GuiControlTemplate>				factory;
 
 			public:
-				GuiControlTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				GuiControlTemplate_ItemStyleProvider(TemplateProperty<GuiControlTemplate> _factory);
 				~GuiControlTemplate_ItemStyleProvider();
 
 				void												AttachComboBox(controls::GuiComboBoxListControl* value)override;
@@ -472,11 +470,11 @@ Item Template (GuiTextListItemTemplate)
 			{
 				friend class GuiTextListItemTemplate_ItemStyleController;
 			protected:
-				Ptr<GuiTemplate::IFactory>							factory;
+				TemplateProperty<GuiTextListItemTemplate>			factory;
 				controls::GuiVirtualTextList*						listControl = nullptr;
 
 			public:
-				GuiTextListItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				GuiTextListItemTemplate_ItemStyleProvider(TemplateProperty<GuiTextListItemTemplate> _factory);
 				~GuiTextListItemTemplate_ItemStyleProvider();
 
 				void												AttachListControl(controls::GuiListControl* value)override;
@@ -530,7 +528,7 @@ Item Template (GuiTreeItemTemplate)
 			{
 				friend class GuiTreeItemTemplate_ItemStyleController;
 			protected:
-				Ptr<GuiTemplate::IFactory>							factory;
+				TemplateProperty<GuiTreeItemTemplate>				factory;
 				controls::GuiVirtualTreeListControl*				treeListControl = nullptr;
 				controls::GuiListControl::IItemStyleProvider*		itemStyleProvider = nullptr;
 				
@@ -542,7 +540,7 @@ Item Template (GuiTreeItemTemplate)
 				void												OnItemCollapsed(controls::tree::INodeProvider* node)override;
 
 			public:
-				GuiTreeItemTemplate_ItemStyleProvider(Ptr<GuiTemplate::IFactory> _factory);
+				GuiTreeItemTemplate_ItemStyleProvider(TemplateProperty<GuiTreeItemTemplate> _factory);
 				~GuiTreeItemTemplate_ItemStyleProvider();
 				
 				void												BindItemStyleProvider(controls::GuiListControl::IItemStyleProvider* styleProvider)override;
@@ -595,11 +593,11 @@ Item Template (GuiGridVisualizerTemplate)
 				class Factory : public controls::list::DataVisualizerFactory<GuiBindableDataVisualizer>
 				{
 				protected:
-					Ptr<GuiTemplate::IFactory>						templateFactory;
+					TemplateProperty<GuiGridVisualizerTemplate>						templateFactory;
 					controls::list::BindableDataColumn*				ownerColumn;
 
 				public:
-					Factory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn);
+					Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn);
 					~Factory();
 
 					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)override;
@@ -608,18 +606,18 @@ Item Template (GuiGridVisualizerTemplate)
 				class DecoratedFactory : public controls::list::DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>
 				{
 				protected:
-					Ptr<GuiTemplate::IFactory>						templateFactory;
+					TemplateProperty<GuiGridVisualizerTemplate>						templateFactory;
 					controls::list::BindableDataColumn*				ownerColumn;
 
 				public:
-					DecoratedFactory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory);
+					DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory);
 					~DecoratedFactory();
 
 					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider)override;
 				};
 
 			protected:
-				Ptr<GuiTemplate::IFactory>							templateFactory;
+				TemplateProperty<GuiGridVisualizerTemplate>			templateFactory;
 				controls::list::BindableDataColumn*					ownerColumn = nullptr;
 				GuiGridVisualizerTemplate*							visualizerTemplate = nullptr;
 
@@ -643,18 +641,18 @@ Item Template (GuiGridEditorTemplate)
 				class Factory : public controls::list::DataEditorFactory<GuiBindableDataEditor>
 				{
 				protected:
-					Ptr<GuiTemplate::IFactory>						templateFactory;
+					TemplateProperty<GuiGridEditorTemplate>			templateFactory;
 					controls::list::BindableDataColumn*				ownerColumn;
 
 				public:
-					Factory(Ptr<GuiTemplate::IFactory> _templateFactory, controls::list::BindableDataColumn* _ownerColumn);
+					Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn);
 					~Factory();
 
 					Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataEditorCallback* callback)override;
 				};
 
 			protected:
-				Ptr<GuiTemplate::IFactory>							templateFactory;
+				TemplateProperty<GuiGridEditorTemplate>							templateFactory;
 				controls::list::BindableDataColumn*					ownerColumn = nullptr;
 				GuiGridEditorTemplate*								editorTemplate = nullptr;
 

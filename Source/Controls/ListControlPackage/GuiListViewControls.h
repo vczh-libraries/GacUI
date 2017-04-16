@@ -20,12 +20,6 @@ namespace vl
 		{
 			class GuiListViewBase;
 
-			template<typename T>
-			using ItemProperty = Func<T(const reflection::description::Value&)>;
-
-			template<typename T>
-			using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
-
 			namespace list
 			{
 

@@ -232,103 +232,103 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiControlTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiControlTemplate_StyleProvider*(TemplateProperty<GuiControlTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiControlTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiLabelTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiLabel::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiLabelTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiLabelTemplate_StyleProvider*(TemplateProperty<GuiLabelTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiLabelTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiSinglelineTextBoxTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiSinglelineTextBox::IStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiSinglelineTextBoxTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiSinglelineTextBoxTemplate_StyleProvider*(TemplateProperty<GuiSinglelineTextBoxTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiSinglelineTextBoxTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentLabelTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiDocumentLabel::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiDocumentLabelTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiDocumentLabelTemplate_StyleProvider*(TemplateProperty<GuiDocumentLabelTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiDocumentLabelTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiMultilineTextBoxTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiMultilineTextBoxTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiMultilineTextBoxTemplate_StyleProvider*(TemplateProperty<GuiMultilineTextBoxTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiMultilineTextBoxTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentViewerTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiDocumentViewer::IStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiDocumentViewerTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiDocumentViewerTemplate_StyleProvider*(TemplateProperty<GuiDocumentViewerTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiDocumentViewerTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiMenuTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiWindow::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiMenuTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiMenuTemplate_StyleProvider*(TemplateProperty<GuiMenuTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiMenuTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiWindowTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiWindow::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiWindowTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiWindowTemplate_StyleProvider*(TemplateProperty<GuiWindowTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiWindowTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiButtonTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiButton::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiButtonTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiButtonTemplate_StyleProvider*(TemplateProperty<GuiButtonTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiButtonTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableButtonTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiButtonTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableButton::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableButtonTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableButtonTemplate_StyleProvider*(TemplateProperty<GuiSelectableButtonTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiSelectableButtonTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiToolstripButtonTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiButtonTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiMenuButton::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiToolstripButtonTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiToolstripButtonTemplate_StyleProvider*(TemplateProperty<GuiToolstripButtonTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiToolstripButtonTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiListViewColumnHeaderTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiToolstripButtonTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiListViewColumnHeader::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiListViewColumnHeaderTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiListViewColumnHeaderTemplate_StyleProvider*(TemplateProperty<GuiListViewColumnHeaderTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiListViewColumnHeaderTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiComboBoxTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiToolstripButtonTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiComboBoxListControl::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiComboBoxTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiComboBoxTemplate_StyleProvider*(TemplateProperty<GuiComboBoxTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiComboBoxTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiDatePickerTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiDatePicker::IStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiDatePickerTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiDatePickerTemplate_StyleProvider*(TemplateProperty<GuiDatePickerTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiDatePickerTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiDateComboBoxTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiComboBoxTemplate_StyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBoxTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBoxTemplate_StyleProvider*(TemplateProperty<GuiDateComboBoxTemplate>), { L"factory" })
 				CLASS_MEMBER_METHOD(CreateArgument, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiDateComboBoxTemplate_StyleProvider)
 
@@ -336,21 +336,21 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScroll::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiScrollTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiScrollTemplate_StyleProvider*(TemplateProperty<GuiScrollTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiScrollTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiScrollViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollView::IStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiScrollViewTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiScrollViewTemplate_StyleProvider*(TemplateProperty<GuiScrollViewTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiScrollViewTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTextListTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiVirtualTextList::IStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate_StyleProvider*(TemplateProperty<GuiTextListTemplate>), { L"factory" })
 				CLASS_MEMBER_METHOD(CreateArgument, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiTextListTemplate_StyleProvider)
 
@@ -358,40 +358,40 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiListViewBase::IStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiListViewTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiListViewTemplate_StyleProvider*(TemplateProperty<GuiListViewTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiListViewTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView::IStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiTreeViewTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiTreeViewTemplate_StyleProvider*(TemplateProperty<GuiTreeViewTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiTreeViewTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTabTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiTab::IStyleController)
 
-				CLASS_MEMBER_CONSTRUCTOR(GuiTabTemplate_StyleProvider*(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiTabTemplate_StyleProvider*(TemplateProperty<GuiTabTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiTabTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiComboBoxListControl::IItemStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiControlTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiControlTemplate_ItemStyleProvider>(TemplateProperty<GuiControlTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
 
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiTextListItemTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiTextListItemTemplate_ItemStyleProvider>(TemplateProperty<GuiTextListItemTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiTextListItemTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate_ItemStyleProvider)
 				CLASS_MEMBER_BASE(tree::INodeItemStyleProvider)
 				CLASS_MEMBER_BASE(tree::INodeProviderCallback)
 
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiTreeItemTemplate_ItemStyleProvider>(Ptr<GuiTemplate::IFactory>), { L"factory" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiTreeItemTemplate_ItemStyleProvider>(TemplateProperty<GuiTreeItemTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiTreeItemTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer)
@@ -400,11 +400,11 @@ Type Declaration
 			END_CLASS_MEMBER(GuiBindableDataVisualizer)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::Factory>(Ptr<GuiTemplate::IFactory>, list::BindableDataColumn*), { L"templateFactory" _ L"ownerColumn" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::Factory>(TemplateProperty<GuiGridVisualizerTemplate>, list::BindableDataColumn*), { L"templateFactory" _ L"ownerColumn" })
 			END_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::DecoratedFactory>(Ptr<GuiTemplate::IFactory>, list::BindableDataColumn*, Ptr<list::IDataVisualizerFactory>), { L"templateFactory" _ L"ownerColumn" _ L"decoratedFactory" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::DecoratedFactory>(TemplateProperty<GuiGridVisualizerTemplate>, list::BindableDataColumn*, Ptr<list::IDataVisualizerFactory>), { L"templateFactory" _ L"ownerColumn" _ L"decoratedFactory" })
 			END_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataEditor)
@@ -412,7 +412,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiBindableDataEditor)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataEditor::Factory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(Ptr<GuiTemplate::IFactory>, list::BindableDataColumn*), { L"templateFactory" _ L"ownerColumn" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(TemplateProperty<GuiGridEditorTemplate>, list::BindableDataColumn*), { L"templateFactory" _ L"ownerColumn" })
 			END_CLASS_MEMBER(GuiBindableDataEditor::Factory)
 
 #undef INTERFACE_EXTERNALCTOR
