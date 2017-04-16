@@ -41,7 +41,7 @@ GuiTemplateInstanceLoader
 						for (vint i = 0; i < propCount; i++)
 						{
 							auto prop = td->GetProperty(i);
-							if (prop->IsWritable() && prop->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<GuiTemplate::IFactory>())
+							if (prop->IsWritable() && INVLOC.EndsWith(prop->GetName(),L"Template",Locale::None))
 							{
 								propertyNames.Add(GlobalStringKey::Get(prop->GetName()));
 							}
@@ -63,9 +63,9 @@ GuiTemplateInstanceLoader
 				{
 					if (auto prop = propertyInfo.typeInfo.typeInfo->GetTypeDescriptor()->GetPropertyByName(propertyInfo.propertyName.ToString(), true))
 					{
-						if (prop->IsWritable() && prop->GetReturn()->GetTypeDescriptor() == description::GetTypeDescriptor<GuiTemplate::IFactory>())
+						if (prop->IsWritable() && INVLOC.EndsWith(prop->GetName(), L"Template", Locale::None))
 						{
-							auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
+							auto info = GuiInstancePropertyInfo::Assign(CopyTypeInfo(prop->GetReturn()));
 							info->usage = GuiInstancePropertyInfo::Property;
 
 							if (prop->GetOwnerTypeDescriptor() != description::GetTypeDescriptor<GuiWindowTemplate>())

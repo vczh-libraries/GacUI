@@ -6,7 +6,7 @@ GuiInstanceLoader_Plugin.cpp
 		default: GuiComponent*
 GuiInstanceLoader_TemplateControl
 	GuiControl
-		ctor: ControlTemplate
+		ctor: ControlTemplate(ItemTemplate<T>)
 GuiInstanceLoader_Compositions.cpp
 	GuiAxis
 		ctor: AxisDirection
@@ -48,7 +48,7 @@ GuiInstanceLoader_Tab.cpp
 		default: GuiControl*, GuiGraphicsComposition*
 GuiInstanceLoader_Templates.cpp
 	GuiTemplate
-		ctor: \w+(Ptr<GuiTemplate::IFactory>)
+		ctor: \w+(ItemTemplate<T>)
 GuiInstanceLoader_Toolstrip.cpp
 	GuiToolstripMenu, GuiToolstripMenuBar, GuiToolstripToolBar
 		default: collection(GuiControl*)

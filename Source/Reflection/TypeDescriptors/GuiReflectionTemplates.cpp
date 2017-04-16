@@ -43,10 +43,6 @@ Type Declaration
 
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiTemplate)
-			
-			BEGIN_INTERFACE_MEMBER(GuiTemplate::IFactory)
-				CLASS_MEMBER_METHOD(CreateTemplate, NO_PARAMETER)
-			END_INTERFACE_MEMBER(GuiTemplate::IFactory)
 
 			BEGIN_CLASS_MEMBER(GuiControlTemplate)
 				CLASS_MEMBER_BASE(GuiTemplate)

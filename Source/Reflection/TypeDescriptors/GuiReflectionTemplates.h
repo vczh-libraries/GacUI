@@ -27,7 +27,6 @@ Type List
 #define GUIREFLECTIONTEMPLATES_TYPELIST(F)\
 			F(presentation::templates::BoolOption)\
 			F(presentation::templates::GuiTemplate)\
-			F(presentation::templates::GuiTemplate::IFactory)\
 			F(presentation::templates::GuiControlTemplate)\
 			F(presentation::templates::GuiLabelTemplate)\
 			F(presentation::templates::GuiSinglelineTextBoxTemplate)\
@@ -85,17 +84,6 @@ Type List
 			F(presentation::templates::GuiBindableDataEditor::Factory)\
 
 			GUIREFLECTIONTEMPLATES_TYPELIST(DECL_TYPE_INFO)
-
-/***********************************************************************
-Interface Proxy
-***********************************************************************/
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::templates::GuiTemplate::IFactory)
-				presentation::templates::GuiTemplate* CreateTemplate(const Value& viewModel)override
-				{
-					INVOKEGET_INTERFACE_PROXY(CreateTemplate, viewModel);
-				}
-			END_INTERFACE_PROXY(presentation::templates::GuiTemplate::IFactory)
 
 /***********************************************************************
 Type Loader

@@ -47,10 +47,6 @@ GuiVrtualTypeInstanceLoader
 				ArgumentFunctionType						argumentFunction;
 				InitFunctionType							initFunction;
 
-				virtual void PrepareAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfBlockStatement> block)
-				{
-				}
-
 				virtual void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)
 				{
 				}
@@ -478,7 +474,7 @@ GuiVrtualTypeInstanceLoader
 						varStat->variable = varTemplate;
 						block->statements.Add(varStat);
 					}
-					PrepareAdditionalArguments(resolvingResult, typeInfo, variableName, arguments, errors, block);
+
 					{
 						auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
 
