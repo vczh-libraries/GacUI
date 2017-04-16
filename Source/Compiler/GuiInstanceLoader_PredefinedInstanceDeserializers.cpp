@@ -286,6 +286,16 @@ GuiTemplatePropertyDeserializer
 				return false;
 			}
 
+			bool IsDataVisualizerFactoryType(ITypeInfo* propType)
+			{
+				return propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetTypeDescriptor() == description::GetTypeDescriptor<list::IDataVisualizerFactory>();
+			}
+
+			bool IsDataEditorFactoryType(ITypeInfo* propType)
+			{
+				return propType->GetDecorator() == ITypeInfo::SharedPtr && propType->GetTypeDescriptor() == description::GetTypeDescriptor<list::IDataEditorFactory>();
+			}
+
 		public:
 			GuiTemplatePropertyDeserializer()
 			{
@@ -312,6 +322,13 @@ GuiTemplatePropertyDeserializer
 			{
 				List<WString> typeNames;
 				SplitBySemicolon(typeNamesString, typeNames);
+				if (typeNames.Count() == 0)
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
+						L"Precompile: Template list \"" +
+						typeNamesString +
+						L"\" cannot be empty."));
+				}
 
 				FOREACH(WString, controlTemplateName, typeNames)
 				{
@@ -320,7 +337,7 @@ GuiTemplatePropertyDeserializer
 					{
 						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
 							L"Precompile: Type \"" +
-							typeNamesString +
+							controlTemplateName +
 							L"\" does not exist."));
 						continue;
 					}
@@ -476,6 +493,55 @@ GuiTemplatePropertyDeserializer
 				return expr;
 			}
 
+			static Ptr<WfExpression> CreateDataVisualizerFactory(
+				types::ResolvingResult& resolvingResult,
+				List<ITypeDescriptor*>& controlTemplateTds,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+			)
+			{
+				auto templateType = TypeInfoRetriver<GuiGridVisualizerTemplate*>::CreateTypeInfo();
+				Ptr<WfExpression> previousFactory;
+				FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
+				{
+					List<ITypeDescriptor*> tds;
+					tds.Add(controlTemplateTd);
+					auto refFactory = CreateTemplateFactory(resolvingResult, tds, templateType.Obj(), tagPosition, errors);
+					auto createStyle = MakePtr<WfNewClassExpression>();
+					if (index == 0)
+					{
+						createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::Factory>>::CreateTypeInfo().Obj());
+					}
+					else
+					{
+						createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataVisualizer::DecoratedFactory>>::CreateTypeInfo().Obj());
+					}
+					createStyle->arguments.Add(refFactory);
+
+					if (index > 0)
+					{
+						createStyle->arguments.Add(previousFactory);
+					}
+					previousFactory = createStyle;
+				}
+				return previousFactory;
+			}
+
+			static Ptr<WfExpression> CreateDataEditorFactory(
+				types::ResolvingResult& resolvingResult,
+				List<ITypeDescriptor*>& controlTemplateTds,
+				GuiResourceTextPos tagPosition,
+				GuiResourceError::List& errors
+			)
+			{
+				auto templateType = TypeInfoRetriver<GuiGridEditorTemplate*>::CreateTypeInfo();
+				auto refFactory = CreateTemplateFactory(resolvingResult, controlTemplateTds, templateType.Obj(), tagPosition, errors);
+				auto createStyle = MakePtr<WfNewClassExpression>();
+				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiBindableDataEditor::Factory>>::CreateTypeInfo().Obj());
+				createStyle->arguments.Add(refFactory);
+				return createStyle;
+			}
+
 			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
 			{
 				auto stringExpr = valueExpression.Cast<WfStringExpression>();
@@ -491,8 +557,19 @@ GuiTemplatePropertyDeserializer
 				List<ITypeDescriptor*> tds;
 				GetItemTemplateType(resolvingResult, stringExpr->value.value, tds, tagPosition, errors);
 
-				auto templateType = typeInfo->GetElementType()->GetGenericArgument(0);
-				return CreateTemplateFactory(resolvingResult, tds, templateType, tagPosition, errors);
+				if (IsDataVisualizerFactoryType(typeInfo))
+				{
+					return CreateDataVisualizerFactory(resolvingResult, tds, tagPosition, errors);
+				}
+				else if (IsDataEditorFactoryType(typeInfo))
+				{
+					return CreateDataEditorFactory(resolvingResult, tds, tagPosition, errors);
+				}
+				else
+				{
+					auto templateType = typeInfo->GetElementType()->GetGenericArgument(0);
+					return CreateTemplateFactory(resolvingResult, tds, templateType, tagPosition, errors);
+				}
 			}
 		};
 

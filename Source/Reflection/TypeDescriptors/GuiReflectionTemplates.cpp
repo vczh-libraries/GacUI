@@ -396,11 +396,11 @@ Type Declaration
 			END_CLASS_MEMBER(GuiBindableDataVisualizer)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::Factory>(TemplateProperty<GuiGridVisualizerTemplate>, list::BindableDataColumn*), { L"templateFactory" _ L"ownerColumn" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::Factory>(TemplateProperty<GuiGridVisualizerTemplate>), { L"templateFactory"})
 			END_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::DecoratedFactory>(TemplateProperty<GuiGridVisualizerTemplate>, list::BindableDataColumn*, Ptr<list::IDataVisualizerFactory>), { L"templateFactory" _ L"ownerColumn" _ L"decoratedFactory" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::DecoratedFactory>(TemplateProperty<GuiGridVisualizerTemplate>, Ptr<list::IDataVisualizerFactory>), { L"templateFactory" _ L"decoratedFactory" })
 			END_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataEditor)
@@ -408,7 +408,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiBindableDataEditor)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataEditor::Factory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(TemplateProperty<GuiGridEditorTemplate>, list::BindableDataColumn*), { L"templateFactory" _ L"ownerColumn" })
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(TemplateProperty<GuiGridEditorTemplate>), { L"templateFactory" })
 			END_CLASS_MEMBER(GuiBindableDataEditor::Factory)
 
 #undef INTERFACE_EXTERNALCTOR

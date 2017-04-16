@@ -1402,9 +1402,8 @@ GuiTreeItemTemplate_ItemStyleController
 GuiBindableDataVisualizer::Factory
 ***********************************************************************/
 
-			GuiBindableDataVisualizer::Factory::Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn)
+			GuiBindableDataVisualizer::Factory::Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory)
 				:templateFactory(_templateFactory)
-				, ownerColumn(_ownerColumn)
 			{
 			}
 
@@ -1418,7 +1417,6 @@ GuiBindableDataVisualizer::Factory
 				if (visualizer)
 				{
 					visualizer->templateFactory = templateFactory;
-					visualizer->ownerColumn = ownerColumn;
 				}
 				return visualizer;
 			}
@@ -1427,10 +1425,9 @@ GuiBindableDataVisualizer::Factory
 GuiBindableDataVisualizer::DecoratedFactory
 ***********************************************************************/
 
-			GuiBindableDataVisualizer::DecoratedFactory::DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory)
+			GuiBindableDataVisualizer::DecoratedFactory::DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory)
 				:DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>(_decoratedFactory)
 				, templateFactory(_templateFactory)
-				, ownerColumn(_ownerColumn)
 			{
 			}
 
@@ -1444,7 +1441,6 @@ GuiBindableDataVisualizer::DecoratedFactory
 				if (visualizer)
 				{
 					visualizer->templateFactory = templateFactory;
-					visualizer->ownerColumn = ownerColumn;
 				}
 				return visualizer;
 			}
@@ -1512,9 +1508,8 @@ GuiBindableDataVisualizer
 GuiBindableDataEditor::Factory
 ***********************************************************************/
 
-			GuiBindableDataEditor::Factory::Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory, controls::list::BindableDataColumn* _ownerColumn)
+			GuiBindableDataEditor::Factory::Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory)
 				:templateFactory(_templateFactory)
-				, ownerColumn(_ownerColumn)
 			{
 			}
 
@@ -1528,7 +1523,6 @@ GuiBindableDataEditor::Factory
 				if (editor)
 				{
 					editor->templateFactory = templateFactory;
-					editor->ownerColumn = ownerColumn;
 
 					// Invoke GuiBindableDataEditor::CreateBoundsCompositionInternal
 					// so that GuiBindableDataEditor::BeforeEditCell is able to set RowValue and CellValue to the editor

@@ -22,20 +22,17 @@ GuiInstanceLoader_Document.cpp
 	GuiDocumentViewer, GuiDocumentLable
 		default: Ptr<GuiDocumentItem>
 GuiInstanceLoader_List.cpp
-	GuiSelectableListControl
-		ItemTemplate
-	GuiVirtualTreeView
-		ItemTemplate
+	GuiVirtualTextList
+		ItemTemplate: TemplateProperty<GuiTextListItemTemplate>
 	GuiComboBox
-		ItemTemplate
+		ItemTemplate: TemplateProperty<GuiControlTemplate>
 	GuiListView, GuiBindableListView
 		ctor: View(ListViewViewType), IconSize(Size)
+	GuiVirtualTreeView
+		ItemTemplate: TemplateProperty<GuiTreeItemTemplate>
 	GuiTreeView, GuiBindableTreeView
 		ctor: IconSize(Size)
 		Nodes: array(Ptr<tree::MemoryNodeProvider>)
-	list::BindableDataColumn
-		VisualizerTemplates
-		EditorTemplate
 	GuiBindableDataGrid
 		ctor: ViewModelContext
 		Columns: collection(Ptr<list::BindableDataColumn>)

@@ -108,247 +108,6 @@ GuiVrtualTypeInstanceLoader
 					}
 				}
 
-				static Ptr<WfExpression> CreateTemplateFactory(types::ResolvingResult& resolvingResult, List<ITypeDescriptor*>& controlTemplateTds, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
-				{
-					auto templateType = TypeInfoRetriver<TTemplate*>::CreateTypeInfo();
-					auto factoryType = TypeInfoRetriver<Ptr<GuiTemplate::IFactory>>::CreateTypeInfo();
-
-					auto refFactory = MakePtr<WfNewInterfaceExpression>();
-					refFactory->type = GetTypeFromTypeInfo(factoryType.Obj());
-					{
-						auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
-						funcCreateTemplate->anonymity = WfFunctionAnonymity::Named;
-						funcCreateTemplate->name.value = L"CreateTemplate";
-						funcCreateTemplate->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<GuiTemplate*>::CreateTypeInfo().Obj());
-
-						auto argViewModel = MakePtr<WfFunctionArgument>();
-						argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
-						argViewModel->name.value = L"<viewModel>";
-						funcCreateTemplate->arguments.Add(argViewModel);
-
-						auto block = MakePtr<WfBlockStatement>();
-						funcCreateTemplate->statement = block;
-						
-						ITypeDescriptor* stopControlTemplateTd = nullptr;
-						FOREACH(ITypeDescriptor*, controlTemplateTd, controlTemplateTds)
-						{
-							if (stopControlTemplateTd)
-							{
-								errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-									L"Precompile: Type \"" +
-									controlTemplateTd->GetTypeName() +
-									L"\" will never be tried, because \"" +
-									stopControlTemplateTd->GetTypeName() +
-									L"\", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice."));
-								continue;
-							}
-
-							ITypeInfo* viewModelType = nullptr;
-							{
-								auto ctors = controlTemplateTd->GetConstructorGroup();
-								if (ctors->GetMethodCount() != 1)
-								{
-									errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-										L"Precompile: To use type \"" +
-										controlTemplateTd->GetTypeName() +
-										L"\" as a control template or item template, it should have exactly one constructor."));
-									continue;
-								}
-
-								auto ctor = ctors->GetMethod(0);
-								if (ctor->GetParameterCount() > 1)
-								{
-									errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-										L"Precompile: To use type \"" +
-										controlTemplateTd->GetTypeName() +
-										L"\" as a control template or item template, its constructor cannot have more than one parameter."));
-									continue;
-								}
-
-								if (ctor->GetParameterCount() != 0)
-								{
-									viewModelType = ctor->GetParameter(0)->GetType();
-								}
-							}
-
-							if (!viewModelType)
-							{
-								stopControlTemplateTd = controlTemplateTd;
-							}
-
-							auto subBlock = MakePtr<WfBlockStatement>();
-							block->statements.Add(subBlock);
-
-							Ptr<ITypeInfo> controlTemplateType;
-							{
-								auto elementType = MakePtr<TypeDescriptorTypeInfo>(controlTemplateTd, TypeInfoHint::Normal);
-								auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
-
-								controlTemplateType = pointerType;
-							}
-
-							Ptr<WfBlockStatement> returnStatBlock;
-							if (viewModelType)
-							{
-								auto refViewModel = MakePtr<WfReferenceExpression>();
-								refViewModel->name.value = L"<viewModel>";
-
-								auto condition = MakePtr<WfTypeTestingExpression>();
-								condition->test = WfTypeTesting::IsType;
-								condition->expression = refViewModel;
-								condition->type = GetTypeFromTypeInfo(viewModelType);
-
-								auto ifStat = MakePtr<WfIfStatement>();
-								subBlock->statements.Add(ifStat);
-								ifStat->expression = condition;
-
-								returnStatBlock = MakePtr<WfBlockStatement>();
-								ifStat->trueBranch = returnStatBlock;
-							}
-							else
-							{
-								returnStatBlock = subBlock;
-							}
-
-							{
-								auto createControlTemplate = MakePtr<WfNewClassExpression>();
-								createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
-								if (viewModelType)
-								{
-									auto refViewModel = MakePtr<WfReferenceExpression>();
-									refViewModel->name.value = L"<viewModel>";
-
-									auto cast = MakePtr<WfTypeCastingExpression>();
-									cast->strategy = WfTypeCastingStrategy::Strong;
-									cast->expression = refViewModel;
-									cast->type = GetTypeFromTypeInfo(viewModelType);
-									createControlTemplate->arguments.Add(cast);
-								}
-
-								auto varTemplate = MakePtr<WfVariableDeclaration>();
-								varTemplate->type = GetTypeFromTypeInfo(templateType.Obj());
-								varTemplate->name.value = L"<template>";
-								varTemplate->expression = createControlTemplate;
-
-								auto varStat = MakePtr<WfVariableStatement>();
-								varStat->variable = varTemplate;
-								returnStatBlock->statements.Add(varStat);
-							}
-							{
-								auto refTemplate = MakePtr<WfReferenceExpression>();
-								refTemplate->name.value = L"<template>";
-
-								auto returnStat = MakePtr<WfReturnStatement>();
-								returnStat->expression = refTemplate;
-								returnStatBlock->statements.Add(returnStat);
-							}
-						}
-
-						if (!stopControlTemplateTd)
-						{
-							auto value = MakePtr<WfStringExpression>();
-							value->value.value = L"Cannot find a matched control template to create.";
-
-							auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
-							raiseStat->expression = value;
-
-							block->statements.Add(raiseStat);
-						}
-
-						funcCreateTemplate->classMember = MakePtr<WfClassMember>();
-						funcCreateTemplate->classMember->kind = WfClassMemberKind::Override;
-						refFactory->declarations.Add(funcCreateTemplate);
-					}
-
-					return refFactory;
-				}
-
-				static Ptr<WfExpression> CreateTemplateFactory(types::ResolvingResult& resolvingResult, ITypeDescriptor* controlTemplateTd, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
-				{
-					List<ITypeDescriptor*> controlTemplateTds;
-					controlTemplateTds.Add(controlTemplateTd);
-					return CreateTemplateFactory(resolvingResult, controlTemplateTds, attPosition, errors);
-				}
-
-				static ITypeDescriptor* GetControlTemplateType(types::ResolvingResult& resolvingResult, Ptr<WfExpression> argument, const TypeInfo& controlTypeInfo, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
-				{
-					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
-					if (!controlTemplateNameExpr)
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-							L"[INTERNAL ERROR] Precompile: The value of contructor parameter \"" +
-							GlobalStringKey::_ControlTemplate.ToString() +
-							L"\" of type \"" +
-							controlTypeInfo.typeName.ToString() +
-							L"\" should be a constant representing the control template type name."));
-						return nullptr;
-					}
-
-					auto controlTemplateName = controlTemplateNameExpr->value.value;
-					if (wcschr(controlTemplateName.Buffer(), L';') != nullptr)
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-							L"Precompile: \"" +
-							controlTemplateNameExpr->value.value +
-							L"\", which is assigned to contructor parameter \"" +
-							GlobalStringKey::_ControlTemplate.ToString() +
-							L" of type \"" +
-							controlTypeInfo.typeName.ToString() +
-							L"\", is illegal because control template should not have multiple choices."));
-						return nullptr;
-					}
-
-					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
-					if (!controlTemplateTd)
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-							L"Precompile: Type \"" +
-							controlTemplateNameExpr->value.value +
-							L"\", which is assigned to contructor parameter \"" +
-							GlobalStringKey::_ControlTemplate.ToString() +
-							L" of type \"" +
-							controlTypeInfo.typeName.ToString() +
-							L"\", does not exist."));
-						return nullptr;
-					}
-
-					return controlTemplateTd;
-				}
-
-				static void GetItemTemplateType(types::ResolvingResult& resolvingResult, Ptr<WfExpression> argument, List<ITypeDescriptor*>& tds, const TypeInfo& controlTypeInfo, const WString& propertyName, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
-				{
-					auto controlTemplateNameExpr = argument.Cast<WfStringExpression>();
-					if (!controlTemplateNameExpr)
-					{
-						errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-							L"Precompile: The value of contructor parameter \"" +
-							propertyName + L"\" of type \"" +
-							controlTypeInfo.typeName.ToString() +
-							L"\" should be a constant representing control template type names."));
-						return;
-					}
-
-					List<WString> typeNames;
-					SplitBySemicolon(controlTemplateNameExpr->value.value, typeNames);
-
-					FOREACH(WString, controlTemplateName, typeNames)
-					{
-						auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
-						if (!controlTemplateTd)
-						{
-							errors.Add(GuiResourceError({ resolvingResult.resource }, attPosition,
-								L"Precompile: Type \"" +
-								controlTemplateNameExpr->value.value +
-								L"\", which is assigned to contructor parameter \"" + propertyName +
-								L" of type \"" +
-								controlTypeInfo.typeName.ToString() +
-								L"\", does not exist."));
-							continue;
-						}
-						tds.Add(controlTemplateTd);
-					}
-				}
-
 			public:
 				GuiTemplateControlInstanceLoader(const WString& _typeName, const WString& _styleMethod)
 					:typeName(GlobalStringKey::Get(_typeName))
@@ -391,7 +150,7 @@ GuiVrtualTypeInstanceLoader
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::_ControlTemplate)
 					{
-						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<TemplateProperty<TTemplate>>::CreateTypeInfo());
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
@@ -405,40 +164,18 @@ GuiVrtualTypeInstanceLoader
 
 				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
 				{
-					Ptr<WfExpression> controlTemplate;
-					GuiResourceTextPos attPosition;
+					auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+					if (index != -1)
 					{
-						auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-						if (index != -1)
-						{
-							auto argument = arguments.GetByIndex(index)[0];
-							controlTemplate = argument.expression;
-							attPosition = argument.attPosition;
-						}
-					}
+						auto argument = arguments.GetByIndex(index)[0];
 
-					if (controlTemplate)
-					{
-						if (auto controlTemplateTd = GetControlTemplateType(resolvingResult, controlTemplate, typeInfo, attPosition, errors))
-						{
-							auto styleType = TypeInfoRetriver<TControlStyle*>::CreateTypeInfo();
+						auto createStyle = MakePtr<WfNewClassExpression>();
+						createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<TControlStyle*>::CreateTypeInfo().Obj());
+						createStyle->arguments.Add(argument.expression);
 
-							auto refFactory = CreateTemplateFactory(resolvingResult, controlTemplateTd, attPosition, errors);
-							auto createStyle = MakePtr<WfNewClassExpression>();
-							createStyle->type = GetTypeFromTypeInfo(styleType.Obj());
-							createStyle->arguments.Add(refFactory);
-							
-							return createStyle;
-						}
-						else
-						{
-							return nullptr;
-						}
+						return createStyle;
 					}
-					else
-					{
-						return CreateIThemeCall(styleMethod);
-					}
+					return CreateIThemeCall(styleMethod);
 				}
 
 				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)override
