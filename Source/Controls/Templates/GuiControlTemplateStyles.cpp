@@ -31,6 +31,7 @@ GuiControlTemplate_StyleProvider
 				:associatedStyleController(0)
 				, controlTemplate(factory(viewModel))
 			{
+				CHECK_ERROR(controlTemplate, L"GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider()#An instance of GuiControlTemplate is expected.");
 			}
 
 			GuiControlTemplate_StyleProvider::~GuiControlTemplate_StyleProvider()
@@ -1104,13 +1105,12 @@ GuiTextListItemTemplate_ItemStyleProvider
 				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
 				{
 					Value viewModel = listControl->GetItemProvider()->GetBindingValue(itemIndex);
-					if (auto listItemTemplate = factory(viewModel))
-					{
-						listItemTemplate->SetFont(listControl->GetFont());
-						listItemTemplate->SetIndex(itemIndex);
-						listItemTemplate->SetTextColor(listControl->GetTextListStyleProvider()->GetTextColor());
-						controller->SetTemplate(listItemTemplate);
-					}
+					auto listItemTemplate = factory(viewModel);
+					CHECK_ERROR(listItemTemplate, L"GuiTextListItemTemplate_ItemStyleProvider::Install()#An instance of GuiTextListItemTemplate is expected.");
+					listItemTemplate->SetFont(listControl->GetFont());
+					listItemTemplate->SetIndex(itemIndex);
+					listItemTemplate->SetTextColor(listControl->GetTextListStyleProvider()->GetTextColor());
+					controller->SetTemplate(listItemTemplate);
 				}
 			}
 
@@ -1302,12 +1302,11 @@ GuiTreeItemTemplate_ItemStyleProvider
 				if (auto controller = dynamic_cast<GuiTreeItemTemplate_ItemStyleController*>(style))
 				{
 					Value viewModel = treeListControl->GetNodeRootProvider()->GetBindingValue(node);
-					if (auto treeItemTemplate = factory(viewModel))
-					{
-						treeItemTemplate->SetFont(treeListControl->GetFont());
-						treeItemTemplate->SetIndex(itemIndex);
-						controller->SetTemplate(treeItemTemplate);
-					}
+					auto treeItemTemplate = factory(viewModel);
+					CHECK_ERROR(treeItemTemplate, L"GuiTreeItemTemplate_ItemStyleProvider::Install()#An instance of GuiTreeItemTemplate is expected.");
+					treeItemTemplate->SetFont(treeListControl->GetFont());
+					treeItemTemplate->SetIndex(itemIndex);
+					controller->SetTemplate(treeItemTemplate);
 				}
 			}
 
@@ -1457,6 +1456,7 @@ GuiBindableDataVisualizer
 			compositions::GuiBoundsComposition* GuiBindableDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
 			{
 				visualizerTemplate = templateFactory(ownerColumn->GetViewModelContext());
+				CHECK_ERROR(visualizerTemplate, L"GuiBindableDataVisualizer::CreateBoundsCompositionInternal()#An instance of GuiGridVisualizerTemplate is expected.");
 
 				if (decoratedComposition)
 				{
@@ -1544,6 +1544,7 @@ GuiBindableDataEditor
 			compositions::GuiBoundsComposition* GuiBindableDataEditor::CreateBoundsCompositionInternal()
 			{
 				editorTemplate = templateFactory(ownerColumn->GetViewModelContext());
+				CHECK_ERROR(editorTemplate, L"GuiBindableDataEditor::CreateBoundsCompositionInternal()#An instance of GuiGridEditorTemplate is expected.");
 
 				editorTemplate->CellValueChanged.AttachMethod(this, &GuiBindableDataEditor::editorTemplate_CellValueChanged);
 				return editorTemplate;
