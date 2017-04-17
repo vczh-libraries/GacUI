@@ -10,9 +10,13 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
 
 #include "../GuiBasicControls.h"
+#include "../GuiLabelControls.h"
+#include "../GuiButtonControls.h"
+#include "../GuiScrollControls.h"
 #include "../GuiWindowControls.h"
 #include "../GuiContainerControls.h"
 #include "../GuiDateTimeControls.h"
+#include "../GuiDialogs.h"
 
 #include "../TextEditorPackage/GuiTextControls.h"
 #include "../TextEditorPackage/GuiDocumentViewer.h"

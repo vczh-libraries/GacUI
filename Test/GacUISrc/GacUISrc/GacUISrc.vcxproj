@@ -305,8 +305,12 @@
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowScriptPosition.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiApplication.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiBasicControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\GuiButtonControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiContainerControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiDateTimeControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\GuiDialogs.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\GuiLabelControls.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\GuiScrollControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiWindowControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControl.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.cpp" />
@@ -468,8 +472,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\GuiApplication.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiBasicControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiButtonControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiContainerControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiDateTimeControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiDialogs.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiLabelControls.h" />
+    <ClInclude Include="..\..\..\Source\Controls\GuiScrollControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiWindowControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControl.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.h" />

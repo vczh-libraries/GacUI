@@ -486,6 +486,18 @@
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceDeserializers.cpp">
       <Filter>GacUI\Compiler</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\GuiLabelControls.cpp">
+      <Filter>GacUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\GuiButtonControls.cpp">
+      <Filter>GacUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\GuiScrollControls.cpp">
+      <Filter>GacUI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\GuiDialogs.cpp">
+      <Filter>GacUI\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -826,6 +838,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListControlItemArrangers.h">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\GuiLabelControls.h">
+      <Filter>GacUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\GuiButtonControls.h">
+      <Filter>GacUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\GuiScrollControls.h">
+      <Filter>GacUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\GuiDialogs.h">
+      <Filter>GacUI\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

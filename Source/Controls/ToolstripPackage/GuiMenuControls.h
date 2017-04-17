@@ -9,6 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUIMENUCONTROLS
 #define VCZH_PRESENTATION_CONTROLS_GUIMENUCONTROLS
 
+#include "../GuiButtonControls.h"
 #include "../GuiWindowControls.h"
 
 namespace vl

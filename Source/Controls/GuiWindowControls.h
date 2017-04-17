@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUIWINDOWCONTROLS
 #define VCZH_PRESENTATION_CONTROLS_GUIWINDOWCONTROLS
 
-#include "GuiBasicControls.h"
+#include "GuiLabelControls.h"
 
 namespace vl
 {
