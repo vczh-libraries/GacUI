@@ -16,6 +16,11 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace templates
+		{
+			class GuiListItemTemplate;
+		}
+
 		namespace controls
 		{
 
@@ -28,8 +33,9 @@ List Control
 			{
 			public:
 				class IItemProvider;
-				class IItemStyleController;
-				class IItemStyleProvider;
+
+				using ItemStyle = templates::GuiListItemTemplate;
+				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
 				//-----------------------------------------------------------
 				// Callback Interfaces
@@ -56,29 +62,29 @@ List Control
 					/// <summary>Request an item control representing an item in the item provider. This function is suggested to call when an item control gets into the visible area.</summary>
 					/// <returns>The item control.</returns>
 					/// <param name="itemIndex">The index of the item in the item provider.</param>
-					virtual IItemStyleController*					RequestItem(vint itemIndex)=0;
+					virtual ItemStyle*								RequestItem(vint itemIndex)=0;
 					/// <summary>Release an item control. This function is suggested to call when an item control gets out of the visible area.</summary>
 					/// <param name="style">The item control.</param>
-					virtual void									ReleaseItem(IItemStyleController* style)=0;
+					virtual void									ReleaseItem(ItemStyle* style)=0;
 					/// <summary>Update the view location. The view location is the left-top position in the logic space of the list control.</summary>
 					/// <param name="value">The new view location.</param>
 					virtual void									SetViewLocation(Point value)=0;
 					/// <summary>Get the preferred size of an item control.</summary>
 					/// <returns>The preferred size of an item control.</returns>
 					/// <param name="style">The item control.</param>
-					virtual Size									GetStylePreferredSize(IItemStyleController* style)=0;
+					virtual Size									GetStylePreferredSize(ItemStyle* style)=0;
 					/// <summary>Set the alignment of an item control.</summary>
 					/// <param name="style">The item control.</param>
 					/// <param name="margin">The new alignment.</param>
-					virtual void									SetStyleAlignmentToParent(IItemStyleController* style, Margin margin)=0;
+					virtual void									SetStyleAlignmentToParent(ItemStyle* style, Margin margin)=0;
 					/// <summary>Get the bounds of an item control.</summary>
 					/// <returns>The bounds of an item control.</returns>
 					/// <param name="style">The item control.</param>
-					virtual Rect									GetStyleBounds(IItemStyleController* style)=0;
+					virtual Rect									GetStyleBounds(ItemStyle* style)=0;
 					/// <summary>Set the bounds of an item control.</summary>
 					/// <param name="style">The item control.</param>
 					/// <param name="bounds">The new bounds.</param>
-					virtual void									SetStyleBounds(IItemStyleController* style, Rect bounds)=0;
+					virtual void									SetStyleBounds(ItemStyle* style, Rect bounds)=0;
 					/// <summary>Get the <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</summary>
 					/// <returns>The <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</returns>
 					virtual compositions::GuiGraphicsComposition*	GetContainerComposition()=0;
@@ -87,7 +93,7 @@ List Control
 				};
 
 				//-----------------------------------------------------------
-				// Provider Interfaces
+				// Data Source Interfaces
 				//-----------------------------------------------------------
 
 				/// <summary>Item provider for a <see cref="GuiListControl"/>.</summary>
@@ -123,56 +129,10 @@ List Control
 					/// <param name="view">The view to release.</param>
 					virtual void								ReleaseView(IDescriptable* view)=0;
 				};
-				
-				/// <summary>Item style controller for a <see cref="GuiListControl"/>. Item style controller contains all information to render a binded item.</summary>
-				class IItemStyleController : public virtual IDescriptable, public Description<IItemStyleController>
-				{
-				public:
-					/// <summary>Get the owner [T:vl.presentation.controls.GuiListControl.IItemStyleProvider].</summary>
-					/// <returns>The owner.</returns>
-					virtual IItemStyleProvider*					GetStyleProvider()=0;
-					/// <summary>Get the item style id for the binded item.</summary>
-					/// <returns>The item style id.</returns>
-					virtual vint								GetItemStyleId()=0;
-					/// <summary>Get the bounds composition that represnets the binded item.</summary>
-					/// <returns>The bounds composition</returns>
-					virtual compositions::GuiBoundsComposition*	GetBoundsComposition()=0;
-					/// <summary>Test is this item style controller cacheable.</summary>
-					/// <returns>Returns true if this item style controller is cacheable.</returns>
-					virtual bool								IsCacheable()=0;
-					/// <summary>Test is there an item binded to this item style controller.</summary>
-					/// <returns>Returns true if an item is binded to this item style controller.</returns>
-					virtual bool								IsInstalled()=0;
-					/// <summary>Called when an item is binded to this item style controller.</summary>
-					virtual void								OnInstalled()=0;
-					/// <summary>Called when an item is unbinded to this item style controller.</summary>
-					virtual void								OnUninstalled()=0;
-				};
-				
-				/// <summary>Item style provider for a <see cref="GuiListControl"/>. When implementing an item style provider, the provider can require the item provider to support a specified view to access data for each item.</summary>
-				class IItemStyleProvider : public virtual IDescriptable, public Description<IItemStyleProvider>
-				{
-				public:
-					/// <summary>Called when an item style provider in installed to a <see cref="GuiListControl"/>.</summary>
-					/// <param name="value">The list control.</param>
-					virtual void								AttachListControl(GuiListControl* value)=0;
-					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiListControl"/>.</summary>
-					virtual void								DetachListControl()=0;
-					/// <summary>Create an item style controller from an item style id.</summary>
-					/// <returns>The created item style controller.</returns>
-					virtual IItemStyleController*				CreateItemStyle()=0;
-					/// <summary>Destroy an item style controller.</summary>
-					/// <param name="style">The item style controller.</param>
-					virtual void								DestroyItemStyle(IItemStyleController* style)=0;
-					/// <summary>Bind an item to an item style controller.</summary>
-					/// <param name="style">The item style controller.</param>
-					/// <param name="itemIndex">The item index.</param>
-					virtual void								Install(IItemStyleController* style, vint itemIndex)=0;
-					/// <summary>Update the visual affect of an item style controller to a new item index.</summary>
-					/// <param name="style">The item style controller.</param>
-					/// <param name="value">The new item index.</param>
-					virtual void								SetStyleIndex(IItemStyleController* style, vint value)=0;
-				};
+
+				//-----------------------------------------------------------
+				// Item Layout Interfaces
+				//-----------------------------------------------------------
 				
 				/// <summary>Item arranger for a <see cref="GuiListControl"/>. Item arranger decides how to arrange and item controls. When implementing an item arranger, <see cref="IItemArrangerCallback"/> is suggested to use when calculating locations and sizes for item controls.</summary>
 				class IItemArranger : public virtual IItemProviderCallback, public Description<IItemArranger>
@@ -195,11 +155,11 @@ List Control
 					/// <summary>Get the item style controller for an visible item index. If an item is not visible, it returns null.</summary>
 					/// <returns>The item style controller.</returns>
 					/// <param name="itemIndex">The item index.</param>
-					virtual IItemStyleController*				GetVisibleStyle(vint itemIndex)=0;
+					virtual ItemStyle*							GetVisibleStyle(vint itemIndex)=0;
 					/// <summary>Get the item index for an visible item style controller. If an item is not visible, it returns -1.</summary>
 					/// <returns>The item index.</returns>
 					/// <param name="style">The item style controller.</param>
-					virtual vint								GetVisibleIndex(IItemStyleController* style)=0;
+					virtual vint								GetVisibleIndex(ItemStyle* style)=0;
 					/// <summary>Called when the visible area of item container is changed.</summary>
 					/// <param name="bounds">The new visible area.</param>
 					virtual void								OnViewChanged(Rect bounds)=0;
@@ -226,14 +186,16 @@ List Control
 
 				class ItemCallback : public IItemProviderCallback, public IItemArrangerCallback
 				{
-					typedef collections::List<IItemStyleController*>													StyleList;
-					typedef collections::Dictionary<IItemStyleController*, Ptr<compositions::IGuiGraphicsEventHandler>>	InstalledStyleMap;
+					typedef compositions::IGuiGraphicsEventHandler							BoundsChangedHandler;
+					typedef collections::List<ItemStyle*>									StyleList;
+					typedef collections::Dictionary<ItemStyle*, Ptr<BoundsChangedHandler>>	InstalledStyleMap;
 				protected:
 					GuiListControl*								listControl;
 					IItemProvider*								itemProvider;
-					StyleList									cachedStyles;
 					InstalledStyleMap							installedStyles;
 
+					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex);
+					ItemStyle*									UninstallStyle(vint index);
 					void										OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					ItemCallback(GuiListControl* _listControl);
@@ -243,13 +205,13 @@ List Control
 
 					void										OnAttached(IItemProvider* provider)override;
 					void										OnItemModified(vint start, vint count, vint newCount)override;
-					IItemStyleController*						RequestItem(vint itemIndex)override;
-					void										ReleaseItem(IItemStyleController* style)override;
+					ItemStyle*									RequestItem(vint itemIndex)override;
+					void										ReleaseItem(ItemStyle* style)override;
 					void										SetViewLocation(Point value)override;
-					Size										GetStylePreferredSize(IItemStyleController* style)override;
-					void										SetStyleAlignmentToParent(IItemStyleController* style, Margin margin)override;
-					Rect										GetStyleBounds(IItemStyleController* style)override;
-					void										SetStyleBounds(IItemStyleController* style, Rect bounds)override;
+					Size										GetStylePreferredSize(ItemStyle* style)override;
+					void										SetStyleAlignmentToParent(ItemStyle* style, Margin margin)override;
+					Rect										GetStyleBounds(ItemStyle* style)override;
+					void										SetStyleBounds(ItemStyle* style, Rect bounds)override;
 					compositions::GuiGraphicsComposition*		GetContainerComposition()override;
 					void										OnTotalSizeChanged()override;
 				};
@@ -260,14 +222,14 @@ List Control
 
 				Ptr<ItemCallback>								callback;
 				Ptr<IItemProvider>								itemProvider;
-				Ptr<IItemStyleProvider>							itemStyleProvider;
+				ItemStyleProperty								itemStyleProperty;
 				Ptr<IItemArranger>								itemArranger;
 				Ptr<compositions::IGuiAxis>						axis;
 				Size											fullSize;
 
 				virtual void									OnItemModified(vint start, vint count, vint newCount);
-				virtual void									OnStyleInstalled(vint itemIndex, IItemStyleController* style);
-				virtual void									OnStyleUninstalled(IItemStyleController* style);
+				virtual void									OnStyleInstalled(vint itemIndex, ItemStyle* style);
+				virtual void									OnStyleUninstalled(ItemStyle* style);
 				
 				void											OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
 				void											OnBeforeReleaseGraphicsHost()override;
@@ -275,7 +237,7 @@ List Control
 				void											UpdateView(Rect viewBounds)override;
 				
 				void											OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-				void											SetStyleProviderAndArranger(Ptr<IItemStyleProvider> styleProvider, Ptr<IItemArranger> arranger);
+				void											SetStyleAndArranger(ItemStyleProperty styleProperty, Ptr<IItemArranger> arranger);
 
 				//-----------------------------------------------------------
 				// Item event management
@@ -299,12 +261,12 @@ List Control
 				};
 				
 				friend class collections::ArrayBase<Ptr<VisibleStyleHelper>>;
-				collections::Dictionary<IItemStyleController*, Ptr<VisibleStyleHelper>>		visibleStyles;
+				collections::Dictionary<ItemStyle*, Ptr<VisibleStyleHelper>>		visibleStyles;
 
-				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, IItemStyleController* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-				void											OnItemNotifyEvent(compositions::GuiItemNotifyEvent& itemEvent, IItemStyleController* style, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void											AttachItemEvents(IItemStyleController* style);
-				void											DetachItemEvents(IItemStyleController* style);
+				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+				void											OnItemNotifyEvent(compositions::GuiItemNotifyEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void											AttachItemEvents(ItemStyle* style);
+				void											DetachItemEvents(ItemStyle* style);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="_styleProvider">The style provider.</param>
@@ -314,7 +276,7 @@ List Control
 				~GuiListControl();
 
 				/// <summary>Style provider changed event.</summary>
-				compositions::GuiNotifyEvent					StyleProviderChanged;
+				compositions::GuiNotifyEvent					ItemTemplateChanged;
 				/// <summary>Arranger changed event.</summary>
 				compositions::GuiNotifyEvent					ArrangerChanged;
 				/// <summary>Coordinate transformer changed event.</summary>
@@ -352,25 +314,25 @@ List Control
 				virtual IItemProvider*							GetItemProvider();
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
-				virtual IItemStyleProvider*						GetStyleProvider();
+				virtual ItemStyleProperty						GetItemTemplate();
 				/// <summary>Set the item style provider</summary>
 				/// <returns>The old item style provider</returns>
 				/// <param name="value">The new item style provider</param>
-				virtual Ptr<IItemStyleProvider>					SetStyleProvider(Ptr<IItemStyleProvider> value);
+				virtual void									SetItemTemplate(ItemStyleProperty value);
 				/// <summary>Get the item arranger.</summary>
 				/// <returns>The item arranger.</returns>
 				virtual IItemArranger*							GetArranger();
 				/// <summary>Set the item arranger</summary>
 				/// <returns>The old item arranger</returns>
 				/// <param name="value">The new item arranger</param>
-				virtual Ptr<IItemArranger>						SetArranger(Ptr<IItemArranger> value);
+				virtual void									SetArranger(Ptr<IItemArranger> value);
 				/// <summary>Get the item coordinate transformer.</summary>
 				/// <returns>The item coordinate transformer.</returns>
 				virtual compositions::IGuiAxis*					GetAxis();
 				/// <summary>Set the item coordinate transformer</summary>
 				/// <returns>The old item coordinate transformer</returns>
 				/// <param name="value">The new item coordinate transformer</param>
-				virtual Ptr<compositions::IGuiAxis>				SetAxis(Ptr<compositions::IGuiAxis> value);
+				virtual void									SetAxis(Ptr<compositions::IGuiAxis> value);
 				/// <summary>Adjust the view location to make an item visible.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="itemIndex">The item index of the item to be made visible.</param>
@@ -388,19 +350,8 @@ Selectable List Control
 			/// <summary>Represents a list control that each item is selectable.</summary>
 			class GuiSelectableListControl : public GuiListControl, public Description<GuiSelectableListControl>
 			{
-			public:
-				/// <summary>Item style provider for <see cref="GuiSelectableListControl"/>.</summary>
-				class IItemStyleProvider : public virtual GuiListControl::IItemStyleProvider, public Description<IItemStyleProvider>
-				{
-				public:
-					/// <summary>Change the visual affect of an item style controller to be selected or unselected.</summary>
-					/// <param name="style">The item style controller.</param>
-					/// <param name="value">Set to true if the item is expected to be rendered as selected.</param>
-					virtual void								SetStyleSelected(IItemStyleController* style, bool value)=0;
-				};
 			protected:
 
-				Ptr<IItemStyleProvider>							selectableStyleProvider;
 				collections::SortedList<vint>					selectedItems;
 				bool											multiSelect;
 				vint											selectedItemIndexStart;
@@ -408,8 +359,7 @@ Selectable List Control
 
 				void											NotifySelectionChanged();
 				void											OnItemModified(vint start, vint count, vint newCount)override;
-				void											OnStyleInstalled(vint itemIndex, IItemStyleController* style)override;
-				void											OnStyleUninstalled(IItemStyleController* style)override;
+				void											OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 				virtual void									OnItemSelectionChanged(vint itemIndex, bool value);
 				virtual void									OnItemSelectionCleared();
 				void											OnItemLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);
@@ -427,8 +377,6 @@ Selectable List Control
 
 				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent					SelectionChanged;
-
-				Ptr<GuiListControl::IItemStyleProvider>			SetStyleProvider(Ptr<GuiListControl::IItemStyleProvider> value)override;
 
 				/// <summary>Get the multiple selection mode.</summary>
 				/// <returns>Returns true if multiple selection is enabled.</returns>
@@ -471,42 +419,6 @@ Selectable List Control
 				/// <summary>Unselect all items.</summary>
 				void											ClearSelection();
 			};
-
-/***********************************************************************
-Predefined ItemStyleController
-***********************************************************************/
-
-			namespace list
-			{
-				/// <summary>Item style controller base. This class provides common functionalities item style controllers.</summary>
-				class ItemStyleControllerBase : public Object, public virtual GuiListControl::IItemStyleController, public Description<ItemStyleControllerBase>
-				{
-				protected:
-					GuiListControl::IItemStyleProvider*			provider;
-					vint										styleId;
-					compositions::GuiBoundsComposition*			boundsComposition;
-					GuiControl*									associatedControl;
-					bool										isInstalled;
-
-					void										Initialize(compositions::GuiBoundsComposition* _boundsComposition, GuiControl* _associatedControl);
-					void										Finalize();
-
-					/// <summary>Create the item style controller with a specified item style provider and a specified item style id.</summary>
-					/// <param name="_provider">The specified item style provider.</param>
-					/// <param name="_styleId">The specified item style id.</param>
-					ItemStyleControllerBase(GuiListControl::IItemStyleProvider* _provider, vint _styleId);
-				public:
-					~ItemStyleControllerBase();
-					
-					GuiListControl::IItemStyleProvider*			GetStyleProvider()override;
-					vint										GetItemStyleId()override;
-					compositions::GuiBoundsComposition*			GetBoundsComposition()override;
-					bool										IsCacheable()override;
-					bool										IsInstalled()override;
-					void										OnInstalled()override;
-					void										OnUninstalled()override;
-				};
-			}
 
 /***********************************************************************
 Predefined ItemProvider

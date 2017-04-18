@@ -1,4 +1,4 @@
-#include "GuiListControls.h"
+#include "../Templates/GuiControlTemplates.h"
 
 namespace vl
 {
@@ -13,6 +13,25 @@ namespace vl
 /***********************************************************************
 GuiListControl::ItemCallback
 ***********************************************************************/
+
+			Ptr<GuiListControl::ItemCallback::BoundsChangedHandler> GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex)
+			{
+				style->SetIndex(itemIndex);
+				auto handler = style->BoundsChanged.AttachMethod(this, &ItemCallback::OnStyleBoundsChanged);
+				listControl->GetContainerComposition()->AddChild(style);
+				listControl->OnStyleInstalled(itemIndex, style);
+				return handler;
+			}
+
+			GuiListControl::ItemStyle* GuiListControl::ItemCallback::UninstallStyle(vint index)
+			{
+				auto style = installedStyles.Keys()[index];
+				auto handler = installedStyles.Values()[index];
+				listControl->OnStyleUninstalled(style);
+				listControl->GetContainerComposition()->RemoveChild(style);
+				style->BoundsChanged.Detach(handler);
+				return style;
+			}
 
 			void GuiListControl::ItemCallback::OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
@@ -31,18 +50,11 @@ GuiListControl::ItemCallback
 
 			void GuiListControl::ItemCallback::ClearCache()
 			{
-				for (vint i = 0; i < cachedStyles.Count(); i++)
-				{
-					listControl->itemStyleProvider->DestroyItemStyle(cachedStyles[i]);
-				}
 				for (vint i = 0; i < installedStyles.Count(); i++)
 				{
-					auto style = installedStyles.Keys()[i];
-					auto handler = installedStyles.Values()[i];
-					style->GetBoundsComposition()->BoundsChanged.Detach(handler);
-					listControl->itemStyleProvider->DestroyItemStyle(style);
+					auto style = UninstallStyle(i);
+					SafeDeleteComposition(style);
 				}
-				cachedStyles.Clear();
 				installedStyles.Clear();
 			}
 
@@ -55,48 +67,25 @@ GuiListControl::ItemCallback
 				listControl->OnItemModified(start, count, newCount);
 			}
 
-			GuiListControl::IItemStyleController* GuiListControl::ItemCallback::RequestItem(vint itemIndex)
+			GuiListControl::ItemStyle* GuiListControl::ItemCallback::RequestItem(vint itemIndex)
 			{
-				IItemStyleController* style = nullptr;
-				if (cachedStyles.Count() > 0)
-				{
-					vint index = cachedStyles.Count() - 1;
-					style = cachedStyles[index];
-					cachedStyles.RemoveAt(index);
-				}
-				else
-				{
-					style = listControl->itemStyleProvider->CreateItemStyle();
-				}
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemProvider->Count(), L"GuiListControl::ItemCallback::RequestItem(vint)#Index out of range.");
+				CHECK_ERROR(listControl->itemStyleProperty, L"GuiListControl::ItemCallback::RequestItem(vint)#SetItemTemplate function should be called before adding items to the list control.");
 
-				listControl->itemStyleProvider->Install(style, itemIndex);
-				style->OnInstalled();
-				auto handler = style->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &ItemCallback::OnStyleBoundsChanged);
+				auto style = listControl->itemStyleProperty(itemProvider->GetBindingValue(itemIndex));
+				auto handler = InstallStyle(style, itemIndex);
 				installedStyles.Add(style, handler);
-				listControl->GetContainerComposition()->AddChild(style->GetBoundsComposition());
-				listControl->OnStyleInstalled(itemIndex, style);
 				return style;
 			}
 
-			void GuiListControl::ItemCallback::ReleaseItem(IItemStyleController* style)
+			void GuiListControl::ItemCallback::ReleaseItem(ItemStyle* style)
 			{
 				vint index = installedStyles.Keys().IndexOf(style);
 				if (index != -1)
 				{
-					listControl->OnStyleUninstalled(style);
-					listControl->GetContainerComposition()->RemoveChild(style->GetBoundsComposition());
-					auto handler = installedStyles.Values()[index];
-					style->GetBoundsComposition()->BoundsChanged.Detach(handler);
+					auto style = UninstallStyle(index);
 					installedStyles.Remove(style);
-					style->OnUninstalled();
-					if (style->IsCacheable())
-					{
-						cachedStyles.Add(style);
-					}
-					else
-					{
-						listControl->itemStyleProvider->DestroyItemStyle(style);
-					}
+					SafeDeleteComposition(style);
 				}
 			}
 
@@ -108,28 +97,28 @@ GuiListControl::ItemCallback
 				listControl->GetVerticalScroll()->SetPosition(realRect.Top());
 			}
 
-			Size GuiListControl::ItemCallback::GetStylePreferredSize(IItemStyleController* style)
+			Size GuiListControl::ItemCallback::GetStylePreferredSize(ItemStyle* style)
 			{
-				Size size = style->GetBoundsComposition()->GetPreferredBounds().GetSize();
+				Size size = style->GetPreferredBounds().GetSize();
 				return listControl->axis->RealSizeToVirtualSize(size);
 			}
 
-			void GuiListControl::ItemCallback::SetStyleAlignmentToParent(IItemStyleController* style, Margin margin)
+			void GuiListControl::ItemCallback::SetStyleAlignmentToParent(ItemStyle* style, Margin margin)
 			{
 				Margin newMargin = listControl->axis->VirtualMarginToRealMargin(margin);
-				style->GetBoundsComposition()->SetAlignmentToParent(newMargin);
+				style->SetAlignmentToParent(newMargin);
 			}
 
-			Rect GuiListControl::ItemCallback::GetStyleBounds(IItemStyleController* style)
+			Rect GuiListControl::ItemCallback::GetStyleBounds(ItemStyle* style)
 			{
-				Rect bounds = style->GetBoundsComposition()->GetBounds();
+				Rect bounds = style->GetBounds();
 				return listControl->axis->RealRectToVirtualRect(listControl->GetViewSize(), bounds);
 			}
 
-			void GuiListControl::ItemCallback::SetStyleBounds(IItemStyleController* style, Rect bounds)
+			void GuiListControl::ItemCallback::SetStyleBounds(ItemStyle* style, Rect bounds)
 			{
 				Rect newBounds = listControl->axis->VirtualRectToRealRect(listControl->GetViewSize(), bounds);
-				return style->GetBoundsComposition()->SetBounds(newBounds);
+				return style->SetBounds(newBounds);
 			}
 
 			compositions::GuiGraphicsComposition* GuiListControl::ItemCallback::GetContainerComposition()
@@ -150,40 +139,40 @@ GuiListControl
 			{
 			}
 
-			void GuiListControl::OnStyleInstalled(vint itemIndex, IItemStyleController* style)
+			void GuiListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style)
 			{
 				AttachItemEvents(style);
 			}
 
-			void GuiListControl::OnStyleUninstalled(IItemStyleController* style)
+			void GuiListControl::OnStyleUninstalled(ItemStyle* style)
 			{
 				DetachItemEvents(style);
 			}
 
 			void GuiListControl::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
-				SetStyleProviderAndArranger(itemStyleProvider, itemArranger);
+				SetStyleAndArranger(itemStyleProperty, itemArranger);
 				GuiScrollView::OnRenderTargetChanged(renderTarget);
 			}
 
 			void GuiListControl::OnBeforeReleaseGraphicsHost()
 			{
 				GuiScrollView::OnBeforeReleaseGraphicsHost();
-				SetStyleProviderAndArranger(0, 0);
+				SetStyleAndArranger({}, nullptr);
 			}
 
 			Size GuiListControl::QueryFullSize()
 			{
-				Size virtualSize=itemArranger?itemArranger->GetTotalSize():Size(0, 0);
-				fullSize=axis->VirtualSizeToRealSize(virtualSize);
+				Size virtualSize = itemArranger ? itemArranger->GetTotalSize() : Size(0, 0);
+				fullSize = axis->VirtualSizeToRealSize(virtualSize);
 				return fullSize;
 			}
 
 			void GuiListControl::UpdateView(Rect viewBounds)
 			{
-				if(itemArranger)
+				if (itemArranger)
 				{
-					Rect newBounds=axis->RealRectToVirtualRect(fullSize, viewBounds);
+					Rect newBounds = axis->RealRectToVirtualRect(fullSize, viewBounds);
 					itemArranger->OnViewChanged(newBounds);
 				}
 			}
@@ -196,30 +185,22 @@ GuiListControl
 				}
 			}
 
-			void GuiListControl::SetStyleProviderAndArranger(Ptr<IItemStyleProvider> styleProvider, Ptr<IItemArranger> arranger)
+			void GuiListControl::SetStyleAndArranger(ItemStyleProperty styleProperty, Ptr<IItemArranger> arranger)
 			{
-				if(itemStyleProvider)
-				{
-					itemStyleProvider->DetachListControl();
-				}
-				if(itemArranger)
+				if (itemArranger)
 				{
 					itemArranger->DetachListControl();
-					itemArranger->SetCallback(0);
+					itemArranger->SetCallback(nullptr);
 					itemProvider->DetachCallback(itemArranger.Obj());
 				}
 				callback->ClearCache();
 
-				itemStyleProvider=styleProvider;
-				itemArranger=arranger;
+				itemStyleProperty = styleProperty;
+				itemArranger = arranger;
 				GetVerticalScroll()->SetPosition(0);
 				GetHorizontalScroll()->SetPosition(0);
 
-				if(itemStyleProvider)
-				{
-					itemStyleProvider->AttachListControl(this);
-				}
-				if(itemArranger)
+				if (itemArranger)
 				{
 					itemProvider->AttachCallback(itemArranger.Obj());
 					itemArranger->SetCallback(callback.Obj());
@@ -228,59 +209,59 @@ GuiListControl
 				CalculateView();
 			}
 
-			void GuiListControl::OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, IItemStyleController* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
+			void GuiListControl::OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 			{
-				if(itemArranger && GetVisuallyEnabled())
+				if (itemArranger && GetVisuallyEnabled())
 				{
-					vint itemIndex=itemArranger->GetVisibleIndex(style);
-					if(itemIndex!=-1)
+					vint itemIndex = itemArranger->GetVisibleIndex(style);
+					if (itemIndex != -1)
 					{
 						GuiItemMouseEventArgs redirectArguments;
-						(GuiMouseEventArgs&)redirectArguments=arguments;
-						redirectArguments.compositionSource=GetBoundsComposition();
-						redirectArguments.eventSource=GetBoundsComposition();
-						redirectArguments.itemIndex=itemIndex;
+						(GuiMouseEventArgs&)redirectArguments = arguments;
+						redirectArguments.compositionSource = GetBoundsComposition();
+						redirectArguments.eventSource = GetBoundsComposition();
+						redirectArguments.itemIndex = itemIndex;
 						itemEvent.Execute(redirectArguments);
-						arguments=redirectArguments;
+						arguments = redirectArguments;
 					}
 				}
 			}
 
-			void GuiListControl::OnItemNotifyEvent(compositions::GuiItemNotifyEvent& itemEvent, IItemStyleController* style, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiListControl::OnItemNotifyEvent(compositions::GuiItemNotifyEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if(itemArranger && GetVisuallyEnabled())
+				if (itemArranger && GetVisuallyEnabled())
 				{
-					vint itemIndex=itemArranger->GetVisibleIndex(style);
-					if(itemIndex!=-1)
+					vint itemIndex = itemArranger->GetVisibleIndex(style);
+					if (itemIndex != -1)
 					{
 						GuiItemEventArgs redirectArguments;
-						(GuiEventArgs&)redirectArguments=arguments;
-						redirectArguments.compositionSource=GetBoundsComposition();
-						redirectArguments.eventSource=GetBoundsComposition();
-						redirectArguments.itemIndex=itemIndex;
+						(GuiEventArgs&)redirectArguments = arguments;
+						redirectArguments.compositionSource = GetBoundsComposition();
+						redirectArguments.eventSource = GetBoundsComposition();
+						redirectArguments.itemIndex = itemIndex;
 						itemEvent.Execute(redirectArguments);
-						arguments=redirectArguments;
+						arguments = redirectArguments;
 					}
 				}
 			}
 
 #define ATTACH_ITEM_MOUSE_EVENT(EVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiItemMouseEvent&, IItemStyleController*, GuiGraphicsComposition*, GuiMouseEventArgs&)> func(this, &GuiListControl::OnItemMouseEvent);\
-						helper->EVENTNAME##Handler=style->GetBoundsComposition()->GetEventReceiver()->EVENTNAME.AttachFunction(\
+						Func<void(GuiItemMouseEvent&, ItemStyle*, GuiGraphicsComposition*, GuiMouseEventArgs&)> func(this, &GuiListControl::OnItemMouseEvent);\
+						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
 							Curry(Curry(func)(ITEMEVENTNAME))(style)\
 							);\
 					}\
 
 #define ATTACH_ITEM_NOTIFY_EVENT(EVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiItemNotifyEvent&, IItemStyleController*, GuiGraphicsComposition*, GuiEventArgs&)> func(this, &GuiListControl::OnItemNotifyEvent);\
-						helper->EVENTNAME##Handler=style->GetBoundsComposition()->GetEventReceiver()->EVENTNAME.AttachFunction(\
+						Func<void(GuiItemNotifyEvent&, ItemStyle*, GuiGraphicsComposition*, GuiEventArgs&)> func(this, &GuiListControl::OnItemNotifyEvent);\
+						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
 							Curry(Curry(func)(ITEMEVENTNAME))(style)\
 							);\
 					}\
 
-			void GuiListControl::AttachItemEvents(IItemStyleController* style)
+			void GuiListControl::AttachItemEvents(ItemStyle* style)
 			{
 				vint index=visibleStyles.Keys().IndexOf(style);
 				if(index==-1)
@@ -306,9 +287,9 @@ GuiListControl
 #undef ATTACH_ITEM_MOUSE_EVENT
 #undef ATTACH_ITEM_NOTIFY_EVENT
 
-#define DETACH_ITEM_EVENT(EVENTNAME) style->GetBoundsComposition()->GetEventReceiver()->EVENTNAME.Detach(helper->EVENTNAME##Handler)
+#define DETACH_ITEM_EVENT(EVENTNAME) style->GetEventReceiver()->EVENTNAME.Detach(helper->EVENTNAME##Handler)
 
-			void GuiListControl::DetachItemEvents(IItemStyleController* style)
+			void GuiListControl::DetachItemEvents(ItemStyle* style)
 			{
 				vint index=visibleStyles.Keys().IndexOf(style);
 				if(index!=-1)
@@ -335,12 +316,12 @@ GuiListControl
 
 			GuiListControl::GuiListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider, bool acceptFocus)
 				:GuiScrollView(_styleProvider)
-				,itemProvider(_itemProvider)
+				, itemProvider(_itemProvider)
 			{
 				StyleProviderChanged.SetAssociatedComposition(boundsComposition);
 				ArrangerChanged.SetAssociatedComposition(boundsComposition);
 				AxisChanged.SetAssociatedComposition(boundsComposition);
-				
+
 				ItemLeftButtonDown.SetAssociatedComposition(boundsComposition);
 				ItemLeftButtonUp.SetAssociatedComposition(boundsComposition);
 				ItemLeftButtonDoubleClick.SetAssociatedComposition(boundsComposition);
@@ -354,11 +335,11 @@ GuiListControl
 				ItemMouseEnter.SetAssociatedComposition(boundsComposition);
 				ItemMouseLeave.SetAssociatedComposition(boundsComposition);
 
-				callback=new ItemCallback(this);
+				callback = new ItemCallback(this);
 				itemProvider->AttachCallback(callback.Obj());
-				axis=new GuiDefaultAxis;
+				axis = new GuiDefaultAxis;
 
-				if(acceptFocus)
+				if (acceptFocus)
 				{
 					boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
 					boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiListControl::OnBoundsMouseButtonDown);
@@ -374,8 +355,8 @@ GuiListControl
 					itemProvider->DetachCallback(itemArranger.Obj());
 				}
 				callback->ClearCache();
-				itemStyleProvider=0;
-				itemArranger=0;
+				itemStyleProperty = {};
+				itemArranger = nullptr;
 			}
 
 			GuiListControl::IItemProvider* GuiListControl::GetItemProvider()
@@ -383,17 +364,15 @@ GuiListControl
 				return itemProvider.Obj();
 			}
 
-			GuiListControl::IItemStyleProvider* GuiListControl::GetStyleProvider()
+			GuiListControl::ItemStyleProperty GuiListControl::GetItemTemplate()
 			{
-				return itemStyleProvider.Obj();
+				return itemStyleProperty;
 			}
 
-			Ptr<GuiListControl::IItemStyleProvider> GuiListControl::SetStyleProvider(Ptr<IItemStyleProvider> value)
+			void GuiListControl::SetItemTemplate(ItemStyleProperty value)
 			{
-				Ptr<IItemStyleProvider> old=itemStyleProvider;
-				SetStyleProviderAndArranger(value, itemArranger);
-				StyleProviderChanged.Execute(GetNotifyEventArguments());
-				return old;
+				SetStyleAndArranger(value, itemArranger);
+				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}
 
 			GuiListControl::IItemArranger* GuiListControl::GetArranger()
@@ -401,12 +380,10 @@ GuiListControl
 				return itemArranger.Obj();
 			}
 
-			Ptr<GuiListControl::IItemArranger> GuiListControl::SetArranger(Ptr<IItemArranger> value)
+			void GuiListControl::SetArranger(Ptr<IItemArranger> value)
 			{
-				Ptr<IItemArranger> old=itemArranger;
-				SetStyleProviderAndArranger(itemStyleProvider, value);
+				SetStyleAndArranger(itemStyleProperty, value);
 				ArrangerChanged.Execute(GetNotifyEventArguments());
-				return old;
 			}
 
 			compositions::IGuiAxis* GuiListControl::GetAxis()
@@ -414,22 +391,21 @@ GuiListControl
 				return axis.Obj();
 			}
 
-			Ptr<compositions::IGuiAxis> GuiListControl::SetAxis(Ptr<compositions::IGuiAxis> value)
+			void GuiListControl::SetAxis(Ptr<compositions::IGuiAxis> value)
 			{
-				Ptr<IGuiAxis> old=axis;
-				axis=value;
-				SetStyleProviderAndArranger(itemStyleProvider, itemArranger);
+				Ptr<IGuiAxis> old = axis;
+				axis = value;
+				SetStyleAndArranger(itemStyleProperty, itemArranger);
 				AxisChanged.Execute(GetNotifyEventArguments());
-				return old;
 			}
 
 			bool GuiListControl::EnsureItemVisible(vint itemIndex)
 			{
-				if(itemIndex<0 || itemIndex>=itemProvider->Count())
+				if (itemIndex < 0 || itemIndex >= itemProvider->Count())
 				{
 					return false;
 				}
-				return itemArranger?itemArranger->EnsureItemVisible(itemIndex):false;
+				return itemArranger ? itemArranger->EnsureItemVisible(itemIndex) : false;
 			}
 
 			Size GuiListControl::GetAdoptedSize(Size expectedSize)
@@ -474,31 +450,25 @@ GuiSelectableListControl
 				}
 			}
 
-			void GuiSelectableListControl::OnStyleInstalled(vint itemIndex, IItemStyleController* style)
+			void GuiSelectableListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style)
 			{
 				GuiListControl::OnStyleInstalled(itemIndex, style);
-				selectableStyleProvider->SetStyleSelected(style, selectedItems.Contains(itemIndex));
-			}
-
-			void GuiSelectableListControl::OnStyleUninstalled(IItemStyleController* style)
-			{
-				GuiListControl::OnStyleUninstalled(style);
+				style->SetSelected(selectedItems.Contains(itemIndex));
 			}
 
 			void GuiSelectableListControl::OnItemSelectionChanged(vint itemIndex, bool value)
 			{
-				GuiListControl::IItemStyleController* style=itemArranger->GetVisibleStyle(itemIndex);
-				if(style)
+				if(auto style = itemArranger->GetVisibleStyle(itemIndex))
 				{
-					selectableStyleProvider->SetStyleSelected(style, value);
+					style->SetSelected(value);
 				}
 			}
 
 			void GuiSelectableListControl::OnItemSelectionCleared()
 			{
-				for(vint i=0;i<visibleStyles.Count();i++)
+				FOREACH(ItemStyle*, style, visibleStyles.Keys())
 				{
-					selectableStyleProvider->SetStyleSelected(visibleStyles.Keys()[i], false);
+					style->SetSelected(false);
 				}
 			}
 
@@ -588,12 +558,6 @@ GuiSelectableListControl
 			{
 			}
 
-			Ptr<GuiListControl::IItemStyleProvider> GuiSelectableListControl::SetStyleProvider(Ptr<GuiListControl::IItemStyleProvider> value)
-			{
-				selectableStyleProvider = value ? value.Cast<IItemStyleProvider>() : nullptr;
-				return GuiListControl::SetStyleProvider(value);
-			}
-
 			bool GuiSelectableListControl::GetMultiSelect()
 			{
 				return multiSelect;
@@ -601,9 +565,9 @@ GuiSelectableListControl
 
 			void GuiSelectableListControl::SetMultiSelect(bool value)
 			{
-				if(multiSelect!=value)
+				if (multiSelect != value)
 				{
-					multiSelect=value;
+					multiSelect = value;
 					ClearSelection();
 				}
 			}
@@ -781,82 +745,6 @@ GuiSelectableListControl
 
 			namespace list
 			{
-
-/***********************************************************************
-ItemStyleControllerBase
-***********************************************************************/
-
-				void ItemStyleControllerBase::Initialize(compositions::GuiBoundsComposition* _boundsComposition, GuiControl* _associatedControl)
-				{
-					boundsComposition=_boundsComposition;
-					associatedControl=_associatedControl;
-				}
-
-				void ItemStyleControllerBase::Finalize()
-				{
-					if(boundsComposition && !isInstalled)
-					{
-						if(associatedControl)
-						{
-							delete associatedControl;
-						}
-						else
-						{
-							delete boundsComposition;
-						}
-					}
-					boundsComposition=0;
-					associatedControl=0;
-				}
-
-				ItemStyleControllerBase::ItemStyleControllerBase(GuiListControl::IItemStyleProvider* _provider, vint _styleId)
-					:provider(_provider)
-					,styleId(_styleId)
-					,boundsComposition(0)
-					,associatedControl(0)
-					,isInstalled(false)
-				{
-				}
-
-				ItemStyleControllerBase::~ItemStyleControllerBase()
-				{
-					Finalize();
-				}
-					
-				GuiListControl::IItemStyleProvider* ItemStyleControllerBase::GetStyleProvider()
-				{
-					return provider;
-				}
-
-				vint ItemStyleControllerBase::GetItemStyleId()
-				{
-					return styleId;
-				}
-
-				compositions::GuiBoundsComposition* ItemStyleControllerBase::GetBoundsComposition()
-				{
-					return boundsComposition;
-				}
-
-				bool ItemStyleControllerBase::IsCacheable()
-				{
-					return true;
-				}
-
-				bool ItemStyleControllerBase::IsInstalled()
-				{
-					return isInstalled;
-				}
-
-				void ItemStyleControllerBase::OnInstalled()
-				{
-					isInstalled=true;
-				}
-
-				void ItemStyleControllerBase::OnUninstalled()
-				{
-					isInstalled=false;
-				}
 
 /***********************************************************************
 ItemProviderBase
