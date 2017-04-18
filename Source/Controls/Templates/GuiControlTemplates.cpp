@@ -143,7 +143,7 @@ GuiButtonTemplate
 			GuiButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiButtonTemplate::GuiButtonTemplate()
-				:State_(GuiButton::Normal)
+				:State_(ButtonState::Normal)
 			{
 				GuiButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
@@ -196,7 +196,7 @@ GuiListViewColumnHeaderTemplate
 			GuiListViewColumnHeaderTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiListViewColumnHeaderTemplate::GuiListViewColumnHeaderTemplate()
-				:SortingState_(GuiListViewColumnHeader::NotSorted)
+				:SortingState_(ColumnSortingState::NotSorted)
 			{
 				GuiListViewColumnHeaderTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}

@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATESTYLES
 
 #include "GuiControlTemplates.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -148,7 +149,7 @@ Control Template
 				GuiButtonTemplate_StyleProvider(TemplateProperty<GuiButtonTemplate> factory);
 				~GuiButtonTemplate_StyleProvider();
 
-				void															Transfer(controls::GuiButton::ControlState value)override;
+				void															Transfer(controls::ButtonState value)override;
 			};
 
 			class GuiSelectableButtonTemplate_StyleProvider
@@ -198,7 +199,7 @@ Control Template
 				GuiListViewColumnHeaderTemplate_StyleProvider(TemplateProperty<GuiListViewColumnHeaderTemplate> factory);
 				~GuiListViewColumnHeaderTemplate_StyleProvider();
 
-				void															SetColumnSortingState(controls::GuiListViewColumnHeader::ColumnSortingState value)override;
+				void															SetColumnSortingState(controls::ColumnSortingState value)override;
 			};
 
 			class GuiComboBoxTemplate_StyleProvider
@@ -213,7 +214,7 @@ Control Template
 				GuiComboBoxTemplate_StyleProvider(TemplateProperty<GuiComboBoxTemplate> factory);
 				~GuiComboBoxTemplate_StyleProvider();
 				
-				void															SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
+				void															SetCommandExecutor(controls::IComboBoxCommandExecutor* value)override;
 				void															OnItemSelected()override;
 				void															SetTextVisible(bool value)override;
 			};
@@ -230,7 +231,7 @@ Control Template
 				GuiScrollTemplate_StyleProvider(TemplateProperty<GuiScrollTemplate> factory);
 				~GuiScrollTemplate_StyleProvider();
 
-				void															SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)override;
+				void															SetCommandExecutor(controls::IScrollCommandExecutor* value)override;
 				void															SetTotalSize(vint value)override;
 				void															SetPageSize(vint value)override;
 				void															SetPosition(vint value)override;
@@ -363,7 +364,7 @@ Control Template
 				compositions::GuiTableComposition*								tabBoundsComposition;
 				compositions::GuiStackComposition*								tabHeaderComposition;
 				compositions::GuiBoundsComposition*								tabContentTopLineComposition;
-				controls::GuiTab::ICommandExecutor*								commandExecutor;
+				controls::ITabCommandExecutor*									commandExecutor;
 
 				Ptr<controls::GuiSelectableButton::MutexGroupController>		headerController;
 				collections::List<controls::GuiSelectableButton*>				headerButtons;
@@ -390,7 +391,7 @@ Control Template
 				GuiTabTemplate_StyleProvider(TemplateProperty<GuiTabTemplate> factory);
 				~GuiTabTemplate_StyleProvider();
 
-				void															SetCommandExecutor(controls::GuiTab::ICommandExecutor* value)override;
+				void															SetCommandExecutor(controls::ITabCommandExecutor* value)override;
 				void															InsertTab(vint index)override;
 				void															SetTabText(vint index, const WString& value)override;
 				void															RemoveTab(vint index)override;

@@ -33,32 +33,32 @@ GuiButton
 
 			void GuiButton::UpdateControlState()
 			{
-				ControlState newControlState=Normal;
-				if(mousePressing)
+				auto newControlState = ButtonState::Normal;
+				if (mousePressing)
 				{
-					if(mouseHoving)
+					if (mouseHoving)
 					{
-						newControlState=Pressed;
+						newControlState = ButtonState::Pressed;
 					}
 					else
 					{
-						newControlState=Active;
+						newControlState = ButtonState::Active;
 					}
 				}
 				else
 				{
-					if(mouseHoving)
+					if (mouseHoving)
 					{
-						newControlState=Active;
+						newControlState = ButtonState::Active;
 					}
 					else
 					{
-						newControlState=Normal;
+						newControlState = ButtonState::Normal;
 					}
 				}
-				if(controlState!=newControlState)
+				if (controlState != newControlState)
 				{
-					controlState=newControlState;
+					controlState = newControlState;
 					styleController->Transfer(controlState);
 				}
 			}

@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUISCROLLCONTROLS
 
 #include "GuiBasicControls.h"
+#include "Templates/GuiControlTemplates.h"
 
 namespace vl
 {
@@ -27,37 +28,13 @@ Scrolls
 			class GuiScroll : public GuiControl, public Description<GuiScroll>
 			{
 			public:
-				/// <summary>A command executor for the style controller to change the control state.</summary>
-				class ICommandExecutor : public virtual IDescriptable, public Description<ICommandExecutor>
-				{
-				public:
-					/// <summary>Do small decrement.</summary>
-					virtual void						SmallDecrease()=0;
-					/// <summary>Do small increment.</summary>
-					virtual void						SmallIncrease()=0;
-					/// <summary>Do big decrement.</summary>
-					virtual void						BigDecrease()=0;
-					/// <summary>Do big increment.</summary>
-					virtual void						BigIncrease()=0;
-
-					/// <summary>Change to total size of the scroll.</summary>
-					/// <param name="value">The total size.</param>
-					virtual void						SetTotalSize(vint value)=0;
-					/// <summary>Change to page size of the scroll.</summary>
-					/// <param name="value">The page size.</param>
-					virtual void						SetPageSize(vint value)=0;
-					/// <summary>Change to position of the scroll.</summary>
-					/// <param name="value">The position.</param>
-					virtual void						SetPosition(vint value)=0;
-				};
-				
 				/// <summary>Style controller interface for <see cref="GuiScroll"/>.</summary>
 				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
 				{
 				public:
 					/// <summary>Called when the command executor is changed.</summary>
 					/// <param name="value">The command executor.</param>
-					virtual void						SetCommandExecutor(ICommandExecutor* value)=0;
+					virtual void						SetCommandExecutor(IScrollCommandExecutor* value)=0;
 					/// <summary>Called when the total size is changed.</summary>
 					/// <param name="value">The total size.</param>
 					virtual void						SetTotalSize(vint value)=0;
@@ -69,7 +46,7 @@ Scrolls
 					virtual void						SetPosition(vint value)=0;
 				};
 			protected:
-				class CommandExecutor : public Object, public ICommandExecutor
+				class CommandExecutor : public Object, public IScrollCommandExecutor
 				{
 				protected:
 					GuiScroll*							scroll;

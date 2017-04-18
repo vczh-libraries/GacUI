@@ -28,28 +28,20 @@ ComboBox Base
 			/// <summary>The base class of combo box control.</summary>
 			class GuiComboBoxBase : public GuiMenuButton, public Description<GuiComboBoxBase>
 			{
-			public:
-				/// <summary>A command executor for the combo box to change the control state.</summary>
-				class ICommandExecutor : public virtual IDescriptable, public Description<ICommandExecutor>
-				{
-				public:
-					/// <summary>Notify that an item is selected, the combo box should close the popup and show the text of the selected item.</summary>
-					virtual void							SelectItem()=0;
-				};
-				
+			public:				
 				/// <summary>Style controller interface for <see cref="GuiComboBoxBase"/>.</summary>
 				class IStyleController : public virtual GuiMenuButton::IStyleController, public Description<IStyleController>
 				{
 				public:
 					/// <summary>Called when the command executor is changed.</summary>
 					/// <param name="value">The command executor.</param>
-					virtual void							SetCommandExecutor(ICommandExecutor* value)=0;
+					virtual void							SetCommandExecutor(IComboBoxCommandExecutor* value)=0;
 					/// <summary>Notify that an item is selected.</summary>
 					virtual void							OnItemSelected()=0;
 				};
 			protected:
 
-				class CommandExecutor : public Object, public virtual ICommandExecutor
+				class CommandExecutor : public Object, public virtual IComboBoxCommandExecutor
 				{
 				protected:
 					GuiComboBoxBase*						combo;

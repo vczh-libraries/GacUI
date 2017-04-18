@@ -1,3 +1,4 @@
+#include "GuiListControls.h"
 #include "../Templates/GuiControlTemplates.h"
 
 namespace vl
@@ -17,6 +18,7 @@ GuiListControl::ItemCallback
 			Ptr<GuiListControl::ItemCallback::BoundsChangedHandler> GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex)
 			{
 				style->SetIndex(itemIndex);
+				style->Initialize(listControl);
 				auto handler = style->BoundsChanged.AttachMethod(this, &ItemCallback::OnStyleBoundsChanged);
 				listControl->GetContainerComposition()->AddChild(style);
 				listControl->OnStyleInstalled(itemIndex, style);
@@ -318,7 +320,7 @@ GuiListControl
 				:GuiScrollView(_styleProvider)
 				, itemProvider(_itemProvider)
 			{
-				StyleProviderChanged.SetAssociatedComposition(boundsComposition);
+				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				ArrangerChanged.SetAssociatedComposition(boundsComposition);
 				AxisChanged.SetAssociatedComposition(boundsComposition);
 

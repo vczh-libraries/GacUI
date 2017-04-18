@@ -317,7 +317,7 @@ GuiButtonTemplate_StyleProvider
 			{
 			}
 
-			void GuiButtonTemplate_StyleProvider::Transfer(controls::GuiButton::ControlState value)
+			void GuiButtonTemplate_StyleProvider::Transfer(controls::ButtonState value)
 			{
 				controlTemplate->SetState(value);
 			}
@@ -408,7 +408,7 @@ GuiListViewColumnHeaderTemplate_StyleProvider
 			{
 			}
 
-			void GuiListViewColumnHeaderTemplate_StyleProvider::SetColumnSortingState(controls::GuiListViewColumnHeader::ColumnSortingState value)
+			void GuiListViewColumnHeaderTemplate_StyleProvider::SetColumnSortingState(controls::ColumnSortingState value)
 			{
 				controlTemplate->SetSortingState(value);
 			}
@@ -430,7 +430,7 @@ GuiComboBoxTemplate_StyleProvider
 			{
 			}
 
-			void GuiComboBoxTemplate_StyleProvider::SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)
+			void GuiComboBoxTemplate_StyleProvider::SetCommandExecutor(controls::IComboBoxCommandExecutor* value)
 			{
 				controlTemplate->SetCommands(value);
 			}
@@ -461,7 +461,7 @@ GuiScrollTemplate_StyleProvider
 			{
 			}
 
-			void GuiScrollTemplate_StyleProvider::SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)
+			void GuiScrollTemplate_StyleProvider::SetCommandExecutor(controls::IScrollCommandExecutor* value)
 			{
 				controlTemplate->SetCommands(value);
 			}
@@ -879,7 +879,7 @@ GuiTabTemplate_StyleProvider
 				delete headerOverflowMenu;
 			}
 
-			void GuiTabTemplate_StyleProvider::SetCommandExecutor(controls::GuiTab::ICommandExecutor* value)
+			void GuiTabTemplate_StyleProvider::SetCommandExecutor(controls::ITabCommandExecutor* value)
 			{
 				commandExecutor=value;
 			}

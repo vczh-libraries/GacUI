@@ -85,14 +85,6 @@ Tab Control
 			{
 				friend class GuiTabPage;
 			public:
-				/// <summary>A command executor for the style controller to change the control state.</summary>
-				class ICommandExecutor : public virtual IDescriptable, public Description<ICommandExecutor>
-				{
-				public:
-					/// <summary>Select a tab page.</summary>
-					/// <param name="index">The specified position for the tab page.</param>
-					virtual void								ShowTab(vint index)=0;
-				};
 				
 				/// <summary>Style controller interface for <see cref="GuiTab"/>.</summary>
 				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
@@ -100,7 +92,7 @@ Tab Control
 				public:
 					/// <summary>Called when the command executor is changed.</summary>
 					/// <param name="value">The command executor.</param>
-					virtual void								SetCommandExecutor(ICommandExecutor* value)=0;
+					virtual void								SetCommandExecutor(ITabCommandExecutor* value)=0;
 					/// <summary>Insert a tab header at the specified position.</summary>
 					/// <param name="index">The specified position.</param>
 					virtual void								InsertTab(vint index)=0;
@@ -129,7 +121,7 @@ Tab Control
 					virtual compositions::IGuiAltAction*		GetTabAltAction(vint index) = 0;
 				};
 			protected:
-				class CommandExecutor : public Object, public ICommandExecutor
+				class CommandExecutor : public Object, public ITabCommandExecutor
 				{
 				protected:
 					GuiTab*										tab;

@@ -10,12 +10,12 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUIBUTTONCONTROLS
 
 #include "GuiBasicControls.h"
+#include "Templates/GuiControlTemplates.h"
 
 namespace vl
 {
 	namespace presentation
 	{
-
 		namespace controls
 		{
 
@@ -27,31 +27,20 @@ Buttons
 			class GuiButton : public GuiControl, public Description<GuiButton>
 			{
 			public:
-				/// <summary>The visual state.</summary>
-				enum ControlState
-				{
-					/// <summary>Normal state.</summary>
-					Normal,
-					/// <summary>Active state.</summary>
-					Active,
-					/// <summary>Pressed state.</summary>
-					Pressed,
-				};
-
 				/// <summary>Style controller interface for <see cref="GuiButton"/>.</summary>
 				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
 				{
 				public:
 					/// <summary>Called when the control state changed.</summary>
 					/// <param name="value">The new control state.</param>
-					virtual void						Transfer(ControlState value) = 0;
+					virtual void						Transfer(ButtonState value) = 0;
 				};
 			protected:
 				IStyleController*						styleController;
 				bool									clickOnMouseUp;
 				bool									mousePressing;
 				bool									mouseHoving;
-				ControlState							controlState;
+				ButtonState								controlState;
 
 				void									OnParentLineChanged()override;
 				void									OnActiveAlt()override;

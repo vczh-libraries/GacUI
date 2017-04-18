@@ -68,17 +68,6 @@ ListView Base
 			class GuiListViewColumnHeader : public GuiMenuButton, public Description<GuiListViewColumnHeader>
 			{
 			public:
-				/// <summary>Represents the sorting state of list view items related to this column.</summary>
-				enum ColumnSortingState
-				{
-					/// <summary>Not sorted.</summary>
-					NotSorted,
-					/// <summary>Ascending.</summary>
-					Ascending,
-					/// <summary>Descending.</summary>
-					Descending,
-				};
-				
 				/// <summary>Style provider for <see cref="GuiListViewColumnHeader"/>.</summary>
 				class IStyleController : public virtual GuiMenuButton::IStyleController, public Description<IStyleController>
 				{

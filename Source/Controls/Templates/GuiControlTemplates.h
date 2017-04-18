@@ -9,12 +9,80 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
 
-#include "../Styles/GuiThemeStyleFactory.h"
+#include "../GuiBasicControls.h"
 
 namespace vl
 {
 	namespace presentation
 	{
+		namespace controls
+		{
+			/// <summary>The visual state for button.</summary>
+			enum class ButtonState
+			{
+				/// <summary>Normal state.</summary>
+				Normal,
+				/// <summary>Active state (when the cursor is hovering on a button).</summary>
+				Active,
+				/// <summary>Pressed state (when the buttin is being pressed).</summary>
+				Pressed,
+			};
+
+			/// <summary>Represents the sorting state of list view items related to this column.</summary>
+			enum class ColumnSortingState
+			{
+				/// <summary>Not sorted.</summary>
+				NotSorted,
+				/// <summary>Ascending.</summary>
+				Ascending,
+				/// <summary>Descending.</summary>
+				Descending,
+			};
+
+			/// <summary>A command executor for the combo box to change the control state.</summary>
+			class IComboBoxCommandExecutor : public virtual IDescriptable, public Description<IComboBoxCommandExecutor>
+			{
+			public:
+				/// <summary>Notify that an item is selected, the combo box should close the popup and show the text of the selected item.</summary>
+				virtual void							SelectItem() = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IScrollCommandExecutor : public virtual IDescriptable, public Description<IScrollCommandExecutor>
+			{
+			public:
+				/// <summary>Do small decrement.</summary>
+				virtual void						SmallDecrease() = 0;
+				/// <summary>Do small increment.</summary>
+				virtual void						SmallIncrease() = 0;
+				/// <summary>Do big decrement.</summary>
+				virtual void						BigDecrease() = 0;
+				/// <summary>Do big increment.</summary>
+				virtual void						BigIncrease() = 0;
+
+				/// <summary>Change to total size of the scroll.</summary>
+				/// <param name="value">The total size.</param>
+				virtual void						SetTotalSize(vint value) = 0;
+				/// <summary>Change to page size of the scroll.</summary>
+				/// <param name="value">The page size.</param>
+				virtual void						SetPageSize(vint value) = 0;
+				/// <summary>Change to position of the scroll.</summary>
+				/// <param name="value">The position.</param>
+				virtual void						SetPosition(vint value) = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class ITabCommandExecutor : public virtual IDescriptable, public Description<ITabCommandExecutor>
+			{
+			public:
+				/// <summary>Select a tab page.</summary>
+				/// <param name="index">The specified position for the tab page.</param>
+				virtual void								ShowTab(vint index) = 0;
+			};
+
+			class GuiButton;
+		}
+
 		namespace templates
 		{
 
@@ -162,7 +230,7 @@ Control Template
 				~GuiButtonTemplate();
 
 #define GuiButtonTemplate_PROPERTIES(F)\
-				F(GuiButtonTemplate, controls::GuiButton::ControlState, State)\
+				F(GuiButtonTemplate, controls::ButtonState, State)\
 
 				GuiButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -203,7 +271,7 @@ Control Template
 				~GuiListViewColumnHeaderTemplate();
 
 #define GuiListViewColumnHeaderTemplate_PROPERTIES(F)\
-				F(GuiListViewColumnHeaderTemplate, controls::GuiListViewColumnHeader::ColumnSortingState, SortingState)\
+				F(GuiListViewColumnHeaderTemplate, controls::ColumnSortingState, SortingState)\
 
 				GuiListViewColumnHeaderTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -215,7 +283,7 @@ Control Template
 				~GuiComboBoxTemplate();
 
 #define GuiComboBoxTemplate_PROPERTIES(F)\
-				F(GuiComboBoxTemplate, controls::GuiComboBoxBase::ICommandExecutor*, Commands)\
+				F(GuiComboBoxTemplate, controls::IComboBoxCommandExecutor*, Commands)\
 				F(GuiComboBoxTemplate, bool, TextVisible)\
 
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -228,7 +296,7 @@ Control Template
 				~GuiScrollTemplate();
 
 #define GuiScrollTemplate_PROPERTIES(F)\
-				F(GuiScrollTemplate, controls::GuiScroll::ICommandExecutor*, Commands)\
+				F(GuiScrollTemplate, controls::IScrollCommandExecutor*, Commands)\
 				F(GuiScrollTemplate, vint, TotalSize)\
 				F(GuiScrollTemplate, vint, PageSize)\
 				F(GuiScrollTemplate, vint, Position)\
