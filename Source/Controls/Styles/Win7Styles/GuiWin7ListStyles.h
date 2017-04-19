@@ -190,39 +190,6 @@ ComboBox
 /***********************************************************************
 List
 ***********************************************************************/
-			
-			/// <summary>Text list style (Windows 7).</summary>
-			class Win7TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::IBulletFactory, public Description<Win7TextListItemProvider>
-			{
-			public:
-				/// <summary>Create the style.</summary>
-				Win7TextListItemProvider();
-				~Win7TextListItemProvider();
-
-				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-			};
-			
-			/// <summary>Check box text list style (Windows 7).</summary>
-			class Win7CheckTextListItemProvider : public Win7TextListItemProvider, public Description<Win7CheckTextListItemProvider>
-			{
-			public:
-				/// <summary>Create the style.</summary>
-				Win7CheckTextListItemProvider();
-				~Win7CheckTextListItemProvider();
-
-				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-			};
-			
-			/// <summary>Radio button text list style (Windows 7).</summary>
-			class Win7RadioTextListItemProvider : public Win7TextListItemProvider, public Description<Win7RadioTextListItemProvider>
-			{
-			public:
-				/// <summary>Create the style.</summary>
-				Win7RadioTextListItemProvider();
-				~Win7RadioTextListItemProvider();
-
-				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-			};
 
 #pragma warning(push)
 #pragma warning(disable:4250)

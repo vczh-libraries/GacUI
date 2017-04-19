@@ -80,39 +80,6 @@ ComboBox
 /***********************************************************************
 List
 ***********************************************************************/
-			
-			/// <summary>Text list style (Windows 8).</summary>
-			class Win8TextListItemProvider : public Object, public virtual controls::list::TextItemStyleProvider::IBulletFactory, public Description<Win8TextListItemProvider>
-			{
-			public:
-				/// <summary>Create the style.</summary>
-				Win8TextListItemProvider();
-				~Win8TextListItemProvider();
-
-				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-			};
-			
-			/// <summary>Check box text list style (Windows 8).</summary>
-			class Win8CheckTextListItemProvider : public Win8TextListItemProvider, public Description<Win8CheckTextListItemProvider>
-			{
-			public:
-				/// <summary>Create the style.</summary>
-				Win8CheckTextListItemProvider();
-				~Win8CheckTextListItemProvider();
-
-				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-			};
-			
-			/// <summary>Radio button text list style (Windows 8).</summary>
-			class Win8RadioTextListItemProvider : public Win8TextListItemProvider, public Description<Win8RadioTextListItemProvider>
-			{
-			public:
-				/// <summary>Create the style.</summary>
-				Win8RadioTextListItemProvider();
-				~Win8RadioTextListItemProvider();
-
-				controls::GuiSelectableButton::IStyleController*		CreateBulletStyleController()override;
-			};
 
 #pragma warning(push)
 #pragma warning(disable:4250)

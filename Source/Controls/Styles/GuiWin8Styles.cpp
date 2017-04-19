@@ -232,19 +232,14 @@ Win8Theme
 				return new Win8TextListProvider;
 			}
 
-			controls::list::TextItemStyleProvider::IBulletFactory* Win8Theme::CreateTextListItemStyle()
+			controls::GuiSelectableButton::IStyleController* Win8Theme::CreateCheckTextListItemStyle()
 			{
-				return new Win8TextListItemProvider;
+				return new Win8CheckBoxStyle(Win8CheckBoxStyle::CheckBox, false);
 			}
 
-			controls::list::TextItemStyleProvider::IBulletFactory* Win8Theme::CreateCheckTextListItemStyle()
+			controls::GuiSelectableButton::IStyleController* Win8Theme::CreateRadioTextListItemStyle()
 			{
-				return new Win8CheckTextListItemProvider;
-			}
-
-			controls::list::TextItemStyleProvider::IBulletFactory* Win8Theme::CreateRadioTextListItemStyle()
-			{
-				return new Win8RadioTextListItemProvider;
+				return new Win8CheckBoxStyle(Win8CheckBoxStyle::RadioButton, false);
 			}
 		}
 	}

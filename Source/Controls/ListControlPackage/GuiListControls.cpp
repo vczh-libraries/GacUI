@@ -754,9 +754,12 @@ ItemProviderBase
 
 				void ItemProviderBase::InvokeOnItemModified(vint start, vint count, vint newCount)
 				{
-					for(vint i=0;i<callbacks.Count();i++)
+					if (callbackSupression == 0)
 					{
-						callbacks[i]->OnItemModified(start, count, newCount);
+						for (vint i = 0; i < callbacks.Count(); i++)
+						{
+							callbacks[i]->OnItemModified(start, count, newCount);
+						}
 					}
 				}
 
@@ -799,6 +802,18 @@ ItemProviderBase
 						callbacks.Remove(value);
 						return true;
 					}
+				}
+
+				void ItemProviderBase::PushSupressCallback()
+				{
+					callbackSupression++;
+				}
+
+				bool ItemProviderBase::PopSupressCallback()
+				{
+					if (callbackSupression == 0)return false;
+					callbackSupression--;
+					return true;
 				}
 			}
 		}

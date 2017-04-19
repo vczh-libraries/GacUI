@@ -1,5 +1,6 @@
 #include "GuiTextListControls.h"
 #include "GuiListControlItemArrangers.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -14,45 +15,41 @@ namespace vl
 
 			namespace list
 			{
+				const wchar_t* const ITextItemView::Identifier = L"vl::presentation::controls::list::ITextItemView";
 
 /***********************************************************************
-TextItemStyleProvider::TextItemStyleController
+DefaultTextListItemTemplate
 ***********************************************************************/
 
-				void TextItemStyleProvider::TextItemStyleController::OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				DefaultTextListItemTemplate::BulletStyle* DefaultTextListItemTemplate::CreateBulletStyle()
 				{
-					textItemStyleProvider->OnStyleCheckedChanged(this);
+					return nullptr;
 				}
 
-				TextItemStyleProvider::TextItemStyleController::TextItemStyleController(TextItemStyleProvider* provider)
-					:ItemStyleControllerBase(provider, 0)
-					,backgroundButton(0)
-					,bulletButton(0)
-					,textElement(0)
-					,textItemStyleProvider(provider)
+				void DefaultTextListItemTemplate::OnInitialize()
 				{
-					auto styleProvider = textItemStyleProvider->listControl->GetTextListStyleProvider();
+					templates::GuiListItemTemplate::OnInitialize();
 
-					backgroundButton=new GuiSelectableButton(styleProvider->CreateItemBackground());
+					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
 					backgroundButton->SetAutoSelection(false);
-					
-					textElement=GuiSolidLabelElement::Create();
+					backgroundButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					AddChild(backgroundButton->GetBoundsComposition());
+
+					textElement = GuiSolidLabelElement::Create();
 					textElement->SetAlignments(Alignment::Left, Alignment::Center);
 					textElement->SetFont(backgroundButton->GetFont());
-					textElement->SetColor(styleProvider->GetTextColor());
 
-					GuiBoundsComposition* textComposition=new GuiBoundsComposition;
+					GuiBoundsComposition* textComposition = new GuiBoundsComposition;
 					textComposition->SetOwnedElement(textElement);
 					textComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 
-					GuiSelectableButton::IStyleController* bulletStyleController=textItemStyleProvider->bulletFactory->CreateBulletStyleController();
-					if(bulletStyleController)
+					if (auto bulletStyleController = CreateBulletStyle())
 					{
-						bulletButton=new GuiSelectableButton(bulletStyleController);
+						bulletButton = new GuiSelectableButton(bulletStyleController);
 						bulletButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						bulletButton->SelectedChanged.AttachMethod(this, &TextItemStyleController::OnBulletSelectedChanged);
+						bulletButton->SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnBulletSelectedChanged);
 
-						GuiTableComposition* table=new GuiTableComposition;
+						GuiTableComposition* table = new GuiTableComposition;
 						backgroundButton->GetContainerComposition()->AddChild(table);
 						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -61,13 +58,13 @@ TextItemStyleProvider::TextItemStyleController
 						table->SetColumnOption(0, GuiCellOption::MinSizeOption());
 						table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
 						{
-							GuiCellComposition* cell=new GuiCellComposition;
+							GuiCellComposition* cell = new GuiCellComposition;
 							table->AddChild(cell);
 							cell->SetSite(0, 0, 1, 1);
 							cell->AddChild(bulletButton->GetBoundsComposition());
 						}
 						{
-							GuiCellComposition* cell=new GuiCellComposition;
+							GuiCellComposition* cell = new GuiCellComposition;
 							table->AddChild(cell);
 							cell->SetSite(0, 1, 1, 1);
 							cell->AddChild(textComposition);
@@ -79,109 +76,72 @@ TextItemStyleProvider::TextItemStyleController
 						backgroundButton->GetContainerComposition()->AddChild(textComposition);
 						textComposition->SetAlignmentToParent(Margin(5, 0, 0, 0));
 					}
-					Initialize(backgroundButton->GetBoundsComposition(), backgroundButton);
+
+					SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnSelectedChanged);
+					IndexChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnIndexChanged);
+					TextColorChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextColorChanged);
+
+					SelectedChanged.Execute(compositions::GuiEventArgs(this));
+					IndexChanged.Execute(compositions::GuiEventArgs(this));
+					TextColorChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
-				TextItemStyleProvider::TextItemStyleController::~TextItemStyleController()
+				void DefaultTextListItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
+					backgroundButton->SetSelected(GetSelected());
 				}
 
-				bool TextItemStyleProvider::TextItemStyleController::GetSelected()
+				void DefaultTextListItemTemplate::OnIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					return backgroundButton->GetSelected();
-				}
-
-				void TextItemStyleProvider::TextItemStyleController::SetSelected(bool value)
-				{
-					backgroundButton->SetSelected(value);
-				}
-
-				bool TextItemStyleProvider::TextItemStyleController::GetChecked()
-				{
-					return bulletButton?bulletButton->GetSelected():false;
-				}
-
-				void TextItemStyleProvider::TextItemStyleController::SetChecked(bool value)
-				{
-					if(bulletButton) bulletButton->SetSelected(value);
-				}
-				
-				const WString& TextItemStyleProvider::TextItemStyleController::GetText()
-				{
-					return textElement->GetText();
-				}
-
-				void TextItemStyleProvider::TextItemStyleController::SetText(const WString& value)
-				{
-					textElement->SetText(value);
-				}
-
-/***********************************************************************
-TextItemStyleProvider
-***********************************************************************/
-
-				const wchar_t* const TextItemStyleProvider::ITextItemView::Identifier = L"vl::presentation::controls::list::TextItemStyleProvider::ITextItemView";
-
-				void TextItemStyleProvider::OnStyleCheckedChanged(TextItemStyleController* style)
-				{
-					vint index=listControl->GetArranger()->GetVisibleIndex(style);
-					if(index!=-1)
+					textElement->SetText(listControl->GetItemProvider()->GetTextValue(GetIndex()));
+					if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(ITextItemView::Identifier)))
 					{
-						textItemView->SetCheckedSilently(index, style->GetChecked());
-
-						GuiItemEventArgs arguments(style->GetBoundsComposition());
-						arguments.itemIndex=index;
-						listControl->ItemChecked.Execute(arguments);
+						if (bulletButton)
+						{
+							bulletButton->SetSelected(textItemView->GetChecked(GetIndex()));
+						}
 					}
 				}
 
-				TextItemStyleProvider::TextItemStyleProvider(IBulletFactory* _bulletFactory)
-					:bulletFactory(_bulletFactory)
+				void DefaultTextListItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					textElement->SetColor(GetTextColor());
+				}
+
+				void DefaultTextListItemTemplate::OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(ITextItemView::Identifier)))
+					{
+						BeginEditListItem();
+						textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
+						EndEditListItem();
+					}
+				}
+
+				DefaultTextListItemTemplate::DefaultTextListItemTemplate()
 				{
 				}
 
-				TextItemStyleProvider::~TextItemStyleProvider()
+				DefaultTextListItemTemplate::~DefaultTextListItemTemplate()
 				{
 				}
 
-				void TextItemStyleProvider::AttachListControl(GuiListControl* value)
+/***********************************************************************
+DefaultCheckTextListItemTemplate
+***********************************************************************/
+
+				DefaultTextListItemTemplate::BulletStyle* DefaultCheckTextListItemTemplate::CreateBulletStyle()
 				{
-					listControl = dynamic_cast<GuiVirtualTextList*>(value);
-					textItemView = dynamic_cast<ITextItemView*>(value->GetItemProvider()->RequestView(ITextItemView::Identifier));
+					return theme::GetCurrentTheme()->CreateCheckTextListItemStyle();
 				}
 
-				void TextItemStyleProvider::DetachListControl()
-				{
-					listControl->GetItemProvider()->ReleaseView(textItemView);
-					textItemView=0;
-					listControl=0;
-				}
+/***********************************************************************
+DefaultRadioTextListItemTemplate
+***********************************************************************/
 
-				GuiListControl::IItemStyleController* TextItemStyleProvider::CreateItemStyle()
+				DefaultTextListItemTemplate::BulletStyle* DefaultRadioTextListItemTemplate::CreateBulletStyle()
 				{
-					return new TextItemStyleController(this);
-				}
-
-				void TextItemStyleProvider::DestroyItemStyle(GuiListControl::IItemStyleController* style)
-				{
-					delete dynamic_cast<TextItemStyleController*>(style);
-				}
-
-				void TextItemStyleProvider::Install(GuiListControl::IItemStyleController* style, vint itemIndex)
-				{
-					TextItemStyleController* textStyle = dynamic_cast<TextItemStyleController*>(style);
-					textStyle->SetText(listControl->GetItemProvider()->GetTextValue(itemIndex));
-					textStyle->SetChecked(textItemView->GetChecked(itemIndex));
-				}
-
-				void TextItemStyleProvider::SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)
-				{
-				}
-
-				void TextItemStyleProvider::SetStyleSelected(GuiListControl::IItemStyleController* style, bool value)
-				{
-					TextItemStyleController* textStyle=dynamic_cast<TextItemStyleController*>(style);
-					textStyle->SetSelected(value);
+					return theme::GetCurrentTheme()->CreateRadioTextListItemStyle();
 				}
 
 /***********************************************************************
@@ -222,11 +182,14 @@ TextItem
 
 				void TextItem::SetText(const WString& value)
 				{
-					text = value;
-					if (owner)
+					if (text != value)
 					{
-						vint index = owner->IndexOf(this);
-						owner->InvokeOnItemModified(index, 1, 1);
+						text = value;
+						if (owner)
+						{
+							vint index = owner->IndexOf(this);
+							owner->InvokeOnItemModified(index, 1, 1);
+						}
 					}
 				}
 
@@ -237,15 +200,18 @@ TextItem
 
 				void TextItem::SetChecked(bool value)
 				{
-					checked = value;
-					if (owner)
+					if (checked != value)
 					{
-						vint index = owner->IndexOf(this);
-						owner->InvokeOnItemModified(index, 1, 1);
+						checked = value;
+						if (owner)
+						{
+							vint index = owner->IndexOf(this);
+							owner->InvokeOnItemModified(index, 1, 1);
 
-						GuiItemEventArgs arguments;
-						arguments.itemIndex=index;
-						owner->listControl->ItemChecked.Execute(arguments);
+							GuiItemEventArgs arguments;
+							arguments.itemIndex = index;
+							owner->listControl->ItemChecked.Execute(arguments);
+						}
 					}
 				}
 
@@ -280,9 +246,9 @@ TextItemProvider
 					return Get(itemIndex)->GetChecked();
 				}
 
-				void TextItemProvider::SetCheckedSilently(vint itemIndex, bool value)
+				void TextItemProvider::SetChecked(vint itemIndex, bool value)
 				{
-					items[itemIndex]->checked=value;
+					return Get(itemIndex)->SetChecked(value);
 				}
 
 				TextItemProvider::TextItemProvider()
@@ -296,9 +262,9 @@ TextItemProvider
 
 				IDescriptable* TextItemProvider::RequestView(const WString& identifier)
 				{
-					if(identifier==TextItemStyleProvider::ITextItemView::Identifier)
+					if (identifier == ITextItemView::Identifier)
 					{
-						return (TextItemStyleProvider::ITextItemView*)this;
+						return (ITextItemView*)this;
 					}
 					else
 					{
@@ -315,13 +281,21 @@ TextItemProvider
 GuiTextList
 ***********************************************************************/
 
-			GuiVirtualTextList::GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, GuiListControl::IItemProvider* _itemProvider)
+			void GuiVirtualTextList::OnStyleInstalled(vint itemIndex, ItemStyle* style)
+			{
+				GuiSelectableListControl::OnStyleInstalled(itemIndex, style);
+				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
+				{
+					textItemStyle->SetTextColor(styleProvider->GetTextColor());
+				}
+			}
+
+			GuiVirtualTextList::GuiVirtualTextList(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_styleProvider, _itemProvider)
 			{
 				ItemChecked.SetAssociatedComposition(boundsComposition);
 
 				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
-				ChangeItemStyle(_bulletFactory);
 				SetArranger(new list::FixedHeightItemArranger);
 			}
 
@@ -334,24 +308,12 @@ GuiTextList
 				return styleProvider;
 			}
 
-			Ptr<GuiListControl::IItemStyleProvider> GuiVirtualTextList::ChangeItemStyle(list::TextItemStyleProvider::IBulletFactory* bulletFactory)
-			{
-				if(bulletFactory)
-				{
-					return SetStyleProvider(new list::TextItemStyleProvider(bulletFactory));
-				}
-				else
-				{
-					return 0;
-				}
-			}
-
 /***********************************************************************
 GuiTextList
 ***********************************************************************/
 
-			GuiTextList::GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory)
-				:GuiVirtualTextList(_styleProvider, _bulletFactory, new list::TextItemProvider)
+			GuiTextList::GuiTextList(IStyleProvider* _styleProvider)
+				:GuiVirtualTextList(_styleProvider, new list::TextItemProvider)
 			{
 				items=dynamic_cast<list::TextItemProvider*>(itemProvider.Obj());
 				items->listControl=this;

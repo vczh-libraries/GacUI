@@ -1,4 +1,5 @@
 #include "GuiControlTemplates.h"
+#include "../ListControlPackage/GuiListControls.h"
 
 namespace vl
 {
@@ -395,6 +396,10 @@ GuiDateComboBoxTemplate
 GuiListItemTemplate
 ***********************************************************************/
 
+			void GuiListItemTemplate::OnInitialize()
+			{
+			}
+
 			GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiListItemTemplate::GuiListItemTemplate()
@@ -407,6 +412,23 @@ GuiListItemTemplate
 			GuiListItemTemplate::~GuiListItemTemplate()
 			{
 				FinalizeAggregation();
+			}
+
+			void GuiListItemTemplate::BeginEditListItem()
+			{
+				listControl->GetItemProvider()->PushSupressCallback();
+			}
+
+			void GuiListItemTemplate::EndEditListItem()
+			{
+				CHECK_ERROR(listControl->GetItemProvider()->PopSupressCallback(), L"GuiListItemTemplate::EndEditListItem()#BeginEditListItem and EndEditListItem calls are not paired.");
+			}
+
+			void GuiListItemTemplate::Initialize(controls::GuiListControl* _listControl)
+			{
+				CHECK_ERROR(listControl == nullptr, L"GuiListItemTemplate::Initialize(GuiListControl*)#This function can only be called once.");
+				listControl = _listControl;
+				OnInitialize();
 			}
 
 /***********************************************************************

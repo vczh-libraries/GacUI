@@ -196,57 +196,6 @@ Win8DropDownComboBoxStyle
 			}
 
 /***********************************************************************
-Win8TextListItemProvider
-***********************************************************************/
-			
-			Win8TextListItemProvider::Win8TextListItemProvider()
-			{
-			}
-
-			Win8TextListItemProvider::~Win8TextListItemProvider()
-			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win8TextListItemProvider::CreateBulletStyleController()
-			{
-				return 0;
-			}
-
-/***********************************************************************
-Win8CheckTextListItemProvider
-***********************************************************************/
-
-			Win8CheckTextListItemProvider::Win8CheckTextListItemProvider()
-			{
-			}
-
-			Win8CheckTextListItemProvider::~Win8CheckTextListItemProvider()
-			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win8CheckTextListItemProvider::CreateBulletStyleController()
-			{
-				return new Win8CheckBoxStyle(Win8CheckBoxStyle::CheckBox, false);
-			}
-
-/***********************************************************************
-Win8RadioTextListItemProvider
-***********************************************************************/
-
-			Win8RadioTextListItemProvider::Win8RadioTextListItemProvider()
-			{
-			}
-
-			Win8RadioTextListItemProvider::~Win8RadioTextListItemProvider()
-			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win8RadioTextListItemProvider::CreateBulletStyleController()
-			{
-				return new Win8CheckBoxStyle(Win8CheckBoxStyle::RadioButton, false);
-			}
-
-/***********************************************************************
 Win8TextListProvider
 ***********************************************************************/
 

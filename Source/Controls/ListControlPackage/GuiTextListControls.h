@@ -27,92 +27,55 @@ namespace vl
 TextList Style Provider
 ***********************************************************************/
 
-				/// <summary>Item style controller for <see cref="GuiVirtualTextList"/> or <see cref="GuiSelectableListControl"/>.</summary>
-				class TextItemStyleProvider : public Object, public GuiSelectableListControl::IItemStyleProvider, public Description<TextItemStyleProvider>
+				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="GuiVirtualTextList"/>.</summary>
+				class ITextItemView : public virtual IDescriptable, public Description<ITextItemView>
 				{
 				public:
-					/// <summary>Style provider for <see cref="TextItemStyleProvider"/>.</summary>
-					class IBulletFactory : public virtual IDescriptable, public Description<IBulletFactory>
-					{
-					public:
-						/// <summary>Create the bullet style controller for an text item. The button selection state represents the text item check state.</summary>
-						/// <returns>The created bullet style controller.</returns>
-						virtual GuiSelectableButton::IStyleController*		CreateBulletStyleController()=0;
-					};
+					/// <summary>The identifier for this view.</summary>
+					static const wchar_t* const				Identifier;
 
-					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="TextItemStyleProvider"/>.</summary>
-					class ITextItemView : public virtual IDescriptable, public Description<ITextItemView>
-					{
-					public:
-						/// <summary>The identifier for this view.</summary>
-						static const wchar_t* const				Identifier;
+					/// <summary>Get the check state of an item.</summary>
+					/// <returns>The check state of an item.</returns>
+					/// <param name="itemIndex">The index of an item.</param>
+					virtual bool							GetChecked(vint itemIndex) = 0;
+					/// <summary>Set the check state of an item without invoving any UI action.</summary>
+					/// <param name="itemIndex">The index of an item.</param>
+					/// <param name="value">The new check state.</param>
+					virtual void							SetChecked(vint itemIndex, bool value) = 0;
+				};
 
-						/// <summary>Get the check state of an item.</summary>
-						/// <returns>The check state of an item.</returns>
-						/// <param name="itemIndex">The index of an item.</param>
-						virtual bool							GetChecked(vint itemIndex)=0;
-						/// <summary>Set the check state of an item without invoving any UI action.</summary>
-						/// <param name="itemIndex">The index of an item.</param>
-						/// <param name="value">The new check state.</param>
-						virtual void							SetCheckedSilently(vint itemIndex, bool value)=0;
-					};
-
+				class DefaultTextListItemTemplate : public templates::GuiTextListItemTemplate
+				{
 				protected:
-					/// <summary>The item style controller for <see cref="TextItemStyleProvider"/>.</summary>
-					class TextItemStyleController : public ItemStyleControllerBase, public Description<TextItemStyleController>
-					{
-					protected:
-						GuiSelectableButton*					backgroundButton;
-						GuiSelectableButton*					bulletButton;
-						elements::GuiSolidLabelElement*			textElement;
-						TextItemStyleProvider*					textItemStyleProvider;
+					using BulletStyle = GuiSelectableButton::IStyleController;
 
-						void									OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					public:
-						/// <summary>Create a item style controller with a specified item style provider callback.</summary>
-						/// <param name="provider">The item style provider callback.</param>
-						TextItemStyleController(TextItemStyleProvider* provider);
-						~TextItemStyleController();
-						
-						/// <summary>Get the selection state of this item.</summary>
-						/// <returns>The selection state of this item.</returns>
-						bool									GetSelected();
-						/// <summary>Set the selection state of this item.</summary>
-						/// <param name="value">The selection state of this item.</param>
-						void									SetSelected(bool value);
-						/// <summary>Get the check state of this item.</summary>
-						/// <returns>The check state of this item.</returns>
-						bool									GetChecked();
-						/// <summary>Set the check state of this item.</summary>
-						/// <param name="value">The check state of this item.</param>
-						void									SetChecked(bool value);
-						/// <summary>Get the text of this item.</summary>
-						/// <returns>The text of this item.</returns>
-						const WString&							GetText();
-						/// <summary>Set the text of this item.</summary>
-						/// <param name="value">The text of this item.</param>
-						void									SetText(const WString& value);
-					};
+					GuiSelectableButton*					backgroundButton = nullptr;
+					GuiSelectableButton*					bulletButton = nullptr;
+					elements::GuiSolidLabelElement*			textElement = nullptr;
 
-				protected:
-					Ptr<IBulletFactory>							bulletFactory;
-					ITextItemView*								textItemView = nullptr;
-					GuiVirtualTextList*							listControl = nullptr;
-
-					void										OnStyleCheckedChanged(TextItemStyleController* style);
+					virtual BulletStyle*					CreateBulletStyle();
+					void									OnInitialize()override;
+					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void									OnIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void									OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create a item style provider with a specified item style provider callback.</summary>
-					/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
-					TextItemStyleProvider(IBulletFactory* _bulletFactory);
-					~TextItemStyleProvider();
+					DefaultTextListItemTemplate();
+					~DefaultTextListItemTemplate();
+				};
 
-					void										AttachListControl(GuiListControl* value)override;
-					void										DetachListControl()override;
-					GuiListControl::IItemStyleController*		CreateItemStyle()override;
-					void										DestroyItemStyle(GuiListControl::IItemStyleController* style)override;
-					void										Install(GuiListControl::IItemStyleController* style, vint itemIndex)override;
-					void										SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)override;
-					void										SetStyleSelected(GuiListControl::IItemStyleController* style, bool value)override;
+				class DefaultCheckTextListItemTemplate : public DefaultTextListItemTemplate
+				{
+				protected:
+					BulletStyle*							CreateBulletStyle()override;
+				public:
+				};
+
+				class DefaultRadioTextListItemTemplate : public DefaultTextListItemTemplate
+				{
+				protected:
+					BulletStyle*							CreateBulletStyle()override;
+				public:
 				};
 
 /***********************************************************************
@@ -160,7 +123,7 @@ TextList Data Source
 				/// <summary>Item provider for <see cref="GuiVirtualTextList"/> or <see cref="GuiSelectableListControl"/>.</summary>
 				class TextItemProvider
 					: public ListProvider<Ptr<TextItem>>
-					, protected TextItemStyleProvider::ITextItemView
+					, protected ITextItemView
 					, public Description<TextItemProvider>
 				{
 					friend class TextItem;
@@ -174,7 +137,7 @@ TextList Data Source
 					WString										GetTextValue(vint itemIndex)override;
 					description::Value							GetBindingValue(vint itemIndex)override;
 					bool										GetChecked(vint itemIndex)override;
-					void										SetCheckedSilently(vint itemIndex, bool value)override;
+					void										SetChecked(vint itemIndex, bool value)override;
 				public:
 					TextItemProvider();
 					~TextItemProvider();
@@ -196,21 +159,20 @@ TextList Control
 				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
 				{
 				public:
-					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of a node.</summary>
-					/// <returns>The created style controller for an item background.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemBackground()=0;
 					/// <summary>Get the text color.</summary>
 					/// <returns>The text color.</returns>
 					virtual Color										GetTextColor()=0;
 				};
 			protected:
 				IStyleProvider*											styleProvider;
+
+				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualTextList(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
 
 				/// <summary>Item checked changed event.</summary>
@@ -219,10 +181,6 @@ TextList Control
 				/// <summary>Get the style provider for this control.</summary>
 				/// <returns>The style provider for this control.</returns>
 				IStyleProvider*											GetTextListStyleProvider();
-				/// <summary>Set the item style provider.</summary>
-				/// <returns>The old item style provider.</returns>
-				/// <param name="bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
-				Ptr<GuiListControl::IItemStyleProvider>					ChangeItemStyle(list::TextItemStyleProvider::IBulletFactory* bulletFactory);
 			};
 			
 			/// <summary>Text list control.</summary>
@@ -234,7 +192,7 @@ TextList Control
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
-				GuiTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
+				GuiTextList(IStyleProvider* _styleProvider);
 				~GuiTextList();
 
 				/// <summary>Get all text items.</summary>

@@ -74,9 +74,8 @@ Theme
 				vint																GetTrackerDefaultSize()override;
 
 				controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()override;
-				controls::list::TextItemStyleProvider::IBulletFactory*				CreateTextListItemStyle()override;
-				controls::list::TextItemStyleProvider::IBulletFactory*				CreateCheckTextListItemStyle()override;
-				controls::list::TextItemStyleProvider::IBulletFactory*				CreateRadioTextListItemStyle()override;
+				controls::GuiSelectableButton::IStyleController*					CreateCheckTextListItemStyle()override;
+				controls::GuiSelectableButton::IStyleController*					CreateRadioTextListItemStyle()override;
 			};
 		}
 	}

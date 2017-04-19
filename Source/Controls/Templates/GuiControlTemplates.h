@@ -17,6 +17,8 @@ namespace vl
 	{
 		namespace controls
 		{
+			class GuiListControl;
+
 			/// <summary>The visual state for button.</summary>
 			enum class ButtonState
 			{
@@ -44,7 +46,7 @@ namespace vl
 			{
 			public:
 				/// <summary>Notify that an item is selected, the combo box should close the popup and show the text of the selected item.</summary>
-				virtual void							SelectItem() = 0;
+				virtual void						SelectItem() = 0;
 			};
 
 			/// <summary>A command executor for the style controller to change the control state.</summary>
@@ -77,7 +79,7 @@ namespace vl
 			public:
 				/// <summary>Select a tab page.</summary>
 				/// <param name="index">The specified position for the tab page.</param>
-				virtual void								ShowTab(vint index) = 0;
+				virtual void						ShowTab(vint index) = 0;
 			};
 
 			class GuiButton;
@@ -440,6 +442,11 @@ Item Template
 
 			class GuiListItemTemplate : public GuiTemplate, public AggregatableDescription<GuiListItemTemplate>
 			{
+			protected:
+				controls::GuiListControl*	listControl = nullptr;
+
+				virtual void				OnInitialize();
+
 			public:
 				GuiListItemTemplate();
 				~GuiListItemTemplate();
@@ -449,6 +456,10 @@ Item Template
 				F(GuiListItemTemplate, vint, Index)\
 
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+
+				void						BeginEditListItem();
+				void						EndEditListItem();
+				void						Initialize(controls::GuiListControl* _listControl);
 			};
 
 			class GuiTextListItemTemplate : public GuiListItemTemplate, public AggregatableDescription<GuiTextListItemTemplate>

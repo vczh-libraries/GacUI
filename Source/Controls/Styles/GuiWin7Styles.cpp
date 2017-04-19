@@ -233,19 +233,14 @@ Win7Theme
 				return new Win7TextListProvider;
 			}
 
-			controls::list::TextItemStyleProvider::IBulletFactory* Win7Theme::CreateTextListItemStyle()
+			controls::GuiSelectableButton::IStyleController* Win7Theme::CreateCheckTextListItemStyle()
 			{
-				return new Win7TextListItemProvider;
+				return new Win7CheckBoxStyle(Win7CheckBoxStyle::CheckBox, false);
 			}
 
-			controls::list::TextItemStyleProvider::IBulletFactory* Win7Theme::CreateCheckTextListItemStyle()
+			controls::GuiSelectableButton::IStyleController* Win7Theme::CreateRadioTextListItemStyle()
 			{
-				return new Win7CheckTextListItemProvider;
-			}
-
-			controls::list::TextItemStyleProvider::IBulletFactory* Win7Theme::CreateRadioTextListItemStyle()
-			{
-				return new Win7RadioTextListItemProvider;
+				return new Win7CheckBoxStyle(Win7CheckBoxStyle::RadioButton, false);
 			}
 		}
 	}

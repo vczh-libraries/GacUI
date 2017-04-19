@@ -103,14 +103,19 @@ List Control
 					/// <summary>Attach an item provider callback to this item provider.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The item provider callback.</param>
-					virtual bool								AttachCallback(IItemProviderCallback* value)=0;
+					virtual bool								AttachCallback(IItemProviderCallback* value) = 0;
 					/// <summary>Detach an item provider callback from this item provider.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The item provider callback.</param>
-					virtual bool								DetachCallback(IItemProviderCallback* value)=0;
+					virtual bool								DetachCallback(IItemProviderCallback* value) = 0;
+					/// <summary>Push a supression of calling [M:vl.presentation.controls.GuiListControl.IItemProviderCallback.OnItemModified].</summary>
+					virtual void								PushSupressCallback() = 0;
+					/// <summary>Pop a suppresion of calling [M:vl.presentation.controls.GuiListControl.IItemProviderCallback.OnItemModified].</summary>
+					/// <returns>Returns false if there is no supression before calling this function.</returns>
+					virtual bool								PopSupressCallback() = 0;
 					/// <summary>Get the number of items in this item proivder.</summary>
 					/// <returns>The number of items in this item proivder.</returns>
-					virtual vint								Count()=0;
+					virtual vint								Count() = 0;
 
 					/// <summary>Get the text representation of an item.</summary>
 					/// <returns>The text representation of an item.</returns>
@@ -124,10 +129,10 @@ List Control
 					/// <summary>Request a view for this item provider. If the specified view is not supported, it returns null. If you want to get a view of type IXXX, use IXXX::Identifier as the identifier. When the view object is no longer needed, Calling to the [M:vl.presentation.controls.GuiListControl.IItemProvider.ReleaseView] is needed.</summary>
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
-					virtual IDescriptable*						RequestView(const WString& identifier)=0;
+					virtual IDescriptable*						RequestView(const WString& identifier) = 0;
 					/// <summary>Release a requested view.</summary>
 					/// <param name="view">The view to release.</param>
-					virtual void								ReleaseView(IDescriptable* view)=0;
+					virtual void								ReleaseView(IDescriptable* view) = 0;
 				};
 
 				//-----------------------------------------------------------
@@ -431,6 +436,7 @@ Predefined ItemProvider
 				{
 				protected:
 					collections::List<GuiListControl::IItemProviderCallback*>	callbacks;
+					vint														callbackSupression = 0;
 
 					virtual void								InvokeOnItemModified(vint start, vint count, vint newCount);
 				public:
@@ -438,8 +444,10 @@ Predefined ItemProvider
 					ItemProviderBase();
 					~ItemProviderBase();
 
-					bool										AttachCallback(GuiListControl::IItemProviderCallback* value);
-					bool										DetachCallback(GuiListControl::IItemProviderCallback* value);
+					bool										AttachCallback(GuiListControl::IItemProviderCallback* value)override;
+					bool										DetachCallback(GuiListControl::IItemProviderCallback* value)override;
+					void										PushSupressCallback()override;
+					bool										PopSupressCallback()override;
 				};
 
 				template<typename T>
