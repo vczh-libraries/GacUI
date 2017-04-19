@@ -77,30 +77,31 @@ GuiComboBoxListControl
 			{
 				if (itemStyleController)
 				{
-					SafeDeleteComposition(itemStyleController->GetBoundsComposition());
+					SafeDeleteComposition(itemStyleController);
 					itemStyleController = nullptr;
 				}
 			}
 
 			void GuiComboBoxListControl::InstallStyleController(vint itemIndex)
 			{
-				if (itemStyleProvider)
+				if (itemStyleProperty)
 				{
 					if (itemIndex != -1)
 					{
 						auto item = containedListControl->GetItemProvider()->GetBindingValue(itemIndex);
 						if (!item.IsNull())
 						{
-							itemStyleController = itemStyleProvider->CreateItemStyle(item);
+							auto style = itemStyleProperty(item);
+							style->SetText(GetText());
+							style->SetFont(GetFont());
+							style->SetVisuallyEnabled(GetVisuallyEnabled());
 							if (itemStyleController)
 							{
 								itemStyleController->SetText(GetText());
 								itemStyleController->SetFont(GetFont());
 								itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());
-
-								auto composition = itemStyleController->GetBoundsComposition();
-								composition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-								GetContainerComposition()->AddChild(composition);
+								itemStyleController->SetAlignmentToParent(Margin(0, 0, 0, 0));
+								GetContainerComposition()->AddChild(itemStyleController);
 							}
 						}
 					}
@@ -203,36 +204,19 @@ GuiComboBoxListControl
 			{
 				return containedListControl;
 			}
-			
-			GuiComboBoxListControl::IItemStyleProvider* GuiComboBoxListControl::GetStyleProvider()
+
+			GuiComboBoxListControl::ItemStyleProperty GuiComboBoxListControl::GetItemTemplate()
 			{
-				return itemStyleProvider.Obj();
+				return itemStyleProperty;
 			}
 
-			Ptr<GuiComboBoxListControl::IItemStyleProvider> GuiComboBoxListControl::SetStyleProvider(Ptr<IItemStyleProvider> value)
+			void GuiComboBoxListControl::SetItemTemplate(ItemStyleProperty value)
 			{
 				RemoveStyleController();
-				auto old = itemStyleProvider;
-				if (itemStyleProvider)
-				{
-					itemStyleProvider->DetachComboBox();
-				}
-
-				itemStyleProvider = value;
-
-				if (itemStyleProvider)
-				{
-					itemStyleProvider->AttachComboBox(this);
-					styleController->SetTextVisible(false);
-					InstallStyleController(GetSelectedIndex());
-				}
-				else
-				{
-					styleController->SetTextVisible(true);
-				}
-
-				StyleProviderChanged.Execute(GetNotifyEventArguments());
-				return old;
+				itemStyleProperty = value;
+				styleController->SetTextVisible(itemStyleProperty);
+				InstallStyleController(GetSelectedIndex());
+				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}
 
 			vint GuiComboBoxListControl::GetSelectedIndex()

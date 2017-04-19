@@ -78,6 +78,8 @@ ComboBox with GuiListControl
 			class GuiComboBoxListControl : public GuiComboBoxBase, public Description<GuiComboBoxListControl>
 			{
 			public:
+				using ItemStyleProperty = TemplateProperty<templates::GuiControlTemplate>;
+
 				/// <summary>Style controller interface for <see cref="GuiComboBoxListControl"/>.</summary>
 				class IStyleController : public virtual GuiComboBoxBase::IStyleController, public Description<IStyleController>
 				{
@@ -86,27 +88,12 @@ ComboBox with GuiListControl
 					/// <param name="value">Set to true to display text.</param>
 					virtual void							SetTextVisible(bool value) = 0;
 				};
-				
-				/// <summary>Item style provider for a <see cref="GuiComboBoxListControl"/>.</summary>
-				class IItemStyleProvider : public virtual IDescriptable, public Description<IItemStyleProvider>
-				{
-				public:
-					/// <summary>Called when an item style provider in installed to a <see cref="GuiComboBoxListControl"/>.</summary>
-					/// <param name="value">The list control.</param>
-					virtual void							AttachComboBox(GuiComboBoxListControl* value)=0;
-					/// <summary>Called when an item style provider in uninstalled from a <see cref="GuiComboBoxListControl"/>.</summary>
-					virtual void							DetachComboBox()=0;
-					/// <summary>Create an item style controller from an item.</summary>
-					/// <returns>The created item style controller.</returns>
-					/// <param name="item">The item.</param>
-					virtual GuiControl::IStyleController*	CreateItemStyle(description::Value item)=0;
-				};
 
 			protected:
-				IStyleController*							styleController;
-				GuiSelectableListControl*					containedListControl;
-				Ptr<IItemStyleProvider>						itemStyleProvider;
-				Ptr<GuiControl::IStyleController>			itemStyleController;
+				IStyleController*							styleController = nullptr;
+				GuiSelectableListControl*					containedListControl = nullptr;
+				ItemStyleProperty							itemStyleProperty;
+				templates::GuiControlTemplate*				itemStyleController = nullptr;
 
 				void										RemoveStyleController();
 				void										InstallStyleController(vint itemIndex);
@@ -124,21 +111,21 @@ ComboBox with GuiListControl
 				~GuiComboBoxListControl();
 				
 				/// <summary>Style provider changed event.</summary>
-				compositions::GuiNotifyEvent				StyleProviderChanged;
+				compositions::GuiNotifyEvent				ItemTemplateChanged;
 				/// <summary>Selected index changed event.</summary>
 				compositions::GuiNotifyEvent				SelectedIndexChanged;
 				
 				/// <summary>Get the list control.</summary>
 				/// <returns>The list control.</returns>
 				GuiSelectableListControl*					GetContainedListControl();
-				
+
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
-				IItemStyleProvider*							GetStyleProvider();
+				virtual ItemStyleProperty					GetItemTemplate();
 				/// <summary>Set the item style provider</summary>
 				/// <returns>The old item style provider</returns>
 				/// <param name="value">The new item style provider</param>
-				Ptr<IItemStyleProvider>						SetStyleProvider(Ptr<IItemStyleProvider> value);
+				virtual void								SetItemTemplate(ItemStyleProperty value);
 				
 				/// <summary>Get the selected index.</summary>
 				/// <returns>The selected index.</returns>
