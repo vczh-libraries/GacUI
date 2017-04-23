@@ -917,6 +917,7 @@ DefaultTreeItemTemplate
 				void DefaultTreeItemTemplate::OnInitialize()
 				{
 					templates::GuiTreeItemTemplate::OnInitialize();
+					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
 					backgroundButton->SetAutoSelection(false);

@@ -22,6 +22,7 @@ DefaultListViewItemTemplate
 				void DefaultListViewItemTemplate::OnInitialize()
 				{
 					templates::GuiListItemTemplate::OnInitialize();
+					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
 					backgroundButton->SetAutoSelection(false);
