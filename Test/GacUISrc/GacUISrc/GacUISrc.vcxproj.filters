@@ -498,6 +498,9 @@
     <ClCompile Include="..\..\..\Source\Controls\GuiDialogs.cpp">
       <Filter>GacUI\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.cpp">
+      <Filter>GacUI\Controls\ListControlPackage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -850,6 +853,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\GuiDialogs.h">
       <Filter>GacUI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.h">
+      <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

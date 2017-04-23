@@ -285,6 +285,11 @@ GuiTextList
 				}
 			}
 
+			void GuiVirtualTextList::OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				view = TextListView::Unknown;
+			}
+
 			GuiVirtualTextList::GuiVirtualTextList(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_styleProvider, _itemProvider)
 			{
@@ -304,6 +309,29 @@ GuiTextList
 			GuiVirtualTextList::IStyleProvider* GuiVirtualTextList::GetTextListStyleProvider()
 			{
 				return styleProvider;
+			}
+
+			TextListView GuiVirtualTextList::GetView()
+			{
+				return view;
+			}
+
+			void GuiVirtualTextList::SetView(TextListView _view)
+			{
+				switch (_view)
+				{
+				case TextListView::Text:
+					SetItemTemplate([](const Value&) { return new list::DefaultTextListItemTemplate; });
+					break;
+				case TextListView::Check:
+					SetItemTemplate([](const Value&) { return new list::DefaultCheckTextListItemTemplate; });
+					break;
+				case TextListView::Radio:
+					SetItemTemplate([](const Value&) { return new list::DefaultRadioTextListItemTemplate; });
+					break;
+				default:;
+				}
+				view = _view;
 			}
 
 /***********************************************************************

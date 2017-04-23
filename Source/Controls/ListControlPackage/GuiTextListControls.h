@@ -151,6 +151,14 @@ TextList Data Source
 TextList Control
 ***********************************************************************/
 
+			enum class TextListView
+			{
+				Text,
+				Check,
+				Radio,
+				Unknown,
+			};
+
 			/// <summary>Text list control in virtual mode.</summary>
 			class GuiVirtualTextList : public GuiSelectableListControl, public Description<GuiVirtualTextList>
 			{
@@ -165,8 +173,10 @@ TextList Control
 				};
 			protected:
 				IStyleProvider*											styleProvider;
+				TextListView											view = TextListView::Unknown;
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
+				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
@@ -181,6 +191,13 @@ TextList Control
 				/// <summary>Get the style provider for this control.</summary>
 				/// <returns>The style provider for this control.</returns>
 				IStyleProvider*											GetTextListStyleProvider();
+
+				/// <summary>Get the current view.</summary>
+				/// <returns>The current view. After [M:vl.presentation.controls.GuiListControl.SetItemTemplate] is called, the current view is reset to Unknown.</returns>
+				TextListView											GetView();
+				/// <summary>Set the current view.</summary>
+				/// <param name="_view">The current view.</param>
+				void													SetView(TextListView _view);
 			};
 			
 			/// <summary>Text list control.</summary>
