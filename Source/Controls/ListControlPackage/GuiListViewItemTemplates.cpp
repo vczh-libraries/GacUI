@@ -1,4 +1,5 @@
 #include "GuiListViewItemTemplates.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -13,6 +14,37 @@ namespace vl
 
 			namespace list
 			{
+
+/***********************************************************************
+DefaultListViewItemTemplate
+***********************************************************************/
+
+				void DefaultListViewItemTemplate::OnInitialize()
+				{
+					templates::GuiListItemTemplate::OnInitialize();
+
+					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
+					backgroundButton->SetAutoSelection(false);
+					backgroundButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					AddChild(backgroundButton->GetBoundsComposition());
+
+					SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnSelectedChanged);
+
+					SelectedChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void DefaultListViewItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					backgroundButton->SetSelected(GetSelected());
+				}
+
+				DefaultListViewItemTemplate::DefaultListViewItemTemplate()
+				{
+				}
+
+				DefaultListViewItemTemplate::~DefaultListViewItemTemplate()
+				{
+				}
 				
 /***********************************************************************
 ListViewBigIconContentProvider

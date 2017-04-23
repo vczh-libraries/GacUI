@@ -28,7 +28,7 @@ DefaultTextListItemTemplate
 
 				void DefaultTextListItemTemplate::OnInitialize()
 				{
-					templates::GuiListItemTemplate::OnInitialize();
+					templates::GuiTextListItemTemplate::OnInitialize();
 
 					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
 					backgroundButton->SetAutoSelection(false);
@@ -293,6 +293,7 @@ GuiTextList
 			GuiVirtualTextList::GuiVirtualTextList(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_styleProvider, _itemProvider)
 			{
+				ItemTemplateChanged.AttachMethod(this, &GuiVirtualTextList::OnItemTemplateChanged);
 				ItemChecked.SetAssociatedComposition(boundsComposition);
 
 				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());

@@ -24,7 +24,7 @@ namespace vl
 			{
 
 /***********************************************************************
-TextList Style Provider
+DefaultTextListItemTemplate
 ***********************************************************************/
 
 				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="GuiVirtualTextList"/>.</summary>
@@ -80,7 +80,7 @@ TextList Style Provider
 				};
 
 /***********************************************************************
-TextList Data Source
+TextItemProvider
 ***********************************************************************/
 
 				class TextItemProvider;
@@ -148,7 +148,7 @@ TextList Data Source
 			}
 
 /***********************************************************************
-TextList Control
+GuiVirtualTextList
 ***********************************************************************/
 
 			enum class TextListView
@@ -173,7 +173,7 @@ TextList Control
 				};
 			protected:
 				IStyleProvider*											styleProvider;
-				TextListView											view = TextListView::Unknown;
+				TextListView											view = TextListView::Text;
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -199,6 +199,10 @@ TextList Control
 				/// <param name="_view">The current view.</param>
 				void													SetView(TextListView _view);
 			};
+
+/***********************************************************************
+GuiTextList
+***********************************************************************/
 			
 			/// <summary>Text list control.</summary>
 			class GuiTextList : public GuiVirtualTextList, public Description<GuiTextList>

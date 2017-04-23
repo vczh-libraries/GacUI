@@ -916,7 +916,7 @@ DefaultTreeItemTemplate
 
 				void DefaultTreeItemTemplate::OnInitialize()
 				{
-					templates::GuiTextListItemTemplate::OnInitialize();
+					templates::GuiTreeItemTemplate::OnInitialize();
 
 					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
 					backgroundButton->SetAutoSelection(false);

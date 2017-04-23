@@ -17,13 +17,20 @@ namespace vl
 	{
 		namespace controls
 		{
-
-/***********************************************************************
-ListView ItemContentProvider
-***********************************************************************/
-
 			namespace list
 			{
+				class DefaultListViewItemTemplate : public templates::GuiListItemTemplate
+				{
+				protected:
+					GuiSelectableButton*					backgroundButton = nullptr;
+
+					void									OnInitialize()override;
+					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				public:
+					DefaultListViewItemTemplate();
+					~DefaultListViewItemTemplate();
+				};
+
 				/// <summary>Big icon content provider.</summary>
 				class ListViewBigIconContentProvider : public Object, public virtual ListViewItemStyleProvider::IListViewItemContentProvider, public Description<ListViewBigIconContentProvider>
 				{

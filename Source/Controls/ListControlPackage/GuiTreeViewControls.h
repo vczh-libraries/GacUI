@@ -19,7 +19,7 @@ namespace vl
 		{
 
 /***********************************************************************
-GuiVirtualTreeListControl NodeProvider
+NodeItemProvider
 ***********************************************************************/
 
 			namespace tree
@@ -196,7 +196,7 @@ GuiVirtualTreeListControl NodeProvider
 			}
 
 /***********************************************************************
-GuiVirtualTreeListControl Predefined NodeProvider
+MemoryNodeProvider
 ***********************************************************************/
 
 			namespace tree
@@ -377,7 +377,7 @@ GuiVirtualTreeListControl
 			};
 
 /***********************************************************************
-TreeView Data Source
+TreeViewItemRootProvider
 ***********************************************************************/
 
 			namespace tree
@@ -447,7 +447,7 @@ TreeView Data Source
 			}
 
 /***********************************************************************
-TreeView
+GuiVirtualTreeView
 ***********************************************************************/
 			
 			/// <summary>Tree view control in virtual mode.</summary>
@@ -484,6 +484,10 @@ TreeView
 				/// <returns>The style provider for this control.</returns>
 				IStyleProvider*											GetTreeViewStyleProvider();
 			};
+
+/***********************************************************************
+GuiTreeView
+***********************************************************************/
 			
 			/// <summary>Tree view control.</summary>
 			class GuiTreeView : public GuiVirtualTreeView, public Description<GuiTreeView>
@@ -506,7 +510,7 @@ TreeView
 			};
 
 /***********************************************************************
-TreeView Style Provider
+DefaultTreeItemTemplate
 ***********************************************************************/
 
 			namespace tree

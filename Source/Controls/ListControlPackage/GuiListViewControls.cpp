@@ -11,74 +11,12 @@ namespace vl
 			using namespace collections;
 			using namespace reflection::description;
 
-			namespace list
-			{
-
-/***********************************************************************
-ListViewItemStyleProviderBase::TextItemStyleController
-***********************************************************************/
-
-				ListViewItemStyleProviderBase::ListViewItemStyleController::ListViewItemStyleController(ListViewItemStyleProviderBase* provider)
-					:ItemStyleControllerBase(provider, 0)
-					,backgroundButton(0)
-					,listViewItemStyleProvider(provider)
-				{
-					backgroundButton=new GuiSelectableButton(listViewItemStyleProvider->listControl->GetListViewStyleProvider()->CreateItemBackground());
-					backgroundButton->SetAutoSelection(false);
-					Initialize(backgroundButton->GetBoundsComposition(), backgroundButton);
-				}
-
-				ListViewItemStyleProviderBase::ListViewItemStyleController::~ListViewItemStyleController()
-				{
-				}
-
-				bool ListViewItemStyleProviderBase::ListViewItemStyleController::GetSelected()
-				{
-					return backgroundButton->GetSelected();
-				}
-
-				void ListViewItemStyleProviderBase::ListViewItemStyleController::SetSelected(bool value)
-				{
-					backgroundButton->SetSelected(value);
-				}
-
-/***********************************************************************
-ListViewItemStyleProviderBase
-***********************************************************************/
-
-				ListViewItemStyleProviderBase::ListViewItemStyleProviderBase()
-					:listControl(0)
-				{
-				}
-
-				ListViewItemStyleProviderBase::~ListViewItemStyleProviderBase()
-				{
-				}
-
-				void ListViewItemStyleProviderBase::AttachListControl(GuiListControl* value)
-				{
-					listControl=dynamic_cast<GuiListViewBase*>(value);
-				}
-
-				void ListViewItemStyleProviderBase::DetachListControl()
-				{
-					listControl=0;
-				}
-
-				void ListViewItemStyleProviderBase::SetStyleSelected(GuiListControl::IItemStyleController* style, bool value)
-				{
-					ListViewItemStyleController* textStyle=dynamic_cast<ListViewItemStyleController*>(style);
-					textStyle->SetSelected(value);
-				}
-			}
-
 /***********************************************************************
 GuiListViewColumnHeader
 ***********************************************************************/
 			
 			GuiListViewColumnHeader::GuiListViewColumnHeader(IStyleController* _styleController)
 				:GuiMenuButton(_styleController)
-				,columnSortingState(NotSorted)
 				,styleController(_styleController)
 			{
 				styleController->SetColumnSortingState(columnSortingState);
@@ -93,7 +31,7 @@ GuiListViewColumnHeader
 				return false;
 			}
 
-			GuiListViewColumnHeader::ColumnSortingState GuiListViewColumnHeader::GetColumnSortingState()
+			ColumnSortingState GuiListViewColumnHeader::GetColumnSortingState()
 			{
 				return columnSortingState;
 			}
@@ -128,162 +66,10 @@ GuiListViewBase
 				return styleProvider;
 			}
 
-			Ptr<GuiListControl::IItemStyleProvider> GuiListViewBase::SetStyleProvider(Ptr<GuiListControl::IItemStyleProvider> value)
-			{
-				if(value.Cast<list::ListViewItemStyleProvider>())
-				{
-					return GuiSelectableListControl::SetStyleProvider(value);
-				}
-				else
-				{
-					return 0;
-				}
-			}
-
 			namespace list
 			{
 
-/***********************************************************************
-ListViewItemStyleProvider::ListViewContentItemStyleController
-***********************************************************************/
-
-				ListViewItemStyleProvider::ListViewContentItemStyleController::ListViewContentItemStyleController(ListViewItemStyleProvider* provider)
-					:ListViewItemStyleController(provider)
-					,listViewItemStyleProvider(provider)
-				{
-					content=listViewItemStyleProvider->listViewItemContentProvider->CreateItemContent(backgroundButton->GetFont());
-					GuiBoundsComposition* composition=content->GetContentComposition();
-					composition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					backgroundButton->GetContainerComposition()->AddChild(composition);
-
-					GuiBoundsComposition* decorator=content->GetBackgroundDecorator();
-					if(decorator)
-					{
-						backgroundButton->GetBoundsComposition()->AddChild(decorator);
-						backgroundButton->GetBoundsComposition()->MoveChild(decorator, 0);
-					}
-				}
-
-				ListViewItemStyleProvider::ListViewContentItemStyleController::~ListViewContentItemStyleController()
-				{
-				}
-
-				void ListViewItemStyleProvider::ListViewContentItemStyleController::OnUninstalled()
-				{
-					ListViewItemStyleController::OnUninstalled();
-					content->Uninstall();
-				}
-
-				ListViewItemStyleProvider::IListViewItemContent* ListViewItemStyleProvider::ListViewContentItemStyleController::GetItemContent()
-				{
-					return content.Obj();
-				}
-
-				void ListViewItemStyleProvider::ListViewContentItemStyleController::Install(IListViewItemView* view, vint itemIndex)
-				{
-					content->Install(listViewItemStyleProvider->listControl->GetListViewStyleProvider(), view, itemIndex);
-				}
-
-/***********************************************************************
-ListViewItemStyleProvider
-***********************************************************************/
-
-				const wchar_t* const ListViewItemStyleProvider::IListViewItemView::Identifier = L"vl::presentation::controls::list::ListViewItemStyleProvider::IListViewItemView";
-
-				ListViewItemStyleProvider::ListViewItemStyleProvider(Ptr<IListViewItemContentProvider> itemContentProvider)
-					:listViewItemView(0)
-					,listViewItemContentProvider(itemContentProvider)
-				{
-				}
-
-				ListViewItemStyleProvider::~ListViewItemStyleProvider()
-				{
-				}
-
-				void ListViewItemStyleProvider::AttachListControl(GuiListControl* value)
-				{
-					ListViewItemStyleProviderBase::AttachListControl(value);
-					listViewItemView = dynamic_cast<IListViewItemView*>(value->GetItemProvider()->RequestView(IListViewItemView::Identifier));
-					listViewItemContentProvider->AttachListControl(value);
-				}
-
-				void ListViewItemStyleProvider::DetachListControl()
-				{
-					listViewItemContentProvider->DetachListControl();
-					if (listViewItemView)
-					{
-						listControl->GetItemProvider()->ReleaseView(listViewItemView);
-						listViewItemView = nullptr;
-					}
-					ListViewItemStyleProviderBase::DetachListControl();
-				}
-
-				GuiListControl::IItemStyleController* ListViewItemStyleProvider::CreateItemStyle()
-				{
-					ListViewContentItemStyleController* itemStyle=new ListViewContentItemStyleController(this);
-					itemStyles.Add(itemStyle);
-					return itemStyle;
-				}
-
-				void ListViewItemStyleProvider::DestroyItemStyle(GuiListControl::IItemStyleController* style)
-				{
-					ListViewContentItemStyleController* itemStyle=dynamic_cast<ListViewContentItemStyleController*>(style);
-					if(itemStyle)
-					{
-						itemStyles.Remove(itemStyle);
-						delete itemStyle;
-					}
-				}
-
-				void ListViewItemStyleProvider::Install(GuiListControl::IItemStyleController* style, vint itemIndex)
-				{
-					ListViewContentItemStyleController* itemStyle=dynamic_cast<ListViewContentItemStyleController*>(style);
-					itemStyle->Install(listViewItemView, itemIndex);
-				}
-
-				void ListViewItemStyleProvider::SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)
-				{
-				}
-
-				ListViewItemStyleProvider::IListViewItemContentProvider* ListViewItemStyleProvider::GetItemContentProvider()
-				{
-					return listViewItemContentProvider.Obj();
-				}
-
-				const ListViewItemStyleProvider::ItemStyleList& ListViewItemStyleProvider::GetCreatedItemStyles()
-				{
-					return itemStyles;
-				}
-
-				bool ListViewItemStyleProvider::IsItemStyleAttachedToListView(GuiListControl::IItemStyleController* itemStyle)
-				{
-					return itemStyle && itemStyle->GetBoundsComposition()->GetParent();
-				}
-
-				ListViewItemStyleProvider::IListViewItemContent* ListViewItemStyleProvider::GetItemContentFromItemStyleController(GuiListControl::IItemStyleController* itemStyleController)
-				{
-					if(itemStyleController)
-					{
-						ListViewContentItemStyleController* item=dynamic_cast<ListViewContentItemStyleController*>(itemStyleController);
-						if(item)
-						{
-							return item->GetItemContent();
-						}
-					}
-					return 0;
-				}
-
-				GuiListControl::IItemStyleController* ListViewItemStyleProvider::GetItemStyleControllerFromItemContent(IListViewItemContent* itemContent)
-				{
-					FOREACH(GuiListControl::IItemStyleController*, style, itemStyles)
-					{
-						if(GetItemContentFromItemStyleController(style)==itemContent)
-						{
-							return style;
-						}
-					}
-					return 0;
-				}
+				const wchar_t* const IListViewItemView::Identifier = L"vl::presentation::controls::list::IListViewItemView";
 				
 /***********************************************************************
 ListViewColumnItemArranger::ColumnItemViewCallback
@@ -524,7 +310,6 @@ ListViewColumnItemArranger
 						if (columnItemView)
 						{
 							columnItemView->DetachCallback(columnItemViewCallback.Obj());
-							listView->GetItemProvider()->ReleaseView(columnItemView);
 							columnItemView = nullptr;
 						}
 						listView->GetContainerComposition()->RemoveChild(columnHeaders);
@@ -625,11 +410,8 @@ ListViewColumn
 				}
 
 				ListViewColumn::ListViewColumn(const WString& _text, vint _size)
-					:owner(0)
-					,text(_text)
+					:text(_text)
 					,size(_size)
-					,dropdownPopup(0)
-					,sortingState(GuiListViewColumnHeader::NotSorted)
 				{
 				}
 
@@ -677,12 +459,12 @@ ListViewColumn
 					NotifyUpdate();
 				}
 
-				GuiListViewColumnHeader::ColumnSortingState ListViewColumn::GetSortingState()
+				ColumnSortingState ListViewColumn::GetSortingState()
 				{
 					return sortingState;
 				}
 
-				void ListViewColumn::SetSortingState(GuiListViewColumnHeader::ColumnSortingState value)
+				void ListViewColumn::SetSortingState(ColumnSortingState value)
 				{
 					sortingState = value;
 					NotifyUpdate();
@@ -880,11 +662,11 @@ ListViewItemProvider
 					}
 				}
 
-				GuiListViewColumnHeader::ColumnSortingState ListViewItemProvider::GetSortingState(vint index)
+				ColumnSortingState ListViewItemProvider::GetSortingState(vint index)
 				{
-					if(index<0 || index>=columns.Count())
+					if (index < 0 || index >= columns.Count())
 					{
-						return GuiListViewColumnHeader::NotSorted;
+						return ColumnSortingState::NotSorted;
 					}
 					else
 					{
@@ -914,11 +696,11 @@ ListViewItemProvider
 
 				IDescriptable* ListViewItemProvider::RequestView(const WString& identifier)
 				{
-					if(identifier==ListViewItemStyleProvider::IListViewItemView::Identifier)
+					if (identifier == IListViewItemView::Identifier)
 					{
-						return (ListViewItemStyleProvider::IListViewItemView*)this;
+						return (IListViewItemView*)this;
 					}
-					else if(identifier==ListViewColumnItemArranger::IColumnItemView::Identifier)
+					else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
 					{
 						return (ListViewColumnItemArranger::IColumnItemView*)this;
 					}
@@ -926,10 +708,6 @@ ListViewItemProvider
 					{
 						return 0;
 					}
-				}
-
-				void ListViewItemProvider::ReleaseView(IDescriptable* view)
-				{
 				}
 
 				ListViewDataColumns& ListViewItemProvider::GetDataColumns()
@@ -947,24 +725,49 @@ ListViewItemProvider
 GuiListView
 ***********************************************************************/
 
+			void GuiVirtualListView::OnStyleInstalled(vint itemIndex, ItemStyle* style)
+			{
+				GuiListViewBase::OnStyleInstalled(itemIndex, style);
+			}
+
+			void GuiVirtualListView::OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				view = ListViewView::Unknown;
+			}
+
 			GuiVirtualListView::GuiVirtualListView(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider)
 				:GuiListViewBase(_styleProvider, _itemProvider)
 			{
-				ChangeItemStyle(new list::ListViewBigIconContentProvider);
 			}
 
 			GuiVirtualListView::~GuiVirtualListView()
 			{
 			}
 
-			bool GuiVirtualListView::ChangeItemStyle(Ptr<list::ListViewItemStyleProvider::IListViewItemContentProvider> contentProvider)
+			ListViewView GuiVirtualListView::GetView()
 			{
-				SetStyleProvider(0);
-				SetArranger(0);
-				SetAxis(contentProvider->CreatePreferredAxis());
-				SetStyleProvider(new list::ListViewItemStyleProvider(contentProvider));
-				SetArranger(contentProvider->CreatePreferredArranger());
-				return true;
+				return view;
+			}
+
+			void GuiVirtualListView::SetView(ListViewView _view)
+			{
+				switch (_view)
+				{
+				case ListViewView::BigIcon:
+					break;
+				case ListViewView::SmallIcon:
+					break;
+				case ListViewView::List:
+					break;
+				case ListViewView::Tile:
+					break;
+				case ListViewView::Information:
+					break;
+				case ListViewView::Detail:
+					break;
+				default:;
+				}
+				view = _view;
 			}
 
 /***********************************************************************
