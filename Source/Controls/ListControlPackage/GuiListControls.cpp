@@ -17,8 +17,6 @@ GuiListControl::ItemCallback
 
 			Ptr<GuiListControl::ItemCallback::BoundsChangedHandler> GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex)
 			{
-				style->SetIndex(itemIndex);
-				style->Initialize(listControl);
 				auto handler = style->BoundsChanged.AttachMethod(this, &ItemCallback::OnStyleBoundsChanged);
 				listControl->GetContainerComposition()->AddChild(style);
 				listControl->OnStyleInstalled(itemIndex, style);
@@ -143,6 +141,12 @@ GuiListControl
 
 			void GuiListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style)
 			{
+				style->SetFont(GetFont());
+				style->SetText(itemProvider->GetTextValue(itemIndex));
+				style->SetVisuallyEnabled(GetVisuallyEnabled());
+				style->SetSelected(false);
+				style->SetIndex(itemIndex);
+				style->Initialize(this);
 				AttachItemEvents(style);
 			}
 
@@ -209,6 +213,22 @@ GuiListControl
 					itemArranger->AttachListControl(this);
 				}
 				CalculateView();
+			}
+
+			void GuiListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				{
+					style->SetVisuallyEnabled(GetVisuallyEnabled());
+				}
+			}
+
+			void GuiListControl::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				{
+					style->SetFont(GetFont());
+				}
 			}
 
 			void GuiListControl::OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
@@ -320,6 +340,9 @@ GuiListControl
 				:GuiScrollView(_styleProvider)
 				, itemProvider(_itemProvider)
 			{
+				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
+				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
+
 				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				ArrangerChanged.SetAssociatedComposition(boundsComposition);
 				AxisChanged.SetAssociatedComposition(boundsComposition);

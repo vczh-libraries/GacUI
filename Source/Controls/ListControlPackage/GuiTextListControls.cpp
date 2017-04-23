@@ -37,7 +37,6 @@ DefaultTextListItemTemplate
 
 					textElement = GuiSolidLabelElement::Create();
 					textElement->SetAlignments(Alignment::Left, Alignment::Center);
-					textElement->SetFont(backgroundButton->GetFont());
 
 					GuiBoundsComposition* textComposition = new GuiBoundsComposition;
 					textComposition->SetOwnedElement(textElement);
@@ -77,30 +76,30 @@ DefaultTextListItemTemplate
 						textComposition->SetAlignmentToParent(Margin(5, 0, 0, 0));
 					}
 
+					FontChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnFontChanged);
+					TextChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextChanged);
 					SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnSelectedChanged);
-					IndexChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnIndexChanged);
 					TextColorChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextColorChanged);
 
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+					TextChanged.Execute(compositions::GuiEventArgs(this));
 					SelectedChanged.Execute(compositions::GuiEventArgs(this));
-					IndexChanged.Execute(compositions::GuiEventArgs(this));
 					TextColorChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void DefaultTextListItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					textElement->SetFont(GetFont());
+				}
+
+				void DefaultTextListItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					textElement->SetText(GetText());
 				}
 
 				void DefaultTextListItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					backgroundButton->SetSelected(GetSelected());
-				}
-
-				void DefaultTextListItemTemplate::OnIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					textElement->SetText(listControl->GetItemProvider()->GetTextValue(GetIndex()));
-					if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(ITextItemView::Identifier)))
-					{
-						if (bulletButton)
-						{
-							bulletButton->SetSelected(textItemView->GetChecked(GetIndex()));
-						}
-					}
 				}
 
 				void DefaultTextListItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -271,10 +270,6 @@ TextItemProvider
 						return nullptr;
 					}
 				}
-
-				void TextItemProvider::ReleaseView(IDescriptable* view)
-				{
-				}
 			}
 
 /***********************************************************************
@@ -296,7 +291,10 @@ GuiTextList
 				ItemChecked.SetAssociatedComposition(boundsComposition);
 
 				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
-				SetArranger(new list::FixedHeightItemArranger);
+				SetStyleAndArranger(
+					[](const Value&) { return new list::DefaultTextListItemTemplate; },
+					new list::FixedHeightItemArranger
+					);
 			}
 
 			GuiVirtualTextList::~GuiVirtualTextList()

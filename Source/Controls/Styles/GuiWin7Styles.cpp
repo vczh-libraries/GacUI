@@ -123,6 +123,11 @@ Win7Theme
 				return new Win7SelectableItemStyle();
 			}
 
+			controls::GuiSelectableButton::IStyleController* Win7Theme::CreateListItemBackgroundStyle()
+			{
+				return new Win7TreeViewExpandingButtonStyle();
+			}
+
 			controls::GuiToolstripMenu::IStyleController* Win7Theme::CreateMenuStyle()
 			{
 				return new Win7MenuStyle;

@@ -716,30 +716,34 @@ DataGridContentProvider
 
 				void DataGridContentProvider::AttachListControl(GuiListControl* value)
 				{
-					dataGrid=dynamic_cast<GuiVirtualDataGrid*>(value);
-					listViewItemStyleProvider=dynamic_cast<ListViewItemStyleProvider*>(value->GetStyleProvider());
-					itemProvider=value->GetItemProvider();
+					dataGrid = dynamic_cast<GuiVirtualDataGrid*>(value);
+					listViewItemStyleProvider = dynamic_cast<ListViewItemStyleProvider*>(value->GetStyleProvider());
+					itemProvider = value->GetItemProvider();
 					itemProvider->AttachCallback(this);
-					columnItemView=dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
-					if(columnItemView)
+					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
+					if (columnItemView)
 					{
 						columnItemView->AttachCallback(this);
 					}
-					dataProvider=dynamic_cast<IDataProvider*>(itemProvider->RequestView(IDataProvider::Identifier));
+					dataProvider = dynamic_cast<IDataProvider*>(itemProvider->RequestView(IDataProvider::Identifier));
 				}
 
 				void DataGridContentProvider::DetachListControl()
 				{
-					dataProvider=0;
-					if(columnItemView)
+					if (dataProvider)
+					{
+						itemProvider->ReleaseView(dataProvider);
+						dataProvider = nullptr;
+					}
+					if (columnItemView)
 					{
 						columnItemView->DetachCallback(this);
 						itemProvider->ReleaseView(columnItemView);
-						columnItemView=0;
+						columnItemView = nullptr;
 					}
 					itemProvider->DetachCallback(this);
-					itemProvider=0;
-					listViewItemStyleProvider=0;
+					itemProvider = nullptr;
+					listViewItemStyleProvider = nullptr;
 				}
 
 				GridPos DataGridContentProvider::GetSelectedCell()

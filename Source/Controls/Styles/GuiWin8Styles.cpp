@@ -9,6 +9,8 @@
 #include "Win8Styles/GuiWin8ScrollableStyles.h"
 #include "Win8Styles/GuiWin8ListStyles.h"
 
+#include "Win7Styles/GuiWin7ListStyles.h"
+
 namespace vl
 {
 	namespace presentation
@@ -120,6 +122,11 @@ Win8Theme
 			controls::GuiSelectableButton::IStyleController* Win8Theme::CreateListItemBackgroundStyle()
 			{
 				return new Win8SelectableItemStyle();
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win8Theme::CreateListItemBackgroundStyle()
+			{
+				return new win7::Win7TreeViewExpandingButtonStyle();
 			}
 
 			controls::GuiToolstripMenu::IStyleController* Win8Theme::CreateMenuStyle()

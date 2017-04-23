@@ -130,9 +130,6 @@ List Control
 					/// <returns>The view object.</returns>
 					/// <param name="identifier">The identifier for the requested view.</param>
 					virtual IDescriptable*						RequestView(const WString& identifier) = 0;
-					/// <summary>Release a requested view.</summary>
-					/// <param name="view">The view to release.</param>
-					virtual void								ReleaseView(IDescriptable* view) = 0;
 				};
 
 				//-----------------------------------------------------------
@@ -268,6 +265,8 @@ List Control
 				friend class collections::ArrayBase<Ptr<VisibleStyleHelper>>;
 				collections::Dictionary<ItemStyle*, Ptr<VisibleStyleHelper>>		visibleStyles;
 
+				void											OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void											OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void											OnItemNotifyEvent(compositions::GuiItemNotifyEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											AttachItemEvents(ItemStyle* style);

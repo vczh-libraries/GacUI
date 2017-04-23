@@ -260,7 +260,7 @@ ListView ItemStyleProvider
 
 					typedef collections::List<GuiListControl::IItemStyleController*>				ItemStyleList;
 
-					IListViewItemView*							listViewItemView;
+					IListViewItemView*							listViewItemView = nullptr;
 					Ptr<IListViewItemContentProvider>			listViewItemContentProvider;
 					ItemStyleList								itemStyles;
 				public:

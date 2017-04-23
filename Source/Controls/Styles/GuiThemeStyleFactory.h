@@ -96,6 +96,9 @@ namespace vl
 				/// <summary>Create a style for selectable list control item background.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiSelectableButton::IStyleController*					CreateListItemBackgroundStyle()=0;
+				/// <summary>Create a style for tree list control item expander.</summary>
+				/// <returns>The created style.</returns>
+				virtual controls::GuiSelectableButton::IStyleController*					CreateTreeItemExpanderStyle()=0;
 				
 				/// <summary>Create a style for menu.</summary>
 				/// <returns>The created style.</returns>

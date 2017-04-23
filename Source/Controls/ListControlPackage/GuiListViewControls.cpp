@@ -203,15 +203,18 @@ ListViewItemStyleProvider
 				void ListViewItemStyleProvider::AttachListControl(GuiListControl* value)
 				{
 					ListViewItemStyleProviderBase::AttachListControl(value);
-					listViewItemView=dynamic_cast<IListViewItemView*>(value->GetItemProvider()->RequestView(IListViewItemView::Identifier));
+					listViewItemView = dynamic_cast<IListViewItemView*>(value->GetItemProvider()->RequestView(IListViewItemView::Identifier));
 					listViewItemContentProvider->AttachListControl(value);
 				}
 
 				void ListViewItemStyleProvider::DetachListControl()
 				{
 					listViewItemContentProvider->DetachListControl();
-					listControl->GetItemProvider()->ReleaseView(listViewItemView);
-					listViewItemView=0;
+					if (listViewItemView)
+					{
+						listControl->GetItemProvider()->ReleaseView(listViewItemView);
+						listViewItemView = nullptr;
+					}
 					ListViewItemStyleProviderBase::DetachListControl();
 				}
 
@@ -1204,13 +1207,13 @@ ListViewColumnItemArranger
 				void ListViewColumnItemArranger::AttachListControl(GuiListControl* value)
 				{
 					FixedHeightItemArranger::AttachListControl(value);
-					listView=dynamic_cast<GuiListViewBase*>(value);
-					if(listView)
+					listView = dynamic_cast<GuiListViewBase*>(value);
+					if (listView)
 					{
-						styleProvider=listView->GetListViewStyleProvider();
+						styleProvider = listView->GetListViewStyleProvider();
 						listView->GetContainerComposition()->AddChild(columnHeaders);
-						columnItemView=dynamic_cast<IColumnItemView*>(listView->GetItemProvider()->RequestView(IColumnItemView::Identifier));
-						if(columnItemView)
+						columnItemView = dynamic_cast<IColumnItemView*>(listView->GetItemProvider()->RequestView(IColumnItemView::Identifier));
+						if (columnItemView)
 						{
 							columnItemView->AttachCallback(columnItemViewCallback.Obj());
 							RebuildColumns();
@@ -1220,17 +1223,17 @@ ListViewColumnItemArranger
 
 				void ListViewColumnItemArranger::DetachListControl()
 				{
-					if(listView)
+					if (listView)
 					{
-						if(columnItemView)
+						if (columnItemView)
 						{
 							columnItemView->DetachCallback(columnItemViewCallback.Obj());
 							listView->GetItemProvider()->ReleaseView(columnItemView);
-							columnItemView=0;
+							columnItemView = nullptr;
 						}
 						listView->GetContainerComposition()->RemoveChild(columnHeaders);
-						styleProvider=0;
-						listView=0;
+						styleProvider = nullptr;
+						listView = nullptr;
 					}
 					FixedHeightItemArranger::DetachListControl();
 				}
@@ -1429,13 +1432,14 @@ ListViewDetailContentProvider
 
 				void ListViewDetailContentProvider::DetachListControl()
 				{
-					if(columnItemView)
+					if (columnItemView)
 					{
 						columnItemView->DetachCallback(this);
 						itemProvider->ReleaseView(columnItemView);
+						columnItemView = nullptr;
 					}
-					itemProvider=0;
-					listViewItemStyleProvider=0;
+					itemProvider = nullptr;
+					listViewItemStyleProvider = nullptr;
 				}
 
 /***********************************************************************

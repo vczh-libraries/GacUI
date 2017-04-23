@@ -1,5 +1,6 @@
 #include "GuiTreeViewControls.h"
 #include "GuiListControlItemArrangers.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -266,102 +267,6 @@ NodeItemProvider
 					}
 				}
 
-				void NodeItemProvider::ReleaseView(IDescriptable* view)
-				{
-					if(dynamic_cast<INodeItemView*>(view)==0)
-					{
-						root->ReleaseView(view);
-					}
-				}
-
-/***********************************************************************
-NodeItemProvider
-***********************************************************************/
-
-				NodeItemStyleProvider::NodeItemStyleProvider(Ptr<INodeItemStyleProvider> provider)
-					:nodeItemStyleProvider(provider)
-					,listControl(0)
-					,nodeItemView(0)
-				{
-					nodeItemStyleProvider->BindItemStyleProvider(this);
-				}
-
-				NodeItemStyleProvider::~NodeItemStyleProvider()
-				{
-				}
-
-				void NodeItemStyleProvider::AttachListControl(GuiListControl* value)
-				{
-					listControl=value;
-					nodeItemView=dynamic_cast<INodeItemView*>(listControl->GetItemProvider()->RequestView(INodeItemView::Identifier));
-					nodeItemStyleProvider->AttachListControl(value);
-				}
-
-				void NodeItemStyleProvider::DetachListControl()
-				{
-					nodeItemStyleProvider->DetachListControl();
-					if(nodeItemView)
-					{
-						listControl->GetItemProvider()->ReleaseView(nodeItemView);
-						nodeItemView=0;
-					}
-					listControl=0;
-				}
-
-				GuiListControl::IItemStyleController* NodeItemStyleProvider::CreateItemStyle()
-				{
-					return nodeItemStyleProvider->CreateItemStyle();
-				}
-
-				void NodeItemStyleProvider::DestroyItemStyle(GuiListControl::IItemStyleController* style)
-				{
-					INodeItemStyleController* nodeStyle=dynamic_cast<INodeItemStyleController*>(style);
-					if(nodeStyle)
-					{
-						nodeItemStyleProvider->DestroyItemStyle(nodeStyle);
-					}
-				}
-
-				void NodeItemStyleProvider::Install(GuiListControl::IItemStyleController* style, vint itemIndex)
-				{
-					if(nodeItemView)
-					{
-						INodeItemStyleController* nodeStyle=dynamic_cast<INodeItemStyleController*>(style);
-						if(nodeStyle)
-						{
-							INodeProvider* node=nodeItemView->RequestNode(itemIndex);
-							if(node)
-							{
-								nodeItemStyleProvider->Install(nodeStyle, node, itemIndex);
-							}
-						}
-					}
-				}
-
-				void NodeItemStyleProvider::SetStyleIndex(GuiListControl::IItemStyleController* style, vint value)
-				{
-					if(nodeItemView)
-					{
-						INodeItemStyleController* nodeStyle=dynamic_cast<INodeItemStyleController*>(style);
-						if(nodeStyle)
-						{
-							nodeItemStyleProvider->SetStyleIndex(nodeStyle, value);
-						}
-					}
-				}
-
-				void NodeItemStyleProvider::SetStyleSelected(GuiListControl::IItemStyleController* style, bool value)
-				{
-					if(nodeItemView)
-					{
-						INodeItemStyleController* nodeStyle=dynamic_cast<INodeItemStyleController*>(style);
-						if(nodeStyle)
-						{
-							nodeItemStyleProvider->SetStyleSelected(nodeStyle, value);
-						}
-					}
-				}
-
 /***********************************************************************
 MemoryNodeProvider::NodeCollection
 ***********************************************************************/
@@ -464,23 +369,8 @@ MemoryNodeProvider
 					}
 				}
 
-				MemoryNodeProvider::MemoryNodeProvider()
-					:parent(0)
-					,expanding(false)
-					,childCount(0)
-					,totalVisibleNodeCount(1)
-					,offsetBeforeChildModified(0)
-				{
-					children.ownerProvider=this;
-				}
-
-				MemoryNodeProvider::MemoryNodeProvider(const Ptr<IMemoryNodeData>& _data)
-					:parent(0)
-					,expanding(false)
-					,childCount(0)
-					,totalVisibleNodeCount(1)
-					,offsetBeforeChildModified(0)
-					,data(_data)
+				MemoryNodeProvider::MemoryNodeProvider(Ptr<DescriptableObject> _data)
+					:data(_data)
 				{
 					children.ownerProvider=this;
 				}
@@ -489,12 +379,12 @@ MemoryNodeProvider
 				{
 				}
 
-				Ptr<IMemoryNodeData> MemoryNodeProvider::GetData()
+				Ptr<DescriptableObject> MemoryNodeProvider::GetData()
 				{
 					return data;
 				}
 
-				void MemoryNodeProvider::SetData(const Ptr<IMemoryNodeData>& value)
+				void MemoryNodeProvider::SetData(const Ptr<DescriptableObject>& value)
 				{
 					data=value;
 					NotifyDataModified();
@@ -678,10 +568,6 @@ NodeRootProviderBase
 					return 0;
 				}
 
-				void NodeRootProviderBase::ReleaseView(IDescriptable* view)
-				{
-				}
-
 /***********************************************************************
 MemoryNodeRootProvider
 ***********************************************************************/
@@ -786,9 +672,9 @@ GuiVirtualTreeListControl
 			GuiVirtualTreeListControl::GuiVirtualTreeListControl(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiSelectableListControl(_styleProvider, new tree::NodeItemProvider(_nodeRootProvider))
 			{
-				nodeItemProvider=dynamic_cast<tree::NodeItemProvider*>(GetItemProvider());
-				nodeItemView=dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(tree::INodeItemView::Identifier));
-				
+				nodeItemProvider = dynamic_cast<tree::NodeItemProvider*>(GetItemProvider());
+				nodeItemView = dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(tree::INodeItemView::Identifier));
+
 				NodeLeftButtonDown.SetAssociatedComposition(boundsComposition);
 				NodeLeftButtonUp.SetAssociatedComposition(boundsComposition);
 				NodeLeftButtonDoubleClick.SetAssociatedComposition(boundsComposition);
@@ -825,7 +711,6 @@ GuiVirtualTreeListControl
 
 			GuiVirtualTreeListControl::~GuiVirtualTreeListControl()
 			{
-				GetItemProvider()->ReleaseView(nodeItemView);
 			}
 
 			tree::INodeItemView* GuiVirtualTreeListControl::GetNodeItemView()
@@ -836,19 +721,6 @@ GuiVirtualTreeListControl
 			tree::INodeRootProvider* GuiVirtualTreeListControl::GetNodeRootProvider()
 			{
 				return nodeItemProvider->GetRoot().Obj();
-			}
-
-			tree::INodeItemStyleProvider* GuiVirtualTreeListControl::GetNodeStyleProvider()
-			{
-				return nodeStyleProvider.Obj();
-			}
-
-			Ptr<tree::INodeItemStyleProvider> GuiVirtualTreeListControl::SetNodeStyleProvider(Ptr<tree::INodeItemStyleProvider> styleProvider)
-			{
-				Ptr<tree::INodeItemStyleProvider> old=nodeStyleProvider;
-				nodeStyleProvider=styleProvider;
-				GuiSelectableListControl::SetStyleProvider(new tree::NodeItemStyleProvider(nodeStyleProvider));
-				return old;
 			}
 
 			namespace tree
@@ -888,23 +760,18 @@ TreeViewItemRootProvider
 					return 0;
 				}
 
-				WString	TreeViewItemRootProvider::GetNodeText(INodeProvider* node)
+				WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
 				{
-					MemoryNodeProvider* memoryNode=dynamic_cast<MemoryNodeProvider*>(node);
-					if(memoryNode)
+					MemoryNodeProvider* memoryNode = dynamic_cast<MemoryNodeProvider*>(node);
+					if (memoryNode)
 					{
-						Ptr<TreeViewItem> data=memoryNode->GetData().Cast<TreeViewItem>();
-						if(data)
+						Ptr<TreeViewItem> data = memoryNode->GetData().Cast<TreeViewItem>();
+						if (data)
 						{
 							return data->text;
 						}
 					}
 					return L"";
-				}
-
-				WString TreeViewItemRootProvider::GetTextValue(INodeProvider* node)
-				{
-					return GetNodeText(node);
 				}
 
 				description::Value TreeViewItemRootProvider::GetBindingValue(INodeProvider* node)
@@ -930,11 +797,6 @@ TreeViewItemRootProvider
 					{
 						return MemoryNodeRootProvider::RequestView(identifier);
 					}
-				}
-
-				void TreeViewItemRootProvider::ReleaseView(IDescriptable* view)
-				{
-					return MemoryNodeRootProvider::ReleaseView(view);
 				}
 
 				Ptr<TreeViewItem> TreeViewItemRootProvider::GetTreeViewData(INodeProvider* node)
@@ -973,11 +835,29 @@ TreeViewItemRootProvider
 GuiVirtualTreeView
 ***********************************************************************/
 
+			void GuiVirtualTreeView::OnStyleInstalled(vint itemIndex, ItemStyle* style)
+			{
+				GuiVirtualTreeListControl::OnStyleInstalled(itemIndex, style);
+				if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
+				{
+					treeItemStyle->SetTextColor(styleProvider->GetTextColor());
+
+					if (treeViewItemView)
+					{
+						if (auto node = nodeItemView->RequestNode(itemIndex))
+						{
+							treeItemStyle->SetImage(treeViewItemView->GetNodeImage(node));
+							nodeItemView->ReleaseNode(node);
+						}
+					}
+				}
+			}
+
 			GuiVirtualTreeView::GuiVirtualTreeView(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiVirtualTreeListControl(_styleProvider, _nodeRootProvider)
 			{
-				styleProvider=dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
-				SetNodeStyleProvider(new tree::TreeViewNodeItemStyleProvider);
+				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
+				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
 				SetArranger(new list::FixedHeightItemArranger);
 			}
 
@@ -1029,61 +909,22 @@ GuiTreeView
 
 			namespace tree
 			{
+
 /***********************************************************************
-TreeViewNodeItemStyleProvider::ItemController
+DefaultTreeItemTemplate
 ***********************************************************************/
 
-				void TreeViewNodeItemStyleProvider::ItemController::SwitchNodeExpanding()
+				void DefaultTreeItemTemplate::OnInitialize()
 				{
-					if(backgroundButton->GetBoundsComposition()->GetParent())
-					{
-						GuiListControl::IItemArranger* arranger=styleProvider->treeControl->GetArranger();
-						vint index=arranger->GetVisibleIndex(this);
-						if(index!=-1)
-						{
-							INodeItemView* view=styleProvider->treeControl->GetNodeItemView();
-							INodeProvider* node=view->RequestNode(index);
-							if(node)
-							{
-								bool expanding=node->GetExpanding();
-								node->SetExpanding(!expanding);
-								view->ReleaseNode(node);
-							}
-						}
-					}
-				}
+					templates::GuiTextListItemTemplate::OnInitialize();
 
-				void TreeViewNodeItemStyleProvider::ItemController::OnBackgroundButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-				{
-					if(backgroundButton->GetVisuallyEnabled())
-					{
-						SwitchNodeExpanding();
-					}
-				}
-
-				void TreeViewNodeItemStyleProvider::ItemController::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-				{
-					arguments.handled=true;
-				}
-
-				void TreeViewNodeItemStyleProvider::ItemController::OnExpandingButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					if(expandingButton->GetVisuallyEnabled())
-					{
-						SwitchNodeExpanding();
-					}
-				}
-
-				TreeViewNodeItemStyleProvider::ItemController::ItemController(TreeViewNodeItemStyleProvider* _styleProvider, Size minIconSize, bool fitImage)
-					:list::ItemStyleControllerBase(_styleProvider->GetBindedItemStyleProvider(), 0)
-					,styleProvider(_styleProvider)
-				{
-					backgroundButton=new GuiSelectableButton(styleProvider->treeControl->GetTreeViewStyleProvider()->CreateItemBackground());
+					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
 					backgroundButton->SetAutoSelection(false);
 					backgroundButton->GetBoundsComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					backgroundButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &ItemController::OnBackgroundButtonDoubleClick);
+					backgroundButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnBackgroundButtonDoubleClick);
+					AddChild(backgroundButton->GetBoundsComposition());
 
-					table=new GuiTableComposition;
+					table = new GuiTableComposition;
 					backgroundButton->GetBoundsComposition()->AddChild(table);
 					table->SetRowsAndColumns(3, 4);
 					table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
@@ -1096,225 +937,135 @@ TreeViewNodeItemStyleProvider::ItemController
 					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					table->SetCellPadding(2);
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(0, 1, 3, 1);
 						cell->SetPreferredMinSize(Size(16, 16));
 
-						expandingButton=new GuiSelectableButton(styleProvider->treeControl->GetTreeViewStyleProvider()->CreateItemExpandingDecorator());
+						expandingButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateTreeItemExpanderStyle());
 						expandingButton->SetAutoSelection(false);
 						expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						expandingButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &ItemController::OnExpandingButtonDoubleClick);
-						expandingButton->Clicked.AttachMethod(this, &ItemController::OnExpandingButtonClicked);
+						expandingButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
+						expandingButton->Clicked.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonClicked);
 						cell->AddChild(expandingButton->GetBoundsComposition());
 					}
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(1, 2, 1, 1);
-						cell->SetPreferredMinSize(minIconSize);
-						if (!fitImage)
-						{
-							cell->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
-						}
+						cell->SetPreferredMinSize(Size(16, 16));
 
-						image=GuiImageFrameElement::Create();
-						image->SetStretch(true);
-						cell->SetOwnedElement(image);
+						imageElement = GuiImageFrameElement::Create();
+						imageElement->SetStretch(true);
+						cell->SetOwnedElement(imageElement);
 					}
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(0, 3, 3, 1);
 						cell->SetPreferredMinSize(Size(192, 0));
 
-						text=GuiSolidLabelElement::Create();
-						text->SetAlignments(Alignment::Left, Alignment::Center);
-						text->SetFont(styleProvider->treeControl->GetFont());
-						text->SetEllipse(true);
-						cell->SetOwnedElement(text);
+						textElement = GuiSolidLabelElement::Create();
+						textElement->SetAlignments(Alignment::Left, Alignment::Center);
+						textElement->SetEllipse(true);
+						cell->SetOwnedElement(textElement);
 					}
-					Initialize(backgroundButton->GetBoundsComposition(), backgroundButton);
+
+					FontChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnFontChanged);
+					TextChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextChanged);
+					SelectedChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnSelectedChanged);
+					TextColorChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
+					ExpandingChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
+					ImageChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
+
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+					TextChanged.Execute(compositions::GuiEventArgs(this));
+					SelectedChanged.Execute(compositions::GuiEventArgs(this));
+					TextColorChanged.Execute(compositions::GuiEventArgs(this));
+					ExpandingChanged.Execute(compositions::GuiEventArgs(this));
+					ImageChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
-				INodeItemStyleProvider* TreeViewNodeItemStyleProvider::ItemController::GetNodeStyleProvider()
+				void DefaultTreeItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					return styleProvider;
+					textElement->SetFont(GetFont());
 				}
 
-				void TreeViewNodeItemStyleProvider::ItemController::Install(INodeProvider* node)
+				void DefaultTreeItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					ITreeViewItemView* view=styleProvider->treeViewItemView;
-					Ptr<GuiImageData> imageData=view->GetNodeImage(node);
-					if(imageData)
+					textElement->SetText(GetText());
+				}
+
+				void DefaultTreeItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					backgroundButton->SetSelected(GetSelected());
+				}
+
+				void DefaultTreeItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					textElement->SetColor(GetTextColor());
+				}
+
+				void DefaultTreeItemTemplate::OnExpandingChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					expandingButton->SetSelected(GetExpanding());
+				}
+
+				void DefaultTreeItemTemplate::OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					imageElement->SetImage(GetImage()->GetImage(), GetImage()->GetFrameIndex());
+				}
+
+				void DefaultTreeItemTemplate::SwitchNodeExpanding()
+				{
+					if (backgroundButton->GetBoundsComposition()->GetParent())
 					{
-						image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
-					}
-					else
-					{
-						image->SetImage(0);
-					}
-					text->SetText(view->GetNodeText(node));
-					text->SetColor(styleProvider->treeControl->GetTreeViewStyleProvider()->GetTextColor());
-					UpdateExpandingButton(node);
-
-					vint level=-2;
-					while(node)
-					{
-						node=node->GetParent();
-						level++;
-					}
-					table->SetColumnOption(0, GuiCellOption::AbsoluteOption(level*16));
-				}
-
-				bool TreeViewNodeItemStyleProvider::ItemController::GetSelected()
-				{
-					return backgroundButton->GetSelected();
-				}
-
-				void TreeViewNodeItemStyleProvider::ItemController::SetSelected(bool value)
-				{
-					backgroundButton->SetSelected(value);
-				}
-
-				void TreeViewNodeItemStyleProvider::ItemController::UpdateExpandingButton(INodeProvider* associatedNode)
-				{
-					expandingButton->SetSelected(associatedNode->GetExpanding());
-					expandingButton->SetVisible(associatedNode->GetChildCount()>0);
-				}
-
-/***********************************************************************
-TreeViewNodeItemStyleProvider
-***********************************************************************/
-
-				TreeViewNodeItemStyleProvider::ItemController* TreeViewNodeItemStyleProvider::GetRelatedController(INodeProvider* node)
-				{
-					vint index=treeControl->GetNodeItemView()->CalculateNodeVisibilityIndex(node);
-					if(index!=-1)
-					{
-						GuiListControl::IItemStyleController* style=treeControl->GetArranger()->GetVisibleStyle(index);
-						if(style)
+						if (auto treeControl = dynamic_cast<GuiVirtualTreeListControl*>(listControl))
 						{
-							ItemController* itemController=dynamic_cast<ItemController*>(style);
-							return itemController;
+							if (auto view = treeControl->GetNodeItemView())
+							{
+								vint index = treeControl->GetArranger()->GetVisibleIndex(this);
+								if (index != -1)
+								{
+									if (auto node = view->RequestNode(index))
+									{
+										bool expanding = node->GetExpanding();
+										node->SetExpanding(!expanding);
+										view->ReleaseNode(node);
+									}
+								}
+							}
 						}
 					}
-					return 0;
 				}
 
-				void TreeViewNodeItemStyleProvider::UpdateExpandingButton(INodeProvider* node)
+				void DefaultTreeItemTemplate::OnBackgroundButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
-					ItemController* itemController=GetRelatedController(node);
-					if(itemController)
+					if (backgroundButton->GetVisuallyEnabled())
 					{
-						itemController->UpdateExpandingButton(node);
+						SwitchNodeExpanding();
 					}
 				}
 
-				void TreeViewNodeItemStyleProvider::OnAttached(INodeRootProvider* provider)
+				void DefaultTreeItemTemplate::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
+					arguments.handled = true;
 				}
 
-				void TreeViewNodeItemStyleProvider::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
+				void DefaultTreeItemTemplate::OnExpandingButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-				}
-
-				void TreeViewNodeItemStyleProvider::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
-				{
-					UpdateExpandingButton(parentNode);
-				}
-
-				void TreeViewNodeItemStyleProvider::OnItemExpanded(INodeProvider* node)
-				{
-					UpdateExpandingButton(node);
-				}
-
-				void TreeViewNodeItemStyleProvider::OnItemCollapsed(INodeProvider* node)
-				{
-					UpdateExpandingButton(node);
-				}
-
-				TreeViewNodeItemStyleProvider::TreeViewNodeItemStyleProvider(Size _minIconSize, bool _fitImage)
-					:treeControl(0)
-					,bindedItemStyleProvider(0)
-					,treeViewItemView(0)
-					, minIconSize(_minIconSize)
-					, fitImage(_fitImage)
-				{
-				}
-
-				TreeViewNodeItemStyleProvider::~TreeViewNodeItemStyleProvider()
-				{
-				}
-
-				void TreeViewNodeItemStyleProvider::BindItemStyleProvider(GuiListControl::IItemStyleProvider* styleProvider)
-				{
-					bindedItemStyleProvider=styleProvider;
-				}
-
-				GuiListControl::IItemStyleProvider* TreeViewNodeItemStyleProvider::GetBindedItemStyleProvider()
-				{
-					return bindedItemStyleProvider;
-				}
-
-				void TreeViewNodeItemStyleProvider::AttachListControl(GuiListControl* value)
-				{
-					treeControl=dynamic_cast<GuiVirtualTreeView*>(value);
-					if(treeControl)
+					if (expandingButton->GetVisuallyEnabled())
 					{
-						treeViewItemView=dynamic_cast<ITreeViewItemView*>(treeControl->GetItemProvider()->RequestView(ITreeViewItemView::Identifier));
-						treeControl->GetNodeRootProvider()->AttachCallback(this);
+						SwitchNodeExpanding();
 					}
 				}
 
-				void TreeViewNodeItemStyleProvider::DetachListControl()
-				{
-					if(treeViewItemView)
-					{
-						treeControl->GetItemProvider()->ReleaseView(treeViewItemView);
-						treeViewItemView=0;
-					}
-					if(treeControl)
-					{
-						treeControl->GetNodeRootProvider()->DetachCallback(this);
-						treeControl=0;
-					}
-				}
-
-				INodeItemStyleController* TreeViewNodeItemStyleProvider::CreateItemStyle()
-				{
-					return new ItemController(this, minIconSize, fitImage);
-				}
-
-				void TreeViewNodeItemStyleProvider::DestroyItemStyle(INodeItemStyleController* style)
-				{
-					ItemController* itemController=dynamic_cast<ItemController*>(style);
-					if(itemController)
-					{
-						delete itemController;
-					}
-				}
-
-				void TreeViewNodeItemStyleProvider::Install(INodeItemStyleController* style, INodeProvider* node, vint itemIndex)
-				{
-					ItemController* itemController=dynamic_cast<ItemController*>(style);
-					if(itemController)
-					{
-						itemController->Install(node);
-					}
-				}
-
-				void TreeViewNodeItemStyleProvider::SetStyleIndex(INodeItemStyleController* style, vint value)
+				DefaultTreeItemTemplate::DefaultTreeItemTemplate()
 				{
 				}
 
-				void TreeViewNodeItemStyleProvider::SetStyleSelected(INodeItemStyleController* style, bool value)
+				DefaultTreeItemTemplate::~DefaultTreeItemTemplate()
 				{
-					ItemController* itemController=dynamic_cast<ItemController*>(style);
-					if(itemController)
-					{
-						itemController->SetSelected(value);
-					}
 				}
 			}
 		}

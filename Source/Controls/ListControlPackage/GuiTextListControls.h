@@ -55,8 +55,9 @@ TextList Style Provider
 
 					virtual BulletStyle*					CreateBulletStyle();
 					void									OnInitialize()override;
+					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
@@ -143,7 +144,6 @@ TextList Data Source
 					~TextItemProvider();
 
 					IDescriptable*								RequestView(const WString& identifier)override;
-					void										ReleaseView(IDescriptable* view)override;
 				};
 			}
 

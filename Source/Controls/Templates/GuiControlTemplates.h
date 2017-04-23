@@ -123,6 +123,7 @@ namespace vl
 				
 #define GuiTemplate_PROPERTIES(F)\
 				F(GuiTemplate, FontProperties, Font)\
+				F(GuiControlTemplate, WString, Text)\
 				F(GuiTemplate, bool, VisuallyEnabled)\
 
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -139,7 +140,6 @@ Control Template
 				~GuiControlTemplate();
 				
 #define GuiControlTemplate_PROPERTIES(F)\
-				F(GuiControlTemplate, WString, Text)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition)\
 
@@ -482,6 +482,7 @@ Item Template
 				
 #define GuiTreeItemTemplate_PROPERTIES(F)\
 				F(GuiTreeItemTemplate, bool, Expanding)\
+				F(GuiTreeItemTemplate, Ptr<GuiImageData>, Image)\
 
 				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
