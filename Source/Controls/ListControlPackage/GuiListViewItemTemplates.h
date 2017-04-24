@@ -31,255 +31,101 @@ namespace vl
 					~DefaultListViewItemTemplate();
 				};
 
-				/// <summary>Big icon content provider.</summary>
-				class ListViewBigIconContentProvider : public Object, public virtual ListViewItemStyleProvider::IListViewItemContentProvider, public Description<ListViewBigIconContentProvider>
+				class BigIconListViewItemTemplate : public DefaultListViewItemTemplate
 				{
 				protected:
-					class ItemContent : public Object, public virtual ListViewItemStyleProvider::IListViewItemContent
-					{
-					protected:
-						compositions::GuiBoundsComposition*				contentComposition;
-						elements::GuiImageFrameElement*					image;
-						elements::GuiSolidLabelElement*					text;
+					elements::GuiImageFrameElement*			image = nullptr;
+					elements::GuiSolidLabelElement*			text = nullptr;
 
-					public:
-						ItemContent(Size minIconSize, bool fitImage, const FontProperties& font);
-						~ItemContent();
-
-						compositions::GuiBoundsComposition*				GetContentComposition()override;
-						compositions::GuiBoundsComposition*				GetBackgroundDecorator()override;
-						void											Install(GuiListViewBase::IStyleProvider* styleProvider, ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)override;
-						void											Uninstall()override;
-					};
-
-					Size												minIconSize;
-					bool												fitImage;
+					void									OnInitialize()override;
+					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create the content provider.</summary>
-					/// <param name="_minIconSize">The icon size.</param>
-					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
-					ListViewBigIconContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
-					~ListViewBigIconContentProvider();
-
-					compositions::IGuiAxis*								CreatePreferredAxis()override;
-					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
-					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
-					void												AttachListControl(GuiListControl* value)override;
-					void												DetachListControl()override;
+					BigIconListViewItemTemplate();
+					~BigIconListViewItemTemplate();
 				};
-				
-				/// <summary>Small icon content provider.</summary>
-				class ListViewSmallIconContentProvider : public Object, public virtual ListViewItemStyleProvider::IListViewItemContentProvider, public Description<ListViewSmallIconContentProvider>
+
+				class SmallIconListViewItemTemplate : public DefaultListViewItemTemplate
 				{
 				protected:
-					class ItemContent : public Object, public virtual ListViewItemStyleProvider::IListViewItemContent
-					{
-					protected:
-						compositions::GuiBoundsComposition*				contentComposition;
-						elements::GuiImageFrameElement*					image;
-						elements::GuiSolidLabelElement*					text;
+					elements::GuiImageFrameElement*			image = nullptr;
+					elements::GuiSolidLabelElement*			text = nullptr;
 
-					public:
-						ItemContent(Size minIconSize, bool fitImage, const FontProperties& font);
-						~ItemContent();
-
-						compositions::GuiBoundsComposition*				GetContentComposition()override;
-						compositions::GuiBoundsComposition*				GetBackgroundDecorator()override;
-						void											Install(GuiListViewBase::IStyleProvider* styleProvider, ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)override;
-						void											Uninstall()override;
-					};
-
-					Size												minIconSize;
-					bool												fitImage;
+					void									OnInitialize()override;
+					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create the content provider.</summary>
-					/// <param name="_minIconSize">The icon size.</param>
-					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
-					ListViewSmallIconContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
-					~ListViewSmallIconContentProvider();
-					
-					compositions::IGuiAxis*								CreatePreferredAxis()override;
-					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
-					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
-					void												AttachListControl(GuiListControl* value)override;
-					void												DetachListControl()override;
+					SmallIconListViewItemTemplate();
+					~SmallIconListViewItemTemplate();
 				};
-				
-				/// <summary>List content provider.</summary>
-				class ListViewListContentProvider : public Object, public virtual ListViewItemStyleProvider::IListViewItemContentProvider, public Description<ListViewListContentProvider>
+
+				class ListListViewItemTemplate : public DefaultListViewItemTemplate
 				{
 				protected:
-					class ItemContent : public Object, public virtual ListViewItemStyleProvider::IListViewItemContent
-					{
-					protected:
-						compositions::GuiBoundsComposition*				contentComposition;
-						elements::GuiImageFrameElement*					image;
-						elements::GuiSolidLabelElement*					text;
+					elements::GuiImageFrameElement*			image = nullptr;
+					elements::GuiSolidLabelElement*			text = nullptr;
 
-					public:
-						ItemContent(Size minIconSize, bool fitImage, const FontProperties& font);
-						~ItemContent();
-
-						compositions::GuiBoundsComposition*				GetContentComposition()override;
-						compositions::GuiBoundsComposition*				GetBackgroundDecorator()override;
-						void											Install(GuiListViewBase::IStyleProvider* styleProvider, ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)override;
-						void											Uninstall()override;
-					};
-
-					Size												minIconSize;
-					bool												fitImage;
+					void									OnInitialize()override;
+					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create the content provider.</summary>
-					/// <param name="_minIconSize">The icon size.</param>
-					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
-					ListViewListContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
-					~ListViewListContentProvider();
-					
-					compositions::IGuiAxis*								CreatePreferredAxis()override;
-					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
-					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
-					void												AttachListControl(GuiListControl* value)override;
-					void												DetachListControl()override;
+					ListListViewItemTemplate();
+					~ListListViewItemTemplate();
 				};
-				
-				/// <summary>Tile content provider.</summary>
-				class ListViewTileContentProvider : public Object, public virtual ListViewItemStyleProvider::IListViewItemContentProvider, public Description<ListViewTileContentProvider>
+
+				class TileListViewItemTemplate : public DefaultListViewItemTemplate
 				{
+					typedef collections::Array<elements::GuiSolidLabelElement*>		DataTextElementArray;
 				protected:
-					class ItemContent : public Object, public virtual ListViewItemStyleProvider::IListViewItemContent
-					{
-						typedef collections::Array<elements::GuiSolidLabelElement*>		DataTextElementArray;
-					protected:
-						compositions::GuiBoundsComposition*				contentComposition;
-						elements::GuiImageFrameElement*					image;
-						elements::GuiSolidLabelElement*					text;
-						compositions::GuiTableComposition*				textTable;
-						DataTextElementArray							dataTexts;
+					elements::GuiImageFrameElement*			image = nullptr;
+					elements::GuiSolidLabelElement*			text = nullptr;
+					compositions::GuiTableComposition*		textTable = nullptr;
+					DataTextElementArray					dataTexts;
 
-						void											RemoveTextElement(vint textRow);
-						elements::GuiSolidLabelElement*					CreateTextElement(vint textRow, const FontProperties& font);
-						void											ResetTextTable(vint textRows);
-					public:
-						ItemContent(Size minIconSize, bool fitImage, const FontProperties& font);
-						~ItemContent();
-
-						compositions::GuiBoundsComposition*				GetContentComposition()override;
-						compositions::GuiBoundsComposition*				GetBackgroundDecorator()override;
-						void											Install(GuiListViewBase::IStyleProvider* styleProvider, ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)override;
-						void											Uninstall()override;
-					};
-
-					Size												minIconSize;
-					bool												fitImage;
+					elements::GuiSolidLabelElement*			CreateTextElement(vint textRow);
+					void									ResetTextTable(vint textRows);
+					void									OnInitialize()override;
+					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create the content provider.</summary>
-					/// <param name="_minIconSize">The icon size.</param>
-					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
-					ListViewTileContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
-					~ListViewTileContentProvider();
-					
-					compositions::IGuiAxis*								CreatePreferredAxis()override;
-					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
-					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
-					void												AttachListControl(GuiListControl* value)override;
-					void												DetachListControl()override;
+					TileListViewItemTemplate();
+					~TileListViewItemTemplate();
 				};
-				
-				/// <summary>View information content provider.</summary>
-				class ListViewInformationContentProvider : public Object, public virtual ListViewItemStyleProvider::IListViewItemContentProvider, public Description<ListViewInformationContentProvider>
+
+				class InformationListViewItemTemplate : public DefaultListViewItemTemplate
 				{
+					typedef collections::Array<elements::GuiSolidLabelElement*>		DataTextElementArray;
 				protected:
-					class ItemContent : public Object, public virtual ListViewItemStyleProvider::IListViewItemContent
-					{
-						typedef collections::Array<elements::GuiSolidLabelElement*>		DataTextElementArray;
-					protected:
-						FontProperties									baselineFont;
-						compositions::GuiBoundsComposition*				contentComposition;
-						elements::GuiImageFrameElement*					image;
-						elements::GuiSolidLabelElement*					text;
-						compositions::GuiTableComposition*				textTable;
-						DataTextElementArray							dataTexts;
+					elements::GuiImageFrameElement*			image = nullptr;
+					elements::GuiSolidLabelElement*			text = nullptr;
+					compositions::GuiTableComposition*		textTable = nullptr;
+					DataTextElementArray					columnTexts;
+					DataTextElementArray					dataTexts;
+					elements::GuiSolidBackgroundElement*	bottomLine = nullptr;
+					compositions::GuiBoundsComposition*		bottomLineComposition = nullptr;
 
-						elements::GuiSolidBackgroundElement*			bottomLine;
-						compositions::GuiBoundsComposition*				bottomLineComposition;
-
-					public:
-						ItemContent(Size minIconSize, bool fitImage, const FontProperties& font);
-						~ItemContent();
-
-						compositions::GuiBoundsComposition*				GetContentComposition()override;
-						compositions::GuiBoundsComposition*				GetBackgroundDecorator()override;
-						void											Install(GuiListViewBase::IStyleProvider* styleProvider, ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)override;
-						void											Uninstall()override;
-					};
-
-					Size												minIconSize;
-					bool												fitImage;
+					void									OnInitialize()override;
+					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create the content provider.</summary>
-					/// <param name="_minIconSize">The icon size.</param>
-					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
-					ListViewInformationContentProvider(Size _minIconSize=Size(32, 32), bool _fitImage=true);
-					~ListViewInformationContentProvider();
-					
-					compositions::IGuiAxis*								CreatePreferredAxis()override;
-					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
-					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
-					void												AttachListControl(GuiListControl* value)override;
-					void												DetachListControl()override;
+					InformationListViewItemTemplate();
+					~InformationListViewItemTemplate();
 				};
-				
-				/// <summary>Detail content provider.</summary>
-				class ListViewDetailContentProvider
-					: public Object
-					, public virtual ListViewItemStyleProvider::IListViewItemContentProvider
+
+				class DetailListViewItemTemplate
+					: public DefaultListViewItemTemplate
 					, protected virtual ListViewColumnItemArranger::IColumnItemViewCallback
-					, public Description<ListViewDetailContentProvider>
 				{
+					typedef collections::Array<elements::GuiSolidLabelElement*>		SubItemList;
+					typedef ListViewColumnItemArranger::IColumnItemView				IColumnItemView;
 				protected:
-					class ItemContent : public Object, public virtual ListViewItemStyleProvider::IListViewItemContent
-					{
-						typedef collections::List<elements::GuiSolidLabelElement*>		SubItemList;
-					protected:
-						compositions::GuiBoundsComposition*				contentComposition;
-						elements::GuiImageFrameElement*					image;
-						elements::GuiSolidLabelElement*					text;
-						compositions::GuiTableComposition*				textTable;
-						SubItemList										subItems;
+					IColumnItemView*						columnItemView = nullptr;
+					elements::GuiImageFrameElement*			image = nullptr;
+					elements::GuiSolidLabelElement*			text = nullptr;
+					compositions::GuiTableComposition*		textTable = nullptr;
+					SubItemList								subItems;
 
-						GuiListControl::IItemProvider*					itemProvider;
-						ListViewColumnItemArranger::IColumnItemView*	columnItemView;
-
-					public:
-						ItemContent(Size minIconSize, bool fitImage, const FontProperties& font, GuiListControl::IItemProvider* _itemProvider);
-						~ItemContent();
-
-						compositions::GuiBoundsComposition*				GetContentComposition()override;
-						compositions::GuiBoundsComposition*				GetBackgroundDecorator()override;
-						void											UpdateSubItemSize();
-						void											Install(GuiListViewBase::IStyleProvider* styleProvider, ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)override;
-						void											Uninstall()override;
-					};
-
-					Size												minIconSize;
-					bool												fitImage;
-					GuiListControl::IItemProvider*						itemProvider;
-					ListViewColumnItemArranger::IColumnItemView*		columnItemView;
-					ListViewItemStyleProvider*							listViewItemStyleProvider;
-
-					void												OnColumnChanged()override;
+					void									OnInitialize()override;
+					void									OnColumnChanged()override;
+					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create the content provider.</summary>
-					/// <param name="_minIconSize">The icon size.</param>
-					/// <param name="_fitImage">Set to true to extend the icon size fit the image if necessary.</param>
-					ListViewDetailContentProvider(Size _minIconSize=Size(16, 16), bool _fitImage=true);
-					~ListViewDetailContentProvider();
-					
-					compositions::IGuiAxis*								CreatePreferredAxis()override;
-					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
-					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
-					void												AttachListControl(GuiListControl* value)override;
-					void												DetachListControl()override;
+					DetailListViewItemTemplate();
+					~DetailListViewItemTemplate();
 				};
 			}
 		}

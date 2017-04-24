@@ -398,6 +398,7 @@ GuiListItemTemplate
 
 			void GuiListItemTemplate::OnInitialize()
 			{
+				CHECK_ERROR(initialized == false, L"GuiListItemTemplate::OnInitialize()#Cannot initialize a GuiListItemTemplate twice.");
 			}
 
 			GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)

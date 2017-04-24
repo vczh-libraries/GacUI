@@ -143,7 +143,7 @@ ListView ItemStyleProvider
 				};
 
 /***********************************************************************
-ListView ItemContentProvider(Detailed)
+ListViewColumnItemArranger
 ***********************************************************************/
 
 				/// <summary>List view column item arranger. This arranger contains column headers. When an column header is resized, all items will be notified via the [T:vl.presentation.controls.list.ListViewColumnItemArranger.IColumnItemView] for <see cref="GuiListControl::IItemProvider"/>.</summary>
@@ -213,15 +213,15 @@ ListView ItemContentProvider(Detailed)
 						void									OnColumnChanged();
 					};
 
-					GuiListViewBase*							listView;
-					GuiListViewBase::IStyleProvider*			styleProvider;
-					IColumnItemView*							columnItemView;
+					GuiListViewBase*							listView = nullptr;
+					GuiListViewBase::IStyleProvider*			styleProvider = nullptr;
+					IColumnItemView*							columnItemView = nullptr;
 					Ptr<ColumnItemViewCallback>					columnItemViewCallback;
-					compositions::GuiStackComposition*			columnHeaders;
+					compositions::GuiStackComposition*			columnHeaders = nullptr;
 					ColumnHeaderButtonList						columnHeaderButtons;
 					ColumnHeaderSplitterList					columnHeaderSplitters;
-					bool										splitterDragging;
-					vint										splitterLatestX;
+					bool										splitterDragging = false;
+					vint										splitterLatestX = 0;
 
 					void										ColumnClicked(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void										ColumnBoundsChanged(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -245,7 +245,7 @@ ListView ItemContentProvider(Detailed)
 			}
 
 /***********************************************************************
-ListView
+ListViewItemProvider
 ***********************************************************************/
 
 			namespace list
@@ -457,6 +457,10 @@ ListView
 				};
 			}
 
+/***********************************************************************
+GuiVirtualListView
+***********************************************************************/
+
 			enum class ListViewView
 			{
 				BigIcon,
@@ -490,6 +494,10 @@ ListView
 				/// <param name="_view">The current view.</param>
 				void													SetView(ListViewView _view);
 			};
+
+/***********************************************************************
+GuiListView
+***********************************************************************/
 			
 			/// <summary>List view control in virtual mode.</summary>
 			class GuiListView : public GuiVirtualListView, public Description<GuiListView>

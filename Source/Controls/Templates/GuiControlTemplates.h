@@ -444,6 +444,7 @@ Item Template
 			{
 			protected:
 				controls::GuiListControl*	listControl = nullptr;
+				bool						initialized = false;
 
 				virtual void				OnInitialize();
 

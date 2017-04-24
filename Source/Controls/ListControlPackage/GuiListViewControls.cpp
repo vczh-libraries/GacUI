@@ -1,4 +1,5 @@
 #include "GuiListViewControls.h"
+#include "GuiListViewItemTemplates.h"
 
 namespace vl
 {
@@ -87,6 +88,13 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged()
 				{
 					arranger->RebuildColumns();
+					FOREACH(templates::GuiListItemTemplate*, itemStyle, arranger->visibleStyles)
+					{
+						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(itemStyle))
+						{
+							callback->OnColumnChanged();
+						}
+					}
 				}
 				
 /***********************************************************************
@@ -266,15 +274,10 @@ ListViewColumnItemArranger
 				}
 
 				ListViewColumnItemArranger::ListViewColumnItemArranger()
-					:listView(0)
-					,styleProvider(0)
-					,columnItemView(0)
-					,splitterDragging(false)
-					,splitterLatestX(0)
 				{
-					columnHeaders=new GuiStackComposition;
+					columnHeaders = new GuiStackComposition;
 					columnHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					columnItemViewCallback=new ColumnItemViewCallback(this);
+					columnItemViewCallback = new ColumnItemViewCallback(this);
 				}
 
 				ListViewColumnItemArranger::~ListViewColumnItemArranger()
@@ -754,16 +757,40 @@ GuiListView
 				switch (_view)
 				{
 				case ListViewView::BigIcon:
+					SetStyleAndArranger(
+						[](const Value&) { return new list::BigIconListViewItemTemplate; },
+						new list::FixedSizeMultiColumnItemArranger
+						);
 					break;
 				case ListViewView::SmallIcon:
+					SetStyleAndArranger(
+						[](const Value&) { return new list::SmallIconListViewItemTemplate; },
+						new list::FixedSizeMultiColumnItemArranger
+					);
 					break;
 				case ListViewView::List:
+					SetStyleAndArranger(
+						[](const Value&) { return new list::ListListViewItemTemplate; },
+						new list::FixedHeightMultiColumnItemArranger
+					);
 					break;
 				case ListViewView::Tile:
+					SetStyleAndArranger(
+						[](const Value&) { return new list::TileListViewItemTemplate; },
+						new list::FixedSizeMultiColumnItemArranger
+					);
 					break;
 				case ListViewView::Information:
+					SetStyleAndArranger(
+						[](const Value&) { return new list::InformationListViewItemTemplate; },
+						new list::FixedHeightItemArranger
+					);
 					break;
 				case ListViewView::Detail:
+					SetStyleAndArranger(
+						[](const Value&) { return new list::DetailListViewItemTemplate; },
+						new list::ListViewColumnItemArranger
+					);
 					break;
 				default:;
 				}
