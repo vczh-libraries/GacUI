@@ -180,7 +180,6 @@ GuiVirtualTextList
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
 				GuiVirtualTextList(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
@@ -212,7 +211,6 @@ GuiTextList
 			public:
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
-				/// <param name="_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				GuiTextList(IStyleProvider* _styleProvider);
 				~GuiTextList();
 

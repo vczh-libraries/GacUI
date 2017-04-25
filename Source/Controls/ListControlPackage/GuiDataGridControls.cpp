@@ -12,229 +12,7 @@ namespace vl
 				using namespace collections;
 				using namespace description;
 
-				const wchar_t* const IDataProvider::Identifier = L"vl::presentation::controls::list::IDataProvider";
-
-/***********************************************************************
-DataGridItemProvider
-***********************************************************************/
-
-				void DataGridItemProvider::InvokeOnItemModified(vint start, vint count, vint newCount)
-				{
-					for(vint i=0;i<itemProviderCallbacks.Count();i++)
-					{
-						itemProviderCallbacks[i]->OnItemModified(start, count, newCount);
-					}
-				}
-
-				void DataGridItemProvider::InvokeOnColumnChanged()
-				{
-					for(vint i=0;i<columnItemViewCallbacks.Count();i++)
-					{
-						columnItemViewCallbacks[i]->OnColumnChanged();
-					}
-				}
-
-				void DataGridItemProvider::OnDataProviderColumnChanged()
-				{
-					InvokeOnColumnChanged();
-				}
-
-				void DataGridItemProvider::OnDataProviderItemModified(vint start, vint count, vint newCount)
-				{
-					InvokeOnItemModified(start, count, newCount);
-				}
-
-				DataGridItemProvider::DataGridItemProvider(IDataProvider* _dataProvider)
-					:dataProvider(_dataProvider)
-				{
-					dataProvider->SetCommandExecutor(this);
-				}
-
-				DataGridItemProvider::~DataGridItemProvider()
-				{
-				}
-
-				IDataProvider* DataGridItemProvider::GetDataProvider()
-				{
-					return dataProvider;
-				}
-
-				void DataGridItemProvider::SortByColumn(vint column, bool ascending)
-				{
-					dataProvider->SortByColumn(column, ascending);
-				}
-
-// ===================== GuiListControl::IItemProvider =====================
-
-				bool DataGridItemProvider::AttachCallback(GuiListControl::IItemProviderCallback* value)
-				{
-					if(itemProviderCallbacks.Contains(value))
-					{
-						return false;
-					}
-					else
-					{
-						itemProviderCallbacks.Add(value);
-						value->OnAttached(this);
-						return true;
-					}
-				}
-
-				bool DataGridItemProvider::DetachCallback(GuiListControl::IItemProviderCallback* value)
-				{
-					vint index=itemProviderCallbacks.IndexOf(value);
-					if(index==-1)
-					{
-						return false;
-					}
-					else
-					{
-						value->OnAttached(0);
-						itemProviderCallbacks.Remove(value);
-						return true;
-					}
-				}
-
-				vint DataGridItemProvider::Count()
-				{
-					return dataProvider->GetRowCount();
-				}
-
-				WString DataGridItemProvider::GetTextValue(vint itemIndex)
-				{
-					return GetText(itemIndex);
-				}
-
-				description::Value DataGridItemProvider::GetBindingValue(vint itemIndex)
-				{
-					return Value();
-				}
-
-				IDescriptable* DataGridItemProvider::RequestView(const WString& identifier)
-				{
-					if(identifier==IDataProvider::Identifier)
-					{
-						return dataProvider;
-					}
-					else if(identifier==ListViewItemStyleProvider::IListViewItemView::Identifier)
-					{
-						return (ListViewItemStyleProvider::IListViewItemView*)this;
-					}
-					else if(identifier==ListViewColumnItemArranger::IColumnItemView::Identifier)
-					{
-						return (ListViewColumnItemArranger::IColumnItemView*)this;
-					}
-					else
-					{
-						return 0;
-					}
-				}
-
-				void DataGridItemProvider::ReleaseView(IDescriptable* view)
-				{
-				}
-
-				Ptr<GuiImageData> DataGridItemProvider::GetSmallImage(vint itemIndex)
-				{
-					return dataProvider->GetRowSmallImage(itemIndex);
-				}
-
-				Ptr<GuiImageData> DataGridItemProvider::GetLargeImage(vint itemIndex)
-				{
-					return dataProvider->GetRowLargeImage(itemIndex);
-				}
-
-				WString DataGridItemProvider::GetText(vint itemIndex)
-				{
-					return dataProvider->GetCellText(itemIndex, 0);
-				}
-
-				WString DataGridItemProvider::GetSubItem(vint itemIndex, vint index)
-				{
-					return dataProvider->GetCellText(itemIndex, index+1);
-				}
-
-				vint DataGridItemProvider::GetDataColumnCount()
-				{
-					return 0;
-				}
-
-				vint DataGridItemProvider::GetDataColumn(vint index)
-				{
-					return 0;
-				}
-
-// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
-						
-				bool DataGridItemProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
-				{
-					if(columnItemViewCallbacks.Contains(value))
-					{
-						return false;
-					}
-					else
-					{
-						columnItemViewCallbacks.Add(value);
-						return true;
-					}
-				}
-
-				bool DataGridItemProvider::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
-				{
-					vint index=columnItemViewCallbacks.IndexOf(value);
-					if(index==-1)
-					{
-						return false;
-					}
-					else
-					{
-						columnItemViewCallbacks.Remove(value);
-						return true;
-					}
-				}
-
-				vint DataGridItemProvider::GetColumnCount()
-				{
-					return dataProvider->GetColumnCount();
-				}
-
-				WString DataGridItemProvider::GetColumnText(vint index)
-				{
-					return dataProvider->GetColumnText(index);
-				}
-
-				vint DataGridItemProvider::GetColumnSize(vint index)
-				{
-					return dataProvider->GetColumnSize(index);
-				}
-
-				void DataGridItemProvider::SetColumnSize(vint index, vint value)
-				{
-					dataProvider->SetColumnSize(index, value);
-					for(vint i=0;i<columnItemViewCallbacks.Count();i++)
-					{
-						columnItemViewCallbacks[i]->OnColumnChanged();
-					}
-				}
-
-				GuiMenu* DataGridItemProvider::GetDropdownPopup(vint index)
-				{
-					return dataProvider->GetColumnPopup(index);
-				}
-
-				GuiListViewColumnHeader::ColumnSortingState DataGridItemProvider::GetSortingState(vint index)
-				{
-					if(index==dataProvider->GetSortedColumn())
-					{
-						return dataProvider->IsSortOrderAscending()
-							?GuiListViewColumnHeader::Ascending
-							:GuiListViewColumnHeader::Descending;
-					}
-					else
-					{
-						return GuiListViewColumnHeader::NotSorted;
-					}
-				}
+				const wchar_t* const IDataGridView::Identifier = L"vl::presentation::controls::list::IDataGridView";
 				
 /***********************************************************************
 DataGridContentProvider::ItemContent
@@ -896,319 +674,226 @@ GuiVirtualDataGrid
 			{
 
 /***********************************************************************
-StringGridDataVisualizer
+DataGridItemProvider
 ***********************************************************************/
 
-				StringGridDataVisualizer::StringGridDataVisualizer()
+				void DataGridItemProvider::InvokeOnItemModified(vint start, vint count, vint newCount)
 				{
-				}
-
-				void StringGridDataVisualizer::BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)
-				{
-					ListViewSubColumnDataVisualizer::BeforeVisualizeCell(dataProvider, row, column);
-					text->SetColor(styleProvider->GetPrimaryTextColor());
-				}
-
-				void StringGridDataVisualizer::SetSelected(bool value)
-				{
-					ListViewSubColumnDataVisualizer::SetSelected(value);
-					FontProperties font=text->GetFont();
-					font.bold=value;
-					text->SetFont(font);
-				}
-
-/***********************************************************************
-StringGridProvider
-***********************************************************************/
-
-				StringGridColumn::StringGridColumn(StringGridProvider* _provider)
-					:StrongTypedColumnProviderBase(_provider)
-					,provider(_provider)
-				{
-				}
-
-				StringGridColumn::~StringGridColumn()
-				{
-				}
-
-				void StringGridColumn::GetCellData(const Ptr<StringGridItem>& rowData, WString& cellData)
-				{
-					vint index=provider->columns.IndexOf(this);
-					if(0<=index && index<rowData->strings.Count())
+					for (vint i = 0; i<itemProviderCallbacks.Count(); i++)
 					{
-						cellData=rowData->strings[index];
+						itemProviderCallbacks[i]->OnItemModified(start, count, newCount);
+					}
+				}
+
+				void DataGridItemProvider::InvokeOnColumnChanged()
+				{
+					for (vint i = 0; i<columnItemViewCallbacks.Count(); i++)
+					{
+						columnItemViewCallbacks[i]->OnColumnChanged();
+					}
+				}
+
+				void DataGridItemProvider::OnDataProviderColumnChanged()
+				{
+					InvokeOnColumnChanged();
+				}
+
+				void DataGridItemProvider::OnDataProviderItemModified(vint start, vint count, vint newCount)
+				{
+					InvokeOnItemModified(start, count, newCount);
+				}
+
+				DataGridItemProvider::DataGridItemProvider(IDataProvider* _dataProvider)
+					:dataProvider(_dataProvider)
+				{
+					dataProvider->SetCommandExecutor(this);
+				}
+
+				DataGridItemProvider::~DataGridItemProvider()
+				{
+				}
+
+				IDataProvider* DataGridItemProvider::GetDataProvider()
+				{
+					return dataProvider;
+				}
+
+				void DataGridItemProvider::SortByColumn(vint column, bool ascending)
+				{
+					dataProvider->SortByColumn(column, ascending);
+				}
+
+				// ===================== GuiListControl::IItemProvider =====================
+
+				bool DataGridItemProvider::AttachCallback(GuiListControl::IItemProviderCallback* value)
+				{
+					if (itemProviderCallbacks.Contains(value))
+					{
+						return false;
 					}
 					else
 					{
-						cellData=L"";
+						itemProviderCallbacks.Add(value);
+						value->OnAttached(this);
+						return true;
 					}
 				}
 
-				void StringGridColumn::SetCellData(const Ptr<StringGridItem>& rowData, const WString& cellData)
+				bool DataGridItemProvider::DetachCallback(GuiListControl::IItemProviderCallback* value)
 				{
-					vint index=provider->columns.IndexOf(this);
-					if(0<=index && index<rowData->strings.Count())
+					vint index = itemProviderCallbacks.IndexOf(value);
+					if (index == -1)
 					{
-						rowData->strings[index]=cellData;
+						return false;
 					}
-				}
-
-				WString StringGridColumn::GetCellDataText(const WString& cellData)
-				{
-					return cellData;
-				}
-
-				void StringGridColumn::BeforeEditCell(vint row, IDataEditor* dataEditor)
-				{
-					TextBoxDataEditor* editor=dynamic_cast<TextBoxDataEditor*>(dataEditor);
-					if(editor)
+					else
 					{
-						vint column=provider->columns.IndexOf(this);
-						editor->GetTextBox()->SetText(provider->GetGridString(row, column));
-						editor->GetTextBox()->SelectAll();
+						value->OnAttached(0);
+						itemProviderCallbacks.Remove(value);
+						return true;
 					}
 				}
 
-				void StringGridColumn::SaveCellData(vint row, IDataEditor* dataEditor)
+				vint DataGridItemProvider::Count()
 				{
-					TextBoxDataEditor* editor=dynamic_cast<TextBoxDataEditor*>(dataEditor);
-					if(editor)
+					return dataProvider->GetRowCount();
+				}
+
+				WString DataGridItemProvider::GetTextValue(vint itemIndex)
+				{
+					return GetText(itemIndex);
+				}
+
+				description::Value DataGridItemProvider::GetBindingValue(vint itemIndex)
+				{
+					return Value();
+				}
+
+				IDescriptable* DataGridItemProvider::RequestView(const WString& identifier)
+				{
+					if (identifier == IDataProvider::Identifier)
 					{
-						vint column=provider->columns.IndexOf(this);
-						provider->SetGridString(row, column, editor->GetTextBox()->GetText());
+						return dataProvider;
 					}
-				}
-
-/***********************************************************************
-StringGridProvider
-***********************************************************************/
-
-				void StringGridProvider::GetRowData(vint row, Ptr<StringGridItem>& rowData)
-				{
-					rowData=items[row];
-				}
-
-				bool StringGridProvider::GetReadonly()
-				{
-					return readonly;
-				}
-
-				void StringGridProvider::SetReadonly(bool value)
-				{
-					if(readonly!=value)
+					else if (identifier == ListViewItemStyleProvider::IListViewItemView::Identifier)
 					{
-						readonly=value;
-						FOREACH(Ptr<StructuredColummProviderBase>, column, columns)
-						{
-							column->SetEditorFactory(readonly ? nullptr : editorFactory);
-						}
+						return (ListViewItemStyleProvider::IListViewItemView*)this;
 					}
-				}
-
-				StringGridProvider::StringGridProvider()
-					:readonly(false)
-				{
-					visualizerFactory=new list::CellBorderDataVisualizer::Factory(new list::StringGridDataVisualizer::Factory);
-					editorFactory=new list::TextBoxDataEditor::Factory;
-				}
-
-				StringGridProvider::~StringGridProvider()
-				{
-				}
-
-				vint StringGridProvider::GetRowCount()
-				{
-					return items.Count();
-				}
-
-				vint StringGridProvider::GetColumnCount()
-				{
-					return columns.Count();
-				}
-
-				bool StringGridProvider::InsertRow(vint row)
-				{
-					if(row<0 || items.Count()<row) return false;
-					Ptr<StringGridItem> item=new StringGridItem;
-					for(vint i=0;i<columns.Count();i++)
+					else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
 					{
-						item->strings.Add(L"");
+						return (ListViewColumnItemArranger::IColumnItemView*)this;
 					}
-					items.Insert(row, item);
-					commandExecutor->OnDataProviderItemModified(row, 0, 1);
-					return true;
-				}
-
-				vint StringGridProvider::AppendRow()
-				{
-					InsertRow(items.Count());
-					return items.Count()-1;
-				}
-
-				bool StringGridProvider::MoveRow(vint source, vint target)
-				{
-					if(source<0 || items.Count()<=source) return false;
-					if(target<0 || items.Count()<=target) return false;
-					Ptr<StringGridItem> item=items[source];
-					items.RemoveAt(source);
-					commandExecutor->OnDataProviderItemModified(source, 1, 0);
-					items.Insert(target, item);
-					commandExecutor->OnDataProviderItemModified(target, 0, 1);
-					return true;
-				}
-
-				bool StringGridProvider::RemoveRow(vint row)
-				{
-					if(row<0 || items.Count()<=row) return false;
-					items.RemoveAt(row);
-					commandExecutor->OnDataProviderItemModified(row, 1, 0);
-					return true;
-				}
-
-				bool StringGridProvider::ClearRows()
-				{
-					vint oldCount=items.Count();
-					items.Clear();
-					commandExecutor->OnDataProviderItemModified(0, oldCount, 0);
-					return true;
-				}
-
-				WString StringGridProvider::GetGridString(vint row, vint column)
-				{
-					if(row<0 || items.Count()<=row) return L"";
-					if(column<0 || columns.Count()<=column) return L"";
-					return items[row]->strings[column];
-				}
-
-				bool StringGridProvider::SetGridString(vint row, vint column, const WString& value)
-				{
-					if(row<0 || items.Count()<=row) return false;
-					if(column<0 || columns.Count()<=column) return false;
-					items[row]->strings[column]=value;
-					commandExecutor->OnDataProviderItemModified(row, 1, 1);
-					return true;
-				}
-
-				bool StringGridProvider::InsertColumn(vint column, const WString& text, vint size)
-				{
-					Ptr<StringGridColumn> columnProvider=new StringGridColumn(this);
-					columnProvider->SetText(text);
-					columnProvider->SetSize(size);
-					columnProvider->SetVisualizerFactory(visualizerFactory);
-					columnProvider->SetEditorFactory(readonly ? nullptr : editorFactory);
-					if(!InsertColumnInternal(column, columnProvider, false)) return false;
-
-					FOREACH(Ptr<StringGridItem>, item, items)
+					else
 					{
-						item->strings.Insert(column, L"");
+						return 0;
 					}
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return true;
 				}
 
-				vint StringGridProvider::AppendColumn(const WString& text, vint size)
+				void DataGridItemProvider::ReleaseView(IDescriptable* view)
 				{
-					InsertColumn(columns.Count(), text, size);
-					return columns.Count()-1;
 				}
 
-				bool StringGridProvider::MoveColumn(vint source, vint target)
+				Ptr<GuiImageData> DataGridItemProvider::GetSmallImage(vint itemIndex)
 				{
-					if(source<0 || columns.Count()<=source) return false;
-					if(target<0 || columns.Count()<=target) return false;
-					Ptr<StringGridColumn> columnProvider=columns[source].Cast<StringGridColumn>();
-					columns.RemoveAt(source);
-					columns.Insert(target, columnProvider);
-
-					FOREACH(Ptr<StringGridItem>, item, items)
-					{
-						WString text=item->strings[source];
-						item->strings.RemoveAt(source);
-						item->strings.Insert(target, text);
-					}
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return true;
+					return dataProvider->GetRowSmallImage(itemIndex);
 				}
 
-				bool StringGridProvider::RemoveColumn(vint column)
+				Ptr<GuiImageData> DataGridItemProvider::GetLargeImage(vint itemIndex)
 				{
-					if(column<0 || columns.Count()<=column) return false;
-					Ptr<StringGridColumn> columnProvider=columns[column].Cast<StringGridColumn>();
-					if(!RemoveColumnInternal(columnProvider, false)) return false;
-
-					FOREACH(Ptr<StringGridItem>, item, items)
-					{
-						item->strings.RemoveAt(column);
-					}
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return true;
+					return dataProvider->GetRowLargeImage(itemIndex);
 				}
 
-				bool StringGridProvider::ClearColumns()
+				WString DataGridItemProvider::GetText(vint itemIndex)
 				{
-					if(!ClearColumnsInternal(false)) return false;
-
-					FOREACH(Ptr<StringGridItem>, item, items)
-					{
-						item->strings.Clear();
-					}
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return true;
+					return dataProvider->GetCellText(itemIndex, 0);
 				}
 
-				WString StringGridProvider::GetColumnText(vint column)
+				WString DataGridItemProvider::GetSubItem(vint itemIndex, vint index)
 				{
-					if(column<0 || columns.Count()<=column) return L"";
-					return columns[column]->GetText();
+					return dataProvider->GetCellText(itemIndex, index + 1);
 				}
 
-				bool StringGridProvider::SetColumnText(vint column, const WString& value)
+				vint DataGridItemProvider::GetDataColumnCount()
 				{
-					if(column<0 || columns.Count()<=column) return false;
-					columns[column]->SetText(value);
-					return true;
+					return 0;
 				}
-			}
 
-/***********************************************************************
-GuiStringGrid
-***********************************************************************/
+				vint DataGridItemProvider::GetDataColumn(vint index)
+				{
+					return 0;
+				}
 
-			GuiStringGrid::GuiStringGrid(IStyleProvider* _styleProvider)
-				:GuiVirtualDataGrid(_styleProvider, grids=new list::StringGridProvider)
-			{
-			}
+				// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 
-			GuiStringGrid::~GuiStringGrid()
-			{
-			}
+				bool DataGridItemProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+				{
+					if (columnItemViewCallbacks.Contains(value))
+					{
+						return false;
+					}
+					else
+					{
+						columnItemViewCallbacks.Add(value);
+						return true;
+					}
+				}
 
-			list::StringGridProvider& GuiStringGrid::Grids()
-			{
-				return *grids;
-			}
+				bool DataGridItemProvider::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+				{
+					vint index = columnItemViewCallbacks.IndexOf(value);
+					if (index == -1)
+					{
+						return false;
+					}
+					else
+					{
+						columnItemViewCallbacks.Remove(value);
+						return true;
+					}
+				}
 
-			bool GuiStringGrid::GetReadonly()
-			{
-				return grids->GetReadonly();
-			}
+				vint DataGridItemProvider::GetColumnCount()
+				{
+					return dataProvider->GetColumnCount();
+				}
 
-			void GuiStringGrid::SetReadonly(bool value)
-			{
-				SetSelectedCell(GridPos(-1, -1));
-				grids->SetReadonly(value);
+				WString DataGridItemProvider::GetColumnText(vint index)
+				{
+					return dataProvider->GetColumnText(index);
+				}
+
+				vint DataGridItemProvider::GetColumnSize(vint index)
+				{
+					return dataProvider->GetColumnSize(index);
+				}
+
+				void DataGridItemProvider::SetColumnSize(vint index, vint value)
+				{
+					dataProvider->SetColumnSize(index, value);
+					for (vint i = 0; i<columnItemViewCallbacks.Count(); i++)
+					{
+						columnItemViewCallbacks[i]->OnColumnChanged();
+					}
+				}
+
+				GuiMenu* DataGridItemProvider::GetDropdownPopup(vint index)
+				{
+					return dataProvider->GetColumnPopup(index);
+				}
+
+				GuiListViewColumnHeader::ColumnSortingState DataGridItemProvider::GetSortingState(vint index)
+				{
+					if (index == dataProvider->GetSortedColumn())
+					{
+						return dataProvider->IsSortOrderAscending()
+							? GuiListViewColumnHeader::Ascending
+							: GuiListViewColumnHeader::Descending;
+					}
+					else
+					{
+						return GuiListViewColumnHeader::NotSorted;
+					}
+				}
 			}
 		}
 	}
