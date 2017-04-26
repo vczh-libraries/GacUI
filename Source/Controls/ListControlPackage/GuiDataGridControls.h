@@ -160,7 +160,7 @@ GuiVirtualDataGrid
 /***********************************************************************
 DataGridItemProvider
 ***********************************************************************/
-
+				/*
 				/// <summary>Data grid item provider.</summary>
 				class DataGridItemProvider
 					: public Object
@@ -217,6 +217,7 @@ DataGridItemProvider
 					GuiMenu*											GetDropdownPopup(vint index)override;
 					GuiListViewColumnHeader::ColumnSortingState			GetSortingState(vint index)override;
 				};
+				*/
 			}
 		}
 	}

@@ -676,7 +676,7 @@ GuiVirtualDataGrid
 /***********************************************************************
 DataGridItemProvider
 ***********************************************************************/
-
+				/*
 				void DataGridItemProvider::InvokeOnItemModified(vint start, vint count, vint newCount)
 				{
 					for (vint i = 0; i<itemProviderCallbacks.Count(); i++)
@@ -894,6 +894,7 @@ DataGridItemProvider
 						return GuiListViewColumnHeader::NotSorted;
 					}
 				}
+				*/
 			}
 		}
 	}
