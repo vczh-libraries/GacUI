@@ -66,9 +66,8 @@ DefaultDataGridItemTemplate
 							currentEditor = dataGrid->OpenEditor(currentRow, index, factory);
 							if (currentEditor)
 							{
-								auto cell = dynamic_cast<GuiCellComposition*>(sender);
 								currentEditor->GetTemplate()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-								cell->AddChild(currentEditor->GetTemplate());
+								sender->AddChild(currentEditor->GetTemplate());
 							}
 						}
 					}
@@ -300,7 +299,7 @@ GuiVirtualDataGrid (Editor)
 			void GuiVirtualDataGrid::OnItemModified(vint start, vint count, vint newCount)
 			{
 				GuiVirtualListView::OnItemModified(start, count, newCount);
-				if(!currentEditorRequestingSaveData)
+				if(!GetItemProvider()->IsEditing())
 				{
 					CloseEditor(false);
 				}
@@ -346,9 +345,9 @@ GuiVirtualDataGrid (Editor)
 						}
 					}
 
-					currentEditorRequestingSaveData = true;
+					GetItemProvider()->PushEditing();
 					dataGridView->SaveCellData(currentEditorPos.row, currentEditorPos.column, currentEditor.Obj());
-					currentEditorRequestingSaveData = false;
+					GetItemProvider()->PopEditing();
 
 					if (currentEditor)
 					{
@@ -379,7 +378,7 @@ GuiVirtualDataGrid (Editor)
 					currentEditorPos = { row,column };
 					currentEditor = editorFactory->CreateEditor(dataGridView->GetViewModelContext());
 					currentEditor->BeforeEditCell(GetItemProvider(), row, column);
-					dataGridView->BeforeEditCell(row, column, currentEditor.Obj());
+					dataGridView->EditCell(row, column, currentEditor.Obj());
 					currentEditorOpeningEditor = false;
 				}
 				return currentEditor.Obj();
@@ -387,7 +386,7 @@ GuiVirtualDataGrid (Editor)
 
 			void GuiVirtualDataGrid::CloseEditor(bool forOpenNewEditor)
 			{
-				if (currentEditorRequestingSaveData)
+				if (GetItemProvider()->IsEditing())
 				{
 					NotifyCloseEditor();
 				}

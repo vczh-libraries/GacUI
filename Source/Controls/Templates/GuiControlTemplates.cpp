@@ -417,12 +417,12 @@ GuiListItemTemplate
 
 			void GuiListItemTemplate::BeginEditListItem()
 			{
-				listControl->GetItemProvider()->PushSupressCallback();
+				listControl->GetItemProvider()->PushEditing();
 			}
 
 			void GuiListItemTemplate::EndEditListItem()
 			{
-				CHECK_ERROR(listControl->GetItemProvider()->PopSupressCallback(), L"GuiListItemTemplate::EndEditListItem()#BeginEditListItem and EndEditListItem calls are not paired.");
+				CHECK_ERROR(listControl->GetItemProvider()->PopEditing(), L"GuiListItemTemplate::EndEditListItem()#BeginEditListItem and EndEditListItem calls are not paired.");
 			}
 
 			void GuiListItemTemplate::Initialize(controls::GuiListControl* _listControl)

@@ -155,7 +155,7 @@ RangedItemArrangerBase
 
 				void RangedItemArrangerBase::OnItemModified(vint start, vint count, vint newCount)
 				{
-					if (callback)
+					if (callback && !itemProvider->IsEditing())
 					{
 						vint visibleCount = visibleStyles.Count();
 						vint itemCount = itemProvider->Count();

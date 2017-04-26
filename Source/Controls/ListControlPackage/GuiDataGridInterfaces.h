@@ -160,7 +160,7 @@ Datagrid Interfaces
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					/// <param name="dataEditor">The data editor.</param>
-					virtual void										BeforeEditCell(vint row, vint column, IDataEditor* dataEditor) = 0;
+					virtual void										EditCell(vint row, vint column, IDataEditor* dataEditor) = 0;
 					/// <summary>Called when saving data for the editing cell.</summary>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>

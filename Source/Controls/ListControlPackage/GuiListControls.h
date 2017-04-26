@@ -108,11 +108,14 @@ List Control
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The item provider callback.</param>
 					virtual bool								DetachCallback(IItemProviderCallback* value) = 0;
-					/// <summary>Push a supression of calling [M:vl.presentation.controls.GuiListControl.IItemProviderCallback.OnItemModified].</summary>
-					virtual void								PushSupressCallback() = 0;
-					/// <summary>Pop a suppresion of calling [M:vl.presentation.controls.GuiListControl.IItemProviderCallback.OnItemModified].</summary>
+					/// <summary>Increase the editing counter indicating that an [T:vl.presentation.templates.GuiListItemTemplate] is editing an item.</summary>
+					virtual void								PushEditing() = 0;
+					/// <summary>Decrease the editing counter indicating that an [T:vl.presentation.templates.GuiListItemTemplate] has stopped editing an item.</summary>
 					/// <returns>Returns false if there is no supression before calling this function.</returns>
-					virtual bool								PopSupressCallback() = 0;
+					virtual bool								PopEditing() = 0;
+					/// <summary>Test if an [T:vl.presentation.templates.GuiListItemTemplate] is editing an item.</summary>
+					/// <returns>Returns false if there is no editing.</returns>
+					virtual bool								IsEditing() = 0;
 					/// <summary>Get the number of items in this item proivder.</summary>
 					/// <returns>The number of items in this item proivder.</returns>
 					virtual vint								Count() = 0;
@@ -435,7 +438,7 @@ Predefined ItemProvider
 				{
 				protected:
 					collections::List<GuiListControl::IItemProviderCallback*>	callbacks;
-					vint														callbackSupression = 0;
+					vint														editingCounter = 0;
 
 					virtual void								InvokeOnItemModified(vint start, vint count, vint newCount);
 				public:
@@ -445,8 +448,9 @@ Predefined ItemProvider
 
 					bool										AttachCallback(GuiListControl::IItemProviderCallback* value)override;
 					bool										DetachCallback(GuiListControl::IItemProviderCallback* value)override;
-					void										PushSupressCallback()override;
-					bool										PopSupressCallback()override;
+					void										PushEditing()override;
+					bool										PopEditing()override;
+					bool										IsEditing()override;
 				};
 
 				template<typename T>

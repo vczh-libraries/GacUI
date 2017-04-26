@@ -123,7 +123,7 @@ namespace vl
 				
 #define GuiTemplate_PROPERTIES(F)\
 				F(GuiTemplate, FontProperties, Font)\
-				F(GuiControlTemplate, WString, Text)\
+				F(GuiTemplate, WString, Text)\
 				F(GuiTemplate, bool, VisuallyEnabled)\
 
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)

@@ -76,7 +76,6 @@ GuiVirtualDataGrid
 				GridPos													selectedCell{ -1,-1 };
 				Ptr<list::IDataEditor>									currentEditor;
 				GridPos													currentEditorPos{ -1,-1 };
-				bool													currentEditorRequestingSaveData = false;
 				bool													currentEditorOpeningEditor = false;
 
 				void													OnItemModified(vint start, vint count, vint newCount)override;

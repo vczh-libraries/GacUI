@@ -777,12 +777,9 @@ ItemProviderBase
 
 				void ItemProviderBase::InvokeOnItemModified(vint start, vint count, vint newCount)
 				{
-					if (callbackSupression == 0)
+					for (vint i = 0; i < callbacks.Count(); i++)
 					{
-						for (vint i = 0; i < callbacks.Count(); i++)
-						{
-							callbacks[i]->OnItemModified(start, count, newCount);
-						}
+						callbacks[i]->OnItemModified(start, count, newCount);
 					}
 				}
 
@@ -827,16 +824,21 @@ ItemProviderBase
 					}
 				}
 
-				void ItemProviderBase::PushSupressCallback()
+				void ItemProviderBase::PushEditing()
 				{
-					callbackSupression++;
+					editingCounter++;
 				}
 
-				bool ItemProviderBase::PopSupressCallback()
+				bool ItemProviderBase::PopEditing()
 				{
-					if (callbackSupression == 0)return false;
-					callbackSupression--;
+					if (editingCounter == 0)return false;
+					editingCounter--;
 					return true;
+				}
+
+				bool ItemProviderBase::IsEditing()
+				{
+					return editingCounter > 0;
 				}
 			}
 		}
