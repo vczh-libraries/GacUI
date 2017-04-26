@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUIDATAGRIDCONTROLS
 
 #include "GuiDataGridInterfaces.h"
+#include "GuiListViewItemTemplates.h"
 
 namespace vl
 {
@@ -17,95 +18,43 @@ namespace vl
 	{
 		namespace controls
 		{
-			class GuiVirtualDataGrid;
-
 			namespace list
 			{
 
 /***********************************************************************
 DefaultDataGridItemTemplate
 ***********************************************************************/
-				
-				/// <summary>Data grid content provider.</summary>
-				class DataGridContentProvider
-					: public Object
-					, public virtual ListViewItemStyleProvider::IListViewItemContentProvider
-					, protected virtual ListViewColumnItemArranger::IColumnItemViewCallback
-					, protected virtual GuiListControl::IItemProviderCallback
-					, protected virtual IDataEditorCallback
-					, public Description<ListViewDetailContentProvider>
+
+				class DefaultDataGridItemTemplate
+					: public DefaultListViewItemTemplate
+					, private ListViewColumnItemArranger::IColumnItemViewCallback
 				{
 				protected:
-					class ItemContent : public Object, public virtual ListViewItemStyleProvider::IListViewItemContent
-					{
-					protected:
-						compositions::GuiBoundsComposition*				contentComposition;
-						compositions::GuiTableComposition*				textTable;
+					compositions::GuiTableComposition*					textTable = nullptr;
+					collections::Array<Ptr<IDataVisualizer>>			dataVisualizers;
+					IDataEditor*										currentEditor = nullptr;
 
-						DataGridContentProvider*						contentProvider;
-						FontProperties									font;
-
-						collections::Array<Ptr<IDataVisualizer>>		dataVisualizers;
-						IDataEditor*									currentEditor;
-
-						void											RemoveCellsAndDataVisualizers();
-						IDataVisualizerFactory*							GetDataVisualizerFactory(vint row, vint column);
-						vint											GetCellColumnIndex(compositions::GuiGraphicsComposition* composition);
-						void											OnCellButtonUp(compositions::GuiGraphicsComposition* sender, bool openEditor);
-						bool											IsInEditor(compositions::GuiMouseEventArgs& arguments);
-						void											OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-						void											OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-						void											OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-					public:
-						ItemContent(DataGridContentProvider* _contentProvider, const FontProperties& _font);
-						~ItemContent();
-
-						compositions::GuiBoundsComposition*				GetContentComposition()override;
-						compositions::GuiBoundsComposition*				GetBackgroundDecorator()override;
-						void											UpdateSubItemSize();
-						void											ForceSetEditor(vint column, IDataEditor* editor);
-						void											NotifyCloseEditor();
-						void											NotifySelectCell(vint column);
-						void											Install(GuiListViewBase::IStyleProvider* styleProvider, ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)override;
-						void											Uninstall()override;
-					};
-
-					GuiVirtualDataGrid*									dataGrid;
-					GuiListControl::IItemProvider*						itemProvider;
-					list::IDataProvider*								dataProvider;
-					ListViewColumnItemArranger::IColumnItemView*		columnItemView;
-					ListViewItemStyleProvider*							listViewItemStyleProvider;
-
-					ListViewMainColumnDataVisualizer::Factory			mainColumnDataVisualizerFactory;
-					ListViewSubColumnDataVisualizer::Factory			subColumnDataVisualizerFactory;
-
-					GridPos												currentCell;
-					Ptr<IDataEditor>									currentEditor;
-					bool												currentEditorRequestingSaveData;
-					bool												currentEditorOpening;
+					IDataVisualizerFactory*								GetDataVisualizerFactory(vint row, vint column);
+					IDataEditorFactory*									GetDataEditorFactory(vint row, vint column);
+					vint												GetCellColumnIndex(compositions::GuiGraphicsComposition* composition);
+					void												OnCellButtonUp(compositions::GuiGraphicsComposition* sender, bool openEditor);
+					bool												IsInEditor(compositions::GuiMouseEventArgs& arguments);
+					void												OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+					void												OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+					void												OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 
 					void												OnColumnChanged()override;
-					void												OnAttached(GuiListControl::IItemProvider* provider)override;
-					void												OnItemModified(vint start, vint count, vint newCount)override;
-
-					void												NotifyCloseEditor();
-					void												NotifySelectCell(vint row, vint column);
-					void												RequestSaveData()override;
-					IDataEditor*										OpenEditor(vint row, vint column, IDataEditorFactory* editorFactory);
-					void												CloseEditor(bool forOpenNewEditor);
+					void												OnInitialize()override;
+					void												OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create the content provider.</summary>
-					DataGridContentProvider();
-					~DataGridContentProvider();
-					
-					compositions::IGuiAxis*								CreatePreferredAxis()override;
-					GuiListControl::IItemArranger*						CreatePreferredArranger()override;
-					ListViewItemStyleProvider::IListViewItemContent*	CreateItemContent(const FontProperties& font)override;
-					void												AttachListControl(GuiListControl* value)override;
-					void												DetachListControl()override;
+					DefaultDataGridItemTemplate();
+					~DefaultDataGridItemTemplate();
 
-					GridPos												GetSelectedCell();
-					bool												SetSelectedCell(const GridPos& value, bool openEditor);
+					void												UpdateSubItemSize();
+					void												ForceSetEditor(vint column, IDataEditor* editor);
+					void												NotifyCloseEditor();
+					void												NotifySelectCell(vint column);
 				};
 			}
 
@@ -114,18 +63,31 @@ GuiVirtualDataGrid
 ***********************************************************************/
 
 			/// <summary>Data grid control in virtual mode.</summary>
-			class GuiVirtualDataGrid : public GuiVirtualListView, public Description<GuiVirtualDataGrid>
+			class GuiVirtualDataGrid
+				: public GuiVirtualListView
+				, public Description<GuiVirtualDataGrid>
 			{
-				friend class list::DataGridContentProvider;
+				friend class list::DefaultDataGridItemTemplate;
 			protected:
-				list::DataGridItemProvider*								itemProvider;
-				list::DataGridContentProvider*							contentProvider;
-				Ptr<list::IDataProvider>								dataProvider;
-				Ptr<list::StructuredDataProvider>						structuredDataProvider;
+				list::IListViewItemView*								listViewItemView = nullptr;
+				list::ListViewColumnItemArranger::IColumnItemView*		columnItemView = nullptr;
+				list::IDataGridView*									dataGridView = nullptr;
+
+				GridPos													selectedCell{ -1,-1 };
+				Ptr<list::IDataEditor>									currentEditor;
+				GridPos													currentEditorPos{ -1,-1 };
+				bool													currentEditorRequestingSaveData = false;
+				bool													currentEditorOpeningEditor = false;
+
+				void													OnItemModified(vint start, vint count, vint newCount)override;
+
+				void													NotifyCloseEditor();
+				void													NotifySelectCell(vint row, vint column);
+				void													RequestSaveData();
+				list::IDataEditor*										OpenEditor(vint row, vint column, list::IDataEditorFactory* editorFactory);
+				void													CloseEditor(bool forOpenNewEditor);
 
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
-				void													Initialize();
-				void													NotifySelectedCellChanged();
 			public:
 				/// <summary>Create a data grid control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
@@ -136,12 +98,6 @@ GuiVirtualDataGrid
 				/// <summary>Selected cell changed event.</summary>
 				compositions::GuiNotifyEvent							SelectedCellChanged;
 
-				/// <summary>Get the given data provider.</summary>
-				/// <returns>The data provider.</returns>
-				list::IDataProvider*									GetDataProvider();
-				/// <summary>Get the given structured data provider.</summary>
-				/// <returns>The structured data provider.</returns>
-				list::StructuredDataProvider*							GetStructuredDataProvider();
 
 				/// <summary>Get the row index and column index of the selected cell.</summary>
 				/// <returns>The row index and column index of the selected cell.</returns>
@@ -149,9 +105,6 @@ GuiVirtualDataGrid
 				/// <summary>Set the row index and column index of the selected cell.</summary>
 				/// <param name="value">The row index and column index of the selected cell.</param>
 				void													SetSelectedCell(const GridPos& value);
-
-				Ptr<GuiListControl::IItemStyleProvider>					SetStyleProvider(Ptr<GuiListControl::IItemStyleProvider> value)override;
-				bool													ChangeItemStyle(Ptr<list::ListViewItemStyleProvider::IListViewItemContentProvider> contentProvider)override;
 			};
 
 			namespace list

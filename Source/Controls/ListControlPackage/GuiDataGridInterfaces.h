@@ -35,7 +35,7 @@ Datagrid Interfaces
 					/// <returns>The created data visualizer.</returns>
 					/// <param name="font">The font for the list view control.</param>
 					/// <param name="styleProvider">The style provider for the list view control.</param>
-					virtual Ptr<IDataVisualizer>						CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext) = 0;
+					virtual Ptr<IDataVisualizer>						CreateVisualizer(GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext) = 0;
 				};
 
 				/// <summary>The visualizer for each cell in [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>
@@ -46,9 +46,9 @@ Datagrid Interfaces
 					/// <returns>The factory object.</returns>
 					virtual IDataVisualizerFactory*						GetFactory() = 0;
 
-					/// <summary>Get the composition that renders the data.. The data visualizer should maintain this bounds composition, and delete it when necessary.</summary>
-					/// <returns>The composition.</returns>
-					virtual compositions::GuiBoundsComposition*			GetBoundsComposition() = 0;
+					/// <summary>Get the template that renders the data. The data visualizer should maintain this template, and delete it when necessary.</summary>
+					/// <returns>The template.</returns>
+					virtual templates::GuiTemplate*						GetTemplate() = 0;
 
 					/// <summary>Called before visualizing a cell.</summary>
 					/// <param name="itemProvider">The item provider.</param>
@@ -96,9 +96,9 @@ Datagrid Interfaces
 					/// <returns>The factory object.</returns>
 					virtual IDataEditorFactory*							GetFactory() = 0;
 
-					/// <summary>Get the composition that holds the editor for a cell. The data editor should maintain this bounds composition, and delete it when necessary.</summary>
-					/// <returns>The composition.</returns>
-					virtual compositions::GuiBoundsComposition*			GetBoundsComposition() = 0;
+					/// <summary>Get the template that edit the data. The data editor should maintain this template, and delete it when necessary.</summary>
+					/// <returns>The template.</returns>
+					virtual templates::GuiTemplate*						GetTemplate() = 0;
 
 					/// <summary>Called before editing a cell.</summary>
 					/// <param name="itemProvider">The item provider.</param>
