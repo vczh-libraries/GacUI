@@ -353,8 +353,6 @@ Control Template
 				~GuiTextListTemplate();
 
 #define GuiTextListTemplate_PROPERTIES(F)\
-				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
-				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BulletTemplate)\
 				F(GuiTextListTemplate, Color, TextColor)\
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)

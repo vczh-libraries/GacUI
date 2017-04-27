@@ -31,7 +31,7 @@ GuiBindableTextList
 			protected:
 				class ItemSource
 					: public list::ItemProviderBase
-					, protected list::TextItemStyleProvider::ITextItemView
+					, protected list::ITextItemView
 				{
 				protected:
 					Ptr<EventHandler>								itemChangedEventHandler;
@@ -57,12 +57,11 @@ GuiBindableTextList
 					description::Value								GetBindingValue(vint itemIndex)override;
 					vint											Count()override;
 					IDescriptable*									RequestView(const WString& identifier)override;
-					void											ReleaseView(IDescriptable* view)override;
 					
 					// ===================== list::TextItemStyleProvider::ITextItemView =====================
 
 					bool											GetChecked(vint itemIndex)override;
-					void											SetCheckedSilently(vint itemIndex, bool value)override;
+					void											SetChecked(vint itemIndex, bool value)override;
 				};
 
 			protected:
@@ -72,7 +71,7 @@ GuiBindableTextList
 				/// <summary>Create a bindable Text list control.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
 				/// <param name = "_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
-				GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory);
+				GuiBindableTextList(IStyleProvider* _styleProvider);
 				~GuiBindableTextList();
 				
 				/// <summary>Text property name changed event.</summary>
@@ -117,7 +116,7 @@ GuiBindableListView
 				class ItemSource
 					: public list::ItemProviderBase
 					, protected virtual list::IListViewItemProvider
-					, protected virtual list::ListViewItemStyleProvider::IListViewItemView
+					, protected virtual list::IListViewItemView
 					, protected virtual list::ListViewColumnItemArranger::IColumnItemView
 				{
 					typedef collections::List<list::ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
@@ -156,7 +155,6 @@ GuiBindableListView
 					description::Value								GetBindingValue(vint itemIndex)override;
 					vint											Count()override;
 					IDescriptable*									RequestView(const WString& identifier)override;
-					void											ReleaseView(IDescriptable* view)override;
 
 					// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
 
@@ -176,7 +174,7 @@ GuiBindableListView
 					vint											GetColumnSize(vint index)override;
 					void											SetColumnSize(vint index, vint value)override;
 					GuiMenu*										GetDropdownPopup(vint index)override;
-					GuiListViewColumnHeader::ColumnSortingState		GetSortingState(vint index)override;
+					ColumnSortingState								GetSortingState(vint index)override;
 				};
 
 			protected:
@@ -303,13 +301,11 @@ GuiBindableTreeView
 					WString											GetTextValue(tree::INodeProvider* node)override;
 					description::Value								GetBindingValue(tree::INodeProvider* node)override;
 					IDescriptable*									RequestView(const WString& identifier)override;
-					void											ReleaseView(IDescriptable* view)override;
 
 
 					// ===================== tree::ITreeViewItemView =====================
 
 					Ptr<GuiImageData>								GetNodeImage(tree::INodeProvider* node)override;
-					WString											GetNodeText(tree::INodeProvider* node)override;
 				};
 
 			protected:

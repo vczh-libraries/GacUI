@@ -578,24 +578,6 @@ GuiDocumentViewerTemplate_StyleProvider
 			}
 
 /***********************************************************************
-GuiTextListTemplate_StyleProvider::ItemStyleProvider
-***********************************************************************/
-
-			GuiTextListTemplate_StyleProvider::ItemStyleProvider::ItemStyleProvider(GuiTextListTemplate_StyleProvider* _styleProvider)
-				:styleProvider(_styleProvider)
-			{
-			}
-
-			GuiTextListTemplate_StyleProvider::ItemStyleProvider::~ItemStyleProvider()
-			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::ItemStyleProvider::CreateBulletStyleController()
-			{
-				return styleProvider->CreateBulletStyle();
-			}
-
-/***********************************************************************
 GuiTextListTemplate_StyleProvider
 ***********************************************************************/
 
@@ -612,24 +594,9 @@ GuiTextListTemplate_StyleProvider
 			{
 			}
 
-			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateItemBackground()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, BackgroundTemplate);
-			}
-
 			Color GuiTextListTemplate_StyleProvider::GetTextColor()
 			{
 				return controlTemplate->GetTextColor();
-			}
-
-			controls::list::TextItemStyleProvider::IBulletFactory* GuiTextListTemplate_StyleProvider::CreateArgument()
-			{
-				return new ItemStyleProvider(this);
-			}
-
-			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateBulletStyle()
-			{
-				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, BulletTemplate);
 			}
 
 /***********************************************************************
@@ -991,7 +958,7 @@ GuiDatePickerTemplate_StyleProvider
 			controls::GuiTextList* GuiDatePickerTemplate_StyleProvider::CreateTextList()
 			{
 				auto style = CreateTextListStyle();
-				return new GuiTextList(style, style->CreateArgument());
+				return new GuiTextList(style);
 			}
 
 			controls::GuiComboBoxListControl::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateComboBoxStyle()
@@ -1042,363 +1009,6 @@ GuiDateComboBoxTemplate_StyleProvider
 			}
 
 /***********************************************************************
-GuiControlTemplate_ItemStyleProvider
-***********************************************************************/
-
-			GuiControlTemplate_ItemStyleProvider::GuiControlTemplate_ItemStyleProvider(TemplateProperty<GuiControlTemplate> _factory)
-				:factory(_factory)
-			{
-			}
-
-			GuiControlTemplate_ItemStyleProvider::~GuiControlTemplate_ItemStyleProvider()
-			{
-			}
-
-			void GuiControlTemplate_ItemStyleProvider::AttachComboBox(controls::GuiComboBoxListControl* value)
-			{
-			}
-
-			void GuiControlTemplate_ItemStyleProvider::DetachComboBox()
-			{
-			}
-
-			controls::GuiControl::IStyleController* GuiControlTemplate_ItemStyleProvider::CreateItemStyle(description::Value item)
-			{
-				return new GuiControlTemplate_StyleProvider(factory, item);
-			}
-
-/***********************************************************************
-GuiTextListItemTemplate_ItemStyleProvider
-***********************************************************************/
-
-			GuiTextListItemTemplate_ItemStyleProvider::GuiTextListItemTemplate_ItemStyleProvider(TemplateProperty<GuiTextListItemTemplate> _factory)
-				:factory(_factory)
-			{
-			}
-
-			GuiTextListItemTemplate_ItemStyleProvider::~GuiTextListItemTemplate_ItemStyleProvider()
-			{
-			}
-
-			void GuiTextListItemTemplate_ItemStyleProvider::AttachListControl(controls::GuiListControl* value)
-			{
-				listControl = dynamic_cast<GuiVirtualTextList*>(value);
-			}
-
-			void GuiTextListItemTemplate_ItemStyleProvider::DetachListControl()
-			{
-				listControl = nullptr;
-			}
-
-			controls::GuiListControl::IItemStyleController* GuiTextListItemTemplate_ItemStyleProvider::CreateItemStyle()
-			{
-				return new GuiTextListItemTemplate_ItemStyleController(this);
-			}
-
-			void GuiTextListItemTemplate_ItemStyleProvider::DestroyItemStyle(controls::GuiListControl::IItemStyleController* style)
-			{
-				delete style;
-			}
-
-			void GuiTextListItemTemplate_ItemStyleProvider::Install(controls::GuiListControl::IItemStyleController* style, vint itemIndex)
-			{
-				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
-				{
-					Value viewModel = listControl->GetItemProvider()->GetBindingValue(itemIndex);
-					auto listItemTemplate = factory(viewModel);
-					CHECK_ERROR(listItemTemplate, L"GuiTextListItemTemplate_ItemStyleProvider::Install()#An instance of GuiTextListItemTemplate is expected.");
-					listItemTemplate->SetFont(listControl->GetFont());
-					listItemTemplate->SetIndex(itemIndex);
-					listItemTemplate->SetTextColor(listControl->GetTextListStyleProvider()->GetTextColor());
-					controller->SetTemplate(listItemTemplate);
-				}
-			}
-
-			void GuiTextListItemTemplate_ItemStyleProvider::SetStyleIndex(controls::GuiListControl::IItemStyleController* style, vint value)
-			{
-				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
-				{
-					if (auto itemTemplate = controller->GetTemplate())
-					{
-						itemTemplate->SetIndex(value);
-					}
-				}
-			}
-
-			void GuiTextListItemTemplate_ItemStyleProvider::SetStyleSelected(controls::GuiListControl::IItemStyleController* style, bool value)
-			{
-				if (auto controller = dynamic_cast<GuiTextListItemTemplate_ItemStyleController*>(style))
-				{
-					controller->backgroundButton->SetSelected(value);
-					if (auto itemTemplate = controller->GetTemplate())
-					{
-						itemTemplate->SetSelected(value);
-					}
-				}
-			}
-
-/***********************************************************************
-GuiTextListItemTemplate_ItemStyleController
-***********************************************************************/
-
-			GuiTextListItemTemplate_ItemStyleController::GuiTextListItemTemplate_ItemStyleController(GuiTextListItemTemplate_ItemStyleProvider* _itemStyleProvider)
-				:itemStyleProvider(_itemStyleProvider)
-				, itemTemplate(0)
-				, installed(false)
-				, backgroundButton(0)
-			{
-				backgroundButton = new GuiSelectableButton(itemStyleProvider->listControl->GetTextListStyleProvider()->CreateItemBackground());
-				backgroundButton->SetAutoSelection(false);
-			}
-
-			GuiTextListItemTemplate_ItemStyleController::~GuiTextListItemTemplate_ItemStyleController()
-			{
-				SafeDeleteControl(backgroundButton);
-			}
-
-			GuiTextListItemTemplate* GuiTextListItemTemplate_ItemStyleController::GetTemplate()
-			{
-				return itemTemplate;
-			}
-
-			void GuiTextListItemTemplate_ItemStyleController::SetTemplate(GuiTextListItemTemplate* _itemTemplate)
-			{
-				SafeDeleteComposition(itemTemplate);
-				itemTemplate = _itemTemplate;
-				itemTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				backgroundButton->GetContainerComposition()->AddChild(itemTemplate);
-			}
-
-			controls::GuiListControl::IItemStyleProvider* GuiTextListItemTemplate_ItemStyleController::GetStyleProvider()
-			{
-				return itemStyleProvider;
-			}
-
-			vint GuiTextListItemTemplate_ItemStyleController::GetItemStyleId()
-			{
-				return 0;
-			}
-
-			compositions::GuiBoundsComposition* GuiTextListItemTemplate_ItemStyleController::GetBoundsComposition()
-			{
-				return backgroundButton->GetBoundsComposition();
-			}
-
-			bool GuiTextListItemTemplate_ItemStyleController::IsCacheable()
-			{
-				return false;
-			}
-
-			bool GuiTextListItemTemplate_ItemStyleController::IsInstalled()
-			{
-				return installed;
-			}
-
-			void GuiTextListItemTemplate_ItemStyleController::OnInstalled()
-			{
-				installed = true;
-			}
-
-			void GuiTextListItemTemplate_ItemStyleController::OnUninstalled()
-			{
-				installed = false;
-			}
-
-/***********************************************************************
-GuiTreeItemTemplate_ItemStyleProvider
-***********************************************************************/
-
-			void GuiTreeItemTemplate_ItemStyleProvider::UpdateExpandingButton(controls::tree::INodeProvider* node)
-			{
-				vint index=treeListControl->GetNodeItemView()->CalculateNodeVisibilityIndex(node);
-				if(index!=-1)
-				{
-					if(auto style = treeListControl->GetArranger()->GetVisibleStyle(index))
-					{
-						if (auto controller = dynamic_cast<GuiTreeItemTemplate_ItemStyleController*>(style))
-						{
-							if (auto itemTemplate = dynamic_cast<GuiTreeItemTemplate*>(controller->GetTemplate()))
-							{
-								itemTemplate->SetExpanding(node->GetExpanding());
-							}
-						}
-					}
-				}
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::OnAttached(controls::tree::INodeRootProvider* provider)
-			{
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::OnBeforeItemModified(controls::tree::INodeProvider* parentNode, vint start, vint count, vint newCount)
-			{
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::OnAfterItemModified(controls::tree::INodeProvider* parentNode, vint start, vint count, vint newCount)
-			{
-				UpdateExpandingButton(parentNode);
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::OnItemExpanded(controls::tree::INodeProvider* node)
-			{
-				UpdateExpandingButton(node);
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::OnItemCollapsed(controls::tree::INodeProvider* node)
-			{
-				UpdateExpandingButton(node);
-			}
-
-			GuiTreeItemTemplate_ItemStyleProvider::GuiTreeItemTemplate_ItemStyleProvider(TemplateProperty<GuiTreeItemTemplate> _factory)
-				:factory(_factory)
-			{
-
-			}
-
-			GuiTreeItemTemplate_ItemStyleProvider::~GuiTreeItemTemplate_ItemStyleProvider()
-			{
-			}
-				
-			void GuiTreeItemTemplate_ItemStyleProvider::BindItemStyleProvider(controls::GuiListControl::IItemStyleProvider* styleProvider)
-			{
-				itemStyleProvider = styleProvider;
-			}
-
-			controls::GuiListControl::IItemStyleProvider* GuiTreeItemTemplate_ItemStyleProvider::GetBindedItemStyleProvider()
-			{
-				return itemStyleProvider;
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::AttachListControl(GuiListControl* value)
-			{
-				treeListControl = dynamic_cast<GuiVirtualTreeListControl*>(value);
-				if (treeListControl)
-				{
-					treeListControl->GetNodeRootProvider()->AttachCallback(this);
-				}
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::DetachListControl()
-			{
-				if (treeListControl)
-				{
-					treeListControl->GetNodeRootProvider()->DetachCallback(this);
-				}
-				treeListControl = nullptr;
-			}
-
-			controls::tree::INodeItemStyleController* GuiTreeItemTemplate_ItemStyleProvider::CreateItemStyle()
-			{
-				return new GuiTreeItemTemplate_ItemStyleController(this);
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::DestroyItemStyle(controls::tree::INodeItemStyleController* style)
-			{
-				delete style;
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::Install(controls::tree::INodeItemStyleController* style, controls::tree::INodeProvider* node, vint itemIndex)
-			{
-				if (auto controller = dynamic_cast<GuiTreeItemTemplate_ItemStyleController*>(style))
-				{
-					Value viewModel = treeListControl->GetNodeRootProvider()->GetBindingValue(node);
-					auto treeItemTemplate = factory(viewModel);
-					CHECK_ERROR(treeItemTemplate, L"GuiTreeItemTemplate_ItemStyleProvider::Install()#An instance of GuiTreeItemTemplate is expected.");
-					treeItemTemplate->SetFont(treeListControl->GetFont());
-					treeItemTemplate->SetIndex(itemIndex);
-					controller->SetTemplate(treeItemTemplate);
-				}
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::SetStyleIndex(controls::tree::INodeItemStyleController* style, vint value)
-			{
-				if (auto controller = dynamic_cast<GuiTreeItemTemplate_ItemStyleController*>(style))
-				{
-					if (auto itemTemplate = controller->GetTemplate())
-					{
-						itemTemplate->SetIndex(value);
-					}
-				}
-			}
-
-			void GuiTreeItemTemplate_ItemStyleProvider::SetStyleSelected(controls::tree::INodeItemStyleController* style, bool value)
-			{
-				if (auto controller = dynamic_cast<GuiTreeItemTemplate_ItemStyleController*>(style))
-				{
-					if (auto itemTemplate = controller->GetTemplate())
-					{
-						itemTemplate->SetSelected(value);
-					}
-				}
-			}
-
-/***********************************************************************
-GuiTreeItemTemplate_ItemStyleController
-***********************************************************************/
-
-			GuiTreeItemTemplate_ItemStyleController::GuiTreeItemTemplate_ItemStyleController(GuiTreeItemTemplate_ItemStyleProvider* _nodeStyleProvider)
-				:nodeStyleProvider(_nodeStyleProvider)
-				, itemTemplate(0)
-				, installed(false)
-			{
-			}
-
-			GuiTreeItemTemplate_ItemStyleController::~GuiTreeItemTemplate_ItemStyleController()
-			{
-			}
-
-			GuiTreeItemTemplate* GuiTreeItemTemplate_ItemStyleController::GetTemplate()
-			{
-				return itemTemplate;
-			}
-
-			void GuiTreeItemTemplate_ItemStyleController::SetTemplate(GuiTreeItemTemplate* _itemTemplate)
-			{
-				SafeDeleteComposition(itemTemplate);
-				itemTemplate = _itemTemplate;
-			}
-
-			controls::GuiListControl::IItemStyleProvider* GuiTreeItemTemplate_ItemStyleController::GetStyleProvider()
-			{
-				return nodeStyleProvider->GetBindedItemStyleProvider();
-			}
-
-			vint GuiTreeItemTemplate_ItemStyleController::GetItemStyleId()
-			{
-				return 0;
-			}
-
-			compositions::GuiBoundsComposition* GuiTreeItemTemplate_ItemStyleController::GetBoundsComposition()
-			{
-				return itemTemplate;
-			}
-
-			bool GuiTreeItemTemplate_ItemStyleController::IsCacheable()
-			{
-				return false;
-			}
-
-			bool GuiTreeItemTemplate_ItemStyleController::IsInstalled()
-			{
-				return installed;
-			}
-
-			void GuiTreeItemTemplate_ItemStyleController::OnInstalled()
-			{
-				installed = true;
-			}
-
-			void GuiTreeItemTemplate_ItemStyleController::OnUninstalled()
-			{
-				installed = false;
-			}
-
-			controls::tree::INodeItemStyleProvider* GuiTreeItemTemplate_ItemStyleController::GetNodeStyleProvider()
-			{
-				return nodeStyleProvider;
-			}
-
-/***********************************************************************
 GuiBindableDataVisualizer::Factory
 ***********************************************************************/
 
@@ -1411,9 +1021,9 @@ GuiBindableDataVisualizer::Factory
 			{
 			}
 
-			Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::Factory::CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)
+			Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::Factory::CreateVisualizer(controls::list::IDataGridContext* dataGridContext)
 			{
-				auto visualizer = DataVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(font, styleProvider, viewModelContext).Cast<GuiBindableDataVisualizer>();
+				auto visualizer = DataVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(dataGridContext).Cast<GuiBindableDataVisualizer>();
 				if (visualizer)
 				{
 					visualizer->templateFactory = templateFactory;
@@ -1435,9 +1045,9 @@ GuiBindableDataVisualizer::DecoratedFactory
 			{
 			}
 
-			Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::DecoratedFactory::CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)
+			Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::DecoratedFactory::CreateVisualizer(controls::list::IDataGridContext* dataGridContext)
 			{
-				auto visualizer = DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(font, styleProvider, viewModelContext).Cast<GuiBindableDataVisualizer>();
+				auto visualizer = DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(dataGridContext).Cast<GuiBindableDataVisualizer>();
 				if (visualizer)
 				{
 					visualizer->templateFactory = templateFactory;
@@ -1449,17 +1059,16 @@ GuiBindableDataVisualizer::DecoratedFactory
 GuiBindableDataVisualizer
 ***********************************************************************/
 
-			compositions::GuiBoundsComposition* GuiBindableDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
+			GuiTemplate* GuiBindableDataVisualizer::CreateTemplateInternal(GuiTemplate* childTemplate)
 			{
-				visualizerTemplate = templateFactory(viewModelContext);
-				CHECK_ERROR(visualizerTemplate, L"GuiBindableDataVisualizer::CreateBoundsCompositionInternal()#An instance of GuiGridVisualizerTemplate is expected.");
+				visualizerTemplate = templateFactory(dataGridContext->GetViewModelContext());
+				CHECK_ERROR(visualizerTemplate, L"GuiBindableDataVisualizer::CreateTemplateInternal(GuiTemplate*)#An instance of GuiGridVisualizerTemplate is expected.");
 
 				if (decoratedComposition)
 				{
 					decoratedComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					visualizerTemplate->GetContainerComposition()->AddChild(decoratedComposition);
 				}
-				visualizerTemplate->SetFont(font);
 				return visualizerTemplate;
 			}
 
@@ -1476,9 +1085,9 @@ GuiBindableDataVisualizer
 			{
 			}
 
-			void GuiBindableDataVisualizer::BeforeVisualizeCell(controls::list::IDataProvider* dataProvider, vint row, vint column)
+			void GuiBindableDataVisualizer::BeforeVisualizeCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 			{
-				DataVisualizerBase::BeforeVisualizeCell(dataProvider, row, column);
+				DataVisualizerBase::BeforeVisualizeCell(itemProvider, row, column);
 				if (!visualizerTemplate) return;
 				visualizerTemplate->SetText(dataProvider->GetCellText(row, column));
 
@@ -1517,16 +1126,16 @@ GuiBindableDataEditor::Factory
 			{
 			}
 
-			Ptr<controls::list::IDataEditor> GuiBindableDataEditor::Factory::CreateEditor(controls::list::IDataEditorCallback* callback, const description::Value& viewModelContext)
+			Ptr<controls::list::IDataEditor> GuiBindableDataEditor::Factory::CreateEditor(controls::list::IDataGridContext* dataGridContext)
 			{
-				auto editor = DataEditorFactory<GuiBindableDataEditor>::CreateEditor(callback, viewModelContext).Cast<GuiBindableDataEditor>();
+				auto editor = DataEditorFactory<GuiBindableDataEditor>::CreateEditor(dataGridContext).Cast<GuiBindableDataEditor>();
 				if (editor)
 				{
 					editor->templateFactory = templateFactory;
 
-					// Invoke GuiBindableDataEditor::CreateBoundsCompositionInternal
+					// Invoke GuiBindableDataEditor::CreateTemplateInternal
 					// so that GuiBindableDataEditor::BeforeEditCell is able to set RowValue and CellValue to the editor
-					editor->GetBoundsComposition();
+					editor->GetTemplate();
 				}
 				return editor;
 			}
@@ -1535,10 +1144,10 @@ GuiBindableDataEditor::Factory
 GuiBindableDataEditor
 ***********************************************************************/
 
-			compositions::GuiBoundsComposition* GuiBindableDataEditor::CreateBoundsCompositionInternal()
+			GuiTemplate* GuiBindableDataEditor::CreateTemplateInternal()
 			{
-				editorTemplate = templateFactory(viewModelContext);
-				CHECK_ERROR(editorTemplate, L"GuiBindableDataEditor::CreateBoundsCompositionInternal()#An instance of GuiGridEditorTemplate is expected.");
+				editorTemplate = templateFactory(dataGridContext->GetViewModelContext());
+				CHECK_ERROR(editorTemplate, L"GuiBindableDataEditor::CreateTemplateInternal()#An instance of GuiGridEditorTemplate is expected.");
 
 				editorTemplate->CellValueChanged.AttachMethod(this, &GuiBindableDataEditor::editorTemplate_CellValueChanged);
 				return editorTemplate;
@@ -1546,10 +1155,7 @@ GuiBindableDataEditor
 
 			void GuiBindableDataEditor::editorTemplate_CellValueChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if (callback)
-				{
-					callback->RequestSaveData();
-				}
+				dataGridContext->RequestSaveData();
 			}
 
 			GuiBindableDataEditor::GuiBindableDataEditor()
@@ -1560,9 +1166,9 @@ GuiBindableDataEditor
 			{
 			}
 
-			void GuiBindableDataEditor::BeforeEditCell(controls::list::IDataProvider* dataProvider, vint row, vint column)
+			void GuiBindableDataEditor::BeforeEditCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 			{
-				DataEditorBase::BeforeEditCell(dataProvider, row, column);
+				DataEditorBase::BeforeEditCell(itemProvider, row, column);
 				if (!editorTemplate) return;
 				editorTemplate->SetText(dataProvider->GetCellText(row, column));
 

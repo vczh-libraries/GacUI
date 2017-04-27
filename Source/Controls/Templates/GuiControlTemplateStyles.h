@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATESTYLES
 
 #include "GuiControlTemplates.h"
+#include "../ListControlPackage/GuiDataGridExtensions.h"
 #include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
@@ -292,29 +293,12 @@ Control Template
 			{
 			protected:
 				GuiTextListTemplate*											controlTemplate;
-				
-				class ItemStyleProvider
-					: public Object
-					, public virtual controls::list::TextItemStyleProvider::IBulletFactory
-				{
-				protected:
-					GuiTextListTemplate_StyleProvider*							styleProvider;
 
-				public:
-					ItemStyleProvider(GuiTextListTemplate_StyleProvider* _styleProvider);
-					~ItemStyleProvider();
-
-					controls::GuiSelectableButton::IStyleController*			CreateBulletStyleController()override;
-				};
 			public:
 				GuiTextListTemplate_StyleProvider(TemplateProperty<GuiTextListTemplate> factory);
 				~GuiTextListTemplate_StyleProvider();
 				
-				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
 				Color															GetTextColor()override;
-				
-				controls::list::TextItemStyleProvider::IBulletFactory*			CreateArgument();
-				controls::GuiSelectableButton::IStyleController*				CreateBulletStyle();
 			};
 
 			class GuiListViewTemplate_StyleProvider
@@ -438,152 +422,6 @@ Control Template
 			};
 
 /***********************************************************************
-Item Template (GuiControlTemplate)
-***********************************************************************/
-
-			class GuiControlTemplate_ItemStyleProvider
-				: public Object
-				, public virtual controls::GuiComboBoxListControl::IItemStyleProvider
-				, public Description<GuiControlTemplate_ItemStyleProvider>
-			{
-			protected:
-				TemplateProperty<GuiControlTemplate>				factory;
-
-			public:
-				GuiControlTemplate_ItemStyleProvider(TemplateProperty<GuiControlTemplate> _factory);
-				~GuiControlTemplate_ItemStyleProvider();
-
-				void												AttachComboBox(controls::GuiComboBoxListControl* value)override;
-				void												DetachComboBox()override;
-				controls::GuiControl::IStyleController*				CreateItemStyle(description::Value item)override;
-			};
-
-/***********************************************************************
-Item Template (GuiTextListItemTemplate)
-***********************************************************************/
-
-			class GuiTextListItemTemplate_ItemStyleController;
-
-			class GuiTextListItemTemplate_ItemStyleProvider
-				: public Object
-				, public virtual controls::GuiSelectableListControl::IItemStyleProvider
-				, public Description<GuiTextListItemTemplate_ItemStyleProvider>
-			{
-				friend class GuiTextListItemTemplate_ItemStyleController;
-			protected:
-				TemplateProperty<GuiTextListItemTemplate>			factory;
-				controls::GuiVirtualTextList*						listControl = nullptr;
-
-			public:
-				GuiTextListItemTemplate_ItemStyleProvider(TemplateProperty<GuiTextListItemTemplate> _factory);
-				~GuiTextListItemTemplate_ItemStyleProvider();
-
-				void												AttachListControl(controls::GuiListControl* value)override;
-				void												DetachListControl()override;
-				controls::GuiListControl::IItemStyleController*		CreateItemStyle()override;
-				void												DestroyItemStyle(controls::GuiListControl::IItemStyleController* style)override;
-				void												Install(controls::GuiListControl::IItemStyleController* style, vint itemIndex)override;
-				void												SetStyleIndex(controls::GuiListControl::IItemStyleController* style, vint value)override;
-				void												SetStyleSelected(controls::GuiListControl::IItemStyleController* style, bool value)override;
-			};
-
-			class GuiTextListItemTemplate_ItemStyleController
-				: public Object
-				, public virtual controls::GuiListControl::IItemStyleController
-				, public Description<GuiTextListItemTemplate_ItemStyleController>
-			{
-				friend class GuiTextListItemTemplate_ItemStyleProvider;
-			protected:
-				GuiTextListItemTemplate_ItemStyleProvider*			itemStyleProvider;
-				GuiTextListItemTemplate*							itemTemplate;
-				bool												installed;
-				controls::GuiSelectableButton*						backgroundButton;
-
-			public:
-				GuiTextListItemTemplate_ItemStyleController(GuiTextListItemTemplate_ItemStyleProvider* _itemStyleProvider);
-				~GuiTextListItemTemplate_ItemStyleController();
-
-				GuiTextListItemTemplate*							GetTemplate();
-				void												SetTemplate(GuiTextListItemTemplate* _itemTemplate);
-
-				controls::GuiListControl::IItemStyleProvider*		GetStyleProvider()override;
-				vint												GetItemStyleId()override;
-				compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-				bool												IsCacheable()override;
-				bool												IsInstalled()override;
-				void												OnInstalled()override;
-				void												OnUninstalled()override;
-			};
-
-/***********************************************************************
-Item Template (GuiTreeItemTemplate)
-***********************************************************************/
-
-			class GuiTreeItemTemplate_ItemStyleController;
-
-			class GuiTreeItemTemplate_ItemStyleProvider
-				: public Object
-				, public virtual controls::tree::INodeItemStyleProvider
-				, protected virtual controls::tree::INodeProviderCallback
-				, public Description<GuiTreeItemTemplate_ItemStyleProvider>
-			{
-				friend class GuiTreeItemTemplate_ItemStyleController;
-			protected:
-				TemplateProperty<GuiTreeItemTemplate>				factory;
-				controls::GuiVirtualTreeListControl*				treeListControl = nullptr;
-				controls::GuiListControl::IItemStyleProvider*		itemStyleProvider = nullptr;
-				
-				void												UpdateExpandingButton(controls::tree::INodeProvider* node);
-				void												OnAttached(controls::tree::INodeRootProvider* provider)override;
-				void												OnBeforeItemModified(controls::tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
-				void												OnAfterItemModified(controls::tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
-				void												OnItemExpanded(controls::tree::INodeProvider* node)override;
-				void												OnItemCollapsed(controls::tree::INodeProvider* node)override;
-
-			public:
-				GuiTreeItemTemplate_ItemStyleProvider(TemplateProperty<GuiTreeItemTemplate> _factory);
-				~GuiTreeItemTemplate_ItemStyleProvider();
-				
-				void												BindItemStyleProvider(controls::GuiListControl::IItemStyleProvider* styleProvider)override;
-				controls::GuiListControl::IItemStyleProvider*		GetBindedItemStyleProvider()override;
-				void												AttachListControl(controls::GuiListControl* value)override;
-				void												DetachListControl()override;
-				controls::tree::INodeItemStyleController*			CreateItemStyle()override;
-				void												DestroyItemStyle(controls::tree::INodeItemStyleController* style)override;
-				void												Install(controls::tree::INodeItemStyleController* style, controls::tree::INodeProvider* node, vint itemIndex)override;
-				void												SetStyleIndex(controls::tree::INodeItemStyleController* style, vint value)override;
-				void												SetStyleSelected(controls::tree::INodeItemStyleController* style, bool value)override;
-			};
-			
-			class GuiTreeItemTemplate_ItemStyleController
-				: public Object
-				, public virtual controls::tree::INodeItemStyleController
-				, public Description<GuiTreeItemTemplate_ItemStyleController>
-			{
-				friend class GuiTreeItemTemplate_ItemStyleProvider;
-			protected:
-				GuiTreeItemTemplate_ItemStyleProvider*				nodeStyleProvider;
-				GuiTreeItemTemplate*								itemTemplate;
-				bool												installed;
-
-			public:
-				GuiTreeItemTemplate_ItemStyleController(GuiTreeItemTemplate_ItemStyleProvider* _nodeStyleProvider);
-				~GuiTreeItemTemplate_ItemStyleController();
-
-				GuiTreeItemTemplate*								GetTemplate();
-				void												SetTemplate(GuiTreeItemTemplate* _itemTemplate);
-				
-				controls::GuiListControl::IItemStyleProvider*		GetStyleProvider()override;
-				vint												GetItemStyleId()override;
-				compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-				bool												IsCacheable()override;
-				bool												IsInstalled()override;
-				void												OnInstalled()override;
-				void												OnUninstalled()override;
-				controls::tree::INodeItemStyleProvider*				GetNodeStyleProvider()override;
-			};
-
-/***********************************************************************
 Item Template (GuiGridVisualizerTemplate)
 ***********************************************************************/
 
@@ -600,7 +438,7 @@ Item Template (GuiGridVisualizerTemplate)
 					Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory);
 					~Factory();
 
-					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override;
+					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(controls::list::IDataGridContext* dataGridContext)override;
 				};
 
 				class DecoratedFactory : public controls::list::DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>
@@ -612,20 +450,20 @@ Item Template (GuiGridVisualizerTemplate)
 					DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory);
 					~DecoratedFactory();
 
-					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(const FontProperties& font, controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override;
+					Ptr<controls::list::IDataVisualizer>			CreateVisualizer(controls::list::IDataGridContext* dataGridContext)override;
 				};
 
 			protected:
 				TemplateProperty<GuiGridVisualizerTemplate>			templateFactory;
 				GuiGridVisualizerTemplate*							visualizerTemplate = nullptr;
 
-				compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)override;
+				GuiTemplate*										CreateTemplateInternal(GuiTemplate* childTemplate)override;
 			public:
 				GuiBindableDataVisualizer();
 				GuiBindableDataVisualizer(Ptr<controls::list::IDataVisualizer> _decoratedVisualizer);
 				~GuiBindableDataVisualizer();
 
-				void												BeforeVisualizeCell(controls::list::IDataProvider* dataProvider, vint row, vint column)override;
+				void												BeforeVisualizeCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 				void												SetSelected(bool value)override;
 			};
 
@@ -645,20 +483,20 @@ Item Template (GuiGridEditorTemplate)
 					Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory);
 					~Factory();
 
-					Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataEditorCallback* callback, const description::Value& viewModelContext)override;
+					Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataGridContext* dataGridContext)override;
 				};
 
 			protected:
 				TemplateProperty<GuiGridEditorTemplate>				templateFactory;
 				GuiGridEditorTemplate*								editorTemplate = nullptr;
 
-				compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal()override;
+				GuiTemplate*										CreateTemplateInternal()override;
 				void												editorTemplate_CellValueChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				GuiBindableDataEditor();
 				~GuiBindableDataEditor();
 
-				void												BeforeEditCell(controls::list::IDataProvider* dataProvider, vint row, vint column)override;
+				void												BeforeEditCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 				description::Value									GetEditedCellValue();
 			};
 

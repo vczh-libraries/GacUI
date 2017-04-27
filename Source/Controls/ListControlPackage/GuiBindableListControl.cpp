@@ -166,18 +166,14 @@ GuiBindableTextList::ItemSource
 			
 			IDescriptable* GuiBindableTextList::ItemSource::RequestView(const WString& identifier)
 			{
-				if (identifier == TextItemStyleProvider::ITextItemView::Identifier)
+				if (identifier == ITextItemView::Identifier)
 				{
-					return (TextItemStyleProvider::ITextItemView*)this;
+					return (ITextItemView*)this;
 				}
 				else
 				{
 					return 0;
 				}
-			}
-			
-			void GuiBindableTextList::ItemSource::ReleaseView(IDescriptable* view)
-			{
 			}
 					
 			// ===================== GuiListControl::IItemBindingView =====================
@@ -208,7 +204,7 @@ GuiBindableTextList::ItemSource
 				return false;
 			}
 			
-			void GuiBindableTextList::ItemSource::SetCheckedSilently(vint itemIndex, bool value)
+			void GuiBindableTextList::ItemSource::SetChecked(vint itemIndex, bool value)
 			{
 				if (itemSource)
 				{
@@ -216,6 +212,7 @@ GuiBindableTextList::ItemSource
 					{
 						auto thisValue = itemSource->Get(itemIndex);
 						WriteProperty(thisValue, checkedProperty, value);
+						InvokeOnItemModified(itemIndex, 1, 1);
 					}
 				}
 			}
@@ -224,8 +221,8 @@ GuiBindableTextList::ItemSource
 GuiBindableTextList
 ***********************************************************************/
 
-			GuiBindableTextList::GuiBindableTextList(IStyleProvider* _styleProvider, list::TextItemStyleProvider::IBulletFactory* _bulletFactory)
-				:GuiVirtualTextList(_styleProvider, _bulletFactory, new ItemSource)
+			GuiBindableTextList::GuiBindableTextList(IStyleProvider* _styleProvider)
+				:GuiVirtualTextList(_styleProvider, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -420,11 +417,11 @@ GuiBindableListView::ItemSource
 
 			IDescriptable* GuiBindableListView::ItemSource::RequestView(const WString& identifier)
 			{
-				if(identifier==ListViewItemStyleProvider::IListViewItemView::Identifier)
+				if (identifier == IListViewItemView::Identifier)
 				{
-					return (ListViewItemStyleProvider::IListViewItemView*)this;
+					return (IListViewItemView*)this;
 				}
-				else if(identifier==ListViewColumnItemArranger::IColumnItemView::Identifier)
+				else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
 				{
 					return (ListViewColumnItemArranger::IColumnItemView*)this;
 				}
@@ -432,10 +429,6 @@ GuiBindableListView::ItemSource
 				{
 					return 0;
 				}
-			}
-
-			void GuiBindableListView::ItemSource::ReleaseView(IDescriptable* view)
-			{
 			}
 
 			// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
@@ -576,11 +569,11 @@ GuiBindableListView::ItemSource
 				}
 			}
 
-			GuiListViewColumnHeader::ColumnSortingState GuiBindableListView::ItemSource::GetSortingState(vint index)
+			ColumnSortingState GuiBindableListView::ItemSource::GetSortingState(vint index)
 			{
 				if (index < 0 || index >= columns.Count())
 				{
-					return GuiListViewColumnHeader::NotSorted;
+					return ColumnSortingState::NotSorted;
 				}
 				else
 				{
@@ -898,10 +891,6 @@ GuiBindableTreeView::ItemSource
 				}
 			}
 
-			void GuiBindableTreeView::ItemSource::ReleaseView(IDescriptable* view)
-			{
-			}
-
 			// ===================== tree::ITreeViewItemView =====================
 
 			Ptr<GuiImageData> GuiBindableTreeView::ItemSource::GetNodeImage(tree::INodeProvider* node)
@@ -911,15 +900,6 @@ GuiBindableTreeView::ItemSource
 					return ReadProperty(itemSourceNode->GetItemSource(), imageProperty);
 				}
 				return nullptr;
-			}
-
-			WString GuiBindableTreeView::ItemSource::GetNodeText(tree::INodeProvider* node)
-			{
-				if (auto itemSourceNode = dynamic_cast<ItemSourceNode*>(node))
-				{
-					return ReadProperty(itemSourceNode->GetItemSource(), textProperty);
-				}
-				return L"";
 			}
 
 /***********************************************************************
