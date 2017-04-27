@@ -40,10 +40,10 @@ Extension Bases
 					FontProperties										font;
 					GuiListViewBase::IStyleProvider*					styleProvider = nullptr;
 					description::Value									viewModelContext;
-					compositions::GuiBoundsComposition*					boundsComposition = nullptr;
+					templates::GuiTemplate*								visualizerTemplate = nullptr;
 					Ptr<IDataVisualizer>								decoratedDataVisualizer;
 
-					virtual compositions::GuiBoundsComposition*			CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)=0;
+					virtual templates::GuiTemplate*						CreateTemplateInternal(templates::GuiTemplate* childTemplate) = 0;
 				public:
 					/// <summary>Create the data visualizer.</summary>
 					/// <param name="_decoratedDataVisualizer">The decorated data visualizer inside the current data visualizer.</param>
@@ -51,8 +51,8 @@ Extension Bases
 					~DataVisualizerBase();
 
 					IDataVisualizerFactory*								GetFactory()override;
-					compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-					void												BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)override;
+					templates::GuiTemplate*								GetTemplate()override;
+					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 					IDataVisualizer*									GetDecoratedDataVisualizer()override;
 					void												SetSelected(bool value)override;
 				};
@@ -102,19 +102,18 @@ Extension Bases
 					friend class DataEditorFactory;
 				protected:
 					IDataEditorFactory*									factory = nullptr;
-					IDataEditorCallback*								callback = nullptr;
 					description::Value									viewModelContext;
-					compositions::GuiBoundsComposition*					boundsComposition = nullptr;
+					templates::GuiTemplate*								editorTemplate = nullptr;
 
-					virtual compositions::GuiBoundsComposition*			CreateBoundsCompositionInternal()=0;
+					virtual templates::GuiTemplate*						CreateTemplateInternal() = 0;
 				public:
 					/// <summary>Create the data editor.</summary>
 					DataEditorBase();
 					~DataEditorBase();
 
 					IDataEditorFactory*									GetFactory()override;
-					compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-					void												BeforeEditCell(IDataProvider* dataProvider, vint row, vint column)override;
+					templates::GuiTemplate*								GetTemplate()override;
+					void												BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 					void												ReinstallEditor()override;
 				};
 				
@@ -142,15 +141,15 @@ Visualizer Extensions
 				public:
 					typedef DataVisualizerFactory<ListViewMainColumnDataVisualizer>			Factory;
 				protected:
-					elements::GuiImageFrameElement*						image;
-					elements::GuiSolidLabelElement*						text;
+					elements::GuiImageFrameElement*						image = nullptr;
+					elements::GuiSolidLabelElement*						text = nullptr;
 
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)override;
+					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
 				public:
 					/// <summary>Create the data visualizer.</summary>
 					ListViewMainColumnDataVisualizer();
 
-					void												BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)override;
+					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 
 					/// <summary>Get the internal text element.</summary>
 					/// <returns>The text element.</returns>
@@ -163,14 +162,14 @@ Visualizer Extensions
 				public:
 					typedef DataVisualizerFactory<ListViewSubColumnDataVisualizer>			Factory;
 				protected:
-					elements::GuiSolidLabelElement*						text;
+					elements::GuiSolidLabelElement*						text = nullptr;
 
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)override;
+					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
 				public:
 					/// <summary>Create the data visualizer.</summary>
 					ListViewSubColumnDataVisualizer();
 
-					void												BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)override;
+					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 
 					/// <summary>Get the internal text element.</summary>
 					/// <returns>The text element.</returns>
@@ -186,11 +185,11 @@ Visualizer Extensions
 
 					void												label_MouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void												label_MouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)override;
+					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
 				public:
 					HyperlinkDataVisualizer();
 
-					void												BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)override;
+					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 				};
 
 				/// <summary>Data visualizer that displays am image. Use ImageDataVisualizer::Factory as the factory class.</summary>
@@ -199,14 +198,14 @@ Visualizer Extensions
 				public:
 					typedef DataVisualizerFactory<ImageDataVisualizer>						Factory;
 				protected:
-					elements::GuiImageFrameElement*						image;
+					elements::GuiImageFrameElement*						image = nullptr;
 
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)override;
+					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
 				public:
 					/// <summary>Create the data visualizer.</summary>
 					ImageDataVisualizer();
 
-					void												BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)override;
+					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 
 					/// <summary>Get the internal image element.</summary>
 					/// <returns>The image element.</returns>
@@ -220,7 +219,7 @@ Visualizer Extensions
 					typedef DataDecoratableVisualizerFactory<CellBorderDataVisualizer>		Factory;
 				protected:
 
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)override;
+					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
 				public:
 					/// <summary>Create the data visualizer.</summary>
 					/// <param name="decoratedDataVisualizer">The decorated data visualizer.</param>
@@ -233,16 +232,16 @@ Visualizer Extensions
 				public:
 					typedef DataDecoratableVisualizerFactory<NotifyIconDataVisualizer>		Factory;
 				protected:
-					elements::GuiImageFrameElement*						leftImage;
-					elements::GuiImageFrameElement*						rightImage;
+					elements::GuiImageFrameElement*						leftImage = nullptr;
+					elements::GuiImageFrameElement*						rightImage = nullptr;
 
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)override;
+					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
 				public:
 					/// <summary>Create the data visualizer.</summary>
 					/// <param name="decoratedDataVisualizer">The decorated data visualizer.</param>
 					NotifyIconDataVisualizer(Ptr<IDataVisualizer> decoratedDataVisualizer);
 
-					void												BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)override;
+					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 
 					/// <summary>Get the internal left image element.</summary>
 					/// <returns>The image element.</returns>
@@ -262,15 +261,15 @@ Editor Extensions
 				public:
 					typedef DataEditorFactory<TextBoxDataEditor>							Factory;
 				protected:
-					GuiSinglelineTextBox*								textBox;
+					GuiSinglelineTextBox*								textBox = nullptr;
 
 					void												OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal()override;
+					templates::GuiTemplate*								CreateTemplateInternal()override;
 				public:
 					/// <summary>Create the data editor.</summary>
 					TextBoxDataEditor();
 
-					void												BeforeEditCell(IDataProvider* dataProvider, vint row, vint column)override;
+					void												BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 
 					/// <summary>Get the <see cref="GuiSinglelineTextBox"/> editor control.</summary>
 					/// <returns>The control.</returns>
@@ -283,16 +282,16 @@ Editor Extensions
 				public:
 					typedef DataEditorFactory<TextComboBoxDataEditor>						Factory;
 				protected:
-					GuiComboBoxListControl*								comboBox;
-					GuiTextList*										textList;
+					GuiComboBoxListControl*								comboBox = nullptr;
+					GuiTextList*										textList = nullptr;
 					
 					void												OnSelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal()override;
+					templates::GuiTemplate*								CreateTemplateInternal()override;
 				public:
 					/// <summary>Create the data editor.</summary>
 					TextComboBoxDataEditor();
 
-					void												BeforeEditCell(IDataProvider* dataProvider, vint row, vint column)override;
+					void												BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 
 					/// <summary>Get the <see cref="GuiComboBoxListControl"/> editor control.</summary>
 					/// <returns>The control.</returns>
@@ -309,15 +308,15 @@ Editor Extensions
 				public:
 					typedef DataEditorFactory<DateComboBoxDataEditor>						Factory;
 				protected:
-					GuiDateComboBox*									comboBox;
+					GuiDateComboBox*									comboBox = nullptr;
 					
 					void												OnSelectedDateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					compositions::GuiBoundsComposition*					CreateBoundsCompositionInternal()override;
+					templates::GuiTemplate*								CreateTemplateInternal()override;
 				public:
 					/// <summary>Create the data editor.</summary>
 					DateComboBoxDataEditor();
 
-					void												BeforeEditCell(IDataProvider* dataProvider, vint row, vint column)override;
+					void												BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 
 					/// <summary>Get the <see cref="GuiDateComboBox"/> editor control.</summary>
 					/// <returns>The control.</returns>

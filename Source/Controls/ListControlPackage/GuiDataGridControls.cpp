@@ -233,6 +233,14 @@ DefaultDataGridItemTemplate
 
 				DefaultDataGridItemTemplate::~DefaultDataGridItemTemplate()
 				{
+					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					{
+						auto composition = visualizer->GetTemplate();
+						if (composition->GetParent())
+						{
+							composition->GetParent()->RemoveChild(composition);
+						}
+					}
 				}
 
 				void DefaultDataGridItemTemplate::UpdateSubItemSize()

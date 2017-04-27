@@ -13,6 +13,7 @@ namespace vl
 				using namespace compositions;
 				using namespace elements;
 				using namespace theme;
+				using namespace templates;
 				
 /***********************************************************************
 DataVisualizerBase
@@ -25,18 +26,18 @@ DataVisualizerBase
 
 				DataVisualizerBase::~DataVisualizerBase()
 				{
-					if(decoratedDataVisualizer)
+					if (decoratedDataVisualizer)
 					{
-						GuiBoundsComposition* composition=decoratedDataVisualizer->GetBoundsComposition();
-						if(composition->GetParent())
+						auto composition = decoratedDataVisualizer->GetTemplate();
+						if (composition->GetParent())
 						{
 							composition->GetParent()->RemoveChild(composition);
 						}
-						decoratedDataVisualizer=0;
+						decoratedDataVisualizer = nullptr;
 					}
-					if(boundsComposition)
+					if (visualizerTemplate)
 					{
-						SafeDeleteComposition(boundsComposition);
+						SafeDeleteComposition(visualizerTemplate);
 					}
 				}
 
@@ -45,25 +46,25 @@ DataVisualizerBase
 					return factory;
 				}
 
-				compositions::GuiBoundsComposition* DataVisualizerBase::GetBoundsComposition()
+				templates::GuiTemplate* DataVisualizerBase::GetTemplate()
 				{
-					if(!boundsComposition)
+					if (!visualizerTemplate)
 					{
-						GuiBoundsComposition* decoratedComposition=0;
-						if(decoratedDataVisualizer)
+						GuiTemplate* childTemplate = nullptr;
+						if (decoratedDataVisualizer)
 						{
-							decoratedComposition=decoratedDataVisualizer->GetBoundsComposition();
+							childTemplate = decoratedDataVisualizer->GetTemplate();
 						}
-						boundsComposition=CreateBoundsCompositionInternal(decoratedComposition);
+						visualizerTemplate = CreateTemplateInternal(childTemplate);
 					}
-					return boundsComposition;
+					return visualizerTemplate;
 				}
 
-				void DataVisualizerBase::BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)
+				void DataVisualizerBase::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					if(decoratedDataVisualizer)
+					if (decoratedDataVisualizer)
 					{
-						decoratedDataVisualizer->BeforeVisualizeCell(dataProvider, row, column);
+						decoratedDataVisualizer->BeforeVisualizeCell(itemProvider, row, column);
 					}
 				}
 
@@ -74,7 +75,7 @@ DataVisualizerBase
 
 				void DataVisualizerBase::SetSelected(bool value)
 				{
-					if(decoratedDataVisualizer)
+					if (decoratedDataVisualizer)
 					{
 						decoratedDataVisualizer->SetSelected(value);
 					}
@@ -90,9 +91,9 @@ DataEditorBase
 
 				DataEditorBase::~DataEditorBase()
 				{
-					if(boundsComposition)
+					if (editorTemplate)
 					{
-						SafeDeleteComposition(boundsComposition);
+						SafeDeleteComposition(editorTemplate);
 					}
 				}
 
@@ -101,16 +102,16 @@ DataEditorBase
 					return factory;
 				}
 
-				compositions::GuiBoundsComposition* DataEditorBase::GetBoundsComposition()
+				templates::GuiTemplate* DataEditorBase::GetTemplate()
 				{
-					if(!boundsComposition)
+					if (!editorTemplate)
 					{
-						boundsComposition=CreateBoundsCompositionInternal();
+						editorTemplate = CreateTemplateInternal();
 					}
-					return boundsComposition;
+					return editorTemplate;
 				}
 
-				void DataEditorBase::BeforeEditCell(IDataProvider* dataProvider, vint row, vint column)
+				void DataEditorBase::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
 				}
 
@@ -122,9 +123,9 @@ DataEditorBase
 ListViewMainColumnDataVisualizer
 ***********************************************************************/
 
-				compositions::GuiBoundsComposition* ListViewMainColumnDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
+				templates::GuiTemplate* ListViewMainColumnDataVisualizer::CreateTemplateInternal(templates::GuiTemplate* childTemplate)
 				{
-					GuiTableComposition* table=new GuiTableComposition;
+					GuiTableComposition* table = new GuiTableComposition;
 					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					table->SetRowsAndColumns(3, 2);
 					table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
@@ -134,45 +135,43 @@ ListViewMainColumnDataVisualizer
 					table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
 					table->SetCellPadding(2);
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(1, 0, 1, 1);
 						cell->SetPreferredMinSize(Size(16, 16));
 
-						image=GuiImageFrameElement::Create();
+						image = GuiImageFrameElement::Create();
 						image->SetStretch(true);
 						cell->SetOwnedElement(image);
 					}
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(0, 1, 3, 1);
 						cell->SetMargin(Margin(0, 0, 8, 0));
 
-						text=GuiSolidLabelElement::Create();
+						text = GuiSolidLabelElement::Create();
 						cell->SetOwnedElement(text);
 					}
 					return table;
 				}
 
 				ListViewMainColumnDataVisualizer::ListViewMainColumnDataVisualizer()
-					:image(0)
-					,text(0)
 				{
 				}
 
-				void ListViewMainColumnDataVisualizer::BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)
+				void ListViewMainColumnDataVisualizer::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					DataVisualizerBase::BeforeVisualizeCell(dataProvider, row, column);
+					DataVisualizerBase::BeforeVisualizeCell(itemProvider, row, column);
 
-					Ptr<GuiImageData> imageData=dataProvider->GetRowSmallImage(row);
-					if(imageData)
+					Ptr<GuiImageData> imageData = dataProvider->GetRowSmallImage(row);
+					if (imageData)
 					{
 						image->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
 					}
 					else
 					{
-						image->SetImage(0);
+						image->SetImage(nullptr);
 					}
 
 					text->SetAlignments(Alignment::Left, Alignment::Center);
@@ -191,26 +190,25 @@ ListViewMainColumnDataVisualizer
 ListViewSubColumnDataVisualizer
 ***********************************************************************/
 
-				compositions::GuiBoundsComposition* ListViewSubColumnDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
+				templates::GuiTemplate* ListViewSubColumnDataVisualizer::CreateTemplateInternal(templates::GuiTemplate* childTemplate)
 				{
-					GuiBoundsComposition* composition=new GuiBoundsComposition;
+					GuiBoundsComposition* composition = new GuiBoundsComposition;
 					composition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					composition->SetMargin(Margin(8, 0, 8, 0));
 
-					text=GuiSolidLabelElement::Create();
+					text = GuiSolidLabelElement::Create();
 					composition->SetOwnedElement(text);
 
 					return composition;
 				}
 
 				ListViewSubColumnDataVisualizer::ListViewSubColumnDataVisualizer()
-					:text(0)
 				{
 				}
 
-				void ListViewSubColumnDataVisualizer::BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)
+				void ListViewSubColumnDataVisualizer::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					DataVisualizerBase::BeforeVisualizeCell(dataProvider, row, column);
+					DataVisualizerBase::BeforeVisualizeCell(itemProvider, row, column);
 
 					text->SetAlignments(Alignment::Left, Alignment::Center);
 					text->SetFont(font);
@@ -230,21 +228,21 @@ HyperlinkDataVisualizer
 
 				void HyperlinkDataVisualizer::label_MouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					FontProperties font=text->GetFont();
-					font.underline=true;
+					FontProperties font = text->GetFont();
+					font.underline = true;
 					text->SetFont(font);
 				}
 
 				void HyperlinkDataVisualizer::label_MouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					FontProperties font=text->GetFont();
-					font.underline=false;
+					FontProperties font = text->GetFont();
+					font.underline = false;
 					text->SetFont(font);
 				}
 
-				compositions::GuiBoundsComposition* HyperlinkDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
+				templates::GuiTemplate* HyperlinkDataVisualizer::CreateTemplateInternal(templates::GuiTemplate* childTemplate)
 				{
-					GuiBoundsComposition* composition=ListViewSubColumnDataVisualizer::CreateBoundsCompositionInternal(decoratedComposition);
+					GuiBoundsComposition* composition = ListViewSubColumnDataVisualizer::CreateTemplateInternal(decoratedComposition);
 					composition->GetEventReceiver()->mouseEnter.AttachMethod(this, &HyperlinkDataVisualizer::label_MouseEnter);
 					composition->GetEventReceiver()->mouseLeave.AttachMethod(this, &HyperlinkDataVisualizer::label_MouseLeave);
 					composition->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand));
@@ -255,9 +253,9 @@ HyperlinkDataVisualizer
 				{
 				}
 
-				void HyperlinkDataVisualizer::BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)
+				void HyperlinkDataVisualizer::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					ListViewSubColumnDataVisualizer::BeforeVisualizeCell(dataProvider, row, column);
+					ListViewSubColumnDataVisualizer::BeforeVisualizeCell(itemProvider, row, column);
 					text->SetColor(Color(0, 0, 255));
 				}
 				
@@ -265,7 +263,7 @@ HyperlinkDataVisualizer
 ImageDataVisualizer
 ***********************************************************************/
 
-				compositions::GuiBoundsComposition* ImageDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
+				templates::GuiTemplate* ImageDataVisualizer::CreateTemplateInternal(templates::GuiTemplate* childTemplate)
 				{
 					GuiBoundsComposition* composition=new GuiBoundsComposition;
 					composition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -277,13 +275,12 @@ ImageDataVisualizer
 				}
 
 				ImageDataVisualizer::ImageDataVisualizer()
-					:image(0)
 				{
 				}
 
-				void ImageDataVisualizer::BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)
+				void ImageDataVisualizer::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					DataVisualizerBase::BeforeVisualizeCell(dataProvider, row, column);
+					DataVisualizerBase::BeforeVisualizeCell(itemProvider, row, column);
 
 					image->SetImage(0, -1);
 					image->SetAlignments(Alignment::Center, Alignment::Center);
@@ -300,29 +297,29 @@ ImageDataVisualizer
 CellBorderDataVisualizer
 ***********************************************************************/
 
-				compositions::GuiBoundsComposition* CellBorderDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
+				templates::GuiTemplate* CellBorderDataVisualizer::CreateTemplateInternal(templates::GuiTemplate* childTemplate)
 				{
-					GuiBoundsComposition* border1=0;
-					GuiBoundsComposition* border2=0;
+					GuiBoundsComposition* border1 = nullptr;
+					GuiBoundsComposition* border2 = nullptr;
 					{
-						GuiSolidBorderElement* element=GuiSolidBorderElement::Create();
+						GuiSolidBorderElement* element = GuiSolidBorderElement::Create();
 						element->SetColor(styleProvider->GetItemSeparatorColor());
 
-						border1=new GuiBoundsComposition;
+						border1 = new GuiBoundsComposition;
 						border1->SetOwnedElement(element);
 						border1->SetAlignmentToParent(Margin(-1, 0, 0, 0));
 					}
 					{
-						GuiSolidBorderElement* element=GuiSolidBorderElement::Create();
+						GuiSolidBorderElement* element = GuiSolidBorderElement::Create();
 						element->SetColor(styleProvider->GetItemSeparatorColor());
 
-						border2=new GuiBoundsComposition;
+						border2 = new GuiBoundsComposition;
 						border2->SetOwnedElement(element);
 						border2->SetAlignmentToParent(Margin(0, -1, 0, 0));
 					}
 					decoratedComposition->SetAlignmentToParent(Margin(0, 0, 1, 1));
 
-					GuiBoundsComposition* composition=new GuiBoundsComposition;
+					GuiBoundsComposition* composition = new GuiBoundsComposition;
 					composition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					composition->AddChild(border1);
 					composition->AddChild(border2);
@@ -340,9 +337,9 @@ CellBorderDataVisualizer
 NotifyIconDataVisualizer
 ***********************************************************************/
 
-				compositions::GuiBoundsComposition* NotifyIconDataVisualizer::CreateBoundsCompositionInternal(compositions::GuiBoundsComposition* decoratedComposition)
+				templates::GuiTemplate* NotifyIconDataVisualizer::CreateTemplateInternal(templates::GuiTemplate* childTemplate)
 				{
-					GuiTableComposition* table=new GuiTableComposition;
+					GuiTableComposition* table = new GuiTableComposition;
 					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					table->SetRowsAndColumns(1, 3);
 					table->SetRowOption(0, GuiCellOption::MinSizeOption());
@@ -350,16 +347,16 @@ NotifyIconDataVisualizer
 					table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
 					table->SetColumnOption(2, GuiCellOption::MinSizeOption());
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(0, 0, 1, 1);
 						cell->SetInternalMargin(Margin(2, 2, 0, 2));
 
-						leftImage=GuiImageFrameElement::Create();
+						leftImage = GuiImageFrameElement::Create();
 						cell->SetOwnedElement(leftImage);
 					}
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(0, 1, 1, 1);
 
@@ -367,12 +364,12 @@ NotifyIconDataVisualizer
 						cell->AddChild(decoratedComposition);
 					}
 					{
-						GuiCellComposition* cell=new GuiCellComposition;
+						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(0, 2, 1, 1);
 						cell->SetInternalMargin(Margin(0, 2, 2, 2));
 
-						rightImage=GuiImageFrameElement::Create();
+						rightImage = GuiImageFrameElement::Create();
 						cell->SetOwnedElement(rightImage);
 					}
 					return table;
@@ -380,14 +377,12 @@ NotifyIconDataVisualizer
 
 				NotifyIconDataVisualizer::NotifyIconDataVisualizer(Ptr<IDataVisualizer> decoratedDataVisualizer)
 					:DataVisualizerBase(decoratedDataVisualizer)
-					,leftImage(0)
-					,rightImage(0)
 				{
 				}
 
-				void NotifyIconDataVisualizer::BeforeVisualizeCell(IDataProvider* dataProvider, vint row, vint column)
+				void NotifyIconDataVisualizer::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					DataVisualizerBase::BeforeVisualizeCell(dataProvider, row, column);
+					DataVisualizerBase::BeforeVisualizeCell(itemProvider, row, column);
 
 					leftImage->SetImage(0, -1);
 					leftImage->SetAlignments(Alignment::Center, Alignment::Center);
@@ -419,7 +414,7 @@ TextBoxDataEditor
 					callback->RequestSaveData();
 				}
 
-				compositions::GuiBoundsComposition* TextBoxDataEditor::CreateBoundsCompositionInternal()
+				templates::GuiTemplate* TextBoxDataEditor::CreateTemplateInternal()
 				{
 					return textBox->GetBoundsComposition();
 				}
@@ -430,9 +425,9 @@ TextBoxDataEditor
 					textBox->TextChanged.AttachMethod(this, &TextBoxDataEditor::OnTextChanged);
 				}
 
-				void TextBoxDataEditor::BeforeEditCell(IDataProvider* dataProvider, vint row, vint column)
+				void TextBoxDataEditor::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					DataEditorBase::BeforeEditCell(dataProvider, row, column);
+					DataEditorBase::BeforeEditCell(itemProvider, row, column);
 					textBox->SetText(L"");
 					GetApplication()->InvokeInMainThread([this]()
 					{
@@ -454,21 +449,21 @@ TextComboBoxDataEditor
 					callback->RequestSaveData();
 				}
 
-				compositions::GuiBoundsComposition* TextComboBoxDataEditor::CreateBoundsCompositionInternal()
+				templates::GuiTemplate* TextComboBoxDataEditor::CreateTemplateInternal()
 				{
 					return comboBox->GetBoundsComposition();
 				}
 
 				TextComboBoxDataEditor::TextComboBoxDataEditor()
 				{
-					textList=g::NewTextList();
-					comboBox=g::NewComboBox(textList);
+					textList = g::NewTextList();
+					comboBox = g::NewComboBox(textList);
 					comboBox->SelectedIndexChanged.AttachMethod(this, &TextComboBoxDataEditor::OnSelectedIndexChanged);
 				}
 
-				void TextComboBoxDataEditor::BeforeEditCell(IDataProvider* dataProvider, vint row, vint column)
+				void TextComboBoxDataEditor::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					DataEditorBase::BeforeEditCell(dataProvider, row, column);
+					DataEditorBase::BeforeEditCell(itemProvider, row, column);
 					textList->GetItems().Clear();
 				}
 
@@ -491,20 +486,20 @@ DateComboBoxDataEditor
 					callback->RequestSaveData();
 				}
 
-				compositions::GuiBoundsComposition* DateComboBoxDataEditor::CreateBoundsCompositionInternal()
+				templates::GuiTemplate* DateComboBoxDataEditor::CreateTemplateInternal()
 				{
 					return comboBox->GetBoundsComposition();
 				}
 
 				DateComboBoxDataEditor::DateComboBoxDataEditor()
 				{
-					comboBox=g::NewDateComboBox();
+					comboBox = g::NewDateComboBox();
 					comboBox->SelectedDateChanged.AttachMethod(this, &DateComboBoxDataEditor::OnSelectedDateChanged);
 				}
 
-				void DateComboBoxDataEditor::BeforeEditCell(IDataProvider* dataProvider, vint row, vint column)
+				void DateComboBoxDataEditor::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					DataEditorBase::BeforeEditCell(dataProvider, row, column);
+					DataEditorBase::BeforeEditCell(itemProvider, row, column);
 					comboBox->SetSelectedDate(DateTime::LocalTime());
 				}
 
