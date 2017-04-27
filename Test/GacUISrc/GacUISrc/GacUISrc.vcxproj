@@ -312,7 +312,7 @@
     <ClCompile Include="..\..\..\Source\Controls\GuiLabelControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiScrollControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiWindowControls.cpp" />
-    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControl.cpp" />
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.cpp" />
@@ -480,7 +480,7 @@
     <ClInclude Include="..\..\..\Source\Controls\GuiLabelControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiScrollControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiWindowControls.h" />
-    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControl.h" />
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.h" />

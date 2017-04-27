@@ -120,9 +120,6 @@
     <ClCompile Include="..\..\..\Source\Controls\GuiWindowControls.cpp">
       <Filter>GacUI\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControl.cpp">
-      <Filter>GacUI\Controls\ListControlPackage</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClCompile>
@@ -501,6 +498,9 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.cpp">
+      <Filter>GacUI\Controls\ListControlPackage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -529,9 +529,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\GuiWindowControls.h">
       <Filter>GacUI\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControl.h">
-      <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiComboControls.h">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
@@ -855,6 +852,9 @@
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.h">
+      <Filter>GacUI\Controls\ListControlPackage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.h">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClInclude>
   </ItemGroup>
