@@ -85,6 +85,11 @@ DataVisualizerBase
 DataEditorBase
 ***********************************************************************/
 
+				void DataEditorBase::RequestSaveData()
+				{
+					dataGridContext->RequestSaveData();
+				}
+
 				DataEditorBase::DataEditorBase()
 				{
 				}
@@ -186,7 +191,7 @@ ListViewMainColumnDataVisualizer
 						}
 
 						text->SetAlignments(Alignment::Left, Alignment::Center);
-						text->SetColor(styleProvider->GetPrimaryTextColor());
+						text->SetColor(dataGridContext->GetListViewStyleProvider()->GetPrimaryTextColor());
 						text->SetEllipse(true);
 						text->SetText(column == 0 ? itemProvider->GetTextValue(row) : view->GetSubItem(row, column - 1));
 					}
@@ -228,7 +233,7 @@ ListViewSubColumnDataVisualizer
 					if (auto view = dynamic_cast<IListViewItemView*>(itemProvider->RequestView(IListViewItemView::Identifier)))
 					{
 						text->SetAlignments(Alignment::Left, Alignment::Center);
-						text->SetColor(styleProvider->GetSecondaryTextColor());
+						text->SetColor(dataGridContext->GetListViewStyleProvider()->GetSecondaryTextColor());
 						text->SetEllipse(true);
 						text->SetText(column == 0 ? itemProvider->GetTextValue(row) : view->GetSubItem(row, column - 1));
 					}
@@ -320,7 +325,7 @@ CellBorderDataVisualizer
 					GuiBoundsComposition* border2 = nullptr;
 					{
 						GuiSolidBorderElement* element = GuiSolidBorderElement::Create();
-						element->SetColor(styleProvider->GetItemSeparatorColor());
+						element->SetColor(dataGridContext->GetListViewStyleProvider()->GetItemSeparatorColor());
 
 						border1 = new GuiBoundsComposition;
 						border1->SetOwnedElement(element);
@@ -328,7 +333,7 @@ CellBorderDataVisualizer
 					}
 					{
 						GuiSolidBorderElement* element = GuiSolidBorderElement::Create();
-						element->SetColor(styleProvider->GetItemSeparatorColor());
+						element->SetColor(dataGridContext->GetListViewStyleProvider()->GetItemSeparatorColor());
 
 						border2 = new GuiBoundsComposition;
 						border2->SetOwnedElement(element);
@@ -433,18 +438,27 @@ TextBoxDataEditor
 
 				void TextBoxDataEditor::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					callback->RequestSaveData();
+					RequestSaveData();
 				}
 
 				templates::GuiTemplate* TextBoxDataEditor::CreateTemplateInternal()
 				{
-					return textBox->GetBoundsComposition();
+					textBox = g::NewTextBox();
+					textBox->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					textBox->TextChanged.AttachMethod(this, &TextBoxDataEditor::OnTextChanged);
+
+					auto dataTemplate = new GuiTemplate;
+					dataTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					dataTemplate->AddChild(textBox->GetBoundsComposition());
+					dataTemplate->FontChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					{
+						textBox->SetFont(dataTemplate->GetFont());
+					});
+					return dataTemplate;
 				}
 
 				TextBoxDataEditor::TextBoxDataEditor()
 				{
-					textBox=g::NewTextBox();
-					textBox->TextChanged.AttachMethod(this, &TextBoxDataEditor::OnTextChanged);
 				}
 
 				void TextBoxDataEditor::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
@@ -468,19 +482,28 @@ TextComboBoxDataEditor
 
 				void TextComboBoxDataEditor::OnSelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					callback->RequestSaveData();
+					RequestSaveData();
 				}
 
 				templates::GuiTemplate* TextComboBoxDataEditor::CreateTemplateInternal()
 				{
-					return comboBox->GetBoundsComposition();
+					textList = g::NewTextList();
+					comboBox = g::NewComboBox(textList);
+					comboBox->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					comboBox->SelectedIndexChanged.AttachMethod(this, &TextComboBoxDataEditor::OnSelectedIndexChanged);
+
+					auto dataTemplate = new GuiTemplate;
+					dataTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					dataTemplate->AddChild(comboBox->GetBoundsComposition());
+					dataTemplate->FontChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					{
+						comboBox->SetFont(dataTemplate->GetFont());
+					});
+					return dataTemplate;
 				}
 
 				TextComboBoxDataEditor::TextComboBoxDataEditor()
 				{
-					textList = g::NewTextList();
-					comboBox = g::NewComboBox(textList);
-					comboBox->SelectedIndexChanged.AttachMethod(this, &TextComboBoxDataEditor::OnSelectedIndexChanged);
 				}
 
 				void TextComboBoxDataEditor::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
@@ -505,18 +528,27 @@ DateComboBoxDataEditor
 
 				void DateComboBoxDataEditor::OnSelectedDateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					callback->RequestSaveData();
+					RequestSaveData();
 				}
 
 				templates::GuiTemplate* DateComboBoxDataEditor::CreateTemplateInternal()
 				{
-					return comboBox->GetBoundsComposition();
+					comboBox = g::NewDateComboBox();
+					comboBox->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					comboBox->SelectedDateChanged.AttachMethod(this, &DateComboBoxDataEditor::OnSelectedDateChanged);
+
+					auto dataTemplate = new GuiTemplate;
+					dataTemplate->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					dataTemplate->AddChild(comboBox->GetBoundsComposition());
+					dataTemplate->FontChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					{
+						comboBox->SetFont(dataTemplate->GetFont());
+					});
+					return dataTemplate;
 				}
 
 				DateComboBoxDataEditor::DateComboBoxDataEditor()
 				{
-					comboBox = g::NewDateComboBox();
-					comboBox->SelectedDateChanged.AttachMethod(this, &DateComboBoxDataEditor::OnSelectedDateChanged);
 				}
 
 				void DateComboBoxDataEditor::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)

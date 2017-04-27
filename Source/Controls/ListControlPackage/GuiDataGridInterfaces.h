@@ -27,6 +27,15 @@ Datagrid Interfaces
 				class IDataVisualizer;
 				class IDataEditor;
 
+				/// <summary>The data grid context.</summary>
+				class IDataGridContext : public virtual IDescriptable, public Description<IDataGridContext>
+				{
+				public:
+					virtual GuiListViewBase::IStyleProvider*			GetListViewStyleProvider() = 0;
+					virtual description::Value							GetViewModelContext() = 0;
+					virtual void										RequestSaveData() = 0;
+				};
+
 				/// <summary>The visualizer factory.</summary>
 				class IDataVisualizerFactory : public virtual IDescriptable, public Description<IDataVisualizerFactory>
 				{
@@ -35,7 +44,7 @@ Datagrid Interfaces
 					/// <returns>The created data visualizer.</returns>
 					/// <param name="font">The font for the list view control.</param>
 					/// <param name="styleProvider">The style provider for the list view control.</param>
-					virtual Ptr<IDataVisualizer>						CreateVisualizer(GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext) = 0;
+					virtual Ptr<IDataVisualizer>						CreateVisualizer(IDataGridContext* dataGridContext) = 0;
 				};
 
 				/// <summary>The visualizer for each cell in [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>
@@ -85,7 +94,7 @@ Datagrid Interfaces
 					/// <summary>Create a data editor.</summary>
 					/// <returns>The created data editor.</returns>
 					/// <param name="callback">The callback for the created editor to send notification.</param>
-					virtual Ptr<IDataEditor>							CreateEditor(const description::Value& viewModelContext) = 0;
+					virtual Ptr<IDataEditor>							CreateEditor(IDataGridContext* dataGridContext) = 0;
 				};
 
 				/// <summary>The editor for each cell in [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>

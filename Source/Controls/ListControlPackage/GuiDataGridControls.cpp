@@ -1,4 +1,5 @@
 #include "GuiDataGridControls.h"
+#include "GuiDataGridExtensions.h"
 
 namespace vl
 {
@@ -20,18 +21,32 @@ DefaultDataGridItemTemplate
 
 				IDataVisualizerFactory* DefaultDataGridItemTemplate::GetDataVisualizerFactory(vint row, vint column)
 				{
-					if (auto view = dynamic_cast<IDataGridView*>(listControl->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
-						return view->GetCellDataVisualizerFactory(row, column);
+						if (auto factory = dataGrid->dataGridView->GetCellDataVisualizerFactory(row, column))
+						{
+							return factory;
+						}
+
+						if (column == 0)
+						{
+							return dataGrid->defaultMainColumnVisualizerFactory.Obj();
+						}
+						else
+						{
+							return dataGrid->defaultSubColumnVisualizerFactory.Obj();
+						}
+
 					}
+
 					return nullptr;
 				}
 
 				IDataEditorFactory* DefaultDataGridItemTemplate::GetDataEditorFactory(vint row, vint column)
 				{
-					if (auto view = dynamic_cast<IDataGridView*>(listControl->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
-						return view->GetCellDataEditorFactory(row, column);
+						return dataGrid->dataGridView->GetCellDataEditorFactory(row, column);
 					}
 					return nullptr;
 				}
@@ -162,7 +177,7 @@ DefaultDataGridItemTemplate
 						for (vint i = 0; i < dataVisualizers.Count(); i++)
 						{
 							auto factory = GetDataVisualizerFactory(itemIndex, i);
-							dataVisualizers[i] = factory->CreateVisualizer(dataGrid->GetListViewStyleProvider(), dataGrid->dataGridView->GetViewModelContext());
+							dataVisualizers[i] = factory->CreateVisualizer(dataGrid);
 						}
 
 						textTable->SetRowsAndColumns(1, columnCount);
@@ -337,6 +352,60 @@ GuiVirtualDataGrid (Editor)
 				}
 			}
 
+			list::IDataEditor* GuiVirtualDataGrid::OpenEditor(vint row, vint column, list::IDataEditorFactory* editorFactory)
+			{
+				CloseEditor(true);
+				NotifySelectCell(row, column);
+				if (editorFactory)
+				{
+					currentEditorOpeningEditor = true;
+					currentEditorPos = { row,column };
+					currentEditor = editorFactory->CreateEditor(this);
+					currentEditor->BeforeEditCell(GetItemProvider(), row, column);
+					dataGridView->EditCell(row, column, currentEditor.Obj());
+					currentEditorOpeningEditor = false;
+				}
+				return currentEditor.Obj();
+			}
+
+			void GuiVirtualDataGrid::CloseEditor(bool forOpenNewEditor)
+			{
+				if (GetItemProvider()->IsEditing())
+				{
+					NotifyCloseEditor();
+				}
+				else
+				{
+					if (currentEditorPos != GridPos{-1, -1})
+					{
+						if (currentEditor)
+						{
+							NotifyCloseEditor();
+							currentEditor = nullptr;
+						}
+						if (!forOpenNewEditor)
+						{
+							NotifySelectCell(-1, -1);
+						}
+					}
+				}
+				currentEditorPos = { -1,-1 };
+			}
+
+/***********************************************************************
+GuiVirtualDataGrid (IDataGridContext)
+***********************************************************************/
+
+			GuiListViewBase::IStyleProvider* GuiVirtualDataGrid::GetListViewStyleProvider()
+			{
+				return GuiVirtualListView::GetListViewStyleProvider();
+			}
+
+			description::Value GuiVirtualDataGrid::GetViewModelContext()
+			{
+				return dataGridView->GetViewModelContext();
+			}
+
 			void GuiVirtualDataGrid::RequestSaveData()
 			{
 				if (currentEditor && !currentEditorOpeningEditor)
@@ -376,46 +445,6 @@ GuiVirtualDataGrid (Editor)
 				}
 			}
 
-			list::IDataEditor* GuiVirtualDataGrid::OpenEditor(vint row, vint column, list::IDataEditorFactory* editorFactory)
-			{
-				CloseEditor(true);
-				NotifySelectCell(row, column);
-				if (editorFactory)
-				{
-					currentEditorOpeningEditor = true;
-					currentEditorPos = { row,column };
-					currentEditor = editorFactory->CreateEditor(dataGridView->GetViewModelContext());
-					currentEditor->BeforeEditCell(GetItemProvider(), row, column);
-					dataGridView->EditCell(row, column, currentEditor.Obj());
-					currentEditorOpeningEditor = false;
-				}
-				return currentEditor.Obj();
-			}
-
-			void GuiVirtualDataGrid::CloseEditor(bool forOpenNewEditor)
-			{
-				if (GetItemProvider()->IsEditing())
-				{
-					NotifyCloseEditor();
-				}
-				else
-				{
-					if (currentEditorPos != GridPos{-1, -1})
-					{
-						if (currentEditor)
-						{
-							NotifyCloseEditor();
-							currentEditor = nullptr;
-						}
-						if (!forOpenNewEditor)
-						{
-							NotifySelectCell(-1, -1);
-						}
-					}
-				}
-				currentEditorPos = { -1,-1 };
-			}
-
 /***********************************************************************
 GuiVirtualDataGrid
 ***********************************************************************/
@@ -445,6 +474,9 @@ GuiVirtualDataGrid
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));
 				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
 				dataGridView = dynamic_cast<IDataGridView*>(_itemProvider->RequestView(IDataGridView::Identifier));
+
+				defaultMainColumnVisualizerFactory = new CellBorderDataVisualizer::Factory(new ListViewMainColumnDataVisualizer::Factory);
+				defaultSubColumnVisualizerFactory = new CellBorderDataVisualizer::Factory(new ListViewSubColumnDataVisualizer::Factory);
 
 				CHECK_ERROR(listViewItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing IListViewItemView from item provider.");
 				CHECK_ERROR(columnItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing ListViewColumnItemArranger::IColumnItemView from item provider.");

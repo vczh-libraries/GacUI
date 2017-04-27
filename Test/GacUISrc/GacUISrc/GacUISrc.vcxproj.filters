@@ -132,9 +132,6 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridExtensions.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridStructured.cpp">
-      <Filter>GacUI\Controls\ListControlPackage</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListControls.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClCompile>
@@ -501,6 +498,9 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.cpp">
+      <Filter>GacUI\Controls\ListControlPackage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -543,9 +543,6 @@
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridInterfaces.h">
-      <Filter>GacUI\Controls\ListControlPackage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiDataGridStructured.h">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListControls.h">
@@ -855,6 +852,9 @@
       <Filter>GacUI\Controls</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.h">
+      <Filter>GacUI\Controls\ListControlPackage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.h">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClInclude>
   </ItemGroup>

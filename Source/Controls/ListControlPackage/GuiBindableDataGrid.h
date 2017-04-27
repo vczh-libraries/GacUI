@@ -487,7 +487,139 @@ Strong Typed DataSource Extensions
 
 					virtual void										GetRowData(vint row, TRow& rowData)=0;
 				};
+
+/***********************************************************************
+GuiBindableDataGrid
+***********************************************************************/
+				class BindableDataProvider;
+
+				/// <summary>Column object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
+				class BindableDataColumn : public StructuredColummProviderBase, public Description<BindableDataColumn>
+				{
+					friend class BindableDataProvider;
+
+					using Value = reflection::description::Value;
+				protected:
+					BindableDataProvider*							dataProvider;
+					ItemProperty<WString>							textProperty;
+					WritableItemProperty<Value>						valueProperty;
+
+				public:
+					BindableDataColumn();
+					~BindableDataColumn();
+
+					/// <summary>Value property name changed event.</summary>
+					compositions::GuiNotifyEvent					ValuePropertyChanged;
+					compositions::GuiNotifyEvent					TextPropertyChanged;
+
+					void											SaveCellData(vint row, IDataEditor* dataEditor)override;
+					WString											GetCellText(vint row)override;
+
+					/// <summary>Get the cell value from an item.</summary>
+					/// <returns>The cell value.</returns>
+					/// <param name="row">The row index of the item.</param>
+					description::Value								GetCellValue(vint row);
+					/// <summary>Set the cell value to an item.</summary>
+					/// <param name="row">The row index of the item.</param>
+					/// <param name="value">The value property name.</param>
+					void											SetCellValue(vint row, description::Value value);
+
+					/// <summary>Get the text property name to get the cell text from an item.</summary>
+					/// <returns>The text property name.</returns>
+					ItemProperty<WString>							GetTextProperty();
+					/// <summary>Set the text property name to get the cell text from an item.</summary>
+					/// <param name="value">The text property name.</param>
+					void											SetTextProperty(const ItemProperty<WString>& value);
+
+					/// <summary>Get the value property name to get the cell value from an item.</summary>
+					/// <returns>The value property name.</returns>
+					WritableItemProperty<Value>						GetValueProperty();
+					/// <summary>Set the value property name to get the cell value from an item.</summary>
+					/// <param name="value">The value property name.</param>
+					void											SetValueProperty(const WritableItemProperty<Value>& value);
+
+					/// <summary>Get the view model context which will be used as a view model to create visualizers and editors.</summary>
+					/// <returns>The value model context.</returns>
+					description::Value								GetViewModelContext();
+				};
+
+				/// <summary>Data provider object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
+				class BindableDataProvider : public StructuredDataProviderBase, public Description<BindableDataProvider>
+				{
+					friend class BindableDataColumn;
+				protected:
+					description::Value								viewModelContext;
+					Ptr<description::IValueReadonlyList>			itemSource;
+					Ptr<EventHandler>								itemChangedEventHandler;
+
+				public:
+					BindableDataProvider(const description::Value& _viewModelContext);
+					~BindableDataProvider();
+
+					Ptr<description::IValueEnumerable>				GetItemSource();
+					void											SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
+
+					vint											GetRowCount()override;
+					description::Value								GetRowValue(vint row);
+
+					description::Value								GetViewModelContext()override;
+					bool											InsertBindableColumn(vint index, Ptr<BindableDataColumn> column);
+					bool											AddBindableColumn(Ptr<BindableDataColumn> column);
+					bool											RemoveBindableColumn(Ptr<BindableDataColumn> column);
+					bool											ClearBindableColumns();
+					Ptr<BindableDataColumn>							GetBindableColumn(vint index);
+				};
 			}
+
+			/// <summary>A bindable Data grid control.</summary>
+			class GuiBindableDataGrid : public GuiVirtualDataGrid, public Description<GuiBindableDataGrid>
+			{
+			protected:
+				Ptr<list::BindableDataProvider>						bindableDataProvider;
+
+			public:
+				/// <summary>Create a bindable Data grid control.</summary>
+				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
+				GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext = description::Value());
+				~GuiBindableDataGrid();
+
+				/// <summary>Get the item source.</summary>
+				/// <returns>The item source.</returns>
+				Ptr<description::IValueEnumerable>					GetItemSource();
+				/// <summary>Set the item source.</summary>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
+
+				/// <summary>Insert a column.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="index">The column index.</param>
+				/// <param name="column">The column.</param>
+				bool												InsertBindableColumn(vint index, Ptr<list::BindableDataColumn> column);
+				/// <summary>Add a column.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="column">The column.</param>
+				bool												AddBindableColumn(Ptr<list::BindableDataColumn> column);
+				/// <summary>Remove a column.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="column">The column.</param>
+				bool												RemoveBindableColumn(Ptr<list::BindableDataColumn> column);
+				/// <summary>Clear all columns.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool												ClearBindableColumns();
+				/// <summary>Get a column.</summary>
+				/// <param name="index">The column index.</param>
+				/// <returns>Returns the column of a specified index.</returns>
+				Ptr<list::BindableDataColumn>						GetBindableColumn(vint index);
+
+				/// <summary>Get the selected cell.</summary>
+				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
+				description::Value									GetSelectedRowValue();
+
+				/// <summary>Get the selected cell.</summary>
+				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
+				description::Value									GetSelectedCellValue();
+			};
 		}
 	}
 }

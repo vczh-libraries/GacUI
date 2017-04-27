@@ -37,8 +37,7 @@ Extension Bases
 					friend class DataDecoratableVisualizerFactory;
 				protected:
 					IDataVisualizerFactory*								factory = nullptr;
-					GuiListViewBase::IStyleProvider*					styleProvider = nullptr;
-					description::Value									viewModelContext;
+					IDataGridContext*									dataGridContext = nullptr;
 					templates::GuiTemplate*								visualizerTemplate = nullptr;
 					Ptr<IDataVisualizer>								decoratedDataVisualizer;
 
@@ -60,13 +59,11 @@ Extension Bases
 				class DataVisualizerFactory : public Object, public virtual IDataVisualizerFactory, public Description<DataVisualizerFactory<TVisualizer>>
 				{
 				public:
-					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override
+					Ptr<IDataVisualizer> CreateVisualizer(IDataGridContext* dataGridContext)override
 					{
 						DataVisualizerBase* dataVisualizer = new TVisualizer;
 						dataVisualizer->factory = this;
-						dataVisualizer->font = font;
-						dataVisualizer->styleProvider = styleProvider;
-						dataVisualizer->viewModelContext = viewModelContext;
+						dataVisualizer->dataGridContext = dataGridContext;
 						return dataVisualizer;
 					}
 				};
@@ -82,14 +79,12 @@ Extension Bases
 					{
 					}
 
-					Ptr<IDataVisualizer> CreateVisualizer(const FontProperties& font, GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override
+					Ptr<IDataVisualizer> CreateVisualizer(IDataGridContext* dataGridContext)override
 					{
-						Ptr<IDataVisualizer> decoratedDataVisualizer = decoratedFactory->CreateVisualizer(font, styleProvider, viewModelContext);
+						Ptr<IDataVisualizer> decoratedDataVisualizer = decoratedFactory->CreateVisualizer(dataGridContext);
 						DataVisualizerBase* dataVisualizer = new TVisualizer(decoratedDataVisualizer);
 						dataVisualizer->factory = this;
-						dataVisualizer->font = font;
-						dataVisualizer->styleProvider = styleProvider;
-						dataVisualizer->viewModelContext = viewModelContext;
+						dataVisualizer->dataGridContext = dataGridContext;
 						return dataVisualizer;
 					}
 				};
@@ -101,10 +96,11 @@ Extension Bases
 					friend class DataEditorFactory;
 				protected:
 					IDataEditorFactory*									factory = nullptr;
-					description::Value									viewModelContext;
+					IDataGridContext*									dataGridContext = nullptr;
 					templates::GuiTemplate*								editorTemplate = nullptr;
 
 					virtual templates::GuiTemplate*						CreateTemplateInternal() = 0;
+					void												RequestSaveData();
 				public:
 					/// <summary>Create the data editor.</summary>
 					DataEditorBase();
@@ -120,12 +116,11 @@ Extension Bases
 				class DataEditorFactory : public Object, public virtual IDataEditorFactory, public Description<DataEditorFactory<TEditor>>
 				{
 				public:
-					Ptr<IDataEditor> CreateEditor(IDataEditorCallback* callback, const description::Value& viewModelContext)override
+					Ptr<IDataEditor> CreateEditor(IDataGridContext* dataGridContext)override
 					{
 						DataEditorBase* dataEditor = new TEditor;
 						dataEditor->factory = this;
-						dataEditor->callback = callback;
-						dataEditor->viewModelContext = viewModelContext;
+						dataEditor->dataGridContext = dataGridContext;
 						return dataEditor;
 					}
 				};

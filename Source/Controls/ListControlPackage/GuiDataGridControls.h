@@ -65,6 +65,7 @@ GuiVirtualDataGrid
 			/// <summary>Data grid control in virtual mode.</summary>
 			class GuiVirtualDataGrid
 				: public GuiVirtualListView
+				, private list::IDataGridContext
 				, public Description<GuiVirtualDataGrid>
 			{
 				friend class list::DefaultDataGridItemTemplate;
@@ -72,6 +73,8 @@ GuiVirtualDataGrid
 				list::IListViewItemView*								listViewItemView = nullptr;
 				list::ListViewColumnItemArranger::IColumnItemView*		columnItemView = nullptr;
 				list::IDataGridView*									dataGridView = nullptr;
+				Ptr<list::IDataVisualizerFactory>						defaultMainColumnVisualizerFactory;
+				Ptr<list::IDataVisualizerFactory>						defaultSubColumnVisualizerFactory;
 
 				GridPos													selectedCell{ -1,-1 };
 				Ptr<list::IDataEditor>									currentEditor;
@@ -82,11 +85,16 @@ GuiVirtualDataGrid
 
 				void													NotifyCloseEditor();
 				void													NotifySelectCell(vint row, vint column);
-				void													RequestSaveData();
 				list::IDataEditor*										OpenEditor(vint row, vint column, list::IDataEditorFactory* editorFactory);
 				void													CloseEditor(bool forOpenNewEditor);
-
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+
+			public:
+
+				GuiListViewBase::IStyleProvider*						GetListViewStyleProvider()override;
+				description::Value										GetViewModelContext()override;
+				void													RequestSaveData()override;
+
 			public:
 				/// <summary>Create a data grid control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
