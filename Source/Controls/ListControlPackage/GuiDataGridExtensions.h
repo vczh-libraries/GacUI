@@ -37,7 +37,6 @@ Extension Bases
 					friend class DataDecoratableVisualizerFactory;
 				protected:
 					IDataVisualizerFactory*								factory = nullptr;
-					FontProperties										font;
 					GuiListViewBase::IStyleProvider*					styleProvider = nullptr;
 					description::Value									viewModelContext;
 					templates::GuiTemplate*								visualizerTemplate = nullptr;
