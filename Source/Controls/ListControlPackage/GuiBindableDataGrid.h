@@ -38,7 +38,6 @@ Interfaces
 					virtual bool										Filter(vint row) = 0;
 				};
 
-
 				class IDataSorter : public virtual IDescriptable, public Description<IDataSorter>
 				{
 				public:

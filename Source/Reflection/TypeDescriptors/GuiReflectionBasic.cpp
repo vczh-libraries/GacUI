@@ -15,6 +15,7 @@ namespace vl
 			using namespace presentation::elements;
 			using namespace presentation::compositions;
 			using namespace presentation::controls;
+			using namespace presentation::templates;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
@@ -25,6 +26,10 @@ Type Declaration
 ***********************************************************************/
 
 #define _ ,
+
+#define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME)\
+	CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(NAME)
+
 			BEGIN_STRUCT_MEMBER(Color)
 				valueType = new SerializableValueType<Color>();
 				serializableType = new SerializableType<Color>();
@@ -689,6 +694,33 @@ Type Declaration
 				CLASS_MEMBER_METHOD(IsAlignedToParent, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiBoundsComposition)
 
+			BEGIN_CLASS_MEMBER(GuiTemplate)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+				CLASS_MEMBER_BASE(GuiInstanceRootObject)
+				CLASS_MEMBER_CONSTRUCTOR(GuiTemplate*(), NO_PARAMETER)
+
+				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiListItemTemplate)
+				CLASS_MEMBER_BASE(GuiTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate*(), NO_PARAMETER)
+
+				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiListItemTemplate)
+
+			BEGIN_ENUM_ITEM(ButtonState)
+				ENUM_CLASS_ITEM(Normal)
+				ENUM_CLASS_ITEM(Active)
+				ENUM_CLASS_ITEM(Pressed)
+			END_ENUM_ITEM(ButtonState)
+
+			BEGIN_ENUM_ITEM(ColumnSortingState)
+				ENUM_CLASS_ITEM(NotSorted)
+				ENUM_CLASS_ITEM(Ascending)
+				ENUM_CLASS_ITEM(Descending)
+			END_ENUM_ITEM(ColumnSortingState)
+
 			BEGIN_CLASS_MEMBER(GuiControl)
 				CLASS_MEMBER_CONSTRUCTOR(GuiControl*(GuiControl::IStyleController*), {L"styleController"})
 
@@ -777,6 +809,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetOpening, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiControlHost)
 
+#undef GUI_TEMPLATE_PROPERTY_REFLECTION
 #undef _
 
 /***********************************************************************

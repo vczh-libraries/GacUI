@@ -99,6 +99,10 @@ Type List
 			F(presentation::compositions::GuiGraphicsSite)\
 			F(presentation::compositions::GuiWindowComposition)\
 			F(presentation::compositions::GuiBoundsComposition)\
+			F(presentation::templates::GuiTemplate)\
+			F(presentation::templates::GuiListItemTemplate)\
+			F(presentation::controls::ButtonState)\
+			F(presentation::controls::ColumnSortingState)\
 			F(presentation::controls::GuiControl)\
 			F(presentation::controls::GuiControl::IStyleController)\
 			F(presentation::controls::GuiControl::IStyleProvider)\

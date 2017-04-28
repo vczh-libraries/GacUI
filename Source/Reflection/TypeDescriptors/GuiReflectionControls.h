@@ -126,6 +126,7 @@ Type List
 			F(presentation::controls::GuiMultilineTextBox)\
 			F(presentation::controls::GuiSinglelineTextBox)\
 			F(presentation::controls::GuiSinglelineTextBox::IStyleProvider)\
+			F(presentation::controls::list::IDataGridContext)\
 			F(presentation::controls::list::IDataVisualizerFactory)\
 			F(presentation::controls::list::IDataVisualizer)\
 			F(presentation::controls::list::IDataEditorFactory)\
@@ -209,7 +210,7 @@ Interface Proxy
 				presentation::controls::GuiControl::IStyleController
 				)
 
-				void SetCommandExecutor(presentation::controls::GuiScroll::ICommandExecutor* value)override
+				void SetCommandExecutor(presentation::controls::IScrollCommandExecutor* value)override
 				{
 					INVOKE_INTERFACE_PROXY(SetCommandExecutor, value);
 				}
@@ -234,7 +235,7 @@ Interface Proxy
 				presentation::controls::GuiControl::IStyleController
 				)
 
-				void SetCommandExecutor(presentation::controls::GuiTab::ICommandExecutor* value)override
+				void SetCommandExecutor(presentation::controls::ITabCommandExecutor* value)override
 				{
 					INVOKE_INTERFACE_PROXY(SetCommandExecutor, value);
 				}
@@ -415,6 +416,21 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY(DetachCallback, value);
 				}
 
+				void PushEditing()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(PushEditing);
+				}
+
+				bool PopEditing()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(PopEditing);
+				}
+
+				bool IsEditing()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(IsEditing);
+				}
+
 				vint Count()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Count);
@@ -434,83 +450,7 @@ Interface Proxy
 				{
 					INVOKEGET_INTERFACE_PROXY(RequestView, identifier);
 				}
-
-				void ReleaseView(IDescriptable* view)override
-				{
-					INVOKE_INTERFACE_PROXY(ReleaseView, view);
-				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemProvider)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::GuiListControl::IItemStyleController)
-
-				presentation::controls::GuiListControl::IItemStyleProvider* GetStyleProvider()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStyleProvider);
-				}
-
-				vint GetItemStyleId()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemStyleId);
-				}
-
-				presentation::compositions::GuiBoundsComposition* GetBoundsComposition()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBoundsComposition);
-				}
-
-				bool IsCacheable()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(IsCacheable);
-				}
-
-				bool IsInstalled()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(IsInstalled);
-				}
-
-				void OnInstalled()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(OnInstalled);
-				}
-
-				void OnUninstalled()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(OnUninstalled);
-				}
-			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemStyleController)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::GuiListControl::IItemStyleProvider)
-
-				void AttachListControl(presentation::controls::GuiListControl* value)override
-				{
-					INVOKE_INTERFACE_PROXY(AttachListControl, value);
-				}
-
-				void DetachListControl()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(DetachListControl);
-				}
-
-				presentation::controls::GuiListControl::IItemStyleController* CreateItemStyle()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateItemStyle);
-				}
-
-				void DestroyItemStyle(presentation::controls::GuiListControl::IItemStyleController* style)override
-				{
-					INVOKE_INTERFACE_PROXY(DestroyItemStyle, style);
-				}
-
-				void Install(presentation::controls::GuiListControl::IItemStyleController* style, vint itemIndex)override
-				{
-					INVOKE_INTERFACE_PROXY(Install, style, itemIndex);
-				}
-
-				void SetStyleIndex(presentation::controls::GuiListControl::IItemStyleController* style, vint value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetStyleIndex, style, value);
-				}
-			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemStyleProvider)
 			
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiListControl::IItemArranger,
 				presentation::controls::GuiListControl::IItemProviderCallback
@@ -541,12 +481,12 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTotalSize);
 				}
 
-				presentation::controls::GuiListControl::IItemStyleController* GetVisibleStyle(vint itemIndex)override
+				presentation::controls::GuiListControl::ItemStyle* GetVisibleStyle(vint itemIndex)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetVisibleStyle, itemIndex);
 				}
 
-				vint GetVisibleIndex(presentation::controls::GuiListControl::IItemStyleController* style)override
+				vint GetVisibleIndex(presentation::controls::GuiListControl::ItemStyle* style)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetVisibleIndex, style);
 				}
@@ -571,46 +511,23 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY(GetAdoptedSize, expectedSize);
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemArranger)
-			
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(presentation::controls::GuiSelectableListControl::IItemStyleProvider,
-				presentation::controls::GuiListControl::IItemStyleProvider
-				)
 
-				void SetStyleSelected(presentation::controls::GuiListControl::IItemStyleController* style, bool value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetStyleSelected, style, value);
-				}
-			END_INTERFACE_PROXY(presentation::controls::GuiSelectableListControl::IItemStyleProvider)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::list::TextItemStyleProvider::IBulletFactory)
-
-				presentation::controls::GuiSelectableButton::IStyleController* CreateBulletStyleController()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateBulletStyleController);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::IBulletFactory)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::TextItemStyleProvider::ITextItemView)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::ITextItemView)
 
 				bool GetChecked(vint itemIndex)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetChecked, itemIndex);
 				}
 
-				void SetCheckedSilently(vint itemIndex, bool value)override
+				void SetChecked(vint itemIndex, bool value)override
 				{
-					INVOKE_INTERFACE_PROXY(SetCheckedSilently, itemIndex, value);
+					INVOKE_INTERFACE_PROXY(SetChecked, itemIndex, value);
 				}
-			END_INTERFACE_PROXY(presentation::controls::list::TextItemStyleProvider::ITextItemView)
+			END_INTERFACE_PROXY(presentation::controls::list::ITextItemView)
 
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiVirtualTextList::IStyleProvider,
 				presentation::controls::GuiSelectableListControl::IStyleProvider
 				)
-
-				presentation::controls::GuiSelectableButton::IStyleController* CreateItemBackground()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateItemBackground);
-				}
 
 				presentation::Color GetTextColor()override
 				{
@@ -648,7 +565,7 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListViewBase::IStyleProvider)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IListViewItemView)
 
 				Ptr<presentation::GuiImageData> GetSmallImage(vint itemIndex)override
 				{
@@ -689,58 +606,7 @@ Interface Proxy
 				{
 					INVOKEGET_INTERFACE_PROXY(GetColumnText, index);
 				}
-			END_INTERFACE_PROXY(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContent)
-
-				presentation::compositions::GuiBoundsComposition* GetContentComposition()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetContentComposition);
-				}
-
-				presentation::compositions::GuiBoundsComposition* GetBackgroundDecorator()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBackgroundDecorator);
-				}
-
-				void Install(presentation::controls::GuiListViewBase::IStyleProvider* styleProvider, presentation::controls::list::ListViewItemStyleProvider::IListViewItemView* view, vint itemIndex)override
-				{
-					INVOKE_INTERFACE_PROXY(Install, styleProvider, view, itemIndex);
-				}
-
-				void Uninstall()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(Uninstall);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContent)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContentProvider)
-
-				presentation::compositions::IGuiAxis* CreatePreferredAxis()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreatePreferredAxis);
-				}
-
-				presentation::controls::GuiListControl::IItemArranger* CreatePreferredArranger()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreatePreferredArranger);
-				}
-
-				presentation::controls::list::ListViewItemStyleProvider::IListViewItemContent* CreateItemContent(const presentation::FontProperties& font)override
-				{
-					INVOKEGET_INTERFACE_PROXY(CreateItemContent, font);
-				}
-
-				void AttachListControl(presentation::controls::GuiListControl* value)override
-				{
-					INVOKE_INTERFACE_PROXY(AttachListControl, value);
-				}
-
-				void DetachListControl()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(DetachListControl);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContentProvider)
+			END_INTERFACE_PROXY(presentation::controls::list::IListViewItemView)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::ListViewColumnItemArranger::IColumnItemView)
 
@@ -752,16 +618,6 @@ Interface Proxy
 				bool DetachCallback(presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback* value)override
 				{
 					INVOKEGET_INTERFACE_PROXY(DetachCallback, value);
-				}
-
-				vint GetColumnCount()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetColumnCount);
-				}
-
-				WString GetColumnText(vint index)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetColumnText, index);
 				}
 
 				vint GetColumnSize(vint index)override
@@ -779,7 +635,7 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY(GetDropdownPopup, index);
 				}
 
-				presentation::controls::GuiListViewColumnHeader::ColumnSortingState GetSortingState(vint index)override
+				presentation::controls::ColumnSortingState GetSortingState(vint index)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetSortingState, index);
 				}
@@ -824,7 +680,7 @@ Interface Proxy
 				presentation::controls::GuiMenuButton::IStyleController
 				)
 
-				void SetColumnSortingState(presentation::controls::GuiListViewColumnHeader::ColumnSortingState value)override
+				void SetColumnSortingState(presentation::controls::ColumnSortingState value)override
 				{
 					INVOKE_INTERFACE_PROXY(SetColumnSortingState, value);
 				}
@@ -914,11 +770,6 @@ Interface Proxy
 				{
 					INVOKEGET_INTERFACE_PROXY(RequestView, identifier);
 				}
-
-				void ReleaseView(IDescriptable* view)override
-				{
-					INVOKE_INTERFACE_PROXY(ReleaseView, view);
-				}
 			END_INTERFACE_PROXY(presentation::controls::tree::INodeRootProvider)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemView)
@@ -939,77 +790,11 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemView)
 
-			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::tree::INodeItemStyleController,
-				presentation::controls::GuiListControl::IItemStyleController
-				)
-
-				presentation::controls::tree::INodeItemStyleProvider* GetNodeStyleProvider()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetNodeStyleProvider);
-				}
-			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemStyleController)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::INodeItemStyleProvider)
-
-				void BindItemStyleProvider(presentation::controls::GuiListControl::IItemStyleProvider* styleProvider)override
-				{
-					INVOKE_INTERFACE_PROXY(BindItemStyleProvider, styleProvider);
-				}
-
-				presentation::controls::GuiListControl::IItemStyleProvider* GetBindedItemStyleProvider()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBindedItemStyleProvider);
-				}
-
-				void AttachListControl(presentation::controls::GuiListControl* value)override
-				{
-					INVOKE_INTERFACE_PROXY(AttachListControl, value);
-				}
-
-				void DetachListControl()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(DetachListControl);
-				}
-
-				presentation::controls::tree::INodeItemStyleController* CreateItemStyle()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CreateItemStyle);
-				}
-
-				void DestroyItemStyle(presentation::controls::tree::INodeItemStyleController* style)override
-				{
-					INVOKE_INTERFACE_PROXY(DestroyItemStyle, style);
-				}
-
-				void Install(presentation::controls::tree::INodeItemStyleController* style, presentation::controls::tree::INodeProvider* node, vint itemIndex)override
-				{
-					INVOKE_INTERFACE_PROXY(Install, style, node, itemIndex);
-				}
-
-				void SetStyleIndex(presentation::controls::tree::INodeItemStyleController* style, vint value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetStyleIndex, style, value);
-				}
-
-				void SetStyleSelected(presentation::controls::tree::INodeItemStyleController* style, bool value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetStyleSelected, style, value);
-				}
-			END_INTERFACE_PROXY(presentation::controls::tree::INodeItemStyleProvider)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::IMemoryNodeData)
-			END_INTERFACE_PROXY(presentation::controls::tree::IMemoryNodeData)
-
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::tree::ITreeViewItemView)
 
 				Ptr<presentation::GuiImageData> GetNodeImage(presentation::controls::tree::INodeProvider* node)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetNodeImage, node);
-				}
-
-				WString GetNodeText(presentation::controls::tree::INodeProvider* node)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetNodeText, node);
 				}
 			END_INTERFACE_PROXY(presentation::controls::tree::ITreeViewItemView)
 
@@ -1037,7 +822,7 @@ Interface Proxy
 				presentation::controls::GuiMenuButton::IStyleController
 				)
 
-				void SetCommandExecutor(presentation::controls::GuiComboBoxBase::ICommandExecutor* value)override
+				void SetCommandExecutor(presentation::controls::IComboBoxCommandExecutor* value)override
 				{
 					INVOKE_INTERFACE_PROXY(SetCommandExecutor, value);
 				}
@@ -1058,24 +843,6 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxListControl::IStyleController)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::GuiComboBoxListControl::IItemStyleProvider)
-				
-				void AttachComboBox(presentation::controls::GuiComboBoxListControl* value)override
-				{
-					INVOKE_INTERFACE_PROXY(AttachComboBox, value);
-				}
-
-				void DetachComboBox()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(DetachComboBox);
-				}
-
-				presentation::controls::GuiControl::IStyleController* CreateItemStyle(description::Value item)override
-				{
-					INVOKEGET_INTERFACE_PROXY(CreateItemStyle, item);
-				}
-			END_INTERFACE_PROXY(presentation::controls::GuiComboBoxListControl::IItemStyleProvider)
-
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiSinglelineTextBox::IStyleProvider,
 				presentation::controls::GuiControl::IStyleProvider
 				)
@@ -1086,11 +853,35 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiSinglelineTextBox::IStyleProvider)
 
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataGridContext)
+
+				presentation::controls::GuiListControl::IItemProvider* GetItemProvider()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemProvider);
+				}
+
+				presentation::controls::GuiListViewBase::IStyleProvider* GetListViewStyleProvider()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetListViewStyleProvider);
+				}
+
+				presentation::description::Value GetViewModelContext()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetViewModelContext);
+				}
+
+				void RequestSaveData()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(RequestSaveData);
+				}
+
+			END_INTERFACE_PROXY(presentation::controls::list::IDataGridContext)
+
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataVisualizerFactory)
 
-				Ptr<presentation::controls::list::IDataVisualizer> CreateVisualizer(const presentation::FontProperties& font, presentation::controls::GuiListViewBase::IStyleProvider* styleProvider, const description::Value& viewModelContext)override
+				Ptr<presentation::controls::list::IDataVisualizer> CreateVisualizer(presentation::controls::list::IDataGridContext* dataGridContext)override
 				{
-					INVOKEGET_INTERFACE_PROXY(CreateVisualizer, font, styleProvider, viewModelContext);
+					INVOKEGET_INTERFACE_PROXY(CreateVisualizer, dataGridContext);
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::IDataVisualizerFactory)
 
@@ -1101,14 +892,14 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetFactory);
 				}
 
-				presentation::compositions::GuiBoundsComposition* GetBoundsComposition()override
+				presentation::templates::GuiTemplate* GetTemplate()override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBoundsComposition);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTemplate);
 				}
 
-				void BeforeVisualizeCell(presentation::controls::list::IDataProvider* dataProvider, vint row, vint column)override
+				void BeforeVisualizeCell(presentation::controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override
 				{
-					INVOKE_INTERFACE_PROXY(BeforeVisualizeCell, dataProvider, row, column);
+					INVOKE_INTERFACE_PROXY(BeforeVisualizeCell, itemProvider, row, column);
 				}
 
 				presentation::controls::list::IDataVisualizer* GetDecoratedDataVisualizer()override
@@ -1124,9 +915,9 @@ Interface Proxy
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataEditorFactory)
 
-				Ptr<presentation::controls::list::IDataEditor> CreateEditor(presentation::controls::list::IDataEditorCallback* callback, const description::Value& viewModelContext)
+				Ptr<presentation::controls::list::IDataEditor> CreateEditor(presentation::controls::list::IDataGridContext* dataGridContext)override
 				{
-					INVOKEGET_INTERFACE_PROXY(CreateEditor, callback, viewModelContext);
+					INVOKEGET_INTERFACE_PROXY(CreateEditor, dataGridContext);
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::IDataEditorFactory)
 
@@ -1137,14 +928,14 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetFactory);
 				}
 
-				presentation::compositions::GuiBoundsComposition* GetBoundsComposition()override
+				presentation::templates::GuiTemplate* GetTemplate()override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBoundsComposition);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTemplate);
 				}
 
-				void BeforeEditCell(presentation::controls::list::IDataProvider* dataProvider, vint row, vint column)override
+				void BeforeEditCell(presentation::controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override
 				{
-					INVOKE_INTERFACE_PROXY(BeforeEditCell, dataProvider, row, column);
+					INVOKE_INTERFACE_PROXY(BeforeEditCell, itemProvider, row, column);
 				}
 
 				void ReinstallEditor()override
@@ -1153,41 +944,11 @@ Interface Proxy
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::IDataEditor)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataProvider)
-
-				void SetCommandExecutor(presentation::controls::list::IDataProviderCommandExecutor* value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetCommandExecutor, value);
-				}
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataGridView)
 
 				description::Value GetViewModelContext()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetViewModelContext);
-				}
-
-				vint GetColumnCount()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetColumnCount);
-				}
-
-				WString GetColumnText(vint column)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetColumnText, column);
-				}
-
-				vint GetColumnSize(vint column)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetColumnSize, column);
-				}
-
-				void SetColumnSize(vint column, vint value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetColumnSize, column, value);
-				}
-
-				presentation::controls::GuiMenu* GetColumnPopup(vint column)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetColumnPopup, column);
 				}
 
 				bool IsColumnSortable(vint column)override
@@ -1210,29 +971,9 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(IsSortOrderAscending);
 				}
 
-				vint GetRowCount()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetRowCount);
-				}
-
-				Ptr<presentation::GuiImageData> GetRowLargeImage(vint row)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetRowLargeImage, row);
-				}
-
-				Ptr<presentation::GuiImageData> GetRowSmallImage(vint row)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetRowSmallImage, row);
-				}
-
 				vint GetCellSpan(vint row, vint column)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetCellSpan, row, column);
-				}
-
-				WString GetCellText(vint row, vint column)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetCellText, row, column);
 				}
 
 				presentation::controls::list::IDataVisualizerFactory* GetCellDataVisualizerFactory(vint row, vint column)override
@@ -1250,148 +991,51 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY(GetCellDataEditorFactory, row, column);
 				}
 
-				void BeforeEditCell(vint row, vint column, presentation::controls::list::IDataEditor* dataEditor)override
+				void EditCell(vint row, vint column, presentation::controls::list::IDataEditor* dataEditor)override
 				{
-					INVOKE_INTERFACE_PROXY(BeforeEditCell, row, column, dataEditor);
+					INVOKE_INTERFACE_PROXY(EditCell, row, column, dataEditor);
 				}
 
 				void SaveCellData(vint row, vint column, presentation::controls::list::IDataEditor* dataEditor)override
 				{
 					INVOKE_INTERFACE_PROXY(SaveCellData, row, column, dataEditor);
 				}
-			END_INTERFACE_PROXY(presentation::controls::list::IDataProvider)
+			END_INTERFACE_PROXY(presentation::controls::list::IDataGridView)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IStructuredDataFilter)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataFilterCallback)
 
-				void SetCommandExecutor(presentation::controls::list::IStructuredDataFilterCommandExecutor* value)override
+				presentation::controls::GuiListControl::IItemProvider* GetItemProvider()override
 				{
-					INVOKE_INTERFACE_PROXY(SetCommandExecutor, value);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemProvider);
+				}
+
+				void OnFilterChanged()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(OnFilterChanged);
+				}
+
+			END_INTERFACE_PROXY(presentation::controls::list::IDataFilterCallback)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataFilter)
+
+				void SetCallback(presentation::controls::list::IDataFilterCallback* value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetCallback, value);
 				}
 
 				bool Filter(vint row)override
 				{
 					INVOKEGET_INTERFACE_PROXY(Filter, row);
 				}
-			END_INTERFACE_PROXY(presentation::controls::list::IStructuredDataFilter)
+			END_INTERFACE_PROXY(presentation::controls::list::IDataFilter)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IStructuredDataSorter)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataSorter)
 
 				vint Compare(vint row1, vint row2)override
 				{
 					INVOKEGET_INTERFACE_PROXY(Compare, row1, row2);
 				}
-			END_INTERFACE_PROXY(presentation::controls::list::IStructuredDataSorter)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IStructuredColumnProvider)
-
-				WString GetText()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetText);
-				}
-
-				vint GetSize()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSize);
-				}
-
-				void SetSize(vint value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetSize, value);
-				}
-
-				presentation::controls::GuiListViewColumnHeader::ColumnSortingState GetSortingState()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSortingState);
-				}
-
-				void SetSortingState(presentation::controls::GuiListViewColumnHeader::ColumnSortingState value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetSortingState, value);
-				}
-
-				presentation::controls::GuiMenu* GetPopup()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetPopup);
-				}
-
-				Ptr<presentation::controls::list::IStructuredDataFilter> GetInherentFilter()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetInherentFilter);
-				}
-
-				Ptr<presentation::controls::list::IStructuredDataSorter> GetInherentSorter()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetInherentSorter);
-				}
-
-				WString GetCellText(vint row)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetCellText, row);
-				}
-
-				presentation::controls::list::IDataVisualizerFactory* GetCellDataVisualizerFactory(vint row)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetCellDataVisualizerFactory, row);
-				}
-
-				void VisualizeCell(vint row, presentation::controls::list::IDataVisualizer* dataVisualizer)override
-				{
-					INVOKE_INTERFACE_PROXY(VisualizeCell, row, dataVisualizer);
-				}
-
-				presentation::controls::list::IDataEditorFactory* GetCellDataEditorFactory(vint row)override
-				{
-					INVOKEGET_INTERFACE_PROXY(GetCellDataEditorFactory, row);
-				}
-
-				void BeforeEditCell(vint row, presentation::controls::list::IDataEditor* dataEditor)override
-				{
-					INVOKE_INTERFACE_PROXY(BeforeEditCell, row, dataEditor);
-				}
-
-				void SaveCellData(vint row, presentation::controls::list::IDataEditor* dataEditor)override
-				{
-					INVOKE_INTERFACE_PROXY(SaveCellData, row, dataEditor);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::IStructuredColumnProvider)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IStructuredDataProvider)
-
-				void SetCommandExecutor(presentation::controls::list::IDataProviderCommandExecutor* value)
-				{
-					INVOKE_INTERFACE_PROXY(SetCommandExecutor, value);
-				}
-
-				description::Value GetViewModelContext()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetViewModelContext);
-				}
-
-				vint GetColumnCount()
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetColumnCount);
-				}
-
-				vint GetRowCount()
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetRowCount);
-				}
-
-				presentation::controls::list::IStructuredColumnProvider* GetColumn(vint column)
-				{
-					INVOKEGET_INTERFACE_PROXY(GetColumn, column);
-				}
-
-				Ptr<presentation::GuiImageData> GetRowLargeImage(vint row)
-				{
-					INVOKEGET_INTERFACE_PROXY(GetRowLargeImage, row);
-				}
-
-				Ptr<presentation::GuiImageData> GetRowSmallImage(vint row)
-				{
-					INVOKEGET_INTERFACE_PROXY(GetRowSmallImage, row);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::IStructuredDataProvider)
+			END_INTERFACE_PROXY(presentation::controls::list::IDataSorter)
 
 			BEGIN_INTERFACE_PROXY_RAWPTR(presentation::controls::GuiDatePicker::IStyleProvider,
 				presentation::controls::GuiControl::IStyleProvider

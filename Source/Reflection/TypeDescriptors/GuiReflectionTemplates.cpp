@@ -36,18 +36,6 @@ Type Declaration
 				ENUM_CLASS_ITEM(Customizable)
 			END_ENUM_ITEM(BoolOption)
 
-			BEGIN_ENUM_ITEM(ButtonState)
-				ENUM_CLASS_ITEM(Normal)
-				ENUM_CLASS_ITEM(Active)
-				ENUM_CLASS_ITEM(Pressed)
-			END_ENUM_ITEM(ButtonState)
-
-			BEGIN_ENUM_ITEM(ColumnSortingState)
-				ENUM_CLASS_ITEM(NotSorted)
-				ENUM_CLASS_ITEM(Ascending)
-				ENUM_CLASS_ITEM(Descending)
-			END_ENUM_ITEM(ColumnSortingState)
-
 			BEGIN_CLASS_MEMBER(IComboBoxCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
 
@@ -68,14 +56,6 @@ Type Declaration
 				CLASS_MEMBER_BASE(IDescriptable)
 				CLASS_MEMBER_METHOD(ShowTab, { L"index" })
 			END_INTERFACE_MEMBER(ITabCommandExecutor)
-
-			BEGIN_CLASS_MEMBER(GuiTemplate)
-				CLASS_MEMBER_BASE(GuiBoundsComposition)
-				CLASS_MEMBER_BASE(GuiInstanceRootObject)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTemplate*(), NO_PARAMETER)
-
-				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiControlTemplate)
 				CLASS_MEMBER_BASE(GuiTemplate)
@@ -221,13 +201,6 @@ Type Declaration
 
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiTabTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiListItemTemplate)
-				CLASS_MEMBER_BASE(GuiTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate*(), NO_PARAMETER)
-
-				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiListItemTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate)
 				CLASS_MEMBER_BASE(GuiListItemTemplate)
@@ -424,7 +397,7 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(TemplateProperty<GuiGridEditorTemplate>), { L"templateFactory" })
 			END_CLASS_MEMBER(GuiBindableDataEditor::Factory)
 
-#undef INTERFACE_EXTERNALCTOR
+#undef GUI_TEMPLATE_PROPERTY_REFLECTION
 #undef _
 
 /***********************************************************************
