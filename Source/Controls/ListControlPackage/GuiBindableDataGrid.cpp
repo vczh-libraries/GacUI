@@ -9,6 +9,7 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace description;
+			using namespace templates;
 
 			namespace list
 			{
@@ -777,7 +778,11 @@ DataProvider
 
 				void DataProvider::VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)
 				{
-					throw 0;
+					if (auto dataTemplate = dynamic_cast<GuiGridVisualizerTemplate*>(dataVisualizer->GetTemplate()))
+					{
+						dataTemplate->SetRowValue(GetBindingValue(row));
+						dataTemplate->SetCellValue(columns[column]->GetCellValue(row));
+					}
 				}
 
 				IDataEditorFactory* DataProvider::GetCellDataEditorFactory(vint row, vint column)
@@ -787,12 +792,19 @@ DataProvider
 
 				void DataProvider::EditCell(vint row, vint column, IDataEditor* dataEditor)
 				{
-					throw 0;
+					if (auto dataTemplate = dynamic_cast<GuiGridEditorTemplate*>(dataEditor->GetTemplate()))
+					{
+						dataTemplate->SetRowValue(GetBindingValue(row));
+						dataTemplate->SetCellValue(columns[column]->GetCellValue(row));
+					}
 				}
 
 				void DataProvider::SaveCellData(vint row, vint column, IDataEditor* dataEditor)
 				{
-					throw 0;
+					if (auto dataTemplate = dynamic_cast<GuiGridEditorTemplate*>(dataEditor->GetTemplate()))
+					{
+						columns[column]->SetCellValue(row, dataTemplate->GetCellValue());
+					}
 				}
 			}
 
