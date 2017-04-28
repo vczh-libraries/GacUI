@@ -400,7 +400,7 @@ Win7DatePickerStyle
 
 			controls::GuiTextList* Win7DatePickerStyle::CreateTextList()
 			{
-				return new GuiTextList(new Win7TextListProvider, new Win7TextListItemProvider);
+				return new GuiTextList(new Win7TextListProvider);
 			}
 
 			controls::GuiComboBoxListControl::IStyleController* Win7DatePickerStyle::CreateComboBoxStyle()

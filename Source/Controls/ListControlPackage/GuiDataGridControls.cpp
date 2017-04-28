@@ -170,7 +170,7 @@ DefaultDataGridItemTemplate
 
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
-						vint columnCount = dataGrid->columnItemView->GetColumnCount();
+						vint columnCount = dataGrid->listViewItemView->GetColumnCount();
 						vint itemIndex = GetIndex();
 
 						dataVisualizers.Resize(columnCount);
@@ -262,7 +262,7 @@ DefaultDataGridItemTemplate
 				{
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
 					{
-						vint columnCount = dataGrid->columnItemView->GetColumnCount();
+						vint columnCount = dataGrid->listViewItemView->GetColumnCount();
 						if (columnCount > textTable->GetColumns())
 						{
 							columnCount = textTable->GetColumns();
@@ -497,6 +497,11 @@ GuiVirtualDataGrid
 				SetSelectedCell({ -1, -1 });
 			}
 
+			GuiListControl::IItemProvider* GuiVirtualDataGrid::GetItemProvider()
+			{
+				return GuiVirtualListView::GetItemProvider();
+			}
+
 			GridPos GuiVirtualDataGrid::GetSelectedCell()
 			{
 				return selectedCell;
@@ -510,7 +515,7 @@ GuiVirtualDataGrid
 					{
 						CloseEditor(false);
 					}
-					else if (0 <= value.row && value.row < GetItemProvider()->Count() && 0 <= value.column && value.column < columnItemView->GetColumnCount())
+					else if (0 <= value.row && value.row < GetItemProvider()->Count() && 0 <= value.column && value.column < listViewItemView->GetColumnCount())
 					{
 						OpenEditor(value.row, value.column, nullptr);
 					}

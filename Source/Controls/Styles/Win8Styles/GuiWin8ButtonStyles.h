@@ -30,13 +30,13 @@ Button
 
 				Win8ButtonElements							elements;
 				Ptr<TransferringAnimation>					transferringAnimation;
-				controls::GuiButton::ControlState			controlStyle;
+				controls::ButtonState						controlStyle;
 				bool										isVisuallyEnabled;
 				bool										isSelected;
 				bool										transparentWhenInactive;
 				bool										transparentWhenDisabled;
 
-				virtual void								TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)=0;
+				virtual void								TransferInternal(controls::ButtonState value, bool enabled, bool selected)=0;
 				virtual void								AfterApplyColors(const Win8ButtonColors& colors);
 			public:
 				/// <summary>Create the style.</summary>
@@ -53,7 +53,7 @@ Button
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
 				void										SetSelected(bool value)override;
-				void										Transfer(controls::GuiButton::ControlState value)override;
+				void										Transfer(controls::ButtonState value)override;
 
 				/// <summary>Get the transparent style for the inactive state.</summary>
 				/// <returns>Returns true if the background is not transparent for the inactive state.</returns>
@@ -79,7 +79,7 @@ Button
 			class Win8ButtonStyle : public Win8ButtonStyleBase, public Description<Win8ButtonStyle>
 			{
 			protected:
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool selected)override;
 			public:
 				/// <summary>Create the style.</summary>
 				Win8ButtonStyle();
@@ -103,11 +103,11 @@ Button
 
 				Win8CheckedButtonElements					elements;
 				Ptr<TransferringAnimation>					transferringAnimation;
-				controls::GuiButton::ControlState			controlStyle;
+				controls::ButtonState						controlStyle;
 				bool										isVisuallyEnabled;
 				bool										isSelected;
 
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected);
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool selected);
 			public:
 				/// <summary>Create the style.</summary>
 				/// <param name="bulletStyle">The bullet style.</param>
@@ -122,7 +122,7 @@ Button
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
 				void										SetSelected(bool value)override;
-				void										Transfer(controls::GuiButton::ControlState value)override;
+				void										Transfer(controls::ButtonState value)override;
 			};
 		}
 	}

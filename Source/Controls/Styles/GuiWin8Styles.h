@@ -49,7 +49,7 @@ Theme
 				controls::GuiListView::IStyleProvider*								CreateListViewStyle()override;
 				controls::GuiTreeView::IStyleProvider*								CreateTreeViewStyle()override;
 				controls::GuiSelectableButton::IStyleController*					CreateListItemBackgroundStyle()override;
-				controls::GuiSelectableButton::IStyleController*					CreateListItemBackgroundStyle()override;
+				controls::GuiSelectableButton::IStyleController*					CreateTreeItemExpanderStyle()override;
 
 				controls::GuiToolstripMenu::IStyleController*						CreateMenuStyle()override;
 				controls::GuiToolstripMenuBar::IStyleController*					CreateMenuBarStyle()override;

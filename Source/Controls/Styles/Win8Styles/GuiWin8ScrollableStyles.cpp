@@ -15,20 +15,20 @@ namespace vl
 Win8ScrollHandleButtonStyle
 ***********************************************************************/
 
-			void Win8ScrollHandleButtonStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win8ScrollHandleButtonStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				Win8ButtonColors targetColor;
 				if(enabled)
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=Win8ButtonColors::ScrollHandleNormal();
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=Win8ButtonColors::ScrollHandleActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win8ButtonColors::ScrollHandlePressed();
 						break;
 					}
@@ -53,20 +53,20 @@ Win8ScrollHandleButtonStyle
 Win8ScrollArrowButtonStyle
 ***********************************************************************/
 
-			void Win8ScrollArrowButtonStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win8ScrollArrowButtonStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				Win8ButtonColors targetColor;
 				if(enabled)
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=Win8ButtonColors::ScrollArrowNormal();
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=Win8ButtonColors::ScrollArrowActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win8ButtonColors::ScrollArrowPressed();
 						break;
 					}
@@ -297,7 +297,7 @@ Win8ProgressBarStyle
 			{
 			}
 
-			void Win8ProgressBarStyle::SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)
+			void Win8ProgressBarStyle::SetCommandExecutor(controls::IScrollCommandExecutor* value)
 			{
 			}
 

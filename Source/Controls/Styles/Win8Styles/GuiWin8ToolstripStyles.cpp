@@ -78,14 +78,14 @@ Win8WindowStyle
 Win8ToolstripButtonDropdownStyle
 ***********************************************************************/
 
-			void Win8ToolstripButtonDropdownStyle::TransferInternal(controls::GuiButton::ControlState value, bool enabled)
+			void Win8ToolstripButtonDropdownStyle::TransferInternal(controls::ButtonState value, bool enabled)
 			{
-				splitterComposition->SetVisible(value!=GuiButton::Normal && enabled);
+				splitterComposition->SetVisible(value != ButtonState::Normal && enabled);
 			}
 
 			Win8ToolstripButtonDropdownStyle::Win8ToolstripButtonDropdownStyle()
 				:isVisuallyEnabled(false)
-				,controlState(GuiButton::Normal)
+				,controlState(ButtonState::Normal)
 			{
 				boundsComposition=new GuiBoundsComposition;
 				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -144,7 +144,7 @@ Win8ToolstripButtonDropdownStyle
 				}
 			}
 
-			void Win8ToolstripButtonDropdownStyle::Transfer(controls::GuiButton::ControlState value)
+			void Win8ToolstripButtonDropdownStyle::Transfer(controls::ButtonState value)
 			{
 				if(controlState!=value)
 				{
@@ -163,24 +163,24 @@ Win8ToolstripButtonStyle
 				style->elements.Apply(colorCurrent);
 			}
 
-			void Win8ToolstripButtonStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected, bool menuOpening)
+			void Win8ToolstripButtonStyle::TransferInternal(ButtonState value, bool enabled, bool selected, bool menuOpening)
 			{
 				Win8ButtonColors targetColor;
 				if(enabled)
 				{
 					if(menuOpening)
 					{
-						value=GuiButton::Pressed;
+						value=ButtonState::Pressed;
 					}
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=selected?Win8ButtonColors::ToolstripButtonSelected():Win8ButtonColors::ToolstripButtonNormal();
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=selected?Win8ButtonColors::ToolstripButtonSelected():Win8ButtonColors::ToolstripButtonActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win8ButtonColors::ToolstripButtonPressed();
 						break;
 					}
@@ -193,7 +193,7 @@ Win8ToolstripButtonStyle
 			}
 
 			Win8ToolstripButtonStyle::Win8ToolstripButtonStyle(ButtonStyle _buttonStyle)
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isSelected(false)
 				,isOpening(false)
@@ -348,7 +348,7 @@ Win8ToolstripButtonStyle
 			{
 			}
 
-			void Win8ToolstripButtonStyle::Transfer(controls::GuiButton::ControlState value)
+			void Win8ToolstripButtonStyle::Transfer(controls::ButtonState value)
 			{
 				if(controlStyle!=value)
 				{

@@ -124,7 +124,7 @@ Win8Theme
 				return new Win8SelectableItemStyle();
 			}
 
-			controls::GuiSelectableButton::IStyleController* Win8Theme::CreateListItemBackgroundStyle()
+			controls::GuiSelectableButton::IStyleController* Win8Theme::CreateTreeItemExpanderStyle()
 			{
 				return new win7::Win7TreeViewExpandingButtonStyle();
 			}

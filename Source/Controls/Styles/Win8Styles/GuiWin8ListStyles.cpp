@@ -16,7 +16,7 @@ namespace vl
 Win8SelectableItemStyle
 ***********************************************************************/
 
-			void Win8SelectableItemStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win8SelectableItemStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				if(!enabled)
 				{
@@ -30,13 +30,13 @@ Win8SelectableItemStyle
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						transferringAnimation->Transfer(Win8ButtonColors::ItemNormal());
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						transferringAnimation->Transfer(Win8ButtonColors::ItemActive());
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						transferringAnimation->Transfer(Win8ButtonColors::ItemSelected());
 						break;
 					}
@@ -57,21 +57,21 @@ Win8SelectableItemStyle
 Win8DropDownComboBoxStyle
 ***********************************************************************/
 
-			void Win8DropDownComboBoxStyle::TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)
+			void Win8DropDownComboBoxStyle::TransferInternal(controls::ButtonState value, bool enabled, bool selected)
 			{
 				Win8ButtonColors targetColor;
 				if(enabled)
 				{
-					if(selected) value=GuiButton::Pressed;
+					if(selected) value= ButtonState::Pressed;
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=Win8ButtonColors::ButtonNormal();
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=Win8ButtonColors::ButtonActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win8ButtonColors::ButtonPressed();
 						break;
 					}
@@ -162,7 +162,7 @@ Win8DropDownComboBoxStyle
 			{
 			}
 
-			void Win8DropDownComboBoxStyle::SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)
+			void Win8DropDownComboBoxStyle::SetCommandExecutor(controls::IComboBoxCommandExecutor* value)
 			{
 				commandExecutor=value;
 			}
@@ -205,11 +205,6 @@ Win8TextListProvider
 
 			Win8TextListProvider::~Win8TextListProvider()
 			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateItemBackground()
-			{
-				return new Win8SelectableItemStyle;
 			}
 
 			Color Win8TextListProvider::GetTextColor()

@@ -74,13 +74,11 @@ External Functions
 
 			extern Ptr<presentation::theme::ITheme>							CreateWin7Theme();
 			extern Ptr<presentation::theme::ITheme>							CreateWin8Theme();
-			extern presentation::controls::list::ListViewItemStyleProvider::IListViewItemContent*	ListViewItemStyleProvider_GetItemContent(presentation::controls::list::ListViewItemStyleProvider* thisObject, presentation::controls::GuiListControl::IItemStyleController* itemStyleController);
 			template<typename T>
 			WString Interface_GetIdentifier()
 			{
 				return T::Identifier;
 			}
-			extern presentation::controls::list::StringGridProvider*		GuiStringGrid_GetGrids(presentation::controls::GuiStringGrid* grid);
 		}
 	}
 }

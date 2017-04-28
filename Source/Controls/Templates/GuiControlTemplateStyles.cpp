@@ -1064,10 +1064,10 @@ GuiBindableDataVisualizer
 				visualizerTemplate = templateFactory(dataGridContext->GetViewModelContext());
 				CHECK_ERROR(visualizerTemplate, L"GuiBindableDataVisualizer::CreateTemplateInternal(GuiTemplate*)#An instance of GuiGridVisualizerTemplate is expected.");
 
-				if (decoratedComposition)
+				if (childTemplate)
 				{
-					decoratedComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					visualizerTemplate->GetContainerComposition()->AddChild(decoratedComposition);
+					childTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					visualizerTemplate->GetContainerComposition()->AddChild(childTemplate);
 				}
 				return visualizerTemplate;
 			}
@@ -1088,20 +1088,11 @@ GuiBindableDataVisualizer
 			void GuiBindableDataVisualizer::BeforeVisualizeCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 			{
 				DataVisualizerBase::BeforeVisualizeCell(itemProvider, row, column);
-				if (!visualizerTemplate) return;
-				visualizerTemplate->SetText(dataProvider->GetCellText(row, column));
-
-				auto structuredDataProvider = dynamic_cast<list::StructuredDataProvider*>(dataProvider);
-				if (!structuredDataProvider) return;
-
-				auto bindableDataProvider = structuredDataProvider->GetStructuredDataProvider().Cast<list::BindableDataProvider>();
-				if (!bindableDataProvider) return;
-
-				auto columnProvider = bindableDataProvider->GetBindableColumn(column);
-				if (!columnProvider) return;
-
-				visualizerTemplate->SetRowValue(bindableDataProvider->GetRowValue(row));
-				visualizerTemplate->SetCellValue(columnProvider->GetCellValue(row));
+				auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier));
+				if (listViewItemView)
+				{
+					visualizerTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
+				}
 			}
 
 			void GuiBindableDataVisualizer::SetSelected(bool value)
@@ -1169,20 +1160,11 @@ GuiBindableDataEditor
 			void GuiBindableDataEditor::BeforeEditCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 			{
 				DataEditorBase::BeforeEditCell(itemProvider, row, column);
-				if (!editorTemplate) return;
-				editorTemplate->SetText(dataProvider->GetCellText(row, column));
-
-				auto structuredDataProvider = dynamic_cast<list::StructuredDataProvider*>(dataProvider);
-				if (!structuredDataProvider) return;
-
-				auto bindableDataProvider = structuredDataProvider->GetStructuredDataProvider().Cast<list::BindableDataProvider>();
-				if (!bindableDataProvider) return;
-
-				auto columnProvider = bindableDataProvider->GetBindableColumn(column);
-				if (!columnProvider) return;
-
-				editorTemplate->SetRowValue(bindableDataProvider->GetRowValue(row));
-				editorTemplate->SetCellValue(columnProvider->GetCellValue(row));
+				auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier));
+				if (listViewItemView)
+				{
+					editorTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
+				}
 			}
 
 			description::Value GuiBindableDataEditor::GetEditedCellValue()

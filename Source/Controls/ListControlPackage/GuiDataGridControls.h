@@ -105,6 +105,8 @@ GuiVirtualDataGrid
 				/// <summary>Selected cell changed event.</summary>
 				compositions::GuiNotifyEvent							SelectedCellChanged;
 
+				IItemProvider*											GetItemProvider()override;
+
 
 				/// <summary>Get the row index and column index of the selected cell.</summary>
 				/// <returns>The row index and column index of the selected cell.</returns>

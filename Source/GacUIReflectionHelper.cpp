@@ -170,16 +170,6 @@ External Functions (Controls)
 			{
 				return new win8::Win8Theme();
 			}
-
-			list::ListViewItemStyleProvider::IListViewItemContent* ListViewItemStyleProvider_GetItemContent(list::ListViewItemStyleProvider* thisObject, GuiListControl::IItemStyleController* itemStyleController)
-			{
-				return thisObject->GetItemContent<list::ListViewItemStyleProvider::IListViewItemContent>(itemStyleController);
-			}
-
-			list::StringGridProvider* GuiStringGrid_GetGrids(GuiStringGrid* grid)
-			{
-				return &grid->Grids();
-			}
 		}
 	}
 }

@@ -117,10 +117,10 @@ GuiButton
 				,clickOnMouseUp(true)
 				,mousePressing(false)
 				,mouseHoving(false)
-				,controlState(Normal)
+				,controlState(ButtonState::Normal)
 			{
 				Clicked.SetAssociatedComposition(boundsComposition);
-				styleController->Transfer(Normal);
+				styleController->Transfer(ButtonState::Normal);
 				SetFocusableComposition(boundsComposition);
 
 				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);

@@ -31,6 +31,7 @@ Datagrid Interfaces
 				class IDataGridContext : public virtual IDescriptable, public Description<IDataGridContext>
 				{
 				public:
+					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
 					virtual GuiListViewBase::IStyleProvider*			GetListViewStyleProvider() = 0;
 					virtual description::Value							GetViewModelContext() = 0;
 					virtual void										RequestSaveData() = 0;

@@ -15,7 +15,7 @@ GuiTextBoxAutoCompleteBase::TextListControlProvider
 
 			GuiTextBoxAutoCompleteBase::TextListControlProvider::TextListControlProvider(GuiTextList::IStyleProvider* styleProvider)
 			{
-				autoCompleteList = new GuiTextList(styleProvider ? styleProvider : theme::GetCurrentTheme()->CreateTextListStyle(), theme::GetCurrentTheme()->CreateTextListItemStyle());
+				autoCompleteList = new GuiTextList(styleProvider ? styleProvider : theme::GetCurrentTheme()->CreateTextListStyle());
 				autoCompleteList->SetHorizontalAlwaysVisible(false);
 				autoCompleteList->SetVerticalAlwaysVisible(false);
 			}

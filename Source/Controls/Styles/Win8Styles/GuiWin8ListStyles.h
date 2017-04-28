@@ -30,7 +30,7 @@ List Control Buttons
 			class Win8SelectableItemStyle : public Win8ButtonStyleBase, public Description<Win8SelectableItemStyle>
 			{
 			protected:
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool selected)override;
 			public:
 				/// <summary>Create the style.</summary>
 				Win8SelectableItemStyle();
@@ -47,7 +47,7 @@ ComboBox
 			class Win8DropDownComboBoxStyle : public Win8ButtonStyle, public virtual controls::GuiComboBoxListControl::IStyleController, public Description<Win8DropDownComboBoxStyle>
 			{
 			protected:
-				controls::GuiComboBoxBase::ICommandExecutor*	commandExecutor;
+				controls::IComboBoxCommandExecutor*				commandExecutor;
 				compositions::GuiTableComposition*				table;
 				compositions::GuiCellComposition*				textComposition;
 				compositions::GuiCellComposition*				dropDownComposition;
@@ -55,7 +55,7 @@ ComboBox
 				WString											text;
 				bool											textVisible;
 
-				void											TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
+				void											TransferInternal(controls::ButtonState value, bool enabled, bool selected)override;
 				void											AfterApplyColors(const Win8ButtonColors& colors)override;
 			public:
 				/// <summary>Create the style.</summary>
@@ -70,7 +70,7 @@ ComboBox
 				controls::GuiButton*										GetSubMenuHost()override;
 				void														SetImage(Ptr<GuiImageData> value)override;
 				void														SetShortcutText(const WString& value)override;
-				void														SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
+				void														SetCommandExecutor(controls::IComboBoxCommandExecutor* value)override;
 				void														OnItemSelected()override;
 				void														SetText(const WString& value)override;
 				void														SetTextVisible(bool value)override;
@@ -92,7 +92,6 @@ List
 				Win8TextListProvider();
 				~Win8TextListProvider();
 
-				virtual controls::GuiSelectableButton::IStyleController*	CreateItemBackground()override;
 				virtual Color												GetTextColor()override;
 			};
 

@@ -12,7 +12,7 @@ namespace vl
 Win8TabPageHeaderStyle
 ***********************************************************************/
 
-			void Win8TabPageHeaderStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win8TabPageHeaderStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				if(selected)
 				{
@@ -22,11 +22,11 @@ Win8TabPageHeaderStyle
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						transferringAnimation->Transfer(Win8ButtonColors::TabPageHeaderNormal());
 						break;
-					case GuiButton::Active:
-					case GuiButton::Pressed:
+					case ButtonState::Active:
+					case ButtonState::Pressed:
 						transferringAnimation->Transfer(Win8ButtonColors::TabPageHeaderActive());
 						break;
 					}

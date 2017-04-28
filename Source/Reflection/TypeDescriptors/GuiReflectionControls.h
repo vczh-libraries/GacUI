@@ -233,7 +233,7 @@ Interface Proxy
 				presentation::controls::GuiControl::IStyleController
 				)
 
-				void Transfer(presentation::controls::GuiButton::ControlState value)override
+				void Transfer(presentation::controls::ButtonState value)override
 				{
 					INVOKE_INTERFACE_PROXY(Transfer, value);
 				}

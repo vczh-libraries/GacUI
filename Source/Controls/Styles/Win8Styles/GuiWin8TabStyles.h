@@ -29,7 +29,7 @@ Tab
 			class Win8TabPageHeaderStyle : public Win8ButtonStyleBase, public Description<Win8TabPageHeaderStyle>
 			{
 			protected:
-				void														TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
+				void														TransferInternal(controls::ButtonState value, bool enabled, bool selected)override;
 			public:
 				/// <summary>Create the style.</summary>
 				Win8TabPageHeaderStyle();
