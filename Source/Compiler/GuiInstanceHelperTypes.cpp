@@ -33,16 +33,6 @@ Type Declaration
 				STRUCT_MEMBER(columnSpan)
 			END_STRUCT_MEMBER(SiteValue)
 
-			BEGIN_ENUM_ITEM(ListViewViewType)
-				ENUM_ITEM_NAMESPACE(ListViewViewType)
-				ENUM_NAMESPACE_ITEM(BigIcon)
-				ENUM_NAMESPACE_ITEM(SmallIcon)
-				ENUM_NAMESPACE_ITEM(List)
-				ENUM_NAMESPACE_ITEM(Tile)
-				ENUM_NAMESPACE_ITEM(Information)
-				ENUM_NAMESPACE_ITEM(Detail)
-			END_ENUM_ITEM(ListViewViewType)
-
 #undef _
 		}
 	}

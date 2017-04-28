@@ -22,20 +22,12 @@ GuiInstanceLoader_Document.cpp
 	GuiDocumentViewer, GuiDocumentLable
 		default: Ptr<GuiDocumentItem>
 GuiInstanceLoader_List.cpp
-	GuiVirtualTextList
-		ItemTemplate: TemplateProperty<GuiTextListItemTemplate>
 	GuiComboBox
-		ItemTemplate: TemplateProperty<GuiControlTemplate>
-	GuiListView, GuiBindableListView
-		ctor: View(ListViewViewType), IconSize(Size)
-	GuiVirtualTreeView
-		ItemTemplate: TemplateProperty<GuiTreeItemTemplate>
+		ctor: _ListControl(GuiListControl*)
 	GuiTreeView, GuiBindableTreeView
-		ctor: IconSize(Size)
 		Nodes: array(Ptr<tree::MemoryNodeProvider>)
 	GuiBindableDataGrid
 		ctor: ViewModelContext
-		Columns: collection(Ptr<list::BindableDataColumn>)
 	tree::TreeNode
 		Text, Image, Tag
 GuiInstanceLoader_Tab.cpp
@@ -274,16 +266,7 @@ GuiPredefinedInstanceLoadersPlugin
 				)\
 			)
 
-	#define ADD_TEMPLATE_CONTROL_2(TYPENAME, STYLE_METHOD, ARGUMENT_METHOD, TEMPLATE)\
-		manager->SetLoader(\
-		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
-				L"presentation::controls::" L ## #TYPENAME,\
-				L ## #STYLE_METHOD,\
-				L ## #ARGUMENT_METHOD\
-				)\
-			)
-
-	#define ADD_TEMPLATE_CONTROL_3(TYPENAME, STYLE_METHOD, ARGUMENT_FUNCTION, TEMPLATE)\
+	#define ADD_TEMPLATE_CONTROL_2(TYPENAME, STYLE_METHOD, ARGUMENT_FUNCTION, TEMPLATE)\
 		manager->SetLoader(\
 		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 				L"presentation::controls::" L ## #TYPENAME,\
@@ -297,15 +280,6 @@ GuiPredefinedInstanceLoadersPlugin
 		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				L ## #STYLE_METHOD\
-				)\
-			)
-
-	#define ADD_VIRTUAL_CONTROL_2(VIRTUALTYPENAME, TYPENAME, STYLE_METHOD, ARGUMENT_METHOD, TEMPLATE)\
-		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-		new GuiTemplateControlInstanceLoader<TYPENAME, TEMPLATE##_StyleProvider, TEMPLATE>(\
-				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
-				L ## #STYLE_METHOD,\
-				L ## #ARGUMENT_METHOD\
 				)\
 			)
 
@@ -325,13 +299,14 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiButton,				CreateButtonStyle,													GuiButtonTemplate											);
 					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		CreateScrollContainerStyle,											GuiScrollViewTemplate										);
 					ADD_TEMPLATE_CONTROL	(							GuiWindow,				CreateWindowStyle,													GuiWindowTemplate											);
-					ADD_TEMPLATE_CONTROL_2	(							GuiTextList,			CreateTextListStyle,				CreateTextListItemStyle,		GuiTextListTemplate											);
-					ADD_TEMPLATE_CONTROL_2	(							GuiBindableTextList,	CreateTextListStyle,				CreateTextListItemStyle,		GuiTextListTemplate											);
+					ADD_TEMPLATE_CONTROL	(							GuiTextList,			CreateTextListStyle,												GuiTextListTemplate											);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,	CreateTextListStyle,												GuiTextListTemplate											);
+					ADD_TEMPLATE_CONTROL	(							GuiListView,			CreateListViewStyle,												GuiListViewTemplate);
+					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,	CreateListViewStyle,												GuiListViewTemplate);
 					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	CreateMultilineTextBoxStyle,										GuiMultilineTextBoxTemplate									);
 					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	CreateTextBoxStyle,													GuiSinglelineTextBoxTemplate								);
 					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			CreateDatePickerStyle,												GuiDatePickerTemplate										);
-					ADD_TEMPLATE_CONTROL_3	(							GuiDateComboBox,		CreateComboBoxStyle,				CreateStandardDataPicker,		GuiDateComboBoxTemplate										);
-					ADD_TEMPLATE_CONTROL	(							GuiStringGrid,			CreateListViewStyle,												GuiListViewTemplate											);
+					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		CreateComboBoxStyle,				CreateStandardDataPicker,		GuiDateComboBoxTemplate										);
 
 					ADD_VIRTUAL_CONTROL		(GroupBox,					GuiControl,				CreateGroupBoxStyle,												GuiControlTemplate											);
 					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				CreateMenuSplitterStyle,											GuiControlTemplate											);
@@ -348,8 +323,6 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_VIRTUAL_CONTROL_F	(HTracker,					GuiScroll,				CreateHTrackerStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
 					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				CreateVTrackerStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
 					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				CreateProgressBarStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
-					ADD_VIRTUAL_CONTROL_2	(CheckTextList,				GuiTextList,			CreateTextListStyle,				CreateCheckTextListItemStyle,	GuiTextListTemplate											);
-					ADD_VIRTUAL_CONTROL_2	(RadioTextList,				GuiTextList,			CreateTextListStyle,				CreateRadioTextListItemStyle,	GuiTextListTemplate											);
 
 					LoadTabControls(manager);
 					LoadToolstripControls(manager);
@@ -361,9 +334,7 @@ GuiPredefinedInstanceLoadersPlugin
 	#undef ADD_VIRTUAL_TYPE_LOADER
 	#undef ADD_TEMPLATE_CONTROL
 	#undef ADD_TEMPLATE_CONTROL_2
-	#undef ADD_TEMPLATE_CONTROL_3
 	#undef ADD_VIRTUAL_CONTROL
-	#undef ADD_VIRTUAL_CONTROL_2
 	#undef ADD_VIRTUAL_CONTROL_F
 	#endif
 				}

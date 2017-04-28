@@ -116,7 +116,6 @@ GlobalStringKey
 		GlobalStringKey GlobalStringKey::_Eval;
 		GlobalStringKey GlobalStringKey::_Uri;
 		GlobalStringKey GlobalStringKey::_ControlTemplate;
-		GlobalStringKey GlobalStringKey::_ItemTemplate;
 
 		class GlobalStringKeyManager
 		{
@@ -134,7 +133,6 @@ GlobalStringKey
 				GlobalStringKey::_Eval = GlobalStringKey::Get(L"eval");
 				GlobalStringKey::_Uri = GlobalStringKey::Get(L"uri");
 				GlobalStringKey::_ControlTemplate = GlobalStringKey::Get(L"ControlTemplate");
-				GlobalStringKey::_ItemTemplate = GlobalStringKey::Get(L"ItemTemplate");
 			}
 		}*globalStringKeyManager = 0;
 

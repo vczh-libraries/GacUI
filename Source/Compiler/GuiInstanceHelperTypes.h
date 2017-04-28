@@ -36,22 +36,10 @@ Helper Types
 		{
 			struct SiteValue
 			{
-				vint			row;
-				vint			column;
-				vint			rowSpan;
-				vint			columnSpan;
-
-				SiteValue() :row(0), column(0), rowSpan(1), columnSpan(1){}
-			};
-
-			enum class ListViewViewType
-			{
-				BigIcon,
-				SmallIcon,
-				List,
-				Tile,
-				Information,
-				Detail,
+				vint			row = 0;
+				vint			column = 0;
+				vint			rowSpan = 1;
+				vint			columnSpan = 1;
 			};
 		}
 	}
@@ -69,7 +57,6 @@ Type List
 
 #define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
 			F(presentation::helper_types::SiteValue)\
-			F(presentation::helper_types::ListViewViewType)\
 
 			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
 		}
