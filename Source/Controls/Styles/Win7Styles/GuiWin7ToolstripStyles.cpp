@@ -29,14 +29,14 @@ Win7WindowStyle
 Win7ToolstripButtonDropdownStyle
 ***********************************************************************/
 
-			void Win7ToolstripButtonDropdownStyle::TransferInternal(controls::GuiButton::ControlState value, bool enabled)
+			void Win7ToolstripButtonDropdownStyle::TransferInternal(controls::ButtonState value, bool enabled)
 			{
-				splitterComposition->SetVisible(value!=GuiButton::Normal && enabled);
+				splitterComposition->SetVisible(value!= ButtonState::Normal && enabled);
 			}
 
 			Win7ToolstripButtonDropdownStyle::Win7ToolstripButtonDropdownStyle()
 				:isVisuallyEnabled(false)
-				,controlState(GuiButton::Normal)
+				,controlState(ButtonState::Normal)
 			{
 				boundsComposition=new GuiBoundsComposition;
 				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -96,7 +96,7 @@ Win7ToolstripButtonDropdownStyle
 				}
 			}
 
-			void Win7ToolstripButtonDropdownStyle::Transfer(controls::GuiButton::ControlState value)
+			void Win7ToolstripButtonDropdownStyle::Transfer(controls::ButtonState value)
 			{
 				if(controlState!=value)
 				{
@@ -115,24 +115,24 @@ Win7ToolstripButtonStyle
 				style->elements.Apply(colorCurrent);
 			}
 
-			void Win7ToolstripButtonStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected, bool menuOpening)
+			void Win7ToolstripButtonStyle::TransferInternal(ButtonState value, bool enabled, bool selected, bool menuOpening)
 			{
 				Win7ButtonColors targetColor;
 				if(enabled)
 				{
 					if(menuOpening)
 					{
-						value=GuiButton::Pressed;
+						value= ButtonState::Pressed;
 					}
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=selected?Win7ButtonColors::ToolstripButtonSelected():Win7ButtonColors::ToolstripButtonNormal();
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=selected?Win7ButtonColors::ToolstripButtonSelected():Win7ButtonColors::ToolstripButtonActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win7ButtonColors::ToolstripButtonPressed();
 						break;
 					}
@@ -145,7 +145,7 @@ Win7ToolstripButtonStyle
 			}
 
 			Win7ToolstripButtonStyle::Win7ToolstripButtonStyle(ButtonStyle _buttonStyle)
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isSelected(false)
 				,isOpening(false)
@@ -300,7 +300,7 @@ Win7ToolstripButtonStyle
 			{
 			}
 
-			void Win7ToolstripButtonStyle::Transfer(controls::GuiButton::ControlState value)
+			void Win7ToolstripButtonStyle::Transfer(controls::ButtonState value)
 			{
 				if(controlStyle!=value)
 				{

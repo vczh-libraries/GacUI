@@ -15,7 +15,7 @@ namespace vl
 Win7SelectableItemStyle
 ***********************************************************************/
 
-			void Win7SelectableItemStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win7SelectableItemStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				if(!enabled)
 				{
@@ -29,13 +29,13 @@ Win7SelectableItemStyle
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						transferringAnimation->Transfer(Win7ButtonColors::ItemNormal());
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						transferringAnimation->Transfer(Win7ButtonColors::ItemActive());
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						transferringAnimation->Transfer(Win7ButtonColors::ItemSelected());
 						break;
 					}
@@ -56,12 +56,12 @@ Win7SelectableItemStyle
 Win7ListViewColumnDropDownStyle
 ***********************************************************************/
 
-			void Win7ListViewColumnDropDownStyle::TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)
+			void Win7ListViewColumnDropDownStyle::TransferInternal(controls::ButtonState value, bool enabled, bool selected)
 			{
-				if(!enabled) value=GuiButton::Normal;
+				if(!enabled) value= ButtonState::Normal;
 				switch(value)
 				{
-				case GuiButton::Normal:
+				case ButtonState::Normal:
 					{
 						leftBorderComposition->SetVisible(true);
 						borderComposition->SetVisible(false);
@@ -70,8 +70,8 @@ Win7ListViewColumnDropDownStyle
 						leftBorderElement->SetColors(Color(223, 234, 247), Color(252, 252, 252));
 					}
 					break;
-				case GuiButton::Active:
-				case GuiButton::Pressed:
+				case ButtonState::Active:
+				case ButtonState::Pressed:
 					{
 						leftBorderComposition->SetVisible(false);
 						borderComposition->SetVisible(true);
@@ -85,7 +85,7 @@ Win7ListViewColumnDropDownStyle
 			}
 
 			Win7ListViewColumnDropDownStyle::Win7ListViewColumnDropDownStyle()
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isSelected(false)
 			{
@@ -170,7 +170,7 @@ Win7ListViewColumnDropDownStyle
 				}
 			}
 
-			void Win7ListViewColumnDropDownStyle::Transfer(GuiButton::ControlState value)
+			void Win7ListViewColumnDropDownStyle::Transfer(ButtonState value)
 			{
 				if(controlStyle!=value)
 				{
@@ -183,12 +183,12 @@ Win7ListViewColumnDropDownStyle
 Win7ListViewColumnHeaderStyle
 ***********************************************************************/
 
-			void Win7ListViewColumnHeaderStyle::TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool subMenuExisting, bool subMenuOpening)
+			void Win7ListViewColumnHeaderStyle::TransferInternal(controls::ButtonState value, bool enabled, bool subMenuExisting, bool subMenuOpening)
 			{
-				if(!enabled) value=GuiButton::Normal;
+				if(!enabled) value= ButtonState::Normal;
 				switch(value)
 				{
-				case GuiButton::Normal:
+				case ButtonState::Normal:
 					{
 						rightBorderComposition->SetVisible(true);
 						borderComposition->SetVisible(false);
@@ -200,7 +200,7 @@ Win7ListViewColumnHeaderStyle
 						dropdownButton->SetVisible(subMenuOpening);
 					}
 					break;
-				case GuiButton::Active:
+				case ButtonState::Active:
 					{
 						rightBorderComposition->SetVisible(false);
 						borderComposition->SetVisible(true);
@@ -214,7 +214,7 @@ Win7ListViewColumnHeaderStyle
 						dropdownButton->SetVisible(isSubMenuExisting);
 					}
 					break;
-				case GuiButton::Pressed:
+				case ButtonState::Pressed:
 					{
 						rightBorderComposition->SetVisible(false);
 						borderComposition->SetVisible(true);
@@ -232,7 +232,7 @@ Win7ListViewColumnHeaderStyle
 			}
 
 			Win7ListViewColumnHeaderStyle::Win7ListViewColumnHeaderStyle()
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isSubMenuExisting(false)
 				,isSubMenuOpening(false)
@@ -330,7 +330,7 @@ Win7ListViewColumnHeaderStyle
 			{
 			}
 
-			void Win7ListViewColumnHeaderStyle::Transfer(GuiButton::ControlState value)
+			void Win7ListViewColumnHeaderStyle::Transfer(ButtonState value)
 			{
 				if(controlStyle!=value)
 				{
@@ -375,18 +375,18 @@ Win7ListViewColumnHeaderStyle
 			{
 			}
 
-			void Win7ListViewColumnHeaderStyle::SetColumnSortingState(controls::GuiListViewColumnHeader::ColumnSortingState value)
+			void Win7ListViewColumnHeaderStyle::SetColumnSortingState(controls::ColumnSortingState value)
 			{
 				Margin margin=arrowComposition->GetAlignmentToParent();
 				switch(value)
 				{
-				case controls::GuiListViewColumnHeader::NotSorted:
+				case controls::ColumnSortingState::NotSorted:
 					arrowElement->SetPoints(0, 0);
 					break;
-				case controls::GuiListViewColumnHeader::Ascending:
+				case controls::ColumnSortingState::Ascending:
 					common_styles::CommonFragmentBuilder::FillUpArrow(arrowElement);
 					break;
-				case controls::GuiListViewColumnHeader::Descending:
+				case controls::ColumnSortingState::Descending:
 					common_styles::CommonFragmentBuilder::FillDownArrow(arrowElement);
 					break;
 				}
@@ -396,14 +396,14 @@ Win7ListViewColumnHeaderStyle
 Win7TreeViewExpandingButtonStyle
 ***********************************************************************/
 
-			void Win7TreeViewExpandingButtonStyle::TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)
+			void Win7TreeViewExpandingButtonStyle::TransferInternal(controls::ButtonState value, bool enabled, bool selected)
 			{
 				bool expanding=false;
 				bool activated=false;
 				if(isVisuallyEnabled)
 				{
 					expanding=selected;
-					activated=value!=GuiButton::Normal;
+					activated=value!= ButtonState::Normal;
 				}
 
 				Point points[3];
@@ -439,7 +439,7 @@ Win7TreeViewExpandingButtonStyle
 			}
 
 			Win7TreeViewExpandingButtonStyle::Win7TreeViewExpandingButtonStyle()
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isSelected(false)
 			{
@@ -497,7 +497,7 @@ Win7TreeViewExpandingButtonStyle
 				}
 			}
 
-			void Win7TreeViewExpandingButtonStyle::Transfer(GuiButton::ControlState value)
+			void Win7TreeViewExpandingButtonStyle::Transfer(ButtonState value)
 			{
 				if(controlStyle!=value)
 				{
@@ -510,21 +510,21 @@ Win7TreeViewExpandingButtonStyle
 Win7DropDownComboBoxStyle
 ***********************************************************************/
 
-			void Win7DropDownComboBoxStyle::TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)
+			void Win7DropDownComboBoxStyle::TransferInternal(controls::ButtonState value, bool enabled, bool selected)
 			{
 				Win7ButtonColors targetColor;
 				if(enabled)
 				{
-					if(selected) value=GuiButton::Pressed;
+					if(selected) value= ButtonState::Pressed;
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=Win7ButtonColors::ButtonNormal();
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=Win7ButtonColors::ButtonActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win7ButtonColors::ButtonPressed();
 						break;
 					}
@@ -616,7 +616,7 @@ Win7DropDownComboBoxStyle
 			{
 			}
 
-			void Win7DropDownComboBoxStyle::SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)
+			void Win7DropDownComboBoxStyle::SetCommandExecutor(controls::IComboBoxCommandExecutor* value)
 			{
 				commandExecutor=value;
 			}
@@ -659,11 +659,6 @@ Win7TextListProvider
 
 			Win7TextListProvider::~Win7TextListProvider()
 			{
-			}
-
-			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateItemBackground()
-			{
-				return new Win7SelectableItemStyle;
 			}
 
 			Color Win7TextListProvider::GetTextColor()

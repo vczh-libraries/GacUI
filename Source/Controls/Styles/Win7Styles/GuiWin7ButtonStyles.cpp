@@ -27,7 +27,7 @@ Win7ButtonStyleBase
 			}
 
 			Win7ButtonStyleBase::Win7ButtonStyleBase(bool verticalGradient, bool roundBorder, const Win7ButtonColors& initialColor, Alignment horizontal, Alignment vertical)
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isSelected(false)
 				,transparentWhenInactive(false)
@@ -85,7 +85,7 @@ Win7ButtonStyleBase
 				}
 			}
 
-			void Win7ButtonStyleBase::Transfer(GuiButton::ControlState value)
+			void Win7ButtonStyleBase::Transfer(ButtonState value)
 			{
 				if(controlStyle!=value)
 				{
@@ -137,24 +137,24 @@ Win7ButtonStyleBase
 Win7ButtonStyle
 ***********************************************************************/
 
-			void Win7ButtonStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win7ButtonStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				Win7ButtonColors targetColor;
 				if(enabled)
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=Win7ButtonColors::ButtonNormal();
 						if(transparentWhenInactive)
 						{
 							targetColor.SetAlphaWithoutText(0);
 						}
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=Win7ButtonColors::ButtonActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win7ButtonColors::ButtonPressed();
 						break;
 					}
@@ -189,19 +189,19 @@ Win7CheckBoxStyle
 				style->elements.Apply(colorCurrent);
 			}
 
-			void Win7CheckBoxStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win7CheckBoxStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				if(enabled)
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						transferringAnimation->Transfer(Win7ButtonColors::CheckedNormal(selected));
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						transferringAnimation->Transfer(Win7ButtonColors::CheckedActive(selected));
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						transferringAnimation->Transfer(Win7ButtonColors::CheckedPressed(selected));
 						break;
 					}
@@ -213,7 +213,7 @@ Win7CheckBoxStyle
 			}
 
 			Win7CheckBoxStyle::Win7CheckBoxStyle(BulletStyle bulletStyle, bool backgroundVisible)
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isSelected(false)
 			{
@@ -270,7 +270,7 @@ Win7CheckBoxStyle
 				}
 			}
 
-			void Win7CheckBoxStyle::Transfer(GuiButton::ControlState value)
+			void Win7CheckBoxStyle::Transfer(ButtonState value)
 			{
 				if(controlStyle!=value)
 				{

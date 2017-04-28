@@ -15,21 +15,21 @@ namespace vl
 Win7ButtonStyle
 ***********************************************************************/
 
-			void Win7ScrollArrowButtonStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win7ScrollArrowButtonStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				Win7ButtonColors targetColor;
 				if(enabled)
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=Win7ButtonColors::ButtonNormal();
 						targetColor.SetAlphaWithoutText(0);
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=Win7ButtonColors::ButtonActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win7ButtonColors::ButtonPressed();
 						break;
 					}
@@ -334,7 +334,7 @@ Win7ProgressBarStyle
 			{
 			}
 
-			void Win7ProgressBarStyle::SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)
+			void Win7ProgressBarStyle::SetCommandExecutor(controls::IScrollCommandExecutor* value)
 			{
 			}
 

@@ -36,7 +36,7 @@ CommonScrollStyle
 				};
 			protected:
 				Direction											direction;
-				controls::GuiScroll::ICommandExecutor*				commandExecutor;
+				controls::IScrollCommandExecutor*					commandExecutor;
 				controls::GuiButton*								decreaseButton;
 				controls::GuiButton*								increaseButton;
 				controls::GuiButton*								handleButton;
@@ -91,7 +91,7 @@ CommonScrollStyle
 				void												SetText(const WString& value)override;
 				void												SetFont(const FontProperties& value)override;
 				void												SetVisuallyEnabled(bool value)override;
-				void												SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)override;
+				void												SetCommandExecutor(controls::IScrollCommandExecutor* value)override;
 				void												SetTotalSize(vint value)override;
 				void												SetPageSize(vint value)override;
 				void												SetPosition(vint value)override;
@@ -115,7 +115,7 @@ CommonTrackStyle
 				};
 			protected:
 				Direction											direction;
-				controls::GuiScroll::ICommandExecutor*				commandExecutor;
+				controls::IScrollCommandExecutor*					commandExecutor;
 				compositions::GuiBoundsComposition*					boundsComposition;
 				controls::GuiButton*								handleButton;
 				compositions::GuiTableComposition*					handleComposition;
@@ -161,7 +161,7 @@ CommonTrackStyle
 				void												SetText(const WString& value)override;
 				void												SetFont(const FontProperties& value)override;
 				void												SetVisuallyEnabled(bool value)override;
-				void												SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)override;
+				void												SetCommandExecutor(controls::IScrollCommandExecutor* value)override;
 				void												SetTotalSize(vint value)override;
 				void												SetPageSize(vint value)override;
 				void												SetPosition(vint value)override;

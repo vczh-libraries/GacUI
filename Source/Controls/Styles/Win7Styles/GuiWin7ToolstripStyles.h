@@ -40,9 +40,9 @@ Toolstrip Button
 				compositions::GuiBoundsComposition*			splitterComposition;
 				compositions::GuiBoundsComposition*			containerComposition;
 				bool										isVisuallyEnabled;
-				controls::GuiButton::ControlState			controlState;
+				controls::ButtonState						controlState;
 
-				virtual void								TransferInternal(controls::GuiButton::ControlState value, bool enabled);
+				virtual void								TransferInternal(controls::ButtonState value, bool enabled);
 			public:
 				/// <summary>Create the style.</summary>
 				Win7ToolstripButtonDropdownStyle();
@@ -54,7 +54,7 @@ Toolstrip Button
 				void										SetText(const WString& value)override;
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
-				void										Transfer(controls::GuiButton::ControlState value)override;
+				void										Transfer(controls::ButtonState value)override;
 			};
 
 			/// <summary>Toolstrip button style (Windows 7).</summary>
@@ -76,7 +76,7 @@ Toolstrip Button
 
 				Win7ButtonElements							elements;
 				Ptr<TransferringAnimation>					transferringAnimation;
-				controls::GuiButton::ControlState			controlStyle;
+				controls::ButtonState						controlStyle;
 				bool										isVisuallyEnabled;
 				bool										isSelected;
 				bool										isOpening;
@@ -85,7 +85,7 @@ Toolstrip Button
 				ButtonStyle									buttonStyle;
 				controls::GuiButton*						subMenuHost;
 
-				virtual void								TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected, bool menuOpening);
+				virtual void								TransferInternal(controls::ButtonState value, bool enabled, bool selected, bool menuOpening);
 			public:
 				/// <summary>Create the style.</summary>
 				/// <param name="_buttonStyle">Defines the sub menu dropdown arrow style.</param>
@@ -105,7 +105,7 @@ Toolstrip Button
 				controls::GuiButton*										GetSubMenuHost()override;
 				void														SetImage(Ptr<GuiImageData> value)override;
 				void														SetShortcutText(const WString& value)override;
-				void														Transfer(controls::GuiButton::ControlState value)override;
+				void														Transfer(controls::ButtonState value)override;
 			};
 
 			/// <summary>Toolstrip splitter style (Windows 7).</summary>

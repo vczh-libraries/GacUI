@@ -15,7 +15,7 @@ namespace vl
 Win7TabPageHeaderStyle
 ***********************************************************************/
 
-			void Win7TabPageHeaderStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected)
+			void Win7TabPageHeaderStyle::TransferInternal(ButtonState value, bool enabled, bool selected)
 			{
 				if(selected)
 				{
@@ -25,11 +25,11 @@ Win7TabPageHeaderStyle
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						transferringAnimation->Transfer(Win7ButtonColors::TabPageHeaderNormal());
 						break;
-					case GuiButton::Active:
-					case GuiButton::Pressed:
+					case ButtonState::Active:
+					case ButtonState::Pressed:
 						transferringAnimation->Transfer(Win7ButtonColors::TabPageHeaderActive());
 						break;
 					}
@@ -311,7 +311,7 @@ Win7TabStyle
 			{
 			}
 
-			void Win7TabStyle::SetCommandExecutor(controls::GuiTab::ICommandExecutor* value)
+			void Win7TabStyle::SetCommandExecutor(controls::ITabCommandExecutor* value)
 			{
 				commandExecutor=value;
 			}

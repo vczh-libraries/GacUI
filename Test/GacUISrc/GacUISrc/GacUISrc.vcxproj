@@ -238,71 +238,104 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceHelperTypes.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceBinders.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceDeserializers.cpp" />
+    <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedInstanceDeserializers.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceLoader_PredefinedTypeResolvers.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceRepresentation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Compositions.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Document.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_List.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Plugin.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Tab.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Templates.cpp" />
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Templates.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Toolstrip.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.cpp" />
+    <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCollectReferences.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateBindings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowGenerateCreating.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowInstallBindings.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowModule.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowParser.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowScriptPosition.cpp" />
+    <ClCompile Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowScriptPosition.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\GuiApplication.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiBasicControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\GuiButtonControls.cpp" />
@@ -395,6 +428,7 @@
     <ClCompile Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.cpp" />
     <ClCompile Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -404,9 +438,11 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -416,18 +452,23 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionElements.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Edit.cpp" />
@@ -448,28 +489,39 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceHelperTypes.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceLoader.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceRepresentation.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\GuiInstanceSharedScript.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_TemplateControl.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.h" />
+    <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\GuiApplication.h" />
     <ClInclude Include="..\..\..\Source\Controls\GuiBasicControls.h" />
@@ -568,24 +620,31 @@
     <ClInclude Include="..\..\..\Source\NativeWindow\Windows\WinNativeWindow.h" />
     <ClInclude Include="..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionElements.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Resources\GuiDocument.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiParserManager.h" />
@@ -595,6 +654,7 @@
   <ItemGroup>
     <Text Include="..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </Text>
   </ItemGroup>
   <ItemGroup>

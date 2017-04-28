@@ -149,7 +149,7 @@ Win7MenuBarStyle
 Win7MenuBarButtonStyle
 ***********************************************************************/
 
-			void Win7MenuBarButtonStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool opening)
+			void Win7MenuBarButtonStyle::TransferInternal(ButtonState value, bool enabled, bool opening)
 			{
 				Win7ButtonColors targetColor;
 				if(!enabled)
@@ -165,14 +165,14 @@ Win7MenuBarButtonStyle
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=Win7ButtonColors::MenuBarButtonNormal();
 						targetColor.SetAlphaWithoutText(0);
 						break;
-					case GuiButton::Active:
+					case ButtonState::Active:
 						targetColor=Win7ButtonColors::MenuBarButtonActive();
 						break;
-					case GuiButton::Pressed:
+					case ButtonState::Pressed:
 						targetColor=Win7ButtonColors::MenuBarButtonPressed();
 						break;
 					}
@@ -181,7 +181,7 @@ Win7MenuBarButtonStyle
 			}
 
 			Win7MenuBarButtonStyle::Win7MenuBarButtonStyle()
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isOpening(false)
 			{
@@ -268,7 +268,7 @@ Win7MenuBarButtonStyle
 			{
 			}
 
-			void Win7MenuBarButtonStyle::Transfer(GuiButton::ControlState value)
+			void Win7MenuBarButtonStyle::Transfer(ButtonState value)
 			{
 				if(controlStyle!=value)
 				{
@@ -281,7 +281,7 @@ Win7MenuBarButtonStyle
 Win7MenuItemButtonStyle
 ***********************************************************************/
 
-			void Win7MenuItemButtonStyle::TransferInternal(GuiButton::ControlState value, bool enabled, bool selected, bool opening)
+			void Win7MenuItemButtonStyle::TransferInternal(ButtonState value, bool enabled, bool selected, bool opening)
 			{
 				Win7ButtonColors targetColor;
 				bool active=false;
@@ -296,11 +296,11 @@ Win7MenuItemButtonStyle
 					{
 						switch(value)
 						{
-						case GuiButton::Normal:
+						case ButtonState::Normal:
 							targetColor=selected?Win7ButtonColors::MenuItemButtonSelected():Win7ButtonColors::MenuItemButtonNormal();
 							break;
-						case GuiButton::Active:
-						case GuiButton::Pressed:
+						case ButtonState::Active:
+						case ButtonState::Pressed:
 							targetColor=selected?Win7ButtonColors::MenuItemButtonSelectedActive():Win7ButtonColors::MenuItemButtonNormalActive();
 							active=true;
 							break;
@@ -311,11 +311,11 @@ Win7MenuItemButtonStyle
 				{
 					switch(value)
 					{
-					case GuiButton::Normal:
+					case ButtonState::Normal:
 						targetColor=Win7ButtonColors::MenuItemButtonDisabled();
 						break;
-					case GuiButton::Active:
-					case GuiButton::Pressed:
+					case ButtonState::Active:
+					case ButtonState::Pressed:
 						targetColor=Win7ButtonColors::MenuItemButtonDisabledActive();
 						active=true;
 						break;
@@ -326,7 +326,7 @@ Win7MenuItemButtonStyle
 			}
 
 			Win7MenuItemButtonStyle::Win7MenuItemButtonStyle()
-				:controlStyle(GuiButton::Normal)
+				:controlStyle(ButtonState::Normal)
 				,isVisuallyEnabled(true)
 				,isSelected(false)
 				,isOpening(false)
@@ -424,7 +424,7 @@ Win7MenuItemButtonStyle
 				elements.shortcutElement->SetText(value);
 			}
 
-			void Win7MenuItemButtonStyle::Transfer(GuiButton::ControlState value)
+			void Win7MenuItemButtonStyle::Transfer(ButtonState value)
 			{
 				if(controlStyle!=value)
 				{

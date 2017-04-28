@@ -75,45 +75,9 @@ namespace vl
 					return new controls::GuiDocumentLabel(GetCurrentTheme()->CreateDocumentLabelStyle());
 				}
 
-				controls::GuiListView* NewListViewBigIcon()
+				controls::GuiListView* NewListView()
 				{
 					controls::GuiListView* listview=new controls::GuiListView(GetCurrentTheme()->CreateListViewStyle());
-					listview->ChangeItemStyle(new controls::list::ListViewBigIconContentProvider);
-					return listview;
-				}
-
-				controls::GuiListView* NewListViewSmallIcon()
-				{
-					controls::GuiListView* listview=new controls::GuiListView(GetCurrentTheme()->CreateListViewStyle());
-					listview->ChangeItemStyle(new controls::list::ListViewSmallIconContentProvider);
-					return listview;
-				}
-
-				controls::GuiListView* NewListViewList()
-				{
-					controls::GuiListView* listview=new controls::GuiListView(GetCurrentTheme()->CreateListViewStyle());
-					listview->ChangeItemStyle(new controls::list::ListViewListContentProvider);
-					return listview;
-				}
-
-				controls::GuiListView* NewListViewDetail()
-				{
-					controls::GuiListView* listview=new controls::GuiListView(GetCurrentTheme()->CreateListViewStyle());
-					listview->ChangeItemStyle(new controls::list::ListViewDetailContentProvider);
-					return listview;
-				}
-
-				controls::GuiListView* NewListViewTile()
-				{
-					controls::GuiListView* listview=new controls::GuiListView(GetCurrentTheme()->CreateListViewStyle());
-					listview->ChangeItemStyle(new controls::list::ListViewTileContentProvider);
-					return listview;
-				}
-
-				controls::GuiListView* NewListViewInformation()
-				{
-					controls::GuiListView* listview=new controls::GuiListView(GetCurrentTheme()->CreateListViewStyle());
-					listview->ChangeItemStyle(new controls::list::ListViewInformationContentProvider);
 					return listview;
 				}
 
@@ -230,17 +194,7 @@ namespace vl
 
 				controls::GuiTextList* NewTextList()
 				{
-					return new controls::GuiTextList(GetCurrentTheme()->CreateTextListStyle(), GetCurrentTheme()->CreateTextListItemStyle());
-				}
-
-				controls::GuiTextList* NewCheckTextList()
-				{
-					return new controls::GuiTextList(GetCurrentTheme()->CreateTextListStyle(), GetCurrentTheme()->CreateCheckTextListItemStyle());
-				}
-
-				controls::GuiTextList* NewRadioTextList()
-				{
-					return new controls::GuiTextList(GetCurrentTheme()->CreateTextListStyle(), GetCurrentTheme()->CreateRadioTextListItemStyle());
+					return new controls::GuiTextList(GetCurrentTheme()->CreateTextListStyle());
 				}
 			}
 		}

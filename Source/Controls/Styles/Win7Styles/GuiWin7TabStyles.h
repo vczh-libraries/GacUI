@@ -28,7 +28,7 @@ Tab
 			class Win7TabPageHeaderStyle : public Win7ButtonStyleBase, public Description<Win7TabPageHeaderStyle>
 			{
 			protected:
-				void														TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
+				void														TransferInternal(controls::ButtonState value, bool enabled, bool selected)override;
 			public:
 				/// <summary>Create the style.</summary>
 				Win7TabPageHeaderStyle();
@@ -46,7 +46,7 @@ Tab
 				compositions::GuiStackComposition*							tabHeaderComposition;
 				compositions::GuiBoundsComposition*							tabContentTopLineComposition;
 				FontProperties												headerFont;
-				controls::GuiTab::ICommandExecutor*							commandExecutor;
+				controls::ITabCommandExecutor*								commandExecutor;
 
 				Ptr<controls::GuiSelectableButton::MutexGroupController>	headerController;
 				collections::List<controls::GuiSelectableButton*>			headerButtons;
@@ -86,7 +86,7 @@ Tab
 				void														SetFont(const FontProperties& value)override;
 				void														SetVisuallyEnabled(bool value)override;
 
-				void														SetCommandExecutor(controls::GuiTab::ICommandExecutor* value)override;
+				void														SetCommandExecutor(controls::ITabCommandExecutor* value)override;
 				void														InsertTab(vint index)override;
 				void														SetTabText(vint index, const WString& value)override;
 				void														RemoveTab(vint index)override;

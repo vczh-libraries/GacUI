@@ -220,24 +220,9 @@ namespace vl
 				/// <summary>Create a document label.</summary>
 				/// <returns>The created control.</returns>
 				extern controls::GuiDocumentLabel*				NewDocumentLabel();
-				/// <summary>Create a list view with big icons.</summary>
+				/// <summary>Create a list view.</summary>
 				/// <returns>The created control.</returns>
-				extern controls::GuiListView*					NewListViewBigIcon();
-				/// <summary>Create a list view with small icons.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiListView*					NewListViewSmallIcon();
-				/// <summary>Create a list view with simple list.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiListView*					NewListViewList();
-				/// <summary>Create a list view with detailed and columns.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiListView*					NewListViewDetail();
-				/// <summary>Create a list view with tiles.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiListView*					NewListViewTile();
-				/// <summary>Create a list view with information.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiListView*					NewListViewInformation();
+				extern controls::GuiListView*					NewListView();
 				/// <summary>Create a tree view.</summary>
 				/// <returns>The created control.</returns>
 				extern controls::GuiTreeView*					NewTreeView();
@@ -309,12 +294,6 @@ namespace vl
 				/// <summary>Create a text list.</summary>
 				/// <returns>The created control.</returns>
 				extern controls::GuiTextList*					NewTextList();
-				/// <summary>Create a text list with check box items.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiTextList*					NewCheckTextList();
-				/// <summary>Create a text list with radio box items.</summary>
-				/// <returns>The created control.</returns>
-				extern controls::GuiTextList*					NewRadioTextList();
 			}
 		}
 	}

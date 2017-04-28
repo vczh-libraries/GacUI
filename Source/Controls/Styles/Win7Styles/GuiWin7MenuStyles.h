@@ -68,11 +68,11 @@ Menu Button
 			{
 			protected:
 				Win7ButtonElements							elements;
-				controls::GuiButton::ControlState			controlStyle;
+				controls::ButtonState						controlStyle;
 				bool										isVisuallyEnabled;
 				bool										isOpening;
 
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool opening);
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool opening);
 			public:
 				/// <summary>Create the style.</summary>
 				Win7MenuBarButtonStyle();
@@ -91,7 +91,7 @@ Menu Button
 				controls::GuiButton*										GetSubMenuHost()override;
 				void														SetImage(Ptr<GuiImageData> value)override;
 				void														SetShortcutText(const WString& value)override;
-				void														Transfer(controls::GuiButton::ControlState value)override;
+				void														Transfer(controls::ButtonState value)override;
 			};
 			
 			/// <summary>Menu item button style (Windows 7). For menu buttons in a popup menu.</summary>
@@ -99,12 +99,12 @@ Menu Button
 			{
 			protected:
 				Win7MenuItemButtonElements									elements;
-				controls::GuiButton::ControlState							controlStyle;
+				controls::ButtonState										controlStyle;
 				bool														isVisuallyEnabled;
 				bool														isSelected;
 				bool														isOpening;
 
-				void														TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected, bool opening);
+				void														TransferInternal(controls::ButtonState value, bool enabled, bool selected, bool opening);
 			public:
 				/// <summary>Create the style.</summary>
 				Win7MenuItemButtonStyle();
@@ -123,7 +123,7 @@ Menu Button
 				controls::GuiButton*										GetSubMenuHost()override;
 				void														SetImage(Ptr<GuiImageData> value)override;
 				void														SetShortcutText(const WString& value)override;
-				void														Transfer(controls::GuiButton::ControlState value)override;
+				void														Transfer(controls::ButtonState value)override;
 			};
 			
 			/// <summary>Menu splitter style (Windows 7). For splitters in a popup menu.</summary>

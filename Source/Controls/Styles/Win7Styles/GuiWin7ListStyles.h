@@ -30,7 +30,7 @@ List Control Buttons
 			class Win7SelectableItemStyle : public Win7ButtonStyleBase, public Description<Win7SelectableItemStyle>
 			{
 			protected:
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool selected)override;
 			public:
 				/// <summary>Create the style.</summary>
 				Win7SelectableItemStyle();
@@ -41,7 +41,7 @@ List Control Buttons
 			class Win7ListViewColumnDropDownStyle : public Object, public virtual controls::GuiSelectableButton::IStyleController, public Description<Win7ListViewColumnDropDownStyle>
 			{
 			protected:
-				controls::GuiButton::ControlState			controlStyle;
+				controls::ButtonState						controlStyle;
 				bool										isVisuallyEnabled;
 				bool										isSelected;
 
@@ -56,7 +56,7 @@ List Control Buttons
 				elements::GuiGradientBackgroundElement*		gradientElement;
 				elements::GuiPolygonElement*				arrowElement;
 
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected);
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool selected);
 			public:
 				/// <summary>Create the style.</summary>
 				Win7ListViewColumnDropDownStyle();
@@ -69,14 +69,14 @@ List Control Buttons
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
 				void										SetSelected(bool value)override;
-				void										Transfer(controls::GuiButton::ControlState value)override;
+				void										Transfer(controls::ButtonState value)override;
 			};
 			
 			/// <summary>List view column header style (Windows 7).</summary>
 			class Win7ListViewColumnHeaderStyle : public Object, public virtual controls::GuiListViewColumnHeader::IStyleController, public Description<Win7ListViewColumnHeaderStyle>
 			{
 			protected:
-				controls::GuiButton::ControlState			controlStyle;
+				controls::ButtonState						controlStyle;
 				bool										isVisuallyEnabled;
 				bool										isSubMenuExisting;
 				bool										isSubMenuOpening;
@@ -97,7 +97,7 @@ List Control Buttons
 
 				controls::GuiButton*						dropdownButton;
 
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool subMenuExisting, bool subMenuOpening);
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool subMenuExisting, bool subMenuOpening);
 			public:
 				/// <summary>Create the style.</summary>
 				Win7ListViewColumnHeaderStyle();
@@ -110,28 +110,28 @@ List Control Buttons
 				void														SetFont(const FontProperties& value)override;
 				void														SetVisuallyEnabled(bool value)override;
 				void														SetSelected(bool value)override;
-				void														Transfer(controls::GuiButton::ControlState value)override;
+				void														Transfer(controls::ButtonState value)override;
 				controls::GuiMenu::IStyleController*						CreateSubMenuStyleController()override;
 				void														SetSubMenuExisting(bool value)override;
 				void														SetSubMenuOpening(bool value)override;
 				controls::GuiButton*										GetSubMenuHost()override;
 				void														SetImage(Ptr<GuiImageData> value)override;
 				void														SetShortcutText(const WString& value)override;
-				void														SetColumnSortingState(controls::GuiListViewColumnHeader::ColumnSortingState value)override;
+				void														SetColumnSortingState(controls::ColumnSortingState value)override;
 			};
 			
 			/// <summary>Tree view expanding button style (Windows 7). Show the triangle to indicate the expanding state of a tree view item.</summary>
 			class Win7TreeViewExpandingButtonStyle : public Object, public virtual controls::GuiSelectableButton::IStyleController, public Description<Win7TreeViewExpandingButtonStyle>
 			{
 			protected:
-				controls::GuiButton::ControlState			controlStyle;
+				controls::ButtonState						controlStyle;
 				bool										isVisuallyEnabled;
 				bool										isSelected;
 
 				compositions::GuiBoundsComposition*			mainComposition;
 				elements::GuiPolygonElement*				polygonElement;
 
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected);
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool selected);
 			public:
 				/// <summary>Create the style.</summary>
 				Win7TreeViewExpandingButtonStyle();
@@ -144,7 +144,7 @@ List Control Buttons
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
 				void										SetSelected(bool value)override;
-				void										Transfer(controls::GuiButton::ControlState value)override;
+				void										Transfer(controls::ButtonState value)override;
 			};
 
 /***********************************************************************
@@ -157,7 +157,7 @@ ComboBox
 			class Win7DropDownComboBoxStyle : public Win7ButtonStyle, public virtual controls::GuiComboBoxListControl::IStyleController, public Description<Win7DropDownComboBoxStyle>
 			{
 			protected:
-				controls::GuiComboBoxBase::ICommandExecutor*	commandExecutor;
+				controls::IComboBoxCommandExecutor*				commandExecutor;
 				compositions::GuiTableComposition*				table;
 				compositions::GuiCellComposition*				textComposition;
 				compositions::GuiCellComposition*				dropDownComposition;
@@ -165,7 +165,7 @@ ComboBox
 				WString											text;
 				bool											textVisible;
 
-				void											TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
+				void											TransferInternal(controls::ButtonState value, bool enabled, bool selected)override;
 				void											AfterApplyColors(const Win7ButtonColors& colors)override;
 			public:
 				/// <summary>Create the style.</summary>
@@ -180,7 +180,7 @@ ComboBox
 				controls::GuiButton*										GetSubMenuHost()override;
 				void														SetImage(Ptr<GuiImageData> value)override;
 				void														SetShortcutText(const WString& value)override;
-				void														SetCommandExecutor(controls::GuiComboBoxBase::ICommandExecutor* value)override;
+				void														SetCommandExecutor(controls::IComboBoxCommandExecutor* value)override;
 				void														OnItemSelected()override;
 				void														SetText(const WString& value)override;
 				void														SetTextVisible(bool value)override;
@@ -202,7 +202,6 @@ List
 				Win7TextListProvider();
 				~Win7TextListProvider();
 
-				virtual controls::GuiSelectableButton::IStyleController*	CreateItemBackground()override;
 				virtual Color												GetTextColor()override;
 			};
 

@@ -29,7 +29,7 @@ Scroll
 			protected:
 				elements::GuiPolygonElement*				arrowElement;
 
-				void										TransferInternal(controls::GuiButton::ControlState value, bool enabled, bool selected)override;
+				void										TransferInternal(controls::ButtonState value, bool enabled, bool selected)override;
 				void										AfterApplyColors(const Win7ButtonColors& colors)override;
 			public:
 				/// <summary>Create the style.</summary>
@@ -100,7 +100,7 @@ Scroll
 				void										SetText(const WString& value)override;
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
-				void										SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)override;
+				void										SetCommandExecutor(controls::IScrollCommandExecutor* value)override;
 				void										SetTotalSize(vint value)override;
 				void										SetPageSize(vint value)override;
 				void										SetPosition(vint value)override;

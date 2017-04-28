@@ -253,7 +253,7 @@ CommonScrollStyle
 			{
 			}
 
-			void CommonScrollStyle::SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)
+			void CommonScrollStyle::SetCommandExecutor(controls::IScrollCommandExecutor* value)
 			{
 				commandExecutor=value;
 			}
@@ -503,7 +503,7 @@ CommonTrackStyle
 			{
 			}
 
-			void CommonTrackStyle::SetCommandExecutor(controls::GuiScroll::ICommandExecutor* value)
+			void CommonTrackStyle::SetCommandExecutor(controls::IScrollCommandExecutor* value)
 			{
 				commandExecutor=value;
 				if(value)
