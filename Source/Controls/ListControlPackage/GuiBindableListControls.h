@@ -20,6 +20,68 @@ namespace vl
 	{
 		namespace controls
 		{
+			template<typename T>
+			struct DefaultValueOf
+			{
+				static T Get()
+				{
+					return TypedValueSerializerProvider<T>::GetDefaultValue();
+				}
+			};
+
+			template<typename T>
+			struct DefaultValueOf<Ptr<T>>
+			{
+				static Ptr<T> Get()
+				{
+					return nullptr;
+				}
+			};
+
+			template<>
+			struct DefaultValueOf<description::Value>
+			{
+				static description::Value Get()
+				{
+					return description::Value();
+				}
+			};
+
+			template<typename T>
+			T ReadProperty(const description::Value& thisObject, const ItemProperty<T>& propertyName)
+			{
+				if (!thisObject.IsNull() && propertyName)
+				{
+					return propertyName(thisObject);
+				}
+				else
+				{
+					return DefaultValueOf<T>::Get();
+				}
+			}
+
+			template<typename T>
+			T ReadProperty(const description::Value& thisObject, const WritableItemProperty<T>& propertyName)
+			{
+				auto defaultValue = DefaultValueOf<T>::Get();
+				if (!thisObject.IsNull() && propertyName)
+				{
+					return propertyName(thisObject, defaultValue, false);
+				}
+				else
+				{
+					return defaultValue;
+				}
+			}
+
+			template<typename T>
+			void WriteProperty(const description::Value& thisObject, const WritableItemProperty<T>& propertyName, const T& value)
+			{
+				if (!thisObject.IsNull() && propertyName)
+				{
+					propertyName(thisObject, value, true);
+				}
+			}
 
 /***********************************************************************
 GuiBindableTextList
@@ -164,13 +226,13 @@ GuiBindableListView
 					WString											GetSubItem(vint itemIndex, vint index)override;
 					vint											GetDataColumnCount()override;
 					vint											GetDataColumn(vint index)override;
+					vint											GetColumnCount()override;
+					WString											GetColumnText(vint index)override;
 
 					// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 						
 					bool											AttachCallback(list::ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
 					bool											DetachCallback(list::ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
-					vint											GetColumnCount()override;
-					WString											GetColumnText(vint index)override;
 					vint											GetColumnSize(vint index)override;
 					void											SetColumnSize(vint index, vint value)override;
 					GuiMenu*										GetDropdownPopup(vint index)override;

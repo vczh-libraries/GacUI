@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUIDATASTRUCTURED
 #define VCZH_PRESENTATION_CONTROLS_GUIDATASTRUCTURED
 
-#include "GuiDataGridInterfaces.h"
+#include "GuiDataGridControls.h"
 
 namespace vl
 {
@@ -21,77 +21,102 @@ namespace vl
 			{
 
 /***********************************************************************
+Interfaces
+***********************************************************************/
+
+				class IDataFilterCallback : public virtual IDescriptable, public Description<IDataFilterCallback>
+				{
+				public:
+					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
+					virtual void										OnFilterChanged() = 0;
+				};
+
+				class IDataFilter : public virtual IDescriptable, public Description<IDataFilter>
+				{
+				public:
+					virtual void										SetCallback(IDataFilterCallback* value) = 0;
+					virtual bool										Filter(vint row) = 0;
+				};
+
+
+				class IDataSorter : public virtual IDescriptable, public Description<IDataSorter>
+				{
+				public:
+					virtual vint										Compare(vint row1, vint row2) = 0;
+				};
+
+/***********************************************************************
 Filter Extensions
 ***********************************************************************/
 
-				/// <summary>Base class for <see cref="IStructuredDataFilter"/>.</summary>
-				class StructuredDataFilterBase : public Object, public virtual IStructuredDataFilter, public Description<StructuredDataFilterBase>
+				/// <summary>Base class for <see cref="IDataFilter"/>.</summary>
+				class DataFilterBase : public Object, public virtual IDataFilter, public Description<DataFilterBase>
 				{
 				protected:
-					IStructuredDataFilterCommandExecutor*				commandExecutor;
+					IDataFilterCallback*								callback = nullptr;
 
 					/// <summary>Called when the structure or properties for this filter is changed.</summary>
 					void												InvokeOnFilterChanged();
 				public:
-					StructuredDataFilterBase();
+					DataFilterBase();
 
-					void												SetCommandExecutor(IStructuredDataFilterCommandExecutor* value)override;
+					void												SetCallback(IDataFilterCallback* value)override;
 				};
 				
-				/// <summary>Base class for a <see cref="IStructuredDataFilter"/> that contains multiple sub filters.</summary>
-				class StructuredDataMultipleFilter : public StructuredDataFilterBase, public Description<StructuredDataMultipleFilter>
+				/// <summary>Base class for a <see cref="IDataFilter"/> that contains multiple sub filters.</summary>
+				class DataMultipleFilter : public DataFilterBase, public Description<DataMultipleFilter>
 				{
 				protected:
-					collections::List<Ptr<IStructuredDataFilter>>		filters;
+					collections::List<Ptr<IDataFilter>>		filters;
 
 				public:
-					StructuredDataMultipleFilter();
+					DataMultipleFilter();
 
 					/// <summary>Add a sub filter.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub filter.</param>
-					bool												AddSubFilter(Ptr<IStructuredDataFilter> value);
+					bool												AddSubFilter(Ptr<IDataFilter> value);
 					/// <summary>Remove a sub filter.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub filter.</param>
-					bool												RemoveSubFilter(Ptr<IStructuredDataFilter> value);
-					void												SetCommandExecutor(IStructuredDataFilterCommandExecutor* value)override;
+					bool												RemoveSubFilter(Ptr<IDataFilter> value);
+					void												SetCallback(IDataFilterCallback* value)override;
 				};
 
 				/// <summary>A filter that keep a row if all sub filters agree.</summary>
-				class StructuredDataAndFilter : public StructuredDataMultipleFilter, public Description<StructuredDataAndFilter>
+				class DataAndFilter : public DataMultipleFilter, public Description<DataAndFilter>
 				{
 				public:
 					/// <summary>Create the filter.</summary>
-					StructuredDataAndFilter();
+					DataAndFilter();
 
 					bool												Filter(vint row)override;
 				};
 				
 				/// <summary>A filter that keep a row if one of all sub filters agrees.</summary>
-				class StructuredDataOrFilter : public StructuredDataMultipleFilter, public Description<StructuredDataOrFilter>
+				class DataOrFilter : public DataMultipleFilter, public Description<DataOrFilter>
 				{
 				public:
 					/// <summary>Create the filter.</summary>
-					StructuredDataOrFilter();
+					DataOrFilter();
 
 					bool												Filter(vint row)override;
 				};
 				
 				/// <summary>A filter that keep a row if the sub filter not agrees.</summary>
-				class StructuredDataNotFilter : public StructuredDataFilterBase, public Description<StructuredDataNotFilter>
+				class DataNotFilter : public DataFilterBase, public Description<DataNotFilter>
 				{
 				protected:
-					Ptr<IStructuredDataFilter>							filter;
+					Ptr<IDataFilter>							filter;
 				public:
 					/// <summary>Create the filter.</summary>
-					StructuredDataNotFilter();
+					DataNotFilter();
 					
 					/// <summary>Set a sub filter.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub filter.</param>
-					bool												SetSubFilter(Ptr<IStructuredDataFilter> value);
-					void												SetCommandExecutor(IStructuredDataFilterCommandExecutor* value)override;
+					bool												SetSubFilter(Ptr<IDataFilter> value);
+					void												SetCallback(IDataFilterCallback* value)override;
 					bool												Filter(vint row)override;
 				};
 
@@ -99,483 +124,276 @@ Filter Extensions
 Sorter Extensions
 ***********************************************************************/
 				
-				/// <summary>A multi-level <see cref="IStructuredDataSorter"/>.</summary>
-				class StructuredDataMultipleSorter : public Object, public virtual IStructuredDataSorter, public Description<StructuredDataMultipleSorter>
+				/// <summary>A multi-level <see cref="IDataSorter"/>.</summary>
+				class DataMultipleSorter : public Object, public virtual IDataSorter, public Description<DataMultipleSorter>
 				{
 				protected:
-					Ptr<IStructuredDataSorter>							leftSorter;
-					Ptr<IStructuredDataSorter>							rightSorter;
+					Ptr<IDataSorter>							leftSorter;
+					Ptr<IDataSorter>							rightSorter;
 				public:
 					/// <summary>Create the sorter.</summary>
-					StructuredDataMultipleSorter();
+					DataMultipleSorter();
 					
 					/// <summary>Set the first sub sorter.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub sorter.</param>
-					bool												SetLeftSorter(Ptr<IStructuredDataSorter> value);
+					bool												SetLeftSorter(Ptr<IDataSorter> value);
 					/// <summary>Set the second sub sorter.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub sorter.</param>
-					bool												SetRightSorter(Ptr<IStructuredDataSorter> value);
+					bool												SetRightSorter(Ptr<IDataSorter> value);
 					vint												Compare(vint row1, vint row2)override;
 				};
 				
-				/// <summary>A reverse order <see cref="IStructuredDataSorter"/>.</summary>
-				class StructuredDataReverseSorter : public Object, public virtual IStructuredDataSorter, public Description<StructuredDataReverseSorter>
+				/// <summary>A reverse order <see cref="IDataSorter"/>.</summary>
+				class DataReverseSorter : public Object, public virtual IDataSorter, public Description<DataReverseSorter>
 				{
 				protected:
-					Ptr<IStructuredDataSorter>							sorter;
+					Ptr<IDataSorter>							sorter;
 				public:
 					/// <summary>Create the sorter.</summary>
-					StructuredDataReverseSorter();
+					DataReverseSorter();
 					
 					/// <summary>Set the sub sorter.</summary>
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub sorter.</param>
-					bool												SetSubSorter(Ptr<IStructuredDataSorter> value);
+					bool												SetSubSorter(Ptr<IDataSorter> value);
 					vint												Compare(vint row1, vint row2)override;
 				};
 
 /***********************************************************************
-Structured DataSource Extensions
+DataColumn
 ***********************************************************************/
 
-				/// <summary>An <see cref="IDataProvider"/> wrapper for <see cref="IStructuredDataProvider"/>.</summary>
-				class StructuredDataProvider
-					: public Object
-					, public virtual IDataProvider
-					, protected virtual IDataProviderCommandExecutor
-					, protected virtual IStructuredDataFilterCommandExecutor
-					, public Description<StructuredDataProvider>
-				{
-				protected:
-					Ptr<IStructuredDataProvider>						structuredDataProvider;
-					IDataProviderCommandExecutor*						commandExecutor;
-					Ptr<IStructuredDataFilter>							additionalFilter;
-					Ptr<IStructuredDataFilter>							currentFilter;
-					Ptr<IStructuredDataSorter>							currentSorter;
-					collections::List<vint>								reorderedRows;
-					
-					void												OnDataProviderColumnChanged()override;
-					void												OnDataProviderItemModified(vint start, vint count, vint newCount)override;
-					void												OnFilterChanged()override;
-					void												RebuildFilter(bool invokeCallback);
-					void												ReorderRows(bool invokeCallback);
-					vint												TranslateRowNumber(vint row);
-				public:
-					/// <summary>Create a data provider from a <see cref="IStructuredDataProvider"/>.</summary>
-					/// <param name="provider">The structured data provider.</param>
-					StructuredDataProvider(Ptr<IStructuredDataProvider> provider);
-					~StructuredDataProvider();
-					
-					/// <summary>Get the <see cref="IStructuredDataProvider"/> object.</summary>
-					/// <returns>The provider.</returns>
-					Ptr<IStructuredDataProvider>						GetStructuredDataProvider();
-					/// <summary>Get the additional filter.</summary>
-					/// <returns>The additional filter.</returns>
-					Ptr<IStructuredDataFilter>							GetAdditionalFilter();
-					/// <summary>Set the additional filter. This filter will be composed with inherent filters of all column to be the final filter.</summary>
-					/// <param name="value">The additional filter.</param>
-					void												SetAdditionalFilter(Ptr<IStructuredDataFilter> value);
+				class DataColumns;
+				class DataProvider;
 
-					void												SetCommandExecutor(IDataProviderCommandExecutor* value)override;
-					description::Value									GetViewModelContext()override;
-					vint												GetColumnCount()override;
-					WString												GetColumnText(vint column)override;
-					vint												GetColumnSize(vint column)override;
-					void												SetColumnSize(vint column, vint value)override;
-					GuiMenu*											GetColumnPopup(vint column)override;
-					bool												IsColumnSortable(vint column)override;
-					void												SortByColumn(vint column, bool ascending)override;
-					vint												GetSortedColumn()override;
-					bool												IsSortOrderAscending()override;
-					
-					vint												GetRowCount()override;
-					Ptr<GuiImageData>									GetRowLargeImage(vint row)override;
-					Ptr<GuiImageData>									GetRowSmallImage(vint row)override;
-					vint												GetCellSpan(vint row, vint column)override;
-					WString												GetCellText(vint row, vint column)override;
-					IDataVisualizerFactory*								GetCellDataVisualizerFactory(vint row, vint column)override;
-					void												VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)override;
-					IDataEditorFactory*									GetCellDataEditorFactory(vint row, vint column)override;
-					void												BeforeEditCell(vint row, vint column, IDataEditor* dataEditor)override;
-					void												SaveCellData(vint row, vint column, IDataEditor* dataEditor)override;
-				};
-
-				/// <summary>Base class for <see cref="IStructuredColumnProvider"/>.</summary>
-				class StructuredColummProviderBase : public Object, public virtual IStructuredColumnProvider, public Description<StructuredColummProviderBase>
+				/// <summary>Datagrid Column.</summary>
+				class DataColumn : public Object, public Description<DataColumn>
 				{
+					friend class DataColumns;
+					friend class DataProvider;
 				protected:
-					IDataProviderCommandExecutor*						commandExecutor;
+					DataProvider*										dataProvider = nullptr;
+					ItemProperty<WString>								textProperty;
+					WritableItemProperty<description::Value>			valueProperty;
 					WString												text;
-					vint												size;
-					GuiListViewColumnHeader::ColumnSortingState			sortingState;
-					GuiMenu*											popup;
-					Ptr<IStructuredDataFilter>							inherentFilter;
-					Ptr<IStructuredDataSorter>							inherentSorter;
+					vint												size = 0;
+					ColumnSortingState									sortingState = ColumnSortingState::NotSorted;
+					GuiMenu*											popup = nullptr;
+					Ptr<IDataFilter>									inherentFilter;
+					Ptr<IDataSorter>									inherentSorter;
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
+					void												NotifyColumnChanged();
 				public:
-					StructuredColummProviderBase();
-					~StructuredColummProviderBase();
-					
-					/// <summary>Set the command executor.</summary>
-					/// <param name="value">The command executor.</param>
-					void												SetCommandExecutor(IDataProviderCommandExecutor* value);
+					DataColumn();
+					~DataColumn();
+
+					/// <summary>Value property name changed event.</summary>
+					compositions::GuiNotifyEvent						ValuePropertyChanged;
+					/// <summary>Text property name changed event.</summary>
+					compositions::GuiNotifyEvent						TextPropertyChanged;
+
+					/// <summary>Get the text for the column.</summary>
+					/// <returns>The text for the column.</returns>
+					WString												GetText();
 					/// <summary>Set the text for the column.</summary>
 					/// <param name="value">The text for the column.</param>
-					/// <returns>The current column provider itself.</returns>
-					StructuredColummProviderBase*						SetText(const WString& value);
+					void												SetText(const WString& value);
+
+					/// <summary>Get the size for the column.</summary>
+					/// <returns>The size for the column.</returns>
+					vint												GetSize();
+					/// <summary>Set the size for the column.</summary>
+					/// <param name="value">The size for the column.</param>
+					void												SetSize(vint value);
+
+					/// <summary>Get the popup for the column.</summary>
+					/// <returns>The popup for the column.</returns>
+					GuiMenu*											GetPopup();
 					/// <summary>Set the popup for the column.</summary>
 					/// <param name="value">The popup for the column.</param>
-					/// <returns>The current column provider itself.</returns>
-					StructuredColummProviderBase*						SetPopup(GuiMenu* value);
+					void												SetPopup(GuiMenu* value);
+
+					/// <summary>Get the inherent filter for the column.</summary>
+					/// <returns>The inherent filter for the column.</returns>
+					Ptr<IDataFilter>									GetInherentFilter();
 					/// <summary>Set the inherent filter for the column.</summary>
 					/// <param name="value">The filter.</param>
-					/// <returns>The current column provider itself.</returns>
-					StructuredColummProviderBase*						SetInherentFilter(Ptr<IStructuredDataFilter> value);
+					void												SetInherentFilter(Ptr<IDataFilter> value);
+
+					/// <summary>Get the inherent sorter for the column.</summary>
+					/// <returns>The inherent sorter for the column.</returns>
+					Ptr<IDataSorter>									GetInherentSorter();
 					/// <summary>Set the inherent sorter for the column.</summary>
 					/// <param name="value">The sorter.</param>
-					/// <returns>The current column provider itself.</returns>
-					StructuredColummProviderBase*						SetInherentSorter(Ptr<IStructuredDataSorter> value);
+					void												SetInherentSorter(Ptr<IDataSorter> value);
+
 					/// <summary>Get the visualizer factory for the column.</summary>
 					/// <returns>The the visualizer factory for the column.</returns>
 					Ptr<IDataVisualizerFactory>							GetVisualizerFactory();
 					/// <summary>Set the visualizer factory for the column.</summary>
 					/// <param name="value">The visualizer factory.</param>
 					/// <returns>The current column provider itself.</returns>
-					StructuredColummProviderBase*						SetVisualizerFactory(Ptr<IDataVisualizerFactory> value);
+					void												SetVisualizerFactory(Ptr<IDataVisualizerFactory> value);
+
 					/// <summary>Get the editor factory for the column.</summary>
 					/// <returns>The the editor factory for the column.</returns>
 					Ptr<IDataEditorFactory>								GetEditorFactory();
 					/// <summary>Set the editor factory for the column.</summary>
 					/// <param name="value">The editor factory.</param>
 					/// <returns>The current column provider itself.</returns>
-					StructuredColummProviderBase*						SetEditorFactory(Ptr<IDataEditorFactory> value);
+					void												SetEditorFactory(Ptr<IDataEditorFactory> value);
 
-					WString												GetText()override;
-					vint												GetSize()override;
-					void												SetSize(vint value)override;
-					GuiListViewColumnHeader::ColumnSortingState			GetSortingState()override;
-					void												SetSortingState(GuiListViewColumnHeader::ColumnSortingState value)override;
-					GuiMenu*											GetPopup()override;
-					Ptr<IStructuredDataFilter>							GetInherentFilter()override;
-					Ptr<IStructuredDataSorter>							GetInherentSorter()override;
-					
-					IDataVisualizerFactory*								GetCellDataVisualizerFactory(vint row)override;
-					void												VisualizeCell(vint row, IDataVisualizer* dataVisualizer)override;
-					IDataEditorFactory*									GetCellDataEditorFactory(vint row)override;
-					void												BeforeEditCell(vint row, IDataEditor* dataEditor)override;
-					void												SaveCellData(vint row, IDataEditor* dataEditor)override;
+					/// <summary>Get the text value from an item.</summary>
+					/// <returns>The text value.</returns>
+					/// <param name="row">The row index of the item.</param>
+					WString												GetCellText(vint row);
+					/// <summary>Get the cell value from an item.</summary>
+					/// <returns>The cell value.</returns>
+					/// <param name="row">The row index of the item.</param>
+					description::Value									GetCellValue(vint row);
+					/// <summary>Set the cell value to an item.</summary>
+					/// <param name="row">The row index of the item.</param>
+					/// <param name="value">The value property name.</param>
+					void												SetCellValue(vint row, description::Value value);
+
+					/// <summary>Get the text property name to get the cell text from an item.</summary>
+					/// <returns>The text property name.</returns>
+					ItemProperty<WString>								GetTextProperty();
+					/// <summary>Set the text property name to get the cell text from an item.</summary>
+					/// <param name="value">The text property name.</param>
+					void												SetTextProperty(const ItemProperty<WString>& value);
+
+					/// <summary>Get the value property name to get the cell value from an item.</summary>
+					/// <returns>The value property name.</returns>
+					WritableItemProperty<description::Value>			GetValueProperty();
+					/// <summary>Set the value property name to get the cell value from an item.</summary>
+					/// <param name="value">The value property name.</param>
+					void												SetValueProperty(const WritableItemProperty<description::Value>& value);
 				};
 
-				/// <summary>Base class for <see cref="IStructuredDataProvider"/>.</summary>
-				class StructuredDataProviderBase : public Object, public virtual IStructuredDataProvider, public Description<StructuredDataProviderBase>
+				class DataColumns : public ItemsBase<Ptr<DataColumn>>
 				{
-					typedef collections::List<Ptr<StructuredColummProviderBase>>		ColumnList;
 				protected:
-					IDataProviderCommandExecutor*						commandExecutor;
-					ColumnList											columns;
+					DataProvider*										dataProvider = nullptr;
 
-					/// <summary>Insert a column.</summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <param name="column">The column index.</param>
-					/// <param name="value">The column.</param>
-					/// <param name="callback">Set to true to invoke the command executor.</param>
-					bool												InsertColumnInternal(vint column, Ptr<StructuredColummProviderBase> value, bool callback);
-					/// <summary>Add a column.</summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <param name="value">The column.</param>
-					/// <param name="callback">Set to true to invoke the command executor.</param>
-					bool												AddColumnInternal(Ptr<StructuredColummProviderBase> value, bool callback);
-					/// <summary>Remove a column.</summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <param name="value">The column.</param>
-					/// <param name="callback">Set to true to invoke the command executor.</param>
-					bool												RemoveColumnInternal(Ptr<StructuredColummProviderBase> value, bool callback);
-					/// <summary>Clear all columns.</summary>
-					/// <returns>Returns true if this operation succeeded.</returns>
-					/// <param name="callback">Set to true to invoke the command executor.</param>
-					bool												ClearColumnsInternal(bool callback);
+					void												NotifyUpdateInternal(vint start, vint count, vint newCount)override;
+					bool												QueryInsert(vint index, const Ptr<DataColumn>& value)override;
+					void												AfterInsert(vint index, const Ptr<DataColumn>& value)override;
+					void												BeforeRemove(vint index, const Ptr<DataColumn>& value)override;
 				public:
-					StructuredDataProviderBase();
-					~StructuredDataProviderBase();
-
-					void												SetCommandExecutor(IDataProviderCommandExecutor* value)override;
-					description::Value									GetViewModelContext()override;
-					vint												GetColumnCount()override;
-					IStructuredColumnProvider*							GetColumn(vint column)override;
-					Ptr<GuiImageData>									GetRowLargeImage(vint row)override;
-					Ptr<GuiImageData>									GetRowSmallImage(vint row)override;
+					DataColumns(DataProvider* _dataProvider);
+					~DataColumns();
 				};
 
 /***********************************************************************
-Strong Typed DataSource Extensions
+DataProvider
 ***********************************************************************/
 
-				template<typename TRow>
-				class StrongTypedDataProvider;
-
-				template<typename TRow, typename TColumn>
-				class StrongTypedColumnProviderBase : public StructuredColummProviderBase
+				class DataProvider
+					: public virtual ItemProviderBase
+					, public virtual IListViewItemView
+					, public virtual ListViewColumnItemArranger::IColumnItemView
+					, public virtual IDataGridView
+					, protected virtual IDataFilterCallback
+					, public Description<DataProvider>
 				{
-				public:
-					class FilterBase : public StructuredDataFilterBase
-					{
-					protected:
-						StrongTypedColumnProviderBase<TRow, TColumn>*		ownerColumn;
-						StrongTypedDataProvider<TRow>*						dataProvider;
-
-						virtual bool										FilterData(const TRow& rowData, const TColumn& cellData)=0;
-					public:
-						FilterBase(StrongTypedColumnProviderBase<TRow, TColumn>* _ownerColumn)
-							:ownerColumn(_ownerColumn)
-							,dataProvider(_ownerColumn->dataProvider)
-						{
-						}
-
-						bool Filter(vint row)override
-						{
-							TRow rowData;
-							TColumn cellData;
-							dataProvider->GetRowData(row, rowData);
-							ownerColumn->GetCellData(rowData, cellData);
-							return FilterData(rowData, cellData);
-						}
-					};
-
-					class SorterBase : public Object, public virtual IStructuredDataSorter
-					{
-					protected:
-						StrongTypedColumnProviderBase<TRow, TColumn>*		ownerColumn;
-						StrongTypedDataProvider<TRow>*						dataProvider;
-
-						virtual vint										CompareData(const TRow& rowData1, const TColumn& cellData1, const TRow& rowData2, const TColumn& cellData2)=0;
-					public:
-						SorterBase(StrongTypedColumnProviderBase<TRow, TColumn>* _ownerColumn)
-							:ownerColumn(_ownerColumn)
-							,dataProvider(_ownerColumn->dataProvider)
-						{
-						}
-
-						vint Compare(vint row1, vint row2)
-						{
-							TRow rowData1, rowData2;
-							TColumn cellData1, cellData2;
-							dataProvider->GetRowData(row1, rowData1);
-							dataProvider->GetRowData(row2, rowData2);
-							ownerColumn->GetCellData(rowData1, cellData1);
-							ownerColumn->GetCellData(rowData2, cellData2);
-							return CompareData(rowData1, cellData1, rowData2, cellData2);
-						}
-					};
-
-					class Sorter : public SorterBase
-					{
-					protected:
-
-						vint CompareData(const TRow& rowData1, const TColumn& cellData1, const TRow& rowData2, const TColumn& cellData2)override
-						{
-							if(cellData1<cellData2) return -1;
-							if(cellData1>cellData2) return 1;
-							return 0;
-						}
-					public:
-						Sorter(StrongTypedColumnProviderBase<TRow, TColumn>* _ownerColumn)
-							:SorterBase(_ownerColumn)
-						{
-						}
-					};
-
+					friend class DataColumn;
+					friend class DataColumns;
 				protected:
-					StrongTypedDataProvider<TRow>*						dataProvider;
+					DataColumns												columns;
+					ListViewColumnItemArranger::IColumnItemViewCallback*	columnItemViewCallback = nullptr;
+					Ptr<description::IValueReadonlyList>					itemSource;
+					Ptr<EventHandler>										itemChangedEventHandler;
 
+					description::Value										viewModelContext;
+					Ptr<IDataFilter>										additionalFilter;
+					Ptr<IDataFilter>										currentFilter;
+					Ptr<IDataSorter>										currentSorter;
+					collections::List<vint>									virtualRowToSourceRow;
+
+					void													NotifyAllItemsChanged();
+					void													NotifyColumnChanged();
+					GuiListControl::IItemProvider*							GetItemProvider()override;
+
+					void													OnFilterChanged()override;
+					void													OnItemSourceModified(vint start, vint count, vint newCount);
+
+					void													RebuildFilter();
+					void													ReorderRows(bool invokeCallback);
 				public:
-					StrongTypedColumnProviderBase(StrongTypedDataProvider<TRow>* _dataProvider)
-						:dataProvider(_dataProvider)
-					{
-					}
+					/// <summary>Create a data provider from a <see cref="IDataProvider"/>.</summary>
+					/// <param name="provider">The structured data provider.</param>
+					DataProvider(const description::Value& _viewModelContext);
+					~DataProvider();
 
-					virtual void										GetCellData(const TRow& rowData, TColumn& cellData)=0;
-					virtual WString										GetCellDataText(const TColumn& cellData)=0;
+					DataColumns&										GetColumns();
+					Ptr<description::IValueEnumerable>					GetItemSource();
+					void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
+					
+					/// <summary>Get the additional filter.</summary>
+					/// <returns>The additional filter.</returns>
+					Ptr<IDataFilter>									GetAdditionalFilter();
+					/// <summary>Set the additional filter. This filter will be composed with inherent filters of all column to be the final filter.</summary>
+					/// <param name="value">The additional filter.</param>
+					void												SetAdditionalFilter(Ptr<IDataFilter> value);
 
-					WString GetCellText(vint row)override
-					{
-						TRow rowData;
-						TColumn cellData;
-						dataProvider->GetRowData(row, rowData);
-						GetCellData(rowData, cellData);
-						return GetCellDataText(cellData);
-					}
+					// ===================== GuiListControl::IItemProvider =====================
+
+					vint												Count()override;
+					WString												GetTextValue(vint itemIndex)override;
+					description::Value									GetBindingValue(vint itemIndex)override;
+					IDescriptable*										RequestView(const WString& identifier)override;
+					
+					// ===================== list::IListViewItemProvider =====================
+
+					Ptr<GuiImageData>									GetSmallImage(vint itemIndex)override;
+					Ptr<GuiImageData>									GetLargeImage(vint itemIndex)override;
+					WString												GetText(vint itemIndex)override;
+					WString												GetSubItem(vint itemIndex, vint index)override;
+					vint												GetDataColumnCount()override;
+					vint												GetDataColumn(vint index)override;
+					vint												GetColumnCount()override;
+					WString												GetColumnText(vint index)override;
+					
+					// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
+						
+					bool												AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
+					bool												DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
+					vint												GetColumnSize(vint index)override;
+					void												SetColumnSize(vint index, vint value)override;
+					GuiMenu*											GetDropdownPopup(vint index)override;
+					ColumnSortingState									GetSortingState(vint index)override;
+					
+					// ===================== list::IDataGridView =====================
+
+					description::Value									GetViewModelContext()override;
+					bool												IsColumnSortable(vint column)override;
+					void												SortByColumn(vint column, bool ascending)override;
+					vint												GetSortedColumn()override;
+					bool												IsSortOrderAscending()override;
+					
+					vint												GetCellSpan(vint row, vint column)override;
+					IDataVisualizerFactory*								GetCellDataVisualizerFactory(vint row, vint column)override;
+					void												VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)override;
+					IDataEditorFactory*									GetCellDataEditorFactory(vint row, vint column)override;
+					void												EditCell(vint row, vint column, IDataEditor* dataEditor)override;
+					void												SaveCellData(vint row, vint column, IDataEditor* dataEditor)override;
 				};
-
-				template<typename TRow, typename TColumn>
-				class StrongTypedColumnProvider : public StrongTypedColumnProviderBase<TRow, TColumn>
-				{
-				public:
-					StrongTypedColumnProvider(StrongTypedDataProvider<TRow>* _dataProvider)
-						:StrongTypedColumnProviderBase<TRow, TColumn>(_dataProvider)
-					{
-					}
-
-					WString GetCellDataText(const TColumn& cellData)override
-					{
-						return description::BoxValue<TColumn>(cellData).GetText();
-					}
-				};
-
-				template<typename TRow, typename TColumn>
-				class StrongTypedFieldColumnProvider : public StrongTypedColumnProvider<TRow, TColumn>
-				{
-				protected:
-					TColumn TRow::*										field;
-
-				public:
-					StrongTypedFieldColumnProvider(StrongTypedDataProvider<TRow>* _dataProvider, TColumn TRow::* _field)
-						:StrongTypedColumnProvider<TRow, TColumn>(_dataProvider)
-						,field(_field)
-					{
-					}
-
-					void GetCellData(const TRow& rowData, TColumn& cellData)override
-					{
-						cellData=rowData.*field;
-					}
-				};
-
-				template<typename TRow>
-				class StrongTypedDataProvider : public StructuredDataProviderBase
-				{
-				protected:
-
-					template<typename TColumn>
-					Ptr<StrongTypedColumnProvider<TRow, TColumn>> AddStrongTypedColumn(const WString& text, Ptr<StrongTypedColumnProvider<TRow, TColumn>> column)
-					{
-						column->SetText(text);
-						return AddColumnInternal(column, true)?column:nullptr;
-					}
-
-					template<typename TColumn>
-					Ptr<StrongTypedColumnProvider<TRow, TColumn>> AddSortableStrongTypedColumn(const WString& text, Ptr<StrongTypedColumnProvider<TRow, TColumn>> column)
-					{
-						if(AddStrongTypedColumn(text, column))
-						{
-							typedef typename StrongTypedColumnProvider<TRow, TColumn>::Sorter ColumnSorter;
-							column->SetInherentSorter(new ColumnSorter(column.Obj()));
-						}
-						return column;
-					}
-
-					template<typename TColumn>
-					Ptr<StrongTypedColumnProvider<TRow, TColumn>> AddFieldColumn(const WString& text, TColumn TRow::* field)
-					{
-						Ptr<StrongTypedFieldColumnProvider<TRow, TColumn>> column=new StrongTypedFieldColumnProvider<TRow, TColumn>(this, field);
-						return AddStrongTypedColumn<TColumn>(text, column);
-					}
-
-					template<typename TColumn>
-					Ptr<StrongTypedColumnProvider<TRow, TColumn>> AddSortableFieldColumn(const WString& text, TColumn TRow::* field)
-					{
-						Ptr<StrongTypedFieldColumnProvider<TRow, TColumn>> column=new StrongTypedFieldColumnProvider<TRow, TColumn>(this, field);
-						return AddSortableStrongTypedColumn<TColumn>(text, column);
-					}
-				public:
-					StrongTypedDataProvider()
-					{
-					}
-
-					virtual void										GetRowData(vint row, TRow& rowData)=0;
-				};
+			}
 
 /***********************************************************************
 GuiBindableDataGrid
 ***********************************************************************/
-				class BindableDataProvider;
-
-				/// <summary>Column object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
-				class BindableDataColumn : public StructuredColummProviderBase, public Description<BindableDataColumn>
-				{
-					friend class BindableDataProvider;
-
-					using Value = reflection::description::Value;
-				protected:
-					BindableDataProvider*							dataProvider;
-					ItemProperty<WString>							textProperty;
-					WritableItemProperty<Value>						valueProperty;
-
-				public:
-					BindableDataColumn();
-					~BindableDataColumn();
-
-					/// <summary>Value property name changed event.</summary>
-					compositions::GuiNotifyEvent					ValuePropertyChanged;
-					compositions::GuiNotifyEvent					TextPropertyChanged;
-
-					void											SaveCellData(vint row, IDataEditor* dataEditor)override;
-					WString											GetCellText(vint row)override;
-
-					/// <summary>Get the cell value from an item.</summary>
-					/// <returns>The cell value.</returns>
-					/// <param name="row">The row index of the item.</param>
-					description::Value								GetCellValue(vint row);
-					/// <summary>Set the cell value to an item.</summary>
-					/// <param name="row">The row index of the item.</param>
-					/// <param name="value">The value property name.</param>
-					void											SetCellValue(vint row, description::Value value);
-
-					/// <summary>Get the text property name to get the cell text from an item.</summary>
-					/// <returns>The text property name.</returns>
-					ItemProperty<WString>							GetTextProperty();
-					/// <summary>Set the text property name to get the cell text from an item.</summary>
-					/// <param name="value">The text property name.</param>
-					void											SetTextProperty(const ItemProperty<WString>& value);
-
-					/// <summary>Get the value property name to get the cell value from an item.</summary>
-					/// <returns>The value property name.</returns>
-					WritableItemProperty<Value>						GetValueProperty();
-					/// <summary>Set the value property name to get the cell value from an item.</summary>
-					/// <param name="value">The value property name.</param>
-					void											SetValueProperty(const WritableItemProperty<Value>& value);
-
-					/// <summary>Get the view model context which will be used as a view model to create visualizers and editors.</summary>
-					/// <returns>The value model context.</returns>
-					description::Value								GetViewModelContext();
-				};
-
-				/// <summary>Data provider object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
-				class BindableDataProvider : public StructuredDataProviderBase, public Description<BindableDataProvider>
-				{
-					friend class BindableDataColumn;
-				protected:
-					description::Value								viewModelContext;
-					Ptr<description::IValueReadonlyList>			itemSource;
-					Ptr<EventHandler>								itemChangedEventHandler;
-
-				public:
-					BindableDataProvider(const description::Value& _viewModelContext);
-					~BindableDataProvider();
-
-					Ptr<description::IValueEnumerable>				GetItemSource();
-					void											SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
-
-					vint											GetRowCount()override;
-					description::Value								GetRowValue(vint row);
-
-					description::Value								GetViewModelContext()override;
-					bool											InsertBindableColumn(vint index, Ptr<BindableDataColumn> column);
-					bool											AddBindableColumn(Ptr<BindableDataColumn> column);
-					bool											RemoveBindableColumn(Ptr<BindableDataColumn> column);
-					bool											ClearBindableColumns();
-					Ptr<BindableDataColumn>							GetBindableColumn(vint index);
-				};
-			}
 
 			/// <summary>A bindable Data grid control.</summary>
 			class GuiBindableDataGrid : public GuiVirtualDataGrid, public Description<GuiBindableDataGrid>
 			{
 			protected:
-				Ptr<list::BindableDataProvider>						bindableDataProvider;
+				list::DataProvider*									dataProvider = nullptr;
 
 			public:
 				/// <summary>Create a bindable Data grid control.</summary>
@@ -584,6 +402,9 @@ GuiBindableDataGrid
 				GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
 
+				/// <summary>Get all columns.</summary>
+				list::DataColumns&									GetColumns();
+
 				/// <summary>Get the item source.</summary>
 				/// <returns>The item source.</returns>
 				Ptr<description::IValueEnumerable>					GetItemSource();
@@ -591,26 +412,6 @@ GuiBindableDataGrid
 				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 
-				/// <summary>Insert a column.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="index">The column index.</param>
-				/// <param name="column">The column.</param>
-				bool												InsertBindableColumn(vint index, Ptr<list::BindableDataColumn> column);
-				/// <summary>Add a column.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="column">The column.</param>
-				bool												AddBindableColumn(Ptr<list::BindableDataColumn> column);
-				/// <summary>Remove a column.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="column">The column.</param>
-				bool												RemoveBindableColumn(Ptr<list::BindableDataColumn> column);
-				/// <summary>Clear all columns.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				bool												ClearBindableColumns();
-				/// <summary>Get a column.</summary>
-				/// <param name="index">The column index.</param>
-				/// <returns>Returns the column of a specified index.</returns>
-				Ptr<list::BindableDataColumn>						GetBindableColumn(vint index);
 
 				/// <summary>Get the selected cell.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>

@@ -210,12 +210,12 @@ ListViewColumnItemArranger
 
 				void ListViewColumnItemArranger::RebuildColumns()
 				{
-					if(columnItemView && columnHeaderButtons.Count()==columnItemView->GetColumnCount())
+					if (columnItemView && columnHeaderButtons.Count() == listViewItemView->GetColumnCount())
 					{
-						for(vint i=0;i<columnItemView->GetColumnCount();i++)
+						for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
 						{
-							GuiListViewColumnHeader* button=columnHeaderButtons[i];
-							button->SetText(columnItemView->GetColumnText(i));
+							GuiListViewColumnHeader* button = columnHeaderButtons[i];
+							button->SetText(listViewItemView->GetColumnText(i));
 							button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 							button->SetColumnSortingState(columnItemView->GetSortingState(i));
 							button->GetBoundsComposition()->SetBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
@@ -224,11 +224,11 @@ ListViewColumnItemArranger
 					else
 					{
 						DeleteColumnButtons();
-						if(columnItemView)
+						if (columnItemView && listViewItemView)
 						{
-							for(vint i=0;i<columnItemView->GetColumnCount();i++)
+							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
 							{
-								GuiBoundsComposition* splitterComposition=new GuiBoundsComposition;
+								GuiBoundsComposition* splitterComposition = new GuiBoundsComposition;
 								splitterComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 								splitterComposition->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
 								splitterComposition->SetAlignmentToParent(Margin(0, 0, -1, 0));
@@ -239,31 +239,31 @@ ListViewColumnItemArranger
 								splitterComposition->GetEventReceiver()->leftButtonUp.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterLeftButtonUp);
 								splitterComposition->GetEventReceiver()->mouseMove.AttachMethod(this, &ListViewColumnItemArranger::ColumnHeaderSplitterMouseMove);
 							}
-							for(vint i=0;i<columnItemView->GetColumnCount();i++)
+							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
 							{
-								GuiListViewColumnHeader* button=new GuiListViewColumnHeader(styleProvider->CreateColumnStyle());
-								button->SetText(columnItemView->GetColumnText(i));
+								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(styleProvider->CreateColumnStyle());
+								button->SetText(listViewItemView->GetColumnText(i));
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));
 								button->GetBoundsComposition()->SetBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
 								button->Clicked.AttachLambda(Curry(Func<void(vint, GuiGraphicsComposition*, GuiEventArgs&)>(this, &ListViewColumnItemArranger::ColumnClicked))(i));
 								button->GetBoundsComposition()->BoundsChanged.AttachLambda(Curry(Func<void(vint, GuiGraphicsComposition*, GuiEventArgs&)>(this, &ListViewColumnItemArranger::ColumnBoundsChanged))(i));
 								columnHeaderButtons.Add(button);
-								if(i>0)
+								if (i > 0)
 								{
-									button->GetContainerComposition()->AddChild(columnHeaderSplitters[i-1]);
+									button->GetContainerComposition()->AddChild(columnHeaderSplitters[i - 1]);
 								}
 
-								GuiStackItemComposition* item=new GuiStackItemComposition;
+								GuiStackItemComposition* item = new GuiStackItemComposition;
 								item->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 								item->AddChild(button->GetBoundsComposition());
 								columnHeaders->AddChild(item);
 							}
-							if(columnItemView->GetColumnCount()>0)
+							if (listViewItemView->GetColumnCount() > 0)
 							{
-								GuiBoundsComposition* splitterComposition=columnHeaderSplitters[columnItemView->GetColumnCount()-1];
+								GuiBoundsComposition* splitterComposition = columnHeaderSplitters[listViewItemView->GetColumnCount() - 1];
 
-								GuiStackItemComposition* item=new GuiStackItemComposition;
+								GuiStackItemComposition* item = new GuiStackItemComposition;
 								item->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 								item->AddChild(splitterComposition);
 								columnHeaders->AddChild(item);
@@ -297,6 +297,7 @@ ListViewColumnItemArranger
 					{
 						styleProvider = listView->GetListViewStyleProvider();
 						listView->GetContainerComposition()->AddChild(columnHeaders);
+						listViewItemView = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier));
 						columnItemView = dynamic_cast<IColumnItemView*>(listView->GetItemProvider()->RequestView(IColumnItemView::Identifier));
 						if (columnItemView)
 						{
@@ -315,6 +316,7 @@ ListViewColumnItemArranger
 							columnItemView->DetachCallback(columnItemViewCallback.Obj());
 							columnItemView = nullptr;
 						}
+						listViewItemView = nullptr;
 						listView->GetContainerComposition()->RemoveChild(columnHeaders);
 						styleProvider = nullptr;
 						listView = nullptr;
@@ -589,6 +591,23 @@ ListViewItemProvider
 					return dataColumns[index];
 				}
 
+				vint ListViewItemProvider::GetColumnCount()
+				{
+					return columns.Count();
+				}
+
+				WString ListViewItemProvider::GetColumnText(vint index)
+				{
+					if (index<0 || index >= columns.Count())
+					{
+						return L"";
+					}
+					else
+					{
+						return columns[index]->GetText();
+					}
+				}
+
 				bool ListViewItemProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
 				{
 					if(columnItemViewCallbacks.Contains(value))
@@ -613,23 +632,6 @@ ListViewItemProvider
 					{
 						columnItemViewCallbacks.Remove(value);
 						return true;
-					}
-				}
-
-				vint ListViewItemProvider::GetColumnCount()
-				{
-					return columns.Count();
-				}
-
-				WString ListViewItemProvider::GetColumnText(vint index)
-				{
-					if(index<0 || index>=columns.Count())
-					{
-						return L"";
-					}
-					else
-					{
-						return columns[index]->GetText();
 					}
 				}
 

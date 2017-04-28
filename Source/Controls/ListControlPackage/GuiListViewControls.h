@@ -127,19 +127,19 @@ ListView ItemStyleProvider
 
 					/// <summary>Get the number of data columns.</summary>
 					/// <returns>The number of data columns.</returns>
-					virtual vint							GetDataColumnCount() = 0;
+					virtual vint											GetDataColumnCount() = 0;
 					/// <summary>Get the column index of the index-th data column.</summary>
 					/// <returns>The column index.</returns>
 					/// <param name="index">The order of the data column.</param>
-					virtual vint							GetDataColumn(vint index) = 0;
+					virtual vint											GetDataColumn(vint index) = 0;
 
-					/// <summary>Get the number of columns.</summary>
-					/// <returns>The number of columns.</returns>
-					virtual vint							GetColumnCount() = 0;
-					/// <summary>Get the text of a column.</summary>
-					/// <returns>The text.</returns>
+					/// <summary>Get the number of all columns.</summary>
+					/// <returns>The number of all columns.</returns>
+					virtual vint											GetColumnCount() = 0;
+					/// <summary>Get the text of the column.</summary>
+					/// <returns>The text of the column.</returns>
 					/// <param name="index">The index of the column.</param>
-					virtual WString							GetColumnText(vint index) = 0;
+					virtual WString											GetColumnText(vint index) = 0;
 				};
 
 /***********************************************************************
@@ -177,13 +177,7 @@ ListViewColumnItemArranger
 						/// <returns>Returns true if this operation succeeded.</returns>
 						/// <param name="value">The column item view callback.</param>
 						virtual bool											DetachCallback(IColumnItemViewCallback* value)=0;
-						/// <summary>Get the number of all columns.</summary>
-						/// <returns>The number of all columns.</returns>
-						virtual vint											GetColumnCount()=0;
-						/// <summary>Get the text of the column.</summary>
-						/// <returns>The text of the column.</returns>
-						/// <param name="index">The index of the column.</param>
-						virtual WString											GetColumnText(vint index)=0;
+
 						/// <summary>Get the size of the column.</summary>
 						/// <returns>The size of the column.</returns>
 						/// <param name="index">The index of the column.</param>
@@ -192,6 +186,7 @@ ListViewColumnItemArranger
 						/// <param name="index">The index of the column.</param>
 						/// <param name="value">The new size of the column.</param>
 						virtual void											SetColumnSize(vint index, vint value)=0;
+
 						/// <summary>Get the popup binded to the column.</summary>
 						/// <returns>The popup binded to the column.</returns>
 						/// <param name="index">The index of the column.</param>
@@ -215,6 +210,7 @@ ListViewColumnItemArranger
 
 					GuiListViewBase*							listView = nullptr;
 					GuiListViewBase::IStyleProvider*			styleProvider = nullptr;
+					IListViewItemView*							listViewItemView = nullptr;
 					IColumnItemView*							columnItemView = nullptr;
 					Ptr<ColumnItemViewCallback>					columnItemViewCallback;
 					compositions::GuiStackComposition*			columnHeaders = nullptr;
@@ -430,11 +426,11 @@ ListViewItemProvider
 					WString												GetSubItem(vint itemIndex, vint index)override;
 					vint												GetDataColumnCount()override;
 					vint												GetDataColumn(vint index)override;
+					vint												GetColumnCount()override;
+					WString												GetColumnText(vint index)override;;
 
 					bool												AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
 					bool												DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
-					vint												GetColumnCount()override;
-					WString												GetColumnText(vint index)override;
 					vint												GetColumnSize(vint index)override;
 					void												SetColumnSize(vint index, vint value)override;
 					GuiMenu*											GetDropdownPopup(vint index)override;

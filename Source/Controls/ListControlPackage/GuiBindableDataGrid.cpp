@@ -1,4 +1,5 @@
-#include "GuiDataGridStructured.h"
+#include "GuiBindableDataGrid.h"
+#include "GuiBindableListControls.h"
 
 namespace vl
 {
@@ -6,219 +7,423 @@ namespace vl
 	{
 		namespace controls
 		{
+			using namespace collections;
+			using namespace description;
+
 			namespace list
 			{
-				using namespace collections;
-				
+
 /***********************************************************************
-StructuredDataFilterBase
+DataFilterBase
 ***********************************************************************/
 
-				void StructuredDataFilterBase::InvokeOnFilterChanged()
+				void DataFilterBase::InvokeOnFilterChanged()
 				{
-					if(commandExecutor)
+					if (callback)
 					{
-						commandExecutor->OnFilterChanged();
+						callback->OnFilterChanged();
 					}
 				}
 
-				StructuredDataFilterBase::StructuredDataFilterBase()
-					:commandExecutor(0)
+				DataFilterBase::DataFilterBase()
 				{
 				}
 
-				void StructuredDataFilterBase::SetCommandExecutor(IStructuredDataFilterCommandExecutor* value)
+				void DataFilterBase::SetCallback(IDataFilterCallback* value)
 				{
-					commandExecutor=value;
+					callback = value;
 				}
-				
+
 /***********************************************************************
-StructuredDataMultipleFilter
+DataMultipleFilter
 ***********************************************************************/
 
-				StructuredDataMultipleFilter::StructuredDataMultipleFilter()
+				DataMultipleFilter::DataMultipleFilter()
 				{
 				}
 
-				bool StructuredDataMultipleFilter::AddSubFilter(Ptr<IStructuredDataFilter> value)
+				bool DataMultipleFilter::AddSubFilter(Ptr<IDataFilter> value)
 				{
-					if(!value) return false;
-					if(filters.Contains(value.Obj())) return false;
+					if (!value) return false;
+					if (filters.Contains(value.Obj())) return false;
 					filters.Add(value);
-					value->SetCommandExecutor(commandExecutor);
+					value->SetCallback(callback);
 					InvokeOnFilterChanged();
 					return true;
 				}
 
-				bool StructuredDataMultipleFilter::RemoveSubFilter(Ptr<IStructuredDataFilter> value)
+				bool DataMultipleFilter::RemoveSubFilter(Ptr<IDataFilter> value)
 				{
-					if(!value) return false;
-					if(!filters.Contains(value.Obj())) return false;
-					value->SetCommandExecutor(0);
+					if (!value) return false;
+					if (!filters.Contains(value.Obj())) return false;
+					value->SetCallback(nullptr);
 					filters.Remove(value.Obj());
 					InvokeOnFilterChanged();
 					return true;
 				}
 
-				void StructuredDataMultipleFilter::SetCommandExecutor(IStructuredDataFilterCommandExecutor* value)
+				void DataMultipleFilter::SetCallback(IDataFilterCallback* value)
 				{
-					StructuredDataFilterBase::SetCommandExecutor(value);
-					for(vint i=0;i<filters.Count();i++)
+					DataFilterBase::SetCallback(value);
+					for (vint i = 0; i < filters.Count(); i++)
 					{
-						filters[i]->SetCommandExecutor(value);
+						filters[i]->SetCallback(value);
 					}
 				}
-				
+
 /***********************************************************************
-StructuredDataAndFilter
+DataAndFilter
 ***********************************************************************/
 
-				StructuredDataAndFilter::StructuredDataAndFilter()
+				DataAndFilter::DataAndFilter()
 				{
 				}
 
-				bool StructuredDataAndFilter::Filter(vint row)
+				bool DataAndFilter::Filter(vint row)
 				{
 					return From(filters)
-						.All([row](Ptr<IStructuredDataFilter> filter)
-						{
-							return filter->Filter(row);
-						});
-				}
-				
-/***********************************************************************
-StructuredDataOrFilter
-***********************************************************************/
-				
-				StructuredDataOrFilter::StructuredDataOrFilter()
-				{
-				}
-
-				bool StructuredDataOrFilter::Filter(vint row)
-				{
-					return From(filters)
-						.Any([row](Ptr<IStructuredDataFilter> filter)
-						{
-							return filter->Filter(row);
-						});
-				}
-				
-/***********************************************************************
-StructuredDataNotFilter
-***********************************************************************/
-				
-				StructuredDataNotFilter::StructuredDataNotFilter()
-				{
-				}
-
-				bool StructuredDataNotFilter::SetSubFilter(Ptr<IStructuredDataFilter> value)
-				{
-					if(filter==value) return false;
-					if(filter)
+						.All([row](Ptr<IDataFilter> filter)
 					{
-						filter->SetCommandExecutor(0);
+						return filter->Filter(row);
+					});
+				}
+
+/***********************************************************************
+DataOrFilter
+***********************************************************************/
+
+				DataOrFilter::DataOrFilter()
+				{
+				}
+
+				bool DataOrFilter::Filter(vint row)
+				{
+					return From(filters)
+						.Any([row](Ptr<IDataFilter> filter)
+					{
+						return filter->Filter(row);
+					});
+				}
+
+/***********************************************************************
+DataNotFilter
+***********************************************************************/
+
+				DataNotFilter::DataNotFilter()
+				{
+				}
+
+				bool DataNotFilter::SetSubFilter(Ptr<IDataFilter> value)
+				{
+					if (filter == value) return false;
+					if (filter)
+					{
+						filter->SetCallback(nullptr);
 					}
-					filter=value;
-					if(filter)
+					filter = value;
+					if (filter)
 					{
-						filter->SetCommandExecutor(commandExecutor);
+						filter->SetCallback(callback);
 					}
 					InvokeOnFilterChanged();
 					return true;
 				}
 
-				void StructuredDataNotFilter::SetCommandExecutor(IStructuredDataFilterCommandExecutor* value)
+				void DataNotFilter::SetCallback(IDataFilterCallback* value)
 				{
-					StructuredDataFilterBase::SetCommandExecutor(value);
-					if(filter)
+					DataFilterBase::SetCallback(value);
+					if (filter)
 					{
-						filter->SetCommandExecutor(value);
+						filter->SetCallback(value);
 					}
 				}
 
-				bool StructuredDataNotFilter::Filter(vint row)
+				bool DataNotFilter::Filter(vint row)
 				{
-					return filter?true:!filter->Filter(row);
+					return filter ? true : !filter->Filter(row);
 				}
-				
+
 /***********************************************************************
-StructuredDataMultipleSorter
+DataMultipleSorter
 ***********************************************************************/
 
-				StructuredDataMultipleSorter::StructuredDataMultipleSorter()
+				DataMultipleSorter::DataMultipleSorter()
 				{
 				}
 
-				bool StructuredDataMultipleSorter::SetLeftSorter(Ptr<IStructuredDataSorter> value)
+				bool DataMultipleSorter::SetLeftSorter(Ptr<IDataSorter> value)
 				{
-					if(leftSorter==value) return false;
-					leftSorter=value;
+					if (leftSorter == value) return false;
+					leftSorter = value;
 					return true;
 				}
 
-				bool StructuredDataMultipleSorter::SetRightSorter(Ptr<IStructuredDataSorter> value)
+				bool DataMultipleSorter::SetRightSorter(Ptr<IDataSorter> value)
 				{
-					if(rightSorter==value) return false;
-					rightSorter=value;
+					if (rightSorter == value) return false;
+					rightSorter = value;
 					return true;
 				}
 
-				vint StructuredDataMultipleSorter::Compare(vint row1, vint row2)
+				vint DataMultipleSorter::Compare(vint row1, vint row2)
 				{
-					if(leftSorter)
+					if (leftSorter)
 					{
-						vint result=leftSorter->Compare(row1, row2);
-						if(result!=0) return result;
+						vint result = leftSorter->Compare(row1, row2);
+						if (result != 0) return result;
 					}
-					if(rightSorter)
+					if (rightSorter)
 					{
-						vint result=rightSorter->Compare(row1, row2);
-						if(result!=0) return result;
+						vint result = rightSorter->Compare(row1, row2);
+						if (result != 0) return result;
 					}
 					return 0;
 				}
-				
+
 /***********************************************************************
-StructuredDataReverseSorter
+DataReverseSorter
 ***********************************************************************/
 
-				StructuredDataReverseSorter::StructuredDataReverseSorter()
+				DataReverseSorter::DataReverseSorter()
 				{
 				}
 
-				bool StructuredDataReverseSorter::SetSubSorter(Ptr<IStructuredDataSorter> value)
+				bool DataReverseSorter::SetSubSorter(Ptr<IDataSorter> value)
 				{
-					if(sorter==value) return false;
-					sorter=value;
+					if (sorter == value) return false;
+					sorter = value;
 					return true;
 				}
 
-				vint StructuredDataReverseSorter::Compare(vint row1, vint row2)
+				vint DataReverseSorter::Compare(vint row1, vint row2)
 				{
-					return sorter?-sorter->Compare(row1, row2):0;
+					return sorter ? -sorter->Compare(row1, row2) : 0;
 				}
-				
+
 /***********************************************************************
-StructuredDataProvider
+DataColumn
 ***********************************************************************/
 
-				void StructuredDataProvider::OnDataProviderColumnChanged()
+				void DataColumn::NotifyColumnChanged()
 				{
-					vint oldRowCount=GetRowCount();
-					RebuildFilter(true);
+					dataProvider->NotifyColumnChanged();
+				}
+
+				DataColumn::DataColumn()
+				{
+				}
+
+				DataColumn::~DataColumn()
+				{
+				}
+
+				WString DataColumn::GetText()
+				{
+					return text;
+				}
+
+				void DataColumn::SetText(const WString& value)
+				{
+					if (text != value)
+					{
+						text = value;
+						NotifyColumnChanged();
+					}
+				}
+
+				vint DataColumn::GetSize()
+				{
+					return size;
+				}
+
+				void DataColumn::SetSize(vint value)
+				{
+					size = value;
+				}
+
+				GuiMenu* DataColumn::GetPopup()
+				{
+					return popup;
+				}
+
+				void DataColumn::SetPopup(GuiMenu* value)
+				{
+					if (popup != value)
+					{
+						popup = value;
+						NotifyColumnChanged();
+					}
+				}
+
+				Ptr<IDataFilter> DataColumn::GetInherentFilter()
+				{
+					return inherentFilter;
+				}
+
+				void DataColumn::SetInherentFilter(Ptr<IDataFilter> value)
+				{
+					inherentFilter = value;
+					NotifyColumnChanged();
+				}
+
+				Ptr<IDataSorter> DataColumn::GetInherentSorter()
+				{
+					return inherentSorter;
+				}
+
+				void DataColumn::SetInherentSorter(Ptr<IDataSorter> value)
+				{
+					inherentSorter = value;
+					NotifyColumnChanged();
+				}
+
+				Ptr<IDataVisualizerFactory> DataColumn::GetVisualizerFactory()
+				{
+					return visualizerFactory;
+				}
+
+				void DataColumn::SetVisualizerFactory(Ptr<IDataVisualizerFactory> value)
+				{
+					visualizerFactory = value;
+					NotifyColumnChanged();
+				}
+
+				Ptr<IDataEditorFactory> DataColumn::GetEditorFactory()
+				{
+					return editorFactory;
+				}
+
+				void DataColumn::SetEditorFactory(Ptr<IDataEditorFactory> value)
+				{
+					editorFactory = value;
+					NotifyColumnChanged();
+				}
+
+				WString DataColumn::GetCellText(vint row)
+				{
+					if (0 <= row && row < dataProvider->Count())
+					{
+						return ReadProperty(dataProvider->GetBindingValue(row), textProperty);
+					}
+					return L"";
+				}
+
+				description::Value DataColumn::GetCellValue(vint row)
+				{
+					if (0 <= row && row < dataProvider->Count())
+					{
+						return ReadProperty(dataProvider->GetBindingValue(row), valueProperty);
+					}
+					return Value();
+				}
+
+				void DataColumn::SetCellValue(vint row, description::Value value)
+				{
+					if (0 <= row && row < dataProvider->Count())
+					{
+						auto rowValue = dataProvider->GetBindingValue(row);
+						return WriteProperty(rowValue, valueProperty, value);
+					}
+				}
+
+				ItemProperty<WString> DataColumn::GetTextProperty()
+				{
+					return textProperty;
+				}
+
+				void DataColumn::SetTextProperty(const ItemProperty<WString>& value)
+				{
+					if (textProperty != value)
+					{
+						textProperty = value;
+						NotifyColumnChanged();
+						compositions::GuiEventArgs arguments;
+						TextPropertyChanged.Execute(arguments);
+					}
+				}
+
+				WritableItemProperty<description::Value> DataColumn::GetValueProperty()
+				{
+					return valueProperty;
+				}
+
+				void DataColumn::SetValueProperty(const WritableItemProperty<description::Value>& value)
+				{
+					if (valueProperty != value)
+					{
+						valueProperty = value;
+						NotifyColumnChanged();
+						compositions::GuiEventArgs arguments;
+						ValuePropertyChanged.Execute(arguments);
+					}
+				}
+
+/***********************************************************************
+DataColumns
+***********************************************************************/
+
+				void DataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
+				{
+					dataProvider->NotifyColumnChanged();
+				}
+
+				bool DataColumns::QueryInsert(vint index, const Ptr<DataColumn>& value)
+				{
+					return !items.Contains(value.Obj());
+				}
+
+				void DataColumns::AfterInsert(vint index, const Ptr<DataColumn>& value)
+				{
+					value->dataProvider = dataProvider;
+				}
+
+				void DataColumns::BeforeRemove(vint index, const Ptr<DataColumn>& value)
+				{
+					value->dataProvider = nullptr;
+				}
+
+				DataColumns::DataColumns(DataProvider* _dataProvider)
+					:dataProvider(_dataProvider)
+				{
+				}
+
+				DataColumns::~DataColumns()
+				{
+				}
+
+/***********************************************************************
+DataProvider
+***********************************************************************/
+
+				void DataProvider::NotifyAllItemsChanged()
+				{
+					InvokeOnItemModified(0, Count(), Count());
+				}
+
+				void DataProvider::NotifyColumnChanged()
+				{
+					NotifyAllItemsChanged();
+					if (columnItemViewCallback)
+					{
+						columnItemViewCallback->OnColumnChanged();
+					}
+				}
+
+				GuiListControl::IItemProvider* DataProvider::GetItemProvider()
+				{
+					return this;
+				}
+
+				void DataProvider::OnFilterChanged()
+				{
 					ReorderRows(true);
 				}
 
-				void StructuredDataProvider::OnDataProviderItemModified(vint start, vint count, vint newCount)
+				void DataProvider::OnItemSourceModified(vint start, vint count, vint newCount)
 				{
-					// optimized for cell editing
-					if(!currentSorter && !currentFilter)
+					if (!currentSorter && !currentFilter && count == newCount)
 					{
-						if(count!=newCount)
-						{
-							ReorderRows(false);
-						}
-						commandExecutor->OnDataProviderItemModified(start, count, newCount);
+						InvokeOnItemModified(start, count, newCount);
 					}
 					else
 					{
@@ -226,641 +431,17 @@ StructuredDataProvider
 					}
 				}
 
-				void StructuredDataProvider::OnFilterChanged()
+				DataColumns& DataProvider::GetColumns()
 				{
-					ReorderRows(true);
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
+					return columns;
 				}
 
-				void StructuredDataProvider::RebuildFilter(bool invokeCallback)
-				{
-					if(currentFilter)
-					{
-						currentFilter->SetCommandExecutor(0);
-						currentFilter=0;
-					}
-
-					List<Ptr<IStructuredDataFilter>> selectedFilters;
-					CopyFrom(
-						selectedFilters,
-						Range<vint>(0, GetColumnCount())
-							.Select([this](vint column){return structuredDataProvider->GetColumn(column)->GetInherentFilter();})
-							.Where([](Ptr<IStructuredDataFilter> filter){return (bool)filter;})
-						);
-					if(additionalFilter)
-					{
-						selectedFilters.Add(additionalFilter);
-					}
-					if(selectedFilters.Count()>0)
-					{
-						Ptr<StructuredDataAndFilter> andFilter=new StructuredDataAndFilter;
-						FOREACH(Ptr<IStructuredDataFilter>, filter, selectedFilters)
-						{
-							andFilter->AddSubFilter(filter);
-						}
-						currentFilter=andFilter;
-					}
-
-					if(currentFilter)
-					{
-						currentFilter->SetCommandExecutor(this);
-					}
-
-					if(invokeCallback && commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-				}
-
-				void StructuredDataProvider::ReorderRows(bool invokeCallback)
-				{
-					vint oldRowCount=reorderedRows.Count();
-					reorderedRows.Clear();
-					vint rowCount=structuredDataProvider->GetRowCount();
-
-					if(currentFilter)
-					{
-						for(vint i=0;i<rowCount;i++)
-						{
-							if(currentFilter->Filter(i))
-							{
-								reorderedRows.Add(i);
-							}
-						}
-					}
-					else
-					{
-						for(vint i=0;i<rowCount;i++)
-						{
-							reorderedRows.Add(i);
-						}
-					}
-
-					if(currentSorter && reorderedRows.Count()>0)
-					{
-						IStructuredDataSorter* sorter=currentSorter.Obj();
-						SortLambda(&reorderedRows[0], reorderedRows.Count(), [sorter](vint a, vint b){return sorter->Compare(a, b);});
-					}
-
-					if(invokeCallback && commandExecutor)
-					{
-						commandExecutor->OnDataProviderItemModified(0, oldRowCount, GetRowCount());
-					}
-				}
-
-				vint StructuredDataProvider::TranslateRowNumber(vint row)
-				{
-					return reorderedRows[row];
-				}
-
-				Ptr<IStructuredDataProvider> StructuredDataProvider::GetStructuredDataProvider()
-				{
-					return structuredDataProvider;
-				}
-
-				Ptr<IStructuredDataFilter> StructuredDataProvider::GetAdditionalFilter()
-				{
-					return additionalFilter;
-				}
-
-				void StructuredDataProvider::SetAdditionalFilter(Ptr<IStructuredDataFilter> value)
-				{
-					additionalFilter=value;
-					RebuildFilter(true);
-					ReorderRows(true);
-				}
-
-				StructuredDataProvider::StructuredDataProvider(Ptr<IStructuredDataProvider> provider)
-					:structuredDataProvider(provider)
-					,commandExecutor(0)
-				{
-					structuredDataProvider->SetCommandExecutor(this);
-					RebuildFilter(false);
-					ReorderRows(false);
-				}
-
-				StructuredDataProvider::~StructuredDataProvider()
-				{
-				}
-
-				void StructuredDataProvider::SetCommandExecutor(IDataProviderCommandExecutor* value)
-				{
-					commandExecutor=value;
-				}
-
-				description::Value StructuredDataProvider::GetViewModelContext()
-				{
-					return structuredDataProvider->GetViewModelContext();
-				}
-
-				vint StructuredDataProvider::GetColumnCount()
-				{
-					return structuredDataProvider->GetColumnCount();
-				}
-
-				WString StructuredDataProvider::GetColumnText(vint column)
-				{
-					return structuredDataProvider->GetColumn(column)->GetText();
-				}
-
-				vint StructuredDataProvider::GetColumnSize(vint column)
-				{
-					return structuredDataProvider->GetColumn(column)->GetSize();
-				}
-
-				void StructuredDataProvider::SetColumnSize(vint column, vint value)
-				{
-					structuredDataProvider->GetColumn(column)->SetSize(value);
-				}
-
-				GuiMenu* StructuredDataProvider::GetColumnPopup(vint column)
-				{
-					return structuredDataProvider->GetColumn(column)->GetPopup();
-				}
-
-				bool StructuredDataProvider::IsColumnSortable(vint column)
-				{
-					return structuredDataProvider->GetColumn(column)->GetInherentSorter();
-				}
-
-				void StructuredDataProvider::SortByColumn(vint column, bool ascending)
-				{
-					if(0<=column && column<structuredDataProvider->GetColumnCount())
-					{
-						Ptr<IStructuredDataSorter> sorter=structuredDataProvider->GetColumn(column)->GetInherentSorter();
-						if(!sorter)
-						{
-							currentSorter=0;
-						}
-						else if(ascending)
-						{
-							currentSorter=sorter;
-						}
-						else
-						{
-							Ptr<StructuredDataReverseSorter> reverseSorter=new StructuredDataReverseSorter();
-							reverseSorter->SetSubSorter(sorter);
-							currentSorter=reverseSorter;
-						}
-					}
-					else
-					{
-						currentSorter=0;
-					}
-					for(vint i=0;i<structuredDataProvider->GetColumnCount();i++)
-					{
-						structuredDataProvider->GetColumn(i)->SetSortingState(
-							i!=column?GuiListViewColumnHeader::NotSorted:
-							ascending?GuiListViewColumnHeader::Ascending:
-							GuiListViewColumnHeader::Descending
-							);
-					}
-					ReorderRows(true);
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-				}
-
-				vint StructuredDataProvider::GetSortedColumn()
-				{
-					for(vint i=0;i<structuredDataProvider->GetColumnCount();i++)
-					{
-						GuiListViewColumnHeader::ColumnSortingState state=structuredDataProvider->GetColumn(i)->GetSortingState();
-						if(state!=GuiListViewColumnHeader::NotSorted)
-						{
-							return i;
-						}
-					}
-					return -1;
-				}
-
-				bool StructuredDataProvider::IsSortOrderAscending()
-				{
-					for(vint i=0;i<structuredDataProvider->GetColumnCount();i++)
-					{
-						GuiListViewColumnHeader::ColumnSortingState state=structuredDataProvider->GetColumn(i)->GetSortingState();
-						if(state!=GuiListViewColumnHeader::NotSorted)
-						{
-							return state==GuiListViewColumnHeader::Ascending;
-						}
-					}
-					return true;
-				}
-					
-				vint StructuredDataProvider::GetRowCount()
-				{
-					return reorderedRows.Count();
-				}
-
-				Ptr<GuiImageData> StructuredDataProvider::GetRowLargeImage(vint row)
-				{
-					return structuredDataProvider->GetRowLargeImage(TranslateRowNumber(row));
-				}
-
-				Ptr<GuiImageData> StructuredDataProvider::GetRowSmallImage(vint row)
-				{
-					return structuredDataProvider->GetRowSmallImage(TranslateRowNumber(row));
-				}
-
-				vint StructuredDataProvider::GetCellSpan(vint row, vint column)
-				{
-					return 1;
-				}
-
-				WString StructuredDataProvider::GetCellText(vint row, vint column)
-				{
-					return structuredDataProvider->GetColumn(column)->GetCellText(TranslateRowNumber(row));
-				}
-
-				IDataVisualizerFactory* StructuredDataProvider::GetCellDataVisualizerFactory(vint row, vint column)
-				{
-					return structuredDataProvider->GetColumn(column)->GetCellDataVisualizerFactory(TranslateRowNumber(row));
-				}
-
-				void StructuredDataProvider::VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)
-				{
-					structuredDataProvider->GetColumn(column)->VisualizeCell(TranslateRowNumber(row), dataVisualizer);
-				}
-
-				IDataEditorFactory* StructuredDataProvider::GetCellDataEditorFactory(vint row, vint column)
-				{
-					return structuredDataProvider->GetColumn(column)->GetCellDataEditorFactory(TranslateRowNumber(row));
-				}
-
-				void StructuredDataProvider::BeforeEditCell(vint row, vint column, IDataEditor* dataEditor)
-				{
-					structuredDataProvider->GetColumn(column)->BeforeEditCell(TranslateRowNumber(row), dataEditor);
-				}
-
-				void StructuredDataProvider::SaveCellData(vint row, vint column, IDataEditor* dataEditor)
-				{
-					structuredDataProvider->GetColumn(column)->SaveCellData(TranslateRowNumber(row), dataEditor);
-				}
-				
-/***********************************************************************
-StructuredColummProviderBase
-***********************************************************************/
-
-				StructuredColummProviderBase::StructuredColummProviderBase()
-					:commandExecutor(0)
-					,size(0)
-					,sortingState(GuiListViewColumnHeader::NotSorted)
-					,popup(0)
-				{
-				}
-
-				StructuredColummProviderBase::~StructuredColummProviderBase()
-				{
-				}
-					
-				void StructuredColummProviderBase::SetCommandExecutor(IDataProviderCommandExecutor* value)
-				{
-					commandExecutor=value;
-				}
-
-				StructuredColummProviderBase* StructuredColummProviderBase::SetText(const WString& value)
-				{
-					text=value;
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return this;
-				}
-
-				StructuredColummProviderBase* StructuredColummProviderBase::SetPopup(GuiMenu* value)
-				{
-					popup=value;
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return this;
-				}
-
-				StructuredColummProviderBase* StructuredColummProviderBase::SetInherentFilter(Ptr<IStructuredDataFilter> value)
-				{
-					inherentFilter=value;
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return this;
-				}
-
-				StructuredColummProviderBase* StructuredColummProviderBase::SetInherentSorter(Ptr<IStructuredDataSorter> value)
-				{
-					inherentSorter=value;
-					if(commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return this;
-				}
-
-				Ptr<IDataVisualizerFactory> StructuredColummProviderBase::GetVisualizerFactory()
-				{
-					return visualizerFactory;
-				}
-
-				StructuredColummProviderBase* StructuredColummProviderBase::SetVisualizerFactory(Ptr<IDataVisualizerFactory> value)
-				{
-					visualizerFactory=value;
-					return this;
-				}
-
-				Ptr<IDataEditorFactory> StructuredColummProviderBase::GetEditorFactory()
-				{
-					return editorFactory;
-				}
-
-				StructuredColummProviderBase* StructuredColummProviderBase::SetEditorFactory(Ptr<IDataEditorFactory> value)
-				{
-					editorFactory=value;
-					return this;
-				}
-
-				WString StructuredColummProviderBase::GetText()
-				{
-					return text;
-				}
-
-				vint StructuredColummProviderBase::GetSize()
-				{
-					return size;
-				}
-
-				void StructuredColummProviderBase::SetSize(vint value)
-				{
-					size=value;
-				}
-
-				GuiListViewColumnHeader::ColumnSortingState StructuredColummProviderBase::GetSortingState()
-				{
-					return sortingState;
-				}
-
-				void StructuredColummProviderBase::SetSortingState(GuiListViewColumnHeader::ColumnSortingState value)
-				{
-					sortingState=value;
-				}
-
-				GuiMenu* StructuredColummProviderBase::GetPopup()
-				{
-					return popup;
-				}
-
-				Ptr<IStructuredDataFilter> StructuredColummProviderBase::GetInherentFilter()
-				{
-					return inherentFilter;
-				}
-
-				Ptr<IStructuredDataSorter> StructuredColummProviderBase::GetInherentSorter()
-				{
-					return inherentSorter;
-				}
-					
-				IDataVisualizerFactory* StructuredColummProviderBase::GetCellDataVisualizerFactory(vint row)
-				{
-					return visualizerFactory.Obj();
-				}
-
-				void StructuredColummProviderBase::VisualizeCell(vint row, IDataVisualizer* dataVisualizer)
-				{
-				}
-
-				IDataEditorFactory* StructuredColummProviderBase::GetCellDataEditorFactory(vint row)
-				{
-					return editorFactory.Obj();
-				}
-
-				void StructuredColummProviderBase::BeforeEditCell(vint row, IDataEditor* dataEditor)
-				{
-				}
-
-				void StructuredColummProviderBase::SaveCellData(vint row, IDataEditor* dataEditor)
-				{
-				}
-				
-/***********************************************************************
-StructuredDataProviderBase
-***********************************************************************/
-
-				bool StructuredDataProviderBase::InsertColumnInternal(vint column, Ptr<StructuredColummProviderBase> value, bool callback)
-				{
-					if(column<0 || columns.Count()<column) return false;
-					if(columns.Contains(value.Obj())) return false;
-					columns.Insert(column, value);
-					value->SetCommandExecutor(commandExecutor);
-					if(callback && commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return true;
-				}
-
-				bool StructuredDataProviderBase::AddColumnInternal(Ptr<StructuredColummProviderBase> value, bool callback)
-				{
-					return InsertColumnInternal(columns.Count(), value, callback);
-				}
-
-				bool StructuredDataProviderBase::RemoveColumnInternal(Ptr<StructuredColummProviderBase> value, bool callback)
-				{
-					if(!columns.Contains(value.Obj())) return false;
-					value->SetCommandExecutor(0);
-					columns.Remove(value.Obj());
-					if(callback && commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return true;
-				}
-
-				bool StructuredDataProviderBase::ClearColumnsInternal(bool callback)
-				{
-					FOREACH(Ptr<StructuredColummProviderBase>, column, columns)
-					{
-						column->SetCommandExecutor(0);
-					}
-					columns.Clear();
-					if(callback && commandExecutor)
-					{
-						commandExecutor->OnDataProviderColumnChanged();
-					}
-					return true;
-				}
-
-				StructuredDataProviderBase::StructuredDataProviderBase()
-					:commandExecutor(0)
-				{
-				}
-
-				StructuredDataProviderBase::~StructuredDataProviderBase()
-				{
-				}
-
-				void StructuredDataProviderBase::SetCommandExecutor(IDataProviderCommandExecutor* value)
-				{
-					commandExecutor=value;
-					FOREACH(Ptr<StructuredColummProviderBase>, column, columns)
-					{
-						column->SetCommandExecutor(commandExecutor);
-					}
-				}
-
-				description::Value StructuredDataProviderBase::GetViewModelContext()
-				{
-					return description::Value();
-				}
-
-				vint StructuredDataProviderBase::GetColumnCount()
-				{
-					return columns.Count();
-				}
-
-				IStructuredColumnProvider* StructuredDataProviderBase::GetColumn(vint column)
-				{
-					return columns[column].Obj();
-				}
-
-				Ptr<GuiImageData> StructuredDataProviderBase::GetRowLargeImage(vint row)
-				{
-					return 0;
-				}
-
-				Ptr<GuiImageData> StructuredDataProviderBase::GetRowSmallImage(vint row)
-				{
-					return 0;
-				}
-
-/***********************************************************************
-GuiBindableDataColumn
-***********************************************************************/
-
-				BindableDataColumn::BindableDataColumn()
-					:dataProvider(nullptr)
-				{
-				}
-
-				BindableDataColumn::~BindableDataColumn()
-				{
-				}
-
-				void BindableDataColumn::SaveCellData(vint row, IDataEditor* dataEditor)
-				{
-					if (auto editor = dynamic_cast<GuiBindableDataEditor*>(dataEditor))
-					{
-						SetCellValue(row, editor->GetEditedCellValue());
-					}
-					if (commandExecutor)
-					{
-						commandExecutor->OnDataProviderItemModified(row, 1, 1);
-					}
-				}
-
-				WString BindableDataColumn::GetCellText(vint row)
-				{
-					if (dataProvider->itemSource)
-					{
-						if (0 <= row && row < dataProvider->itemSource->GetCount())
-						{
-							return ReadProperty(dataProvider->itemSource->Get(row), textProperty);
-						}
-					}
-					return L"";
-				}
-
-				description::Value BindableDataColumn::GetCellValue(vint row)
-				{
-					if (dataProvider->itemSource)
-					{
-						if (0 <= row && row < dataProvider->itemSource->GetCount())
-						{
-							return ReadProperty(dataProvider->itemSource->Get(row), valueProperty);
-						}
-					}
-					return Value();
-				}
-
-				void BindableDataColumn::SetCellValue(vint row, description::Value value)
-				{
-					if (dataProvider->itemSource)
-					{
-						if (0 <= row && row < dataProvider->itemSource->GetCount())
-						{
-							auto rowValue = dataProvider->itemSource->Get(row);
-							return WriteProperty(rowValue, valueProperty, value);
-						}
-					}
-				}
-
-				ItemProperty<WString> BindableDataColumn::GetTextProperty()
-				{
-					return textProperty;
-				}
-
-				void BindableDataColumn::SetTextProperty(const ItemProperty<WString>& value)
-				{
-					if (textProperty != value)
-					{
-						textProperty = value;
-						if (commandExecutor)
-						{
-							commandExecutor->OnDataProviderColumnChanged();
-						}
-						compositions::GuiEventArgs arguments;
-						TextPropertyChanged.Execute(arguments);
-					}
-				}
-
-				WritableItemProperty<Value> BindableDataColumn::GetValueProperty()
-				{
-					return valueProperty;
-				}
-
-				void BindableDataColumn::SetValueProperty(const WritableItemProperty<Value>& value)
-				{
-					if (valueProperty != value)
-					{
-						valueProperty = value;
-						if (commandExecutor)
-						{
-							commandExecutor->OnDataProviderColumnChanged();
-						}
-						compositions::GuiEventArgs arguments;
-						ValuePropertyChanged.Execute(arguments);
-					}
-				}
-
-				description::Value BindableDataColumn::GetViewModelContext()
-				{
-					return dataProvider->viewModelContext;
-				}
-
-/***********************************************************************
-GuiBindableDataProvider
-***********************************************************************/
-
-				BindableDataProvider::BindableDataProvider(const description::Value& _viewModelContext)
-					:viewModelContext(_viewModelContext)
-				{
-				}
-
-				BindableDataProvider::~BindableDataProvider()
-				{
-					SetItemSource(nullptr);
-				}
-
-				Ptr<description::IValueEnumerable> BindableDataProvider::GetItemSource()
+				Ptr<description::IValueEnumerable> DataProvider::GetItemSource()
 				{
 					return itemSource;
 				}
 
-				void BindableDataProvider::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
+				void DataProvider::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
 				{
 					vint oldCount = 0;
 					if (itemSource)
@@ -883,7 +464,7 @@ GuiBindableDataProvider
 							itemSource = ol;
 							itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 							{
-								commandExecutor->OnDataProviderItemModified(start, oldCount, newCount);
+								OnItemSourceModified(start, oldCount, newCount);
 							});
 						}
 						else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
@@ -896,80 +477,134 @@ GuiBindableDataProvider
 						}
 					}
 
-					commandExecutor->OnDataProviderItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
+					OnItemSourceModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
 				}
 
-				vint BindableDataProvider::GetRowCount()
+				void DataProvider::RebuildFilter()
 				{
-					if (!itemSource) return 0;
-					return itemSource->GetCount();
-				}
-
-				description::Value BindableDataProvider::GetRowValue(vint row)
-				{
-					if (itemSource)
+					if (currentFilter)
 					{
-						if (0 <= row && row < itemSource->GetCount())
+						currentFilter->SetCallback(nullptr);
+						currentFilter = nullptr;
+					}
+
+					List<Ptr<IDataFilter>> selectedFilters;
+					CopyFrom(
+						selectedFilters,
+						From(columns)
+						.Select([](Ptr<DataColumn> column) {return column->GetInherentFilter(); })
+						.Where([](Ptr<IDataFilter> filter) {return (bool)filter; })
+					);
+					if (additionalFilter)
+					{
+						selectedFilters.Add(additionalFilter);
+					}
+					if (selectedFilters.Count() > 0)
+					{
+						auto andFilter = MakePtr<DataAndFilter>();
+						FOREACH(Ptr<IDataFilter>, filter, selectedFilters)
 						{
-							return itemSource->Get(row);
+							andFilter->AddSubFilter(filter);
+						}
+						currentFilter = andFilter;
+					}
+
+					if (currentFilter)
+					{
+						currentFilter->SetCallback(this);
+					}
+				}
+
+				void DataProvider::ReorderRows(bool invokeCallback)
+				{
+					vint oldRowCount = virtualRowToSourceRow.Count();
+					virtualRowToSourceRow.Clear();
+					vint rowCount = itemSource ? itemSource->GetCount() : 0;
+
+					if (currentFilter)
+					{
+						for (vint i = 0; i < rowCount; i++)
+						{
+							if (currentFilter->Filter(i))
+							{
+								virtualRowToSourceRow.Add(i);
+							}
 						}
 					}
-					return Value();
-				}
-
-				bool BindableDataProvider::InsertBindableColumn(vint index, Ptr<BindableDataColumn> column)
-				{
-					if (InsertColumnInternal(index, column, true))
-					{
-						column->dataProvider = this;
-						return true;
-					}
 					else
 					{
-						return false;
+						for (vint i = 0; i < rowCount; i++)
+						{
+							virtualRowToSourceRow.Add(i);
+						}
+					}
+
+					if (currentSorter && virtualRowToSourceRow.Count() > 0)
+					{
+						IDataSorter* sorter = currentSorter.Obj();
+						SortLambda(&virtualRowToSourceRow[0], virtualRowToSourceRow.Count(), [sorter](vint a, vint b) {return sorter->Compare(a, b); });
+					}
+
+					if (invokeCallback)
+					{
+						NotifyAllItemsChanged();
 					}
 				}
 
-				bool BindableDataProvider::AddBindableColumn(Ptr<BindableDataColumn> column)
+				DataProvider::DataProvider(const description::Value& _viewModelContext)
+					:columns(this)
+					, viewModelContext(_viewModelContext)
 				{
-					if (AddColumnInternal(column, true))
-					{
-						column->dataProvider = this;
-						return true;
-					}
-					else
-					{
-						return false;
-					}
+					RebuildFilter();
+					ReorderRows(false);
 				}
 
-				bool BindableDataProvider::RemoveBindableColumn(Ptr<BindableDataColumn> column)
+				DataProvider::~DataProvider()
 				{
-					if (RemoveColumnInternal(column, true))
-					{
-						column->dataProvider = nullptr;
-						return true;
-					}
-					else
-					{
-						return false;
-					}
 				}
 
-				bool BindableDataProvider::ClearBindableColumns()
+				Ptr<IDataFilter> DataProvider::GetAdditionalFilter()
 				{
-					FOREACH(Ptr<StructuredColummProviderBase>, column, columns)
-					{
-						column.Cast<BindableDataColumn>()->dataProvider = nullptr;
-					}
-					return ClearColumnsInternal(true);
+					return additionalFilter;
 				}
 
-				Ptr<BindableDataColumn> BindableDataProvider::GetBindableColumn(vint index)
+				void DataProvider::SetAdditionalFilter(Ptr<IDataFilter> value)
 				{
-					if (0 <= index && index < GetColumnCount())
+					additionalFilter = value;
+					RebuildFilter();
+					ReorderRows(true);
+				}
+
+				// ===================== GuiListControl::IItemProvider =====================
+
+				vint DataProvider::Count()
+				{
+					return virtualRowToSourceRow.Count();
+				}
+
+				WString DataProvider::GetTextValue(vint itemIndex)
+				{
+					return GetText(itemIndex);
+				}
+
+				description::Value DataProvider::GetBindingValue(vint itemIndex)
+				{
+					return itemSource ? itemSource->Get(virtualRowToSourceRow[itemIndex]) : Value();
+				}
+
+				IDescriptable* DataProvider::RequestView(const WString& identifier)
+				{
+					if (identifier == IListViewItemView::Identifier)
 					{
-						return columns[index].Cast<BindableDataColumn>();
+						return (IListViewItemView*)this;
+					}
+					else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
+					{
+						return (ListViewColumnItemArranger::IColumnItemView*)this;
+					}
+					else if (identifier == IDataGridView::Identifier)
+					{
+						return (IDataGridView*)this;
 					}
 					else
 					{
@@ -977,9 +612,187 @@ GuiBindableDataProvider
 					}
 				}
 
-				description::Value BindableDataProvider::GetViewModelContext()
+				// ===================== list::IListViewItemProvider =====================
+
+				Ptr<GuiImageData> DataProvider::GetSmallImage(vint itemIndex)
+				{
+					return nullptr;
+				}
+
+				Ptr<GuiImageData> DataProvider::GetLargeImage(vint itemIndex)
+				{
+					return nullptr;
+				}
+
+				WString DataProvider::GetText(vint itemIndex)
+				{
+					if (columns.Count() == 0)return L"";
+					return columns[0]->GetCellText(itemIndex);
+				}
+
+				WString DataProvider::GetSubItem(vint itemIndex, vint index)
+				{
+					return columns[index + 1]->GetCellText(itemIndex);
+				}
+
+				vint DataProvider::GetDataColumnCount()
+				{
+					return 0;
+				}
+
+				vint DataProvider::GetDataColumn(vint index)
+				{
+					return -1;
+				}
+
+				vint DataProvider::GetColumnCount()
+				{
+					return columns.Count();
+				}
+
+				WString DataProvider::GetColumnText(vint index)
+				{
+					return columns[index]->GetText();
+				}
+
+				// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
+
+				bool DataProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+				{
+					if (columnItemViewCallback)return false;
+					columnItemViewCallback = value;
+					return true;
+				}
+
+				bool DataProvider::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
+				{
+					if (!columnItemViewCallback) return false;
+					columnItemViewCallback = nullptr;
+					return true;
+				}
+
+				vint DataProvider::GetColumnSize(vint index)
+				{
+					return columns[index]->GetSize();
+				}
+
+				void DataProvider::SetColumnSize(vint index, vint value)
+				{
+					columns[index]->SetSize(value);
+				}
+
+				GuiMenu* DataProvider::GetDropdownPopup(vint index)
+				{
+					return columns[index]->GetPopup();
+				}
+
+				ColumnSortingState DataProvider::GetSortingState(vint index)
+				{
+					return columns[index]->sortingState;
+				}
+
+				// ===================== list::IDataGridView =====================
+
+				description::Value DataProvider::GetViewModelContext()
 				{
 					return viewModelContext;
+				}
+
+				bool DataProvider::IsColumnSortable(vint column)
+				{
+					return columns[column]->GetInherentSorter();
+				}
+
+				void DataProvider::SortByColumn(vint column, bool ascending)
+				{
+					if (0 <= column && column < columns.Count())
+					{
+						auto sorter = columns[column]->GetInherentSorter();
+						if (!sorter)
+						{
+							currentSorter = nullptr;
+						}
+						else if (ascending)
+						{
+							currentSorter = sorter;
+						}
+						else
+						{
+							Ptr<DataReverseSorter> reverseSorter = new DataReverseSorter();
+							reverseSorter->SetSubSorter(sorter);
+							currentSorter = reverseSorter;
+						}
+					}
+					else
+					{
+						currentSorter = nullptr;
+					}
+
+					for (vint i = 0; i < columns.Count(); i++)
+					{
+						columns[column]->sortingState =
+							i != column ? ColumnSortingState::NotSorted :
+							ascending ? ColumnSortingState::Ascending :
+							ColumnSortingState::Descending
+							;
+					}
+					ReorderRows(true);
+				}
+
+				vint DataProvider::GetSortedColumn()
+				{
+					for (vint i = 0; i < columns.Count(); i++)
+					{
+						auto state = columns[i]->sortingState;
+						if (state != ColumnSortingState::NotSorted)
+						{
+							return i;
+						}
+					}
+					return -1;
+				}
+
+				bool DataProvider::IsSortOrderAscending()
+				{
+					for (vint i = 0; i < columns.Count(); i++)
+					{
+						auto state = columns[i]->sortingState;
+						if (state != ColumnSortingState::NotSorted)
+						{
+							return state == ColumnSortingState::Ascending;
+						}
+					}
+					return true;
+				}
+
+				vint DataProvider::GetCellSpan(vint row, vint column)
+				{
+					return 1;
+				}
+
+				IDataVisualizerFactory* DataProvider::GetCellDataVisualizerFactory(vint row, vint column)
+				{
+					return columns[row]->GetVisualizerFactory().Obj();
+				}
+
+				void DataProvider::VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)
+				{
+					throw 0;
+				}
+
+				IDataEditorFactory* DataProvider::GetCellDataEditorFactory(vint row, vint column)
+				{
+					return columns[row]->GetEditorFactory().Obj();
+				}
+
+				void DataProvider::EditCell(vint row, vint column, IDataEditor* dataEditor)
+				{
+					throw 0;
+				}
+
+				void DataProvider::SaveCellData(vint row, vint column, IDataEditor* dataEditor)
+				{
+					throw 0;
 				}
 			}
 
@@ -988,64 +801,48 @@ GuiBindableDataGrid
 ***********************************************************************/
 
 			GuiBindableDataGrid::GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext)
-				:GuiVirtualDataGrid(_styleProvider, new BindableDataProvider(_viewModelContext))
+				:GuiVirtualDataGrid(_styleProvider, new list::DataProvider(_viewModelContext))
 			{
-				bindableDataProvider = GetStructuredDataProvider()->GetStructuredDataProvider().Cast<BindableDataProvider>();
+				dataProvider = dynamic_cast<list::DataProvider*>(GetItemProvider());
 			}
 
 			GuiBindableDataGrid::~GuiBindableDataGrid()
 			{
 			}
 
+			list::DataColumns& GuiBindableDataGrid::GetColumns()
+			{
+				return dataProvider->GetColumns();
+			}
+
 			Ptr<description::IValueEnumerable> GuiBindableDataGrid::GetItemSource()
 			{
-				return bindableDataProvider->GetItemSource();
+				return dataProvider->GetItemSource();
 			}
 
 			void GuiBindableDataGrid::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
 			{
-				bindableDataProvider->SetItemSource(_itemSource);
-			}
-
-			bool GuiBindableDataGrid::InsertBindableColumn(vint index, Ptr<list::BindableDataColumn> column)
-			{
-				return bindableDataProvider->InsertBindableColumn(index, column);
-			}
-
-			bool GuiBindableDataGrid::AddBindableColumn(Ptr<list::BindableDataColumn> column)
-			{
-				return bindableDataProvider->AddBindableColumn(column);
-			}
-
-			bool GuiBindableDataGrid::RemoveBindableColumn(Ptr<list::BindableDataColumn> column)
-			{
-				return bindableDataProvider->RemoveBindableColumn(column);
-			}
-
-			bool GuiBindableDataGrid::ClearBindableColumns()
-			{
-				return bindableDataProvider->ClearBindableColumns();
-			}
-
-			Ptr<list::BindableDataColumn> GuiBindableDataGrid::GetBindableColumn(vint index)
-			{
-				return bindableDataProvider->GetBindableColumn(index);
+				dataProvider->SetItemSource(_itemSource);
 			}
 
 			description::Value GuiBindableDataGrid::GetSelectedRowValue()
 			{
-				return bindableDataProvider->GetRowValue(GetSelectedCell().row);
+				auto pos = GetSelectedCell();
+				if (pos.row == -1 || pos.column == -1)
+				{
+					return Value();
+				}
+				return dataProvider->GetBindingValue(GetSelectedCell().row);
 			}
 
 			description::Value GuiBindableDataGrid::GetSelectedCellValue()
 			{
-				auto cell = GetSelectedCell();
-				auto column = GetBindableColumn(cell.column);
-				if (column)
+				auto pos = GetSelectedCell();
+				if (pos.row == -1 || pos.column == -1)
 				{
-					return column->GetCellValue(cell.row);
+					return Value();
 				}
-				return Value();
+				return dataProvider->GetColumns()[pos.column]->GetCellValue(pos.row);
 			}
 		}
 	}

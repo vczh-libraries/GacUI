@@ -13,69 +13,6 @@ namespace vl
 			using namespace reflection::description;
 			using namespace templates;
 
-			template<typename T>
-			struct DefaultValueOf
-			{
-				static T Get()
-				{
-					return TypedValueSerializerProvider<T>::GetDefaultValue();
-				}
-			};
-
-			template<typename T>
-			struct DefaultValueOf<Ptr<T>>
-			{
-				static Ptr<T> Get()
-				{
-					return nullptr;
-				}
-			};
-
-			template<>
-			struct DefaultValueOf<Value>
-			{
-				static Value Get()
-				{
-					return Value();
-				}
-			};
-
-			template<typename T>
-			T ReadProperty(const Value& thisObject, const ItemProperty<T>& propertyName)
-			{
-				if (!thisObject.IsNull() && propertyName)
-				{
-					return propertyName(thisObject);
-				}
-				else
-				{
-					return DefaultValueOf<T>::Get();
-				}
-			}
-
-			template<typename T>
-			T ReadProperty(const Value& thisObject, const WritableItemProperty<T>& propertyName)
-			{
-				auto defaultValue = DefaultValueOf<T>::Get();
-				if (!thisObject.IsNull() && propertyName)
-				{
-					return propertyName(thisObject, defaultValue, false);
-				}
-				else
-				{
-					return defaultValue;
-				}
-			}
-
-			template<typename T>
-			void WriteProperty(const Value& thisObject, const WritableItemProperty<T>& propertyName, const T& value)
-			{
-				if (!thisObject.IsNull() && propertyName)
-				{
-					propertyName(thisObject, value, true);
-				}
-			}
-
 /***********************************************************************
 GuiBindableTextList::ItemSource
 ***********************************************************************/
@@ -491,6 +428,23 @@ GuiBindableListView::ItemSource
 				return dataColumns[index];
 			}
 
+			vint GuiBindableListView::ItemSource::GetColumnCount()
+			{
+				return columns.Count();
+			}
+
+			WString GuiBindableListView::ItemSource::GetColumnText(vint index)
+			{
+				if (index < 0 || index >= columns.Count())
+				{
+					return L"";
+				}
+				else
+				{
+					return columns[index]->GetText();
+				}
+			}
+
 			// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
 
 			bool GuiBindableListView::ItemSource::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
@@ -517,23 +471,6 @@ GuiBindableListView::ItemSource
 				{
 					columnItemViewCallbacks.Remove(value);
 					return true;
-				}
-			}
-
-			vint GuiBindableListView::ItemSource::GetColumnCount()
-			{
-				return columns.Count();
-			}
-
-			WString GuiBindableListView::ItemSource::GetColumnText(vint index)
-			{
-				if (index < 0 || index >= columns.Count())
-				{
-					return L"";
-				}
-				else
-				{
-					return columns[index]->GetText();
 				}
 			}
 
