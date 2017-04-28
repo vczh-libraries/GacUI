@@ -40,18 +40,15 @@ Type List
 			F(presentation::controls::GuiLabel)\
 			F(presentation::controls::GuiLabel::IStyleController)\
 			F(presentation::controls::GuiButton)\
-			F(presentation::controls::GuiButton::ControlState)\
 			F(presentation::controls::GuiButton::IStyleController)\
 			F(presentation::controls::GuiSelectableButton)\
 			F(presentation::controls::GuiSelectableButton::IStyleController)\
 			F(presentation::controls::GuiSelectableButton::GroupController)\
 			F(presentation::controls::GuiSelectableButton::MutexGroupController)\
 			F(presentation::controls::GuiScroll)\
-			F(presentation::controls::GuiScroll::ICommandExecutor)\
 			F(presentation::controls::GuiScroll::IStyleController)\
 			F(presentation::controls::GuiTabPage)\
 			F(presentation::controls::GuiTab)\
-			F(presentation::controls::GuiTab::ICommandExecutor)\
 			F(presentation::controls::GuiTab::IStyleController)\
 			F(presentation::controls::GuiScrollView)\
 			F(presentation::controls::GuiScrollView::IStyleProvider)\
@@ -64,46 +61,29 @@ Type List
 			F(presentation::controls::GuiListControl::IItemProviderCallback)\
 			F(presentation::controls::GuiListControl::IItemArrangerCallback)\
 			F(presentation::controls::GuiListControl::IItemProvider)\
-			F(presentation::controls::GuiListControl::IItemStyleController)\
-			F(presentation::controls::GuiListControl::IItemStyleProvider)\
 			F(presentation::controls::GuiListControl::IItemArranger)\
 			F(presentation::controls::GuiSelectableListControl)\
-			F(presentation::controls::GuiSelectableListControl::IItemStyleProvider)\
 			F(presentation::controls::list::RangedItemArrangerBase)\
 			F(presentation::controls::list::FixedHeightItemArranger)\
 			F(presentation::controls::list::FixedSizeMultiColumnItemArranger)\
 			F(presentation::controls::list::FixedHeightMultiColumnItemArranger)\
-			F(presentation::controls::list::ItemStyleControllerBase)\
-			F(presentation::controls::list::TextItemStyleProvider)\
-			F(presentation::controls::list::TextItemStyleProvider::IBulletFactory)\
-			F(presentation::controls::list::TextItemStyleProvider::ITextItemView)\
+			F(presentation::controls::list::ITextItemView)\
 			F(presentation::controls::list::TextItem)\
+			F(presentation::controls::TextListView)\
 			F(presentation::controls::GuiVirtualTextList)\
 			F(presentation::controls::GuiVirtualTextList::IStyleProvider)\
 			F(presentation::controls::GuiTextList)\
-			F(presentation::controls::list::ListViewItemStyleProviderBase)\
-			F(presentation::controls::list::ListViewItemStyleProviderBase::ListViewItemStyleController)\
 			F(presentation::controls::GuiListViewColumnHeader)\
-			F(presentation::controls::GuiListViewColumnHeader::ColumnSortingState)\
 			F(presentation::controls::GuiListViewColumnHeader::IStyleController)\
 			F(presentation::controls::GuiListViewBase)\
 			F(presentation::controls::GuiListViewBase::IStyleProvider)\
-			F(presentation::controls::list::ListViewItemStyleProvider)\
-			F(presentation::controls::list::ListViewItemStyleProvider::IListViewItemView)\
-			F(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContent)\
-			F(presentation::controls::list::ListViewItemStyleProvider::IListViewItemContentProvider)\
-			F(presentation::controls::list::ListViewItemStyleProvider::ListViewContentItemStyleController)\
-			F(presentation::controls::list::ListViewBigIconContentProvider)\
-			F(presentation::controls::list::ListViewSmallIconContentProvider)\
-			F(presentation::controls::list::ListViewListContentProvider)\
-			F(presentation::controls::list::ListViewTileContentProvider)\
-			F(presentation::controls::list::ListViewInformationContentProvider)\
+			F(presentation::controls::list::IListViewItemView)\
 			F(presentation::controls::list::ListViewColumnItemArranger)\
 			F(presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback)\
 			F(presentation::controls::list::ListViewColumnItemArranger::IColumnItemView)\
-			F(presentation::controls::list::ListViewDetailContentProvider)\
 			F(presentation::controls::list::ListViewItem)\
 			F(presentation::controls::list::ListViewColumn)\
+			F(presentation::controls::ListViewView)\
 			F(presentation::controls::GuiVirtualListView)\
 			F(presentation::controls::GuiListView)\
 			F(presentation::controls::IGuiMenuService)\
@@ -116,10 +96,6 @@ Type List
 			F(presentation::controls::tree::INodeProvider)\
 			F(presentation::controls::tree::INodeRootProvider)\
 			F(presentation::controls::tree::INodeItemView)\
-			F(presentation::controls::tree::INodeItemStyleController)\
-			F(presentation::controls::tree::INodeItemStyleProvider)\
-			F(presentation::controls::tree::NodeItemStyleProvider)\
-			F(presentation::controls::tree::IMemoryNodeData)\
 			F(presentation::controls::tree::MemoryNodeProvider)\
 			F(presentation::controls::tree::NodeRootProviderBase)\
 			F(presentation::controls::tree::MemoryNodeRootProvider)\
@@ -130,13 +106,10 @@ Type List
 			F(presentation::controls::GuiVirtualTreeView)\
 			F(presentation::controls::GuiVirtualTreeView::IStyleProvider)\
 			F(presentation::controls::GuiTreeView)\
-			F(presentation::controls::tree::TreeViewNodeItemStyleProvider)\
 			F(presentation::controls::GuiComboBoxBase)\
-			F(presentation::controls::GuiComboBoxBase::ICommandExecutor)\
 			F(presentation::controls::GuiComboBoxBase::IStyleController)\
 			F(presentation::controls::GuiComboBoxListControl)\
 			F(presentation::controls::GuiComboBoxListControl::IStyleController)\
-			F(presentation::controls::GuiComboBoxListControl::IItemStyleProvider)\
 			F(presentation::controls::GuiToolstripCommand)\
 			F(presentation::controls::GuiToolstripMenu)\
 			F(presentation::controls::GuiToolstripMenuBar)\
@@ -155,28 +128,10 @@ Type List
 			F(presentation::controls::GuiSinglelineTextBox::IStyleProvider)\
 			F(presentation::controls::list::IDataVisualizerFactory)\
 			F(presentation::controls::list::IDataVisualizer)\
-			F(presentation::controls::list::IDataEditorCallback)\
 			F(presentation::controls::list::IDataEditorFactory)\
 			F(presentation::controls::list::IDataEditor)\
-			F(presentation::controls::list::IDataProviderCommandExecutor)\
-			F(presentation::controls::list::IDataProvider)\
-			F(presentation::controls::list::IStructuredDataFilterCommandExecutor)\
-			F(presentation::controls::list::IStructuredDataFilter)\
-			F(presentation::controls::list::IStructuredDataSorter)\
-			F(presentation::controls::list::IStructuredColumnProvider)\
-			F(presentation::controls::list::IStructuredDataProvider)\
-			F(presentation::controls::list::DataGridContentProvider)\
+			F(presentation::controls::list::IDataGridView)\
 			F(presentation::controls::GuiVirtualDataGrid)\
-			F(presentation::controls::list::StructuredDataFilterBase)\
-			F(presentation::controls::list::StructuredDataMultipleFilter)\
-			F(presentation::controls::list::StructuredDataAndFilter)\
-			F(presentation::controls::list::StructuredDataOrFilter)\
-			F(presentation::controls::list::StructuredDataNotFilter)\
-			F(presentation::controls::list::StructuredDataMultipleSorter)\
-			F(presentation::controls::list::StructuredDataReverseSorter)\
-			F(presentation::controls::list::StructuredDataProvider)\
-			F(presentation::controls::list::StructuredColummProviderBase)\
-			F(presentation::controls::list::StructuredDataProviderBase)\
 			F(presentation::controls::list::ListViewMainColumnDataVisualizer)\
 			F(presentation::controls::list::ListViewMainColumnDataVisualizer::Factory)\
 			F(presentation::controls::list::ListViewSubColumnDataVisualizer)\
@@ -198,12 +153,13 @@ Type List
 			F(presentation::controls::GuiDatePicker)\
 			F(presentation::controls::GuiDatePicker::IStyleProvider)\
 			F(presentation::controls::GuiDateComboBox)\
-			F(presentation::controls::GuiStringGrid)\
-			F(presentation::controls::list::StringGridProvider)\
 			F(presentation::controls::GuiBindableTextList)\
 			F(presentation::controls::GuiBindableListView)\
 			F(presentation::controls::GuiBindableTreeView)\
-			F(presentation::controls::list::BindableDataColumn)\
+			F(presentation::controls::list::IDataFilterCallback)\
+			F(presentation::controls::list::IDataFilter)\
+			F(presentation::controls::list::IDataSorter)\
+			F(presentation::controls::list::DataColumn)\
 			F(presentation::controls::GuiBindableDataGrid)\
 
 			GUIREFLECTIONCONTROLS_TYPELIST(DECL_TYPE_INFO)

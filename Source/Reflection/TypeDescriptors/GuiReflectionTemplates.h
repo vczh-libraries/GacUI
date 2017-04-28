@@ -25,6 +25,11 @@ Type List
 ***********************************************************************/
 
 #define GUIREFLECTIONTEMPLATES_TYPELIST(F)\
+			F(presentation::controls::ButtonState)\
+			F(presentation::controls::ColumnSortingState)\
+			F(presentation::controls::IComboBoxCommandExecutor)\
+			F(presentation::controls::IScrollCommandExecutor)\
+			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::templates::BoolOption)\
 			F(presentation::templates::GuiTemplate)\
 			F(presentation::templates::GuiControlTemplate)\
@@ -74,9 +79,6 @@ Type List
 			F(presentation::templates::GuiListViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTreeViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTabTemplate_StyleProvider)\
-			F(presentation::templates::GuiControlTemplate_ItemStyleProvider)\
-			F(presentation::templates::GuiTextListItemTemplate_ItemStyleProvider)\
-			F(presentation::templates::GuiTreeItemTemplate_ItemStyleProvider)\
 			F(presentation::templates::GuiBindableDataVisualizer)\
 			F(presentation::templates::GuiBindableDataVisualizer::Factory)\
 			F(presentation::templates::GuiBindableDataVisualizer::DecoratedFactory)\

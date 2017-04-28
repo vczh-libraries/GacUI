@@ -36,6 +36,39 @@ Type Declaration
 				ENUM_CLASS_ITEM(Customizable)
 			END_ENUM_ITEM(BoolOption)
 
+			BEGIN_ENUM_ITEM(ButtonState)
+				ENUM_CLASS_ITEM(Normal)
+				ENUM_CLASS_ITEM(Active)
+				ENUM_CLASS_ITEM(Pressed)
+			END_ENUM_ITEM(ButtonState)
+
+			BEGIN_ENUM_ITEM(ColumnSortingState)
+				ENUM_CLASS_ITEM(NotSorted)
+				ENUM_CLASS_ITEM(Ascending)
+				ENUM_CLASS_ITEM(Descending)
+			END_ENUM_ITEM(ColumnSortingState)
+
+			BEGIN_CLASS_MEMBER(IComboBoxCommandExecutor)
+				CLASS_MEMBER_BASE(IDescriptable)
+
+				CLASS_MEMBER_METHOD(SelectItem, NO_PARAMETER)
+			END_CLASS_MEMBER(IComboBoxCommandExecutor)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IScrollCommandExecutor)
+				CLASS_MEMBER_METHOD(SmallDecrease, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SmallIncrease, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(BigDecrease, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(BigIncrease, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetTotalSize, { L"value" })
+				CLASS_MEMBER_METHOD(SetPageSize, { L"value" })
+				CLASS_MEMBER_METHOD(SetPosition, { L"value" })
+			END_INTERFACE_MEMBER(IScrollCommandExecutor)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(ITabCommandExecutor)
+				CLASS_MEMBER_BASE(IDescriptable)
+				CLASS_MEMBER_METHOD(ShowTab, { L"index" })
+			END_INTERFACE_MEMBER(ITabCommandExecutor)
+
 			BEGIN_CLASS_MEMBER(GuiTemplate)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_BASE(GuiInstanceRootObject)
@@ -347,7 +380,6 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiVirtualTextList::IStyleProvider)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate_StyleProvider*(TemplateProperty<GuiTextListTemplate>), { L"factory" })
-				CLASS_MEMBER_METHOD(CreateArgument, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiTextListTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiListViewTemplate_StyleProvider)
@@ -370,25 +402,6 @@ Type Declaration
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiTabTemplate_StyleProvider*(TemplateProperty<GuiTabTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiTabTemplate_StyleProvider)
-
-			BEGIN_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
-				CLASS_MEMBER_BASE(GuiComboBoxListControl::IItemStyleProvider)
-
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiControlTemplate_ItemStyleProvider>(TemplateProperty<GuiControlTemplate>), { L"factory" })
-			END_CLASS_MEMBER(GuiControlTemplate_ItemStyleProvider)
-
-			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate_ItemStyleProvider)
-				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
-
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiTextListItemTemplate_ItemStyleProvider>(TemplateProperty<GuiTextListItemTemplate>), { L"factory" })
-			END_CLASS_MEMBER(GuiTextListItemTemplate_ItemStyleProvider)
-
-			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate_ItemStyleProvider)
-				CLASS_MEMBER_BASE(tree::INodeItemStyleProvider)
-				CLASS_MEMBER_BASE(tree::INodeProviderCallback)
-
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiTreeItemTemplate_ItemStyleProvider>(TemplateProperty<GuiTreeItemTemplate>), { L"factory" })
-			END_CLASS_MEMBER(GuiTreeItemTemplate_ItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer>(), NO_PARAMETER)

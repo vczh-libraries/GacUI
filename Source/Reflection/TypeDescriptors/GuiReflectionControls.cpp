@@ -232,13 +232,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(ClickOnMouseUp)
 			END_CLASS_MEMBER(GuiButton)
 
-			BEGIN_ENUM_ITEM(GuiButton::ControlState)
-				ENUM_ITEM_NAMESPACE(GuiButton)
-				ENUM_NAMESPACE_ITEM(Normal)
-				ENUM_NAMESPACE_ITEM(Active)
-				ENUM_NAMESPACE_ITEM(Pressed)
-			END_ENUM_ITEM(GuiButton::ControlState)
-
 			BEGIN_INTERFACE_MEMBER(GuiButton::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
 
@@ -286,16 +279,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxPosition)
 			END_CLASS_MEMBER(GuiScroll)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiScroll::ICommandExecutor)
-				CLASS_MEMBER_METHOD(SmallDecrease, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SmallIncrease, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(BigDecrease, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(BigIncrease, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetTotalSize, {L"value"})
-				CLASS_MEMBER_METHOD(SetPageSize, {L"value"})
-				CLASS_MEMBER_METHOD(SetPosition, {L"value"})
-			END_INTERFACE_MEMBER(GuiScroll::ICommandExecutor)
-
 			BEGIN_INTERFACE_MEMBER(GuiScroll::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
 
@@ -330,11 +313,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(MovePage, {L"page" _ L"newIndex"})
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Pages)
 			END_CLASS_MEMBER(GuiTab)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiTab::ICommandExecutor)
-				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_METHOD(ShowTab, {L"index"})
-			END_INTERFACE_MEMBER(GuiTab::ICommandExecutor)
 
 			BEGIN_INTERFACE_MEMBER(GuiTab::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
@@ -645,13 +623,6 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_FAST(ColumnSortingState)
 			END_CLASS_MEMBER(GuiListViewColumnHeader)
-
-			BEGIN_ENUM_ITEM(GuiListViewColumnHeader::ColumnSortingState)
-				ENUM_ITEM_NAMESPACE(GuiListViewColumnHeader)
-				ENUM_NAMESPACE_ITEM(NotSorted)
-				ENUM_NAMESPACE_ITEM(Ascending)
-				ENUM_NAMESPACE_ITEM(Descending)
-			END_ENUM_ITEM(GuiListViewColumnHeader::ColumnSortingState)
 
 			BEGIN_INTERFACE_MEMBER(GuiListViewColumnHeader::IStyleController)
 				CLASS_MEMBER_BASE(GuiMenuButton::IStyleController)
@@ -1080,12 +1051,6 @@ Type Declaration
 
 				CLASS_MEMBER_GUIEVENT(ItemSelected)
 			END_CLASS_MEMBER(GuiComboBoxBase)
-
-			BEGIN_CLASS_MEMBER(GuiComboBoxBase::ICommandExecutor)
-				CLASS_MEMBER_BASE(IDescriptable)
-				
-				CLASS_MEMBER_METHOD(SelectItem, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiComboBoxBase::ICommandExecutor)
 
 			BEGIN_INTERFACE_MEMBER(GuiComboBoxBase::IStyleController)
 				CLASS_MEMBER_BASE(GuiMenuButton::IStyleController)
