@@ -1,4 +1,5 @@
 #include "GuiReflectionEvents.h"
+#include "GuiReflectionTemplates.h"
 #include "../../Controls/Styles/GuiWin7Styles.h"
 #include "../../Controls/Styles/GuiWin8Styles.h"
 
@@ -565,7 +566,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::IStyleProvider*), {L"styleProvider")
+				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::IStyleProvider*), { L"styleProvider" })
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
@@ -630,8 +631,6 @@ Type Declaration
 				CLASS_MEMBER_BASE(IDescriptable)
 				INTERFACE_IDENTIFIER(vl::presentation::controls::list::ListViewColumnItemArranger::IColumnItemView)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
-
 				CLASS_MEMBER_METHOD(AttachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(DetachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(GetColumnSize, {L"index"})
@@ -674,7 +673,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualListView)
 				CLASS_MEMBER_BASE(GuiListViewBase)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualListView*(GuiVirtualListView::IStyleProvider*), { L"styleProvider" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualListView*(GuiVirtualListView::IStyleProvider*, GuiListControl::IItemProvider*), { L"styleProvider" _ L"itemProvider" })
 
 				CLASS_MEMBER_PROPERTY_FAST(View)
 			END_CLASS_MEMBER(GuiVirtualListView)
@@ -784,7 +783,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetTextValue, { L"node" })
 				CLASS_MEMBER_METHOD(GetBindingValue, { L"node" })
 				CLASS_MEMBER_METHOD(RequestView, {L"identifier"})
-				CLASS_MEMBER_METHOD(ReleaseView, {L"value"})
 			END_INTERFACE_MEMBER(INodeRootProvider)
 
 			BEGIN_INTERFACE_MEMBER(INodeItemView)
@@ -795,40 +793,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CalculateNodeVisibilityIndex, {L"node"})
 			END_INTERFACE_MEMBER(INodeItemView)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(INodeItemStyleController)
-				CLASS_MEMBER_BASE(GuiListControl::IItemStyleController)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(NodeStyleProvider)
-			END_INTERFACE_MEMBER(INodeItemStyleController)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(INodeItemStyleProvider)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BindedItemStyleProvider)
-
-				CLASS_MEMBER_METHOD(BindItemStyleProvider, {L"styleProvider"})
-				CLASS_MEMBER_METHOD(AttachListControl, {L"value"})
-				CLASS_MEMBER_METHOD(DetachListControl, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(CreateItemStyle, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(DestroyItemStyle, {L"style"})
-				CLASS_MEMBER_METHOD(Install, {L"style" _ L"node" _ L"index"})
-				CLASS_MEMBER_METHOD(SetStyleIndex, {L"style" _ L"value"})
-				CLASS_MEMBER_METHOD(SetStyleSelected, {L"style" _ L"value"})
-			END_INTERFACE_MEMBER(INodeItemStyleProvider)
-
-			BEGIN_CLASS_MEMBER(NodeItemStyleProvider)
-				CLASS_MEMBER_BASE(GuiSelectableListControl::IItemStyleProvider)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<NodeItemStyleProvider>(Ptr<INodeItemStyleProvider>), {L"provider"})
-			END_CLASS_MEMBER(NodeItemStyleProvider)
-
-			BEGIN_INTERFACE_MEMBER(IMemoryNodeData)
-				CLASS_MEMBER_BASE(IDescriptable)
-			END_INTERFACE_MEMBER(IMemoryNodeData)
-
 			BEGIN_CLASS_MEMBER(MemoryNodeProvider)
 				CLASS_MEMBER_BASE(INodeProvider)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<MemoryNodeProvider>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<MemoryNodeProvider>(Ptr<IMemoryNodeData>), {L"data"})
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<MemoryNodeProvider>(Ptr<DescriptableObject>), {L"data"})
 
 				CLASS_MEMBER_PROPERTY_FAST(Data)
 
@@ -871,18 +839,15 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(NodeItemView)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(NodeRootProvider)
-				CLASS_MEMBER_PROPERTY_FAST(NodeStyleProvider)
 			END_CLASS_MEMBER(GuiVirtualTreeListControl)
 
 			BEGIN_INTERFACE_MEMBER(ITreeViewItemView)
 				INTERFACE_IDENTIFIER(vl::presentation::controls::tree::ITreeViewItemView)
 
 				CLASS_MEMBER_METHOD(GetNodeImage, {L"node"})
-				CLASS_MEMBER_METHOD(GetNodeText, {L"node"})
 			END_INTERFACE_MEMBER(ITreeViewItemView)
 
 			BEGIN_CLASS_MEMBER(TreeViewItem)
-				CLASS_MEMBER_BASE(IMemoryNodeData)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<TreeViewItem>(), NO_PARAMETER)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<TreeViewItem>(const Ptr<GuiImageData>&, const WString&), {L"image" _ L"text"})
 
@@ -925,12 +890,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
 			END_CLASS_MEMBER(GuiTreeView)
 
-			BEGIN_CLASS_MEMBER(TreeViewNodeItemStyleProvider)
-				CLASS_MEMBER_BASE(INodeItemStyleProvider)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<TreeViewNodeItemStyleProvider>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<TreeViewNodeItemStyleProvider>(Size, bool), {L"minIconSize" _ L"fitImage"})
-			END_CLASS_MEMBER(TreeViewNodeItemStyleProvider)
-
 			BEGIN_CLASS_MEMBER(GuiComboBoxBase)
 				CLASS_MEMBER_BASE(GuiMenuButton)
 				CONTROL_CONSTRUCTOR_CONTROLLER(GuiComboBoxBase)
@@ -949,9 +908,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiComboBoxBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiComboBoxListControl*(GuiComboBoxListControl::IStyleController* _ GuiSelectableListControl*), {L"styleController" _ L"containedListControl"})
 
-				CLASS_MEMBER_PROPERTY_FAST(Font)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainedListControl)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(StyleProvider)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedIndex)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectedIndexChanged)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
@@ -962,12 +920,6 @@ Type Declaration
 				
 				CLASS_MEMBER_METHOD(SetTextVisible, {L"value"})
 			END_INTERFACE_MEMBER(GuiComboBoxListControl::IStyleController)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiComboBoxListControl::IItemStyleProvider)
-				CLASS_MEMBER_METHOD(AttachComboBox, {L"value"})
-				CLASS_MEMBER_METHOD(DetachComboBox, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(CreateItemStyle, {L"item"})
-			END_INTERFACE_MEMBER(GuiComboBoxListControl::IItemStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiToolstripCommand)
 				CLASS_MEMBER_BASE(GuiComponent)
@@ -1164,209 +1116,74 @@ Type Declaration
 				CLASS_MEMBER_METHOD(InstallBackground, {L"background"})
 			END_INTERFACE_MEMBER(GuiSinglelineTextBox::IStyleProvider)
 
+			BEGIN_INTERFACE_MEMBER(IDataGridContext)
+				CLASS_MEMBER_BASE(IDescriptable)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListViewStyleProvider)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
+				CLASS_MEMBER_METHOD(RequestSaveData, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IDataGridContext)
+
 			BEGIN_INTERFACE_MEMBER(IDataVisualizerFactory)
 				CLASS_MEMBER_BASE(IDescriptable)
 
-				CLASS_MEMBER_METHOD(CreateVisualizer, {L"font" _ L"styleProvider" _ L"viewModelContext"})
+				CLASS_MEMBER_METHOD(CreateVisualizer, {L"dataGridContext"})
 			END_INTERFACE_MEMBER(IDataVisualizerFactory)
 
 			BEGIN_INTERFACE_MEMBER(IDataVisualizer)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Factory)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Template)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DecoratedDataVisualizer)
 
-				CLASS_MEMBER_METHOD(BeforeVisualizeCell, {L"dataProvider" _ L"row" _ L"column"})
+				CLASS_MEMBER_METHOD(BeforeVisualizeCell, {L"itemProvider" _ L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(SetSelected, {L"value"})
 			END_INTERFACE_MEMBER(IDataVisualizer)
-
-			BEGIN_CLASS_MEMBER(IDataEditorCallback)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_METHOD(RequestSaveData, NO_PARAMETER);
-			END_CLASS_MEMBER(IDataEditorCallback)
 
 			BEGIN_INTERFACE_MEMBER(IDataEditorFactory)
 				CLASS_MEMBER_BASE(IDescriptable)
 
-				CLASS_MEMBER_METHOD(CreateEditor, {L"callback" _ L"viewModelContext"})
+				CLASS_MEMBER_METHOD(CreateEditor, {L"dataGridContext"})
 			END_INTERFACE_MEMBER(IDataEditorFactory)
 
 			BEGIN_INTERFACE_MEMBER(IDataEditor)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Factory)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Template)
 
-				CLASS_MEMBER_METHOD(BeforeEditCell, {L"dataProvider" _ L"row" _ L"column"})
+				CLASS_MEMBER_METHOD(BeforeEditCell, {L"itemProvider" _ L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(ReinstallEditor, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDataEditor)
 
-			BEGIN_CLASS_MEMBER(IDataProviderCommandExecutor)
+			BEGIN_INTERFACE_MEMBER(IDataGridView)
 				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_METHOD(OnDataProviderColumnChanged, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(OnDataProviderItemModified, {L"start" _ L"count" _ L"newCount"})
-			END_CLASS_MEMBER(IDataProviderCommandExecutor)
-
-			BEGIN_INTERFACE_MEMBER(IDataProvider)
-				CLASS_MEMBER_BASE(IDescriptable)
-				INTERFACE_IDENTIFIER(vl::presentation::controls::list::IDataProvider)
+				INTERFACE_IDENTIFIER(vl::presentation::controls::list::IDataGridView)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SortedColumn)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RowCount)
 
-				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
-				CLASS_MEMBER_METHOD(GetColumnText, {L"column"})
-				CLASS_MEMBER_METHOD(GetColumnSize, {L"column"})
-				CLASS_MEMBER_METHOD(SetColumnSize, {L"column" _ L"value"})
-				CLASS_MEMBER_METHOD(GetColumnPopup, {L"column"})
 				CLASS_MEMBER_METHOD(IsColumnSortable, {L"column"})
 				CLASS_MEMBER_METHOD(SortByColumn, {L"column" _ L"ascending"})
 				CLASS_MEMBER_METHOD(IsSortOrderAscending, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetRowLargeImage, {L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(GetRowSmallImage, {L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(GetCellSpan, {L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(GetCellText, {L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(GetCellDataVisualizerFactory, {L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(VisualizeCell, {L"row" _ L"column" _ L"dataVisualizer"})
 				CLASS_MEMBER_METHOD(GetCellDataEditorFactory, {L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(BeforeEditCell, {L"row" _ L"column" _ L"dataEditor"})
+				CLASS_MEMBER_METHOD(EditCell, {L"row" _ L"column" _ L"dataEditor"})
 				CLASS_MEMBER_METHOD(SaveCellData, {L"row" _ L"column" _ L"dataEditor"})
-			END_INTERFACE_MEMBER(IDataProvider)
-
-			BEGIN_CLASS_MEMBER(IStructuredDataFilterCommandExecutor)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_METHOD(OnFilterChanged, NO_PARAMETER)
-			END_CLASS_MEMBER(IStructuredDataFilterCommandExecutor)
-
-			BEGIN_INTERFACE_MEMBER(IStructuredDataFilter)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
-				CLASS_MEMBER_METHOD(Filter, {L"row"})
-			END_INTERFACE_MEMBER(IStructuredDataFilter)
-
-			BEGIN_INTERFACE_MEMBER(IStructuredDataSorter)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_METHOD(Compare, {L"row1" _ L"row2"})
-			END_INTERFACE_MEMBER(IStructuredDataSorter)
-
-			BEGIN_INTERFACE_MEMBER(IStructuredColumnProvider)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Text)
-				CLASS_MEMBER_PROPERTY_FAST(Size)
-				CLASS_MEMBER_PROPERTY_FAST(SortingState)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Popup)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(InherentFilter)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(InherentSorter)
-				CLASS_MEMBER_METHOD(GetCellText, {L"row"})
-				CLASS_MEMBER_METHOD(GetCellDataVisualizerFactory, {L"row"})
-				CLASS_MEMBER_METHOD(VisualizeCell, {L"row" _ L"dataVisualizer"})
-				CLASS_MEMBER_METHOD(GetCellDataEditorFactory, {L"row"})
-				CLASS_MEMBER_METHOD(BeforeEditCell, {L"row" _ L"dataEditor"})
-				CLASS_MEMBER_METHOD(SaveCellData, {L"row" _ L"dataEditor"})
-			END_INTERFACE_MEMBER(IStructuredColumnProvider)
-
-			BEGIN_INTERFACE_MEMBER(IStructuredDataProvider)
-				CLASS_MEMBER_BASE(IDescriptable)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ColumnCount)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RowCount)
-
-				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
-				CLASS_MEMBER_METHOD(GetColumn, {L"column"})
-				CLASS_MEMBER_METHOD(GetRowLargeImage, {L"row"})
-				CLASS_MEMBER_METHOD(GetRowSmallImage, {L"row"})
-			END_INTERFACE_MEMBER(IStructuredDataProvider)
-
-			BEGIN_CLASS_MEMBER(DataGridContentProvider)
-				CLASS_MEMBER_BASE(ListViewItemStyleProvider::IListViewItemContentProvider)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataGridContentProvider>(), NO_PARAMETER)
-			END_CLASS_MEMBER(DataGridContentProvider)
+			END_INTERFACE_MEMBER(IDataGridView)
 
 			BEGIN_CLASS_MEMBER(GuiVirtualDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualDataGrid*(GuiVirtualListView::IStyleProvider* _ list::IDataProvider*), {L"styleProvider" _ L"dataProvider"})
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualDataGrid*(GuiVirtualListView::IStyleProvider* _ list::IStructuredDataProvider*), {L"styleProvider" _ L"dataProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualDataGrid*(GuiVirtualListView::IStyleProvider* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"itemProvider"})
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedCell)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataProvider)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(StructuredDataProvider)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 			END_CLASS_MEMBER(GuiVirtualDataGrid)
-
-			BEGIN_CLASS_MEMBER(StructuredDataFilterBase)
-				CLASS_MEMBER_BASE(IStructuredDataFilter)
-			END_CLASS_MEMBER(StructuredDataFilterBase)
-
-			BEGIN_CLASS_MEMBER(StructuredDataMultipleFilter)
-				CLASS_MEMBER_BASE(StructuredDataFilterBase)
-
-				CLASS_MEMBER_METHOD(AddSubFilter, {L"value"})
-				CLASS_MEMBER_METHOD(RemoveSubFilter, {L"value"})
-			END_CLASS_MEMBER(StructuredDataMultipleFilter)
-
-			BEGIN_CLASS_MEMBER(StructuredDataAndFilter)
-				CLASS_MEMBER_BASE(StructuredDataMultipleFilter)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<StructuredDataAndFilter>(), NO_PARAMETER)
-			END_CLASS_MEMBER(StructuredDataAndFilter)
-
-			BEGIN_CLASS_MEMBER(StructuredDataOrFilter)
-				CLASS_MEMBER_BASE(StructuredDataMultipleFilter)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<StructuredDataOrFilter>(), NO_PARAMETER)
-			END_CLASS_MEMBER(StructuredDataOrFilter)
-
-			BEGIN_CLASS_MEMBER(StructuredDataNotFilter)
-				CLASS_MEMBER_BASE(StructuredDataFilterBase)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<StructuredDataNotFilter>(), NO_PARAMETER)
-
-				CLASS_MEMBER_METHOD(SetSubFilter, {L"value"})
-			END_CLASS_MEMBER(StructuredDataNotFilter)
-
-			BEGIN_CLASS_MEMBER(StructuredDataMultipleSorter)
-				CLASS_MEMBER_BASE(IStructuredDataSorter)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<StructuredDataMultipleSorter>(), NO_PARAMETER)
-
-				CLASS_MEMBER_METHOD(SetLeftSorter, {L"value"})
-				CLASS_MEMBER_METHOD(SetRightSorter, {L"value"})
-			END_CLASS_MEMBER(StructuredDataMultipleSorter)
-
-			BEGIN_CLASS_MEMBER(StructuredDataReverseSorter)
-				CLASS_MEMBER_BASE(IStructuredDataSorter)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<StructuredDataReverseSorter>(), NO_PARAMETER)
-				
-				CLASS_MEMBER_METHOD(SetSubSorter, {L"value"})
-			END_CLASS_MEMBER(StructuredDataReverseSorter)
-
-			BEGIN_CLASS_MEMBER(StructuredDataProvider)
-				CLASS_MEMBER_BASE(IDataProvider)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(StructuredDataProvider)
-				CLASS_MEMBER_PROPERTY_FAST(AdditionalFilter)
-			END_CLASS_MEMBER(StructuredDataProvider)
-
-			BEGIN_CLASS_MEMBER(StructuredColummProviderBase)
-				CLASS_MEMBER_BASE(IStructuredColumnProvider)
-
-				CLASS_MEMBER_PROPERTY_FAST(Text)
-				CLASS_MEMBER_PROPERTY_FAST(Popup)
-				CLASS_MEMBER_PROPERTY_FAST(InherentFilter)
-				CLASS_MEMBER_PROPERTY_FAST(InherentSorter)
-				CLASS_MEMBER_PROPERTY_FAST(VisualizerFactory)
-				CLASS_MEMBER_PROPERTY_FAST(EditorFactory)
-			END_CLASS_MEMBER(StructuredColummProviderBase)
-
-			BEGIN_CLASS_MEMBER(StructuredDataProviderBase)
-				CLASS_MEMBER_BASE(IStructuredDataProvider)
-			END_CLASS_MEMBER(StructuredDataProviderBase)
 
 			BEGIN_CLASS_MEMBER(ListViewMainColumnDataVisualizer)
 				CLASS_MEMBER_BASE(IDataVisualizer)
@@ -1498,35 +1315,9 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DatePicker)
 			END_CLASS_MEMBER(GuiDateComboBox)
 
-			BEGIN_CLASS_MEMBER(GuiStringGrid)
-				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
-				CONTROL_CONSTRUCTOR_PROVIDER(GuiStringGrid)
-
-				CLASS_MEMBER_EXTERNALMETHOD(GetGrids, NO_PARAMETER, StringGridProvider*(GuiStringGrid::*)(), vl::reflection::description::GuiStringGrid_GetGrids)
-				CLASS_MEMBER_PROPERTY_READONLY(Grids, GetGrids)
-			END_CLASS_MEMBER(GuiStringGrid)
-
-			BEGIN_CLASS_MEMBER(StringGridProvider)
-				CLASS_MEMBER_METHOD(InsertRow, {L"row"})
-				CLASS_MEMBER_METHOD(AppendRow, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(MoveRow, {L"source" _ L"target"})
-				CLASS_MEMBER_METHOD(RemoveRow, {L"row"})
-				CLASS_MEMBER_METHOD(ClearRows, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetGridString, {L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(SetGridString, {L"row" _ L"column" _ L"value"})
-
-				CLASS_MEMBER_METHOD(InsertColumn, {L"column" _ L"text" _ L"size"})
-				CLASS_MEMBER_METHOD(AppendColumn, {L"text" _ L"size"})
-				CLASS_MEMBER_METHOD(MoveColumn, {L"source" _ L"target"})
-				CLASS_MEMBER_METHOD(RemoveColumn, {L"column"})
-				CLASS_MEMBER_METHOD(ClearColumns, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetColumnText, {L"column"})
-				CLASS_MEMBER_METHOD(SetColumnText, {L"column" _ L"value"})
-			END_CLASS_MEMBER(StringGridProvider)
-
 			BEGIN_CLASS_MEMBER(GuiBindableTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*, list::TextItemStyleProvider::IBulletFactory*), {L"styleProvider" _ L"bulletFactory"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*), {L"styleProvider"})
 
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
@@ -1557,26 +1348,92 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
 			END_CLASS_MEMBER(GuiBindableTreeView)
 
-			BEGIN_CLASS_MEMBER(BindableDataColumn)
-				CLASS_MEMBER_BASE(StructuredColummProviderBase)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<BindableDataColumn>(), NO_PARAMETER)
+			BEGIN_INTERFACE_MEMBER(IDataFilterCallback)
+				CLASS_MEMBER_BASE(IDescriptable)
 
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
+				CLASS_MEMBER_METHOD(OnFilterChanged, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IDataFilterCallback)
+
+			BEGIN_INTERFACE_MEMBER(IDataFilter)
+				CLASS_MEMBER_BASE(IDescriptable)
+
+				CLASS_MEMBER_METHOD(SetCallback, { L"value" })
+				CLASS_MEMBER_METHOD(Filter, { L"row" })
+			END_INTERFACE_MEMBER(IDataFilter)
+
+			BEGIN_INTERFACE_MEMBER(IDataSorter)
+				CLASS_MEMBER_BASE(IDescriptable)
+
+				CLASS_MEMBER_METHOD(Compare, { L"row1" _ L"row2" })
+			END_INTERFACE_MEMBER(IDataSorter)
+
+			BEGIN_CLASS_MEMBER(DataFilterBase)
+				CLASS_MEMBER_BASE(IDataFilter)
+			END_CLASS_MEMBER(DataFilterBase)
+
+			BEGIN_CLASS_MEMBER(DataMultipleFilter)
+				CLASS_MEMBER_BASE(DataFilterBase)
+
+				CLASS_MEMBER_METHOD(AddSubFilter, {L"value"})
+				CLASS_MEMBER_METHOD(RemoveSubFilter, {L"value"})
+			END_CLASS_MEMBER(DataMultipleFilter)
+
+			BEGIN_CLASS_MEMBER(DataAndFilter)
+				CLASS_MEMBER_BASE(DataMultipleFilter)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataAndFilter>(), NO_PARAMETER)
+			END_CLASS_MEMBER(DataAndFilter)
+
+			BEGIN_CLASS_MEMBER(DataOrFilter)
+				CLASS_MEMBER_BASE(DataMultipleFilter)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataOrFilter>(), NO_PARAMETER)
+			END_CLASS_MEMBER(DataOrFilter)
+
+			BEGIN_CLASS_MEMBER(DataNotFilter)
+				CLASS_MEMBER_BASE(DataFilterBase)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataNotFilter>(), NO_PARAMETER)
+
+				CLASS_MEMBER_METHOD(SetSubFilter, {L"value"})
+			END_CLASS_MEMBER(DataNotFilter)
+
+			BEGIN_CLASS_MEMBER(DataMultipleSorter)
+				CLASS_MEMBER_BASE(IDataSorter)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataMultipleSorter>(), NO_PARAMETER)
+
+				CLASS_MEMBER_METHOD(SetLeftSorter, {L"value"})
+				CLASS_MEMBER_METHOD(SetRightSorter, {L"value"})
+			END_CLASS_MEMBER(DataMultipleSorter)
+
+			BEGIN_CLASS_MEMBER(DataReverseSorter)
+				CLASS_MEMBER_BASE(DataMultipleSorter)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataReverseSorter>(), NO_PARAMETER)
+				
+				CLASS_MEMBER_METHOD(SetSubSorter, {L"value"})
+			END_CLASS_MEMBER(DataReverseSorter)
+
+			BEGIN_CLASS_MEMBER(DataColumn)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataColumn>(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_FAST(Text)
+				CLASS_MEMBER_PROPERTY_FAST(Size)
+				CLASS_MEMBER_PROPERTY_FAST(Popup)
+				CLASS_MEMBER_PROPERTY_FAST(InherentFilter)
+				CLASS_MEMBER_PROPERTY_FAST(InherentSorter)
+				CLASS_MEMBER_PROPERTY_FAST(VisualizerFactory)
+				CLASS_MEMBER_PROPERTY_FAST(EditorFactory)
+
+				CLASS_MEMBER_METHOD(GetCellText, { L"row" })
 				CLASS_MEMBER_METHOD(GetCellValue, { L"row" })
 				CLASS_MEMBER_METHOD(SetCellValue, { L"row" _ L"value" })
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ValueProperty)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
-			END_CLASS_MEMBER(BindableDataColumn)
+			END_CLASS_MEMBER(DataColumn)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
 				CLASS_MEMBER_CONSTRUCTOR(GuiBindableDataGrid*(GuiBindableDataGrid::IStyleProvider*, const Value&), {L"styleProvider" _ L"viewModelContext"})
-				
-				CLASS_MEMBER_METHOD(InsertBindableColumn, { L"index" _ L"column" })
-				CLASS_MEMBER_METHOD(AddBindableColumn, { L"column" })
-				CLASS_MEMBER_METHOD(RemoveBindableColumn, { L"column" })
-				CLASS_MEMBER_METHOD(ClearBindableColumns, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetBindableColumn, { L"index" })
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedRowValue, SelectedCellChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedCellValue, SelectedCellChanged)

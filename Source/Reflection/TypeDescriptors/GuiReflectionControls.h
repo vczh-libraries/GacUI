@@ -160,6 +160,13 @@ Type List
 			F(presentation::controls::list::IDataFilterCallback)\
 			F(presentation::controls::list::IDataFilter)\
 			F(presentation::controls::list::IDataSorter)\
+			F(presentation::controls::list::DataFilterBase)\
+			F(presentation::controls::list::DataMultipleFilter)\
+			F(presentation::controls::list::DataAndFilter)\
+			F(presentation::controls::list::DataOrFilter)\
+			F(presentation::controls::list::DataNotFilter)\
+			F(presentation::controls::list::DataMultipleSorter)\
+			F(presentation::controls::list::DataReverseSorter)\
 			F(presentation::controls::list::DataColumn)\
 			F(presentation::controls::GuiBindableDataGrid)\
 
