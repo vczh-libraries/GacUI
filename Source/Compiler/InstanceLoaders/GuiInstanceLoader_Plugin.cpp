@@ -228,7 +228,6 @@ GuiPredefinedInstanceLoadersPlugin
 				block->statements.Add(stat);
 			}
 
-			extern void LoadTabControls(IGuiInstanceLoaderManager* manager);
 			extern void LoadToolstripControls(IGuiInstanceLoaderManager* manager);
 			extern void LoadListControls(IGuiInstanceLoaderManager* manager);
 			extern void LoadDocumentControls(IGuiInstanceLoaderManager* manager);
@@ -321,7 +320,6 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_VIRTUAL_CONTROL_F	(VTracker,					GuiScroll,				CreateVTrackerStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
 					ADD_VIRTUAL_CONTROL_F	(ProgressBar,				GuiScroll,				CreateProgressBarStyle,												GuiScrollTemplate,				InitializeTrackerProgressBar);
 
-					LoadTabControls(manager);
 					LoadToolstripControls(manager);
 					LoadListControls(manager);
 					LoadDocumentControls(manager);

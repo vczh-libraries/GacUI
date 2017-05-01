@@ -1,0 +1,14 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::TextListTabPage">
+  <TabPage Text="TextList">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+      <att.Rows>
+        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Absolute absolute:100</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Columns>
+    </Table>
+  </TabPage>
+</Instance>

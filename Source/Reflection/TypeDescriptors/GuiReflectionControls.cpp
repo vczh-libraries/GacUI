@@ -291,8 +291,8 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTabPage)
 				CLASS_MEMBER_BASE(GuiCustomControl)
-				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTab)
-				CONTROL_CONSTRUCTOR_DEFAULT(GuiTab, vl::presentation::theme::g::NewTabPage)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTabPage)
+				CONTROL_CONSTRUCTOR_DEFAULT(GuiTabPage, vl::presentation::theme::g::NewTabPage)
 			END_CLASS_MEMBER(GuiTabPage)
 
 			BEGIN_CLASS_MEMBER(GuiTab)
@@ -455,7 +455,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(DetachCallback, {L"value"})
 				CLASS_MEMBER_METHOD(PushEditing, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(PopEditing, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(PopEditing, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(IsEditing, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Count, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetTextValue, { L"itemIndex" })
 				CLASS_MEMBER_METHOD(GetBindingValue, { L"itemIndex" })

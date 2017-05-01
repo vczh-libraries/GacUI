@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\FullControlTest">
+      <UniqueIdentifier>{48b9bcd2-72bb-4be9-87e4-09623d8a9fb9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Resources\UI2_Properties.xml">
@@ -44,6 +47,12 @@
     </Xml>
     <Xml Include="Resources\UI10_MultipleWindows.xml">
       <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\Resource.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\TextListTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

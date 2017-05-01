@@ -43,6 +43,7 @@ GuiTabPage
 
 			GuiTabPage::~GuiTabPage()
 			{
+				FinalizeAggregation();
 			}
 
 /***********************************************************************
@@ -124,10 +125,6 @@ GuiTab
 
 			GuiTab::~GuiTab()
 			{
-				for (vint i = 0; i < tabPages.Count(); i++)
-				{
-					SafeDeleteControl(tabPages[i]);
-				}
 			}
 
 			IDescriptable* GuiTab::QueryService(const WString& identifier)
@@ -142,7 +139,7 @@ GuiTab
 				}
 			}
 
-			const GuiTabPageList& GuiTab::GetPages()
+			GuiTabPageList& GuiTab::GetPages()
 			{
 				return tabPages;
 			}

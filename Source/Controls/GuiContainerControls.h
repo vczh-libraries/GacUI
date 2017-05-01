@@ -25,7 +25,7 @@ Tab Control
 			class GuiTab;
 
 			/// <summary>Represnets a tab page control.</summary>
-			class GuiTabPage : public GuiCustomControl, public Description<GuiTabPage>
+			class GuiTabPage : public GuiCustomControl, public AggregatableDescription<GuiTabPage>
 			{
 				friend class GuiTabPageList;
 				friend class GuiTab;
@@ -120,7 +120,7 @@ Tab Control
 
 				/// <summary>Get all pages.</summary>
 				/// <returns>All pages.</returns>
-				const GuiTabPageList&							GetPages();
+				GuiTabPageList&									GetPages();
 
 				/// <summary>Get the selected page.</summary>
 				/// <returns>The selected page.</returns>

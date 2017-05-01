@@ -106,7 +106,7 @@ void GuiMain_Resource()
 	}
 	{
 		List<GuiResourceError> errors;
-		auto resource = GuiResource::LoadFromXml(LR"(Resources/UI7_ColorComboBox.xml)", errors);
+		auto resource = GuiResource::LoadFromXml(LR"(Resources/FullControlTest/Resource.xml)", errors);
 		resource->Precompile(nullptr, errors);
 
 		{
@@ -178,7 +178,7 @@ void GuiMain_Resource()
 		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::InstanceClass);
 	}
 
-	// UI1 / UI3 / UI4 / UI5 / UI7 / UI8 / UI9
+	// FullControlTest / UI1 / UI3 / UI4 / UI5 / UI7 / UI8 / UI9
 	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
 
 	// UI2
