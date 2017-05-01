@@ -205,6 +205,9 @@ namespace vl
 				/// <summary>Create a tab.</summary>
 				/// <returns>The created control.</returns>
 				extern controls::GuiTab*						NewTab();
+				/// <summary>Create a tab page.</summary>
+				/// <returns>The created control.</returns>
+				extern controls::GuiTabPage*					NewTabPage();
 				/// <summary>Create a combo box.</summary>
 				/// <returns>The created control.</returns>
 				/// <param name="containedListControl">A list control to put in the popup control to show all items.</param>

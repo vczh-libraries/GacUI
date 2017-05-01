@@ -361,19 +361,6 @@ Win7TabStyle
 				UpdateHeaderLayout();
 			}
 
-			void Win7TabStyle::MoveTab(vint oldIndex, vint newIndex)
-			{
-				GuiStackItemComposition* item=tabHeaderComposition->GetStackItems().Get(oldIndex);
-				tabHeaderComposition->RemoveChild(item);
-				tabHeaderComposition->InsertStackItem(newIndex, item);
-
-				GuiSelectableButton* button=headerButtons[oldIndex];
-				headerButtons.RemoveAt(oldIndex);
-				headerButtons.Insert(newIndex, button);
-				
-				UpdateHeaderLayout();
-			}
-
 			void Win7TabStyle::SetSelectedTab(vint index)
 			{
 				headerButtons[index]->SetSelected(true);
@@ -381,11 +368,10 @@ Win7TabStyle
 				UpdateHeaderLayout();
 			}
 
-			void Win7TabStyle::SetTabAlt(vint index, const WString& value, compositions::IGuiAltActionHost* host)
+			void Win7TabStyle::SetTabAlt(vint index, const WString& value)
 			{
 				auto button = headerButtons[index];
 				button->SetAlt(value);
-				button->SetActivatingAltHost(host);
 			}
 
 			compositions::IGuiAltAction* Win7TabStyle::GetTabAltAction(vint index)

@@ -30,11 +30,6 @@ GuiInstanceLoader_List.cpp
 		ctor: ViewModelContext
 	tree::TreeNode
 		Text, Image, Tag
-GuiInstanceLoader_Tab.cpp
-	GuiTab
-		default: GuiTabPage*
-	GuiTabPage
-		default: GuiControl*, GuiGraphicsComposition*
 GuiInstanceLoader_Templates.cpp
 	GuiTemplate
 		ctor: \w+(ItemTemplate<T>)
@@ -297,6 +292,8 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,		CreateCustomControlStyle,											GuiControlTemplate											);
 					ADD_TEMPLATE_CONTROL	(							GuiLabel,				CreateLabelStyle,													GuiLabelTemplate											);
 					ADD_TEMPLATE_CONTROL	(							GuiButton,				CreateButtonStyle,													GuiButtonTemplate											);
+					ADD_TEMPLATE_CONTROL	(							GuiTabPage,				CreateCustomControlStyle,											GuiControlTemplate											);
+					ADD_TEMPLATE_CONTROL	(							GuiTab,					CreateTabStyle,														GuiTabTemplate												);
 					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		CreateScrollContainerStyle,											GuiScrollViewTemplate										);
 					ADD_TEMPLATE_CONTROL	(							GuiWindow,				CreateWindowStyle,													GuiWindowTemplate											);
 					ADD_TEMPLATE_CONTROL	(							GuiTextList,			CreateTextListStyle,												GuiTextListTemplate											);

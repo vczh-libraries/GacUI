@@ -50,6 +50,11 @@ namespace vl
 					return new controls::GuiTab(GetCurrentTheme()->CreateTabStyle());
 				}
 
+				controls::GuiTabPage* NewTabPage()
+				{
+					return new controls::GuiTabPage(GetCurrentTheme()->CreateCustomControlStyle());
+				}
+
 				controls::GuiComboBoxListControl* NewComboBox(controls::GuiSelectableListControl* containedListControl)
 				{
 					return new controls::GuiComboBoxListControl(GetCurrentTheme()->CreateComboBoxStyle(), containedListControl);

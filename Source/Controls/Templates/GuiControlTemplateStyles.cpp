@@ -895,19 +895,6 @@ GuiTabTemplate_StyleProvider
 				UpdateHeaderLayout();
 			}
 
-			void GuiTabTemplate_StyleProvider::MoveTab(vint oldIndex, vint newIndex)
-			{
-				GuiStackItemComposition* item=tabHeaderComposition->GetStackItems().Get(oldIndex);
-				tabHeaderComposition->RemoveChild(item);
-				tabHeaderComposition->InsertStackItem(newIndex, item);
-
-				GuiSelectableButton* button=headerButtons[oldIndex];
-				headerButtons.RemoveAt(oldIndex);
-				headerButtons.Insert(newIndex, button);
-				
-				UpdateHeaderLayout();
-			}
-
 			void GuiTabTemplate_StyleProvider::SetSelectedTab(vint index)
 			{
 				headerButtons[index]->SetSelected(true);
@@ -915,11 +902,10 @@ GuiTabTemplate_StyleProvider
 				UpdateHeaderLayout();
 			}
 
-			void GuiTabTemplate_StyleProvider::SetTabAlt(vint index, const WString& value, compositions::IGuiAltActionHost* host)
+			void GuiTabTemplate_StyleProvider::SetTabAlt(vint index, const WString& value)
 			{
 				auto button = headerButtons[index];
 				button->SetAlt(value);
-				button->SetActivatingAltHost(host);
 			}
 
 			compositions::IGuiAltAction* GuiTabTemplate_StyleProvider::GetTabAltAction(vint index)

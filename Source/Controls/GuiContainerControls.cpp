@@ -8,136 +8,91 @@ namespace vl
 
 		namespace controls
 		{
+
 /***********************************************************************
 GuiTabPage
 ***********************************************************************/
 
-			bool GuiTabPage::AssociateTab(GuiTab* _owner)
+			bool GuiTabPage::IsAltAvailable()
 			{
-				if(owner)
-				{
-					return false;
-				}
-				else
-				{
-					owner=_owner;
-					PageInstalled.Execute(containerControl->GetNotifyEventArguments());
-					return true;
-				}
+				return false;
 			}
 
-			bool GuiTabPage::DeassociateTab(GuiTab* _owner)
+			void GuiTabPage::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				if(owner && owner==_owner)
+				if (tab)
 				{
-					PageUninstalled.Execute(containerControl->GetNotifyEventArguments());
-					owner=0;
-					return true;
-				}
-				else
-				{
-					return false;
+					tab->styleController->SetTabText(tab->tabPages.IndexOf(this), GetText());
 				}
 			}
 
-			compositions::GuiGraphicsComposition* GuiTabPage::GetAltComposition()
+			void GuiTabPage::OnAltChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				return containerControl->GetContainerComposition();
+				if (tab)
+				{
+					tab->styleController->SetTabAlt(tab->tabPages.IndexOf(this), GetAlt());
+				}
 			}
 
-			compositions::IGuiAltActionHost* GuiTabPage::GetPreviousAltHost()
+			GuiTabPage::GuiTabPage(IStyleController* _styleController)
+				:GuiCustomControl(_styleController)
 			{
-				return previousAltHost;
-			}
-
-			void GuiTabPage::OnActivatedAltHost(compositions::IGuiAltActionHost* previousHost)
-			{
-				previousAltHost = previousHost;
-			}
-
-			void GuiTabPage::OnDeactivatedAltHost()
-			{
-				previousAltHost = 0;
-			}
-
-			void GuiTabPage::CollectAltActions(collections::Group<WString, compositions::IGuiAltAction*>& actions)
-			{
-				IGuiAltActionHost::CollectAltActionsFromControl(containerControl, actions);
-			}
-
-			GuiTabPage::GuiTabPage()
-				:containerControl(0)
-				,owner(0)
-				,previousAltHost(0)
-			{
-				containerControl = new GuiControl(new GuiControl::EmptyStyleController());
-				containerControl->GetBoundsComposition()->SetAlignmentToParent(Margin(2, 2, 2, 2));
-				
-				AltChanged.SetAssociatedComposition(containerControl->GetBoundsComposition());
-				TextChanged.SetAssociatedComposition(containerControl->GetBoundsComposition());
-				PageInstalled.SetAssociatedComposition(containerControl->GetBoundsComposition());
-				PageUninstalled.SetAssociatedComposition(containerControl->GetBoundsComposition());
+				TextChanged.AttachMethod(this, &GuiTabPage::OnTextChanged);
+				AltChanged.AttachMethod(this, &GuiTabPage::OnAltChanged);
 			}
 
 			GuiTabPage::~GuiTabPage()
 			{
-				if (!containerControl->GetParent())
+			}
+
+/***********************************************************************
+GuiTabPageList
+***********************************************************************/
+
+			bool GuiTabPageList::QueryInsert(vint index, GuiTabPage* const& value)
+			{
+				return !items.Contains(value) && value->tab == nullptr;
+			}
+
+			void GuiTabPageList::AfterInsert(vint index, GuiTabPage* const& value)
+			{
+				tab->styleController->InsertTab(index);
+				tab->styleController->SetTabText(index, value->GetText());
+				tab->styleController->SetTabAlt(index, value->GetAlt());
+
+				if (!tab->selectedPage)
 				{
-					delete containerControl;
+					tab->SetSelectedPage(value);
+				}
+
+				value->tab = tab;
+				tab->GetContainerComposition()->AddChild(value->GetBoundsComposition());
+				value->GetContainerComposition()->SetVisible(value == tab->selectedPage);
+			}
+
+			void GuiTabPageList::BeforeRemove(vint index, GuiTabPage* const& value)
+			{
+				tab->styleController->RemoveTab(index);
+				tab->GetContainerComposition()->RemoveChild(value->GetBoundsComposition());
+				value->tab = nullptr;
+
+				if (items.Count() == 0)
+				{
+					tab->SetSelectedPage(nullptr);
+				}
+				else if (tab->selectedPage == value)
+				{
+					tab->SetSelectedPage(items[0]);
 				}
 			}
 
-			compositions::GuiGraphicsComposition* GuiTabPage::GetContainerComposition()
+			GuiTabPageList::GuiTabPageList(GuiTab* _tab)
+				:tab(_tab)
 			{
-				return containerControl->GetContainerComposition();
 			}
 
-			GuiTab* GuiTabPage::GetOwnerTab()
+			GuiTabPageList::~GuiTabPageList()
 			{
-				return owner;
-			}
-
-			const WString& GuiTabPage::GetAlt()
-			{
-				return alt;
-			}
-
-			bool GuiTabPage::SetAlt(const WString& value)
-			{
-				if (!IGuiAltAction::IsLegalAlt(value)) return false;
-				if(owner)
-				{
-					owner->styleController->SetTabAlt(owner->tabPages.IndexOf(this), text, this);
-				}
-				if (alt != value)
-				{
-					alt = value;
-					AltChanged.Execute(containerControl->GetNotifyEventArguments());
-				}
-				return true;
-			}
-
-			const WString& GuiTabPage::GetText()
-			{
-				return text;
-			}
-
-			void GuiTabPage::SetText(const WString& value)
-			{
-				if(text!=value)
-				{
-					text=value;
-					if(owner)
-					{
-						owner->styleController->SetTabText(owner->tabPages.IndexOf(this), text);
-					}
-					TextChanged.Execute(containerControl->GetNotifyEventArguments());
-				}
-			}
-
-			bool GuiTabPage::GetSelected()
-			{
-				return owner->GetSelectedPage()==this;
 			}
 
 /***********************************************************************
@@ -158,30 +113,20 @@ GuiTab
 				tab->SetSelectedPage(tab->GetPages().Get(index));
 			}
 
-			vint GuiTab::GetAltActionCount()
-			{
-				return tabPages.Count();
-			}
-
-			compositions::IGuiAltAction* GuiTab::GetAltAction(vint index)
-			{
-				return styleController->GetTabAltAction(index);
-			}
-
 			GuiTab::GuiTab(IStyleController* _styleController)
 				:GuiControl(_styleController)
-				,styleController(_styleController)
-				,selectedPage(0)
+				, styleController(_styleController)
+				, tabPages(this)
 			{
-				commandExecutor=new CommandExecutor(this);
+				commandExecutor = new CommandExecutor(this);
 				styleController->SetCommandExecutor(commandExecutor.Obj());
 			}
 
 			GuiTab::~GuiTab()
 			{
-				for(vint i=0;i<tabPages.Count();i++)
+				for (vint i = 0; i < tabPages.Count(); i++)
 				{
-					delete tabPages[i];
+					SafeDeleteControl(tabPages[i]);
 				}
 			}
 
@@ -197,90 +142,7 @@ GuiTab
 				}
 			}
 
-			GuiTabPage* GuiTab::CreatePage(vint index)
-			{
-				GuiTabPage* page=new GuiTabPage();
-				if(CreatePage(page, index))
-				{
-					return page;
-				}
-				else
-				{
-					delete page;
-					return 0;
-				}
-			}
-
-			bool GuiTab::CreatePage(GuiTabPage* page, vint index)
-			{
-				if(index>=0 && index>=tabPages.Count())
-				{
-					index=tabPages.Count()-1;
-				}
-				else if(index<-1)
-				{
-					index=-1;
-				}
-
-				if(page->AssociateTab(this))
-				{
-					index=index==-1?tabPages.Add(page):tabPages.Insert(index, page);
-					GetContainerComposition()->AddChild(page->GetContainerComposition());
-					styleController->InsertTab(index);
-					styleController->SetTabText(index, page->GetText());
-					styleController->SetTabAlt(index, page->GetAlt(), page);
-				
-					if(!selectedPage)
-					{
-						SetSelectedPage(page);
-					}
-					page->GetContainerComposition()->SetVisible(page==selectedPage);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			bool GuiTab::RemovePage(GuiTabPage* page)
-			{
-				if(page->GetOwnerTab()==this && page->DeassociateTab(this))
-				{
-					vint index=tabPages.IndexOf(page);
-					styleController->RemoveTab(index);
-					GetContainerComposition()->RemoveChild(page->GetContainerComposition());
-					tabPages.RemoveAt(index);
-					if(tabPages.Count()==0)
-					{
-						SetSelectedPage(0);
-						return 0;
-					}
-					else if(selectedPage==page)
-					{
-						SetSelectedPage(tabPages[0]);
-					}
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			bool GuiTab::MovePage(GuiTabPage* page, vint newIndex)
-			{
-				if(!page) return false;
-				vint index=tabPages.IndexOf(page);
-				if(index==-1) return false;
-				tabPages.RemoveAt(index);
-				tabPages.Insert(newIndex, page);
-				styleController->MoveTab(index, newIndex);
-				styleController->SetSelectedTab(tabPages.IndexOf(selectedPage));
-				return true;
-			}
-
-			const collections::List<GuiTabPage*>& GuiTab::GetPages()
+			const GuiTabPageList& GuiTab::GetPages()
 			{
 				return tabPages;
 			}
@@ -292,23 +154,23 @@ GuiTab
 
 			bool GuiTab::SetSelectedPage(GuiTabPage* value)
 			{
-				if(!value)
+				if (!value)
 				{
-					if(tabPages.Count()==0)
+					if (tabPages.Count() == 0)
 					{
-						selectedPage=0;
+						selectedPage = nullptr;
 					}
 				}
-				else if(value->GetOwnerTab()==this)
+				else if (value->tab == this)
 				{
-					if(selectedPage!=value)
+					if (selectedPage != value)
 					{
-						selectedPage=value;
-						for(vint i=0;i<tabPages.Count();i++)
+						selectedPage = value;
+						for (vint i = 0; i < tabPages.Count(); i++)
 						{
-							bool selected=tabPages[i]==value;
+							bool selected = tabPages[i] == value;
 							tabPages[i]->GetContainerComposition()->SetVisible(selected);
-							if(selected)
+							if (selected)
 							{
 								styleController->SetSelectedTab(i);
 							}
@@ -316,7 +178,7 @@ GuiTab
 						SelectedPageChanged.Execute(GetNotifyEventArguments());
 					}
 				}
-				return selectedPage==value;
+				return selectedPage == value;
 			}
 
 /***********************************************************************

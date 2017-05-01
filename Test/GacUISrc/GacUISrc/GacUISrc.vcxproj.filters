@@ -417,9 +417,6 @@
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Plugin.cpp">
       <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Tab.cpp">
-      <Filter>GacUI\Compiler\InstanceLoaders</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Compiler\InstanceLoaders\GuiInstanceLoader_Toolstrip.cpp">
       <Filter>GacUI\Compiler\InstanceLoaders</Filter>
     </ClCompile>

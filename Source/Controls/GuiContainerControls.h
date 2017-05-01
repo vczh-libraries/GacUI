@@ -21,69 +21,45 @@ namespace vl
 Tab Control
 ***********************************************************************/
 
+			class GuiTabPageList;
 			class GuiTab;
 
-			/// <summary>Represents a page of a <see cref="GuiTab"/>. A tab page is not a control.</summary>
-			class GuiTabPage : public Object, protected compositions::IGuiAltActionHost, public Description<GuiTabPage>
+			/// <summary>Represnets a tab page control.</summary>
+			class GuiTabPage : public GuiCustomControl, public Description<GuiTabPage>
 			{
+				friend class GuiTabPageList;
 				friend class GuiTab;
-				friend class Ptr<GuiTabPage>;
 			protected:
-				GuiControl*										containerControl;
-				GuiTab*											owner;
-				WString											alt;
-				WString											text;
-				compositions::IGuiAltActionHost*				previousAltHost;
+				GuiTab*											tab = nullptr;
 
-				bool											AssociateTab(GuiTab* _owner);
-				bool											DeassociateTab(GuiTab* _owner);
-				compositions::GuiGraphicsComposition*			GetAltComposition()override;
-				compositions::IGuiAltActionHost*				GetPreviousAltHost()override;
-				void											OnActivatedAltHost(compositions::IGuiAltActionHost* previousHost)override;
-				void											OnDeactivatedAltHost()override;
-				void											CollectAltActions(collections::Group<WString, compositions::IGuiAltAction*>& actions)override;
+				bool											IsAltAvailable()override;
+				void											OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void											OnAltChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
-				/// <summary>Create a tab page.</summary>
-				GuiTabPage();
+				/// <summary>Create a tab page control with a specified style controller.</summary>
+				/// <param name="_styleController">The style controller.</param>
+				GuiTabPage(IStyleController* _styleController);
 				~GuiTabPage();
-				
-				/// <summary>Alt changed event.</summary>
-				compositions::GuiNotifyEvent					AltChanged;
-				/// <summary>Text changed event.</summary>
-				compositions::GuiNotifyEvent					TextChanged;
-				/// <summary>Page installed event.</summary>
-				compositions::GuiNotifyEvent					PageInstalled;
-				/// <summary>Page installed event.</summary>
-				compositions::GuiNotifyEvent					PageUninstalled;
+			};
 
-				/// <summary>Get the container control to store all sub controls.</summary>
-				/// <returns>The container control to store all sub controls.</returns>
-				compositions::GuiGraphicsComposition*			GetContainerComposition();
-				/// <summary>Get the owner <see cref="GuiTab"/>.</summary>
-				/// <returns>The owner <see cref="GuiTab"/>.</returns>
-				GuiTab*											GetOwnerTab();
-				/// <summary>Get the Alt-combined shortcut key associated with this control.</summary>
-				/// <returns>The Alt-combined shortcut key associated with this control.</returns>
-				const WString&									GetAlt();
-				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="value">The Alt-combined shortcut key to associate. Only zero, sigle or multiple upper case letters are legal.</param>
-				bool											SetAlt(const WString& value);
-				/// <summary>Get the text rendered as the name for this page.</summary>
-				/// <returns>The text rendered as the name for this page.</returns>
-				const WString&									GetText();
-				/// <summary>Set the text rendered as the name for this page.</summary>
-				/// <param name="value">The text rendered as the name for this page.</param>
-				void											SetText(const WString& value);
-				/// <summary>Test is this page selected.</summary>
-				/// <returns>Returns true if this page is selected.</returns>
-				bool											GetSelected();
+			class GuiTabPageList : public list::ItemsBase<GuiTabPage*>
+			{
+			protected:
+				GuiTab*											tab;
+
+				bool											QueryInsert(vint index, GuiTabPage* const& value)override;
+				void											AfterInsert(vint index, GuiTabPage* const& value)override;
+				void											BeforeRemove(vint index, GuiTabPage* const& value)override;
+			public:
+				GuiTabPageList(GuiTab* _tab);
+				~GuiTabPageList();
 			};
 
 			/// <summary>Represents a container with multiple named tabs.</summary>
-			class GuiTab : public GuiControl, protected compositions::IGuiAltActionContainer, public Description<GuiTab>
+			class GuiTab : public GuiControl, public Description<GuiTab>
 			{
 				friend class GuiTabPage;
+				friend class GuiTabPageList;
 			public:
 				
 				/// <summary>Style controller interface for <see cref="GuiTab"/>.</summary>
@@ -103,18 +79,13 @@ Tab Control
 					/// <summary>Remove the tab header at the specified position.</summary>
 					/// <param name="index">The specified position.</param>
 					virtual void								RemoveTab(vint index)=0;
-					/// <summary>Move a tab header from a position to another.</summary>
-					/// <param name="oldIndex">The old position.</param>
-					/// <param name="newIndex">The new position.</param>
-					virtual void								MoveTab(vint oldIndex, vint newIndex)=0;
 					/// <summary>Render a tab header at the specified position as selected.</summary>
 					/// <param name="index">The specified position.</param>
 					virtual void								SetSelectedTab(vint index)=0;
 					/// <summary>Set the Alt-combined shortcut key of a tab header at the specified position.</summary>
 					/// <param name="index">The specified position.</param>
 					/// <param name="value">The Alt-combined shortcut key.</param>
-					/// <param name="host">The alt action host object.</param>
-					virtual void								SetTabAlt(vint index, const WString& value, compositions::IGuiAltActionHost* host)=0;
+					virtual void								SetTabAlt(vint index, const WString& value)=0;
 					/// <summary>Get the associated <see cref="compositions::IGuiAltAction"/> object of a tab header at the specified position.</summary>
 					/// <returns>The associated <see cref="compositions::IGuiAltAction"/> object.</returns>
 					/// <param name="index">The specified position.</param>
@@ -133,12 +104,9 @@ Tab Control
 				};
 
 				Ptr<CommandExecutor>							commandExecutor;
-				IStyleController*								styleController;
-				collections::List<GuiTabPage*>					tabPages;
-				GuiTabPage*										selectedPage;
-
-				vint											GetAltActionCount()override;
-				compositions::IGuiAltAction*					GetAltAction(vint index)override;
+				IStyleController*								styleController = nullptr;
+				GuiTabPageList									tabPages;
+				GuiTabPage*										selectedPage = nullptr;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
@@ -150,27 +118,9 @@ Tab Control
 				/// <summary>Selected page changed event.</summary>
 				compositions::GuiNotifyEvent					SelectedPageChanged;
 
-				/// <summary>Create a tag page at the specified index.</summary>
-				/// <returns>The created page.</returns>
-				/// <param name="index">The specified index. Set to -1 to insert at the last position.</param>
-				GuiTabPage*										CreatePage(vint index=-1);
-				/// <summary>Insert a tag page at the specified index.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="page">The tab page to insert. This page should be a new page that has never been inserted to a <see cref="GuiTab"/>.</param>
-				/// <param name="index">The specified index. Set to -1 to insert at the last position.</param>
-				bool											CreatePage(GuiTabPage* page, vint index=-1);
-				/// <summary>Remove the tag page at the specified index.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="page">The tab page to remove.</param>
-				bool											RemovePage(GuiTabPage* page);
-				/// <summary>Move a tag page at the specified index to a new position.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="page">The tab page to move.</param>
-				/// <param name="newIndex">The new position.</param>
-				bool											MovePage(GuiTabPage* page, vint newIndex);
 				/// <summary>Get all pages.</summary>
 				/// <returns>All pages.</returns>
-				const collections::List<GuiTabPage*>&			GetPages();
+				const GuiTabPageList&							GetPages();
 
 				/// <summary>Get the selected page.</summary>
 				/// <returns>The selected page.</returns>

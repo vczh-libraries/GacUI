@@ -290,15 +290,9 @@ Type Declaration
 			END_INTERFACE_MEMBER(GuiScroll::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiTabPage)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTabPage*(), NO_PARAMETER)
-				CLASS_MEMBER_GUIEVENT(PageInstalled)
-				CLASS_MEMBER_GUIEVENT(PageUninstalled)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerTab)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Alt)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Text)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Selected)
+				CLASS_MEMBER_BASE(GuiCustomControl)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTab)
+				CONTROL_CONSTRUCTOR_DEFAULT(GuiTab, vl::presentation::theme::g::NewTabPage)
 			END_CLASS_MEMBER(GuiTabPage)
 
 			BEGIN_CLASS_MEMBER(GuiTab)
@@ -308,10 +302,6 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedPage)
 
-				CLASS_MEMBER_METHOD_OVERLOAD(CreatePage, {L"index"}, GuiTabPage*(GuiTab::*)(vint))
-				CLASS_MEMBER_METHOD_OVERLOAD(CreatePage, {L"page" _ L"index"}, bool(GuiTab::*)(GuiTabPage* _ vint))
-				CLASS_MEMBER_METHOD(RemovePage, {L"value"})
-				CLASS_MEMBER_METHOD(MovePage, {L"page" _ L"newIndex"})
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Pages)
 			END_CLASS_MEMBER(GuiTab)
 
@@ -322,9 +312,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(InsertTab, {L"index"})
 				CLASS_MEMBER_METHOD(SetTabText, {L"index" _ L"value"})
 				CLASS_MEMBER_METHOD(RemoveTab, {L"index"})
-				CLASS_MEMBER_METHOD(MoveTab, {L"oldIndex" _ L"newIndex"})
 				CLASS_MEMBER_METHOD(SetSelectedTab, {L"index"})
-				CLASS_MEMBER_METHOD(SetTabAlt, {L"index" _ L"value" _ L"host"})
+				CLASS_MEMBER_METHOD(SetTabAlt, {L"index" _ L"value"})
 				CLASS_MEMBER_METHOD(GetTabAltAction, {L"index"})
 			END_INTERFACE_MEMBER(GuiTab::IStyleController)
 

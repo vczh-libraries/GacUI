@@ -18,7 +18,7 @@ namespace vl
 			using namespace compositions;
 			using namespace theme;
 			using namespace helper_types;
-		
+
 			using namespace elements;
 			using namespace compositions;
 			using namespace controls;
