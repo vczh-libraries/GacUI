@@ -34,7 +34,7 @@ namespace demo
 	USERIMPL(/* ::demo::MainWindow */)
 	::vl::Ptr<::demo::IViewModel> MainWindow::CreateViewModel()
 	{
-		throw ::vl::Exception(L"You should implement this function.");
+		return demo::CreateViewModel();
 	}
 
 	MainWindow::MainWindow()
@@ -63,35 +63,3 @@ namespace demo
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-// UNUSED_USER_CONTENT:
-//	USERIMPL(/* ::demo::MainWindow */)
-//	void MainWindow::buttonIDoNotKnow_Clicked(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
-//	{
-//		auto dialogService = vl::presentation::GetCurrentController()->DialogService();
-//		dialogService->ShowMessageBox(GetNativeWindow(), L"This is a user-defined event handler!", GetText());
-//	}
-//	USERIMPL(/* ::demo::MainWindow */)
-//	void MainWindow::comboBox_SelectedIndexChanged(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
-//	{
-//		switch (comboBox->GetSelectedIndex())
-//		{
-//		case 0:
-//			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewBigIconContentProvider);
-//			break;
-//		case 1:
-//			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewSmallIconContentProvider);
-//			break;
-//		case 2:
-//			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewListContentProvider);
-//			break;
-//		case 3:
-//			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewTileContentProvider);
-//			break;
-//		case 4:
-//			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewInformationContentProvider);
-//			break;
-//		case 5:
-//			listView->ChangeItemStyle(new vl::presentation::controls::list::ListViewDetailContentProvider);
-//			break;
-//		}
-//	}

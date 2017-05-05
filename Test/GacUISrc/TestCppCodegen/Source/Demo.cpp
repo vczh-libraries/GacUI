@@ -57,10 +57,18 @@ Closures
 	{
 	}
 
-	void __vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	bool __vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->SetView(::vl::presentation::controls::TextListView::Text);
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Text);
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
+		if (__vwsn_update_)
+		{
+			::vl::__vwsn::This(item.Obj())->SetChecked(__vwsn_value_);
+			return false;
+		}
+		else
+		{
+			return ::vl::__vwsn::This(item.Obj())->GetChecked();
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -70,10 +78,10 @@ Closures
 	{
 	}
 
-	void __vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	::vl::WString __vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->SetView(::vl::presentation::controls::TextListView::Check);
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Check);
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetName();
 	}
 
 	//-------------------------------------------------------------------
@@ -85,8 +93,8 @@ Closures
 
 	void __vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->SetView(::vl::presentation::controls::TextListView::Radio);
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Radio);
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->SetView(::vl::presentation::controls::TextListView::Text);
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Text);
 	}
 
 	//-------------------------------------------------------------------
@@ -97,6 +105,32 @@ Closures
 	}
 
 	void __vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->SetView(::vl::presentation::controls::TextListView::Check);
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Check);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->SetView(::vl::presentation::controls::TextListView::Radio);
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Radio);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_for_begin_i = 0;
@@ -133,68 +167,68 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	void __vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		{
-			auto i = 0;
-			while ((i < ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->GetCount()))
-			{
-				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->RemoveAt(i);
-				(i = (i + 1));
-			}
-		}
-		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
-		{
-			auto i = 0;
-			while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems().Obj())->GetCount()))
-			{
-				::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->RemoveTextItem(i);
-				(i = (i + 1));
-			}
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	void __vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		{
-			auto i = 1;
-			while ((i < ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->GetCount()))
-			{
-				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->RemoveAt(i);
-				(i = (i + 1));
-			}
-		}
-		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
-		{
-			auto i = 1;
-			while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems().Obj())->GetCount()))
-			{
-				::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->RemoveTextItem(i);
-				(i = (i + 1));
-			}
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
 	void __vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		{
+			auto i = 0;
+			while ((i < ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->GetCount()))
+			{
+				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->RemoveAt(i);
+				(i = (i + 1));
+			}
+		}
+		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
+		{
+			auto i = 0;
+			while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems().Obj())->GetCount()))
+			{
+				::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->RemoveTextItem(i);
+				(i = (i + 1));
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		{
+			auto i = 1;
+			while ((i < ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->GetCount()))
+			{
+				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->RemoveAt(i);
+				(i = (i + 1));
+			}
+		}
+		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
+		{
+			auto i = 1;
+			while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems().Obj())->GetCount()))
+			{
+				::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->RemoveTextItem(i);
+				(i = (i + 1));
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->Clear();
 		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
@@ -513,6 +547,12 @@ Class (::demo::TextListTabPageConstructor)
 			(::vl::__vwsn::This(this)->bindableTextList = new ::vl::presentation::controls::GuiBindableTextList(__vwsn_controlStyle_));
 		}
 		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetCheckedProperty(LAMBDA(::vl_workflow_global::__vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
+		}
+		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{
@@ -532,31 +572,31 @@ Class (::demo::TextListTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -602,6 +642,15 @@ Class (::demo::MyTextItem)
 	void MyTextItem::SetName(const ::vl::WString& __vwsn_value_)
 	{
 		(::vl::__vwsn::This(this)->__vwsn_prop_Name = __vwsn_value_);
+	}
+
+	bool MyTextItem::GetChecked()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_prop_Checked;
+	}
+	void MyTextItem::SetChecked(bool __vwsn_value_)
+	{
+		(::vl::__vwsn::This(this)->__vwsn_prop_Checked = __vwsn_value_);
 	}
 
 	MyTextItem::MyTextItem()
@@ -666,9 +715,13 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::demo::MyTextItem)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::MyTextItem>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetChecked, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetChecked, { L"__vwsn_value_" })
 				CLASS_MEMBER_METHOD(SetName, { L"__vwsn_value_" })
+				CLASS_MEMBER_FIELD(__vwsn_prop_Checked)
 				CLASS_MEMBER_FIELD(__vwsn_prop_Name)
+				CLASS_MEMBER_PROPERTY(Checked, GetChecked, SetChecked)
 				CLASS_MEMBER_PROPERTY(Name, GetName, SetName)
 			END_CLASS_MEMBER(::demo::MyTextItem)
 

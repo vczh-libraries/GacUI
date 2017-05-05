@@ -11,6 +11,7 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_DEMO
 
 #include "../../../../Source/GacUI.h"
+#include "../Helpers.h"
 #ifndef VCZH_DEBUG_NO_REFLECTION
 #include "../../../../Source/Reflection/TypeDescriptors/GuiReflectionTemplates.h"
 #include "../../../../Source/Reflection/TypeDescriptors/GuiReflectionEvents.h"
@@ -36,6 +37,8 @@ namespace vl_workflow_global
 	struct __vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	class __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel;
 }
 
@@ -76,6 +79,8 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPageConstructor>;
 #endif
@@ -126,6 +131,8 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPage>;
 #endif
@@ -146,6 +153,9 @@ namespace demo
 		::vl::WString __vwsn_prop_Name = ::vl::WString(L"", false);
 		::vl::WString GetName();
 		void SetName(const ::vl::WString& __vwsn_value_);
+		bool __vwsn_prop_Checked = false;
+		bool GetChecked();
+		void SetChecked(bool __vwsn_value_);
 		MyTextItem();
 	};
 
@@ -185,7 +195,7 @@ Closures
 
 		__vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		bool operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const;
 	};
 
 	struct __vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
@@ -194,7 +204,7 @@ Closures
 
 		__vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
@@ -238,6 +248,24 @@ Closures
 		::demo::TextListTabPageConstructor* __vwsnthis_0;
 
 		__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};

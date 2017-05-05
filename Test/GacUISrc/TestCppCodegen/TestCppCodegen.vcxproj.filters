@@ -35,5 +35,8 @@
     <ClInclude Include="Source\Demo.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="Helpers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

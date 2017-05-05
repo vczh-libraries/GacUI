@@ -234,6 +234,7 @@
     <ClCompile Include="Source\MainWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Helpers.h" />
     <ClInclude Include="Source\Demo.h" />
     <ClInclude Include="Source\DemoIncludes.h" />
     <ClInclude Include="Source\MainWindow.h" />

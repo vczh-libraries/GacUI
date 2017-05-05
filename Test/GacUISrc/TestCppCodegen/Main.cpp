@@ -11,6 +11,40 @@ using namespace vl::presentation;
 using namespace vl::presentation::controls;
 using namespace demo;
 
+namespace demo
+{
+	class MyViewModel : public Object, public IViewModel
+	{
+	public:
+		list::ObservableList<Ptr<MyTextItem>> textItems;
+
+		Ptr<IValueObservableList> GetTextItems()override
+		{
+			return textItems.GetWrapper();
+		}
+
+		void AddTextItem(Ptr<MyTextItem> item)override
+		{
+			textItems.Add(item);
+		}
+
+		void RemoveTextItem(vint32_t index)override
+		{
+			textItems.RemoveAt(index);
+		}
+
+		void ClearTextItems()override
+		{
+			textItems.Clear();
+		}
+	};
+
+	Ptr<IViewModel> CreateViewModel()
+	{
+		return new MyViewModel;
+	}
+}
+
 void GuiMain()
 {
 	{

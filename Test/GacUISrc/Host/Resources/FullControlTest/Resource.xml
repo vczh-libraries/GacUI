@@ -55,6 +55,7 @@
           class MyTextItem
           {
             prop Name : string = "" {not observe}
+            prop Checked : bool = false {not observe}
           }
         
           interface IViewModel
