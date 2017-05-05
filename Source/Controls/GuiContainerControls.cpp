@@ -61,14 +61,14 @@ GuiTabPageList
 				tab->styleController->SetTabText(index, value->GetText());
 				tab->styleController->SetTabAlt(index, value->GetAlt());
 
+				value->tab = tab;
+				value->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				tab->GetContainerComposition()->AddChild(value->GetBoundsComposition());
+
 				if (!tab->selectedPage)
 				{
 					tab->SetSelectedPage(value);
 				}
-
-				value->tab = tab;
-				tab->GetContainerComposition()->AddChild(value->GetBoundsComposition());
-				value->GetContainerComposition()->SetVisible(value == tab->selectedPage);
 			}
 
 			void GuiTabPageList::BeforeRemove(vint index, GuiTabPage* const& value)

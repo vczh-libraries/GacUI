@@ -1,14 +1,113 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::TextListTabPage">
-  <TabPage Text="TextList">
+  <ref.Members>
+    <![CDATA[
+      var counter : int = 0;
+    ]]>
+  </ref.Members>
+  <TabPage ref.Name="self" Text="TextList">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
         <_>composeType:MinSize</_>
         <_>composeType:Percentage percentage:1.0</_>
       </att.Rows>
       <att.Columns>
-        <_>composeType:Absolute absolute:100</_>
-        <_>composeType:Percentage percentage:1.0</_>
+        <_>composeType:Percentage percentage:0.5</_>
+        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:0.5</_>
       </att.Columns>
+
+      <Cell Site="row:0 column:0 columnSpan:3">
+        <Stack Direction="Horizontal" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <Button Text="Normal"/>
+          </StackItem>
+          <StackItem>
+            <Button Text="Check"/>
+          </StackItem>
+          <StackItem>
+            <Button Text="Radio"/>
+          </StackItem>
+        </Stack>
+      </Cell>
+
+      <Cell Site="row:1 column:0">
+        <TextList ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </TextList>
+      </Cell>
+
+      <Cell Site="row:1 column:1">
+        <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <Button Text="Add 10 items">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    for (i in range [0, 9])
+                    {
+                      var textItem = new TextItem^(cast string self.counter);
+                      self.counter = self.counter + 1;
+                      textList.Items.Add(textItem);
+                    }
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Text="Remove odd items">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    for (i in range [0, 9])
+                    {
+                      textList.Items.RemoveAt(i);
+                    }
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Text="Remove even items">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    for (i in range [0, 9])
+                    {
+                      textList.Items.RemoveAt(i + 1);
+                    }
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Text="Clear">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    for (i in range [0, 9])
+                    {
+                      textList.Items.Clear();
+                    }
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+        </Stack>
+      </Cell>
+
+      <Cell Site="row:1 column:2">
+        <BindableTextList ref.Name="bindableTextList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </BindableTextList>
+      </Cell>
     </Table>
   </TabPage>
 </Instance>
