@@ -4,6 +4,7 @@
       var counter : int = 0;
     ]]>
   </ref.Members>
+  <ref.Parameter Name="ViewModel" Class="demo::IViewModel"/>
   <TabPage ref.Name="self" Text="TextList">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
@@ -105,7 +106,7 @@
       </Cell>
 
       <Cell Site="row:1 column:2">
-        <BindableTextList ref.Name="bindableTextList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableTextList ref.Name="bindableTextList" ItemSource-eval="ViewModel.TextItems" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </BindableTextList>
       </Cell>

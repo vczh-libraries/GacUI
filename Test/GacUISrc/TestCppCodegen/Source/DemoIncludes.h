@@ -24,10 +24,19 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::demo::IViewModel)
 			DECL_TYPE_INFO(::demo::MainWindow)
 			DECL_TYPE_INFO(::demo::MainWindowConstructor)
+			DECL_TYPE_INFO(::demo::MyTextItem)
 			DECL_TYPE_INFO(::demo::TextListTabPage)
 			DECL_TYPE_INFO(::demo::TextListTabPageConstructor)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::demo::IViewModel)
+				::vl::Ptr<::vl::reflection::description::IValueObservableList> GetTextItems() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTextItems);
+				}
+			END_INTERFACE_PROXY(::demo::IViewModel)
 #endif
 
 			extern bool LoadDemoTypes();

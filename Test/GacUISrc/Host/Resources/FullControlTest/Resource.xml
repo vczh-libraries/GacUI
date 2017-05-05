@@ -1,7 +1,12 @@
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window Text="GacUI 完整控件测试" ClientSize="x:640 y:480">
+      <ref.Members>
+        <![CDATA[
+          var viewModel : demo::IViewModel^ = demo::IViewModel::Create();
+        ]]>
+      </ref.Members>
+      <Window ref.Name="self" Text="GacUI 完整控件测试" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
@@ -10,7 +15,7 @@
               <Tab>
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 <att.Pages>
-                  <demo:TextListTabPage/>
+                  <demo:TextListTabPage ViewModel-eval="self.viewModel"/>
                 </att.Pages>
               </Tab>
             </TabPage>
@@ -21,4 +26,39 @@
   </Instance>
 
   <Instance name="TestListTabPageResource" content="File">TextListTabPage.xml</Instance>
+
+  <Script name="ViewModelResource">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        using system::*;
+        
+        namespace demo
+        {
+          class MyTextItem
+          {
+            prop Name : string = "" {not observe}
+          }
+        
+          interface IViewModel
+          {
+            prop TextItems : ObservableList^ {const, not observe}
+            
+            @cpp:UserImpl
+            static func Create() : IViewModel^
+            {
+              return new IViewModel^
+              {
+                override func GetTextItems() : ObservableList^
+                {
+                  return null;
+                }
+              };
+            }
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
 </Resource>

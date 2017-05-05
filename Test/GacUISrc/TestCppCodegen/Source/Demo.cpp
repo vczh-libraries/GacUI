@@ -120,6 +120,18 @@ Closures
 	{
 		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->Clear();
 	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel::__vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel()
+	{
+	}
+
+	::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel::GetTextItems()
+	{
+		return ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
+	}
+
 }
 
 /***********************************************************************
@@ -130,54 +142,54 @@ namespace demo
 {
 	void MainWindowConstructor::__vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
 	{
-		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = __vwsn_this_);
-		(::vl::__vwsn::This(this)->__vwsn_precompile_7 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition());
+		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetText(::vl::WString(L"GacUI 完整控件测试", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetText(::vl::WString(L"GacUI 完整控件测试", false));
 		}
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTabStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::controls::GuiTab(__vwsn_controlStyle_));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiTab(__vwsn_controlStyle_));
 		}
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_3 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->SetText(::vl::WString(L"List", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetText(::vl::WString(L"List", false));
 		}
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTabStyle();
-			(::vl::__vwsn::This(this)->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiTab(__vwsn_controlStyle_));
+			(::vl::__vwsn::This(this)->__vwsn_precompile_3 = new ::vl::presentation::controls::GuiTab(__vwsn_controlStyle_));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = new ::demo::TextListTabPage());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_5 = new ::demo::TextListTabPage(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->viewModel));
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetPages());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_6));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_5));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_5 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->GetBoundsComposition());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_4 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 5; __vwsn_temp__.top = 5; __vwsn_temp__.right = 5; __vwsn_temp__.bottom = 5; return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(::vl::__vwsn::This(this)->__vwsn_precompile_4));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 5; __vwsn_temp__.top = 5; __vwsn_temp__.right = 5; __vwsn_temp__.bottom = 5; return __vwsn_temp__; }());
 		}
 		{
-			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetPages());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_3));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 5; __vwsn_temp__.top = 5; __vwsn_temp__.right = 5; __vwsn_temp__.bottom = 5; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(::vl::__vwsn::This(this)->__vwsn_precompile_3));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_2));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 5; __vwsn_temp__.top = 5; __vwsn_temp__.right = 5; __vwsn_temp__.bottom = 5; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
 		}
 	}
 
@@ -192,6 +204,7 @@ Class (::demo::TextListTabPageConstructor)
 	void TextListTabPageConstructor::__vwsn_initialize_instance_(::demo::TextListTabPage* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_)
 	{
 		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		(::vl::__vwsn::This(this)->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetText(::vl::WString(L"TextList", false));
 		}
@@ -437,6 +450,9 @@ Class (::demo::TextListTabPageConstructor)
 			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23)->Clicked, __vwsn_event_handler_);
 		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(::vl::__vwsn::This(this)->ViewModel.Obj())->GetTextItems()));
+		}
 	}
 
 	TextListTabPageConstructor::TextListTabPageConstructor()
@@ -447,9 +463,15 @@ Class (::demo::TextListTabPageConstructor)
 Class (::demo::TextListTabPage)
 ***********************************************************************/
 
-	TextListTabPage::TextListTabPage()
+	::vl::Ptr<::demo::IViewModel> TextListTabPage::GetViewModel()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_parameter_ViewModel;
+	}
+
+	TextListTabPage::TextListTabPage(::vl::Ptr<::demo::IViewModel> __vwsn_ctor_parameter_ViewModel)
 		: ::vl::presentation::controls::GuiTabPage(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
 	{
+		(::vl::__vwsn::This(this)->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextListTabPage", false));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this, ::vl::__vwsn::Ensure(static_cast<::vl::presentation::GuiResourcePathResolver*>(__vwsn_resolver_.Obj())));
@@ -458,6 +480,33 @@ Class (::demo::TextListTabPage)
 	TextListTabPage::~TextListTabPage()
 	{
 		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
+Class (::demo::MyTextItem)
+***********************************************************************/
+
+	::vl::WString MyTextItem::GetName()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_prop_Name;
+	}
+	void MyTextItem::SetName(const ::vl::WString& __vwsn_value_)
+	{
+		(::vl::__vwsn::This(this)->__vwsn_prop_Name = __vwsn_value_);
+	}
+
+	MyTextItem::MyTextItem()
+	{
+	}
+
+/***********************************************************************
+Class (::demo::IViewModel)
+***********************************************************************/
+
+	USERIMPL(/* ::demo::IViewModel */)
+	::vl::Ptr<::demo::IViewModel> IViewModel::Create()
+	{
+		throw ::vl::Exception(L"You should implement this function.");
 	}
 
 }
@@ -477,14 +526,23 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(demo::IViewModel)
 			IMPL_CPP_TYPE_INFO(demo::MainWindow)
 			IMPL_CPP_TYPE_INFO(demo::MainWindowConstructor)
+			IMPL_CPP_TYPE_INFO(demo::MyTextItem)
 			IMPL_CPP_TYPE_INFO(demo::TextListTabPage)
 			IMPL_CPP_TYPE_INFO(demo::TextListTabPageConstructor)
 
 #define _ ,
+			BEGIN_INTERFACE_MEMBER(::demo::IViewModel)
+				CLASS_MEMBER_STATIC_METHOD(Create, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetTextItems, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY(TextItems, GetTextItems)
+			END_INTERFACE_MEMBER(::demo::IViewModel)
+
 			BEGIN_CLASS_MEMBER(::demo::MainWindow)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::MainWindow*(), NO_PARAMETER)
+				CLASS_MEMBER_FIELD(viewModel)
 			END_CLASS_MEMBER(::demo::MainWindow)
 
 			BEGIN_CLASS_MEMBER(::demo::MainWindowConstructor)
@@ -497,11 +555,22 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::MainWindowConstructor)
 
+			BEGIN_CLASS_MEMBER(::demo::MyTextItem)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::MyTextItem>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetName, { L"__vwsn_value_" })
+				CLASS_MEMBER_FIELD(__vwsn_prop_Name)
+				CLASS_MEMBER_PROPERTY(Name, GetName, SetName)
+			END_CLASS_MEMBER(::demo::MyTextItem)
+
 			BEGIN_CLASS_MEMBER(::demo::TextListTabPage)
-				CLASS_MEMBER_CONSTRUCTOR(::demo::TextListTabPage*(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::demo::TextListTabPage*(::vl::Ptr<::demo::IViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
+				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
+				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)
 				CLASS_MEMBER_FIELD(counter)
 			END_CLASS_MEMBER(::demo::TextListTabPage)
 
@@ -535,6 +604,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(ViewModel)
 				CLASS_MEMBER_FIELD(bindableTextList)
 				CLASS_MEMBER_FIELD(self)
 				CLASS_MEMBER_FIELD(textList)
@@ -546,8 +616,10 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
+					ADD_TYPE_INFO(::demo::IViewModel)
 					ADD_TYPE_INFO(::demo::MainWindow)
 					ADD_TYPE_INFO(::demo::MainWindowConstructor)
+					ADD_TYPE_INFO(::demo::MyTextItem)
 					ADD_TYPE_INFO(::demo::TextListTabPage)
 					ADD_TYPE_INFO(::demo::TextListTabPageConstructor)
 				}

@@ -33,6 +33,7 @@ namespace vl_workflow_global
 	struct __vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	class __vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel;
 }
 
 namespace demo
@@ -41,6 +42,8 @@ namespace demo
 	class MainWindow;
 	class TextListTabPageConstructor;
 	class TextListTabPage;
+	class MyTextItem;
+	class IViewModel;
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
 	{
@@ -48,14 +51,14 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
-		::demo::MainWindow* __vwsn_precompile_0 = static_cast<::demo::MainWindow*>(nullptr);
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_1 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
-		::vl::presentation::controls::GuiTab* __vwsn_precompile_4 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::demo::TextListTabPage* __vwsn_precompile_6 = static_cast<::demo::TextListTabPage*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::demo::MainWindow* self = static_cast<::demo::MainWindow*>(nullptr);
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_0 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_2 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::demo::TextListTabPage* __vwsn_precompile_5 = static_cast<::demo::TextListTabPage*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		MainWindowConstructor();
@@ -72,6 +75,7 @@ namespace demo
 #endif
 	protected:
 		::demo::TextListTabPage* self = static_cast<::demo::TextListTabPage*>(nullptr);
+		::vl::Ptr<::demo::IViewModel> ViewModel = ::vl::Ptr<::demo::IViewModel>();
 		::vl::presentation::controls::GuiTextList* textList = static_cast<::vl::presentation::controls::GuiTextList*>(nullptr);
 		::vl::presentation::controls::GuiBindableTextList* bindableTextList = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr);
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
@@ -118,8 +122,33 @@ namespace demo
 #endif
 	public:
 		::vl::vint32_t counter = 0;
-		TextListTabPage();
+		::vl::Ptr<::demo::IViewModel> __vwsn_parameter_ViewModel = ::vl::Ptr<::demo::IViewModel>();
+		::vl::Ptr<::demo::IViewModel> GetViewModel();
+		TextListTabPage(::vl::Ptr<::demo::IViewModel> __vwsn_ctor_parameter_ViewModel);
 		~TextListTabPage();
+	};
+
+	class MyTextItem : public ::vl::Object, public ::vl::reflection::Description<MyTextItem>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MyTextItem>;
+#endif
+	public:
+		::vl::WString __vwsn_prop_Name = ::vl::WString(L"", false);
+		::vl::WString GetName();
+		void SetName(const ::vl::WString& __vwsn_value_);
+		MyTextItem();
+	};
+
+	class IViewModel : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IViewModel>
+	{
+		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IViewModel>;
+#endif
+	public:
+		virtual ::vl::Ptr<::vl::reflection::description::IValueObservableList> GetTextItems() = 0;
+		static ::vl::Ptr<::demo::IViewModel> Create();
 	};
 
 }
@@ -174,6 +203,14 @@ Closures
 		__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	class __vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel : public ::vl::Object, public virtual ::demo::IViewModel
+	{
+	public:
+		__vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel();
+
+		::vl::Ptr<::vl::reflection::description::IValueObservableList> GetTextItems() override;
 	};
 }
 

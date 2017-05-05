@@ -32,6 +32,7 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif
 	public:
+		::vl::Ptr<::demo::IViewModel> viewModel = ::demo::IViewModel::Create();
 		MainWindow();
 		~MainWindow();
 	};
