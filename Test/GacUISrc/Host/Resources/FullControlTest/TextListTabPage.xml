@@ -20,13 +20,40 @@
       <Cell Site="row:0 column:0 columnSpan:3">
         <Stack Direction="Horizontal" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <StackItem>
-            <Button Text="Normal"/>
+            <Button Text="Text">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    textList.View = Text;
+                    bindableTextList.View = Text;
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
           </StackItem>
           <StackItem>
-            <Button Text="Check"/>
+            <Button Text="Check">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    textList.View = Check;
+                    bindableTextList.View = Check;
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
           </StackItem>
           <StackItem>
-            <Button Text="Radio"/>
+            <Button Text="Radio">
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    textList.View = Radio;
+                    bindableTextList.View = Radio;
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
           </StackItem>
         </Stack>
       </Cell>
@@ -47,10 +74,21 @@
                   {
                     for (i in range [0, 9])
                     {
-                      var textItem = new TextItem^(cast string self.counter);
-                      self.counter = self.counter + 1;
+                      var textItem = new TextItem^(cast string (self.counter + i));
                       textList.Items.Add(textItem);
                     }
+                    
+                    if (ViewModel.TextItems is not null)
+                    {
+                      for (i in range [0, 9])
+                      {
+                        var textItem = new demo::MyTextItem^();
+                        textItem.Name = cast string (self.counter + i);
+                        ViewModel.AddTextItem(textItem);
+                      }
+                    }
+                    
+                    self.counter = self.counter + 10;
                   }
                 ]]>
               </ev.Clicked-eval>
@@ -62,11 +100,23 @@
               <ev.Clicked-eval>
                 <![CDATA[
                   {
-                    var i = 0;
-                    while (i < textList.Items.Count)
                     {
-                      textList.Items.RemoveAt(i);
-                      i = i + 1;
+                      var i = 0;
+                      while (i < textList.Items.Count)
+                      {
+                        textList.Items.RemoveAt(i);
+                        i = i + 1;
+                      }
+                    }
+                    
+                    if (ViewModel.TextItems is not null)
+                    {
+                      var i = 0;
+                      while (i < ViewModel.TextItems.Count)
+                      {
+                        ViewModel.RemoveTextItem(i);
+                        i = i + 1;
+                      }
                     }
                   }
                 ]]>
@@ -79,11 +129,23 @@
               <ev.Clicked-eval>
                 <![CDATA[
                   {
-                    var i = 1;
-                    while (i < textList.Items.Count)
                     {
-                      textList.Items.RemoveAt(i);
-                      i = i + 1;
+                      var i = 1;
+                      while (i < textList.Items.Count)
+                      {
+                        textList.Items.RemoveAt(i);
+                        i = i + 1;
+                      }
+                    }
+                    
+                    if (ViewModel.TextItems is not null)
+                    {
+                      var i = 1;
+                      while (i < ViewModel.TextItems.Count)
+                      {
+                        ViewModel.RemoveTextItem(i);
+                        i = i + 1;
+                      }
                     }
                   }
                 ]]>
@@ -97,6 +159,11 @@
                 <![CDATA[
                   {
                     textList.Items.Clear();
+                    
+                    if (ViewModel.TextItems is not null)
+                    {
+                      ViewModel.ClearTextItems();
+                    }
                   }
                 ]]>
               </ev.Clicked-eval>

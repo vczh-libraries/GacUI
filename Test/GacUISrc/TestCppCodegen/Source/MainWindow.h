@@ -27,12 +27,14 @@ namespace demo
 {
 	class MainWindow : public ::vl::presentation::controls::GuiWindow, public ::demo::MainWindowConstructor, public ::vl::reflection::Description<MainWindow>
 	{
+		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel;
 		friend class ::demo::MainWindowConstructor;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif
 	public:
-		::vl::Ptr<::demo::IViewModel> viewModel = ::demo::IViewModel::Create();
+		::vl::Ptr<::demo::IViewModel> viewModel = ::demo::MainWindow::CreateViewModel();
+		static ::vl::Ptr<::demo::IViewModel> CreateViewModel();
 		MainWindow();
 		~MainWindow();
 	};

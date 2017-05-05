@@ -33,7 +33,10 @@ namespace vl_workflow_global
 	struct __vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-	class __vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel;
+	struct __vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	class __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel;
 }
 
 namespace demo
@@ -70,6 +73,9 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPageConstructor>;
 #endif
@@ -117,6 +123,9 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPage>;
 #endif
@@ -142,13 +151,14 @@ namespace demo
 
 	class IViewModel : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IViewModel>
 	{
-		friend class ::vl_workflow_global::__vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IViewModel>;
 #endif
 	public:
 		virtual ::vl::Ptr<::vl::reflection::description::IValueObservableList> GetTextItems() = 0;
-		static ::vl::Ptr<::demo::IViewModel> Create();
+		virtual void AddTextItem(::vl::Ptr<::demo::MyTextItem> item) = 0;
+		virtual void RemoveTextItem(::vl::vint32_t index) = 0;
+		virtual void ClearTextItems() = 0;
 	};
 
 }
@@ -205,11 +215,41 @@ Closures
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	class __vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel : public ::vl::Object, public virtual ::demo::IViewModel
+	struct __vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextListTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	class __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel : public ::vl::Object, public virtual ::demo::IViewModel
 	{
 	public:
-		__vwsnc1_Demo_demo_IViewModel_Create__demo_IViewModel();
+		__vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel();
 
+		void AddTextItem(::vl::Ptr<::demo::MyTextItem> item) override;
+		void RemoveTextItem(::vl::vint32_t index) override;
+		void ClearTextItems() override;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> GetTextItems() override;
 	};
 }

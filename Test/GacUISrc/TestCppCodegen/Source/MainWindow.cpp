@@ -31,6 +31,12 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
+	USERIMPL(/* ::demo::MainWindow */)
+	::vl::Ptr<::demo::IViewModel> MainWindow::CreateViewModel()
+	{
+		throw ::vl::Exception(L"You should implement this function.");
+	}
+
 	MainWindow::MainWindow()
 		: ::vl::presentation::controls::GuiWindow(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateWindowStyle())
 	{

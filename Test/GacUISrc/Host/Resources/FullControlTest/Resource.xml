@@ -3,7 +3,23 @@
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <ref.Members>
         <![CDATA[
-          var viewModel : demo::IViewModel^ = demo::IViewModel::Create();
+          var viewModel : demo::IViewModel^ = CreateViewModel();
+          
+          @cpp:UserImpl
+          static func CreateViewModel() : IViewModel^
+          {
+            return new IViewModel^
+            {
+              override func AddTextItem(item : MyTextItem^) : void { raise "NotImplemented!"; }
+              override func RemoveTextItem(index : int) : void { raise "NotImplemented!"; }
+              override func ClearTextItems() : void { raise "NotImplemented!"; }
+                
+              override func GetTextItems() : ObservableList^
+              {
+                return null;
+              }
+            };
+          }
         ]]>
       </ref.Members>
       <Window ref.Name="self" Text="GacUI 完整控件测试" ClientSize="x:640 y:480">
@@ -45,17 +61,9 @@
           {
             prop TextItems : ObservableList^ {const, not observe}
             
-            @cpp:UserImpl
-            static func Create() : IViewModel^
-            {
-              return new IViewModel^
-              {
-                override func GetTextItems() : ObservableList^
-                {
-                  return null;
-                }
-              };
-            }
+            func AddTextItem(item : MyTextItem^) : void;
+            func RemoveTextItem(index : int) : void;
+            func ClearTextItems() : void;
           }
         }
       ]]>
