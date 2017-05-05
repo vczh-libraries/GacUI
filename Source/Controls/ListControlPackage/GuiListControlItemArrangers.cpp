@@ -157,61 +157,65 @@ RangedItemArrangerBase
 				{
 					if (callback && !itemProvider->IsEditing())
 					{
-						vint visibleCount = visibleStyles.Count();
-						vint itemCount = itemProvider->Count();
-						SortedList<GuiListControl::ItemStyle*> reusedStyles;
-						for (vint i = 0; i < visibleCount; i++)
+						suppressOnViewChanged = true;
 						{
-							vint index = startIndex + i;
-							if (index >= itemCount)
+							vint visibleCount = visibleStyles.Count();
+							vint itemCount = itemProvider->Count();
+							SortedList<GuiListControl::ItemStyle*> reusedStyles;
+							for (vint i = 0; i < visibleCount; i++)
 							{
-								break;
-							}
-
-							vint oldIndex = -1;
-							if (index < start)
-							{
-								oldIndex = index;
-							}
-							else if (index >= start + newCount)
-							{
-								oldIndex = index - newCount + count;
-							}
-
-							if (oldIndex != -1)
-							{
-								if (oldIndex >= startIndex && oldIndex < startIndex + visibleCount)
+								vint index = startIndex + i;
+								if (index >= itemCount)
 								{
-									auto style = visibleStyles[oldIndex - startIndex];
-									reusedStyles.Add(style);
+									break;
+								}
+
+								vint oldIndex = -1;
+								if (index < start)
+								{
+									oldIndex = index;
+								}
+								else if (index >= start + newCount)
+								{
+									oldIndex = index - newCount + count;
+								}
+
+								if (oldIndex != -1)
+								{
+									if (oldIndex >= startIndex && oldIndex < startIndex + visibleCount)
+									{
+										auto style = visibleStyles[oldIndex - startIndex];
+										reusedStyles.Add(style);
+										visibleStyles.Add(style);
+									}
+									else
+									{
+										oldIndex = -1;
+									}
+								}
+								if (oldIndex == -1)
+								{
+									auto style = callback->RequestItem(index);
 									visibleStyles.Add(style);
 								}
-								else
+							}
+
+							for (vint i = 0; i < visibleCount; i++)
+							{
+								auto style = visibleStyles[i];
+								if (!reusedStyles.Contains(style))
 								{
-									oldIndex = -1;
+									callback->ReleaseItem(style);
 								}
 							}
-							if (oldIndex == -1)
+
+							visibleStyles.RemoveRange(0, visibleCount);
+							for (vint i = 0; i < visibleStyles.Count(); i++)
 							{
-								auto style = callback->RequestItem(index);
-								visibleStyles.Add(style);
+								visibleStyles[i]->SetIndex(startIndex + i);
 							}
 						}
-
-						for (vint i = 0; i < visibleCount; i++)
-						{
-							auto style = visibleStyles[i];
-							if (!reusedStyles.Contains(style))
-							{
-								callback->ReleaseItem(style);
-							}
-						}
-
-						visibleStyles.RemoveRange(0, visibleCount);
-						for (vint i = 0; i < visibleStyles.Count(); i++)
-						{
-							visibleStyles[i]->SetIndex(startIndex + i);
-						}
+						suppressOnViewChanged = false;
 
 						callback->OnTotalSizeChanged();
 						callback->SetViewLocation(viewBounds.LeftTop());

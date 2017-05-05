@@ -469,6 +469,7 @@ Item Template
 				
 #define GuiTextListItemTemplate_PROPERTIES(F)\
 				F(GuiTextListItemTemplate, Color, TextColor)\
+				F(GuiTextListItemTemplate, bool, Checked)\
 
 				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};

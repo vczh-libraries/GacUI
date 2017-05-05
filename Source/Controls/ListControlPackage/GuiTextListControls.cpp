@@ -81,11 +81,13 @@ DefaultTextListItemTemplate
 					TextChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextChanged);
 					SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnSelectedChanged);
 					TextColorChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextColorChanged);
+					CheckedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnCheckedChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
 					TextChanged.Execute(compositions::GuiEventArgs(this));
 					SelectedChanged.Execute(compositions::GuiEventArgs(this));
 					TextColorChanged.Execute(compositions::GuiEventArgs(this));
+					CheckedChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
 				void DefaultTextListItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -108,13 +110,26 @@ DefaultTextListItemTemplate
 					textElement->SetColor(GetTextColor());
 				}
 
+				void DefaultTextListItemTemplate::OnCheckedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					if (bulletButton)
+					{
+						supressEdit = true;
+						bulletButton->SetSelected(GetChecked());
+						supressEdit = false;
+					}
+				}
+
 				void DefaultTextListItemTemplate::OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(ITextItemView::Identifier)))
+					if (!supressEdit)
 					{
-						BeginEditListItem();
-						textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
-						EndEditListItem();
+						if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(ITextItemView::Identifier)))
+						{
+							BeginEditListItem();
+							textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
+							EndEditListItem();
+						}
 					}
 				}
 
@@ -283,6 +298,10 @@ GuiTextList
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
 					textItemStyle->SetTextColor(styleProvider->GetTextColor());
+					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
+					{
+						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
+					}
 				}
 			}
 
