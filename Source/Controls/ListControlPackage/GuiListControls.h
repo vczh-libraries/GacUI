@@ -195,8 +195,8 @@ List Control
 					typedef collections::List<ItemStyle*>									StyleList;
 					typedef collections::Dictionary<ItemStyle*, Ptr<BoundsChangedHandler>>	InstalledStyleMap;
 				protected:
-					GuiListControl*								listControl;
-					IItemProvider*								itemProvider;
+					GuiListControl*								listControl = nullptr;
+					IItemProvider*								itemProvider = nullptr;
 					InstalledStyleMap							installedStyles;
 
 					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex);

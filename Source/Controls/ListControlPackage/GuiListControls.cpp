@@ -60,6 +60,7 @@ GuiListControl::ItemCallback
 
 			void GuiListControl::ItemCallback::OnAttached(IItemProvider* provider)
 			{
+				itemProvider = provider;
 			}
 
 			void GuiListControl::ItemCallback::OnItemModified(vint start, vint count, vint newCount)
