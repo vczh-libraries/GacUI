@@ -41,6 +41,301 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
+	void Demo::LoadListView(::vl::presentation::controls::GuiListView* listView)
+	{
+		auto host = ::vl::__vwsn::This(listView)->GetRelatedControlHost();
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Task", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Task", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Task", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"005_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"005_Task_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Reminder", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Reminder", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Reminder", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"008_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"008_Reminder_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Tip", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Tip", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Tip", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"023_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"023_Tip_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"ArrowCurve_Blue_Left", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/ArrowCurve_Blue_Left", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/ArrowCurve_Blue_Left", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_ArrowCurve_Blue_Left_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"ArrowCurve_Blue_Right", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/ArrowCurve_Blue_Right", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/ArrowCurve_Blue_Right", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_ArrowCurve_Blue_Right_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"DownArrowLong_Blue", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/DownArrowLong_Blue", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/DownArrowLong_Blue", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_DownArrowLong_Blue_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"DownArrowLong_Green", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/DownArrowLong_Green", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/DownArrowLong_Green", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_DownArrowLong_Green_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"DownArrowLong_Grey", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/DownArrowLong_Grey", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/DownArrowLong_Grey", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_DownArrowLong_Grey_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"DownArrowLong_Orange", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/DownArrowLong_Orange", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/DownArrowLong_Orange", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_DownArrowLong_Orange_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"LeftArrowLong_Blue", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/LeftArrowLong_Blue", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/LeftArrowLong_Blue", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_LeftArrowLong_Blue_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"LeftArrowLong_Green", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/LeftArrowLong_Green", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/LeftArrowLong_Green", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_LeftArrowLong_Green_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"LeftArrowLong_Grey", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/LeftArrowLong_Grey", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/LeftArrowLong_Grey", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_LeftArrowLong_Grey_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"LeftArrowLong_Orange", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/LeftArrowLong_Orange", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/LeftArrowLong_Orange", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_LeftArrowLong_Orange_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Minus_Blue", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Minus_Blue", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Minus_Blue", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_Minus_Blue_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Minus_Green", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Minus_Green", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Minus_Green", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_Minus_Green_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Minus_Grey", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Minus_Grey", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Minus_Grey", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_Minus_Grey_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Minus_Orange", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Minus_Orange", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Minus_Orange", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_Minus_Orange_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Plus_Blue", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Plus_Blue", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Plus_Blue", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_Plus_Blue_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Plus_Green", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Plus_Green", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Plus_Green", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_Plus_Green_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Plus_Grey", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Plus_Grey", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Plus_Grey", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_Plus_Grey_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"Plus_Orange", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/Plus_Orange", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Plus_Orange", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_Plus_Orange_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"RightArrowLong_Blue", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/RightArrowLong_Blue", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/RightArrowLong_Blue", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_RightArrowLong_Blue_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"RightArrowLong_Green", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/RightArrowLong_Green", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/RightArrowLong_Green", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_RightArrowLong_Green_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"RightArrowLong_Grey", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/RightArrowLong_Grey", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/RightArrowLong_Grey", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_RightArrowLong_Grey_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"RightArrowLong_Orange", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/RightArrowLong_Orange", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/RightArrowLong_Orange", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_RightArrowLong_Orange_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"UpArrowLong_Blue", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/UpArrowLong_Blue", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/UpArrowLong_Blue", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_UpArrowLong_Blue_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"UpArrowLong_Green", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/UpArrowLong_Green", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/UpArrowLong_Green", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_UpArrowLong_Green_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"UpArrowLong_Grey", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/UpArrowLong_Grey", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/UpArrowLong_Grey", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_UpArrowLong_Grey_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+		{
+			auto item = ::vl::Ptr<::vl::presentation::controls::list::ListViewItem>(new ::vl::presentation::controls::list::ListViewItem());
+			::vl::__vwsn::This(item.Obj())->SetText(::vl::WString(L"UpArrowLong_Orange", false));
+			::vl::__vwsn::This(item.Obj())->SetLargeImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"LargeImages/UpArrowLong_Orange", false)).Obj())));
+			::vl::__vwsn::This(item.Obj())->SetSmallImage(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(host)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/UpArrowLong_Orange", false)).Obj())));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"16x16", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(item.Obj())->GetSubItems()).Obj())->Add(::vl::__vwsn::Box(::vl::WString(L"112_UpArrowLong_Orange_16x16_72.png", false)));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+		}
+	}
+
 	Demo& Demo::Instance()
 	{
 		return Getvl_workflow_global_Demo().instance;
@@ -60,22 +355,36 @@ Closures
 	void __vwsnf10_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
-			auto i = 0;
-			while ((i < ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->GetCount()))
+			auto __vwsn_for_begin_i = 0;
+			auto __vwsn_for_end_i = 9;
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
 			{
-				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->RemoveAt(i);
+				{
+					auto textItem = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem(::vl::__vwsn::ToString((::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->counter + i))));
+					::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->Add(::vl::__vwsn::Box(textItem));
+				}
 				(i = (i + 1));
 			}
 		}
 		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
 		{
-			auto i = 0;
-			while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems().Obj())->GetCount()))
 			{
-				::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->RemoveTextItem(i);
-				(i = (i + 1));
+				auto __vwsn_for_begin_i = 0;
+				auto __vwsn_for_end_i = 9;
+				auto i = __vwsn_for_begin_i;
+				while ((i <= __vwsn_for_end_i))
+				{
+					{
+						auto textItem = ::vl::Ptr<::demo::MyTextItem>(new ::demo::MyTextItem());
+						::vl::__vwsn::This(textItem.Obj())->SetName(::vl::__vwsn::ToString((::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->counter + i)));
+						::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->AddTextItem(textItem);
+					}
+					(i = (i + 1));
+				}
 			}
 		}
+		(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->counter = (::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->counter + 10));
 	}
 
 	//-------------------------------------------------------------------
@@ -88,7 +397,7 @@ Closures
 	void __vwsnf11_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
-			auto i = 1;
+			auto i = 0;
 			while ((i < ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->GetCount()))
 			{
 				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->RemoveAt(i);
@@ -97,7 +406,7 @@ Closures
 		}
 		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
 		{
-			auto i = 1;
+			auto i = 0;
 			while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems().Obj())->GetCount()))
 			{
 				::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->RemoveTextItem(i);
@@ -114,6 +423,34 @@ Closures
 	}
 
 	void __vwsnf12_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		{
+			auto i = 1;
+			while ((i < ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->GetCount()))
+			{
+				::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->RemoveAt(i);
+				(i = (i + 1));
+			}
+		}
+		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
+		{
+			auto i = 1;
+			while ((i < ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems().Obj())->GetCount()))
+			{
+				::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->RemoveTextItem(i);
+				(i = (i + 1));
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf13_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf13_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf13_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->Clear();
 		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
@@ -212,12 +549,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf6_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::__vwsnf6_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(::demo::ListViewTabPage* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	bool __vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
+	void __vwsnf6_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::operator()() const
+	{
+		GLOBAL_NAME LoadListView(::vl::__vwsn::This(__vwsnthis_0)->listView);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	bool __vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
 		if (__vwsn_update_)
@@ -233,12 +582,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	::vl::WString __vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
@@ -246,12 +595,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_1 = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->comboView)->GetSelectedIndex();
@@ -271,48 +620,6 @@ Closures
 				::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Radio);
 			}
 		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	void __vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		{
-			auto __vwsn_for_begin_i = 0;
-			auto __vwsn_for_end_i = 9;
-			auto i = __vwsn_for_begin_i;
-			while ((i <= __vwsn_for_end_i))
-			{
-				{
-					auto textItem = ::vl::Ptr<::vl::presentation::controls::list::TextItem>(new ::vl::presentation::controls::list::TextItem(::vl::__vwsn::ToString((::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->counter + i))));
-					::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->Add(::vl::__vwsn::Box(textItem));
-				}
-				(i = (i + 1));
-			}
-		}
-		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
-		{
-			{
-				auto __vwsn_for_begin_i = 0;
-				auto __vwsn_for_end_i = 9;
-				auto i = __vwsn_for_begin_i;
-				while ((i <= __vwsn_for_end_i))
-				{
-					{
-						auto textItem = ::vl::Ptr<::demo::MyTextItem>(new ::demo::MyTextItem());
-						::vl::__vwsn::This(textItem.Obj())->SetName(::vl::__vwsn::ToString((::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->counter + i)));
-						::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->AddTextItem(textItem);
-					}
-					(i = (i + 1));
-				}
-			}
-		}
-		(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->counter = (::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->self)->counter + 10));
 	}
 
 	//-------------------------------------------------------------------
@@ -660,6 +967,12 @@ Class (::demo::ListViewTabPage)
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
+		::vl::__vwsn::This(this)->__vwsn_instance_ctor_();
+	}
+
+	void ListViewTabPage::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(LAMBDA(::vl_workflow_global::__vwsnf6_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(this)));
 	}
 
 	ListViewTabPage::~ListViewTabPage()
@@ -969,10 +1282,10 @@ Class (::demo::TextListTabPageConstructor)
 			(::vl::__vwsn::This(this)->bindableTextList = new ::vl::presentation::controls::GuiBindableTextList(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetCheckedProperty(LAMBDA(::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetCheckedProperty(LAMBDA(::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
@@ -997,23 +1310,23 @@ Class (::demo::TextListTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf9_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf10_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf10_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf11_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf11_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf12_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf12_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf13_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -1116,6 +1429,7 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::demo::ListViewTabPage)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::ListViewTabPage*(::vl::Ptr<::demo::IViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
 				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)

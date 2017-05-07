@@ -1,5 +1,14 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::ListViewTabPage">
   <ref.Parameter Name="ViewModel" Class="demo::IViewModel"/>
+  <ref.Ctor>
+    <![CDATA[
+      Application::GetApplication().InvokeInMainThread(func():void
+      {
+        /* This code will be executed after demo::ListViewTabPage is put on the window, so that listView.RelatedControlHost doesn't return null. */
+        LoadListView(listView);
+      });
+    ]]>
+  </ref.Ctor>
   <TabPage ref.Name="self" Text="ListView">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>

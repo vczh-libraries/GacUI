@@ -46,6 +46,7 @@
   <Instance name="ListViewTabPageResource" content="File">ListViewTabPage.xml</Instance>
   <Folder name="LargeImages" content="Link">Images/LargeImages.xml</Folder>
   <Folder name="SmallImages" content="Link">Images/SmallImages.xml</Folder>
+  <Script name="ImageLoaderResource" content="File">Images/ImageLoader.xml</Script>
 
   <Script name="ViewModelResource">
     <Workflow>
