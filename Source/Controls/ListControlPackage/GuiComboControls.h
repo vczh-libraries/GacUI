@@ -95,6 +95,8 @@ ComboBox with GuiListControl
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiControlTemplate*				itemStyleController = nullptr;
 
+				bool										IsAltAvailable()override;
+				void										OnActiveAlt()override;
 				void										RemoveStyleController();
 				void										InstallStyleController(vint itemIndex);
 				virtual void								DisplaySelectedContent(vint itemIndex);

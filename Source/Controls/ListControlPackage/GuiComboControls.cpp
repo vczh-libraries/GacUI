@@ -73,6 +73,18 @@ GuiComboBoxBase
 GuiComboBoxListControl
 ***********************************************************************/
 
+			bool GuiComboBoxListControl::IsAltAvailable()
+			{
+				return true;
+			}
+
+			void GuiComboBoxListControl::OnActiveAlt()
+			{
+				GuiMenuButton::OnActiveAlt();
+				GetSubMenu()->GetNativeWindow()->SetFocus();
+				containedListControl->SetFocus();
+			}
+
 			void GuiComboBoxListControl::RemoveStyleController()
 			{
 				if (itemStyleController)
