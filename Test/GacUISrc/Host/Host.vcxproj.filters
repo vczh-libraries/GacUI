@@ -83,4 +83,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FullControlTest\Images\Build.bat">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </None>
+    <None Include="Resources\FullControlTest\Images\Build_WriteImageLoader.bat">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </None>
+    <None Include="Resources\FullControlTest\Images\Build_WriteFolder.bat">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -254,6 +254,11 @@
       <Project>{407401eb-c968-42b2-aee9-47aa1658e1ff}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FullControlTest\Images\Build.bat" />
+    <None Include="Resources\FullControlTest\Images\Build_WriteFolder.bat" />
+    <None Include="Resources\FullControlTest\Images\Build_WriteImageLoader.bat" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
