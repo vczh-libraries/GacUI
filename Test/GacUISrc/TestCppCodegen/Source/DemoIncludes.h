@@ -25,6 +25,8 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::demo::IViewModel)
+			DECL_TYPE_INFO(::demo::ListViewTabPage)
+			DECL_TYPE_INFO(::demo::ListViewTabPageConstructor)
 			DECL_TYPE_INFO(::demo::MainWindow)
 			DECL_TYPE_INFO(::demo::MainWindowConstructor)
 			DECL_TYPE_INFO(::demo::MyTextItem)

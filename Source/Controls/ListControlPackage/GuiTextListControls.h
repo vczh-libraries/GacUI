@@ -175,7 +175,7 @@ GuiVirtualTextList
 				};
 			protected:
 				IStyleProvider*											styleProvider;
-				TextListView											view = TextListView::Text;
+				TextListView											view = TextListView::Unknown;
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

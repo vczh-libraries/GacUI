@@ -30,11 +30,14 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	struct __vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf10_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf11_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf12_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf1_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf2_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf3_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf4_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf5_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
@@ -44,12 +47,81 @@ namespace vl_workflow_global
 
 namespace demo
 {
+	class ListViewTabPageConstructor;
+	class ListViewTabPage;
 	class MainWindowConstructor;
 	class MainWindow;
 	class TextListTabPageConstructor;
 	class TextListTabPage;
 	class MyTextItem;
 	class IViewModel;
+
+	class ListViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ListViewTabPageConstructor>
+	{
+		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTabPageConstructor>;
+#endif
+	protected:
+		::demo::ListViewTabPage* self = static_cast<::demo::ListViewTabPage*>(nullptr);
+		::vl::Ptr<::demo::IViewModel> ViewModel = ::vl::Ptr<::demo::IViewModel>();
+		::vl::presentation::controls::GuiComboBoxListControl* comboView = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
+		::vl::presentation::controls::GuiListView* listView = static_cast<::vl::presentation::controls::GuiListView*>(nullptr);
+		::vl::presentation::controls::GuiBindableListView* bindableListView = static_cast<::vl::presentation::controls::GuiBindableListView*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2 = static_cast<::vl::presentation::controls::GuiTextList*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_13 = static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_14 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_15 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_17 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_18 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_19 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_20 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_21 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_23 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_24 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_26 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_27 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		void __vwsn_initialize_instance_(::demo::ListViewTabPage* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
+	public:
+		ListViewTabPageConstructor();
+	};
+
+	class ListViewTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::ListViewTabPageConstructor, public ::vl::reflection::Description<ListViewTabPage>
+	{
+		friend class ::demo::ListViewTabPageConstructor;
+		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ListViewTabPage>;
+#endif
+	public:
+		::vl::Ptr<::demo::IViewModel> __vwsn_parameter_ViewModel = ::vl::Ptr<::demo::IViewModel>();
+		::vl::Ptr<::demo::IViewModel> GetViewModel();
+		ListViewTabPage(::vl::Ptr<::demo::IViewModel> __vwsn_ctor_parameter_ViewModel);
+		~ListViewTabPage();
+	};
 
 	class MainWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MainWindowConstructor>
 	{
@@ -64,7 +136,8 @@ namespace demo
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_3 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::demo::TextListTabPage* __vwsn_precompile_5 = static_cast<::demo::TextListTabPage*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::demo::ListViewTabPage* __vwsn_precompile_6 = static_cast<::demo::ListViewTabPage*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		MainWindowConstructor();
@@ -72,11 +145,9 @@ namespace demo
 
 	class TextListTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextListTabPageConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
@@ -87,35 +158,34 @@ namespace demo
 	protected:
 		::demo::TextListTabPage* self = static_cast<::demo::TextListTabPage*>(nullptr);
 		::vl::Ptr<::demo::IViewModel> ViewModel = ::vl::Ptr<::demo::IViewModel>();
+		::vl::presentation::controls::GuiComboBoxListControl* comboView = static_cast<::vl::presentation::controls::GuiComboBoxListControl*>(nullptr);
 		::vl::presentation::controls::GuiTextList* textList = static_cast<::vl::presentation::controls::GuiTextList*>(nullptr);
 		::vl::presentation::controls::GuiBindableTextList* bindableTextList = static_cast<::vl::presentation::controls::GuiBindableTextList*>(nullptr);
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr);
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_4 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_6 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_8 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2 = static_cast<::vl::presentation::controls::GuiTextList*>(nullptr);
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::list::TextItem>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr);
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_13 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_14 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_16 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_17 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_19 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_20 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_21 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_22 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_23 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiStackComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_12 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_14 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_15 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_17 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_18 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_19 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_20 = static_cast<::vl::presentation::compositions::GuiStackItemComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_21 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_23 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_25 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_26 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::TextListTabPage* __vwsn_this_, ::vl::presentation::GuiResourcePathResolver* __vwsn_resolver_);
 	public:
 		TextListTabPageConstructor();
@@ -124,11 +194,9 @@ namespace demo
 	class TextListTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextListTabPageConstructor, public ::vl::reflection::Description<TextListTabPage>
 	{
 		friend class ::demo::TextListTabPageConstructor;
-		friend struct ::vl_workflow_global::__vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf10_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf11_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf12_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
 		friend struct ::vl_workflow_global::__vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__;
@@ -189,47 +257,74 @@ namespace vl_workflow_global
 Closures
 ***********************************************************************/
 
-	struct __vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
+	struct __vwsnf10_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
 	{
 		::demo::TextListTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf1_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
-
-		bool operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const;
-	};
-
-	struct __vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
-	{
-		::demo::TextListTabPageConstructor* __vwsnthis_0;
-
-		__vwsnf2_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
-
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
-	};
-
-	struct __vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
-	{
-		::demo::TextListTabPageConstructor* __vwsnthis_0;
-
-		__vwsnf3_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf10_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
+	struct __vwsnf11_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
 	{
 		::demo::TextListTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf4_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf11_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
+	struct __vwsnf12_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
 	{
 		::demo::TextListTabPageConstructor* __vwsnthis_0;
 
-		__vwsnf5_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+		__vwsnf12_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf1_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::ListViewTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf1_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf2_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::ListViewTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf2_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf3_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::ListViewTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf3_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf4_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::ListViewTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf4_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf5_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::ListViewTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf5_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
@@ -240,7 +335,7 @@ Closures
 
 		__vwsnf6_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		bool operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const;
 	};
 
 	struct __vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__
@@ -249,7 +344,7 @@ Closures
 
 		__vwsnf7_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf8_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__

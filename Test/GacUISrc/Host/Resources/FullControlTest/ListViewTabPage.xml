@@ -1,0 +1,134 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::ListViewTabPage">
+  <ref.Parameter Name="ViewModel" Class="demo::IViewModel"/>
+  <TabPage ref.Name="self" Text="ListView">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+      <att.Rows>
+        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Percentage percentage:0.5</_>
+        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:0.5</_>
+      </att.Columns>
+
+      <Cell Site="row:0 column:0 columnSpan:3">
+        <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="5">
+          <att.BoundsComposition-set PreferredMinSize="x:120"/>
+          <att.ListControl>
+            <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.Items>
+                <TextItem Text="BigIcon"/>
+                <TextItem Text="SmallIcon"/>
+                <TextItem Text="List"/>
+                <TextItem Text="Tile"/>
+                <TextItem Text="Information"/>
+                <TextItem Text="Detail"/>
+              </att.Items>
+            </TextList>
+          </att.ListControl>
+          <ev.SelectedIndexChanged-eval>
+            <![CDATA[
+              {
+                switch (comboView.SelectedIndex)
+                {
+                case 0:
+                  {
+                    listView.View = BigIcon;
+                    bindableListView.View = BigIcon;
+                  }
+                case 1:
+                  {
+                    listView.View = SmallIcon;
+                    bindableListView.View = SmallIcon;
+                  }
+                case 2:
+                  {
+                    listView.View = ListViewView::List;
+                    bindableListView.View = ListViewView::List;
+                  }
+                case 3:
+                  {
+                    listView.View = Tile;
+                    bindableListView.View = Tile;
+                  }
+                case 4:
+                  {
+                    listView.View = Information;
+                    bindableListView.View = Information;
+                  }
+                case 5:
+                  {
+                    listView.View = Detail;
+                    bindableListView.View = Detail;
+                  }
+                }
+              }
+            ]]>
+          </ev.SelectedIndexChanged-eval>
+        </ComboBox>
+      </Cell>
+
+      <Cell Site="row:1 column:0">
+        <ListView ref.Name="listView" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </ListView>
+      </Cell>
+
+      <Cell Site="row:1 column:1">
+        <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <Button Alt="A" Text="Insert at Above">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Alt="B" Text="Insert at Below">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Alt="R" Text="Remove">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Alt="C" Text="Clear">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+        </Stack>
+      </Cell>
+
+      <Cell Site="row:1 column:2">
+        <BindableListView ref.Name="bindableListView" Alt="B" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </BindableListView>
+      </Cell>
+    </Table>
+  </TabPage>
+</Instance>

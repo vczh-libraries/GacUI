@@ -27,11 +27,12 @@
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
           <att.Pages>
-            <TabPage Text="List">
+            <TabPage Alt="L" Text="List">
               <Tab>
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 <att.Pages>
-                  <demo:TextListTabPage ViewModel-eval="self.viewModel"/>
+                  <demo:TextListTabPage Alt="T" ViewModel-eval="self.viewModel"/>
+                  <demo:ListViewTabPage Alt="L" ViewModel-eval="self.viewModel"/>
                 </att.Pages>
               </Tab>
             </TabPage>
@@ -41,7 +42,8 @@
     </Instance>
   </Instance>
 
-  <Instance name="TestListTabPageResource" content="File">TextListTabPage.xml</Instance>
+  <Instance name="TextListTabPageResource" content="File">TextListTabPage.xml</Instance>
+  <Instance name="ListViewTabPageResource" content="File">ListViewTabPage.xml</Instance>
 
   <Script name="ViewModelResource">
     <Workflow>

@@ -113,8 +113,6 @@ Tab Control
 				GuiTab(IStyleController* _styleController);
 				~GuiTab();
 
-				IDescriptable*									QueryService(const WString& identifier)override;
-
 				/// <summary>Selected page changed event.</summary>
 				compositions::GuiNotifyEvent					SelectedPageChanged;
 

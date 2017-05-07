@@ -18,48 +18,46 @@
       </att.Columns>
 
       <Cell Site="row:0 column:0 columnSpan:3">
-        <Stack Direction="Horizontal" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-          <StackItem>
-            <Button Text="Text">
-              <ev.Clicked-eval>
-                <![CDATA[
+        <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="0">
+          <att.BoundsComposition-set PreferredMinSize="x:120"/>
+          <att.ListControl>
+            <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.Items>
+                <TextItem Text="Text"/>
+                <TextItem Text="Check"/>
+                <TextItem Text="Radio"/>
+              </att.Items>
+            </TextList>
+          </att.ListControl>
+          <ev.SelectedIndexChanged-eval>
+            <![CDATA[
+              {
+                switch (comboView.SelectedIndex)
+                {
+                case 0:
                   {
                     textList.View = Text;
                     bindableTextList.View = Text;
                   }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-          <StackItem>
-            <Button Text="Check">
-              <ev.Clicked-eval>
-                <![CDATA[
+                case 1:
                   {
                     textList.View = Check;
                     bindableTextList.View = Check;
                   }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-          <StackItem>
-            <Button Text="Radio">
-              <ev.Clicked-eval>
-                <![CDATA[
+                case 2:
                   {
                     textList.View = Radio;
                     bindableTextList.View = Radio;
                   }
-                ]]>
-              </ev.Clicked-eval>
-            </Button>
-          </StackItem>
-        </Stack>
+                }
+              }
+            ]]>
+          </ev.SelectedIndexChanged-eval>
+        </ComboBox>
       </Cell>
 
       <Cell Site="row:1 column:0">
-        <TextList ref.Name="textList" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <TextList ref.Name="textList" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </TextList>
       </Cell>
@@ -67,7 +65,7 @@
       <Cell Site="row:1 column:1">
         <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <StackItem>
-            <Button Text="Add 10 items">
+            <Button Alt="A" Text="Add 10 items">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.Clicked-eval>
                 <![CDATA[
@@ -95,7 +93,7 @@
             </Button>
           </StackItem>
           <StackItem>
-            <Button Text="Remove odd items">
+            <Button Alt="O" Text="Remove odd items">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.Clicked-eval>
                 <![CDATA[
@@ -124,7 +122,7 @@
             </Button>
           </StackItem>
           <StackItem>
-            <Button Text="Remove even items">
+            <Button Alt="E" Text="Remove even items">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.Clicked-eval>
                 <![CDATA[
@@ -153,7 +151,7 @@
             </Button>
           </StackItem>
           <StackItem>
-            <Button Text="Clear">
+            <Button Alt="C" Text="Clear">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.Clicked-eval>
                 <![CDATA[
@@ -173,7 +171,7 @@
       </Cell>
 
       <Cell Site="row:1 column:2">
-        <BindableTextList ref.Name="bindableTextList" env.ItemType="demo::MyTextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+        <BindableTextList ref.Name="bindableTextList" Alt="B" env.ItemType="demo::MyTextItem^" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.ItemSource-eval>ViewModel.TextItems</att.ItemSource-eval>
           <att.TextProperty>Name</att.TextProperty>

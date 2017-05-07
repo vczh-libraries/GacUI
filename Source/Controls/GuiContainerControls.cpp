@@ -62,6 +62,7 @@ GuiTabPageList
 				tab->styleController->SetTabAlt(index, value->GetAlt());
 
 				value->tab = tab;
+				value->SetVisible(false);
 				value->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				tab->GetContainerComposition()->AddChild(value->GetBoundsComposition());
 
@@ -127,18 +128,6 @@ GuiTab
 			{
 			}
 
-			IDescriptable* GuiTab::QueryService(const WString& identifier)
-			{
-				if (identifier == IGuiAltActionContainer::Identifier)
-				{
-					return (IGuiAltActionContainer*)this;
-				}
-				else
-				{
-					return GuiControl::QueryService(identifier);
-				}
-			}
-
 			GuiTabPageList& GuiTab::GetPages()
 			{
 				return tabPages;
@@ -166,7 +155,7 @@ GuiTab
 						for (vint i = 0; i < tabPages.Count(); i++)
 						{
 							bool selected = tabPages[i] == value;
-							tabPages[i]->GetContainerComposition()->SetVisible(selected);
+							tabPages[i]->SetVisible(selected);
 							if (selected)
 							{
 								styleController->SetSelectedTab(i);

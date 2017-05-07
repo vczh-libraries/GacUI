@@ -743,6 +743,7 @@ GuiListView
 			GuiVirtualListView::GuiVirtualListView(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider)
 				:GuiListViewBase(_styleProvider, _itemProvider)
 			{
+				SetView(ListViewView::Detail);
 			}
 
 			GuiVirtualListView::~GuiVirtualListView()

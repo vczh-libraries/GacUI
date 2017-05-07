@@ -472,7 +472,7 @@ GuiVirtualListView
 			class GuiVirtualListView : public GuiListViewBase, public Description<GuiVirtualListView>
 			{
 			protected:
-				ListViewView											view = ListViewView::BigIcon;
+				ListViewView											view = ListViewView::Unknown;
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

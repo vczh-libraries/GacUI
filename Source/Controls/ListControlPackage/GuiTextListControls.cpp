@@ -317,10 +317,7 @@ GuiTextList
 				ItemChecked.SetAssociatedComposition(boundsComposition);
 
 				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
-				SetStyleAndArranger(
-					[](const Value&) { return new list::DefaultTextListItemTemplate; },
-					new list::FixedHeightItemArranger
-					);
+				SetView(TextListView::Text);
 			}
 
 			GuiVirtualTextList::~GuiVirtualTextList()
@@ -342,13 +339,22 @@ GuiTextList
 				switch (_view)
 				{
 				case TextListView::Text:
-					SetItemTemplate([](const Value&) { return new list::DefaultTextListItemTemplate; });
+					SetStyleAndArranger(
+						[](const Value&) { return new list::DefaultTextListItemTemplate; },
+						new list::FixedHeightItemArranger
+					);
 					break;
 				case TextListView::Check:
-					SetItemTemplate([](const Value&) { return new list::DefaultCheckTextListItemTemplate; });
+					SetStyleAndArranger(
+						[](const Value&) { return new list::DefaultCheckTextListItemTemplate; },
+						new list::FixedHeightItemArranger
+					);
 					break;
 				case TextListView::Radio:
-					SetItemTemplate([](const Value&) { return new list::DefaultRadioTextListItemTemplate; });
+					SetStyleAndArranger(
+						[](const Value&) { return new list::DefaultRadioTextListItemTemplate; },
+						new list::FixedHeightItemArranger
+					);
 					break;
 				default:;
 				}
