@@ -73,6 +73,19 @@
       <Cell Site="row:1 column:0">
         <ListView ref.Name="listView" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+
+          <att.Columns>
+            <_ Text="Id"/>
+            <_ Text="Category"/>
+            <_ Text="Size"/>
+            <_ Text="File"/>
+          </att.Columns>
+
+          <att.DataColumns>
+            <_>0</_>
+            <_>1</_>
+            <_>2</_>
+          </att.DataColumns>
         </ListView>
       </Cell>
     </Table>

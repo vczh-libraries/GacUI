@@ -34,7 +34,7 @@ for %%f in (*_16x16_*.png) do (
     echo.        item.Text = "!id!";>> ImageLoader.xml
     echo.        item.LargeImage = cast ^(GuiImageData^^^^^) host.ResolveResource^("res", "LargeImages/!id!"^);>> ImageLoader.xml
     echo.        item.SmallImage = cast ^(GuiImageData^^^^^) host.ResolveResource^("res", "SmallImages/!id!"^);>> ImageLoader.xml
-    echo.        item.SubItems.Add^("!name:~0,4!"^);>> ImageLoader.xml
+    echo.        item.SubItems.Add^("!name:~0,3!"^);>> ImageLoader.xml
     echo.        item.SubItems.Add^("!name:~-12,-7!"^);>> ImageLoader.xml
     echo.        item.SubItems.Add^("!name!"^);>> ImageLoader.xml
     echo.        listView.Items.Add^(item^);>> ImageLoader.xml
