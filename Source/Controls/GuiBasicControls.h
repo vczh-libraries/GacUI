@@ -306,13 +306,23 @@ Basic Construction
 			{
 				typedef collections::List<Ptr<description::IValueSubscription>>		SubscriptionList;
 			protected:
-				collections::SortedList<GuiComponent*>			components;
+				Ptr<GuiResourcePathResolver>					resourceResolver;
 				SubscriptionList								subscriptions;
+				collections::SortedList<GuiComponent*>			components;
 
 				void											FinalizeInstance();
 			public:
 				GuiInstanceRootObject();
 				~GuiInstanceRootObject();
+
+				/// <summary>Set the resource resolver to connect the current root object to the resource creating it.</summary>
+				/// <param name="resolver">The resource resolver</param>
+				void											SetResourceResolver(Ptr<GuiResourcePathResolver> resolver);
+				/// <summary>Resolve a resource using the current resource resolver.</summary>
+				/// <returns>The loaded resource. Returns null if failed to load.</returns>
+				/// <param name="protocol">The protocol.</param>
+				/// <param name="path">The path.</param>
+				Ptr<DescriptableObject>							ResolveResource(const WString& protocol, const WString& path);
 
 				/// <summary>Add a subscription. When this control host is disposing, all attached subscriptions will be deleted.</summary>
 				/// <returns>Returns null if this operation failed.</returns>

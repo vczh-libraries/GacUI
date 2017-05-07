@@ -129,22 +129,12 @@ Workflow_InstallCtorClass
 			thisParam->name.value = L"<this>";
 			thisParam->type = GetTypeFromTypeInfo(resolvingResult.rootTypeInfo.typeInfo.Obj());
 
-			auto resolverParam = MakePtr<WfFunctionArgument>();
-			resolverParam->name.value = L"<resolver>";
-			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<GuiResourcePathResolver>(), TypeInfoHint::Normal);
-				auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
-
-				resolverParam->type = GetTypeFromTypeInfo(pointerType.Obj());
-			}
-
 			auto block = MakePtr<WfBlockStatement>();
 
 			auto func = MakePtr<WfFunctionDeclaration>();
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = L"<initialize-instance>";
 			func->arguments.Add(thisParam);
-			func->arguments.Add(resolverParam);
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 			func->statement = block;
 

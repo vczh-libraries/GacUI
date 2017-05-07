@@ -671,26 +671,32 @@ Workflow_GenerateInstanceClass
 					ctorBlock->statements.Add(varStat);
 				}
 				{
-					auto ctorRef = MakePtr<WfThisExpression>();
-
-					auto initRef = MakePtr<WfMemberExpression>();
-					initRef->parent = ctorRef;
-					initRef->name.value = L"<initialize-instance>";
-
-					auto refThis = MakePtr<WfThisExpression>();
+					auto setRef = MakePtr<WfMemberExpression>();
+					setRef->parent = MakePtr<WfThisExpression>();
+					setRef->name.value = L"SetResourceResolver";
 
 					auto resolverRef = MakePtr<WfReferenceExpression>();
 					resolverRef->name.value = L"<resolver>";
 
-					auto castExpr = MakePtr<WfTypeCastingExpression>();
-					castExpr->strategy = WfTypeCastingStrategy::Strong;
-					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<GuiResourcePathResolver*>::CreateTypeInfo().Obj());
-					castExpr->expression = resolverRef;
+					auto callExpr = MakePtr<WfCallExpression>();
+					callExpr->function = setRef;
+					callExpr->arguments.Add(resolverRef);
+
+					auto stat = MakePtr<WfExpressionStatement>();
+					stat->expression = callExpr;
+
+					ctorBlock->statements.Add(stat);
+				}
+				{
+					auto initRef = MakePtr<WfMemberExpression>();
+					initRef->parent = MakePtr<WfThisExpression>();
+					initRef->name.value = L"<initialize-instance>";
+
+					auto refThis = MakePtr<WfThisExpression>();
 
 					auto callExpr = MakePtr<WfCallExpression>();
 					callExpr->function = initRef;
 					callExpr->arguments.Add(refThis);
-					callExpr->arguments.Add(castExpr);
 
 					auto stat = MakePtr<WfExpressionStatement>();
 					stat->expression = callExpr;

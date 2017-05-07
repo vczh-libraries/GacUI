@@ -490,6 +490,17 @@ GuiInstanceRootObject
 			{
 			}
 
+			void GuiInstanceRootObject::SetResourceResolver(Ptr<GuiResourcePathResolver> resolver)
+			{
+				resourceResolver = resolver;
+			}
+
+			Ptr<DescriptableObject> GuiInstanceRootObject::ResolveResource(const WString& protocol, const WString& path)
+			{
+				if (!resourceResolver) return nullptr;
+				return resourceResolver->ResolveResource(protocol, path);
+			}
+
 			Ptr<description::IValueSubscription> GuiInstanceRootObject::AddSubscription(Ptr<description::IValueSubscription> subscription)
 			{
 				if (subscriptions.Contains(subscription.Obj()))

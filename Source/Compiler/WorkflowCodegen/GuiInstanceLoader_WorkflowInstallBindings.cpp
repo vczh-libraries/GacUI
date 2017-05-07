@@ -23,7 +23,7 @@ Workflow_InstallBindProperty
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
 				auto refResolver = MakePtr<WfReferenceExpression>();
-				refResolver->name.value = L"<resolver>";
+				refResolver->name.value = L"<this>";
 
 				auto member = MakePtr<WfMemberExpression>();
 				member->parent = refResolver;
