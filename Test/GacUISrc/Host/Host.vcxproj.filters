@@ -57,6 +57,12 @@
     <Xml Include="Resources\FullControlTest\ListViewTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
+    <Xml Include="Resources\FullControlTest\Images\LargeImages.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\Images\SmallImages.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">
