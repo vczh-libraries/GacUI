@@ -444,7 +444,7 @@ InformationListViewItemTemplate
 							auto cell = new GuiCellComposition;
 							table->AddChild(cell);
 							cell->SetSite(1, 0, 1, 1);
-							cell->SetPreferredMinSize(Size(16, 16));
+							cell->SetPreferredMinSize(Size(32, 32));
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
@@ -648,21 +648,21 @@ DetailListViewItemTemplate
 							text->SetText(view->GetText(itemIndex));
 							text->SetColor(styleProvider->GetPrimaryTextColor());
 
-							vint columnCount = view->GetColumnCount();
+							vint columnCount = view->GetColumnCount() - 1;
 							subItems.Resize(columnCount);
-							textTable->SetRowsAndColumns(1, columnCount);
-							for (vint i = 1; i < columnCount; i++)
+							textTable->SetRowsAndColumns(1, columnCount + 1);
+							for (vint i = 0; i < columnCount; i++)
 							{
 								auto cell = new GuiCellComposition;
 								textTable->AddChild(cell);
-								cell->SetSite(0, i, 1, 1);
+								cell->SetSite(0, i + 1, 1, 1);
 								cell->SetMargin(Margin(8, 0, 8, 0));
 
 								subItems[i] = GuiSolidLabelElement::Create();
 								subItems[i]->SetAlignments(Alignment::Left, Alignment::Center);
 								subItems[i]->SetFont(text->GetFont());
 								subItems[i]->SetEllipse(true);
-								subItems[i]->SetText(view->GetSubItem(itemIndex, i - 1));
+								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
 								subItems[i]->SetColor(styleProvider->GetSecondaryTextColor());
 								cell->SetOwnedElement(subItems[i]);
 							}
@@ -700,7 +700,7 @@ DetailListViewItemTemplate
 					text->SetFont(GetFont());
 					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
-						vint columnCount = view->GetColumnCount();
+						vint columnCount = view->GetColumnCount() - 1;
 						for (vint i = 0; i < columnCount; i++)
 						{
 							subItems[i]->SetFont(GetFont());
