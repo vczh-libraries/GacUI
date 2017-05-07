@@ -71,7 +71,7 @@ BigIconListViewItemTemplate
 							cell->SetSite(0, 1, 1, 1);
 							cell->SetPreferredMinSize(Size(32, 32));
 
-							auto image = GuiImageFrameElement::Create();
+							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
 							cell->SetOwnedElement(image);
 						}
