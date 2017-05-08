@@ -609,7 +609,6 @@ namespace demo
 	void ListViewTabPageConstructor::__vwsn_initialize_instance_(::demo::ListViewTabPage* __vwsn_this_)
 	{
 		(::vl::__vwsn::This(this)->self = __vwsn_this_);
-		(::vl::__vwsn::This(this)->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetText(::vl::WString(L"ListView", false));
 		}
@@ -796,15 +795,9 @@ namespace demo
 Class (::demo::ListViewTabPage)
 ***********************************************************************/
 
-	::vl::Ptr<::demo::IViewModel> ListViewTabPage::GetViewModel()
-	{
-		return ::vl::__vwsn::This(this)->__vwsn_parameter_ViewModel;
-	}
-
-	ListViewTabPage::ListViewTabPage(::vl::Ptr<::demo::IViewModel> __vwsn_ctor_parameter_ViewModel)
+	ListViewTabPage::ListViewTabPage()
 		: ::vl::presentation::controls::GuiTabPage(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
 	{
-		(::vl::__vwsn::This(this)->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::ListViewTabPage", false));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
@@ -829,9 +822,9 @@ Class (::demo::MainWindowConstructor)
 	void MainWindowConstructor::__vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_)
 	{
 		(::vl::__vwsn::This(this)->self = __vwsn_this_);
-		(::vl::__vwsn::This(this)->__vwsn_precompile_7 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetBoundsComposition());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_8 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
@@ -865,13 +858,21 @@ Class (::demo::MainWindowConstructor)
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetPages());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_5));
 		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = new ::demo::ListViewTabPage(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->viewModel));
+		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = new ::demo::ListViewTabPage());
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6)->SetAlt(::vl::WString(L"L", false));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetPages());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_6));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_7 = new ::demo::TreeViewTabPage());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7)->SetAlt(::vl::WString(L"R", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_7));
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_4 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3)->GetBoundsComposition());
 		{
@@ -1205,6 +1206,610 @@ Class (::demo::TextListTabPage)
 	}
 
 /***********************************************************************
+Class (::demo::TreeViewTabPageConstructor)
+***********************************************************************/
+
+	void TreeViewTabPageConstructor::__vwsn_initialize_instance_(::demo::TreeViewTabPage* __vwsn_this_)
+	{
+		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetText(::vl::WString(L"TreeView", false));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowsAndColumns(1, 1);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 0.5; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetSite(0, 0, 1, 1);
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTreeViewStyle();
+			(::vl::__vwsn::This(this)->treeView = new ::vl::presentation::controls::GuiTreeView(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->SetHorizontalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->SetAlt(::vl::WString(L"L", false));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_24 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_24)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"Blue+", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->NotifyDataModified();
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"<--", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_3));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"-->", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_4));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"V", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_5));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"^", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_6));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"<", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_7));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_8 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L">", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_8));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->Nodes().Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_2));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_9 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"Green+", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->NotifyDataModified();
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_10 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"V", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_10));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_11 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"^", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_11));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_12 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"<", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_12));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_13 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L">", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_13));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->Nodes().Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_9));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_14 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"Grey+", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->NotifyDataModified();
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_15 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"V", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_15));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_16 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"^", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_16));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"<", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_17));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L">", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_18));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->Nodes().Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_14));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"Orange+", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->NotifyDataModified();
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"V", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_20));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_21 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"^", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_21));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_22 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L"<", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_22));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_23 = ::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>(new ::vl::presentation::controls::tree::MemoryNodeProvider(::vl::Ptr<::vl::presentation::controls::tree::TreeViewItem>(new ::vl::presentation::controls::tree::TreeViewItem()))));
+		{
+			(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23.Obj())->GetData().Obj())).Obj())->text = ::vl::WString(L">", false));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23.Obj())->NotifyDataModified();
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_23));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->Nodes().Obj())->Children()).Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::This(this)->__vwsn_precompile_19));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->treeView)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/ArrowCurve_Blue_Left", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/ArrowCurve_Blue_Left\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/ArrowCurve_Blue_Left\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/ArrowCurve_Blue_Right", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/ArrowCurve_Blue_Right\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/ArrowCurve_Blue_Right\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_4.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/DownArrowLong_Blue", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/DownArrowLong_Blue\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/DownArrowLong_Blue\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_5.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/UpArrowLong_Blue", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/UpArrowLong_Blue\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/UpArrowLong_Blue\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_6.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/LeftArrowLong_Blue", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/LeftArrowLong_Blue\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/LeftArrowLong_Blue\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_7.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/RightArrowLong_Blue", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/RightArrowLong_Blue\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/RightArrowLong_Blue\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_8.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Plus_Blue", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/Plus_Blue\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/Plus_Blue\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/DownArrowLong_Green", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/DownArrowLong_Green\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/DownArrowLong_Green\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/UpArrowLong_Green", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/UpArrowLong_Green\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/UpArrowLong_Green\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_11.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/LeftArrowLong_Green", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/LeftArrowLong_Green\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/LeftArrowLong_Green\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/RightArrowLong_Green", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/RightArrowLong_Green\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/RightArrowLong_Green\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_13.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Plus_Green", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/Plus_Green\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/Plus_Green\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_9.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/DownArrowLong_Grey", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/DownArrowLong_Grey\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/DownArrowLong_Grey\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/UpArrowLong_Grey", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/UpArrowLong_Grey\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/UpArrowLong_Grey\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_16.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/LeftArrowLong_Grey", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/LeftArrowLong_Grey\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/LeftArrowLong_Grey\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/RightArrowLong_Grey", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/RightArrowLong_Grey\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/RightArrowLong_Grey\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Plus_Grey", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/Plus_Grey\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/Plus_Grey\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_14.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/DownArrowLong_Orange", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/DownArrowLong_Orange\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/DownArrowLong_Orange\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/UpArrowLong_Orange", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/UpArrowLong_Orange\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/UpArrowLong_Orange\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/LeftArrowLong_Orange", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/LeftArrowLong_Orange\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/LeftArrowLong_Orange\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_22.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/RightArrowLong_Orange", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/RightArrowLong_Orange\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/RightArrowLong_Orange\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_23.Obj())->NotifyDataModified();
+			}
+		}
+		{
+			auto __vwsn_resource_item_ = ::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"SmallImages/Plus_Orange", false));
+			if ((! static_cast<bool>(__vwsn_resource_item_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/Plus_Orange\" does not exist.", false));
+			}
+			auto __vwsn_resource_value_ = ::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(__vwsn_resource_item_.Obj());
+			if ((! static_cast<bool>(__vwsn_resource_value_)))
+			{
+				throw ::vl::Exception(::vl::WString(L"Resource \"res://SmallImages/Plus_Orange\" cannot be read as type \"presentation::GuiImageData^\".", false));
+			}
+			{
+				(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->GetData().Obj())).Obj())->image = __vwsn_resource_value_);
+				::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->NotifyDataModified();
+			}
+		}
+	}
+
+	TreeViewTabPageConstructor::TreeViewTabPageConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::demo::TreeViewTabPage)
+***********************************************************************/
+
+	TreeViewTabPage::TreeViewTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TreeViewTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
+	}
+
+	TreeViewTabPage::~TreeViewTabPage()
+	{
+		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
 Class (::demo::MyTextItem)
 ***********************************************************************/
 
@@ -1259,6 +1864,8 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(demo::MyTextItem)
 			IMPL_CPP_TYPE_INFO(demo::TextListTabPage)
 			IMPL_CPP_TYPE_INFO(demo::TextListTabPageConstructor)
+			IMPL_CPP_TYPE_INFO(demo::TreeViewTabPage)
+			IMPL_CPP_TYPE_INFO(demo::TreeViewTabPageConstructor)
 
 #define _ ,
 			BEGIN_INTERFACE_MEMBER(::demo::IViewModel)
@@ -1270,11 +1877,8 @@ namespace vl
 			END_INTERFACE_MEMBER(::demo::IViewModel)
 
 			BEGIN_CLASS_MEMBER(::demo::ListViewTabPage)
-				CLASS_MEMBER_CONSTRUCTOR(::demo::ListViewTabPage*(::vl::Ptr<::demo::IViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_CONSTRUCTOR(::demo::ListViewTabPage*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
-				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
-				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)
 			END_CLASS_MEMBER(::demo::ListViewTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::ListViewTabPageConstructor)
@@ -1296,7 +1900,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
-				CLASS_MEMBER_FIELD(ViewModel)
 				CLASS_MEMBER_FIELD(comboView)
 				CLASS_MEMBER_FIELD(listView)
 				CLASS_MEMBER_FIELD(self)
@@ -1319,6 +1922,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::MainWindowConstructor)
 
@@ -1377,6 +1981,42 @@ namespace vl
 				CLASS_MEMBER_FIELD(textList)
 			END_CLASS_MEMBER(::demo::TextListTabPageConstructor)
 
+			BEGIN_CLASS_MEMBER(::demo::TreeViewTabPage)
+				CLASS_MEMBER_CONSTRUCTOR(::demo::TreeViewTabPage*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::demo::TreeViewTabPage)
+
+			BEGIN_CLASS_MEMBER(::demo::TreeViewTabPageConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::TreeViewTabPageConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_11)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_12)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_13)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_14)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_15)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_16)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_17)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_18)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_19)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_20)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_21)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_22)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_23)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_24)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(self)
+				CLASS_MEMBER_FIELD(treeView)
+			END_CLASS_MEMBER(::demo::TreeViewTabPageConstructor)
+
 #undef _
 			class DemoTypeLoader : public Object, public ITypeLoader
 			{
@@ -1391,6 +2031,8 @@ namespace vl
 					ADD_TYPE_INFO(::demo::MyTextItem)
 					ADD_TYPE_INFO(::demo::TextListTabPage)
 					ADD_TYPE_INFO(::demo::TextListTabPageConstructor)
+					ADD_TYPE_INFO(::demo::TreeViewTabPage)
+					ADD_TYPE_INFO(::demo::TreeViewTabPageConstructor)
 				}
 
 				void Unload(ITypeManager* manager)

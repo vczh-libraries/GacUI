@@ -230,6 +230,7 @@
     <Xml Include="Resources\FullControlTest\ListViewTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Resource.xml" />
     <Xml Include="Resources\FullControlTest\TextListTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\TreeViewTabPage.xml" />
     <Xml Include="Resources\UI10_MultipleWindows.xml" />
     <Xml Include="Resources\UI1_StyleTemplate.xml" />
     <Xml Include="Resources\UI2_Properties.xml" />

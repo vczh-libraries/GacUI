@@ -32,6 +32,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::MyTextItem)
 			DECL_TYPE_INFO(::demo::TextListTabPage)
 			DECL_TYPE_INFO(::demo::TextListTabPageConstructor)
+			DECL_TYPE_INFO(::demo::TreeViewTabPage)
+			DECL_TYPE_INFO(::demo::TreeViewTabPageConstructor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::demo::IViewModel)
 				void AddTextItem(::vl::Ptr<::demo::MyTextItem> item) override

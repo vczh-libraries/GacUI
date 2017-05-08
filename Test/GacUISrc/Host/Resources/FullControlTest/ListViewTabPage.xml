@@ -1,5 +1,4 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::ListViewTabPage">
-  <ref.Parameter Name="ViewModel" Class="demo::IViewModel"/>
   <ref.Ctor>
     <![CDATA[
       Application::GetApplication().InvokeInMainThread(func():void

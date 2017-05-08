@@ -858,7 +858,10 @@ GuiVirtualTreeView
 			{
 				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
 				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
-				SetArranger(new list::FixedHeightItemArranger);
+				SetStyleAndArranger(
+					[](const Value&) { return new tree::DefaultTreeItemTemplate; },
+					new list::FixedHeightItemArranger
+				);
 			}
 
 			GuiVirtualTreeView::~GuiVirtualTreeView()
