@@ -979,8 +979,8 @@ DefaultTreeItemTemplate
 					TextChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextChanged);
 					SelectedChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnSelectedChanged);
 					TextColorChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
-					ExpandingChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
-					ImageChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
+					ExpandingChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingChanged);
+					ImageChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnImageChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
 					TextChanged.Execute(compositions::GuiEventArgs(this));
@@ -1017,7 +1017,14 @@ DefaultTreeItemTemplate
 
 				void DefaultTreeItemTemplate::OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					imageElement->SetImage(GetImage()->GetImage(), GetImage()->GetFrameIndex());
+					if (auto imageData = GetImage())
+					{
+						imageElement->SetImage(imageData->GetImage(), imageData->GetFrameIndex());
+					}
+					else
+					{
+						imageElement->SetImage(nullptr);
+					}
 				}
 
 				void DefaultTreeItemTemplate::SwitchNodeExpanding()
