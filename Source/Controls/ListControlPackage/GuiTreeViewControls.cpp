@@ -984,6 +984,7 @@ DefaultTreeItemTemplate
 
 					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
 					backgroundButton->SetAutoSelection(false);
+					backgroundButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					backgroundButton->GetBoundsComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					backgroundButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnBackgroundButtonDoubleClick);
 					AddChild(backgroundButton->GetBoundsComposition());
