@@ -29,7 +29,8 @@ GuiInstanceLoader_List.cpp
 	GuiBindableDataGrid
 		ctor: ViewModelContext
 	tree::TreeNode
-		Text, Image, Tag
+		ctor: Text, Image
+		Tag
 GuiInstanceLoader_Templates.cpp
 	GuiTemplate
 		ctor: \w+(ItemTemplate<T>)

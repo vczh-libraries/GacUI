@@ -13,8 +13,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Task";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Task");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Task");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Task", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Task", true);
         item.SubItems.Add("005");
         item.SubItems.Add("16x16");
         item.SubItems.Add("005_Task_16x16_72.png");
@@ -23,8 +23,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Reminder";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Reminder");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Reminder");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Reminder", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Reminder", true);
         item.SubItems.Add("008");
         item.SubItems.Add("16x16");
         item.SubItems.Add("008_Reminder_16x16_72.png");
@@ -33,8 +33,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Tip";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Tip");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Tip");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Tip", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Tip", true);
         item.SubItems.Add("023");
         item.SubItems.Add("16x16");
         item.SubItems.Add("023_Tip_16x16_72.png");
@@ -43,8 +43,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "ArrowCurve_Blue_Left";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/ArrowCurve_Blue_Left");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Left");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/ArrowCurve_Blue_Left", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Left", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_ArrowCurve_Blue_Left_16x16_72.png");
@@ -53,8 +53,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "ArrowCurve_Blue_Right";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/ArrowCurve_Blue_Right");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Right");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/ArrowCurve_Blue_Right", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Right", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_ArrowCurve_Blue_Right_16x16_72.png");
@@ -63,8 +63,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "DownArrowLong_Blue";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/DownArrowLong_Blue");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/DownArrowLong_Blue");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/DownArrowLong_Blue", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/DownArrowLong_Blue", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_DownArrowLong_Blue_16x16_72.png");
@@ -73,8 +73,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "DownArrowLong_Green";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/DownArrowLong_Green");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/DownArrowLong_Green");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/DownArrowLong_Green", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/DownArrowLong_Green", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_DownArrowLong_Green_16x16_72.png");
@@ -83,8 +83,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "DownArrowLong_Grey";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/DownArrowLong_Grey");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/DownArrowLong_Grey");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/DownArrowLong_Grey", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/DownArrowLong_Grey", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_DownArrowLong_Grey_16x16_72.png");
@@ -93,8 +93,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "DownArrowLong_Orange";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/DownArrowLong_Orange");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/DownArrowLong_Orange");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/DownArrowLong_Orange", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/DownArrowLong_Orange", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_DownArrowLong_Orange_16x16_72.png");
@@ -103,8 +103,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "LeftArrowLong_Blue";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/LeftArrowLong_Blue");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/LeftArrowLong_Blue");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/LeftArrowLong_Blue", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/LeftArrowLong_Blue", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_LeftArrowLong_Blue_16x16_72.png");
@@ -113,8 +113,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "LeftArrowLong_Green";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/LeftArrowLong_Green");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/LeftArrowLong_Green");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/LeftArrowLong_Green", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/LeftArrowLong_Green", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_LeftArrowLong_Green_16x16_72.png");
@@ -123,8 +123,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "LeftArrowLong_Grey";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/LeftArrowLong_Grey");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/LeftArrowLong_Grey");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/LeftArrowLong_Grey", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/LeftArrowLong_Grey", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_LeftArrowLong_Grey_16x16_72.png");
@@ -133,8 +133,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "LeftArrowLong_Orange";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/LeftArrowLong_Orange");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/LeftArrowLong_Orange");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/LeftArrowLong_Orange", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/LeftArrowLong_Orange", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_LeftArrowLong_Orange_16x16_72.png");
@@ -143,8 +143,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Minus_Blue";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Minus_Blue");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Minus_Blue");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Minus_Blue", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Minus_Blue", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Minus_Blue_16x16_72.png");
@@ -153,8 +153,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Minus_Green";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Minus_Green");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Minus_Green");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Minus_Green", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Minus_Green", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Minus_Green_16x16_72.png");
@@ -163,8 +163,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Minus_Grey";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Minus_Grey");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Minus_Grey");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Minus_Grey", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Minus_Grey", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Minus_Grey_16x16_72.png");
@@ -173,8 +173,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Minus_Orange";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Minus_Orange");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Minus_Orange");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Minus_Orange", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Minus_Orange", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Minus_Orange_16x16_72.png");
@@ -183,8 +183,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Plus_Blue";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Plus_Blue");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Plus_Blue");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Plus_Blue", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Plus_Blue", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Plus_Blue_16x16_72.png");
@@ -193,8 +193,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Plus_Green";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Plus_Green");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Plus_Green");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Plus_Green", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Plus_Green", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Plus_Green_16x16_72.png");
@@ -203,8 +203,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Plus_Grey";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Plus_Grey");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Plus_Grey");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Plus_Grey", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Plus_Grey", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Plus_Grey_16x16_72.png");
@@ -213,8 +213,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "Plus_Orange";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Plus_Orange");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Plus_Orange");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Plus_Orange", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Plus_Orange", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Plus_Orange_16x16_72.png");
@@ -223,8 +223,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "RightArrowLong_Blue";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/RightArrowLong_Blue");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/RightArrowLong_Blue");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/RightArrowLong_Blue", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/RightArrowLong_Blue", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_RightArrowLong_Blue_16x16_72.png");
@@ -233,8 +233,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "RightArrowLong_Green";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/RightArrowLong_Green");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/RightArrowLong_Green");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/RightArrowLong_Green", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/RightArrowLong_Green", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_RightArrowLong_Green_16x16_72.png");
@@ -243,8 +243,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "RightArrowLong_Grey";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/RightArrowLong_Grey");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/RightArrowLong_Grey");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/RightArrowLong_Grey", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/RightArrowLong_Grey", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_RightArrowLong_Grey_16x16_72.png");
@@ -253,8 +253,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "RightArrowLong_Orange";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/RightArrowLong_Orange");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/RightArrowLong_Orange");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/RightArrowLong_Orange", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/RightArrowLong_Orange", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_RightArrowLong_Orange_16x16_72.png");
@@ -263,8 +263,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "UpArrowLong_Blue";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/UpArrowLong_Blue");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/UpArrowLong_Blue");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/UpArrowLong_Blue", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/UpArrowLong_Blue", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_UpArrowLong_Blue_16x16_72.png");
@@ -273,8 +273,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "UpArrowLong_Green";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/UpArrowLong_Green");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/UpArrowLong_Green");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/UpArrowLong_Green", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/UpArrowLong_Green", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_UpArrowLong_Green_16x16_72.png");
@@ -283,8 +283,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "UpArrowLong_Grey";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/UpArrowLong_Grey");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/UpArrowLong_Grey");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/UpArrowLong_Grey", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/UpArrowLong_Grey", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_UpArrowLong_Grey_16x16_72.png");
@@ -293,8 +293,8 @@
       {
         var item = new ListViewItem^();
         item.Text = "UpArrowLong_Orange";
-        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/UpArrowLong_Orange");
-        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/UpArrowLong_Orange");
+        item.LargeImage = cast (GuiImageData^) host.ResolveResource("res", "LargeImages/UpArrowLong_Orange", true);
+        item.SmallImage = cast (GuiImageData^) host.ResolveResource("res", "SmallImages/UpArrowLong_Orange", true);
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_UpArrowLong_Orange_16x16_72.png");

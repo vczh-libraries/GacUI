@@ -30,7 +30,7 @@ GuiResourceInstanceBinder (uri)
 
 			bool ApplicableToConstructorArgument()override
 			{
-				return false;
+				return true;
 			}
 
 			bool RequirePropertyExist()override
@@ -40,7 +40,16 @@ GuiResourceInstanceBinder (uri)
 
 			Ptr<workflow::WfExpression> GenerateConstructorArgument(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				CHECK_FAIL(L"GuiResourceInstanceBinder::GenerateConstructorArgument()#This binder does not support binding to constructor arguments. Please call ApplicableToConstructorArgument() to determine before calling this function.");
+				WString protocol, path;
+				if (!IsResourceUrl(code, protocol, path))
+				{
+					errors.Add(GuiResourceError({ resolvingResult.resource }, position, L"Precompile: \"" + code + L"\" is not a valid resource uri."));
+					return nullptr;
+				}
+				else
+				{
+					return Workflow_GetUriProperty(precompileContext, resolvingResult, loader, prop, propInfo, protocol, path, position, errors);
+				}
 			}
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override

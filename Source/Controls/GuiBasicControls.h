@@ -322,7 +322,8 @@ Basic Construction
 				/// <returns>The loaded resource. Returns null if failed to load.</returns>
 				/// <param name="protocol">The protocol.</param>
 				/// <param name="path">The path.</param>
-				Ptr<DescriptableObject>							ResolveResource(const WString& protocol, const WString& path);
+				/// <param name="ensureExist">Set to true and it will throw an exception if the resource doesn't exist.</param>
+				Ptr<DescriptableObject>							ResolveResource(const WString& protocol, const WString& path, bool ensureExist);
 
 				/// <summary>Add a subscription. When this control host is disposing, all attached subscriptions will be deleted.</summary>
 				/// <returns>Returns null if this operation failed.</returns>

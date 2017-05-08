@@ -495,10 +495,18 @@ GuiInstanceRootObject
 				resourceResolver = resolver;
 			}
 
-			Ptr<DescriptableObject> GuiInstanceRootObject::ResolveResource(const WString& protocol, const WString& path)
+			Ptr<DescriptableObject> GuiInstanceRootObject::ResolveResource(const WString& protocol, const WString& path, bool ensureExist)
 			{
-				if (!resourceResolver) return nullptr;
-				return resourceResolver->ResolveResource(protocol, path);
+				Ptr<DescriptableObject> object;
+				if (resourceResolver)
+				{
+					object = resourceResolver->ResolveResource(protocol, path);
+				}
+				if (ensureExist && !object)
+				{
+					throw ArgumentException(L"Resource \"" + protocol + L"://" + path + L"\" does not exist.");
+				}
+				return object;
 			}
 
 			Ptr<description::IValueSubscription> GuiInstanceRootObject::AddSubscription(Ptr<description::IValueSubscription> subscription)

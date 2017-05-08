@@ -281,11 +281,17 @@ GuiTreeNodeInstanceLoader
 				{
 					if (propertyInfo.propertyName == _Text)
 					{
-						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<WString>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						info->bindability = GuiInstancePropertyInfo::Bindable;
+						return info;
 					}
 					else if (propertyInfo.propertyName == _Image)
 					{
-						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Ptr<GuiImageData>>::CreateTypeInfo());
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Ptr<GuiImageData>>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						info->bindability = GuiInstancePropertyInfo::Bindable;
+						return info;
 					}
 					else if (propertyInfo.propertyName == _Tag)
 					{
@@ -309,6 +315,32 @@ GuiTreeNodeInstanceLoader
 					{
 						auto createItem = MakePtr<WfNewClassExpression>();
 						createItem->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
+
+						vint imageIndex = arguments.Keys().IndexOf(_Image);
+						vint textIndex = arguments.Keys().IndexOf(_Text);
+
+						if (imageIndex != -1 || textIndex != -1)
+						{
+							if (imageIndex == -1)
+							{
+								auto nullExpr = MakePtr<WfLiteralExpression>();
+								nullExpr->value = WfLiteralValue::Null;
+								createItem->arguments.Add(nullExpr);
+							}
+							else
+							{
+								createItem->arguments.Add(arguments.GetByIndex(imageIndex)[0].expression);
+							}
+
+							if (textIndex == -1)
+							{
+								createItem->arguments.Add(MakePtr<WfStringExpression>());
+							}
+							else
+							{
+								createItem->arguments.Add(arguments.GetByIndex(textIndex)[0].expression);
+							}
+						}
 
 						auto createNode = MakePtr<WfNewClassExpression>();
 						createNode->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo().Obj());
@@ -356,7 +388,7 @@ GuiTreeNodeInstanceLoader
 							stat->expression = call;
 							block->statements.Add(stat);
 						}
-						else if (prop == _Text || prop == _Image || prop == _Tag)
+						else if (prop == _Tag)
 						{
 							{
 								auto refNode = MakePtr<WfReferenceExpression>();
@@ -373,18 +405,7 @@ GuiTreeNodeInstanceLoader
 
 								auto refProp = MakePtr<WfMemberExpression>();
 								refProp->parent = castExpr;
-								if (prop == _Text)
-								{
-									refProp->name.value = L"text";
-								}
-								else if (prop == _Image)
-								{
-									refProp->name.value = L"image";
-								}
-								else if (prop == _Tag)
-								{
-									refProp->name.value = L"tag";
-								}
+								refProp->name.value = L"tag";
 
 								auto assign = MakePtr<WfBinaryExpression>();
 								assign->op = WfBinaryOperator::Assign;

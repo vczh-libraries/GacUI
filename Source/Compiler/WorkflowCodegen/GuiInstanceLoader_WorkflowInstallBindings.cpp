@@ -18,9 +18,9 @@ namespace vl
 Workflow_InstallBindProperty
 ***********************************************************************/
 
-		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
+		Ptr<workflow::WfExpression> Workflow_GetUriProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
 		{
-			auto subBlock = MakePtr<WfBlockStatement>();
+			Ptr<WfExpression> resourceExpr;
 			{
 				auto refResolver = MakePtr<WfReferenceExpression>();
 				refResolver->name.value = L"<this>";
@@ -35,153 +35,95 @@ Workflow_InstallBindProperty
 				auto valuePath = MakePtr<WfStringExpression>();
 				valuePath->value.value = path;
 
+				auto valueBool = MakePtr<WfLiteralExpression>();
+				valueBool->value = WfLiteralValue::True;
+
 				auto call = MakePtr<WfCallExpression>();
 				call->function = member;
 				call->arguments.Add(valueProtocol);
 				call->arguments.Add(valuePath);
+				call->arguments.Add(valueBool);
 
-				auto varDesc = MakePtr<WfVariableDeclaration>();
-				varDesc->name.value = L"<resource-item>";
-				varDesc->expression = call;
-
-				auto varStat = MakePtr<WfVariableStatement>();
-				varStat->variable = varDesc;
-				subBlock->statements.Add(varStat);
-			}
-			{
-				auto refResourceItem = MakePtr<WfReferenceExpression>();
-				refResourceItem->name.value = L"<resource-item>";
-
-				auto isNull = MakePtr<WfTypeTestingExpression>();
-				isNull->expression = refResourceItem;
-				isNull->test = WfTypeTesting::IsNull;
-
-				auto valueException = MakePtr<WfStringExpression>();
-				valueException->value.value = L"Resource \"" + protocol + L"://" + path + L"\" does not exist.";
-
-				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
-				raiseStat->expression = valueException;
-				
-				auto ifBlock = MakePtr<WfBlockStatement>();
-				ifBlock->statements.Add(raiseStat);
-
-				auto ifStat = MakePtr<WfIfStatement>();
-				ifStat->expression = isNull;
-				ifStat->trueBranch = ifBlock;
-				subBlock->statements.Add(ifStat);
+				resourceExpr = call;
 			}
 
 			auto td = propInfo->acceptableTypes[0]->GetTypeDescriptor();
 			Ptr<ITypeInfo> convertedType;
-			if (td->GetSerializableType())
 			{
-				convertedType = TypeInfoRetriver<Ptr<GuiTextData>>::CreateTypeInfo();
-			}
-			else if (td == description::GetTypeDescriptor<INativeImage>() || td == description::GetTypeDescriptor<GuiImageData>())
-			{
-				convertedType = TypeInfoRetriver<Ptr<GuiImageData>>::CreateTypeInfo();
-			}
-			else
-			{
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-				auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
-				convertedType = pointerType;
+				if (td->GetSerializableType())
+				{
+					convertedType = TypeInfoRetriver<Ptr<GuiTextData>>::CreateTypeInfo();
+				}
+				else if (td == description::GetTypeDescriptor<INativeImage>() || td == description::GetTypeDescriptor<GuiImageData>())
+				{
+					convertedType = TypeInfoRetriver<Ptr<GuiImageData>>::CreateTypeInfo();
+				}
+				else
+				{
+					auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
+					convertedType = pointerType;
+				}
 			}
 
+			Ptr<WfExpression> convertedExpr;
 			{
-				auto refResourceItem = MakePtr<WfReferenceExpression>();
-				refResourceItem->name.value = L"<resource-item>";
-
 				auto cast = MakePtr<WfTypeCastingExpression>();
-				cast->expression = refResourceItem;
+				cast->expression = resourceExpr;
 				cast->type = GetTypeFromTypeInfo(convertedType.Obj());
-				cast->strategy = WfTypeCastingStrategy::Weak;
-
-				auto varDesc = MakePtr<WfVariableDeclaration>();
-				varDesc->name.value = L"<resource-value>";
-				varDesc->expression = cast;
-
-				auto varStat = MakePtr<WfVariableStatement>();
-				varStat->variable = varDesc;
-				subBlock->statements.Add(varStat);
-			}
-			{
-				auto refResourceValue = MakePtr<WfReferenceExpression>();
-				refResourceValue->name.value = L"<resource-value>";
-
-				auto isNull = MakePtr<WfTypeTestingExpression>();
-				isNull->expression = refResourceValue;
-				isNull->test = WfTypeTesting::IsNull;
-
-				auto valueException = MakePtr<WfStringExpression>();
-				valueException->value.value = L"Resource \"" + protocol + L"://" + path + L"\" cannot be read as type \"" + convertedType->GetTypeFriendlyName() + L"\".";
-
-				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
-				raiseStat->expression = valueException;
-
-				auto ifBlock = MakePtr<WfBlockStatement>();
-				ifBlock->statements.Add(raiseStat);
-
-				auto ifStat = MakePtr<WfIfStatement>();
-				ifStat->expression = isNull;
-				ifStat->trueBranch = ifBlock;
-				subBlock->statements.Add(ifStat);
-			}
-
-			Ptr<WfExpression> evalExpression;
-			if (td->GetSerializableType())
-			{
-				auto refResourceValue = MakePtr<WfReferenceExpression>();
-				refResourceValue->name.value = L"<resource-value>";
-
-				auto member = MakePtr<WfMemberExpression>();
-				member->parent = refResourceValue;
-				member->name.value = L"Text";
-
-				auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-
-				auto cast = MakePtr<WfTypeCastingExpression>();
-				cast->expression = member;
-				cast->type = GetTypeFromTypeInfo(elementType.Obj());
 				cast->strategy = WfTypeCastingStrategy::Strong;
 
-				evalExpression = cast;
-			}
-			else if (td == description::GetTypeDescriptor<INativeImage>())
-			{
-				auto refResourceValue = MakePtr<WfReferenceExpression>();
-				refResourceValue->name.value = L"<resource-value>";
-
-				auto member = MakePtr<WfMemberExpression>();
-				member->parent = refResourceValue;
-				member->name.value = L"Image";
-
-				evalExpression = member;
-			}
-			else
-			{
-				auto refResourceValue = MakePtr<WfReferenceExpression>();
-				refResourceValue->name.value = L"<resource-value>";
-
-				evalExpression = refResourceValue;
+				convertedExpr = cast;
 			}
 
+			Ptr<WfExpression> evalExpr;
 			{
-				IGuiInstanceLoader::ArgumentMap arguments;
+				if (td->GetSerializableType())
 				{
-					IGuiInstanceLoader::ArgumentInfo argumentInfo;
-					argumentInfo.typeInfo = propInfo->acceptableTypes[0];
-					argumentInfo.expression = evalExpression;
-					argumentInfo.attPosition = attPosition;
-					arguments.Add(prop.propertyName, argumentInfo);
+					auto member = MakePtr<WfMemberExpression>();
+					member->parent = convertedExpr;
+					member->name.value = L"Text";
+
+					auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+
+					auto cast = MakePtr<WfTypeCastingExpression>();
+					cast->expression = member;
+					cast->type = GetTypeFromTypeInfo(elementType.Obj());
+					cast->strategy = WfTypeCastingStrategy::Strong;
+
+					evalExpr = cast;
 				}
-
-				if (auto stat = loader->AssignParameters(precompileContext, resolvingResult, prop.typeInfo, variableName, arguments, attPosition, errors))
+				else if (td == description::GetTypeDescriptor<INativeImage>())
 				{
-					subBlock->statements.Add(stat);
+					auto member = MakePtr<WfMemberExpression>();
+					member->parent = convertedExpr;
+					member->name.value = L"Image";
+
+					evalExpr = member;
+				}
+				else
+				{
+					evalExpr = convertedExpr;
 				}
 			}
-			return subBlock;
+
+			return evalExpr;
+		}
+
+		Ptr<workflow::WfStatement> Workflow_InstallUriProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors)
+		{
+			auto evalExpr = Workflow_GetUriProperty(precompileContext, resolvingResult, loader, prop, propInfo, protocol, path, attPosition, errors);
+
+			IGuiInstanceLoader::ArgumentMap arguments;
+			{
+				IGuiInstanceLoader::ArgumentInfo argumentInfo;
+				argumentInfo.typeInfo = propInfo->acceptableTypes[0];
+				argumentInfo.expression = evalExpr;
+				argumentInfo.attPosition = attPosition;
+				arguments.Add(prop.propertyName, argumentInfo);
+			}
+
+			return loader->AssignParameters(precompileContext, resolvingResult, prop.typeInfo, variableName, arguments, attPosition, errors);
 		}
 
 /***********************************************************************

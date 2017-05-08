@@ -122,7 +122,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
 				CLASS_MEMBER_METHOD(SetResourceResolver, {L"resolver"})
-				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path"})
+				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path" _ L"ensureExist"})
 
 				CLASS_MEMBER_METHOD(AddSubscription, {L"subscription"})
 				CLASS_MEMBER_METHOD(RemoveSubscription, {L"subscription"})
