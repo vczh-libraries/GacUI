@@ -320,12 +320,13 @@ GuiVirtualTreeListControl
 			/// <summary>Tree list control in virtual node.</summary>
 			class GuiVirtualTreeListControl : public GuiSelectableListControl, protected virtual tree::INodeProviderCallback, public Description<GuiVirtualTreeListControl>
 			{
-			private:
+			protected:
 				void								OnAttached(tree::INodeRootProvider* provider)override;
 				void								OnBeforeItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
 				void								OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
 				void								OnItemExpanded(tree::INodeProvider* node)override;
 				void								OnItemCollapsed(tree::INodeProvider* node)override;
+
 			protected:
 				tree::NodeItemProvider*				nodeItemProvider;
 				tree::INodeItemView*				nodeItemView;
@@ -472,6 +473,9 @@ GuiVirtualTreeView
 				IStyleProvider*											styleProvider = nullptr;
 				tree::ITreeViewItemView*								treeViewItemView = nullptr;
 
+				void													SetStyleExpanding(tree::INodeProvider* node, bool expanding);
+				void													OnItemExpanded(tree::INodeProvider* node)override;
+				void													OnItemCollapsed(tree::INodeProvider* node)override;
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 			public:
 				/// <summary>Create a tree view control in virtual mode. A [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider] is created as a node item style provider by default.</summary>

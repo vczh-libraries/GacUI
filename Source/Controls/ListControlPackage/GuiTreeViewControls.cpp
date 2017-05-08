@@ -835,6 +835,34 @@ TreeViewItemRootProvider
 GuiVirtualTreeView
 ***********************************************************************/
 
+			void GuiVirtualTreeView::SetStyleExpanding(tree::INodeProvider* node, bool expanding)
+			{
+				if (itemArranger)
+				{
+					vint index = nodeItemView->CalculateNodeVisibilityIndex(node);
+					if (index != -1)
+					{
+						auto style = itemArranger->GetVisibleStyle(index);
+						if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
+						{
+							treeItemStyle->SetExpanding(expanding);
+						}
+					}
+				}
+			}
+
+			void GuiVirtualTreeView::OnItemExpanded(tree::INodeProvider* node)
+			{
+				GuiVirtualTreeListControl::OnItemExpanded(node);
+				SetStyleExpanding(node, true);
+			}
+
+			void GuiVirtualTreeView::OnItemCollapsed(tree::INodeProvider* node)
+			{
+				GuiVirtualTreeListControl::OnItemCollapsed(node);
+				SetStyleExpanding(node, false);
+			}
+
 			void GuiVirtualTreeView::OnStyleInstalled(vint itemIndex, ItemStyle* style)
 			{
 				GuiVirtualTreeListControl::OnStyleInstalled(itemIndex, style);
