@@ -835,7 +835,7 @@ TreeViewItemRootProvider
 GuiVirtualTreeView
 ***********************************************************************/
 
-			void GuiVirtualTreeView::SetStyleExpanding(tree::INodeProvider* node, bool expanding)
+			templates::GuiTreeItemTemplate* GuiVirtualTreeView::GetStyleFromNode(tree::INodeProvider* node)
 			{
 				if (itemArranger)
 				{
@@ -843,12 +843,32 @@ GuiVirtualTreeView
 					if (index != -1)
 					{
 						auto style = itemArranger->GetVisibleStyle(index);
-						if (auto treeItemStyle = dynamic_cast<templates::GuiTreeItemTemplate*>(style))
-						{
-							treeItemStyle->SetExpanding(expanding);
-						}
+						return dynamic_cast<templates::GuiTreeItemTemplate*>(style);
 					}
 				}
+				return nullptr;
+			}
+
+			void GuiVirtualTreeView::SetStyleExpanding(tree::INodeProvider* node, bool expanding)
+			{
+				if (auto treeItemStyle = GetStyleFromNode(node))
+				{
+					treeItemStyle->SetExpanding(expanding);
+				}
+			}
+
+			void GuiVirtualTreeView::SetStyleExpandable(tree::INodeProvider* node, bool expandable)
+			{
+				if (auto treeItemStyle = GetStyleFromNode(node))
+				{
+					treeItemStyle->SetExpandable(expandable);
+				}
+			}
+
+			void GuiVirtualTreeView::OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)
+			{
+				GuiVirtualTreeListControl::OnAfterItemModified(parentNode, start, count, newCount);
+				SetStyleExpandable(parentNode, parentNode->GetChildCount() > 0);
 			}
 
 			void GuiVirtualTreeView::OnItemExpanded(tree::INodeProvider* node)
@@ -875,6 +895,8 @@ GuiVirtualTreeView
 						if (auto node = nodeItemView->RequestNode(itemIndex))
 						{
 							treeItemStyle->SetImage(treeViewItemView->GetNodeImage(node));
+							treeItemStyle->SetExpanding(node->GetExpanding());
+							treeItemStyle->SetExpandable(node->GetChildCount() > 0);
 							nodeItemView->ReleaseNode(node);
 						}
 					}
@@ -1008,6 +1030,7 @@ DefaultTreeItemTemplate
 					SelectedChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnSelectedChanged);
 					TextColorChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
 					ExpandingChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingChanged);
+					ExpandableChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandableChanged);
 					ImageChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnImageChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
@@ -1015,6 +1038,7 @@ DefaultTreeItemTemplate
 					SelectedChanged.Execute(compositions::GuiEventArgs(this));
 					TextColorChanged.Execute(compositions::GuiEventArgs(this));
 					ExpandingChanged.Execute(compositions::GuiEventArgs(this));
+					ExpandableChanged.Execute(compositions::GuiEventArgs(this));
 					ImageChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
@@ -1041,6 +1065,11 @@ DefaultTreeItemTemplate
 				void DefaultTreeItemTemplate::OnExpandingChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					expandingButton->SetSelected(GetExpanding());
+				}
+
+				void DefaultTreeItemTemplate::OnExpandableChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					expandingButton->SetVisible(GetExpandable());
 				}
 
 				void DefaultTreeItemTemplate::OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

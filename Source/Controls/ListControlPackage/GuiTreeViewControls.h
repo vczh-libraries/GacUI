@@ -473,7 +473,10 @@ GuiVirtualTreeView
 				IStyleProvider*											styleProvider = nullptr;
 				tree::ITreeViewItemView*								treeViewItemView = nullptr;
 
+				templates::GuiTreeItemTemplate*							GetStyleFromNode(tree::INodeProvider* node);
 				void													SetStyleExpanding(tree::INodeProvider* node, bool expanding);
+				void													SetStyleExpandable(tree::INodeProvider* node, bool expandable);
+				void													OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
 				void													OnItemExpanded(tree::INodeProvider* node)override;
 				void													OnItemCollapsed(tree::INodeProvider* node)override;
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
@@ -534,6 +537,7 @@ DefaultTreeItemTemplate
 					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnExpandingChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void									OnExpandableChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									SwitchNodeExpanding();
 					void									OnBackgroundButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
