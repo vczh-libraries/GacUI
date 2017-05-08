@@ -897,6 +897,16 @@ GuiVirtualTreeView
 							treeItemStyle->SetImage(treeViewItemView->GetNodeImage(node));
 							treeItemStyle->SetExpanding(node->GetExpanding());
 							treeItemStyle->SetExpandable(node->GetChildCount() > 0);
+							{
+								vint level = -1;
+								auto current = node;
+								while (current->GetParent())
+								{
+									level++;
+									current = current->GetParent();
+								}
+								treeItemStyle->SetLevel(level);
+							}
 							nodeItemView->ReleaseNode(node);
 						}
 					}
@@ -1031,6 +1041,7 @@ DefaultTreeItemTemplate
 					TextColorChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
 					ExpandingChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingChanged);
 					ExpandableChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandableChanged);
+					LevelChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnLevelChanged);
 					ImageChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnImageChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
@@ -1039,6 +1050,7 @@ DefaultTreeItemTemplate
 					TextColorChanged.Execute(compositions::GuiEventArgs(this));
 					ExpandingChanged.Execute(compositions::GuiEventArgs(this));
 					ExpandableChanged.Execute(compositions::GuiEventArgs(this));
+					LevelChanged.Execute(compositions::GuiEventArgs(this));
 					ImageChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
@@ -1070,6 +1082,11 @@ DefaultTreeItemTemplate
 				void DefaultTreeItemTemplate::OnExpandableChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					expandingButton->SetVisible(GetExpandable());
+				}
+
+				void DefaultTreeItemTemplate::OnLevelChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					table->SetColumnOption(0, GuiCellOption::AbsoluteOption(GetLevel() * 12));
 				}
 
 				void DefaultTreeItemTemplate::OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

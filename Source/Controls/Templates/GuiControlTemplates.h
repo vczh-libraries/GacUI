@@ -483,6 +483,7 @@ Item Template
 #define GuiTreeItemTemplate_PROPERTIES(F)\
 				F(GuiTreeItemTemplate, bool, Expanding)\
 				F(GuiTreeItemTemplate, bool, Expandable)\
+				F(GuiTreeItemTemplate, vint, Level)\
 				F(GuiTreeItemTemplate, Ptr<GuiImageData>, Image)\
 
 				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)

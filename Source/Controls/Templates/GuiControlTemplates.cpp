@@ -457,6 +457,7 @@ GuiTreeItemTemplate
 			GuiTreeItemTemplate::GuiTreeItemTemplate()
 				:Expanding_(false)
 				, Expandable_(false)
+				, Level_(0)
 			{
 				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
