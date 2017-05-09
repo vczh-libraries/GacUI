@@ -4,7 +4,10 @@
       Application::GetApplication().InvokeInMainThread(func():void
       {
         /* This code will be executed after demo::ListViewTabPage is put on the window, so that listView.RelatedControlHost doesn't return null. */
-        LoadListView(listView);
+        LoadListView(listView.RelatedControlHost, func(item : ListViewItem^):void
+        {
+          listView.Items.Add(item);
+        });
       });
     ]]>
   </ref.Ctor>

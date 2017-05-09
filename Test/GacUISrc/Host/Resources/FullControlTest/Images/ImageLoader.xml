@@ -6,10 +6,8 @@
     using presentation::controls::*;
     using presentation::controls::list::*;
 
-    func LoadListView(listView : GuiListView*) : void
+    func LoadListView(host : GuiControlHost*, callback : func(ListViewItem^):void) : void
     {
-      var host = listView.RelatedControlHost;
-
       {
         var item = new ListViewItem^();
         item.Text = "Task";
@@ -18,7 +16,7 @@
         item.SubItems.Add("005");
         item.SubItems.Add("16x16");
         item.SubItems.Add("005_Task_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -28,7 +26,7 @@
         item.SubItems.Add("008");
         item.SubItems.Add("16x16");
         item.SubItems.Add("008_Reminder_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -38,7 +36,7 @@
         item.SubItems.Add("023");
         item.SubItems.Add("16x16");
         item.SubItems.Add("023_Tip_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -48,7 +46,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_ArrowCurve_Blue_Left_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -58,7 +56,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_ArrowCurve_Blue_Right_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -68,7 +66,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_DownArrowLong_Blue_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -78,7 +76,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_DownArrowLong_Green_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -88,7 +86,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_DownArrowLong_Grey_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -98,7 +96,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_DownArrowLong_Orange_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -108,7 +106,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_LeftArrowLong_Blue_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -118,7 +116,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_LeftArrowLong_Green_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -128,7 +126,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_LeftArrowLong_Grey_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -138,7 +136,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_LeftArrowLong_Orange_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -148,7 +146,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Minus_Blue_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -158,7 +156,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Minus_Green_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -168,7 +166,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Minus_Grey_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -178,7 +176,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Minus_Orange_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -188,7 +186,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Plus_Blue_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -198,7 +196,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Plus_Green_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -208,7 +206,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Plus_Grey_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -218,7 +216,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_Plus_Orange_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -228,7 +226,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_RightArrowLong_Blue_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -238,7 +236,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_RightArrowLong_Green_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -248,7 +246,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_RightArrowLong_Grey_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -258,7 +256,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_RightArrowLong_Orange_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -268,7 +266,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_UpArrowLong_Blue_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -278,7 +276,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_UpArrowLong_Green_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -288,7 +286,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_UpArrowLong_Grey_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
       {
         var item = new ListViewItem^();
@@ -298,7 +296,7 @@
         item.SubItems.Add("112");
         item.SubItems.Add("16x16");
         item.SubItems.Add("112_UpArrowLong_Orange_16x16_72.png");
-        listView.Items.Add(item);
+        callback(item);
       }
     }
 

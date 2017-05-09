@@ -8,10 +8,8 @@ echo.    using presentation::*;
 echo.    using presentation::controls::*;
 echo.    using presentation::controls::list::*;
 echo.
-echo.    func LoadListView^(listView : GuiListView*^) : void
+echo.    func LoadListView^(host : GuiControlHost*, callback : func^(ListViewItem^^^):void^) : void
 echo.    {
-echo.      var host = listView.RelatedControlHost;
-echo.
 for %%f in (*_16x16_*.png) do (
     set "name=%%f"
     set "id=!name:~4,-13!"
@@ -23,7 +21,7 @@ for %%f in (*_16x16_*.png) do (
     echo.        item.SubItems.Add^("!name:~0,3!"^);
     echo.        item.SubItems.Add^("!name:~-12,-7!"^);
     echo.        item.SubItems.Add^("!name!"^);
-    echo.        listView.Items.Add^(item^);
+    echo.        callback^(item^);
     echo.      }
 )
 echo.    }
