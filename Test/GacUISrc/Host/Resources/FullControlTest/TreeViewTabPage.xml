@@ -1,10 +1,21 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::TreeViewTabPage">
+  <ref.Members>
+    <![CDATA[
+      var nodesToBind : MemoryNodeProvider^ = null;
+    ]]>
+  </ref.Members>
+  <ref.Ctor>
+    <![CDATA[
+      bindableTreeView.ItemSource = nodesToBind;
+    ]]>
+  </ref.Ctor>
   <TabPage ref.Name="self" Text="TreeView">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
         <_>composeType:Percentage percentage:1.0</_>
       </att.Rows>
       <att.Columns>
+        <_>composeType:Percentage percentage:0.5</_>
         <_>composeType:Percentage percentage:0.5</_>
       </att.Columns>
 
@@ -42,6 +53,46 @@
           </att.Nodes>
         </TreeView>
       </Cell>
+
+      <Cell Site="row:0 column:1">
+        <BindableTreeView ref.Name="bindableTreeView" Alt="L" env.ItemType="MemoryNodeProvider^" env.ItemName="nodeToBind" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.TextProperty>(nodeToBind.Data as TreeViewItem^).text</att.TextProperty>
+          <att.ImageProperty>(nodeToBind.Data as TreeViewItem^).image</att.ImageProperty>
+          <att.ChildrenProperty>Children</att.ChildrenProperty>
+        </BindableTreeView>
+      </Cell>
     </Table>
+
+    <att.nodesToBind>
+      <TreeNode>
+        <TreeNode Image-uri="res://SmallImages/Plus_Blue" Text="Blue+">
+          <TreeNode Image-uri="res://SmallImages/ArrowCurve_Blue_Left" Text="&lt;--"/>
+          <TreeNode Image-uri="res://SmallImages/ArrowCurve_Blue_Right" Text="--&gt;"/>
+          <TreeNode Image-uri="res://SmallImages/DownArrowLong_Blue" Text="V"/>
+          <TreeNode Image-uri="res://SmallImages/UpArrowLong_Blue" Text="^"/>
+          <TreeNode Image-uri="res://SmallImages/LeftArrowLong_Blue" Text="&lt;"/>
+          <TreeNode Image-uri="res://SmallImages/RightArrowLong_Blue" Text="&gt;"/>
+        </TreeNode>
+        <TreeNode Image-uri="res://SmallImages/Plus_Green" Text="Green+">
+          <TreeNode Image-uri="res://SmallImages/DownArrowLong_Green" Text="V"/>
+          <TreeNode Image-uri="res://SmallImages/UpArrowLong_Green" Text="^"/>
+          <TreeNode Image-uri="res://SmallImages/LeftArrowLong_Green" Text="&lt;"/>
+          <TreeNode Image-uri="res://SmallImages/RightArrowLong_Green" Text="&gt;"/>
+        </TreeNode>
+        <TreeNode Image-uri="res://SmallImages/Plus_Grey" Text="Grey+">
+          <TreeNode Image-uri="res://SmallImages/DownArrowLong_Grey" Text="V"/>
+          <TreeNode Image-uri="res://SmallImages/UpArrowLong_Grey" Text="^"/>
+          <TreeNode Image-uri="res://SmallImages/LeftArrowLong_Grey" Text="&lt;"/>
+          <TreeNode Image-uri="res://SmallImages/RightArrowLong_Grey" Text="&gt;"/>
+        </TreeNode>
+        <TreeNode Image-uri="res://SmallImages/Plus_Orange" Text="Orange+">
+          <TreeNode Image-uri="res://SmallImages/DownArrowLong_Orange" Text="V"/>
+          <TreeNode Image-uri="res://SmallImages/UpArrowLong_Orange" Text="^"/>
+          <TreeNode Image-uri="res://SmallImages/LeftArrowLong_Orange" Text="&lt;"/>
+          <TreeNode Image-uri="res://SmallImages/RightArrowLong_Orange" Text="&gt;"/>
+        </TreeNode>
+      </TreeNode>
+    </att.nodesToBind>
   </TabPage>
 </Instance>
