@@ -24,6 +24,8 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::demo::DataGridTabPage)
+			DECL_TYPE_INFO(::demo::DataGridTabPageConstructor)
 			DECL_TYPE_INFO(::demo::IViewModel)
 			DECL_TYPE_INFO(::demo::ListViewTabPage)
 			DECL_TYPE_INFO(::demo::ListViewTabPageConstructor)

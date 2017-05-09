@@ -55,6 +55,8 @@ namespace vl_workflow_global
 
 namespace demo
 {
+	class DataGridTabPageConstructor;
+	class DataGridTabPage;
 	class ListViewTabPageConstructor;
 	class ListViewTabPage;
 	class MainWindowConstructor;
@@ -65,6 +67,33 @@ namespace demo
 	class TreeViewTabPage;
 	class MyTextItem;
 	class IViewModel;
+
+	class DataGridTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DataGridTabPageConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabPageConstructor>;
+#endif
+	protected:
+		::demo::DataGridTabPage* self = static_cast<::demo::DataGridTabPage*>(nullptr);
+		::vl::presentation::controls::GuiBindableDataGrid* treeView = static_cast<::vl::presentation::controls::GuiBindableDataGrid*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		void __vwsn_initialize_instance_(::demo::DataGridTabPage* __vwsn_this_);
+	public:
+		DataGridTabPageConstructor();
+	};
+
+	class DataGridTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::DataGridTabPageConstructor, public ::vl::reflection::Description<DataGridTabPage>
+	{
+		friend class ::demo::DataGridTabPageConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DataGridTabPage>;
+#endif
+	public:
+		DataGridTabPage();
+		~DataGridTabPage();
+	};
 
 	class ListViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ListViewTabPageConstructor>
 	{
@@ -148,7 +177,8 @@ namespace demo
 		::demo::TextListTabPage* __vwsn_precompile_5 = static_cast<::demo::TextListTabPage*>(nullptr);
 		::demo::ListViewTabPage* __vwsn_precompile_6 = static_cast<::demo::ListViewTabPage*>(nullptr);
 		::demo::TreeViewTabPage* __vwsn_precompile_7 = static_cast<::demo::TreeViewTabPage*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::demo::DataGridTabPage* __vwsn_precompile_8 = static_cast<::demo::DataGridTabPage*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_);
 	public:
 		MainWindowConstructor();

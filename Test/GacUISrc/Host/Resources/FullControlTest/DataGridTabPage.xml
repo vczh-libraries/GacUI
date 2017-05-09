@@ -1,0 +1,18 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::DataGridTabPage">
+  <TabPage ref.Name="self" Text="BindableDataGrid">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+      <att.Rows>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Columns>
+
+      <Cell Site="row:0 column:0">
+        <BindableDataGrid ref.Name="treeView" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </BindableDataGrid>
+      </Cell>
+    </Table>
+  </TabPage>
+</Instance>
