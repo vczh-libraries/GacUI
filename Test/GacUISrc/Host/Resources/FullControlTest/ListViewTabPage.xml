@@ -1,4 +1,9 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::ListViewTabPage">
+  <ref.Members>
+    <![CDATA[
+      var itemsToBind : ListViewItem^[] = {};
+    ]]>
+  </ref.Members>
   <ref.Ctor>
     <![CDATA[
       Application::GetApplication().InvokeInMainThread(func():void
@@ -8,6 +13,13 @@
         {
           listView.Items.Add(item);
         });
+        
+        LoadListView(listView.RelatedControlHost, func(item : ListViewItem^):void
+        {
+          itemsToBind.Add(item);
+        });
+        /* itemsToBind is not ObservableList so the ItemSource property should be assigned after the data is prepared. */
+        bindableListView.ItemSource = itemsToBind;
       });
     ]]>
   </ref.Ctor>
@@ -19,9 +31,10 @@
       </att.Rows>
       <att.Columns>
         <_>composeType:Percentage percentage:0.5</_>
+        <_>composeType:Percentage percentage:0.5</_>
       </att.Columns>
 
-      <Cell Site="row:0 column:0">
+      <Cell Site="row:0 column:0 columnSpan:2">
         <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="5">
           <att.BoundsComposition-set PreferredMinSize="x:120"/>
           <att.ListControl>
@@ -44,26 +57,32 @@
                 case 0:
                   {
                     listView.View = BigIcon;
+                    bindableListView.View = BigIcon;
                   }
                 case 1:
                   {
                     listView.View = SmallIcon;
+                    bindableListView.View = SmallIcon;
                   }
                 case 2:
                   {
                     listView.View = ListViewView::List;
+                    bindableListView.View = ListViewView::List;
                   }
                 case 3:
                   {
                     listView.View = Tile;
+                    bindableListView.View = Tile;
                   }
                 case 4:
                   {
                     listView.View = Information;
+                    bindableListView.View = Information;
                   }
                 case 5:
                   {
                     listView.View = Detail;
+                    bindableListView.View = Detail;
                   }
                 }
               }
@@ -89,6 +108,27 @@
             <_>2</_>
           </att.DataColumns>
         </ListView>
+      </Cell>
+
+      <Cell Site="row:1 column:1">
+        <BindableListView ref.Name="bindableListView" Alt="L" env.ItemType="ListViewItem^" env.ItemName="itemToBind" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.LargeImageProperty>LargeImage</att.LargeImageProperty>
+          <att.SmallImageProperty>SmallImage</att.SmallImageProperty>
+
+          <att.Columns>
+            <_ Text="Id" TextProperty="Text"/>
+            <_ Text="Category" TextProperty="itemToBind.SubItems[0]"/>
+            <_ Text="Size" TextProperty="itemToBind.SubItems[1]"/>
+            <_ Text="File" TextProperty="itemToBind.SubItems[2]"/>
+          </att.Columns>
+
+          <att.DataColumns>
+            <_>0</_>
+            <_>1</_>
+            <_>2</_>
+          </att.DataColumns>
+        </BindableListView>
       </Cell>
     </Table>
   </TabPage>
