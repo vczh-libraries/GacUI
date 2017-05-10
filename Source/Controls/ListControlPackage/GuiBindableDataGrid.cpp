@@ -205,11 +205,11 @@ DataReverseSorter
 DataColumn
 ***********************************************************************/
 
-				void DataColumn::NotifyColumnChanged()
+				void DataColumn::NotifyAllColumnsUpdate()
 				{
 					if (dataProvider)
 					{
-						dataProvider->NotifyColumnChanged();
+						dataProvider->NotifyAllColumnsUpdate();
 					}
 				}
 
@@ -231,7 +231,7 @@ DataColumn
 					if (text != value)
 					{
 						text = value;
-						NotifyColumnChanged();
+						NotifyAllColumnsUpdate();
 					}
 				}
 
@@ -255,7 +255,7 @@ DataColumn
 					if (popup != value)
 					{
 						popup = value;
-						NotifyColumnChanged();
+						NotifyAllColumnsUpdate();
 					}
 				}
 
@@ -267,7 +267,7 @@ DataColumn
 				void DataColumn::SetInherentFilter(Ptr<IDataFilter> value)
 				{
 					inherentFilter = value;
-					NotifyColumnChanged();
+					NotifyAllColumnsUpdate();
 				}
 
 				Ptr<IDataSorter> DataColumn::GetInherentSorter()
@@ -278,7 +278,7 @@ DataColumn
 				void DataColumn::SetInherentSorter(Ptr<IDataSorter> value)
 				{
 					inherentSorter = value;
-					NotifyColumnChanged();
+					NotifyAllColumnsUpdate();
 				}
 
 				Ptr<IDataVisualizerFactory> DataColumn::GetVisualizerFactory()
@@ -289,7 +289,7 @@ DataColumn
 				void DataColumn::SetVisualizerFactory(Ptr<IDataVisualizerFactory> value)
 				{
 					visualizerFactory = value;
-					NotifyColumnChanged();
+					NotifyAllColumnsUpdate();
 				}
 
 				Ptr<IDataEditorFactory> DataColumn::GetEditorFactory()
@@ -300,7 +300,7 @@ DataColumn
 				void DataColumn::SetEditorFactory(Ptr<IDataEditorFactory> value)
 				{
 					editorFactory = value;
-					NotifyColumnChanged();
+					NotifyAllColumnsUpdate();
 				}
 
 				WString DataColumn::GetCellText(vint row)
@@ -340,7 +340,7 @@ DataColumn
 					if (textProperty != value)
 					{
 						textProperty = value;
-						NotifyColumnChanged();
+						NotifyAllColumnsUpdate();
 						compositions::GuiEventArgs arguments;
 						TextPropertyChanged.Execute(arguments);
 					}
@@ -356,7 +356,7 @@ DataColumn
 					if (valueProperty != value)
 					{
 						valueProperty = value;
-						NotifyColumnChanged();
+						NotifyAllColumnsUpdate();
 						compositions::GuiEventArgs arguments;
 						ValuePropertyChanged.Execute(arguments);
 					}
@@ -368,7 +368,7 @@ DataColumns
 
 				void DataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
-					dataProvider->NotifyColumnChanged();
+					dataProvider->NotifyAllColumnsUpdate();
 				}
 
 				bool DataColumns::QueryInsert(vint index, const Ptr<DataColumn>& value)
@@ -399,14 +399,14 @@ DataColumns
 DataProvider
 ***********************************************************************/
 
-				void DataProvider::NotifyAllItemsChanged()
+				void DataProvider::NotifyAllItemsUpdate()
 				{
 					InvokeOnItemModified(0, Count(), Count());
 				}
 
-				void DataProvider::NotifyColumnChanged()
+				void DataProvider::NotifyAllColumnsUpdate()
 				{
-					NotifyAllItemsChanged();
+					NotifyAllItemsUpdate();
 					if (columnItemViewCallback)
 					{
 						columnItemViewCallback->OnColumnChanged();
@@ -433,6 +433,11 @@ DataProvider
 					{
 						ReorderRows(true);
 					}
+				}
+
+				ListViewDataColumns& DataProvider::GetDataColumns()
+				{
+					return dataColumns;
 				}
 
 				DataColumns& DataProvider::GetColumns()
@@ -551,12 +556,13 @@ DataProvider
 
 					if (invokeCallback)
 					{
-						NotifyAllItemsChanged();
+						NotifyAllItemsUpdate();
 					}
 				}
 
 				DataProvider::DataProvider(const description::Value& _viewModelContext)
-					:columns(this)
+					:dataColumns(this)
+					, columns(this)
 					, viewModelContext(_viewModelContext)
 				{
 					RebuildFilter();
@@ -649,12 +655,12 @@ DataProvider
 
 				vint DataProvider::GetDataColumnCount()
 				{
-					return 0;
+					return dataColumns.Count();
 				}
 
 				vint DataProvider::GetDataColumn(vint index)
 				{
-					return -1;
+					return dataColumns[index];
 				}
 
 				vint DataProvider::GetColumnCount()
@@ -832,6 +838,11 @@ GuiBindableDataGrid
 			GuiBindableDataGrid::~GuiBindableDataGrid()
 			{
 			}
+			
+			list::ListViewDataColumns& GuiBindableDataGrid::GetDataColumns()
+			{
+				return dataProvider->GetDataColumns();
+			}
 
 			list::DataColumns& GuiBindableDataGrid::GetColumns()
 			{
@@ -858,7 +869,7 @@ GuiBindableDataGrid
 				if (dataProvider->largeImageProperty != value)
 				{
 					dataProvider->largeImageProperty = value;
-					dataProvider->NotifyAllItemsChanged();
+					dataProvider->NotifyAllItemsUpdate();
 					LargeImagePropertyChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -873,7 +884,7 @@ GuiBindableDataGrid
 				if (dataProvider->smallImageProperty != value)
 				{
 					dataProvider->smallImageProperty = value;
-					dataProvider->NotifyAllItemsChanged();
+					dataProvider->NotifyAllItemsUpdate();
 					SmallImagePropertyChanged.Execute(GetNotifyEventArguments());
 				}
 			}

@@ -1427,6 +1427,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
 				CLASS_MEMBER_CONSTRUCTOR(GuiBindableDataGrid*(GuiBindableDataGrid::IStyleProvider*, const Value&), {L"styleProvider" _ L"viewModelContext"})
 
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImageProperty)

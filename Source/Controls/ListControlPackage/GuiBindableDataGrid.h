@@ -187,7 +187,7 @@ DataColumn
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
-					void												NotifyColumnChanged();
+					void												NotifyAllColumnsUpdate();
 				public:
 					DataColumn();
 					~DataColumn();
@@ -300,12 +300,14 @@ DataProvider
 					, public virtual ListViewColumnItemArranger::IColumnItemView
 					, public virtual IDataGridView
 					, protected virtual IDataFilterCallback
+					, protected virtual IListViewItemProvider
 					, public Description<DataProvider>
 				{
 					friend class DataColumn;
 					friend class DataColumns;
 					friend class GuiBindableDataGrid;
 				protected:
+					ListViewDataColumns										dataColumns;
 					DataColumns												columns;
 					ListViewColumnItemArranger::IColumnItemViewCallback*	columnItemViewCallback = nullptr;
 					Ptr<description::IValueReadonlyList>					itemSource;
@@ -317,8 +319,8 @@ DataProvider
 					Ptr<IDataSorter>										currentSorter;
 					collections::List<vint>									virtualRowToSourceRow;
 
-					void													NotifyAllItemsChanged();
-					void													NotifyColumnChanged();
+					void													NotifyAllItemsUpdate()override;
+					void													NotifyAllColumnsUpdate()override;
 					GuiListControl::IItemProvider*							GetItemProvider()override;
 
 					void													OnFilterChanged()override;
@@ -337,6 +339,7 @@ DataProvider
 					DataProvider(const description::Value& _viewModelContext);
 					~DataProvider();
 
+					ListViewDataColumns&								GetDataColumns();
 					DataColumns&										GetColumns();
 					Ptr<description::IValueEnumerable>					GetItemSource();
 					void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
@@ -409,7 +412,11 @@ GuiBindableDataGrid
 				GuiBindableDataGrid(IStyleProvider* _styleProvider, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
 
+				/// <summary>Get all data columns indices in columns.</summary>
+				/// <returns>All data columns indices in columns.</returns>
+				list::ListViewDataColumns&							GetDataColumns();
 				/// <summary>Get all columns.</summary>
+				/// <returns>All columns.</returns>
 				list::DataColumns&									GetColumns();
 
 				/// <summary>Get the item source.</summary>

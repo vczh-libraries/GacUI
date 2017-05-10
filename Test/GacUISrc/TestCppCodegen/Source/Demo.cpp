@@ -1089,6 +1089,10 @@ namespace demo
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->dataGrid)->SetLargeImageProperty(LAMBDA(::vl_workflow_global::__vwsnf2_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->dataGrid)->GetDataColumns());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"0", false))));
+		}
+		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->dataGrid)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
 		}
 		{

@@ -101,6 +101,7 @@
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.LargeImageProperty>LargeImage</att.LargeImageProperty>
           <att.SmallImageProperty>SmallImage</att.SmallImageProperty>
+          
           <att.Columns>
             <DataColumn Text="Name">
               <att.TextProperty>Name</att.TextProperty>
@@ -118,6 +119,10 @@
               <att.TextProperty>Website</att.TextProperty>
             </DataColumn>
           </att.Columns>
+
+          <att.DataColumns>
+            <_>0</_>
+          </att.DataColumns>
         </BindableDataGrid>
       </Cell>
     </Table>
