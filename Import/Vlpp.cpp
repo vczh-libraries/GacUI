@@ -19195,12 +19195,15 @@ DateTimeValueSerializer
 ***********************************************************************/
 
 			BEGIN_GLOBAL_STORAGE_CLASS(DateTimeSerializerStorage)
-				Regex regexDateTime {
-					L"(<Y>/d/d/d/d)-(<M>/d/d)-(<D>/d/d) (<h>/d/d):(<m>/d/d):(<s>/d/d).(<ms>/d/d/d)"
-					};
+				Regex* regexDateTime = nullptr;
 
 				INITIALIZE_GLOBAL_STORAGE_CLASS
+					regexDateTime = new Regex(L"(<Y>/d/d/d/d)-(<M>/d/d)-(<D>/d/d) (<h>/d/d):(<m>/d/d):(<s>/d/d).(<ms>/d/d/d)");
+
 				FINALIZE_GLOBAL_STORAGE_CLASS
+					delete regexDateTime;
+					regexDateTime = nullptr;
+
 			END_GLOBAL_STORAGE_CLASS(DateTimeSerializerStorage)
 
 			DateTime TypedValueSerializerProvider<DateTime>::GetDefaultValue()
@@ -19229,7 +19232,7 @@ DateTimeValueSerializer
 
 			bool TypedValueSerializerProvider<DateTime>::Deserialize(const WString& input, DateTime& output)
 			{
-				Ptr<RegexMatch> match = GetDateTimeSerializerStorage().regexDateTime.Match(input);
+				Ptr<RegexMatch> match = GetDateTimeSerializerStorage().regexDateTime->Match(input);
 				if (!match) return false;
 				if (!match->Success()) return false;
 				if (match->Result().Start() != 0) return false;
