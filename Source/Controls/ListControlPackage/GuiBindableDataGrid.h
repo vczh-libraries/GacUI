@@ -17,6 +17,8 @@ namespace vl
 	{
 		namespace controls
 		{
+			class GuiBindableDataGrid;
+
 			namespace list
 			{
 
@@ -302,6 +304,7 @@ DataProvider
 				{
 					friend class DataColumn;
 					friend class DataColumns;
+					friend class GuiBindableDataGrid;
 				protected:
 					DataColumns												columns;
 					ListViewColumnItemArranger::IColumnItemViewCallback*	columnItemViewCallback = nullptr;
@@ -323,6 +326,11 @@ DataProvider
 
 					void													RebuildFilter();
 					void													ReorderRows(bool invokeCallback);
+
+				public:
+					ItemProperty<Ptr<GuiImageData>>							largeImageProperty;
+					ItemProperty<Ptr<GuiImageData>>							smallImageProperty;
+
 				public:
 					/// <summary>Create a data provider from a <see cref="IDataProvider"/>.</summary>
 					/// <param name="provider">The structured data provider.</param>
@@ -410,6 +418,25 @@ GuiBindableDataGrid
 				/// <summary>Set the item source.</summary>
 				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
+
+				/// <summary>Large image property name changed event.</summary>
+				compositions::GuiNotifyEvent						LargeImagePropertyChanged;
+				/// <summary>Small image property name changed event.</summary>
+				compositions::GuiNotifyEvent						SmallImagePropertyChanged;
+
+				/// <summary>Get the large image property name to get the large image from an item.</summary>
+				/// <returns>The large image property name.</returns>
+				ItemProperty<Ptr<GuiImageData>>						GetLargeImageProperty();
+				/// <summary>Set the large image property name to get the large image from an item.</summary>
+				/// <param name="value">The large image property name.</param>
+				void												SetLargeImageProperty(const ItemProperty<Ptr<GuiImageData>>& value);
+
+				/// <summary>Get the small image property name to get the small image from an item.</summary>
+				/// <returns>The small image property name.</returns>
+				ItemProperty<Ptr<GuiImageData>>						GetSmallImageProperty();
+				/// <summary>Set the small image property name to get the small image from an item.</summary>
+				/// <param name="value">The small image property name.</param>
+				void												SetSmallImageProperty(const ItemProperty<Ptr<GuiImageData>>& value);
 
 
 				/// <summary>Get the selected cell.</summary>

@@ -620,11 +620,19 @@ DataProvider
 
 				Ptr<GuiImageData> DataProvider::GetSmallImage(vint itemIndex)
 				{
+					if (0 <= itemIndex && itemIndex < Count())
+					{
+						return ReadProperty(GetBindingValue(itemIndex), smallImageProperty);
+					}
 					return nullptr;
 				}
 
 				Ptr<GuiImageData> DataProvider::GetLargeImage(vint itemIndex)
 				{
+					if (0 <= itemIndex && itemIndex < Count())
+					{
+						return ReadProperty(GetBindingValue(itemIndex), largeImageProperty);
+					}
 					return nullptr;
 				}
 
@@ -838,6 +846,36 @@ GuiBindableDataGrid
 			void GuiBindableDataGrid::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
 			{
 				dataProvider->SetItemSource(_itemSource);
+			}
+
+			ItemProperty<Ptr<GuiImageData>> GuiBindableDataGrid::GetLargeImageProperty()
+			{
+				return dataProvider->largeImageProperty;
+			}
+
+			void GuiBindableDataGrid::SetLargeImageProperty(const ItemProperty<Ptr<GuiImageData>>& value)
+			{
+				if (dataProvider->largeImageProperty != value)
+				{
+					dataProvider->largeImageProperty = value;
+					dataProvider->NotifyAllItemsChanged();
+					LargeImagePropertyChanged.Execute(GetNotifyEventArguments());
+				}
+			}
+
+			ItemProperty<Ptr<GuiImageData>> GuiBindableDataGrid::GetSmallImageProperty()
+			{
+				return dataProvider->smallImageProperty;
+			}
+
+			void GuiBindableDataGrid::SetSmallImageProperty(const ItemProperty<Ptr<GuiImageData>>& value)
+			{
+				if (dataProvider->smallImageProperty != value)
+				{
+					dataProvider->smallImageProperty = value;
+					dataProvider->NotifyAllItemsChanged();
+					SmallImagePropertyChanged.Execute(GetNotifyEventArguments());
+				}
 			}
 
 			description::Value GuiBindableDataGrid::GetSelectedRowValue()

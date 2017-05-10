@@ -58,6 +58,7 @@
         module viewmodel;
         
         using system::*;
+        using presentation::*;
         
         namespace demo
         {
@@ -89,6 +90,8 @@
             prop Category : MyCategory = White {not observe}
             prop Birthday : DateTime = (cast DateTime "2000-01-01 00:00:00.000") {not observe}
             prop Website : string = "" {not observe}
+            prop LargeImage : GuiImageData^ = null {not observe}
+            prop SmallImage : GuiImageData^ = null {not observe}
             
             new()
             {
