@@ -51,6 +51,13 @@ DataVisualizerBase
 							childTemplate = decoratedDataVisualizer->GetTemplate();
 						}
 						visualizerTemplate = CreateTemplateInternal(childTemplate);
+						if (decoratedDataVisualizer)
+						{
+							visualizerTemplate->FontChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+							{
+								decoratedDataVisualizer->GetTemplate()->SetFont(visualizerTemplate->GetFont());
+							});
+						}
 					}
 					return visualizerTemplate;
 				}
