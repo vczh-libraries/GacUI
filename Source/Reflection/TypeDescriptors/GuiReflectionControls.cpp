@@ -1175,6 +1175,8 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedCell)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
+
+				CLASS_MEMBER_METHOD(SetViewToDefault, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiVirtualDataGrid)
 
 			BEGIN_CLASS_MEMBER(ListViewMainColumnDataVisualizer)

@@ -207,7 +207,10 @@ DataColumn
 
 				void DataColumn::NotifyColumnChanged()
 				{
-					dataProvider->NotifyColumnChanged();
+					if (dataProvider)
+					{
+						dataProvider->NotifyColumnChanged();
+					}
 				}
 
 				DataColumn::DataColumn()

@@ -177,7 +177,7 @@ DataColumn
 					ItemProperty<WString>								textProperty;
 					WritableItemProperty<description::Value>			valueProperty;
 					WString												text;
-					vint												size = 0;
+					vint												size = 160;
 					ColumnSortingState									sortingState = ColumnSortingState::NotSorted;
 					GuiMenu*											popup = nullptr;
 					Ptr<IDataFilter>									inherentFilter;

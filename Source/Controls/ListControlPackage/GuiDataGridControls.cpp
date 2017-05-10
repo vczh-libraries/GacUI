@@ -482,13 +482,8 @@ GuiVirtualDataGrid
 				CHECK_ERROR(columnItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing ListViewColumnItemArranger::IColumnItemView from item provider.");
 				CHECK_ERROR(dataGridView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing IDataGridView from item provider.");
 
-				SetStyleAndArranger(
-					[](const Value&) { return new list::DefaultDataGridItemTemplate; },
-					new list::ListViewColumnItemArranger
-				);
-
+				SetViewToDefault();
 				ColumnClicked.AttachMethod(this, &GuiVirtualDataGrid::OnColumnClicked);
-
 				SelectedCellChanged.SetAssociatedComposition(GetBoundsComposition());
 			}
 
@@ -500,6 +495,14 @@ GuiVirtualDataGrid
 			GuiListControl::IItemProvider* GuiVirtualDataGrid::GetItemProvider()
 			{
 				return GuiVirtualListView::GetItemProvider();
+			}
+
+			void GuiVirtualDataGrid::SetViewToDefault()
+			{
+				SetStyleAndArranger(
+					[](const Value&) { return new list::DefaultDataGridItemTemplate; },
+					new list::ListViewColumnItemArranger
+				);
 			}
 
 			GridPos GuiVirtualDataGrid::GetSelectedCell()

@@ -66,6 +66,43 @@
             prop Name : string = "" {not observe}
             prop Checked : bool = false {not observe}
           }
+          
+          enum MyCategory
+          {
+            Black = 0,
+            Red = 1,
+            Lime = 2,
+            Blue = 3,
+            White = 4,
+          }
+          
+          enum MyGender
+          {
+            Male = 0,
+            Female = 1,
+          }
+          
+          class MyDataItem
+          {
+            prop Name : string = "" {not observe}
+            prop Gender : MyGender = Male {not observe}
+            prop Category : MyCategory = White {not observe}
+            prop Birthday : DateTime = (cast DateTime "2000-01-01 00:00:00.000") {not observe}
+            prop Website : string = "" {not observe}
+            
+            new()
+            {
+            }
+            
+            new(name : string, gender : MyGender, category : MyCategory, birthday : DateTime, website : string)
+            {
+              Name = name;
+              Gender = gender;
+              Category = category;
+              Birthday = birthday;
+              Website = website;
+            }
+          }
         
           interface IViewModel
           {
@@ -74,6 +111,29 @@
             func AddTextItem(item : MyTextItem^) : void;
             func RemoveTextItem(index : int) : void;
             func ClearTextItems() : void;
+          }
+          
+          func ToString(value : MyCategory) : string
+          {
+            switch (value)
+            {
+              case Black:   { return "Black"; }
+              case Red:     { return "Red"; }
+              case Lime:    { return "Lime"; }
+              case Blue:    { return "Blue"; }
+              case White:   { return "White"; }
+              default: { raise "Wrong!"; }
+            }
+          }
+          
+          func ToString(value : MyGender) : string
+          {
+            switch (value)
+            {
+              case Male:    { return "Male"; }
+              case Female:  { return "Female"; }
+              default: { raise "Wrong!"; }
+            }
           }
         }
       ]]>

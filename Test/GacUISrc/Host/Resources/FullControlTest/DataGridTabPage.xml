@@ -1,16 +1,103 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DataGridTabPage">
+  <ref.Members>
+    <![CDATA[
+      var tempData : MyDataItem^[] = 
+      {
+        new MyDataItem^("涼宮 春日",     Female, Lime,  (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
+        new MyDataItem^("キョン",        Male,   Black, (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
+        new MyDataItem^("长门 有希",     Female, White, (cast DateTime "2000-08-06 00:00:00.000"),  "http://www.haruhi.tv/")
+        new MyDataItem^("朝比奈 实玖瑠", Female, Red,   (cast DateTime "1987-08-30 00:00:00.000"),  "http://www.haruhi.tv/")
+        new MyDataItem^("古泉 一树",     Male,   Blue,  (cast DateTime "1986-08-12 00:00:00.000"),  "http://www.haruhi.tv/")
+      };
+    ]]>
+  </ref.Members>
   <TabPage ref.Name="self" Text="BindableDataGrid">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
         <_>composeType:Percentage percentage:1.0</_>
       </att.Rows>
       <att.Columns>
-        <_>composeType:Percentage percentage:1.0</_>
+        <_>composeType:Percentage percentage:0.5</_>
+        <_>composeType:Percentage percentage:0.5</_>
       </att.Columns>
 
-      <Cell Site="row:0 column:0">
-        <BindableDataGrid ref.Name="treeView" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+      <Cell Site="row:0 column:0 columnSpan:2">
+        <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="6">
+          <att.BoundsComposition-set PreferredMinSize="x:120"/>
+          <att.ListControl>
+            <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.Items>
+                <TextItem Text="BigIcon"/>
+                <TextItem Text="SmallIcon"/>
+                <TextItem Text="List"/>
+                <TextItem Text="Tile"/>
+                <TextItem Text="Information"/>
+                <TextItem Text="Detail"/>
+                <TextItem Text="DataGrid"/>
+              </att.Items>
+            </TextList>
+          </att.ListControl>
+          <ev.SelectedIndexChanged-eval>
+            <![CDATA[
+              {
+                switch (comboView.SelectedIndex)
+                {
+                case 0:
+                  {
+                    dataGrid.View = BigIcon;
+                  }
+                case 1:
+                  {
+                    dataGrid.View = SmallIcon;
+                  }
+                case 2:
+                  {
+                    dataGrid.View = ListViewView::List;
+                  }
+                case 3:
+                  {
+                    dataGrid.View = Tile;
+                  }
+                case 4:
+                  {
+                    dataGrid.View = Information;
+                  }
+                case 5:
+                  {
+                    dataGrid.View = Detail;
+                  }
+                case 6:
+                  {
+                    dataGrid.SetViewToDefault();
+                  }
+                }
+              }
+            ]]>
+          </ev.SelectedIndexChanged-eval>
+        </ComboBox>
+      </Cell>
+
+      <Cell Site="row:1 column:0">
+        <BindableDataGrid ref.Name="dataGrid" Alt="L" env.ItemType="demo::MyDataItem^" env.ItemName="itemToBind" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.ItemSource-eval>self.tempData</att.ItemSource-eval>
+          <att.Columns>
+            <DataColumn Text="Name">
+              <att.TextProperty>Name</att.TextProperty>
+            </DataColumn>
+            <DataColumn Text="Gender">
+              <att.TextProperty>demo::ToString(itemToBind.Gender)</att.TextProperty>
+            </DataColumn>
+            <DataColumn Text="Category">
+              <att.TextProperty>demo::ToString(itemToBind.Category)</att.TextProperty>
+            </DataColumn>
+            <DataColumn Text="Birthday">
+              <att.TextProperty>cast string (itemToBind.Birthday)</att.TextProperty>
+            </DataColumn>
+            <DataColumn Text="Website">
+              <att.TextProperty>Website</att.TextProperty>
+            </DataColumn>
+          </att.Columns>
         </BindableDataGrid>
       </Cell>
     </Table>

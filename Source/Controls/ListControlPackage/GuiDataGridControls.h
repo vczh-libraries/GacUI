@@ -107,6 +107,8 @@ GuiVirtualDataGrid
 
 				IItemProvider*											GetItemProvider()override;
 
+				/// <summary>Change the view to data grid's default view.</summary>
+				void													SetViewToDefault();
 
 				/// <summary>Get the row index and column index of the selected cell.</summary>
 				/// <returns>The row index and column index of the selected cell.</returns>
