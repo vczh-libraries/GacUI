@@ -545,6 +545,11 @@ Interface Proxy
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTemplate);
 				}
 
+				void NotifyDeletedTemplate()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(NotifyDeletedTemplate);
+				}
+
 				void BeforeVisualizeCell(presentation::controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override
 				{
 					INVOKE_INTERFACE_PROXY(BeforeVisualizeCell, itemProvider, row, column);
@@ -579,6 +584,11 @@ Interface Proxy
 				presentation::templates::GuiTemplate* GetTemplate()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTemplate);
+				}
+
+				void NotifyDeletedTemplate()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(NotifyDeletedTemplate);
 				}
 
 				void BeforeEditCell(presentation::controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override

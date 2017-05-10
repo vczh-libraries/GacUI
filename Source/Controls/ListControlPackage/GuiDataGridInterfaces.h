@@ -59,6 +59,8 @@ Datagrid Interfaces
 					/// <summary>Get the template that renders the data. The data visualizer should maintain this template, and delete it when necessary.</summary>
 					/// <returns>The template.</returns>
 					virtual templates::GuiTemplate*						GetTemplate() = 0;
+					/// <summary>Notify that the template has been deleted during the deconstruction of UI objects.</summary>
+					virtual void										NotifyDeletedTemplate() = 0;
 
 					/// <summary>Called before visualizing a cell.</summary>
 					/// <param name="itemProvider">The item provider.</param>
@@ -109,6 +111,8 @@ Datagrid Interfaces
 					/// <summary>Get the template that edit the data. The data editor should maintain this template, and delete it when necessary.</summary>
 					/// <returns>The template.</returns>
 					virtual templates::GuiTemplate*						GetTemplate() = 0;
+					/// <summary>Notify that the template has been deleted during the deconstruction of UI objects.</summary>
+					virtual void										NotifyDeletedTemplate() = 0;
 
 					/// <summary>Called before editing a cell.</summary>
 					/// <param name="itemProvider">The item provider.</param>

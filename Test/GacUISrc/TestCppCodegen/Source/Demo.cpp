@@ -925,14 +925,14 @@ namespace demo
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowsAndColumns(1, 2);
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 0.5; return __vwsn_temp__; }());
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 0.5; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowsAndColumns(2, 1);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetSite(0, 0, 1, 2);
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetSite(0, 0, 1, 1);
 		}
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextListStyle();

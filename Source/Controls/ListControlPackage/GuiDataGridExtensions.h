@@ -50,6 +50,7 @@ Extension Bases
 
 					IDataVisualizerFactory*								GetFactory()override;
 					templates::GuiTemplate*								GetTemplate()override;
+					void												NotifyDeletedTemplate()override;
 					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 					IDataVisualizer*									GetDecoratedDataVisualizer()override;
 					void												SetSelected(bool value)override;
@@ -108,6 +109,7 @@ Extension Bases
 
 					IDataEditorFactory*									GetFactory()override;
 					templates::GuiTemplate*								GetTemplate()override;
+					void												NotifyDeletedTemplate()override;
 					void												BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
 					void												ReinstallEditor()override;
 				};

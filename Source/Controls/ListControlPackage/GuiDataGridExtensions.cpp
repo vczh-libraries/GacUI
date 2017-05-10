@@ -28,12 +28,7 @@ DataVisualizerBase
 				{
 					if (decoratedDataVisualizer)
 					{
-						auto composition = decoratedDataVisualizer->GetTemplate();
-						if (composition->GetParent())
-						{
-							composition->GetParent()->RemoveChild(composition);
-						}
-						decoratedDataVisualizer = nullptr;
+						decoratedDataVisualizer->NotifyDeletedTemplate();
 					}
 					if (visualizerTemplate)
 					{
@@ -58,6 +53,15 @@ DataVisualizerBase
 						visualizerTemplate = CreateTemplateInternal(childTemplate);
 					}
 					return visualizerTemplate;
+				}
+
+				void DataVisualizerBase::NotifyDeletedTemplate()
+				{
+					visualizerTemplate = nullptr;
+					if (decoratedDataVisualizer)
+					{
+						decoratedDataVisualizer->NotifyDeletedTemplate();
+					}
 				}
 
 				void DataVisualizerBase::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
@@ -114,6 +118,11 @@ DataEditorBase
 						editorTemplate = CreateTemplateInternal();
 					}
 					return editorTemplate;
+				}
+
+				void DataEditorBase::NotifyDeletedTemplate()
+				{
+					editorTemplate = nullptr;
 				}
 
 				void DataEditorBase::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)

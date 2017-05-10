@@ -14,14 +14,14 @@
   <TabPage ref.Name="self" Text="BindableDataGrid">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
       <att.Rows>
+        <_>composeType:MinSize</_>
         <_>composeType:Percentage percentage:1.0</_>
       </att.Rows>
       <att.Columns>
-        <_>composeType:Percentage percentage:0.5</_>
-        <_>composeType:Percentage percentage:0.5</_>
+        <_>composeType:Percentage percentage:1.0</_>
       </att.Columns>
 
-      <Cell Site="row:0 column:0 columnSpan:2">
+      <Cell Site="row:0 column:0">
         <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="6">
           <att.BoundsComposition-set PreferredMinSize="x:120"/>
           <att.ListControl>
