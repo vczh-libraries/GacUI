@@ -9,12 +9,21 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLTEMPLATES
 
-#include "../GuiBasicControls.h"
+#include "../../GraphicsComposition/GuiGraphicsComposition.h"
 
 namespace vl
 {
 	namespace presentation
 	{
+		template<typename T>
+		using ItemProperty = Func<T(const reflection::description::Value&)>;
+
+		template<typename T>
+		using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
+
+		template<typename T>
+		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
+
 		namespace controls
 		{
 			class GuiListControl;
@@ -80,6 +89,81 @@ namespace vl
 				/// <summary>Select a tab page.</summary>
 				/// <param name="index">The specified position for the tab page.</param>
 				virtual void						ShowTab(vint index) = 0;
+			};
+
+			class GuiInstanceRootObject;
+
+			/// <summary>
+			/// Represnets a component.
+			/// </summary>
+			class GuiComponent : public Object, public Description<GuiComponent>
+			{
+			public:
+				GuiComponent();
+				~GuiComponent();
+
+				virtual void							Attach(GuiInstanceRootObject* rootObject);
+				virtual void							Detach(GuiInstanceRootObject* rootObject);
+			};
+
+			/// <summary>Represnets a root GUI object.</summary>
+			class GuiInstanceRootObject abstract : public Description<GuiInstanceRootObject>
+			{
+				typedef collections::List<Ptr<description::IValueSubscription>>		SubscriptionList;
+			protected:
+				Ptr<GuiResourcePathResolver>					resourceResolver;
+				SubscriptionList								subscriptions;
+				collections::SortedList<GuiComponent*>			components;
+
+				void											FinalizeInstance();
+			public:
+				GuiInstanceRootObject();
+				~GuiInstanceRootObject();
+
+				/// <summary>Set the resource resolver to connect the current root object to the resource creating it.</summary>
+				/// <param name="resolver">The resource resolver</param>
+				void											SetResourceResolver(Ptr<GuiResourcePathResolver> resolver);
+				/// <summary>Resolve a resource using the current resource resolver.</summary>
+				/// <returns>The loaded resource. Returns null if failed to load.</returns>
+				/// <param name="protocol">The protocol.</param>
+				/// <param name="path">The path.</param>
+				/// <param name="ensureExist">Set to true and it will throw an exception if the resource doesn't exist.</param>
+				Ptr<DescriptableObject>							ResolveResource(const WString& protocol, const WString& path, bool ensureExist);
+
+				/// <summary>Add a subscription. When this control host is disposing, all attached subscriptions will be deleted.</summary>
+				/// <returns>Returns null if this operation failed.</returns>
+				/// <param name="subscription">The subscription to test.</param>
+				Ptr<description::IValueSubscription>			AddSubscription(Ptr<description::IValueSubscription> subscription);
+				/// <summary>Remove a subscription.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="subscription">The subscription to test.</param>
+				bool											RemoveSubscription(Ptr<description::IValueSubscription> subscription);
+				/// <summary>Test does the window contain the subscription.</summary>
+				/// <returns>Returns true if the window contains the subscription.</returns>
+				/// <param name="subscription">The subscription to test.</param>
+				bool											ContainsSubscription(Ptr<description::IValueSubscription> subscription);
+				/// <summary>Clear all subscriptions.</summary>
+				void											ClearSubscriptions();
+
+				/// <summary>Add a component. When this control host is disposing, all attached components will be deleted.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="component">The component to add.</param>
+				bool											AddComponent(GuiComponent* component);
+
+				/// <summary>Add a control host as a component. When this control host is disposing, all attached components will be deleted.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="controlHost">The controlHost to add.</param>
+				bool											AddControlHostComponent(GuiControlHost* controlHost);
+				/// <summary>Remove a component.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="component">The component to remove.</param>
+				bool											RemoveComponent(GuiComponent* component);
+				/// <summary>Test does the window contain the component.</summary>
+				/// <returns>Returns true if the window contains the component.</returns>
+				/// <param name="component">The component to test.</param>
+				bool											ContainsComponent(GuiComponent* component);
+				/// <summary>Clear all components.</summary>
+				void											ClearComponents();
 			};
 
 			class GuiButton;

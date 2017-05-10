@@ -28,7 +28,6 @@ Type List
 #define GUIREFLECTIONCONTROLS_TYPELIST(F)\
 			F(presentation::controls::GuiApplication)\
 			F(presentation::theme::ITheme)\
-			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::controls::GuiDialogBase)\
 			F(presentation::controls::GuiMessageDialog)\
 			F(presentation::controls::GuiColorDialog)\

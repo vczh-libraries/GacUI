@@ -107,6 +107,7 @@ Type List
 			F(presentation::controls::GuiControl::IStyleController)\
 			F(presentation::controls::GuiControl::IStyleProvider)\
 			F(presentation::controls::GuiComponent)\
+			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::controls::GuiControlHost)\
 
 			GUIREFLECTIONBASIC_TYPELIST(DECL_TYPE_INFO)
