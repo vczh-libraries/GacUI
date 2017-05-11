@@ -414,27 +414,6 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiTabTemplate_StyleProvider*(TemplateProperty<GuiTabTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiTabTemplate_StyleProvider)
 
-			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer>(Ptr<list::IDataVisualizer>), { L"decoratedVisualizer" })
-			END_CLASS_MEMBER(GuiBindableDataVisualizer)
-
-			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::Factory>(TemplateProperty<GuiGridVisualizerTemplate>), { L"templateFactory"})
-			END_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
-
-			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::DecoratedFactory>(TemplateProperty<GuiGridVisualizerTemplate>, Ptr<list::IDataVisualizerFactory>), { L"templateFactory" _ L"decoratedFactory" })
-			END_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
-
-			BEGIN_CLASS_MEMBER(GuiBindableDataEditor)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor>(), NO_PARAMETER)
-			END_CLASS_MEMBER(GuiBindableDataEditor)
-
-			BEGIN_CLASS_MEMBER(GuiBindableDataEditor::Factory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(TemplateProperty<GuiGridEditorTemplate>), { L"templateFactory" })
-			END_CLASS_MEMBER(GuiBindableDataEditor::Factory)
-
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION
 #undef _
 

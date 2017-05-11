@@ -1238,6 +1238,27 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetViewToDefault, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiVirtualDataGrid)
 
+			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer>(Ptr<list::IDataVisualizer>), { L"decoratedVisualizer" })
+			END_CLASS_MEMBER(GuiBindableDataVisualizer)
+
+			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::Factory>(TemplateProperty<templates::GuiGridVisualizerTemplate>), { L"templateFactory"})
+			END_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
+
+			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::DecoratedFactory>(TemplateProperty<templates::GuiGridVisualizerTemplate>, Ptr<list::IDataVisualizerFactory>), { L"templateFactory" _ L"decoratedFactory" })
+			END_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
+
+			BEGIN_CLASS_MEMBER(GuiBindableDataEditor)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor>(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiBindableDataEditor)
+
+			BEGIN_CLASS_MEMBER(GuiBindableDataEditor::Factory)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(TemplateProperty<templates::GuiGridEditorTemplate>), { L"templateFactory" })
+			END_CLASS_MEMBER(GuiBindableDataEditor::Factory)
+
 			BEGIN_CLASS_MEMBER(ListViewMainColumnDataVisualizer)
 				CLASS_MEMBER_BASE(IDataVisualizer)
 

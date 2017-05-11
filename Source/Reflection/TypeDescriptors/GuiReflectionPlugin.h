@@ -239,11 +239,6 @@ Type List (Templates)
 			F(presentation::templates::GuiListViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTreeViewTemplate_StyleProvider)\
 			F(presentation::templates::GuiTabTemplate_StyleProvider)\
-			F(presentation::templates::GuiBindableDataVisualizer)\
-			F(presentation::templates::GuiBindableDataVisualizer::Factory)\
-			F(presentation::templates::GuiBindableDataVisualizer::DecoratedFactory)\
-			F(presentation::templates::GuiBindableDataEditor)\
-			F(presentation::templates::GuiBindableDataEditor::Factory)\
 
 /***********************************************************************
 Type List (Controls)
@@ -360,6 +355,11 @@ Type List (Controls)
 			F(presentation::controls::list::IDataEditor)\
 			F(presentation::controls::list::IDataGridView)\
 			F(presentation::controls::GuiVirtualDataGrid)\
+			F(presentation::controls::list::GuiBindableDataVisualizer)\
+			F(presentation::controls::list::GuiBindableDataVisualizer::Factory)\
+			F(presentation::controls::list::GuiBindableDataVisualizer::DecoratedFactory)\
+			F(presentation::controls::list::GuiBindableDataEditor)\
+			F(presentation::controls::list::GuiBindableDataEditor::Factory)\
 			F(presentation::controls::list::ListViewMainColumnDataVisualizer)\
 			F(presentation::controls::list::ListViewMainColumnDataVisualizer::Factory)\
 			F(presentation::controls::list::ListViewSubColumnDataVisualizer)\

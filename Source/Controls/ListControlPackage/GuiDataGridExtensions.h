@@ -128,6 +128,87 @@ Extension Bases
 				};
 
 /***********************************************************************
+GuiBindableDataVisualizer
+***********************************************************************/
+
+				/// <summary>Data visualizer object for [T:vl.presentation.controls.GuiBindableDataGrid].</summary>
+				class GuiBindableDataVisualizer : public controls::list::DataVisualizerBase, public Description<GuiBindableDataVisualizer>
+				{
+					using GuiGridVisualizerTemplate = templates::GuiGridVisualizerTemplate;
+				public:
+					class Factory : public controls::list::DataVisualizerFactory<GuiBindableDataVisualizer>
+					{
+					protected:
+						TemplateProperty<GuiGridVisualizerTemplate>		templateFactory;
+
+					public:
+						Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory);
+						~Factory();
+
+						Ptr<controls::list::IDataVisualizer>			CreateVisualizer(controls::list::IDataGridContext* dataGridContext)override;
+					};
+
+					class DecoratedFactory : public controls::list::DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>
+					{
+					protected:
+						TemplateProperty<GuiGridVisualizerTemplate>		templateFactory;
+
+					public:
+						DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory);
+						~DecoratedFactory();
+
+						Ptr<controls::list::IDataVisualizer>			CreateVisualizer(controls::list::IDataGridContext* dataGridContext)override;
+					};
+
+				protected:
+					TemplateProperty<GuiGridVisualizerTemplate>			templateFactory;
+					GuiGridVisualizerTemplate*							visualizerTemplate = nullptr;
+
+					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
+				public:
+					GuiBindableDataVisualizer();
+					GuiBindableDataVisualizer(Ptr<controls::list::IDataVisualizer> _decoratedVisualizer);
+					~GuiBindableDataVisualizer();
+
+					void												BeforeVisualizeCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
+					void												SetSelected(bool value)override;
+				};
+
+/***********************************************************************
+GuiBindableDataEditor
+***********************************************************************/
+
+				class GuiBindableDataEditor : public controls::list::DataEditorBase, public Description<GuiBindableDataEditor>
+				{
+					using GuiGridEditorTemplate = templates::GuiGridEditorTemplate;
+				public:
+					class Factory : public controls::list::DataEditorFactory<GuiBindableDataEditor>
+					{
+					protected:
+						TemplateProperty<GuiGridEditorTemplate>			templateFactory;
+
+					public:
+						Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory);
+						~Factory();
+
+						Ptr<controls::list::IDataEditor>				CreateEditor(controls::list::IDataGridContext* dataGridContext)override;
+					};
+
+				protected:
+					TemplateProperty<GuiGridEditorTemplate>				templateFactory;
+					GuiGridEditorTemplate*								editorTemplate = nullptr;
+
+					templates::GuiTemplate*								CreateTemplateInternal()override;
+					void												editorTemplate_CellValueChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				public:
+					GuiBindableDataEditor();
+					~GuiBindableDataEditor();
+
+					void												BeforeEditCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
+					description::Value									GetEditedCellValue();
+				};
+
+/***********************************************************************
 Visualizer Extensions
 ***********************************************************************/
 
