@@ -88,10 +88,21 @@ DataVisualizerFactory
 						childTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						itemTemplate->GetContainerComposition()->AddChild(childTemplate);
 
-						itemTemplate->FontChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-						{
-							childTemplate->SetFont(itemTemplate->GetFont());
-						});
+#define FORWARD_EVENT(NAME)\
+						itemTemplate->NAME##Changed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)\
+						{\
+							childTemplate->Set##NAME(itemTemplate->Get##NAME());\
+						});\
+
+#define FORWARD_EVENT_IMPL(CLASS, TYPE, NAME) FORWARD_EVENT(NAME)
+
+						GuiTemplate_PROPERTIES(FORWARD_EVENT_IMPL)
+						GuiControlTemplate_PROPERTIES(FORWARD_EVENT_IMPL)
+						GuiGridCellTemplate_PROPERTIES(FORWARD_EVENT_IMPL)
+						GuiGridVisualizerTemplate_PROPERTIES(FORWARD_EVENT_IMPL)
+
+#undef FORWARD_EVENT_IMPL
+#undef FORWARD_EVENT
 					}
 					return itemTemplate;
 				}
