@@ -9,6 +9,7 @@ namespace vl
 		namespace description
 		{
 			using namespace presentation;
+			using namespace presentation::templates;
 			using namespace presentation::controls;
 			using namespace presentation::controls::list;
 			using namespace presentation::controls::tree;
@@ -1259,68 +1260,21 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(TemplateProperty<templates::GuiGridEditorTemplate>), { L"templateFactory" })
 			END_CLASS_MEMBER(GuiBindableDataEditor::Factory)
 
-			BEGIN_CLASS_MEMBER(ListViewMainColumnDataVisualizer)
-				CLASS_MEMBER_BASE(IDataVisualizer)
+			BEGIN_CLASS_MEMBER(MainColumnVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+			END_CLASS_MEMBER(MainColumnVisualizerTemplate)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextElement)
-			END_CLASS_MEMBER(ListViewMainColumnDataVisualizer)
+			BEGIN_CLASS_MEMBER(SubColumnVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+			END_CLASS_MEMBER(SubColumnVisualizerTemplate)
 
-			BEGIN_CLASS_MEMBER(ListViewMainColumnDataVisualizer::Factory)
-				CLASS_MEMBER_BASE(IDataVisualizerFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<ListViewMainColumnDataVisualizer::Factory>(), NO_PARAMETER)
-			END_CLASS_MEMBER(ListViewMainColumnDataVisualizer::Factory)
+			BEGIN_CLASS_MEMBER(HyperlinkVisualizerTemplate)
+				CLASS_MEMBER_BASE(SubColumnVisualizerTemplate)
+			END_CLASS_MEMBER(HyperlinkVisualizerTemplate)
 
-			BEGIN_CLASS_MEMBER(ListViewSubColumnDataVisualizer)
-				CLASS_MEMBER_BASE(IDataVisualizer)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextElement)
-			END_CLASS_MEMBER(ListViewSubColumnDataVisualizer)
-
-			BEGIN_CLASS_MEMBER(ListViewSubColumnDataVisualizer::Factory)
-				CLASS_MEMBER_BASE(IDataVisualizerFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<ListViewSubColumnDataVisualizer::Factory>(), NO_PARAMETER)
-			END_CLASS_MEMBER(ListViewSubColumnDataVisualizer::Factory)
-
-			BEGIN_CLASS_MEMBER(HyperlinkDataVisualizer)
-				CLASS_MEMBER_BASE(ListViewSubColumnDataVisualizer)
-			END_CLASS_MEMBER(HyperlinkDataVisualizer)
-
-			BEGIN_CLASS_MEMBER(HyperlinkDataVisualizer::Factory)
-				CLASS_MEMBER_BASE(IDataVisualizerFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<HyperlinkDataVisualizer::Factory>(), NO_PARAMETER)
-			END_CLASS_MEMBER(HyperlinkDataVisualizer::Factory)
-
-			BEGIN_CLASS_MEMBER(ImageDataVisualizer)
-				CLASS_MEMBER_BASE(IDataVisualizer)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ImageElement)
-			END_CLASS_MEMBER(ImageDataVisualizer)
-
-			BEGIN_CLASS_MEMBER(ImageDataVisualizer::Factory)
-				CLASS_MEMBER_BASE(IDataVisualizerFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<ImageDataVisualizer::Factory>(), NO_PARAMETER)
-			END_CLASS_MEMBER(ImageDataVisualizer::Factory)
-
-			BEGIN_CLASS_MEMBER(CellBorderDataVisualizer)
-				CLASS_MEMBER_BASE(IDataVisualizer)
-			END_CLASS_MEMBER(CellBorderDataVisualizer)
-
-			BEGIN_CLASS_MEMBER(CellBorderDataVisualizer::Factory)
-				CLASS_MEMBER_BASE(IDataVisualizerFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<CellBorderDataVisualizer::Factory>(Ptr<IDataVisualizerFactory>), {L"decoratedFactory"})
-			END_CLASS_MEMBER(CellBorderDataVisualizer::Factory)
-
-			BEGIN_CLASS_MEMBER(NotifyIconDataVisualizer)
-				CLASS_MEMBER_BASE(IDataVisualizer)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(LeftImageElement)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RightImageElement)
-			END_CLASS_MEMBER(NotifyIconDataVisualizer)
-
-			BEGIN_CLASS_MEMBER(NotifyIconDataVisualizer::Factory)
-				CLASS_MEMBER_BASE(IDataVisualizerFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<NotifyIconDataVisualizer::Factory>(Ptr<IDataVisualizerFactory>), {L"decoratedFactory"})
-			END_CLASS_MEMBER(NotifyIconDataVisualizer::Factory)
+			BEGIN_CLASS_MEMBER(CellBorderVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+			END_CLASS_MEMBER(CellBorderVisualizerTemplate)
 
 			BEGIN_CLASS_MEMBER(TextBoxDataEditor)
 				CLASS_MEMBER_BASE(IDataEditor)

@@ -212,120 +212,59 @@ GuiBindableDataEditor
 Visualizer Extensions
 ***********************************************************************/
 
-				/// <summary>Data visualizer that displays an image and a text. Use ListViewMainColumnDataVisualizer::Factory as the factory class.</summary>
-				class ListViewMainColumnDataVisualizer : public DataVisualizerBase
+				class MainColumnVisualizerTemplate : public templates::GuiGridVisualizerTemplate
 				{
-				public:
-					typedef DataVisualizerFactory<ListViewMainColumnDataVisualizer>			Factory;
 				protected:
 					elements::GuiImageFrameElement*						image = nullptr;
 					elements::GuiSolidLabelElement*						text = nullptr;
 
-					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
+					void												OnTextChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnFontChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnTextColorChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnSmallImageChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
-					/// <summary>Create the data visualizer.</summary>
-					ListViewMainColumnDataVisualizer();
-
-					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
-
-					/// <summary>Get the internal text element.</summary>
-					/// <returns>The text element.</returns>
-					elements::GuiSolidLabelElement*						GetTextElement();
+					MainColumnVisualizerTemplate();
+					~MainColumnVisualizerTemplate();
 				};
-				
-				/// <summary>Data visualizer that displays a text. Use ListViewSubColumnDataVisualizer::Factory as the factory class.</summary>
-				class ListViewSubColumnDataVisualizer : public DataVisualizerBase
+
+				class SubColumnVisualizerTemplate : public templates::GuiGridVisualizerTemplate
 				{
-				public:
-					typedef DataVisualizerFactory<ListViewSubColumnDataVisualizer>			Factory;
 				protected:
 					elements::GuiSolidLabelElement*						text = nullptr;
 
-					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
+					void												OnTextChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnFontChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												OnTextColorChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												Initialize(bool fixTextColor);
+
+					SubColumnVisualizerTemplate(bool fixTextColor);
 				public:
-					/// <summary>Create the data visualizer.</summary>
-					ListViewSubColumnDataVisualizer();
-
-					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
-
-					/// <summary>Get the internal text element.</summary>
-					/// <returns>The text element.</returns>
-					elements::GuiSolidLabelElement*						GetTextElement();
+					SubColumnVisualizerTemplate();
+					~SubColumnVisualizerTemplate();
 				};
 
-				/// <summary>Data visualizer that displays a hyperlink. Use HyperlinkDataVisualizer::Factory as the factory class.</summary>
-				class HyperlinkDataVisualizer : public ListViewSubColumnDataVisualizer
+				class HyperlinkVisualizerTemplate : public SubColumnVisualizerTemplate
 				{
-				public:
-					typedef DataVisualizerFactory<HyperlinkDataVisualizer>					Factory;
 				protected:
-
 					void												label_MouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void												label_MouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
-				public:
-					HyperlinkDataVisualizer();
 
-					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
+				public:
+					HyperlinkVisualizerTemplate();
+					~HyperlinkVisualizerTemplate();
 				};
 
-				/// <summary>Data visualizer that displays am image. Use ImageDataVisualizer::Factory as the factory class.</summary>
-				class ImageDataVisualizer : public DataVisualizerBase
+				class CellBorderVisualizerTemplate : public templates::GuiGridVisualizerTemplate
 				{
-				public:
-					typedef DataVisualizerFactory<ImageDataVisualizer>						Factory;
 				protected:
-					elements::GuiImageFrameElement*						image = nullptr;
+					elements::GuiSolidBorderElement*					border1 = nullptr;
+					elements::GuiSolidBorderElement*					border2 = nullptr;
 
-					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
+					void												OnItemSeparatorColorChanged(GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
 				public:
-					/// <summary>Create the data visualizer.</summary>
-					ImageDataVisualizer();
-
-					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
-
-					/// <summary>Get the internal image element.</summary>
-					/// <returns>The image element.</returns>
-					elements::GuiImageFrameElement*						GetImageElement();
-				};
-				
-				/// <summary>Data visualizer that display a cell border that around another data visualizer. Use CellBorderDataVisualizer::Factory as the factory class.</summary>
-				class CellBorderDataVisualizer : public DataVisualizerBase
-				{
-				public:
-					typedef DataDecoratableVisualizerFactory<CellBorderDataVisualizer>		Factory;
-				protected:
-
-					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
-				public:
-					/// <summary>Create the data visualizer.</summary>
-					/// <param name="decoratedDataVisualizer">The decorated data visualizer.</param>
-					CellBorderDataVisualizer(Ptr<IDataVisualizer> decoratedDataVisualizer);
-				};
-
-				/// <summary>Data visualizer that display two icons (both optional) that beside another data visualizer. Use NotifyIconDataVisualizer::Factory as the factory class.</summary>
-				class NotifyIconDataVisualizer : public DataVisualizerBase
-				{
-				public:
-					typedef DataDecoratableVisualizerFactory<NotifyIconDataVisualizer>		Factory;
-				protected:
-					elements::GuiImageFrameElement*						leftImage = nullptr;
-					elements::GuiImageFrameElement*						rightImage = nullptr;
-
-					templates::GuiTemplate*								CreateTemplateInternal(templates::GuiTemplate* childTemplate)override;
-				public:
-					/// <summary>Create the data visualizer.</summary>
-					/// <param name="decoratedDataVisualizer">The decorated data visualizer.</param>
-					NotifyIconDataVisualizer(Ptr<IDataVisualizer> decoratedDataVisualizer);
-
-					void												BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
-
-					/// <summary>Get the internal left image element.</summary>
-					/// <returns>The image element.</returns>
-					elements::GuiImageFrameElement*						GetLeftImageElement();
-					/// <summary>Get the internal right image element.</summary>
-					/// <returns>The image element.</returns>
-					elements::GuiImageFrameElement*						GetRightImageElement();
+					CellBorderVisualizerTemplate();
+					~CellBorderVisualizerTemplate();
 				};
 
 /***********************************************************************

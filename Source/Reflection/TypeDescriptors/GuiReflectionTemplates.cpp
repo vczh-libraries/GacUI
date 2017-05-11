@@ -254,15 +254,22 @@ Type Declaration
 				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiTreeItemTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiGridVisualizerTemplate)
+			BEGIN_CLASS_MEMBER(GuiGridCellTemplate)
 				CLASS_MEMBER_BASE(GuiControlTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiGridCellTemplate*(), NO_PARAMETER)
+
+				GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiGridCellTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_BASE(GuiGridCellTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiGridVisualizerTemplate*(), NO_PARAMETER)
 
 				GuiGridVisualizerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiGridVisualizerTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiGridEditorTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
+				CLASS_MEMBER_BASE(GuiGridCellTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiGridEditorTemplate*(), NO_PARAMETER)
 
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)

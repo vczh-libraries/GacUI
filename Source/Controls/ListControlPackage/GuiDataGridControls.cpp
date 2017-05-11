@@ -12,6 +12,7 @@ namespace vl
 				using namespace compositions;
 				using namespace collections;
 				using namespace description;
+				using namespace templates;
 
 				const wchar_t* const IDataGridView::Identifier = L"vl::presentation::controls::list::IDataGridView";
 
@@ -475,8 +476,16 @@ GuiVirtualDataGrid
 				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
 				dataGridView = dynamic_cast<IDataGridView*>(_itemProvider->RequestView(IDataGridView::Identifier));
 
-				defaultMainColumnVisualizerFactory = new CellBorderDataVisualizer::Factory(new ListViewMainColumnDataVisualizer::Factory);
-				defaultSubColumnVisualizerFactory = new CellBorderDataVisualizer::Factory(new ListViewSubColumnDataVisualizer::Factory);
+				{
+					auto mainProperty = [](const Value&) { return new MainColumnVisualizerTemplate; };
+					auto subProperty = [](const Value&) { return new SubColumnVisualizerTemplate; };
+					auto cellBorderProperty = [](const Value&) { return new CellBorderVisualizerTemplate; };
+
+					auto mainFactory = MakePtr<GuiBindableDataVisualizer::Factory>(mainProperty);
+					auto subFactory = MakePtr<GuiBindableDataVisualizer::Factory>(subProperty);
+					defaultMainColumnVisualizerFactory = MakePtr<GuiBindableDataVisualizer::DecoratedFactory>(cellBorderProperty, mainFactory);
+					defaultSubColumnVisualizerFactory = MakePtr<GuiBindableDataVisualizer::DecoratedFactory>(cellBorderProperty, subFactory);
+				}
 
 				CHECK_ERROR(listViewItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing IListViewItemView from item provider.");
 				CHECK_ERROR(columnItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing ListViewColumnItemArranger::IColumnItemView from item provider.");

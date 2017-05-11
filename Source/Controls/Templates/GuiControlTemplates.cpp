@@ -612,6 +612,22 @@ GuiTreeItemTemplate
 			}
 
 /***********************************************************************
+GuiGridCellTemplate
+***********************************************************************/
+
+			GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
+
+			GuiGridCellTemplate::GuiGridCellTemplate()
+			{
+				GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
+			}
+
+			GuiGridCellTemplate::~GuiGridCellTemplate()
+			{
+				FinalizeAggregation();
+			}
+
+/***********************************************************************
 GuiGridVisualizerTemplate
 ***********************************************************************/
 

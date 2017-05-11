@@ -216,6 +216,7 @@ Type List (Templates)
 			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiTextListItemTemplate)\
 			F(presentation::templates::GuiTreeItemTemplate)\
+			F(presentation::templates::GuiGridCellTemplate)\
 			F(presentation::templates::GuiGridVisualizerTemplate)\
 			F(presentation::templates::GuiGridEditorTemplate)\
 			F(presentation::templates::GuiControlTemplate_StyleProvider)\
@@ -360,18 +361,10 @@ Type List (Controls)
 			F(presentation::controls::list::GuiBindableDataVisualizer::DecoratedFactory)\
 			F(presentation::controls::list::GuiBindableDataEditor)\
 			F(presentation::controls::list::GuiBindableDataEditor::Factory)\
-			F(presentation::controls::list::ListViewMainColumnDataVisualizer)\
-			F(presentation::controls::list::ListViewMainColumnDataVisualizer::Factory)\
-			F(presentation::controls::list::ListViewSubColumnDataVisualizer)\
-			F(presentation::controls::list::ListViewSubColumnDataVisualizer::Factory)\
-			F(presentation::controls::list::HyperlinkDataVisualizer)\
-			F(presentation::controls::list::HyperlinkDataVisualizer::Factory)\
-			F(presentation::controls::list::ImageDataVisualizer)\
-			F(presentation::controls::list::ImageDataVisualizer::Factory)\
-			F(presentation::controls::list::CellBorderDataVisualizer)\
-			F(presentation::controls::list::CellBorderDataVisualizer::Factory)\
-			F(presentation::controls::list::NotifyIconDataVisualizer)\
-			F(presentation::controls::list::NotifyIconDataVisualizer::Factory)\
+			F(presentation::controls::list::MainColumnVisualizerTemplate)\
+			F(presentation::controls::list::SubColumnVisualizerTemplate)\
+			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
+			F(presentation::controls::list::CellBorderVisualizerTemplate)\
 			F(presentation::controls::list::TextBoxDataEditor)\
 			F(presentation::controls::list::TextBoxDataEditor::Factory)\
 			F(presentation::controls::list::TextComboBoxDataEditor)\

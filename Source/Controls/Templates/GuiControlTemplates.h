@@ -573,29 +573,43 @@ Item Template
 				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiGridVisualizerTemplate : public GuiControlTemplate , public AggregatableDescription<GuiGridVisualizerTemplate>
+			class GuiGridCellTemplate : public GuiControlTemplate, public AggregatableDescription<GuiGridCellTemplate>
+			{
+			public:
+				GuiGridCellTemplate();
+				~GuiGridCellTemplate();
+
+#define GuiGridCellTemplate_PROPERTIES(F)\
+				F(GuiGridCellTemplate, Color, PrimaryTextColor)\
+				F(GuiGridCellTemplate, Color, SecondaryTextColor)\
+				F(GuiGridCellTemplate, Color, ItemSeparatorColor)\
+				F(GuiGridCellTemplate, Ptr<GuiImageData>, LargeImage)\
+				F(GuiGridCellTemplate, Ptr<GuiImageData>, SmallImage)\
+				F(GuiGridCellTemplate, description::Value, RowValue)\
+				F(GuiGridCellTemplate, description::Value, CellValue)\
+
+				GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiGridVisualizerTemplate : public GuiGridCellTemplate, public AggregatableDescription<GuiGridVisualizerTemplate>
 			{
 			public:
 				GuiGridVisualizerTemplate();
 				~GuiGridVisualizerTemplate();
 
 #define GuiGridVisualizerTemplate_PROPERTIES(F)\
-				F(GuiGridVisualizerTemplate, description::Value, RowValue)\
-				F(GuiGridVisualizerTemplate, description::Value, CellValue)\
 				F(GuiGridVisualizerTemplate, bool, Selected)\
 
 				GuiGridVisualizerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiGridEditorTemplate : public GuiControlTemplate , public AggregatableDescription<GuiGridEditorTemplate>
+			class GuiGridEditorTemplate : public GuiGridCellTemplate, public AggregatableDescription<GuiGridEditorTemplate>
 			{
 			public:
 				GuiGridEditorTemplate();
 				~GuiGridEditorTemplate();
 
 #define GuiGridEditorTemplate_PROPERTIES(F)\
-				F(GuiGridEditorTemplate, description::Value, RowValue)\
-				F(GuiGridEditorTemplate, description::Value, CellValue)\
 
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
