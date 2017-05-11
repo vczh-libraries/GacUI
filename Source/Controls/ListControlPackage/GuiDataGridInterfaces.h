@@ -58,7 +58,7 @@ Datagrid Interfaces
 
 					/// <summary>Get the template that renders the data. The data visualizer should maintain this template, and delete it when necessary.</summary>
 					/// <returns>The template.</returns>
-					virtual templates::GuiTemplate*						GetTemplate() = 0;
+					virtual templates::GuiGridVisualizerTemplate*		GetTemplate() = 0;
 					/// <summary>Notify that the template has been deleted during the deconstruction of UI objects.</summary>
 					virtual void										NotifyDeletedTemplate() = 0;
 
@@ -67,10 +67,6 @@ Datagrid Interfaces
 					/// <param name="row">The row number of the cell.</param>
 					/// <param name="column">The column number of the cell.</param>
 					virtual void										BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column) = 0;
-
-					/// <summary>Get the decorated data visualizer inside the current data visualizer.</summary>
-					/// <returns>The decorated data visualizer. Returns null if such a visualizer does not exists.</returns>
-					virtual IDataVisualizer*							GetDecoratedDataVisualizer() = 0;
 
 					/// <summary>Set the selected state.</summary>
 					/// <param name="value">Set to true to make this data visualizer looks selected.</param>
@@ -110,7 +106,7 @@ Datagrid Interfaces
 
 					/// <summary>Get the template that edit the data. The data editor should maintain this template, and delete it when necessary.</summary>
 					/// <returns>The template.</returns>
-					virtual templates::GuiTemplate*						GetTemplate() = 0;
+					virtual templates::GuiGridEditorTemplate*			GetTemplate() = 0;
 					/// <summary>Notify that the template has been deleted during the deconstruction of UI objects.</summary>
 					virtual void										NotifyDeletedTemplate() = 0;
 
@@ -170,11 +166,11 @@ Datagrid Interfaces
 					/// <param name="row">The row index of the cell.</param>
 					/// <param name="column">The column index of the cell.</param>
 					virtual description::Value							GetBindingCellValue(vint row, vint column) = 0;
-					/// <summary>Called when saving data for the editing cell.</summary>
-					/// <param name="row">The row number for the cell.</param>
-					/// <param name="column">The column number for the cell.</param>
-					/// <param name="dataEditor">The data editor.</param>
-					virtual void										SaveCellData(vint row, vint column, IDataEditor* dataEditor) = 0;
+					/// <summary>Set the binding value of a cell.</summary>
+					/// <param name="row">The row index of the cell.</param>
+					/// <param name="column">The column index of the cell.</param>
+					/// <param name="value">The value to set.</param>
+					virtual void										SetBindingCellValue(vint row, vint column, const description::Value& value) = 0;
 				};
 			}
 		}

@@ -356,11 +356,10 @@ Type List (Controls)
 			F(presentation::controls::list::IDataEditor)\
 			F(presentation::controls::list::IDataGridView)\
 			F(presentation::controls::GuiVirtualDataGrid)\
-			F(presentation::controls::list::GuiBindableDataVisualizer)\
-			F(presentation::controls::list::GuiBindableDataVisualizer::Factory)\
-			F(presentation::controls::list::GuiBindableDataVisualizer::DecoratedFactory)\
-			F(presentation::controls::list::GuiBindableDataEditor)\
-			F(presentation::controls::list::GuiBindableDataEditor::Factory)\
+			F(presentation::controls::list::DataVisualizerBase)\
+			F(presentation::controls::list::DataVisualizerFactory)\
+			F(presentation::controls::list::DataEditorBase)\
+			F(presentation::controls::list::DataEditorFactory)\
 			F(presentation::controls::list::MainColumnVisualizerTemplate)\
 			F(presentation::controls::list::SubColumnVisualizerTemplate)\
 			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
@@ -1051,83 +1050,6 @@ Interface Proxy (Controls)
 
 			END_INTERFACE_PROXY(presentation::controls::list::IDataGridContext)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataVisualizerFactory)
-
-				Ptr<presentation::controls::list::IDataVisualizer> CreateVisualizer(presentation::controls::list::IDataGridContext* dataGridContext)override
-				{
-					INVOKEGET_INTERFACE_PROXY(CreateVisualizer, dataGridContext);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::IDataVisualizerFactory)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataVisualizer)
-
-				presentation::controls::list::IDataVisualizerFactory* GetFactory()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetFactory);
-				}
-
-				presentation::templates::GuiTemplate* GetTemplate()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTemplate);
-				}
-
-				void NotifyDeletedTemplate()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(NotifyDeletedTemplate);
-				}
-
-				void BeforeVisualizeCell(presentation::controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override
-				{
-					INVOKE_INTERFACE_PROXY(BeforeVisualizeCell, itemProvider, row, column);
-				}
-
-				presentation::controls::list::IDataVisualizer* GetDecoratedDataVisualizer()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetDecoratedDataVisualizer);
-				}
-
-				void SetSelected(bool value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetSelected, value);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::IDataVisualizer)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataEditorFactory)
-
-				Ptr<presentation::controls::list::IDataEditor> CreateEditor(presentation::controls::list::IDataGridContext* dataGridContext)override
-				{
-					INVOKEGET_INTERFACE_PROXY(CreateEditor, dataGridContext);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::IDataEditorFactory)
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataEditor)
-
-				presentation::controls::list::IDataEditorFactory* GetFactory()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetFactory);
-				}
-
-				presentation::templates::GuiTemplate* GetTemplate()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetTemplate);
-				}
-
-				void NotifyDeletedTemplate()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(NotifyDeletedTemplate);
-				}
-
-				void BeforeEditCell(presentation::controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)override
-				{
-					INVOKE_INTERFACE_PROXY(BeforeEditCell, itemProvider, row, column);
-				}
-
-				void ReinstallEditor()override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(ReinstallEditor);
-				}
-			END_INTERFACE_PROXY(presentation::controls::list::IDataEditor)
-
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataGridView)
 
 				description::Value GetViewModelContext()override
@@ -1175,9 +1097,9 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY(GetBindingCellValue, row, column);
 				}
 
-				void SaveCellData(vint row, vint column, presentation::controls::list::IDataEditor* dataEditor)override
+				void SetBindingCellValue(vint row, vint column, const Value& value)override
 				{
-					INVOKE_INTERFACE_PROXY(SaveCellData, row, column, dataEditor);
+					INVOKE_INTERFACE_PROXY(SetBindingCellValue, row, column, value);
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::IDataGridView)
 

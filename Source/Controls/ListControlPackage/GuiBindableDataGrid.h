@@ -390,7 +390,7 @@ DataProvider
 					IDataVisualizerFactory*								GetCellDataVisualizerFactory(vint row, vint column)override;
 					IDataEditorFactory*									GetCellDataEditorFactory(vint row, vint column)override;
 					description::Value									GetBindingCellValue(vint row, vint column)override;
-					void												SaveCellData(vint row, vint column, IDataEditor* dataEditor)override;
+					void												SetBindingCellValue(vint row, vint column, const description::Value& value)override;
 				};
 			}
 

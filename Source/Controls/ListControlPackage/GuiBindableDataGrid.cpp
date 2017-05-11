@@ -326,7 +326,8 @@ DataColumn
 					if (0 <= row && row < dataProvider->Count())
 					{
 						auto rowValue = dataProvider->GetBindingValue(row);
-						return WriteProperty(rowValue, valueProperty, value);
+						WriteProperty(rowValue, valueProperty, value);
+						dataProvider->InvokeOnItemModified(row, 1, 1);
 					}
 				}
 
@@ -803,12 +804,9 @@ DataProvider
 					return columns[column]->GetCellValue(row);
 				}
 
-				void DataProvider::SaveCellData(vint row, vint column, IDataEditor* dataEditor)
+				void DataProvider::SetBindingCellValue(vint row, vint column, const description::Value& value)
 				{
-					if (auto dataTemplate = dynamic_cast<GuiGridEditorTemplate*>(dataEditor->GetTemplate()))
-					{
-						columns[column]->SetCellValue(row, dataTemplate->GetCellValue());
-					}
+					columns[column]->SetCellValue(row, value);
 				}
 			}
 

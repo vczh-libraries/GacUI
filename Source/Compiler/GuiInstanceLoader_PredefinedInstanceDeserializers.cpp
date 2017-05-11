@@ -269,14 +269,7 @@ GuiTemplatePropertyDeserializer
 					tds.Add(controlTemplateTd);
 					auto refFactory = CreateTemplateFactory(resolvingResult, tds, templateType.Obj(), tagPosition, errors);
 					auto createStyle = MakePtr<WfNewClassExpression>();
-					if (index == 0)
-					{
-						createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::GuiBindableDataVisualizer::Factory>>::CreateTypeInfo().Obj());
-					}
-					else
-					{
-						createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::GuiBindableDataVisualizer::DecoratedFactory>>::CreateTypeInfo().Obj());
-					}
+					createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataVisualizerFactory>>::CreateTypeInfo().Obj());
 					createStyle->arguments.Add(refFactory);
 
 					if (index > 0)
@@ -298,7 +291,7 @@ GuiTemplatePropertyDeserializer
 				auto templateType = TypeInfoRetriver<GuiGridEditorTemplate*>::CreateTypeInfo();
 				auto refFactory = CreateTemplateFactory(resolvingResult, controlTemplateTds, templateType.Obj(), tagPosition, errors);
 				auto createStyle = MakePtr<WfNewClassExpression>();
-				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::GuiBindableDataEditor::Factory>>::CreateTypeInfo().Obj());
+				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataEditorFactory>>::CreateTypeInfo().Obj());
 				createStyle->arguments.Add(refFactory);
 				return createStyle;
 			}

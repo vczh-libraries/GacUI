@@ -421,7 +421,7 @@ GuiVirtualDataGrid (IDataGridContext)
 					}
 
 					GetItemProvider()->PushEditing();
-					dataGridView->SaveCellData(currentEditorPos.row, currentEditorPos.column, currentEditor.Obj());
+					dataGridView->SetBindingCellValue(currentEditorPos.row, currentEditorPos.column, currentEditor->GetTemplate()->GetCellValue());
 					GetItemProvider()->PopEditing();
 
 					if (currentEditor)
@@ -478,10 +478,10 @@ GuiVirtualDataGrid
 					auto subProperty = [](const Value&) { return new SubColumnVisualizerTemplate; };
 					auto cellBorderProperty = [](const Value&) { return new CellBorderVisualizerTemplate; };
 
-					auto mainFactory = MakePtr<GuiBindableDataVisualizer::Factory>(mainProperty);
-					auto subFactory = MakePtr<GuiBindableDataVisualizer::Factory>(subProperty);
-					defaultMainColumnVisualizerFactory = MakePtr<GuiBindableDataVisualizer::DecoratedFactory>(cellBorderProperty, mainFactory);
-					defaultSubColumnVisualizerFactory = MakePtr<GuiBindableDataVisualizer::DecoratedFactory>(cellBorderProperty, subFactory);
+					auto mainFactory = MakePtr<DataVisualizerFactory>(mainProperty);
+					auto subFactory = MakePtr<DataVisualizerFactory>(subProperty);
+					defaultMainColumnVisualizerFactory = MakePtr<DataVisualizerFactory>(cellBorderProperty, mainFactory);
+					defaultSubColumnVisualizerFactory = MakePtr<DataVisualizerFactory>(cellBorderProperty, subFactory);
 				}
 
 				CHECK_ERROR(listViewItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleProvider*, GuiListControl::IItemProvider*)#Missing IListViewItemView from item provider.");

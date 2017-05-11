@@ -19,17 +19,12 @@ namespace vl
 DataVisualizerBase
 ***********************************************************************/
 
-				DataVisualizerBase::DataVisualizerBase(Ptr<IDataVisualizer> _decoratedDataVisualizer)
-					:decoratedDataVisualizer(_decoratedDataVisualizer)
+				DataVisualizerBase::DataVisualizerBase()
 				{
 				}
 
 				DataVisualizerBase::~DataVisualizerBase()
 				{
-					if (decoratedDataVisualizer)
-					{
-						decoratedDataVisualizer->NotifyDeletedTemplate();
-					}
 					if (visualizerTemplate)
 					{
 						SafeDeleteComposition(visualizerTemplate);
@@ -41,55 +36,84 @@ DataVisualizerBase
 					return factory;
 				}
 
-				templates::GuiTemplate* DataVisualizerBase::GetTemplate()
+				templates::GuiGridVisualizerTemplate* DataVisualizerBase::GetTemplate()
 				{
-					if (!visualizerTemplate)
-					{
-						GuiTemplate* childTemplate = nullptr;
-						if (decoratedDataVisualizer)
-						{
-							childTemplate = decoratedDataVisualizer->GetTemplate();
-						}
-						visualizerTemplate = CreateTemplateInternal(childTemplate);
-						if (decoratedDataVisualizer)
-						{
-							visualizerTemplate->FontChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-							{
-								decoratedDataVisualizer->GetTemplate()->SetFont(visualizerTemplate->GetFont());
-							});
-						}
-					}
 					return visualizerTemplate;
 				}
 
 				void DataVisualizerBase::NotifyDeletedTemplate()
 				{
 					visualizerTemplate = nullptr;
-					if (decoratedDataVisualizer)
-					{
-						decoratedDataVisualizer->NotifyDeletedTemplate();
-					}
 				}
 
 				void DataVisualizerBase::BeforeVisualizeCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-					if (decoratedDataVisualizer)
+					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
-						decoratedDataVisualizer->BeforeVisualizeCell(itemProvider, row, column);
-					}
-				}
+						auto styleProvider = dataGridContext->GetListViewStyleProvider();
+						visualizerTemplate->SetPrimaryTextColor(styleProvider->GetPrimaryTextColor());
+						visualizerTemplate->SetSecondaryTextColor(styleProvider->GetSecondaryTextColor());
+						visualizerTemplate->SetItemSeparatorColor(styleProvider->GetItemSeparatorColor());
 
-				IDataVisualizer* DataVisualizerBase::GetDecoratedDataVisualizer()
-				{
-					return decoratedDataVisualizer.Obj();
+						visualizerTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
+						visualizerTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
+						visualizerTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
+					}
+					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					{
+						visualizerTemplate->SetRowValue(itemProvider->GetBindingValue(row));
+						visualizerTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
+					}
 				}
 
 				void DataVisualizerBase::SetSelected(bool value)
 				{
-					if (decoratedDataVisualizer)
+					if (visualizerTemplate)
 					{
-						decoratedDataVisualizer->SetSelected(value);
+						visualizerTemplate->SetSelected(value);
 					}
+				}
+
+/***********************************************************************
+DataVisualizerFactory
+***********************************************************************/
+
+				DataVisualizerFactory::ItemTemplate* DataVisualizerFactory::CreateItemTemplate(controls::list::IDataGridContext* dataGridContext)
+				{
+					ItemTemplate* itemTemplate = templateFactory(dataGridContext->GetViewModelContext());
+					CHECK_ERROR(itemTemplate, L"DataVisualizerFactory::CreateItemTemplate(IDataGridContext*)#An instance of GuiGridEditorTemplate is expected.");
+					if (decoratedFactory)
+					{
+						auto childTemplate = decoratedFactory->CreateItemTemplate(dataGridContext);
+						childTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						itemTemplate->GetContainerComposition()->AddChild(childTemplate);
+
+						itemTemplate->FontChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+						{
+							childTemplate->SetFont(itemTemplate->GetFont());
+						});
+					}
+					return itemTemplate;
+				}
+
+				DataVisualizerFactory::DataVisualizerFactory(TemplateProperty<ItemTemplate> _templateFactory, Ptr<DataVisualizerFactory> _decoratedFactory)
+					:templateFactory(_templateFactory)
+					, decoratedFactory(_decoratedFactory)
+				{
+				}
+
+				DataVisualizerFactory::~DataVisualizerFactory()
+				{
+				}
+
+				Ptr<controls::list::IDataVisualizer> DataVisualizerFactory::CreateVisualizer(controls::list::IDataGridContext* dataGridContext)
+				{
+					auto dataVisualizer = MakePtr<DataVisualizerBase>();
+					dataVisualizer->factory = this;
+					dataVisualizer->dataGridContext = dataGridContext;
+					dataVisualizer->visualizerTemplate = CreateItemTemplate(dataGridContext);
+
+					return dataVisualizer;
 				}
 				
 /***********************************************************************
@@ -118,12 +142,8 @@ DataEditorBase
 					return factory;
 				}
 
-				templates::GuiTemplate* DataEditorBase::GetTemplate()
+				templates::GuiGridEditorTemplate* DataEditorBase::GetTemplate()
 				{
-					if (!editorTemplate)
-					{
-						editorTemplate = CreateTemplateInternal();
-					}
 					return editorTemplate;
 				}
 
@@ -134,175 +154,6 @@ DataEditorBase
 
 				void DataEditorBase::BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
-				}
-
-				void DataEditorBase::ReinstallEditor()
-				{
-				}
-
-/***********************************************************************
-GuiBindableDataVisualizer::Factory
-***********************************************************************/
-
-				GuiBindableDataVisualizer::Factory::Factory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory)
-					:templateFactory(_templateFactory)
-				{
-				}
-
-				GuiBindableDataVisualizer::Factory::~Factory()
-				{
-				}
-
-				Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::Factory::CreateVisualizer(controls::list::IDataGridContext* dataGridContext)
-				{
-					auto visualizer = DataVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(dataGridContext).Cast<GuiBindableDataVisualizer>();
-					if (visualizer)
-					{
-						visualizer->templateFactory = templateFactory;
-					}
-					return visualizer;
-				}
-
-/***********************************************************************
-GuiBindableDataVisualizer::DecoratedFactory
-***********************************************************************/
-
-				GuiBindableDataVisualizer::DecoratedFactory::DecoratedFactory(TemplateProperty<GuiGridVisualizerTemplate> _templateFactory, Ptr<controls::list::IDataVisualizerFactory> _decoratedFactory)
-					:DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>(_decoratedFactory)
-					, templateFactory(_templateFactory)
-				{
-				}
-
-				GuiBindableDataVisualizer::DecoratedFactory::~DecoratedFactory()
-				{
-				}
-
-				Ptr<controls::list::IDataVisualizer> GuiBindableDataVisualizer::DecoratedFactory::CreateVisualizer(controls::list::IDataGridContext* dataGridContext)
-				{
-					auto visualizer = DataDecoratableVisualizerFactory<GuiBindableDataVisualizer>::CreateVisualizer(dataGridContext).Cast<GuiBindableDataVisualizer>();
-					if (visualizer)
-					{
-						visualizer->templateFactory = templateFactory;
-					}
-					return visualizer;
-				}
-
-/***********************************************************************
-GuiBindableDataVisualizer
-***********************************************************************/
-
-				GuiTemplate* GuiBindableDataVisualizer::CreateTemplateInternal(GuiTemplate* childTemplate)
-				{
-					visualizerTemplate = templateFactory(dataGridContext->GetViewModelContext());
-					CHECK_ERROR(visualizerTemplate, L"GuiBindableDataVisualizer::CreateTemplateInternal(GuiTemplate*)#An instance of GuiGridVisualizerTemplate is expected.");
-
-					if (childTemplate)
-					{
-						childTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						visualizerTemplate->GetContainerComposition()->AddChild(childTemplate);
-					}
-					return visualizerTemplate;
-				}
-
-				GuiBindableDataVisualizer::GuiBindableDataVisualizer()
-				{
-				}
-
-				GuiBindableDataVisualizer::GuiBindableDataVisualizer(Ptr<controls::list::IDataVisualizer> _decoratedVisualizer)
-					:DataVisualizerBase(_decoratedVisualizer)
-				{
-				}
-
-				GuiBindableDataVisualizer::~GuiBindableDataVisualizer()
-				{
-				}
-
-				void GuiBindableDataVisualizer::BeforeVisualizeCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)
-				{
-					DataVisualizerBase::BeforeVisualizeCell(itemProvider, row, column);
-					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
-					{
-						auto styleProvider = dataGridContext->GetListViewStyleProvider();
-						visualizerTemplate->SetPrimaryTextColor(styleProvider->GetPrimaryTextColor());
-						visualizerTemplate->SetSecondaryTextColor(styleProvider->GetSecondaryTextColor());
-						visualizerTemplate->SetItemSeparatorColor(styleProvider->GetItemSeparatorColor());
-
-						visualizerTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
-						visualizerTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
-						visualizerTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
-					}
-					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(IDataGridView::Identifier)))
-					{
-						visualizerTemplate->SetRowValue(itemProvider->GetBindingValue(row));
-						visualizerTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
-					}
-				}
-
-				void GuiBindableDataVisualizer::SetSelected(bool value)
-				{
-					DataVisualizerBase::SetSelected(value);
-					if (visualizerTemplate)
-					{
-						visualizerTemplate->SetSelected(value);
-					}
-				}
-
-/***********************************************************************
-GuiBindableDataEditor::Factory
-***********************************************************************/
-
-				GuiBindableDataEditor::Factory::Factory(TemplateProperty<GuiGridEditorTemplate> _templateFactory)
-					:templateFactory(_templateFactory)
-				{
-				}
-
-				GuiBindableDataEditor::Factory::~Factory()
-				{
-				}
-
-				Ptr<controls::list::IDataEditor> GuiBindableDataEditor::Factory::CreateEditor(controls::list::IDataGridContext* dataGridContext)
-				{
-					auto editor = DataEditorFactory<GuiBindableDataEditor>::CreateEditor(dataGridContext).Cast<GuiBindableDataEditor>();
-					if (editor)
-					{
-						editor->templateFactory = templateFactory;
-
-						// Invoke GuiBindableDataEditor::CreateTemplateInternal
-						// so that GuiBindableDataEditor::BeforeEditCell is able to set RowValue and CellValue to the editor
-						editor->GetTemplate();
-					}
-					return editor;
-				}
-
-/***********************************************************************
-GuiBindableDataEditor
-***********************************************************************/
-
-				GuiTemplate* GuiBindableDataEditor::CreateTemplateInternal()
-				{
-					editorTemplate = templateFactory(dataGridContext->GetViewModelContext());
-					CHECK_ERROR(editorTemplate, L"GuiBindableDataEditor::CreateTemplateInternal()#An instance of GuiGridEditorTemplate is expected.");
-
-					editorTemplate->CellValueChanged.AttachMethod(this, &GuiBindableDataEditor::editorTemplate_CellValueChanged);
-					return editorTemplate;
-				}
-
-				void GuiBindableDataEditor::editorTemplate_CellValueChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					dataGridContext->RequestSaveData();
-				}
-
-				GuiBindableDataEditor::GuiBindableDataEditor()
-				{
-				}
-
-				GuiBindableDataEditor::~GuiBindableDataEditor()
-				{
-				}
-
-				void GuiBindableDataEditor::BeforeEditCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)
-				{
-					DataEditorBase::BeforeEditCell(itemProvider, row, column);
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
 						auto styleProvider = dataGridContext->GetListViewStyleProvider();
@@ -321,16 +172,37 @@ GuiBindableDataEditor
 					}
 				}
 
-				description::Value GuiBindableDataEditor::GetEditedCellValue()
+				void DataEditorBase::ReinstallEditor()
 				{
-					if (editorTemplate)
+				}
+
+/***********************************************************************
+DataEditorFactory
+***********************************************************************/
+
+				DataEditorFactory::DataEditorFactory(TemplateProperty<GuiGridEditorTemplate> _templateFactory)
+					:templateFactory(_templateFactory)
+				{
+				}
+
+				DataEditorFactory::~DataEditorFactory()
+				{
+				}
+
+				Ptr<IDataEditor> DataEditorFactory::CreateEditor(controls::list::IDataGridContext* dataGridContext)
+				{
+					auto editor = MakePtr<DataEditorBase>();
+					editor->factory = this;
+					editor->dataGridContext = dataGridContext;
+
+					ItemTemplate* itemTemplate = templateFactory(dataGridContext->GetViewModelContext());
+					CHECK_ERROR(itemTemplate, L"DataEditorFactory::CreateEditor(IDataGridContext*)#An instance of GuiGridEditorTemplate is expected.");
+					itemTemplate->CellValueChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 					{
-						return editorTemplate->GetCellValue();
-					}
-					else
-					{
-						return description::Value();
-					}
+						editor->RequestSaveData();
+					});
+					editor->editorTemplate = itemTemplate;
+					return editor;
 				}
 				
 /***********************************************************************

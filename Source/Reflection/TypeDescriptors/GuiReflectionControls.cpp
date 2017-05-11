@@ -1177,30 +1177,29 @@ Type Declaration
 				CLASS_MEMBER_METHOD(RequestSaveData, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDataGridContext)
 
-			BEGIN_INTERFACE_MEMBER(IDataVisualizerFactory)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IDataVisualizerFactory)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_METHOD(CreateVisualizer, {L"dataGridContext"})
 			END_INTERFACE_MEMBER(IDataVisualizerFactory)
 
-			BEGIN_INTERFACE_MEMBER(IDataVisualizer)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IDataVisualizer)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Factory)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Template)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(DecoratedDataVisualizer)
 
 				CLASS_MEMBER_METHOD(BeforeVisualizeCell, {L"itemProvider" _ L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(SetSelected, {L"value"})
 			END_INTERFACE_MEMBER(IDataVisualizer)
 
-			BEGIN_INTERFACE_MEMBER(IDataEditorFactory)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IDataEditorFactory)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_METHOD(CreateEditor, {L"dataGridContext"})
 			END_INTERFACE_MEMBER(IDataEditorFactory)
 
-			BEGIN_INTERFACE_MEMBER(IDataEditor)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IDataEditor)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Factory)
@@ -1224,7 +1223,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetCellDataVisualizerFactory, {L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(GetCellDataEditorFactory, {L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(GetBindingCellValue, {L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(SaveCellData, {L"row" _ L"column" _ L"dataEditor"})
+				CLASS_MEMBER_METHOD(SetBindingCellValue, {L"row" _ L"column" _ L"value"})
 			END_INTERFACE_MEMBER(IDataGridView)
 
 			BEGIN_CLASS_MEMBER(GuiVirtualDataGrid)
@@ -1238,26 +1237,23 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetViewToDefault, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiVirtualDataGrid)
 
-			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer>(), NO_PARAMETER)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer>(Ptr<list::IDataVisualizer>), { L"decoratedVisualizer" })
-			END_CLASS_MEMBER(GuiBindableDataVisualizer)
+			BEGIN_CLASS_MEMBER(DataVisualizerBase)
+				CLASS_MEMBER_BASE(IDataVisualizer)
+			END_CLASS_MEMBER(DataVisualizerBase)
 
-			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::Factory>(TemplateProperty<templates::GuiGridVisualizerTemplate>), { L"templateFactory"})
-			END_CLASS_MEMBER(GuiBindableDataVisualizer::Factory)
+			BEGIN_CLASS_MEMBER(DataVisualizerFactory)
+				CLASS_MEMBER_BASE(IDataVisualizerFactory)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataVisualizerFactory>(TemplateProperty<templates::GuiGridVisualizerTemplate>, Ptr<DataVisualizerFactory>), { L"templateFactory" _ L"decoratedFactory"})
+			END_CLASS_MEMBER(DataVisualizerFactory)
 
-			BEGIN_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataVisualizer::DecoratedFactory>(TemplateProperty<templates::GuiGridVisualizerTemplate>, Ptr<list::IDataVisualizerFactory>), { L"templateFactory" _ L"decoratedFactory" })
-			END_CLASS_MEMBER(GuiBindableDataVisualizer::DecoratedFactory)
+			BEGIN_CLASS_MEMBER(DataEditorBase)
+				CLASS_MEMBER_BASE(IDataEditor)
+			END_CLASS_MEMBER(DataEditorBase)
 
-			BEGIN_CLASS_MEMBER(GuiBindableDataEditor)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor>(), NO_PARAMETER)
-			END_CLASS_MEMBER(GuiBindableDataEditor)
-
-			BEGIN_CLASS_MEMBER(GuiBindableDataEditor::Factory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<GuiBindableDataEditor::Factory>(TemplateProperty<templates::GuiGridEditorTemplate>), { L"templateFactory" })
-			END_CLASS_MEMBER(GuiBindableDataEditor::Factory)
+			BEGIN_CLASS_MEMBER(DataEditorFactory)
+				CLASS_MEMBER_BASE(IDataEditorFactory)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataEditorFactory>(TemplateProperty<templates::GuiGridEditorTemplate>), { L"templateFactory" })
+			END_CLASS_MEMBER(DataEditorFactory)
 
 			BEGIN_CLASS_MEMBER(MainColumnVisualizerTemplate)
 				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
