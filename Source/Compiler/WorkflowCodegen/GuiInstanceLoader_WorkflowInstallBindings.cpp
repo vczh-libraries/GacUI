@@ -132,26 +132,6 @@ Workflow_InstallBindProperty
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
-				auto refThis = MakePtr<WfReferenceExpression>();
-				refThis->name.value = L"<this>";
-
-				auto member = MakePtr<WfMemberExpression>();
-				member->parent = refThis;
-				member->name.value = L"AddSubscription";
-
-				auto call = MakePtr<WfCallExpression>();
-				call->function = member;
-				call->arguments.Add(bindExpression);
-
-				auto var = MakePtr<WfVariableDeclaration>();
-				var->name.value = L"<created-subscription>";
-				var->expression = call;
-
-				auto stat = MakePtr<WfVariableStatement>();
-				stat->variable = var;
-				subBlock->statements.Add(stat);
-			}
-			{
 				auto callback = MakePtr<WfFunctionDeclaration>();
 				callback->anonymity = WfFunctionAnonymity::Anonymous;
 				callback->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());;
@@ -251,31 +231,36 @@ Workflow_InstallBindProperty
 				auto refThis = MakePtr<WfReferenceExpression>();
 				refThis->name.value = L"<created-subscription>";
 
-				auto member = MakePtr<WfMemberExpression>();
-				member->parent = refThis;
-				member->name.value = L"Subscribe";
+				auto refEvent = MakePtr<WfMemberExpression>();
+				refEvent->parent = refThis;
+				refEvent->name.value = L"ValueChanged";
 
-				auto call = MakePtr<WfCallExpression>();
-				call->function = member;
-				call->arguments.Add(funcExpr);
+				auto attachExpr = MakePtr<WfAttachEventExpression>();
+				attachExpr->event = refEvent;
+				attachExpr->function = funcExpr;
 
 				auto stat = MakePtr<WfExpressionStatement>();
-				stat->expression = call;
+				stat->expression = attachExpr;
 				subBlock->statements.Add(stat);
 			}
 			{
 				auto refThis = MakePtr<WfReferenceExpression>();
-				refThis->name.value = L"<created-subscription>";
+				refThis->name.value = L"<this>";
 
 				auto member = MakePtr<WfMemberExpression>();
 				member->parent = refThis;
-				member->name.value = L"Update";
+				member->name.value = L"AddSubscription";
 
 				auto call = MakePtr<WfCallExpression>();
 				call->function = member;
+				call->arguments.Add(bindExpression);
 
-				auto stat = MakePtr<WfExpressionStatement>();
-				stat->expression = call;
+				auto var = MakePtr<WfVariableDeclaration>();
+				var->name.value = L"<created-subscription>";
+				var->expression = call;
+
+				auto stat = MakePtr<WfVariableStatement>();
+				stat->variable = var;
 				subBlock->statements.Add(stat);
 			}
 

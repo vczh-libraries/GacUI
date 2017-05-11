@@ -76,6 +76,8 @@ GuiInstanceRootObject
 				else
 				{
 					subscriptions.Add(subscription);
+					subscription->Open();
+					subscription->Update();
 					return subscription;
 				}
 			}
