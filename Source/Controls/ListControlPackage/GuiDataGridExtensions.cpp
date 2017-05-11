@@ -220,8 +220,7 @@ GuiBindableDataVisualizer
 				void GuiBindableDataVisualizer::BeforeVisualizeCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
 					DataVisualizerBase::BeforeVisualizeCell(itemProvider, row, column);
-					auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier));
-					if (listViewItemView)
+					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
 						auto styleProvider = dataGridContext->GetListViewStyleProvider();
 						visualizerTemplate->SetPrimaryTextColor(styleProvider->GetPrimaryTextColor());
@@ -231,6 +230,11 @@ GuiBindableDataVisualizer
 						visualizerTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
 						visualizerTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
 						visualizerTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
+					}
+					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					{
+						visualizerTemplate->SetRowValue(itemProvider->GetBindingValue(row));
+						visualizerTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
 					}
 				}
 
@@ -299,8 +303,7 @@ GuiBindableDataEditor
 				void GuiBindableDataEditor::BeforeEditCell(controls::GuiListControl::IItemProvider* itemProvider, vint row, vint column)
 				{
 					DataEditorBase::BeforeEditCell(itemProvider, row, column);
-					auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier));
-					if (listViewItemView)
+					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
 						auto styleProvider = dataGridContext->GetListViewStyleProvider();
 						editorTemplate->SetPrimaryTextColor(styleProvider->GetPrimaryTextColor());
@@ -310,6 +313,11 @@ GuiBindableDataEditor
 						editorTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
 						editorTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
 						editorTemplate->SetText(column == 0 ? listViewItemView->GetText(row) : listViewItemView->GetSubItem(row, column - 1));
+					}
+					if (auto dataGridView = dynamic_cast<IDataGridView*>(dataGridContext->GetItemProvider()->RequestView(IDataGridView::Identifier)))
+					{
+						editorTemplate->SetRowValue(itemProvider->GetBindingValue(row));
+						editorTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
 					}
 				}
 

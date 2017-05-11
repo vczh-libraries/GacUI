@@ -160,21 +160,16 @@ Datagrid Interfaces
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					virtual IDataVisualizerFactory*						GetCellDataVisualizerFactory(vint row, vint column) = 0;
-					/// <summary>Called before visualizing the cell.</summary>
-					/// <param name="row">The row number for the cell.</param>
-					/// <param name="column">The column number for the cell.</param>
-					/// <param name="dataVisualizer">The data visualizer to be updated.</param>
-					virtual void										VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer) = 0;
 					/// <summary>Get the data editor factory that creates data editors for editing the cell.</summary>
 					/// <returns>The data editor factory. Returns null to disable editing.</returns>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>
 					virtual IDataEditorFactory*							GetCellDataEditorFactory(vint row, vint column) = 0;
-					/// <summary>Called before editing the cell.</summary>
-					/// <param name="row">The row number for the cell.</param>
-					/// <param name="column">The column number for the cell.</param>
-					/// <param name="dataEditor">The data editor.</param>
-					virtual void										EditCell(vint row, vint column, IDataEditor* dataEditor) = 0;
+					/// <summary>Get the binding value of a cell.</summary>
+					/// <returns>The binding value of cell.</returns>
+					/// <param name="row">The row index of the cell.</param>
+					/// <param name="column">The column index of the cell.</param>
+					virtual description::Value							GetBindingCellValue(vint row, vint column) = 0;
 					/// <summary>Called when saving data for the editing cell.</summary>
 					/// <param name="row">The row number for the cell.</param>
 					/// <param name="column">The column number for the cell.</param>

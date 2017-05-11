@@ -1165,19 +1165,14 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY(GetCellDataVisualizerFactory, row, column);
 				}
 
-				void VisualizeCell(vint row, vint column, presentation::controls::list::IDataVisualizer* dataVisualizer)override
-				{
-					INVOKE_INTERFACE_PROXY(VisualizeCell, row, column, dataVisualizer);
-				}
-
 				presentation::controls::list::IDataEditorFactory* GetCellDataEditorFactory(vint row, vint column)override
 				{
 					INVOKEGET_INTERFACE_PROXY(GetCellDataEditorFactory, row, column);
 				}
 
-				void EditCell(vint row, vint column, presentation::controls::list::IDataEditor* dataEditor)override
+				Value GetBindingCellValue(vint row, vint column)override
 				{
-					INVOKE_INTERFACE_PROXY(EditCell, row, column, dataEditor);
+					INVOKEGET_INTERFACE_PROXY(GetBindingCellValue, row, column);
 				}
 
 				void SaveCellData(vint row, vint column, presentation::controls::list::IDataEditor* dataEditor)override

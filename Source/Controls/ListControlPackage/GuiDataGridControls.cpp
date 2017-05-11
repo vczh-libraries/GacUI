@@ -199,9 +199,7 @@ DefaultDataGridItemTemplate
 
 						for (vint i = 0; i < dataVisualizers.Count(); i++)
 						{
-							auto dataVisualizer = dataVisualizers[i].Obj();
-							dataVisualizer->BeforeVisualizeCell(dataGrid->GetItemProvider(), itemIndex, i);
-							dataGrid->dataGridView->VisualizeCell(itemIndex, i, dataVisualizer);
+							dataVisualizers[i]->BeforeVisualizeCell(dataGrid->GetItemProvider(), itemIndex, i);
 						}
 
 						GridPos selectedCell = dataGrid->GetSelectedCell();
@@ -363,7 +361,6 @@ GuiVirtualDataGrid (Editor)
 					currentEditorPos = { row,column };
 					currentEditor = editorFactory->CreateEditor(this);
 					currentEditor->BeforeEditCell(GetItemProvider(), row, column);
-					dataGridView->EditCell(row, column, currentEditor.Obj());
 					currentEditorOpeningEditor = false;
 				}
 				return currentEditor.Obj();

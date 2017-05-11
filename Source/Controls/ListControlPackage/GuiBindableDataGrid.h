@@ -388,9 +388,8 @@ DataProvider
 					
 					vint												GetCellSpan(vint row, vint column)override;
 					IDataVisualizerFactory*								GetCellDataVisualizerFactory(vint row, vint column)override;
-					void												VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)override;
 					IDataEditorFactory*									GetCellDataEditorFactory(vint row, vint column)override;
-					void												EditCell(vint row, vint column, IDataEditor* dataEditor)override;
+					description::Value									GetBindingCellValue(vint row, vint column)override;
 					void												SaveCellData(vint row, vint column, IDataEditor* dataEditor)override;
 				};
 			}

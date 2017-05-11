@@ -1222,9 +1222,8 @@ Type Declaration
 				CLASS_MEMBER_METHOD(IsSortOrderAscending, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetCellSpan, {L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(GetCellDataVisualizerFactory, {L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(VisualizeCell, {L"row" _ L"column" _ L"dataVisualizer"})
 				CLASS_MEMBER_METHOD(GetCellDataEditorFactory, {L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(EditCell, {L"row" _ L"column" _ L"dataEditor"})
+				CLASS_MEMBER_METHOD(GetBindingCellValue, {L"row" _ L"column"})
 				CLASS_MEMBER_METHOD(SaveCellData, {L"row" _ L"column" _ L"dataEditor"})
 			END_INTERFACE_MEMBER(IDataGridView)
 

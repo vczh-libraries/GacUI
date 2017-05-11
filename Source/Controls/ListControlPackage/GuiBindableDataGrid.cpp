@@ -793,27 +793,14 @@ DataProvider
 					return columns[row]->GetVisualizerFactory().Obj();
 				}
 
-				void DataProvider::VisualizeCell(vint row, vint column, IDataVisualizer* dataVisualizer)
-				{
-					if (auto dataTemplate = dynamic_cast<GuiGridVisualizerTemplate*>(dataVisualizer->GetTemplate()))
-					{
-						dataTemplate->SetRowValue(GetBindingValue(row));
-						dataTemplate->SetCellValue(columns[column]->GetCellValue(row));
-					}
-				}
-
 				IDataEditorFactory* DataProvider::GetCellDataEditorFactory(vint row, vint column)
 				{
 					return columns[row]->GetEditorFactory().Obj();
 				}
 
-				void DataProvider::EditCell(vint row, vint column, IDataEditor* dataEditor)
+				description::Value DataProvider::GetBindingCellValue(vint row, vint column)
 				{
-					if (auto dataTemplate = dynamic_cast<GuiGridEditorTemplate*>(dataEditor->GetTemplate()))
-					{
-						dataTemplate->SetRowValue(GetBindingValue(row));
-						dataTemplate->SetCellValue(columns[column]->GetCellValue(row));
-					}
+					return columns[column]->GetCellValue(row);
 				}
 
 				void DataProvider::SaveCellData(vint row, vint column, IDataEditor* dataEditor)
