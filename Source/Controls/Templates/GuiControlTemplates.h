@@ -585,8 +585,6 @@ Item Template
 				F(GuiGridCellTemplate, Color, ItemSeparatorColor)\
 				F(GuiGridCellTemplate, Ptr<GuiImageData>, LargeImage)\
 				F(GuiGridCellTemplate, Ptr<GuiImageData>, SmallImage)\
-				F(GuiGridCellTemplate, description::Value, RowValue)\
-				F(GuiGridCellTemplate, description::Value, CellValue)\
 
 				GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -598,6 +596,8 @@ Item Template
 				~GuiGridVisualizerTemplate();
 
 #define GuiGridVisualizerTemplate_PROPERTIES(F)\
+				F(GuiGridVisualizerTemplate, description::Value, RowValue)\
+				F(GuiGridVisualizerTemplate, description::Value, CellValue)\
 				F(GuiGridVisualizerTemplate, bool, Selected)\
 
 				GuiGridVisualizerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
@@ -610,6 +610,8 @@ Item Template
 				~GuiGridEditorTemplate();
 
 #define GuiGridEditorTemplate_PROPERTIES(F)\
+				F(GuiGridEditorTemplate, description::Value, RowValue)\
+				F(GuiGridEditorTemplate, description::Value, CellValue)\
 
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};

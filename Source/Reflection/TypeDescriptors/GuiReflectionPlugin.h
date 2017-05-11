@@ -365,12 +365,6 @@ Type List (Controls)
 			F(presentation::controls::list::SubColumnVisualizerTemplate)\
 			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
 			F(presentation::controls::list::CellBorderVisualizerTemplate)\
-			F(presentation::controls::list::TextBoxDataEditor)\
-			F(presentation::controls::list::TextBoxDataEditor::Factory)\
-			F(presentation::controls::list::TextComboBoxDataEditor)\
-			F(presentation::controls::list::TextComboBoxDataEditor::Factory)\
-			F(presentation::controls::list::DateComboBoxDataEditor)\
-			F(presentation::controls::list::DateComboBoxDataEditor::Factory)\
 			F(presentation::controls::GuiDatePicker)\
 			F(presentation::controls::GuiDatePicker::IStyleProvider)\
 			F(presentation::controls::GuiDateComboBox)\

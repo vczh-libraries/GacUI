@@ -1276,41 +1276,6 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
 			END_CLASS_MEMBER(CellBorderVisualizerTemplate)
 
-			BEGIN_CLASS_MEMBER(TextBoxDataEditor)
-				CLASS_MEMBER_BASE(IDataEditor)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextBox)
-			END_CLASS_MEMBER(TextBoxDataEditor)
-
-			BEGIN_CLASS_MEMBER(TextBoxDataEditor::Factory)
-				CLASS_MEMBER_BASE(IDataEditorFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextBoxDataEditor::Factory>(), NO_PARAMETER)
-			END_CLASS_MEMBER(TextBoxDataEditor::Factory)
-
-			BEGIN_CLASS_MEMBER(TextComboBoxDataEditor)
-				CLASS_MEMBER_BASE(IDataEditor)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ComboBoxControl)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextListControl)
-			END_CLASS_MEMBER(TextComboBoxDataEditor)
-
-			BEGIN_CLASS_MEMBER(TextComboBoxDataEditor::Factory)
-				CLASS_MEMBER_BASE(IDataEditorFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<TextComboBoxDataEditor::Factory>(), NO_PARAMETER)
-			END_CLASS_MEMBER(TextComboBoxDataEditor::Factory)
-
-			BEGIN_CLASS_MEMBER(DateComboBoxDataEditor)
-				CLASS_MEMBER_BASE(IDataEditor)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ComboBoxControl)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(DatePickerControl)
-			END_CLASS_MEMBER(DateComboBoxDataEditor)
-
-			BEGIN_CLASS_MEMBER(DateComboBoxDataEditor::Factory)
-				CLASS_MEMBER_BASE(IDataEditorFactory)
-				CLASS_MEMBER_CONSTRUCTOR(Ptr<DateComboBoxDataEditor::Factory>(), NO_PARAMETER)
-			END_CLASS_MEMBER(DateComboBoxDataEditor::Factory)
-
 			BEGIN_CLASS_MEMBER(GuiDatePicker)
 				CLASS_MEMBER_BASE(GuiControl)
 				CONTROL_CONSTRUCTOR_PROVIDER(GuiDatePicker)
