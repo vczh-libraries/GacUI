@@ -1,4 +1,4 @@
-#include "GuiReflectionEvents.h"
+#include "GuiReflectionPlugin.h"
 
 namespace vl
 {
@@ -6,20 +6,10 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace collections;
-			using namespace parsing;
-			using namespace parsing::tabling;
 			using namespace parsing::xml;
-			using namespace stream;
 			using namespace presentation;
-			using namespace presentation::elements;
-			using namespace presentation::compositions;
-			using namespace presentation::controls;
-			using namespace presentation::templates;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-
-			GUIREFLECTIONBASIC_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
 Type Declaration
@@ -582,77 +572,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetResourceFromClassName, { L"name" })
 			END_INTERFACE_MEMBER(IGuiResourceManager)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerComposition)
-			END_INTERFACE_MEMBER(IGuiGraphicsElement)
-
-			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDoubleClick)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonDoubleClick)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonDoubleClick)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(horizontalWheel)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(verticalWheel)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseMove)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseEnter)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseLeave)
-				
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewKey)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(systemKeyDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(systemKeyUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewCharInput)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(charInput)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(gotFocus)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(lostFocus)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(caretNotify)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(clipboardNotify)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
-				CLASS_MEMBER_PROPERTY_FAST(OwnedElement)
-				CLASS_MEMBER_PROPERTY_FAST(Visible)
-				CLASS_MEMBER_PROPERTY_FAST(MinSizeLimitation)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(GlobalBounds)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(AssociatedControl)
-				CLASS_MEMBER_PROPERTY_FAST(AssociatedCursor)
-				CLASS_MEMBER_PROPERTY_FAST(AssociatedHitTestResult)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedControl)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedControlHost)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedCursor)
-				CLASS_MEMBER_PROPERTY_FAST(Margin)
-				CLASS_MEMBER_PROPERTY_FAST(InternalMargin)
-				CLASS_MEMBER_PROPERTY_FAST(PreferredMinSize)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ClientArea)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(MinPreferredClientSize)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreferredBounds)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Bounds)
-
-				CLASS_MEMBER_METHOD_RENAME(GetChildren, Children, NO_PARAMETER)
-				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
-
-				CLASS_MEMBER_METHOD(AddChild, {L"child"})
-				CLASS_MEMBER_METHOD(InsertChild, {L"index" _ L"child"})
-				CLASS_MEMBER_METHOD(RemoveChild, {L"child"})
-				CLASS_MEMBER_METHOD(MoveChild, {L"child" _ L"newIndex"})
-				CLASS_MEMBER_METHOD(Render, {L"size"})
-				CLASS_MEMBER_METHOD(FindComposition, {L"location"})
-				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(IsSizeAffectParent, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiGraphicsComposition)
-
-			BEGIN_ENUM_ITEM(GuiGraphicsComposition::MinSizeLimitation)
-				ENUM_ITEM_NAMESPACE(GuiGraphicsComposition)
-				ENUM_NAMESPACE_ITEM(NoLimit)
-				ENUM_NAMESPACE_ITEM(LimitToElement)
-				ENUM_NAMESPACE_ITEM(LimitToElementAndChildren)
-			END_ENUM_ITEM(GuiGraphicsComposition::MinSizeLimitation)
-
 			BEGIN_ENUM_ITEM(INativeWindowListener::HitTestResult)
 				ENUM_ITEM_NAMESPACE(INativeWindowListener)
 				ENUM_NAMESPACE_ITEM(BorderNoSizing)
@@ -672,158 +591,6 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(Icon)
 				ENUM_NAMESPACE_ITEM(NoDecision)
 			END_ENUM_ITEM(INativeWindowListener::HitTestResult)
-
-			BEGIN_CLASS_MEMBER(GuiGraphicsSite)
-				CLASS_MEMBER_BASE(GuiGraphicsComposition)
-
-				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Bounds)
-			END_CLASS_MEMBER(GuiGraphicsSite)
-
-			BEGIN_CLASS_MEMBER(GuiWindowComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
-				CLASS_MEMBER_CONSTRUCTOR(GuiWindowComposition*(), NO_PARAMETER)
-			END_CLASS_MEMBER(GuiWindowComposition)
-
-			BEGIN_CLASS_MEMBER(GuiBoundsComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBoundsComposition*(), NO_PARAMETER)
-
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
-				CLASS_MEMBER_PROPERTY_FAST(AlignmentToParent)
-				
-				CLASS_MEMBER_METHOD(IsAlignedToParent, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiBoundsComposition)
-
-			BEGIN_CLASS_MEMBER(GuiTemplate)
-				CLASS_MEMBER_BASE(GuiBoundsComposition)
-				CLASS_MEMBER_BASE(GuiInstanceRootObject)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTemplate*(), NO_PARAMETER)
-
-				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiListItemTemplate)
-				CLASS_MEMBER_BASE(GuiTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate*(), NO_PARAMETER)
-
-				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiListItemTemplate)
-
-			BEGIN_ENUM_ITEM(ButtonState)
-				ENUM_CLASS_ITEM(Normal)
-				ENUM_CLASS_ITEM(Active)
-				ENUM_CLASS_ITEM(Pressed)
-			END_ENUM_ITEM(ButtonState)
-
-			BEGIN_ENUM_ITEM(ColumnSortingState)
-				ENUM_CLASS_ITEM(NotSorted)
-				ENUM_CLASS_ITEM(Ascending)
-				ENUM_CLASS_ITEM(Descending)
-			END_ENUM_ITEM(ColumnSortingState)
-
-			BEGIN_CLASS_MEMBER(GuiControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiControl*(GuiControl::IStyleController*), {L"styleController"})
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(StyleController)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(FocusableComposition)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ChildrenCount)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedControlHost)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(VisuallyEnabled)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Enabled)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Visible)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Alt)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Text)
-				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Font)
-				CLASS_MEMBER_PROPERTY_FAST(Tag)
-				CLASS_MEMBER_PROPERTY_FAST(TooltipControl)
-				CLASS_MEMBER_PROPERTY_FAST(TooltipWidth)
-
-				CLASS_MEMBER_METHOD(SetActivatingAltHost, { L"host" })
-				CLASS_MEMBER_METHOD(GetChild, {L"index"})
-				CLASS_MEMBER_METHOD(AddChild, {L"control"})
-				CLASS_MEMBER_METHOD(HasChild, {L"control"})
-				CLASS_MEMBER_METHOD(SetFocus, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(DisplayTooltip, {L"location"})
-				CLASS_MEMBER_METHOD(CloseTooltip, NO_PARAMETER)
-				CLASS_MEMBER_METHOD_OVERLOAD(QueryService, {L"identifier"}, IDescriptable*(GuiControl::*)(const WString&))
-			END_CLASS_MEMBER(GuiControl)
-
-			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleController)
-				CLASS_MEMBER_METHOD(GetBoundsComposition, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetContainerComposition, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
-				CLASS_MEMBER_METHOD(SetText, {L"value"})
-				CLASS_MEMBER_METHOD(SetFont, {L"value"})
-				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
-			END_INTERFACE_MEMBER(GuiControl::IStyleController)
-
-			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleProvider)
-				CLASS_MEMBER_METHOD(AssociateStyleController, {L"controller"})
-				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
-				CLASS_MEMBER_METHOD(SetText, {L"value"})
-				CLASS_MEMBER_METHOD(SetFont, {L"value"})
-				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
-			END_INTERFACE_MEMBER(GuiControl::IStyleProvider)
-
-			BEGIN_CLASS_MEMBER(GuiComponent)
-			END_CLASS_MEMBER(GuiComponent)
-
-			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
-				CLASS_MEMBER_METHOD(SetResourceResolver, {L"resolver"})
-				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path" _ L"ensureExist"})
-
-				CLASS_MEMBER_METHOD(AddSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(RemoveSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(ContainsSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(ClearSubscriptions, NO_PARAMETER)
-
-				CLASS_MEMBER_METHOD(AddComponent, {L"component"})
-				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
-				CLASS_MEMBER_METHOD(RemoveComponent, {L"component"})
-				CLASS_MEMBER_METHOD(ContainsComponent, {L"component"})
-				CLASS_MEMBER_METHOD(ClearComponents, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiInstanceRootObject)
-
-			BEGIN_CLASS_MEMBER(GuiControlHost)
-				CLASS_MEMBER_BASE(GuiControl)
-				CLASS_MEMBER_BASE(GuiInstanceRootObject)
-				CLASS_MEMBER_CONSTRUCTOR(GuiControlHost*(GuiControl::IStyleController*), {L"styleController"})
-
-				CLASS_MEMBER_GUIEVENT(WindowGotFocus)
-				CLASS_MEMBER_GUIEVENT(WindowLostFocus)
-				CLASS_MEMBER_GUIEVENT(WindowActivated)
-				CLASS_MEMBER_GUIEVENT(WindowDeactivated)
-				CLASS_MEMBER_GUIEVENT(WindowOpened)
-				CLASS_MEMBER_GUIEVENT(WindowClosing)
-				CLASS_MEMBER_GUIEVENT(WindowClosed)
-				CLASS_MEMBER_GUIEVENT(WindowDestroying)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(MainComposition)
-				CLASS_MEMBER_PROPERTY_FAST(ShowInTaskBar)
-				CLASS_MEMBER_PROPERTY_FAST(EnabledActivate)
-				CLASS_MEMBER_PROPERTY_FAST(TopMost)
-				CLASS_MEMBER_PROPERTY_FAST(ClientSize)
-				CLASS_MEMBER_PROPERTY_FAST(Bounds)
-				CLASS_MEMBER_PROPERTY_FAST(ShortcutKeyManager)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(AnimationManager)
-
-				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetFocused, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetFocused, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetActivated, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetActivated, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Show, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(ShowDeactivated, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(ShowRestored, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(ShowMaximized, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(ShowMinimized, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Hide, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Close, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetOpening, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiControlHost)
 
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION
 #undef _

@@ -4,7 +4,6 @@
 #include "..\..\..\Source\GacUI.h"
 #ifndef VCZH_DEBUG_NO_REFLECTION
 #include "..\..\..\Source\Compiler\GuiInstanceLoader.h"
-#include "..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h"
 #include "..\..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
 #include "..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h"
 #endif
@@ -134,8 +133,7 @@ void GuiMain_Resource()
 				input->comment = L"Source: Host.sln";
 				input->normalIncludes.Add(L"../../../../Source/GacUI.h");
 				input->normalIncludes.Add(L"../Helpers.h");
-				input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionTemplates.h");
-				input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionEvents.h");
+				input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
 				auto output = GenerateCppFiles(input, compiled->metadata.Obj());
 				FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
 				{

@@ -1,5 +1,4 @@
 #include "GuiInstanceLoader.h"
-#include "../Reflection/TypeDescriptors/GuiReflectionTemplates.h"
 #include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
 
 namespace vl

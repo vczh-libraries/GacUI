@@ -13,9 +13,9 @@ static_assert(false, "Don't use GacUICompiler.(h|cpp) if VCZH_DEBUG_NO_REFLECTIO
 #ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOADER
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCELOADER
 
+#include "../../Import/VlppWorkflowCompiler.h"
 #include "../Controls/GuiApplication.h"
 #include "../Controls/Styles/GuiThemeStyleFactory.h"
-#include "../../Import/VlppWorkflowCompiler.h"
 #include "GuiInstanceRepresentation.h"
 
 namespace vl

@@ -1,9 +1,8 @@
-#include "GuiReflectionBasic.h"
-#include "GuiReflectionElements.h"
-#include "GuiReflectionCompositions.h"
-#include "GuiReflectionControls.h"
-#include "GuiReflectionTemplates.h"
-#include "GuiReflectionEvents.h"
+#include "GuiReflectionPlugin.h"
+
+/***********************************************************************
+Plugin
+***********************************************************************/
 
 namespace vl
 {
@@ -11,6 +10,20 @@ namespace vl
 	{
 		namespace description
 		{
+			GUIREFLECTIONBASIC_TYPELIST(IMPL_VL_TYPE_INFO)
+			GUIREFLECTIONELEMENT_TYPELIST(IMPL_VL_TYPE_INFO)
+			GUIREFLECTIONCOMPOSITION_TYPELIST(IMPL_VL_TYPE_INFO)
+			GUIREFLECTIONEVENT_TYPELIST(IMPL_VL_TYPE_INFO)
+			GUIREFLECTIONTEMPLATES_TYPELIST(IMPL_VL_TYPE_INFO)
+			GUIREFLECTIONCONTROLS_TYPELIST(IMPL_VL_TYPE_INFO)
+
+			extern bool LoadGuiBasicTypes();
+			extern bool LoadGuiElementTypes();
+			extern bool LoadGuiCompositionTypes();
+			extern bool LoadGuiEventTypes();
+			extern bool LoadGuiTemplateTypes();
+			extern bool LoadGuiControlTypes();
+
 			using namespace presentation::controls;
 
 			class GuiReflectionPlugin : public Object, public IGuiPlugin
@@ -25,9 +38,9 @@ namespace vl
 					LoadGuiBasicTypes();
 					LoadGuiElementTypes();
 					LoadGuiCompositionTypes();
-					LoadGuiControlTypes();
-					LoadGuiTemplateTypes();
 					LoadGuiEventTypes();
+					LoadGuiTemplateTypes();
+					LoadGuiControlTypes();
 				}
 				
 				void AfterLoad()override

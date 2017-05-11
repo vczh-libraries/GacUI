@@ -767,24 +767,6 @@
     <ClInclude Include="..\..\..\Source\Resources\GuiResource.h">
       <Filter>GacUI\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h">
-      <Filter>GacUI\Reflection\TypeDescriptors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.h">
-      <Filter>GacUI\Reflection\TypeDescriptors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.h">
-      <Filter>GacUI\Reflection\TypeDescriptors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionElements.h">
-      <Filter>GacUI\Reflection\TypeDescriptors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h">
-      <Filter>GacUI\Reflection\TypeDescriptors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.h">
-      <Filter>GacUI\Reflection\TypeDescriptors</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.h">
       <Filter>GacUI\GraphicsComposition</Filter>
     </ClInclude>
@@ -853,6 +835,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.h">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h">
+      <Filter>GacUI\Reflection\TypeDescriptors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

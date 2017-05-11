@@ -1,4 +1,4 @@
-#include "GuiReflectionEvents.h"
+#include "GuiReflectionPlugin.h"
 
 namespace vl
 {
@@ -6,19 +6,20 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace collections;
 			using namespace presentation;
 			using namespace presentation::elements;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-
-			GUIREFLECTIONELEMENT_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
 Type Declaration
 ***********************************************************************/
 
 #define _ ,
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiGraphicsElement)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerComposition)
+			END_INTERFACE_MEMBER(IGuiGraphicsElement)
 
 			BEGIN_CLASS_MEMBER(IGuiGraphicsParagraph)
 				CLASS_MEMBER_BASE(IDescriptable)

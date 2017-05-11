@@ -1,5 +1,4 @@
-#include "GuiReflectionTemplates.h"
-#include "GuiReflectionEvents.h"
+#include "GuiReflectionPlugin.h"
 
 namespace vl
 {
@@ -7,19 +6,12 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace collections;
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace parsing::xml;
-			using namespace stream;
 			using namespace presentation;
 			using namespace presentation::compositions;
 			using namespace presentation::controls;
 			using namespace presentation::templates;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-
-			GUIREFLECTIONTEMPLATES_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
 Type Declaration
@@ -29,6 +21,18 @@ Type Declaration
 
 #define GUI_TEMPLATE_PROPERTY_REFLECTION(CLASS, TYPE, NAME)\
 	CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(NAME)
+
+			BEGIN_ENUM_ITEM(ButtonState)
+				ENUM_CLASS_ITEM(Normal)
+				ENUM_CLASS_ITEM(Active)
+				ENUM_CLASS_ITEM(Pressed)
+			END_ENUM_ITEM(ButtonState)
+
+			BEGIN_ENUM_ITEM(ColumnSortingState)
+				ENUM_CLASS_ITEM(NotSorted)
+				ENUM_CLASS_ITEM(Ascending)
+				ENUM_CLASS_ITEM(Descending)
+			END_ENUM_ITEM(ColumnSortingState)
 
 			BEGIN_ENUM_ITEM(BoolOption)
 				ENUM_CLASS_ITEM(AlwaysTrue)
@@ -56,6 +60,33 @@ Type Declaration
 				CLASS_MEMBER_BASE(IDescriptable)
 				CLASS_MEMBER_METHOD(ShowTab, { L"index" })
 			END_INTERFACE_MEMBER(ITabCommandExecutor)
+
+			BEGIN_CLASS_MEMBER(GuiComponent)
+			END_CLASS_MEMBER(GuiComponent)
+
+			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
+				CLASS_MEMBER_METHOD(SetResourceResolver, {L"resolver"})
+				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path" _ L"ensureExist"})
+
+				CLASS_MEMBER_METHOD(AddSubscription, {L"subscription"})
+				CLASS_MEMBER_METHOD(RemoveSubscription, {L"subscription"})
+				CLASS_MEMBER_METHOD(ContainsSubscription, {L"subscription"})
+				CLASS_MEMBER_METHOD(ClearSubscriptions, NO_PARAMETER)
+
+				CLASS_MEMBER_METHOD(AddComponent, {L"component"})
+				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
+				CLASS_MEMBER_METHOD(RemoveComponent, {L"component"})
+				CLASS_MEMBER_METHOD(ContainsComponent, {L"component"})
+				CLASS_MEMBER_METHOD(ClearComponents, NO_PARAMETER)
+			END_CLASS_MEMBER(GuiInstanceRootObject)
+
+			BEGIN_CLASS_MEMBER(GuiTemplate)
+				CLASS_MEMBER_BASE(GuiBoundsComposition)
+				CLASS_MEMBER_BASE(GuiInstanceRootObject)
+				CLASS_MEMBER_CONSTRUCTOR(GuiTemplate*(), NO_PARAMETER)
+
+				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiControlTemplate)
 				CLASS_MEMBER_BASE(GuiTemplate)
@@ -146,20 +177,6 @@ Type Declaration
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiComboBoxTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiDatePickerTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiDatePickerTemplate*(), NO_PARAMETER)
-
-				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiDatePickerTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiDateComboBoxTemplate)
-				CLASS_MEMBER_BASE(GuiComboBoxTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBoxTemplate*(), NO_PARAMETER)
-
-				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiDateComboBoxTemplate)
-
 			BEGIN_CLASS_MEMBER(GuiScrollTemplate)
 				CLASS_MEMBER_BASE(GuiControlTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiScrollTemplate*(), NO_PARAMETER)
@@ -201,6 +218,27 @@ Type Declaration
 
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiTabTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiDatePickerTemplate)
+				CLASS_MEMBER_BASE(GuiControlTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiDatePickerTemplate*(), NO_PARAMETER)
+
+				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiDatePickerTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiDateComboBoxTemplate)
+				CLASS_MEMBER_BASE(GuiComboBoxTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBoxTemplate*(), NO_PARAMETER)
+
+				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiDateComboBoxTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiListItemTemplate)
+				CLASS_MEMBER_BASE(GuiTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate*(), NO_PARAMETER)
+
+				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiListItemTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate)
 				CLASS_MEMBER_BASE(GuiListItemTemplate)

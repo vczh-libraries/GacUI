@@ -618,30 +618,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionBasic.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionCompositions.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionControls.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionElements.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionEvents.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionTemplates.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiDocument.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiParserManager.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiResource.h" />

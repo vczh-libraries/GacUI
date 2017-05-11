@@ -1,5 +1,4 @@
-#include "GuiReflectionEvents.h"
-#include "GuiReflectionTemplates.h"
+#include "GuiReflectionPlugin.h"
 #include "../../Controls/Styles/GuiWin7Styles.h"
 #include "../../Controls/Styles/GuiWin8Styles.h"
 
@@ -9,23 +8,14 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace collections;
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace parsing::definitions;
-			using namespace parsing::analyzing;
-			using namespace parsing::xml;
-			using namespace stream;
 			using namespace presentation;
 			using namespace presentation::controls;
 			using namespace presentation::controls::list;
 			using namespace presentation::controls::tree;
 			using namespace presentation::elements::text;
-			using namespace theme;
+			using namespace presentation::theme;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-
-			GUIREFLECTIONCONTROLS_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
 Type Declaration
@@ -191,6 +181,53 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ShowDialog, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSaveFileDialog)
 
+			BEGIN_CLASS_MEMBER(GuiControl)
+				CLASS_MEMBER_CONSTRUCTOR(GuiControl*(GuiControl::IStyleController*), {L"styleController"})
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(StyleController)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(FocusableComposition)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ChildrenCount)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedControlHost)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(VisuallyEnabled)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Enabled)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Visible)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Alt)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Text)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Font)
+				CLASS_MEMBER_PROPERTY_FAST(Tag)
+				CLASS_MEMBER_PROPERTY_FAST(TooltipControl)
+				CLASS_MEMBER_PROPERTY_FAST(TooltipWidth)
+
+				CLASS_MEMBER_METHOD(SetActivatingAltHost, { L"host" })
+				CLASS_MEMBER_METHOD(GetChild, {L"index"})
+				CLASS_MEMBER_METHOD(AddChild, {L"control"})
+				CLASS_MEMBER_METHOD(HasChild, {L"control"})
+				CLASS_MEMBER_METHOD(SetFocus, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(DisplayTooltip, {L"location"})
+				CLASS_MEMBER_METHOD(CloseTooltip, NO_PARAMETER)
+				CLASS_MEMBER_METHOD_OVERLOAD(QueryService, {L"identifier"}, IDescriptable*(GuiControl::*)(const WString&))
+			END_CLASS_MEMBER(GuiControl)
+
+			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleController)
+				CLASS_MEMBER_METHOD(GetBoundsComposition, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetContainerComposition, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
+				CLASS_MEMBER_METHOD(SetText, {L"value"})
+				CLASS_MEMBER_METHOD(SetFont, {L"value"})
+				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
+			END_INTERFACE_MEMBER(GuiControl::IStyleController)
+
+			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleProvider)
+				CLASS_MEMBER_METHOD(AssociateStyleController, {L"controller"})
+				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
+				CLASS_MEMBER_METHOD(SetText, {L"value"})
+				CLASS_MEMBER_METHOD(SetFont, {L"value"})
+				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
+			END_INTERFACE_MEMBER(GuiControl::IStyleProvider)
+
 			BEGIN_CLASS_MEMBER(GuiCustomControl)
 				CLASS_MEMBER_BASE(GuiControl)
 				CLASS_MEMBER_BASE(GuiInstanceRootObject)
@@ -332,6 +369,44 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_FAST(ExtendToFullWidth)
 			END_CLASS_MEMBER(GuiScrollContainer)
+
+			BEGIN_CLASS_MEMBER(GuiControlHost)
+				CLASS_MEMBER_BASE(GuiControl)
+				CLASS_MEMBER_BASE(GuiInstanceRootObject)
+				CLASS_MEMBER_CONSTRUCTOR(GuiControlHost*(GuiControl::IStyleController*), {L"styleController"})
+
+				CLASS_MEMBER_GUIEVENT(WindowGotFocus)
+				CLASS_MEMBER_GUIEVENT(WindowLostFocus)
+				CLASS_MEMBER_GUIEVENT(WindowActivated)
+				CLASS_MEMBER_GUIEVENT(WindowDeactivated)
+				CLASS_MEMBER_GUIEVENT(WindowOpened)
+				CLASS_MEMBER_GUIEVENT(WindowClosing)
+				CLASS_MEMBER_GUIEVENT(WindowClosed)
+				CLASS_MEMBER_GUIEVENT(WindowDestroying)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(MainComposition)
+				CLASS_MEMBER_PROPERTY_FAST(ShowInTaskBar)
+				CLASS_MEMBER_PROPERTY_FAST(EnabledActivate)
+				CLASS_MEMBER_PROPERTY_FAST(TopMost)
+				CLASS_MEMBER_PROPERTY_FAST(ClientSize)
+				CLASS_MEMBER_PROPERTY_FAST(Bounds)
+				CLASS_MEMBER_PROPERTY_FAST(ShortcutKeyManager)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AnimationManager)
+
+				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetFocused, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetFocused, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetActivated, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetActivated, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Show, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(ShowDeactivated, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(ShowRestored, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(ShowMaximized, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(ShowMinimized, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Hide, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Close, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetOpening, NO_PARAMETER)
+			END_CLASS_MEMBER(GuiControlHost)
 
 			BEGIN_CLASS_MEMBER(GuiWindow)
 				CLASS_MEMBER_BASE(GuiControlHost)

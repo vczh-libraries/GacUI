@@ -1,4 +1,4 @@
-#include "GuiReflectionEvents.h"
+#include "GuiReflectionPlugin.h"
 
 namespace vl
 {
@@ -11,8 +11,6 @@ namespace vl
 			using namespace presentation::compositions;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-
-			GUIREFLECTIONCOMPOSITION_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
 Type Declaration
@@ -59,6 +57,94 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Direction)
 			END_CLASS_MEMBER(GuiAxis)
+
+			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDown)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonUp)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDoubleClick)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonDown)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonUp)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(middleButtonDoubleClick)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonDown)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonUp)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(rightButtonDoubleClick)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(horizontalWheel)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(verticalWheel)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseMove)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseEnter)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(mouseLeave)
+				
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewKey)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyDown)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyUp)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(systemKeyDown)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(systemKeyUp)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewCharInput)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(charInput)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(gotFocus)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(lostFocus)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(caretNotify)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(clipboardNotify)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
+				CLASS_MEMBER_PROPERTY_FAST(OwnedElement)
+				CLASS_MEMBER_PROPERTY_FAST(Visible)
+				CLASS_MEMBER_PROPERTY_FAST(MinSizeLimitation)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(GlobalBounds)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AssociatedControl)
+				CLASS_MEMBER_PROPERTY_FAST(AssociatedCursor)
+				CLASS_MEMBER_PROPERTY_FAST(AssociatedHitTestResult)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedControl)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedControlHost)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedCursor)
+				CLASS_MEMBER_PROPERTY_FAST(Margin)
+				CLASS_MEMBER_PROPERTY_FAST(InternalMargin)
+				CLASS_MEMBER_PROPERTY_FAST(PreferredMinSize)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ClientArea)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(MinPreferredClientSize)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreferredBounds)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Bounds)
+
+				CLASS_MEMBER_METHOD_RENAME(GetChildren, Children, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
+
+				CLASS_MEMBER_METHOD(AddChild, {L"child"})
+				CLASS_MEMBER_METHOD(InsertChild, {L"index" _ L"child"})
+				CLASS_MEMBER_METHOD(RemoveChild, {L"child"})
+				CLASS_MEMBER_METHOD(MoveChild, {L"child" _ L"newIndex"})
+				CLASS_MEMBER_METHOD(Render, {L"size"})
+				CLASS_MEMBER_METHOD(FindComposition, {L"location"})
+				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(IsSizeAffectParent, NO_PARAMETER)
+			END_CLASS_MEMBER(GuiGraphicsComposition)
+
+			BEGIN_ENUM_ITEM(GuiGraphicsComposition::MinSizeLimitation)
+				ENUM_ITEM_NAMESPACE(GuiGraphicsComposition)
+				ENUM_NAMESPACE_ITEM(NoLimit)
+				ENUM_NAMESPACE_ITEM(LimitToElement)
+				ENUM_NAMESPACE_ITEM(LimitToElementAndChildren)
+			END_ENUM_ITEM(GuiGraphicsComposition::MinSizeLimitation)
+
+			BEGIN_CLASS_MEMBER(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
+
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Bounds)
+			END_CLASS_MEMBER(GuiGraphicsSite)
+
+			BEGIN_CLASS_MEMBER(GuiWindowComposition)
+				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_CONSTRUCTOR(GuiWindowComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiWindowComposition)
+
+			BEGIN_CLASS_MEMBER(GuiBoundsComposition)
+				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_CONSTRUCTOR(GuiBoundsComposition*(), NO_PARAMETER)
+
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
+				CLASS_MEMBER_PROPERTY_FAST(AlignmentToParent)
+				
+				CLASS_MEMBER_METHOD(IsAlignedToParent, NO_PARAMETER)
+			END_CLASS_MEMBER(GuiBoundsComposition)
 
 			BEGIN_CLASS_MEMBER(GuiStackComposition)
 				CLASS_MEMBER_BASE(GuiBoundsComposition)

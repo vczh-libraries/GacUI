@@ -10,6 +10,8 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCESCHE_WORKFLOWCODEGEN
 
 #include "../GuiInstanceLoader.h"
+#include "../../Resources/GuiParserManager.h"
+#include "../../Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 
 namespace vl
 {

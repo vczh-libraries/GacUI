@@ -1,4 +1,4 @@
-#include "GuiReflectionEvents.h"
+#include "GuiReflectionPlugin.h"
 
 namespace vl
 {
@@ -6,13 +6,9 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace collections;
-			using namespace presentation;
 			using namespace presentation::compositions;
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
-
-			GUIREFLECTIONEVENT_TYPELIST(IMPL_VL_TYPE_INFO)
 
 /***********************************************************************
 Type Declaration
