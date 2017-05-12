@@ -19,15 +19,15 @@ namespace vl
 FindInstanceLoadingSource
 ***********************************************************************/
 
-		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
+		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName)
 		{
-			vint index = context->namespaces.Keys().IndexOf(ctor->typeNamespace);
+			vint index = context->namespaces.Keys().IndexOf(namespaceName);
 			if (index != -1)
 			{
 				Ptr<GuiInstanceContext::NamespaceInfo> namespaceInfo = context->namespaces.Values()[index];
 				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
 				{
-					auto fullName = GlobalStringKey::Get(ns->prefix + ctor->typeName.ToString() + ns->postfix);
+					auto fullName = GlobalStringKey::Get(ns->prefix + typeName + ns->postfix);
 					if (auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
 					{
 						return InstanceLoadingSource(loader, fullName);
@@ -35,6 +35,11 @@ FindInstanceLoadingSource
 				}
 			}
 			return InstanceLoadingSource();
+		}
+
+		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
+		{
+			return FindInstanceLoadingSource(context, ctor->typeNamespace, ctor->typeName.ToString());
 		}
 
 /***********************************************************************

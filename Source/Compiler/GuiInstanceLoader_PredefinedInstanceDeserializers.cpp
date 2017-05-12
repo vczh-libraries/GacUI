@@ -96,13 +96,30 @@ GuiTemplatePropertyDeserializer
 					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
 					if (!controlTemplateTd)
 					{
+						auto index = INVLOC.FindFirst(controlTemplateName, L":", Locale::None);
+						GlobalStringKey namespaceName;
+						auto typeName = controlTemplateName;
+						if (index.key != -1)
+						{
+							namespaceName = GlobalStringKey::Get(controlTemplateName.Left(index.key));
+							typeName = controlTemplateName.Right(controlTemplateName.Length() - index.key - index.value);
+						}
+
+						auto source = FindInstanceLoadingSource(resolvingResult.context, namespaceName, typeName);
+						controlTemplateTd = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName)->GetTypeDescriptor();
+					}
+					if (controlTemplateTd)
+					{
+						tds.Add(controlTemplateTd);
+					}
+					else
+					{
 						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
 							L"Precompile: Type \"" +
 							controlTemplateName +
 							L"\" does not exist."));
 						continue;
 					}
-					tds.Add(controlTemplateTd);
 				}
 			}
 

@@ -122,7 +122,7 @@
             <DataColumn Text="Website" Size="160">
               <att.TextProperty>Website</att.TextProperty>
               <att.ValueProperty>Website</att.ValueProperty>
-              <att.VisualizerFactory>presentation::controls::list::HyperlinkVisualizerTemplate;presentation::controls::list::CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.VisualizerFactory>HyperlinkVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
             </DataColumn>
           </att.Columns>
 
