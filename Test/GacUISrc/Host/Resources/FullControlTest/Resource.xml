@@ -138,6 +138,11 @@
               default: { raise "Wrong!"; }
             }
           }
+          
+          func ToString(value : DateTime) : string
+          {
+            return $"$(value.month)/$(value.day)/$(value.year)";
+          }
         }
       ]]>
     </Workflow>

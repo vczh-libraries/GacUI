@@ -65,7 +65,7 @@ GuiTemplatePropertyDeserializer
 
 			bool CanDeserialize(description::ITypeInfo* typeInfo)override
 			{
-				return IsTemplatePropertyType(typeInfo);
+				return IsTemplatePropertyType(typeInfo) || IsDataVisualizerFactoryType(typeInfo) || IsDataEditorFactoryType(typeInfo);
 			}
 
 			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
@@ -153,7 +153,7 @@ GuiTemplatePropertyDeserializer
 					ITypeInfo* viewModelType = nullptr;
 					{
 						auto ctors = controlTemplateTd->GetConstructorGroup();
-						if (ctors->GetMethodCount() != 1)
+						if (!ctors || ctors->GetMethodCount() != 1)
 						{
 							errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
 								L"Precompile: To use type \"" +
@@ -275,6 +275,12 @@ GuiTemplatePropertyDeserializer
 					if (index > 0)
 					{
 						createStyle->arguments.Add(previousFactory);
+					}
+					else
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						createStyle->arguments.Add(nullExpr);
 					}
 					previousFactory = createStyle;
 				}

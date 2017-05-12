@@ -791,12 +791,12 @@ DataProvider
 
 				IDataVisualizerFactory* DataProvider::GetCellDataVisualizerFactory(vint row, vint column)
 				{
-					return columns[row]->GetVisualizerFactory().Obj();
+					return columns[column]->GetVisualizerFactory().Obj();
 				}
 
 				IDataEditorFactory* DataProvider::GetCellDataEditorFactory(vint row, vint column)
 				{
-					return columns[row]->GetEditorFactory().Obj();
+					return columns[column]->GetEditorFactory().Obj();
 				}
 
 				description::Value DataProvider::GetBindingCellValue(vint row, vint column)
