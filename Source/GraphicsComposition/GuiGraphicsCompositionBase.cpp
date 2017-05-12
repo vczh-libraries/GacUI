@@ -166,10 +166,13 @@ GuiGraphicsComposition
 				if (!child) return false;
 				if (child->GetParent()) return false;
 				children.Insert(index, child);
+
+				// composition parent changed -> control parent changed -> related host changed
 				child->parent = this;
-				child->UpdateRelatedHostRecord(relatedHostRecord);
+				child->OnParentChanged(nullptr, this);
 				OnChildInserted(child);
-				child->OnParentChanged(nullptr, child->parent);
+				child->UpdateRelatedHostRecord(relatedHostRecord);
+
 				InvokeOnCompositionStateChanged();
 				return true;
 			}
@@ -179,10 +182,13 @@ GuiGraphicsComposition
 				if (!child) return false;
 				vint index = children.IndexOf(child);
 				if (index == -1) return false;
-				child->OnParentChanged(child->parent, nullptr);
+
+				// composition parent changed -> control parent changed -> related host changed
+				child->parent = nullptr;
+				child->OnParentChanged(this, nullptr);
 				OnChildRemoved(child);
 				child->UpdateRelatedHostRecord(nullptr);
-				child->parent = nullptr;
+
 				GuiGraphicsHost* host = GetRelatedGraphicsHost();
 				if (host)
 				{
