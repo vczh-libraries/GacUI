@@ -187,7 +187,7 @@ DataColumn
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
-					void												NotifyAllColumnsUpdate();
+					void												NotifyAllColumnsUpdate(bool affectItem);
 				public:
 					DataColumn();
 					~DataColumn();
@@ -278,9 +278,12 @@ DataColumn
 
 				class DataColumns : public ItemsBase<Ptr<DataColumn>>
 				{
+					friend class DataColumn;
 				protected:
 					DataProvider*										dataProvider = nullptr;
+					bool												affectItemFlag = true;
 
+					void												NotifyColumnUpdated(vint index, bool affectItem);
 					void												NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 					bool												QueryInsert(vint index, const Ptr<DataColumn>& value)override;
 					void												AfterInsert(vint index, const Ptr<DataColumn>& value)override;

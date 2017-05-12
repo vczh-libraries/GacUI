@@ -379,6 +379,7 @@ HyperlinkVisualizerTemplate
 					:SubColumnVisualizerTemplate(true)
 				{
 					text->SetColor(Color(0, 0, 255));
+					text->SetEllipse(true);
 					GetEventReceiver()->mouseEnter.AttachMethod(this, &HyperlinkVisualizerTemplate::label_MouseEnter);
 					GetEventReceiver()->mouseLeave.AttachMethod(this, &HyperlinkVisualizerTemplate::label_MouseLeave);
 					SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand));

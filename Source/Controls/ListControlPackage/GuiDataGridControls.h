@@ -27,7 +27,7 @@ DefaultDataGridItemTemplate
 
 				class DefaultDataGridItemTemplate
 					: public DefaultListViewItemTemplate
-					, private ListViewColumnItemArranger::IColumnItemViewCallback
+					, public ListViewColumnItemArranger::IColumnItemViewCallback
 				{
 				protected:
 					compositions::GuiTableComposition*					textTable = nullptr;
