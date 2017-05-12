@@ -32,18 +32,23 @@
             <_>composeType:Percentage percentage:0.5</_>
           </att.Rows>
           <att.Columns>
+            <_>composeType:Absolute absolute:2</_>
             <_>composeType:Absolute absolute:16</_>
+            <_>composeType:Absolute absolute:2</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <SolidBorder Color="#000000"/>
+            <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+              <SolidBackground Color-bind="ToColor(self.Category)"/>
+            </Bounds>
+          </Cell>
+
+          <Cell Site="row:0 column:3 rowSpan:3">
+            <SolidLabel Text-bind="ToString(self.Category)" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center" Ellipse="true"/>
+          </Cell>
         </Table>
-
-        <Cell Site="row:1 column:1" InternalMargin="left:2 top:0 right:0 bottom:0">
-          <SolidBackground Color-bind="ToColor(self.Category)"/>
-        </Cell>
-
-        <Cell Site="row:0 column:3 rowSpan:3" InternalMargin="left:2 top:0 right:0 bottom:0">
-          <SolidLabel Text-bind="ToString(self.Category)" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center" Ellipse="true"/>
-        </Cell>
       </CustomControl>
     </Instance>
   </Instance>

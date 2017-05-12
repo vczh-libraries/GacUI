@@ -469,9 +469,11 @@ namespace demo
 		::demo::CategoryDisplayer* self = static_cast<::demo::CategoryDisplayer*>(nullptr);
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement>();
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>();
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6 = ::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement>();
 		void __vwsn_initialize_instance_(::demo::CategoryDisplayer* __vwsn_this_);
 	public:
 		CategoryDisplayerConstructor();
