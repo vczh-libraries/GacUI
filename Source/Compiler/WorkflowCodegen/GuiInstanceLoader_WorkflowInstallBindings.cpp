@@ -132,6 +132,15 @@ Workflow_InstallBindProperty
 		{
 			auto subBlock = MakePtr<WfBlockStatement>();
 			{
+				auto var = MakePtr<WfVariableDeclaration>();
+				var->name.value = L"<created-subscription>";
+				var->expression = bindExpression;
+
+				auto stat = MakePtr<WfVariableStatement>();
+				stat->variable = var;
+				subBlock->statements.Add(stat);
+			}
+			{
 				auto callback = MakePtr<WfFunctionDeclaration>();
 				callback->anonymity = WfFunctionAnonymity::Anonymous;
 				callback->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());;
@@ -228,11 +237,11 @@ Workflow_InstallBindProperty
 				auto funcExpr = MakePtr<WfFunctionExpression>();
 				funcExpr->function = callback;
 
-				auto refThis = MakePtr<WfReferenceExpression>();
-				refThis->name.value = L"<created-subscription>";
+				auto refBind = MakePtr<WfReferenceExpression>();
+				refBind->name.value = L"<created-subscription>";
 
 				auto refEvent = MakePtr<WfMemberExpression>();
-				refEvent->parent = refThis;
+				refEvent->parent = refBind;
 				refEvent->name.value = L"ValueChanged";
 
 				auto attachExpr = MakePtr<WfAttachEventExpression>();
@@ -251,16 +260,15 @@ Workflow_InstallBindProperty
 				member->parent = refThis;
 				member->name.value = L"AddSubscription";
 
+				auto refBind = MakePtr<WfReferenceExpression>();
+				refBind->name.value = L"<created-subscription>";
+
 				auto call = MakePtr<WfCallExpression>();
 				call->function = member;
-				call->arguments.Add(bindExpression);
+				call->arguments.Add(refBind);
 
-				auto var = MakePtr<WfVariableDeclaration>();
-				var->name.value = L"<created-subscription>";
-				var->expression = call;
-
-				auto stat = MakePtr<WfVariableStatement>();
-				stat->variable = var;
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = call;
 				subBlock->statements.Add(stat);
 			}
 
