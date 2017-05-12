@@ -7,11 +7,10 @@
         ]]>
       </ref.Members>
       <CustomControl ref.Name="self">
-        <Bounds Visible-bind="self.Gender == MyGender::Male" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElement">
-          <ImageFrame Image-uri="res://MiscImages/Male" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Bounds>
-        <Bounds Visible-bind="self.Gender == MyGender::Female" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElement">
-          <ImageFrame Image-uri="res://MiscImages/Female" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElement">
+          <ImageFrame HorizontalAlignment="Center" VerticalAlignment="Center">
+            <att.Image-bind>(cast (GuiImageData^) self.ResolveResource("res", $"MiscImages/$(ToString(self.Gender))", true)).Image</att.Image-bind>
+          </ImageFrame>
         </Bounds>
       </CustomControl>
     </Instance>

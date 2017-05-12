@@ -1,26 +1,20 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::ListViewTabPage">
-  <ref.Members>
-    <![CDATA[
-      var itemsToBind : ListViewItem^[] = {};
-    ]]>
-  </ref.Members>
   <ref.Ctor>
     <![CDATA[
-      Application::GetApplication().InvokeInMainThread(func():void
       {
-        /* This code will be executed after demo::ListViewTabPage is put on the window, so that listView.RelatedControlHost doesn't return null. */
-        LoadListView(listView.RelatedControlHost, func(item : ListViewItem^):void
+        LoadListView(this, func(item : ListViewItem^):void
         {
           listView.Items.Add(item);
         });
         
-        LoadListView(listView.RelatedControlHost, func(item : ListViewItem^):void
+        var itemsToBind : ListViewItem^[] = {};
+        LoadListView(this, func(item : ListViewItem^):void
         {
           itemsToBind.Add(item);
         });
         /* itemsToBind is not ObservableList so the ItemSource property should be assigned after the data is prepared. */
         bindableListView.ItemSource = itemsToBind;
-      });
+      }
     ]]>
   </ref.Ctor>
   <TabPage ref.Name="self" Text="ListView">

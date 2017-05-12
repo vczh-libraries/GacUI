@@ -1,15 +1,8 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DataGridTabPage" xmlns:demo="demo::*">
-  <ref.Members>
-    <![CDATA[
-      var tempData : MyDataItem^[] = null;
-    ]]>
-  </ref.Members>
   <ref.Ctor>
     <![CDATA[
-      Application::GetApplication().InvokeInMainThread(func():void
       {
-        /* This code will be executed after demo::DataGridTabPage is put on the window, so that dataGrid.RelatedControlHost doesn't return null. */
-        tempData = 
+        var tempData : MyDataItem^[] = 
         {
           new MyDataItem^("涼宮 春日",     Female, Lime,  (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
           new MyDataItem^("キョン",        Male,   Black, (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
@@ -17,17 +10,16 @@
           new MyDataItem^("朝比奈 实玖瑠", Female, Red,   (cast DateTime "1987-08-30 00:00:00.000"),  "http://www.haruhi.tv/")
           new MyDataItem^("古泉 一树",     Male,   Blue,  (cast DateTime "1986-08-12 00:00:00.000"),  "http://www.haruhi.tv/")
         };
-        
-        var host = dataGrid.RelatedControlHost;
-        var largeImage =  cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Task", true);
-        var smallImage =  cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Task", true);
+
+        var largeImage = cast (GuiImageData^) (ResolveResource("res", "LargeImages/Task", true));
+        var smallImage = cast (GuiImageData^) (ResolveResource("res", "SmallImages/Task", true));
         for(item in tempData)
         {
           item.LargeImage = largeImage;
           item.SmallImage = smallImage;
         }
         dataGrid.ItemSource = tempData;
-      });
+      }
     ]]>
   </ref.Ctor>
   <TabPage ref.Name="self" Text="BindableDataGrid">
