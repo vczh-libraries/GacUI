@@ -131,6 +131,18 @@
             return "";
           }
           
+          func ToColor(value : MyCategory) : Color
+          {
+            switch (value)
+            {
+              case Red:     { return cast Color "#FF0000"; }
+              case Lime:    { return cast Color "#00FF00"; }
+              case Blue:    { return cast Color "#0000FF"; }
+              case White:   { return cast Color "#FFFFFF"; }
+            }
+            return cast Color "#000000";
+          }
+          
           func ToString(value : MyGender) : string
           {
             switch (value)

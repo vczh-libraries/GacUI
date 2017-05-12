@@ -16,6 +16,37 @@
       </CustomControl>
     </Instance>
   </Instance>
+  
+  <Instance name="CategoryDisplayerResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::CategoryDisplayer">
+      <ref.Members>
+        <![CDATA[
+          prop Category : MyCategory = Black {}
+        ]]>
+      </ref.Members>
+      <CustomControl ref.Name="self">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:0.5</_>
+            <_>composeType:Absolute absolute:16</_>
+            <_>composeType:Percentage percentage:0.5</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Absolute absolute:16</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+        </Table>
+
+        <Cell Site="row:1 column:1" InternalMargin="left:2 top:0 right:0 bottom:0">
+          <SolidBackground Color-bind="ToColor(self.Category)"/>
+        </Cell>
+
+        <Cell Site="row:0 column:3 rowSpan:3" InternalMargin="left:2 top:0 right:0 bottom:0">
+          <SolidLabel Text-bind="ToString(self.Category)" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center" Ellipse="true"/>
+        </Cell>
+      </CustomControl>
+    </Instance>
+  </Instance>
 
   <Instance name="GenderVisualizerResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::GenderVisualizer" xmlns:demo="demo::*">
@@ -25,5 +56,15 @@
         </demo:GenderDisplayer>
       </GridVisualizerTemplate>
     </Instance>
+  </Instance>
+
+  <Instance name="CategoryVisualizerResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::CategoryVisualizer" xmlns:demo="demo::*">
+      <GridVisualizerTemplate ref.Name="self">
+        <demo:CategoryDisplayer Category-bind="(cast MyCategory self.CellValue) ?? MyCategory::Black">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </demo:CategoryDisplayer>
+      </GridVisualizerTemplate>
+  </Instance>
   </Instance>
 </Folder>
