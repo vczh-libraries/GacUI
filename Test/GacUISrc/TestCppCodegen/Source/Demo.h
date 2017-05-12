@@ -500,7 +500,7 @@ Closures
 
 		__vwsnf10_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& item, const ::vl::reflection::description::Value& value, bool update) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -509,7 +509,7 @@ Closures
 
 		__vwsnf11_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& item, const ::vl::reflection::description::Value& value, bool update) const;
+		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const;
 	};
 
 	struct __vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -518,7 +518,7 @@ Closures
 
 		__vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& item, const ::vl::reflection::description::Value& value, bool update) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -527,7 +527,7 @@ Closures
 
 		__vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& item, const ::vl::reflection::description::Value& value, bool update) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf14_Demo_demo_DataGridTabPage___vwsn_instance_ctor__
@@ -743,7 +743,7 @@ Closures
 
 		__vwsnf3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const;
 	};
 
 	struct __vwsnf4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -761,7 +761,7 @@ Closures
 
 		__vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const;
 	};
 
 	struct __vwsnf6_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -779,7 +779,7 @@ Closures
 
 		__vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const;
 	};
 
 	struct __vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -788,7 +788,7 @@ Closures
 
 		__vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf9_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -797,7 +797,7 @@ Closures
 
 		__vwsnf9_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& item, const ::vl::reflection::description::Value& value, bool update) const;
+		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const;
 	};
 
 	class __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel : public ::vl::Object, public virtual ::demo::IViewModel

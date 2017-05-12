@@ -105,88 +105,23 @@
           <att.Columns>
             <DataColumn Text="Name">
               <att.TextProperty>Name</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Name = cast string value;
-                      return null;
-                    }
-                    return itemToBind.Name;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Name</att.ValueProperty>
             </DataColumn>
             <DataColumn Text="Gender">
               <att.TextProperty>demo::ToString(itemToBind.Gender)</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Gender = cast MyGender value;
-                      return null;
-                    }
-                    return itemToBind.Gender;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Gender</att.ValueProperty>
             </DataColumn>
             <DataColumn Text="Category">
               <att.TextProperty>demo::ToString(itemToBind.Category)</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Category = cast MyCategory value;
-                      return null;
-                    }
-                    return itemToBind.Category;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Category</att.ValueProperty>
             </DataColumn>
             <DataColumn Text="Birthday">
               <att.TextProperty>cast string (itemToBind.Birthday)</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Birthday = cast DateTime value;
-                      return null;
-                    }
-                    return itemToBind.Birthday;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Birthday</att.ValueProperty>
             </DataColumn>
             <DataColumn Text="Website">
               <att.TextProperty>Website</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Website = cast string value;
-                      return null;
-                    }
-                    return itemToBind.Website;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Website</att.ValueProperty>
             </DataColumn>
           </att.Columns>
 

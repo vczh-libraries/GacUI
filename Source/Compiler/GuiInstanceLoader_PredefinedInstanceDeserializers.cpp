@@ -449,6 +449,7 @@ GuiItemPropertyDeserializer
 				bool isWritableItemProperty = IsWritableItemPropertyType(typeInfo);
 
 				auto funcDecl = MakePtr<WfFunctionDeclaration>();
+				ITypeInfo* acceptValueType = nullptr;
 				funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
 				{
 					auto genericType = typeInfo->GetElementType();
@@ -465,7 +466,7 @@ GuiItemPropertyDeserializer
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
 							argument->name.value = L"<value>";
-							argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(2));
+							argument->type = GetTypeFromTypeInfo((acceptValueType = genericType->GetGenericArgument(2)));
 							funcDecl->arguments.Add(argument);
 						}
 						{
@@ -525,7 +526,18 @@ GuiItemPropertyDeserializer
 							auto assignExpr = MakePtr<WfBinaryExpression>();
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = CopyExpression(propertyExpression);
-							assignExpr->second = refValue;
+
+							if (acceptValueType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
+							{
+								auto castExpr = MakePtr<WfExpectedTypeCastExpression>();
+								castExpr->strategy = WfTypeCastingStrategy::Strong;
+								castExpr->expression = refValue;
+								assignExpr->second = castExpr;
+							}
+							else
+							{
+								assignExpr->second = refValue;
+							}
 
 							auto stat = MakePtr<WfExpressionStatement>();
 							stat->expression = assignExpr;
