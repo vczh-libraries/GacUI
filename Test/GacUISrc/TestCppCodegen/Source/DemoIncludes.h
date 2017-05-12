@@ -28,6 +28,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::DataGridTabPageConstructor)
 			DECL_TYPE_INFO(::demo::GenderDisplayer)
 			DECL_TYPE_INFO(::demo::GenderDisplayerConstructor)
+			DECL_TYPE_INFO(::demo::GenderVisualizer)
+			DECL_TYPE_INFO(::demo::GenderVisualizerConstructor)
 			DECL_TYPE_INFO(::demo::IViewModel)
 			DECL_TYPE_INFO(::demo::ListViewTabPage)
 			DECL_TYPE_INFO(::demo::ListViewTabPageConstructor)

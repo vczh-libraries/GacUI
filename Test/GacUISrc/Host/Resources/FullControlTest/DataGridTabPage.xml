@@ -1,4 +1,4 @@
-<Instance ref.CodeBehind="false" ref.Class="demo::DataGridTabPage">
+<Instance ref.CodeBehind="false" ref.Class="demo::DataGridTabPage" xmlns:demo="demo::*">
   <ref.Members>
     <![CDATA[
       var tempData : MyDataItem^[] = null;
@@ -110,6 +110,7 @@
             <DataColumn Text="Gender" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Gender)</att.TextProperty>
               <att.ValueProperty>Gender</att.ValueProperty>
+              <att.VisualizerFactory>demo:GenderVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
             </DataColumn>
             <DataColumn Text="Category" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Category)</att.TextProperty>

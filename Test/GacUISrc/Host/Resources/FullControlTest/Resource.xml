@@ -50,9 +50,8 @@
         <![CDATA[
           prop Gender : MyGender = Male {}
           
-          func GetImage(gender : MyGender) : INativeImage^
+          func GetImage(host : ControlHost*, gender : MyGender) : INativeImage^
           {
-            var host = RelatedControlHost;
             if (host is not null)
             {
                return (cast (GuiImageData^) host.ResolveResource("res", $"MiscImages/$(ToString(gender))", true)).Image;
@@ -62,10 +61,22 @@
         ]]>
       </ref.Members>
       <CustomControl ref.Name="self">
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <ImageFrame ref.Name="image" Image-bind="self.GetImage(self.Gender)" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElement">
+          <ImageFrame ref.Name="image" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <att.Image-bind>self.GetImage(self.RelatedControlHost, self.Gender)</att.Image-bind>
+          </ImageFrame>
         </Bounds>
       </CustomControl>
+    </Instance>
+  </Instance>
+
+  <Instance name="GenderVisualizerResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::GenderVisualizer" xmlns:demo="demo::*">
+      <GridVisualizerTemplate ref.Name="self">
+        <demo:GenderDisplayer Gender-bind="(cast MyGender self.CellValue) ?? MyGender::Male">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </demo:GenderDisplayer>
+      </GridVisualizerTemplate>
     </Instance>
   </Instance>
 
@@ -151,8 +162,8 @@
               case Lime:    { return "Lime";   }
               case Blue:    { return "Blue";   }
               case White:   { return "White";  }
-              default:      { raise  "Wrong!"; }
             }
+            return "";
           }
           
           func ToString(value : MyGender) : string
@@ -161,8 +172,8 @@
             {
               case Male:    { return "Male";   }
               case Female:  { return "Female"; }
-              default:      { raise  "Wrong!"; }
             }
+            return "";
           }
           
           func ToString(value : DateTime) : string

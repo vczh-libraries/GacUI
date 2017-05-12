@@ -145,6 +145,8 @@ Basic Construction
 				GuiControl(IStyleController* _styleController);
 				~GuiControl();
 
+				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
+				compositions::GuiNotifyEvent			RenderTargetChanged;
 				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			VisibleChanged;
 				/// <summary>Enabled event. This event will be raised when the enabling state of the control is changed.</summary>
