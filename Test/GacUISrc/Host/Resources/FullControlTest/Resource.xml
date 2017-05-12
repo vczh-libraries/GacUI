@@ -120,12 +120,12 @@
           {
             switch (value)
             {
-              case Black:   { return "Black"; }
-              case Red:     { return "Red"; }
-              case Lime:    { return "Lime"; }
-              case Blue:    { return "Blue"; }
-              case White:   { return "White"; }
-              default: { raise "Wrong!"; }
+              case Black:   { return "Black";  }
+              case Red:     { return "Red";    }
+              case Lime:    { return "Lime";   }
+              case Blue:    { return "Blue";   }
+              case White:   { return "White";  }
+              default:      { raise  "Wrong!"; }
             }
           }
           
@@ -133,9 +133,9 @@
           {
             switch (value)
             {
-              case Male:    { return "Male"; }
+              case Male:    { return "Male";   }
               case Female:  { return "Female"; }
-              default: { raise "Wrong!"; }
+              default:      { raise  "Wrong!"; }
             }
           }
           
