@@ -574,20 +574,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf19_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__::__vwsnf19_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(::demo::GenderDisplayerConstructor* __vwsnctorthis_0)
+	__vwsnf19_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf19_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf19_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf19_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->GetVisible();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->SetVisible(__vwsn_new_);
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(itemToBind.Obj())->GetSmallImage();
 	}
 
 	//-------------------------------------------------------------------
@@ -605,38 +600,28 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf20_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__::__vwsnf20_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(::demo::GenderDisplayerConstructor* __vwsnctorthis_0)
+	__vwsnf20_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf20_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf20_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf20_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_2)->GetVisible();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_2)->SetVisible(__vwsn_new_);
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(itemToBind.Obj())->GetLargeImage();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf21_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__::__vwsnf21_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__(::demo::GenderVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnf21_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf21_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf21_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::WString __vwsnf21_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->GetGender();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::demo::MyGender>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->SetGender(__vwsn_new_);
+		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
+		return ::vl::__vwsn::This(itemToBind.Obj())->GetText();
 	}
 
 	//-------------------------------------------------------------------
@@ -646,10 +631,10 @@ Closures
 	{
 	}
 
-	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf22_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf22_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(itemToBind.Obj())->GetSmallImage();
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(0));
 	}
 
 	//-------------------------------------------------------------------
@@ -659,10 +644,10 @@ Closures
 	{
 	}
 
-	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf23_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf23_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(itemToBind.Obj())->GetLargeImage();
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(1));
 	}
 
 	//-------------------------------------------------------------------
@@ -675,7 +660,7 @@ Closures
 	::vl::WString __vwsnf24_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::This(itemToBind.Obj())->GetText();
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(2));
 	}
 
 	//-------------------------------------------------------------------
@@ -685,46 +670,7 @@ Closures
 	{
 	}
 
-	::vl::WString __vwsnf25_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(0));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf26_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf26_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	::vl::WString __vwsnf26_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(1));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf27_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf27_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	::vl::WString __vwsnf27_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto itemToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::list::ListViewItem>>(__vwsn_item_);
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(itemToBind.Obj())->GetSubItems()).Obj())->Get(2));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf28_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf28_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(::demo::ListViewTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	void __vwsnf28_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf25_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_1 = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->comboView)->GetSelectedIndex();
@@ -763,16 +709,61 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf29_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::__vwsnf29_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(::demo::ListViewTabPage* __vwsnctorthis_0)
+	__vwsnf26_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::__vwsnf26_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(::demo::ListViewTabPage* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf29_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::operator()() const
+	void __vwsnf26_Demo_demo_ListViewTabPage___vwsn_instance_ctor__::operator()() const
 	{
-		GLOBAL_NAME LoadListView(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->listView)->GetRelatedControlHost(), LAMBDA(::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPage___vwsn_instance_ctor___(__vwsnthis_0)));
-		GLOBAL_NAME LoadListView(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->listView)->GetRelatedControlHost(), LAMBDA(::vl_workflow_global::__vwsnf31_Demo_demo_ListViewTabPage___vwsn_instance_ctor___(__vwsnthis_0)));
+		GLOBAL_NAME LoadListView(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->listView)->GetRelatedControlHost(), LAMBDA(::vl_workflow_global::__vwsnf27_Demo_demo_ListViewTabPage___vwsn_instance_ctor___(__vwsnthis_0)));
+		GLOBAL_NAME LoadListView(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->listView)->GetRelatedControlHost(), LAMBDA(::vl_workflow_global::__vwsnf28_Demo_demo_ListViewTabPage___vwsn_instance_ctor___(__vwsnthis_0)));
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->bindableListView)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(__vwsnthis_0)->itemsToBind));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf27_Demo_demo_ListViewTabPage___vwsn_instance_ctor___::__vwsnf27_Demo_demo_ListViewTabPage___vwsn_instance_ctor___(::demo::ListViewTabPage* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf27_Demo_demo_ListViewTabPage___vwsn_instance_ctor___::operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf28_Demo_demo_ListViewTabPage___vwsn_instance_ctor___::__vwsnf28_Demo_demo_ListViewTabPage___vwsn_instance_ctor___(::demo::ListViewTabPage* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf28_Demo_demo_ListViewTabPage___vwsn_instance_ctor___::operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const
+	{
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->itemsToBind.Obj())->Add(::vl::__vwsn::Box(item));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf29_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf29_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	bool __vwsnf29_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
+		if (__vwsn_update_)
+		{
+			::vl::__vwsn::This(item.Obj())->SetChecked(__vwsn_value_);
+			return false;
+		}
+		else
+		{
+			return ::vl::__vwsn::This(item.Obj())->GetChecked();
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -790,57 +781,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf30_Demo_demo_ListViewTabPage___vwsn_instance_ctor___::__vwsnf30_Demo_demo_ListViewTabPage___vwsn_instance_ctor___(::demo::ListViewTabPage* __vwsnctorthis_0)
+	__vwsnf30_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf30_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf30_Demo_demo_ListViewTabPage___vwsn_instance_ctor___::operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const
-	{
-		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->listView)->GetItems()).Obj())->Add(::vl::__vwsn::Box(item));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf31_Demo_demo_ListViewTabPage___vwsn_instance_ctor___::__vwsnf31_Demo_demo_ListViewTabPage___vwsn_instance_ctor___(::demo::ListViewTabPage* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	void __vwsnf31_Demo_demo_ListViewTabPage___vwsn_instance_ctor___::operator()(::vl::Ptr<::vl::presentation::controls::list::ListViewItem> item) const
-	{
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->itemsToBind.Obj())->Add(::vl::__vwsn::Box(item));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf32_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf32_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	bool __vwsnf32_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_, bool __vwsn_value_, bool __vwsn_update_) const
-	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
-		if (__vwsn_update_)
-		{
-			::vl::__vwsn::This(item.Obj())->SetChecked(__vwsn_value_);
-			return false;
-		}
-		else
-		{
-			return ::vl::__vwsn::This(item.Obj())->GetChecked();
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf33_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf33_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
-	{
-	}
-
-	::vl::WString __vwsnf33_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::WString __vwsnf30_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::demo::MyTextItem>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
@@ -848,12 +794,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf34_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf34_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf31_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf31_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf34_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf31_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_switch_2 = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->comboView)->GetSelectedIndex();
@@ -877,12 +823,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf35_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf35_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf32_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf32_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf35_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf32_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto __vwsn_for_begin_i = 0;
@@ -919,12 +865,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf36_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf36_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf33_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf33_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf36_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf33_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto i = 0;
@@ -947,12 +893,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf37_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf37_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf34_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf34_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf37_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf34_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
 			auto i = 1;
@@ -975,12 +921,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf38_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf38_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf35_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::__vwsnf35_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(::demo::TextListTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	void __vwsnf38_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf35_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->textList)->GetItems()).Obj())->Clear();
 		if (static_cast<bool>(::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->ViewModel.Obj())->GetTextItems()))
@@ -991,15 +937,59 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf39_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf39_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf36_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf36_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf39_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf36_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
 		return ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(nodeToBind.Obj())->Children()));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf37_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf37_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf37_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
+		return ::vl::__vwsn::This(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(nodeToBind.Obj())->GetData().Obj()).Obj())->image;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf38_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf38_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	::vl::WString __vwsnf38_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
+		return ::vl::__vwsn::This(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(nodeToBind.Obj())->GetData().Obj()).Obj())->text;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf39_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__::__vwsnf39_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(::demo::GenderDisplayerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+	}
+
+	void __vwsnf39_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->GetVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1025,28 +1015,38 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf40_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf40_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf40_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__::__vwsnf40_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(::demo::GenderDisplayerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	::vl::Ptr<::vl::presentation::GuiImageData> __vwsnf40_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	void __vwsnf40_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
-		return ::vl::__vwsn::This(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(nodeToBind.Obj())->GetData().Obj()).Obj())->image;
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_2)->GetVisible();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_2)->SetVisible(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf41_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::__vwsnf41_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0)
+	__vwsnf41_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__::__vwsnf41_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__(::demo::GenderVisualizerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
 	}
 
-	::vl::WString __vwsnf41_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	void __vwsnf41_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto nodeToBind = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider>>(__vwsn_item_);
-		return ::vl::__vwsn::This(::vl::__vwsn::SharedPtrCast<::vl::presentation::controls::tree::TreeViewItem>(::vl::__vwsn::This(nodeToBind.Obj())->GetData().Obj()).Obj())->text;
+		auto __vwsn_old_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->GetGender();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::demo::MyGender>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0)->__vwsn_precompile_0)->SetGender(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1147,59 +1147,28 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderDisplayerConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(__vwsnctorthis_0)
+	__vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::__vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel()
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::demo::GenderDisplayer*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::AddTextItem(::vl::Ptr<::demo::MyTextItem> item)
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetGender() == ::demo::MyGender::Male);
-		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+		throw ::vl::Exception(::vl::WString(L"NotImplemented!", false));
 	}
 
-	void __vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::RemoveTextItem(::vl::vint32_t index)
 	{
-		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+		throw ::vl::Exception(::vl::WString(L"NotImplemented!", false));
 	}
 
-	bool __vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Open()
+	void __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::ClearTextItems()
 	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
-			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->GenderChanged, ::vl::Func<void()>(::vl::__vwsn::This(this), &__vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
-			return true;
-		}
-		return false;
+		throw ::vl::Exception(::vl::WString(L"NotImplemented!", false));
 	}
 
-	bool __vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::GetTextItems()
 	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->GenderChanged, __vwsn_bind_handler_0_0);
-			(__vwsn_bind_cache_0 = static_cast<::demo::GenderDisplayer*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
+		return ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
 	}
 
 	//-------------------------------------------------------------------
@@ -1215,7 +1184,7 @@ Closures
 
 	void __vwsnc2_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetGender() == ::demo::MyGender::Female);
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetGender() == ::demo::MyGender::Male);
 		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1261,39 +1230,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderVisualizerConstructor* __vwsnctorthis_0)
+	__vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderDisplayerConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(__vwsnctorthis_0)
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::demo::GenderVisualizer*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::demo::GenderDisplayer*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::Unbox<::demo::MyGender>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetCellValue()); } catch(...){ return ::demo::MyGender::Male; } }();
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetGender() == ::demo::MyGender::Female);
 		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
-			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->CellValueChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->GenderChanged, ::vl::Func<void()>(::vl::__vwsn::This(this), &__vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -1303,7 +1272,64 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->GenderChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::demo::GenderDisplayer*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderVisualizerConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(__vwsnctorthis_0)
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::demo::GenderVisualizer*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::Unbox<::demo::MyGender>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetCellValue()); } catch(...){ return ::demo::MyGender::Male; } }();
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = ::vl::__vwsn::This(__vwsnthis_0)->self);
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->CellValueChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(::vl::__vwsn::This(this), &__vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			::vl::__vwsn::This(this)->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -1314,32 +1340,6 @@ Closures
 			return true;
 		}
 		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc4_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::__vwsnc4_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel()
-	{
-	}
-
-	void __vwsnc4_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::AddTextItem(::vl::Ptr<::demo::MyTextItem> item)
-	{
-		throw ::vl::Exception(::vl::WString(L"NotImplemented!", false));
-	}
-
-	void __vwsnc4_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::RemoveTextItem(::vl::vint32_t index)
-	{
-		throw ::vl::Exception(::vl::WString(L"NotImplemented!", false));
-	}
-
-	void __vwsnc4_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::ClearTextItems()
-	{
-		throw ::vl::Exception(::vl::WString(L"NotImplemented!", false));
-	}
-
-	::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnc4_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel::GetTextItems()
-	{
-		return ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
 	}
 
 }
@@ -1625,149 +1625,6 @@ Class (::demo::DataGridTabPage)
 	}
 
 /***********************************************************************
-Class (::demo::GenderDisplayerConstructor)
-***********************************************************************/
-
-	void GenderDisplayerConstructor::__vwsn_initialize_instance_(::demo::GenderDisplayer* __vwsn_this_)
-	{
-		(::vl::__vwsn::This(this)->self = __vwsn_this_);
-		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElement);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElement);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
-		}
-		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_3));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_2));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1.Obj())->SetImage(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"MiscImages/Male", false), true).Obj())).Obj())->GetImage());
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf19_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->SetImage(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"MiscImages/Female", false), true).Obj())).Obj())->GetImage());
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf20_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-	}
-
-	GenderDisplayerConstructor::GenderDisplayerConstructor()
-	{
-	}
-
-/***********************************************************************
-Class (::demo::GenderDisplayer)
-***********************************************************************/
-
-	::demo::MyGender GenderDisplayer::GetGender()
-	{
-		return ::vl::__vwsn::This(this)->__vwsn_prop_Gender;
-	}
-	void GenderDisplayer::SetGender(::demo::MyGender __vwsn_value_)
-	{
-		if ((::vl::__vwsn::This(this)->__vwsn_prop_Gender != __vwsn_value_))
-		{
-			(::vl::__vwsn::This(this)->__vwsn_prop_Gender = __vwsn_value_);
-			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->GenderChanged)();
-		}
-	}
-
-	GenderDisplayer::GenderDisplayer()
-		: ::vl::presentation::controls::GuiCustomControl(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderDisplayer", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
-	}
-
-	GenderDisplayer::~GenderDisplayer()
-	{
-		::vl::__vwsn::This(this)->ClearSubscriptions();
-	}
-
-/***********************************************************************
-Class (::demo::GenderVisualizerConstructor)
-***********************************************************************/
-
-	void GenderVisualizerConstructor::__vwsn_initialize_instance_(::demo::GenderVisualizer* __vwsn_this_)
-	{
-		(::vl::__vwsn::This(this)->self = __vwsn_this_);
-		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::demo::GenderDisplayer());
-		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition()));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf21_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-	}
-
-	GenderVisualizerConstructor::GenderVisualizerConstructor()
-	{
-	}
-
-/***********************************************************************
-Class (::demo::GenderVisualizer)
-***********************************************************************/
-
-	GenderVisualizer::GenderVisualizer()
-	{
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderVisualizer", false));
-		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
-		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
-	}
-
-	GenderVisualizer::~GenderVisualizer()
-	{
-		::vl::__vwsn::This(this)->ClearSubscriptions();
-	}
-
-/***********************************************************************
 Class (::demo::ListViewTabPageConstructor)
 ***********************************************************************/
 
@@ -1953,10 +1810,10 @@ Class (::demo::ListViewTabPageConstructor)
 			(::vl::__vwsn::This(this)->bindableListView = new ::vl::presentation::controls::GuiBindableListView(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableListView)->SetSmallImageProperty(LAMBDA(::vl_workflow_global::__vwsnf22_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableListView)->SetSmallImageProperty(LAMBDA(::vl_workflow_global::__vwsnf19_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableListView)->SetLargeImageProperty(LAMBDA(::vl_workflow_global::__vwsnf23_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableListView)->SetLargeImageProperty(LAMBDA(::vl_workflow_global::__vwsnf20_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableListView)->GetDataColumns());
@@ -1985,7 +1842,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_17 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf24_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf21_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_17.Obj())->SetText(::vl::WString(L"Id", false));
@@ -1996,7 +1853,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_18 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf25_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf22_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18.Obj())->SetText(::vl::WString(L"Category", false));
@@ -2007,7 +1864,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_19 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf26_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf23_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_19.Obj())->SetText(::vl::WString(L"Size", false));
@@ -2018,7 +1875,7 @@ Class (::demo::ListViewTabPageConstructor)
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_20 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf27_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf24_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_20.Obj())->SetText(::vl::WString(L"File", false));
@@ -2037,7 +1894,7 @@ Class (::demo::ListViewTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf28_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf25_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 	}
@@ -2062,7 +1919,7 @@ Class (::demo::ListViewTabPage)
 
 	void ListViewTabPage::__vwsn_instance_ctor_()
 	{
-		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(LAMBDA(::vl_workflow_global::__vwsnf29_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(this)));
+		::vl::__vwsn::This(::vl::presentation::controls::GetApplication())->InvokeInMainThread(LAMBDA(::vl_workflow_global::__vwsnf26_Demo_demo_ListViewTabPage___vwsn_instance_ctor__(this)));
 	}
 
 	ListViewTabPage::~ListViewTabPage()
@@ -2278,13 +2135,13 @@ Class (::demo::TextListTabPageConstructor)
 		}
 		(::vl::__vwsn::This(this)->__vwsn_precompile_10 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
@@ -2388,10 +2245,10 @@ Class (::demo::TextListTabPageConstructor)
 			(::vl::__vwsn::This(this)->bindableTextList = new ::vl::presentation::controls::GuiBindableTextList(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetCheckedProperty(LAMBDA(::vl_workflow_global::__vwsnf32_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetCheckedProperty(LAMBDA(::vl_workflow_global::__vwsnf29_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf33_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf30_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTextList)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
@@ -2416,23 +2273,23 @@ Class (::demo::TextListTabPageConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf34_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf31_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->comboView)->SelectedIndexChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf35_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf32_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_12)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf36_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf33_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf37_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf34_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_18)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf38_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf35_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_21)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -2707,13 +2564,13 @@ Class (::demo::TreeViewTabPageConstructor)
 			(::vl::__vwsn::This(this)->bindableTreeView = new ::vl::presentation::controls::GuiBindableTreeView(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTreeView)->SetChildrenProperty(LAMBDA(::vl_workflow_global::__vwsnf39_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTreeView)->SetChildrenProperty(LAMBDA(::vl_workflow_global::__vwsnf36_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTreeView)->SetImageProperty(LAMBDA(::vl_workflow_global::__vwsnf40_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTreeView)->SetImageProperty(LAMBDA(::vl_workflow_global::__vwsnf37_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTreeView)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf41_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTreeView)->SetTextProperty(LAMBDA(::vl_workflow_global::__vwsnf38_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this)->bindableTreeView)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
@@ -2763,6 +2620,149 @@ Class (::demo::TreeViewTabPage)
 	}
 
 	TreeViewTabPage::~TreeViewTabPage()
+	{
+		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
+Class (::demo::GenderDisplayerConstructor)
+***********************************************************************/
+
+	void GenderDisplayerConstructor::__vwsn_initialize_instance_(::demo::GenderDisplayer* __vwsn_this_)
+	{
+		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElement);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_1));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_0));
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElement);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		(::vl::__vwsn::This(this)->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->SetVerticalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->SetHorizontalAlignment(::vl::presentation::Alignment::Center);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(::vl::__vwsn::This(this)->__vwsn_precompile_3));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this)->__vwsn_precompile_2));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1.Obj())->SetImage(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"MiscImages/Male", false), true).Obj())).Obj())->GetImage());
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf39_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_3.Obj())->SetImage(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"MiscImages/Female", false), true).Obj())).Obj())->GetImage());
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf40_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	GenderDisplayerConstructor::GenderDisplayerConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::demo::GenderDisplayer)
+***********************************************************************/
+
+	::demo::MyGender GenderDisplayer::GetGender()
+	{
+		return ::vl::__vwsn::This(this)->__vwsn_prop_Gender;
+	}
+	void GenderDisplayer::SetGender(::demo::MyGender __vwsn_value_)
+	{
+		if ((::vl::__vwsn::This(this)->__vwsn_prop_Gender != __vwsn_value_))
+		{
+			(::vl::__vwsn::This(this)->__vwsn_prop_Gender = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(::vl::__vwsn::This(this)->GenderChanged)();
+		}
+	}
+
+	GenderDisplayer::GenderDisplayer()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderDisplayer", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
+	}
+
+	GenderDisplayer::~GenderDisplayer()
+	{
+		::vl::__vwsn::This(this)->ClearSubscriptions();
+	}
+
+/***********************************************************************
+Class (::demo::GenderVisualizerConstructor)
+***********************************************************************/
+
+	void GenderVisualizerConstructor::__vwsn_initialize_instance_(::demo::GenderVisualizer* __vwsn_this_)
+	{
+		(::vl::__vwsn::This(this)->self = __vwsn_this_);
+		(::vl::__vwsn::This(this)->__vwsn_precompile_0 = new ::demo::GenderDisplayer());
+		(::vl::__vwsn::This(this)->__vwsn_precompile_1 = ::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(::vl::__vwsn::This(this)->__vwsn_precompile_0)->GetBoundsComposition()));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf41_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	GenderVisualizerConstructor::GenderVisualizerConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::demo::GenderVisualizer)
+***********************************************************************/
+
+	GenderVisualizer::GenderVisualizer()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::GenderVisualizer", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
+	}
+
+	GenderVisualizer::~GenderVisualizer()
 	{
 		::vl::__vwsn::This(this)->ClearSubscriptions();
 	}

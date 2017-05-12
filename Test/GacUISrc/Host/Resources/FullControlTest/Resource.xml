@@ -44,38 +44,11 @@
     </Instance>
   </Instance>
 
-  <Instance name="GenderDisplayerResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::GenderDisplayer">
-      <ref.Members>
-        <![CDATA[
-          prop Gender : MyGender = Male {}
-        ]]>
-      </ref.Members>
-      <CustomControl ref.Name="self">
-        <Bounds Visible-bind="self.Gender == MyGender::Male" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElement">
-          <ImageFrame Image-uri="res://MiscImages/Male" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Bounds>
-        <Bounds Visible-bind="self.Gender == MyGender::Female" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElement">
-          <ImageFrame Image-uri="res://MiscImages/Female" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Bounds>
-      </CustomControl>
-    </Instance>
-  </Instance>
-
-  <Instance name="GenderVisualizerResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::GenderVisualizer" xmlns:demo="demo::*">
-      <GridVisualizerTemplate ref.Name="self">
-        <demo:GenderDisplayer Gender-bind="(cast MyGender self.CellValue) ?? MyGender::Male">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-        </demo:GenderDisplayer>
-      </GridVisualizerTemplate>
-    </Instance>
-  </Instance>
-
   <Instance name="TextListTabPageResource" content="File">TextListTabPage.xml</Instance>
   <Instance name="ListViewTabPageResource" content="File">ListViewTabPage.xml</Instance>
   <Instance name="TreeViewTabPageResource" content="File">TreeViewTabPage.xml</Instance>
   <Instance name="DataGridTabPageResource" content="File">DataGridTabPage.xml</Instance>
+  <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
   <Folder name="LargeImages" content="Link">Images/LargeImages.xml</Folder>
   <Folder name="SmallImages" content="Link">Images/SmallImages.xml</Folder>
   <Folder name="MiscImages" content="Link">Images/MiscImages.xml</Folder>
