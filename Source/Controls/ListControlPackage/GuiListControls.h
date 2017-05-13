@@ -62,7 +62,8 @@ List Control
 					/// <summary>Request an item control representing an item in the item provider. This function is suggested to call when an item control gets into the visible area.</summary>
 					/// <returns>The item control.</returns>
 					/// <param name="itemIndex">The index of the item in the item provider.</param>
-					virtual ItemStyle*								RequestItem(vint itemIndex)=0;
+					/// <param name="itemComposition">The composition that represents the item. Set to null if the item style is expected to be put directly into the list control.</param>
+					virtual ItemStyle*								RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)=0;
 					/// <summary>Release an item control. This function is suggested to call when an item control gets out of the visible area.</summary>
 					/// <param name="style">The item control.</param>
 					virtual void									ReleaseItem(ItemStyle* style)=0;
@@ -199,7 +200,7 @@ List Control
 					IItemProvider*								itemProvider = nullptr;
 					InstalledStyleMap							installedStyles;
 
-					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex);
+					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition);
 					ItemStyle*									UninstallStyle(vint index);
 					void										OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
@@ -210,7 +211,7 @@ List Control
 
 					void										OnAttached(IItemProvider* provider)override;
 					void										OnItemModified(vint start, vint count, vint newCount)override;
-					ItemStyle*									RequestItem(vint itemIndex)override;
+					ItemStyle*									RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)override;
 					void										ReleaseItem(ItemStyle* style)override;
 					void										SetViewLocation(Point value)override;
 					Size										GetStylePreferredSize(compositions::GuiBoundsComposition* style)override;

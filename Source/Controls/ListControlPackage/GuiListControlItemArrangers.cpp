@@ -48,13 +48,16 @@ RangedItemArrangerBase
 
 				RangedItemArrangerBase::ItemStyleRecord RangedItemArrangerBase::CreateStyle(vint index)
 				{
-					auto itemStyle = callback->RequestItem(index);
 					GuiSelectableButton* backgroundButton = nullptr;
 					if (listControl->GetDisplayItemBackground())
 					{
 						backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
 						backgroundButton->SetAutoSelection(false);
+					}
 
+					auto itemStyle = callback->RequestItem(index, backgroundButton->GetBoundsComposition());
+					if (backgroundButton)
+					{
 						itemStyle->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						itemStyle->SelectedChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 						{

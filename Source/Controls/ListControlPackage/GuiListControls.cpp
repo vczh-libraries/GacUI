@@ -15,10 +15,10 @@ namespace vl
 GuiListControl::ItemCallback
 ***********************************************************************/
 
-			Ptr<GuiListControl::ItemCallback::BoundsChangedHandler> GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex)
+			Ptr<GuiListControl::ItemCallback::BoundsChangedHandler> GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition)
 			{
 				auto handler = style->BoundsChanged.AttachMethod(this, &ItemCallback::OnStyleBoundsChanged);
-				listControl->GetContainerComposition()->AddChild(style);
+				listControl->GetContainerComposition()->AddChild(itemComposition ? itemComposition : style);
 				listControl->OnStyleInstalled(itemIndex, style);
 				return handler;
 			}
@@ -68,13 +68,13 @@ GuiListControl::ItemCallback
 				listControl->OnItemModified(start, count, newCount);
 			}
 
-			GuiListControl::ItemStyle* GuiListControl::ItemCallback::RequestItem(vint itemIndex)
+			GuiListControl::ItemStyle* GuiListControl::ItemCallback::RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)
 			{
 				CHECK_ERROR(0 <= itemIndex && itemIndex < itemProvider->Count(), L"GuiListControl::ItemCallback::RequestItem(vint)#Index out of range.");
 				CHECK_ERROR(listControl->itemStyleProperty, L"GuiListControl::ItemCallback::RequestItem(vint)#SetItemTemplate function should be called before adding items to the list control.");
 
 				auto style = listControl->itemStyleProperty(itemProvider->GetBindingValue(itemIndex));
-				auto handler = InstallStyle(style, itemIndex);
+				auto handler = InstallStyle(style, itemIndex, itemComposition);
 				installedStyles.Add(style, handler);
 				return style;
 			}

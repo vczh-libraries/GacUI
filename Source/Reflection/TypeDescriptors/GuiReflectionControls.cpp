@@ -502,7 +502,7 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IItemArrangerCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_METHOD(RequestItem, {L"itemIndex"})
+				CLASS_MEMBER_METHOD(RequestItem, {L"itemIndex" _ L"itemComposition"})
 				CLASS_MEMBER_METHOD(ReleaseItem, {L"style"})
 				CLASS_MEMBER_METHOD(SetViewLocation, {L"value"})
 				CLASS_MEMBER_METHOD(GetStylePreferredSize, {L"style"})
