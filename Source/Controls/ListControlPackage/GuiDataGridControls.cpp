@@ -313,6 +313,14 @@ DefaultDataGridItemTemplate
 						dataVisualizers[i]->SetSelected(i == column);
 					}
 				}
+
+				void DefaultDataGridItemTemplate::NotifyCellEdited()
+				{
+					for (vint i = 0; i < dataVisualizers.Count(); i++)
+					{
+						dataVisualizers[i]->BeforeVisualizeCell(listControl->GetItemProvider(), GetIndex(), i);
+					}
+				}
 			}
 				
 /***********************************************************************
@@ -447,6 +455,12 @@ GuiVirtualDataGrid (IDataGridContext)
 					GetItemProvider()->PushEditing();
 					dataGridView->SetBindingCellValue(currentEditorPos.row, currentEditorPos.column, currentEditor->GetTemplate()->GetCellValue());
 					GetItemProvider()->PopEditing();
+
+					auto style = GetArranger()->GetVisibleStyle(currentEditorPos.row);
+					if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
+					{
+						itemStyle->NotifyCellEdited();
+					}
 
 					if (currentEditor && focusedControl)
 					{

@@ -56,6 +56,7 @@ DefaultDataGridItemTemplate
 					void												NotifyOpenEditor(vint column, IDataEditor* editor);
 					void												NotifyCloseEditor();
 					void												NotifySelectCell(vint column);
+					void												NotifyCellEdited();
 				};
 			}
 
