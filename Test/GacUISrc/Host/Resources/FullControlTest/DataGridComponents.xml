@@ -30,7 +30,7 @@
     <Instance name="GenderItemTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="demo::GenderItemTemplate" xmlns:demo="demo::*">
         <ref.Parameter Name="SelectedGender" Class="demo::MyGender"/>
-        <TextListItemTemplate>
+        <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren">
           <demo:GenderDisplayer Gender-eval="SelectedGender">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </demo:GenderDisplayer>
@@ -41,7 +41,7 @@
     <Instance name="GenderComboItemTemplateResource">
       <Instance ref.CodeBehind="false" ref.Class="demo::GenderComboItemTemplate" xmlns:demo="demo::*">
         <ref.Parameter Name="SelectedGender" Class="demo::MyGender"/>
-        <ControlTemplate>
+        <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
           <demo:GenderDisplayer Gender-eval="SelectedGender">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </demo:GenderDisplayer>
@@ -53,21 +53,18 @@
       <Instance ref.CodeBehind="false" ref.Class="demo::GenderEditor" xmlns:demo="demo::*">
         <ref.Members>
           <![CDATA[
-          var items : MyGender[] = {};
-        ]]>
+            var items : MyGender[] = 
+            {
+              Male of MyGender
+              Female of MyGender
+            };
+          ]]>
         </ref.Members>
-        <ref.Ctor>
-          <![CDATA[
-          {
-            items.Add(MyGender::Male);
-            items.Add(MyGender::Female);
-          }
-        ]]>
-        </ref.Ctor>
         <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem">
           <ComboBox ref.Name="comboBox" ItemTemplate="demo:GenderComboItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             <att.ListControl>
-              <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:GenderItemTemplate"/>
+              <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:GenderItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
             </att.ListControl>
           </ComboBox>
         </GridEditorTemplate>

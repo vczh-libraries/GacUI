@@ -93,27 +93,32 @@
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.LargeImageProperty>LargeImage</att.LargeImageProperty>
           <att.SmallImageProperty>SmallImage</att.SmallImageProperty>
-          
+
           <att.Columns>
             <DataColumn Text="Name" Size="120">
               <att.TextProperty>Name</att.TextProperty>
               <att.ValueProperty>Name</att.ValueProperty>
               <att.EditorFactory>demo:TextEditor</att.EditorFactory>
             </DataColumn>
+
             <DataColumn Text="Gender" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Gender)</att.TextProperty>
               <att.ValueProperty>Gender</att.ValueProperty>
               <att.VisualizerFactory>demo:GenderVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:GenderEditor</att.EditorFactory>
             </DataColumn>
+
             <DataColumn Text="Category" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Category)</att.TextProperty>
               <att.ValueProperty>Category</att.ValueProperty>
               <att.VisualizerFactory>demo:CategoryVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
             </DataColumn>
+
             <DataColumn Text="Birthday" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Birthday)</att.TextProperty>
               <att.ValueProperty>Birthday</att.ValueProperty>
             </DataColumn>
+
             <DataColumn Text="Website" Size="160">
               <att.TextProperty>Website</att.TextProperty>
               <att.ValueProperty>Website</att.ValueProperty>
