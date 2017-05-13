@@ -653,6 +653,7 @@ GuiGridEditorTemplate
 
 			GuiGridEditorTemplate::GuiGridEditorTemplate()
 				:CellValueSaved_(true)
+				, FocusControl_(nullptr)
 			{
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}

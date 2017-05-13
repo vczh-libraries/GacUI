@@ -286,6 +286,10 @@ DefaultDataGridItemTemplate
 						}
 						editorBounds->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						cell->AddChild(editorBounds);
+						if (auto focusControl = currentEditor->GetTemplate()->GetFocusControl())
+						{
+							focusControl->SetFocus();
+						}
 					}
 				}
 

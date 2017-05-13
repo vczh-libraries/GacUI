@@ -613,6 +613,7 @@ Item Template
 				F(GuiGridEditorTemplate, description::Value, RowValue)\
 				F(GuiGridEditorTemplate, description::Value, CellValue)\
 				F(GuiGridEditorTemplate, bool, CellValueSaved)\
+				F(GuiGridEditorTemplate, controls::GuiControl*, FocusControl)\
 
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};

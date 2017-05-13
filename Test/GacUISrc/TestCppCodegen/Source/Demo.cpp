@@ -3380,6 +3380,9 @@ Class (::demo::TextEditorConstructor)
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf48_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this)->self)->SetFocusControl(static_cast<::vl::presentation::controls::GuiControl*>(::vl::__vwsn::This(this)->textBox));
+		}
 	}
 
 	TextEditorConstructor::TextEditorConstructor()
