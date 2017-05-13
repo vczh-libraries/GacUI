@@ -625,6 +625,11 @@ Helper Functions
 					}
 					else
 					{
+						if (auto root = dynamic_cast<GuiInstanceRootObject*>(value))
+						{
+							root->ClearSubscriptions();
+							root->ClearComponents();
+						}
 						for(vint i=value->Children().Count()-1;i>=0;i--)
 						{
 							SafeDeleteComposition(value->Children().Get(i));

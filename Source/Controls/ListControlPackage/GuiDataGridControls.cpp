@@ -357,7 +357,7 @@ GuiVirtualDataGrid (Editor)
 				selectedCell = { row, column };
 				SelectedCellChanged.Execute(GetNotifyEventArguments());
 
-				auto style = GetArranger()->GetVisibleStyle(currentEditorPos.row);
+				auto style = GetArranger()->GetVisibleStyle(row);
 				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
 				{
 					itemStyle->NotifySelectCell(column);
@@ -369,7 +369,7 @@ GuiVirtualDataGrid (Editor)
 				StopEdit(true);
 				NotifySelectCell(row, column);
 
-				auto style = GetArranger()->GetVisibleStyle(currentEditorPos.row);
+				auto style = GetArranger()->GetVisibleStyle(row);
 				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
 				{
 					if (auto factory = dataGridView->GetCellDataEditorFactory(row, column))
@@ -399,7 +399,6 @@ GuiVirtualDataGrid (Editor)
 						if (currentEditor)
 						{
 							NotifyCloseEditor();
-							currentEditor = nullptr;
 						}
 						if (!forOpenNewEditor)
 						{
@@ -407,6 +406,7 @@ GuiVirtualDataGrid (Editor)
 						}
 					}
 				}
+				currentEditor = nullptr;
 				currentEditorPos = { -1,-1 };
 			}
 

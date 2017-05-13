@@ -43,6 +43,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::MyDataItem)
 			DECL_TYPE_INFO(::demo::MyGender)
 			DECL_TYPE_INFO(::demo::MyTextItem)
+			DECL_TYPE_INFO(::demo::TextEditor)
+			DECL_TYPE_INFO(::demo::TextEditorConstructor)
 			DECL_TYPE_INFO(::demo::TextListTabPage)
 			DECL_TYPE_INFO(::demo::TextListTabPageConstructor)
 			DECL_TYPE_INFO(::demo::TreeViewTabPage)

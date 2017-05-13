@@ -71,4 +71,14 @@
       </GridVisualizerTemplate>
     </Instance>
   </Instance>
+
+  <Instance name="TextEditorResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TextEditor">
+      <GridEditorTemplate ref.Name="self" CellValue-bind="textBox.Text">
+        <SinglelineTextBox ref.Name="textBox" Text-bind="(cast string self.CellValue) ?? ''">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </SinglelineTextBox>
+      </GridEditorTemplate>
+    </Instance>
+  </Instance>
 </Folder>

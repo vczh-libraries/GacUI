@@ -809,6 +809,17 @@ Workflow_GenerateInstanceClass
 				stat->expression = call;
 				dtorBlock->statements.Add(stat);
 			}
+			{
+				auto ref = MakePtr<WfReferenceExpression>();
+				ref->name.value = L"ClearComponents";
+
+				auto call = MakePtr<WfCallExpression>();
+				call->function = ref;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = call;
+				dtorBlock->statements.Add(stat);
+			}
 
 			addDecl(dtor);
 

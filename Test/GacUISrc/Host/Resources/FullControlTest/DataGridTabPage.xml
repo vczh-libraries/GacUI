@@ -98,6 +98,7 @@
             <DataColumn Text="Name" Size="120">
               <att.TextProperty>Name</att.TextProperty>
               <att.ValueProperty>Name</att.ValueProperty>
+              <att.EditorFactory>demo:TextEditor</att.EditorFactory>
             </DataColumn>
             <DataColumn Text="Gender" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Gender)</att.TextProperty>
@@ -117,6 +118,7 @@
               <att.TextProperty>Website</att.TextProperty>
               <att.ValueProperty>Website</att.ValueProperty>
               <att.VisualizerFactory>HyperlinkVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:TextEditor</att.EditorFactory>
             </DataColumn>
           </att.Columns>
 
