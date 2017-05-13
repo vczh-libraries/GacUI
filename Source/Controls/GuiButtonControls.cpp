@@ -86,8 +86,17 @@ GuiButton
 				}
 				if(GetVisuallyEnabled())
 				{
-					if(mouseHoving && clickOnMouseUp && arguments.eventSource->GetAssociatedControl()==this)
+					if(mouseHoving && clickOnMouseUp)
 					{
+						auto eventSource = arguments.eventSource->GetAssociatedControl();
+						while (eventSource && eventSource != this)
+						{
+							if (eventSource->GetFocusableComposition())
+							{
+								return;
+							}
+							eventSource = eventSource->GetParent();
+						}
 						Clicked.Execute(GetNotifyEventArguments());
 					}
 				}
