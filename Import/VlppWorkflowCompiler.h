@@ -4197,6 +4197,9 @@ GenerateCppFiles
 			{
 			public:
 				collections::Dictionary<WString, WString>		cppFiles;
+				bool											containsReflectionInfo = false;
+				bool											multiFile = false;
+				WString											entryFileName;
 			};
 
 			extern Ptr<WfCppOutput>		GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager);

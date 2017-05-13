@@ -8869,7 +8869,7 @@ ValueType
 #pragma GCC diagnostic ignored "-Wdynamic-class-memaccess"
 #elif defined(__clang__)
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "--class-memaccess"
+#pragma clang diagnostic ignored "-Wdynamic-class-memaccess"
 #endif
 						auto result = memcmp(&a, &b, sizeof(U));
 #if defined(__GNUC__)
