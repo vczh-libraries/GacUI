@@ -8,8 +8,8 @@
           ]]>
         </ref.Members>
         <CustomControl ref.Name="self">
-          <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElement">
-            <ImageFrame HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2" MinSizeLimitation="LimitToElement">
+            <ImageFrame HorizontalAlignment="Left" VerticalAlignment="Center">
               <att.Image-bind>(cast (GuiImageData^) self.ResolveResource("res", $"MiscImages/$(ToString(self.Gender))", true)).Image</att.Image-bind>
             </ImageFrame>
           </Bounds>
@@ -81,7 +81,7 @@
           ]]>
         </ref.Members>
         <CustomControl ref.Name="self">
-          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <Table AlignmentToParent="left:2 top:2 right:2 bottom:2" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
               <_>composeType:Percentage percentage:0.5</_>
               <_>composeType:Absolute absolute:16</_>
@@ -112,10 +112,57 @@
     <Instance name="CategoryVisualizerResource">
       <Instance ref.CodeBehind="false" ref.Class="demo::CategoryVisualizer" xmlns:demo="demo::*">
         <GridVisualizerTemplate ref.Name="self">
-          <demo:CategoryDisplayer Category-bind="(cast MyCategory self.CellValue) ?? MyCategory::Black">
+          <demo:CategoryDisplayer Category-bind="(cast MyCategory self.CellValue) ?? MyCategory::Black" Font-bind="self.Font">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           </demo:CategoryDisplayer>
         </GridVisualizerTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="CategoryItemTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::CategoryItemTemplate" xmlns:demo="demo::*">
+        <ref.Parameter Name="SelectedCategory" Class="demo::MyCategory"/>
+        <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <demo:CategoryDisplayer Category-eval="SelectedCategory" Font-bind="self.Font">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </demo:CategoryDisplayer>
+        </TextListItemTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="CategoryComboItemTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::CategoryComboItemTemplate" xmlns:demo="demo::*">
+        <ref.Parameter Name="SelectedCategory" Class="demo::MyCategory"/>
+        <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <demo:CategoryDisplayer Category-eval="SelectedCategory" Font-bind="self.Font">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </demo:CategoryDisplayer>
+        </ControlTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="CategoryEditorResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::CategoryEditor" xmlns:demo="demo::*">
+        <ref.Members>
+          <![CDATA[
+            var items : MyCategory[] = 
+            {
+              Black of MyCategory
+              Red of MyCategory
+              Lime of MyCategory
+              Blue of MyCategory
+              White of MyCategory
+            };
+          ]]>
+        </ref.Members>
+        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem">
+          <ComboBox ref.Name="comboBox" ItemTemplate="demo:CategoryComboItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <att.ListControl>
+              <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:CategoryItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
+            </att.ListControl>
+          </ComboBox>
+        </GridEditorTemplate>
       </Instance>
     </Instance>
   </Folder>

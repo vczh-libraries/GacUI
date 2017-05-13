@@ -112,6 +112,7 @@
               <att.TextProperty>demo::ToString(itemToBind.Category)</att.TextProperty>
               <att.ValueProperty>Category</att.ValueProperty>
               <att.VisualizerFactory>demo:CategoryVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:CategoryEditor</att.EditorFactory>
             </DataColumn>
 
             <DataColumn Text="Birthday" Size="80">
