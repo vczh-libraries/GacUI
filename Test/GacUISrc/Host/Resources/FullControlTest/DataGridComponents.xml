@@ -38,17 +38,6 @@
       </Instance>
     </Instance>
 
-    <Instance name="GenderComboItemTemplateResource">
-      <Instance ref.CodeBehind="false" ref.Class="demo::GenderComboItemTemplate" xmlns:demo="demo::*">
-        <ref.Parameter Name="SelectedGender" Class="demo::MyGender"/>
-        <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-          <demo:GenderDisplayer Gender-eval="SelectedGender">
-            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          </demo:GenderDisplayer>
-        </ControlTemplate>
-      </Instance>
-    </Instance>
-
     <Instance name="GenderEditorResource">
       <Instance ref.CodeBehind="false" ref.Class="demo::GenderEditor" xmlns:demo="demo::*">
         <ref.Members>
@@ -61,7 +50,7 @@
           ]]>
         </ref.Members>
         <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem">
-          <ComboBox ref.Name="comboBox" ItemTemplate="demo:GenderComboItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+          <ComboBox ref.Name="comboBox" ItemTemplate="demo:GenderItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             <att.ListControl>
               <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:GenderItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
@@ -130,17 +119,6 @@
       </Instance>
     </Instance>
 
-    <Instance name="CategoryComboItemTemplateResource">
-      <Instance ref.CodeBehind="false" ref.Class="demo::CategoryComboItemTemplate" xmlns:demo="demo::*">
-        <ref.Parameter Name="SelectedCategory" Class="demo::MyCategory"/>
-        <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-          <demo:CategoryDisplayer Category-eval="SelectedCategory" Font-bind="self.Font">
-            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          </demo:CategoryDisplayer>
-        </ControlTemplate>
-      </Instance>
-    </Instance>
-
     <Instance name="CategoryEditorResource">
       <Instance ref.CodeBehind="false" ref.Class="demo::CategoryEditor" xmlns:demo="demo::*">
         <ref.Members>
@@ -156,7 +134,7 @@
           ]]>
         </ref.Members>
         <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem">
-          <ComboBox ref.Name="comboBox" ItemTemplate="demo:CategoryComboItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+          <ComboBox ref.Name="comboBox" ItemTemplate="demo:CategoryItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
             <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             <att.ListControl>
               <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:CategoryItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>

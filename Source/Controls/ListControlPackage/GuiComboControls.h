@@ -78,7 +78,7 @@ ComboBox with GuiListControl
 			class GuiComboBoxListControl : public GuiComboBoxBase, public Description<GuiComboBoxListControl>
 			{
 			public:
-				using ItemStyleProperty = TemplateProperty<templates::GuiControlTemplate>;
+				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
 
 				/// <summary>Style controller interface for <see cref="GuiComboBoxListControl"/>.</summary>
 				class IStyleController : public virtual GuiComboBoxBase::IStyleController, public Description<IStyleController>
@@ -93,7 +93,7 @@ ComboBox with GuiListControl
 				IStyleController*							styleController = nullptr;
 				GuiSelectableListControl*					containedListControl = nullptr;
 				ItemStyleProperty							itemStyleProperty;
-				templates::GuiControlTemplate*				itemStyleController = nullptr;
+				templates::GuiTemplate*						itemStyleController = nullptr;
 
 				bool										IsAltAvailable()override;
 				void										OnActiveAlt()override;

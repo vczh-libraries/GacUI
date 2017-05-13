@@ -106,7 +106,10 @@ GuiTemplatePropertyDeserializer
 						}
 
 						auto source = FindInstanceLoadingSource(resolvingResult.context, namespaceName, typeName);
-						controlTemplateTd = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName)->GetTypeDescriptor();
+						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
+						{
+							controlTemplateTd = typeInfo->GetTypeDescriptor();
+						}
 					}
 					if (controlTemplateTd)
 					{

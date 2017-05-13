@@ -24,8 +24,6 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::demo::CategoryComboItemTemplate)
-			DECL_TYPE_INFO(::demo::CategoryComboItemTemplateConstructor)
 			DECL_TYPE_INFO(::demo::CategoryDisplayer)
 			DECL_TYPE_INFO(::demo::CategoryDisplayerConstructor)
 			DECL_TYPE_INFO(::demo::CategoryEditor)
@@ -36,8 +34,6 @@ namespace vl
 			DECL_TYPE_INFO(::demo::CategoryVisualizerConstructor)
 			DECL_TYPE_INFO(::demo::DataGridTabPage)
 			DECL_TYPE_INFO(::demo::DataGridTabPageConstructor)
-			DECL_TYPE_INFO(::demo::GenderComboItemTemplate)
-			DECL_TYPE_INFO(::demo::GenderComboItemTemplateConstructor)
 			DECL_TYPE_INFO(::demo::GenderDisplayer)
 			DECL_TYPE_INFO(::demo::GenderDisplayerConstructor)
 			DECL_TYPE_INFO(::demo::GenderEditor)
