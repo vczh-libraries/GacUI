@@ -21,11 +21,6 @@ namespace vl
 			{
 				class DefaultListViewItemTemplate : public templates::GuiListItemTemplate
 				{
-				protected:
-					GuiSelectableButton*					backgroundButton = nullptr;
-
-					void									OnInitialize()override;
-					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					DefaultListViewItemTemplate();
 					~DefaultListViewItemTemplate();

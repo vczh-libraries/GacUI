@@ -27,8 +27,10 @@ Predefined ItemArranger
 				/// <summary>Ranged item arranger. This arranger implements most of the common functionality for those arrangers that display a continuing subset of item at a time.</summary>
 				class RangedItemArrangerBase : public Object, virtual public GuiListControl::IItemArranger, public Description<RangedItemArrangerBase>
 				{
-					typedef collections::List<GuiListControl::ItemStyle*>		StyleList;
 				protected:
+					using ItemStyleRecord = collections::Pair<GuiListControl::ItemStyle*, GuiSelectableButton*>;
+					typedef collections::List<ItemStyleRecord>	StyleList;
+
 					GuiListControl*								listControl = nullptr;
 					GuiListControl::IItemArrangerCallback*		callback = nullptr;
 					GuiListControl::IItemProvider*				itemProvider = nullptr;
@@ -42,13 +44,16 @@ Predefined ItemArranger
 
 					void										InvalidateAdoptedSize();
 					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
+					ItemStyleRecord								CreateStyle(vint index);
+					void										DeleteStyle(ItemStyleRecord style);
+					compositions::GuiBoundsComposition*			GetStyleBounds(ItemStyleRecord style);
 					void										ClearStyles();
 					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds);
 					virtual void								RearrangeItemBounds();
 
 					virtual void								BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
-					virtual void								PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
-					virtual bool								IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds) = 0;
+					virtual void								PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
+					virtual bool								IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
 					virtual bool								EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
 					virtual void								InvalidateItemSizeCache() = 0;
 					virtual Size								OnCalculateTotalSize() = 0;
@@ -83,8 +88,8 @@ Predefined ItemArranger
 					virtual vint								GetYOffset();
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-					bool										IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;
@@ -110,8 +115,8 @@ Predefined ItemArranger
 					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-					bool										IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;
@@ -139,8 +144,8 @@ Predefined ItemArranger
 					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-					bool										IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;

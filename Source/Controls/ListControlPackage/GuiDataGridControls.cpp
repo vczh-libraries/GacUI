@@ -89,7 +89,6 @@ DefaultDataGridItemTemplate
 					{
 						if (!dataGrid->currentEditor) return false;
 						auto editorComposition = dataGrid->currentEditor->GetTemplate();
-						auto stopComposition = backgroundButton->GetContainerComposition();
 						auto currentComposition = arguments.eventSource;
 
 						while (currentComposition)
@@ -99,7 +98,7 @@ DefaultDataGridItemTemplate
 								arguments.handled = true;
 								return true;
 							}
-							else if (currentComposition == stopComposition)
+							else if (currentComposition == this)
 							{
 								break;
 							}
@@ -160,7 +159,7 @@ DefaultDataGridItemTemplate
 						textTable->SetRowsAndColumns(1, 1);
 						textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
 						textTable->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
-						backgroundButton->GetContainerComposition()->AddChild(textTable);
+						AddChild(textTable);
 					}
 
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))

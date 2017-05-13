@@ -1,5 +1,4 @@
 #include "GuiListViewItemTemplates.h"
-#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -19,28 +18,9 @@ namespace vl
 DefaultListViewItemTemplate
 ***********************************************************************/
 
-				void DefaultListViewItemTemplate::OnInitialize()
-				{
-					templates::GuiListItemTemplate::OnInitialize();
-					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-
-					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
-					backgroundButton->SetAutoSelection(false);
-					backgroundButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					AddChild(backgroundButton->GetBoundsComposition());
-
-					SelectedChanged.AttachMethod(this, &DefaultListViewItemTemplate::OnSelectedChanged);
-
-					SelectedChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void DefaultListViewItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					backgroundButton->SetSelected(GetSelected());
-				}
-
 				DefaultListViewItemTemplate::DefaultListViewItemTemplate()
 				{
+					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				}
 
 				DefaultListViewItemTemplate::~DefaultListViewItemTemplate()
@@ -56,7 +36,7 @@ BigIconListViewItemTemplate
 					DefaultListViewItemTemplate::OnInitialize();
 					{
 						auto table = new GuiTableComposition;
-						backgroundButton->GetContainerComposition()->AddChild(table);
+						AddChild(table);
 						table->SetRowsAndColumns(2, 3);
 						table->SetRowOption(0, GuiCellOption::MinSizeOption());
 						table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -137,7 +117,7 @@ SmallIconListViewItemTemplate
 					DefaultListViewItemTemplate::OnInitialize();
 					{
 						auto table = new GuiTableComposition;
-						backgroundButton->GetContainerComposition()->AddChild(table);
+						AddChild(table);
 						table->SetRowsAndColumns(3, 2);
 						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 						table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -216,7 +196,7 @@ ListListViewItemTemplate
 					DefaultListViewItemTemplate::OnInitialize();
 					{
 						auto table = new GuiTableComposition;
-						backgroundButton->GetContainerComposition()->AddChild(table);
+						AddChild(table);
 						table->SetRowsAndColumns(3, 2);
 						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 						table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -319,7 +299,7 @@ TileListViewItemTemplate
 					DefaultListViewItemTemplate::OnInitialize();
 					{
 						auto table = new GuiTableComposition;
-						backgroundButton->GetContainerComposition()->AddChild(table);
+						AddChild(table);
 						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						table->SetRowsAndColumns(3, 2);
 						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
@@ -426,10 +406,10 @@ InformationListViewItemTemplate
 						bottomLineComposition->SetOwnedElement(bottomLine);
 						bottomLineComposition->SetAlignmentToParent(Margin(8, -1, 8, 0));
 						bottomLineComposition->SetPreferredMinSize(Size(0, 1));
-						backgroundButton->GetBoundsComposition()->AddChild(bottomLineComposition);
+						AddChild(bottomLineComposition);
 
 						auto table = new GuiTableComposition;
-						backgroundButton->GetContainerComposition()->AddChild(table);
+						AddChild(table);
 						table->SetRowsAndColumns(3, 3);
 						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 						table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -590,7 +570,7 @@ DetailListViewItemTemplate
 						textTable->SetRowsAndColumns(1, 1);
 						textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
 						textTable->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
-						backgroundButton->GetContainerComposition()->AddChild(textTable);
+						AddChild(textTable);
 						{
 							auto cell = new GuiCellComposition;
 							textTable->AddChild(cell);

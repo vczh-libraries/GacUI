@@ -645,8 +645,7 @@ GuiVirtualTreeListControl
 
 			void GuiVirtualTreeListControl::OnItemNotifyEvent(compositions::GuiNodeNotifyEvent& nodeEvent, compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
-				tree::INodeProvider* node=GetNodeItemView()->RequestNode(arguments.itemIndex);
-				if(node)
+				if(auto node = GetNodeItemView()->RequestNode(arguments.itemIndex))
 				{
 					GuiNodeEventArgs redirectArguments;
 					(GuiEventArgs&)redirectArguments=arguments;
@@ -668,6 +667,14 @@ GuiVirtualTreeListControl
 						Func<void(GuiNodeNotifyEvent&, GuiGraphicsComposition*, GuiItemEventArgs&)> func(this, &GuiVirtualTreeListControl::OnItemNotifyEvent);\
 						ITEMEVENTNAME.AttachFunction(Curry(func)(NODEEVENTNAME));\
 					}\
+
+			void GuiVirtualTreeListControl::OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments)
+			{
+				if (arguments.node->GetChildCount() > 0)
+				{
+					arguments.node->SetExpanding(!arguments.node->GetExpanding());
+				}
+			}
 
 			GuiVirtualTreeListControl::GuiVirtualTreeListControl(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiSelectableListControl(_styleProvider, new tree::NodeItemProvider(_nodeRootProvider))
@@ -704,6 +711,7 @@ GuiVirtualTreeListControl
 				ATTACH_ITEM_NOTIFY_EVENT(NodeMouseLeave, ItemMouseLeave);
 
 				nodeItemProvider->GetRoot()->AttachCallback(this);
+				NodeLeftButtonDoubleClick.AttachMethod(this, &GuiVirtualTreeListControl::OnNodeLeftButtonDoubleClick);
 			}
 
 #undef ATTACH_ITEM_MOUSE_EVENT
@@ -982,15 +990,8 @@ DefaultTreeItemTemplate
 					templates::GuiTreeItemTemplate::OnInitialize();
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
-					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
-					backgroundButton->SetAutoSelection(false);
-					backgroundButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					backgroundButton->GetBoundsComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					backgroundButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnBackgroundButtonDoubleClick);
-					AddChild(backgroundButton->GetBoundsComposition());
-
 					table = new GuiTableComposition;
-					backgroundButton->GetBoundsComposition()->AddChild(table);
+					AddChild(table);
 					table->SetRowsAndColumns(3, 4);
 					table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 					table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -1038,7 +1039,6 @@ DefaultTreeItemTemplate
 
 					FontChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnFontChanged);
 					TextChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextChanged);
-					SelectedChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnSelectedChanged);
 					TextColorChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnTextColorChanged);
 					ExpandingChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingChanged);
 					ExpandableChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandableChanged);
@@ -1047,7 +1047,6 @@ DefaultTreeItemTemplate
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
 					TextChanged.Execute(compositions::GuiEventArgs(this));
-					SelectedChanged.Execute(compositions::GuiEventArgs(this));
 					TextColorChanged.Execute(compositions::GuiEventArgs(this));
 					ExpandingChanged.Execute(compositions::GuiEventArgs(this));
 					ExpandableChanged.Execute(compositions::GuiEventArgs(this));
@@ -1063,11 +1062,6 @@ DefaultTreeItemTemplate
 				void DefaultTreeItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					textElement->SetText(GetText());
-				}
-
-				void DefaultTreeItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					backgroundButton->SetSelected(GetSelected());
 				}
 
 				void DefaultTreeItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -1102,9 +1096,14 @@ DefaultTreeItemTemplate
 					}
 				}
 
-				void DefaultTreeItemTemplate::SwitchNodeExpanding()
+				void DefaultTreeItemTemplate::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
 				{
-					if (backgroundButton->GetBoundsComposition()->GetParent())
+					arguments.handled = true;
+				}
+
+				void DefaultTreeItemTemplate::OnExpandingButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				{
+					if (expandingButton->GetVisuallyEnabled())
 					{
 						if (auto treeControl = dynamic_cast<GuiVirtualTreeListControl*>(listControl))
 						{
@@ -1122,27 +1121,6 @@ DefaultTreeItemTemplate
 								}
 							}
 						}
-					}
-				}
-
-				void DefaultTreeItemTemplate::OnBackgroundButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-				{
-					if (backgroundButton->GetVisuallyEnabled())
-					{
-						SwitchNodeExpanding();
-					}
-				}
-
-				void DefaultTreeItemTemplate::OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
-				{
-					arguments.handled = true;
-				}
-
-				void DefaultTreeItemTemplate::OnExpandingButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					if (expandingButton->GetVisuallyEnabled())
-					{
-						SwitchNodeExpanding();
 					}
 				}
 

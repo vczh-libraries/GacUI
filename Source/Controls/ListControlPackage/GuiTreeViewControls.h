@@ -333,6 +333,7 @@ GuiVirtualTreeListControl
 
 				void								OnItemMouseEvent(compositions::GuiNodeMouseEvent& nodeEvent, compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);
 				void								OnItemNotifyEvent(compositions::GuiNodeNotifyEvent& nodeEvent, compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void								OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a tree list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
@@ -525,7 +526,6 @@ DefaultTreeItemTemplate
 				class DefaultTreeItemTemplate : public templates::GuiTreeItemTemplate
 				{
 				protected:
-					GuiSelectableButton*					backgroundButton = nullptr;
 					GuiSelectableButton*					expandingButton = nullptr;
 					compositions::GuiTableComposition*		table = nullptr;
 					elements::GuiImageFrameElement*			imageElement = nullptr;
@@ -534,14 +534,11 @@ DefaultTreeItemTemplate
 					void									OnInitialize()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnExpandingChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnExpandableChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnLevelChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									SwitchNodeExpanding();
-					void									OnBackgroundButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void									OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void									OnExpandingButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:

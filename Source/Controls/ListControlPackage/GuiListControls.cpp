@@ -98,25 +98,25 @@ GuiListControl::ItemCallback
 				listControl->GetVerticalScroll()->SetPosition(realRect.Top());
 			}
 
-			Size GuiListControl::ItemCallback::GetStylePreferredSize(ItemStyle* style)
+			Size GuiListControl::ItemCallback::GetStylePreferredSize(compositions::GuiBoundsComposition* style)
 			{
 				Size size = style->GetPreferredBounds().GetSize();
 				return listControl->axis->RealSizeToVirtualSize(size);
 			}
 
-			void GuiListControl::ItemCallback::SetStyleAlignmentToParent(ItemStyle* style, Margin margin)
+			void GuiListControl::ItemCallback::SetStyleAlignmentToParent(compositions::GuiBoundsComposition* style, Margin margin)
 			{
 				Margin newMargin = listControl->axis->VirtualMarginToRealMargin(margin);
 				style->SetAlignmentToParent(newMargin);
 			}
 
-			Rect GuiListControl::ItemCallback::GetStyleBounds(ItemStyle* style)
+			Rect GuiListControl::ItemCallback::GetStyleBounds(compositions::GuiBoundsComposition* style)
 			{
 				Rect bounds = style->GetBounds();
 				return listControl->axis->RealRectToVirtualRect(listControl->GetViewSize(), bounds);
 			}
 
-			void GuiListControl::ItemCallback::SetStyleBounds(ItemStyle* style, Rect bounds)
+			void GuiListControl::ItemCallback::SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)
 			{
 				Rect newBounds = listControl->axis->VirtualRectToRealRect(listControl->GetViewSize(), bounds);
 				return style->SetBounds(newBounds);
@@ -456,6 +456,20 @@ GuiListControl
 					return Size(adoptedViewSize.x + x, adoptedViewSize.y + y);
 				}
 				return expectedSize;
+			}
+			
+			bool GuiListControl::GetDisplayItemBackground()
+			{
+				return displayItemBackground;
+			}
+
+			void GuiListControl::SetDisplayItemBackground(bool value)
+			{
+				if (displayItemBackground != value)
+				{
+					displayItemBackground = value;
+					SetStyleAndArranger(itemStyleProperty, itemArranger);
+				}
 			}
 
 /***********************************************************************

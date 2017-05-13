@@ -487,6 +487,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Arranger)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Axis)
+				CLASS_MEMBER_PROPERTY_FAST(DisplayItemBackground)
 
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})

@@ -31,11 +31,6 @@ DefaultTextListItemTemplate
 					templates::GuiTextListItemTemplate::OnInitialize();
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
-					backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
-					backgroundButton->SetAutoSelection(false);
-					backgroundButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					AddChild(backgroundButton->GetBoundsComposition());
-
 					textElement = GuiSolidLabelElement::Create();
 					textElement->SetAlignments(Alignment::Left, Alignment::Center);
 
@@ -50,7 +45,7 @@ DefaultTextListItemTemplate
 						bulletButton->SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnBulletSelectedChanged);
 
 						GuiTableComposition* table = new GuiTableComposition;
-						backgroundButton->GetContainerComposition()->AddChild(table);
+						AddChild(table);
 						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						table->SetRowsAndColumns(1, 2);
@@ -73,19 +68,17 @@ DefaultTextListItemTemplate
 					}
 					else
 					{
-						backgroundButton->GetContainerComposition()->AddChild(textComposition);
+						AddChild(textComposition);
 						textComposition->SetAlignmentToParent(Margin(5, 0, 0, 0));
 					}
 
 					FontChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnFontChanged);
 					TextChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextChanged);
-					SelectedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnSelectedChanged);
 					TextColorChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnTextColorChanged);
 					CheckedChanged.AttachMethod(this, &DefaultTextListItemTemplate::OnCheckedChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
 					TextChanged.Execute(compositions::GuiEventArgs(this));
-					SelectedChanged.Execute(compositions::GuiEventArgs(this));
 					TextColorChanged.Execute(compositions::GuiEventArgs(this));
 					CheckedChanged.Execute(compositions::GuiEventArgs(this));
 				}
@@ -98,11 +91,6 @@ DefaultTextListItemTemplate
 				void DefaultTextListItemTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					textElement->SetText(GetText());
-				}
-
-				void DefaultTextListItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-				{
-					backgroundButton->SetSelected(GetSelected());
 				}
 
 				void DefaultTextListItemTemplate::OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
