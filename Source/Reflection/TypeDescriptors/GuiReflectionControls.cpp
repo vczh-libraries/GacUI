@@ -1281,9 +1281,9 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiControl)
 				CONTROL_CONSTRUCTOR_PROVIDER(GuiDatePicker)
 
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(Date, DateChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(DateFormat, DateFormatChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(DateLocale, DateLocaleChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Date)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(DateFormat)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(DateLocale)
 
 				CLASS_MEMBER_GUIEVENT(DateSelected);
 				CLASS_MEMBER_GUIEVENT(DateNavigated);
@@ -1305,7 +1305,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiComboBoxBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBox*(GuiDateComboBox::IStyleController* _ GuiDatePicker*), {L"styleController" _ L"datePicker"})
 
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectedDate, SelectedDateChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedDate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DatePicker)
 			END_CLASS_MEMBER(GuiDateComboBox)
 

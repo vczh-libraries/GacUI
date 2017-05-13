@@ -118,6 +118,7 @@
             <DataColumn Text="Birthday" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Birthday)</att.TextProperty>
               <att.ValueProperty>Birthday</att.ValueProperty>
+              <att.EditorFactory>demo:DateEditor</att.EditorFactory>
             </DataColumn>
 
             <DataColumn Text="Website" Size="160">

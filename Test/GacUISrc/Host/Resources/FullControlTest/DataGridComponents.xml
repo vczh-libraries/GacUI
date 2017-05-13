@@ -154,4 +154,14 @@
       </GridEditorTemplate>
     </Instance>
   </Instance>
+
+  <Instance name="DateEditorResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DateEditor">
+      <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedDate" FocusControl-ref="comboBox">
+        <DateComboBox ref.Name="comboBox" SelectedDate-bind="(cast DateTime self.CellValue) ?? (cast DateTime '2000-01-01 00:00:00.000')">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </DateComboBox>
+      </GridEditorTemplate>
+    </Instance>
+  </Instance>
 </Folder>
