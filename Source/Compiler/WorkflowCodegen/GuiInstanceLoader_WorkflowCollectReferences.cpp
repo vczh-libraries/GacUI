@@ -623,9 +623,19 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
-					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
-					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),pointerType });
+					Ptr<ITypeInfo> referenceType;
+					{
+						auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
+						if ((type->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+						{
+							referenceType = MakePtr<SharedPtrTypeInfo>(elementType);
+						}
+						else
+						{
+							referenceType = elementType;
+						}
+					}
+					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
 				}
 			}
 			

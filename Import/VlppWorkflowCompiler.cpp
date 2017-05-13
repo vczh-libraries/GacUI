@@ -4456,8 +4456,9 @@ CreateDefaultValue
 							auto intExpr = MakePtr<WfIntegerExpression>();
 							intExpr->value.value = u64tow(elementType->GetTypeDescriptor()->GetEnumType()->FromEnum(value));
 
-							auto inferExpr = MakePtr<WfInferExpression>();
-							inferExpr->expression = inferExpr;
+							auto inferExpr = MakePtr<WfTypeCastingExpression>();
+							inferExpr->strategy = WfTypeCastingStrategy::Strong;
+							inferExpr->expression = intExpr;
 							inferExpr->type = GetTypeFromTypeInfo(CreateTypeInfoFromTypeFlag(TypeFlag::U8).Obj());
 
 							auto castExpr = MakePtr<WfTypeCastingExpression>();
