@@ -205,11 +205,15 @@ DataReverseSorter
 DataColumn
 ***********************************************************************/
 
-				void DataColumn::NotifyAllColumnsUpdate()
+				void DataColumn::NotifyAllColumnsUpdate(bool affectItem)
 				{
 					if (dataProvider)
 					{
-						dataProvider->NotifyAllColumnsUpdate();
+						vint index = dataProvider->columns.IndexOf(this);
+						if (index != -1)
+						{
+							dataProvider->columns.NotifyColumnUpdated(index, affectItem);
+						}
 					}
 				}
 
@@ -231,7 +235,7 @@ DataColumn
 					if (text != value)
 					{
 						text = value;
-						NotifyAllColumnsUpdate();
+						NotifyAllColumnsUpdate(false);
 					}
 				}
 
@@ -242,7 +246,11 @@ DataColumn
 
 				void DataColumn::SetSize(vint value)
 				{
-					size = value;
+					if (size != value)
+					{
+						size = value;
+						NotifyAllColumnsUpdate(false);
+					}
 				}
 
 				GuiMenu* DataColumn::GetPopup()
@@ -255,7 +263,7 @@ DataColumn
 					if (popup != value)
 					{
 						popup = value;
-						NotifyAllColumnsUpdate();
+						NotifyAllColumnsUpdate(false);
 					}
 				}
 
@@ -267,7 +275,7 @@ DataColumn
 				void DataColumn::SetInherentFilter(Ptr<IDataFilter> value)
 				{
 					inherentFilter = value;
-					NotifyAllColumnsUpdate();
+					NotifyAllColumnsUpdate(false);
 				}
 
 				Ptr<IDataSorter> DataColumn::GetInherentSorter()
@@ -278,7 +286,7 @@ DataColumn
 				void DataColumn::SetInherentSorter(Ptr<IDataSorter> value)
 				{
 					inherentSorter = value;
-					NotifyAllColumnsUpdate();
+					NotifyAllColumnsUpdate(false);
 				}
 
 				Ptr<IDataVisualizerFactory> DataColumn::GetVisualizerFactory()
@@ -289,7 +297,7 @@ DataColumn
 				void DataColumn::SetVisualizerFactory(Ptr<IDataVisualizerFactory> value)
 				{
 					visualizerFactory = value;
-					NotifyAllColumnsUpdate();
+					NotifyAllColumnsUpdate(true);
 				}
 
 				Ptr<IDataEditorFactory> DataColumn::GetEditorFactory()
@@ -300,7 +308,7 @@ DataColumn
 				void DataColumn::SetEditorFactory(Ptr<IDataEditorFactory> value)
 				{
 					editorFactory = value;
-					NotifyAllColumnsUpdate();
+					NotifyAllColumnsUpdate(true);
 				}
 
 				WString DataColumn::GetCellText(vint row)
@@ -341,7 +349,7 @@ DataColumn
 					if (textProperty != value)
 					{
 						textProperty = value;
-						NotifyAllColumnsUpdate();
+						NotifyAllColumnsUpdate(true);
 						compositions::GuiEventArgs arguments;
 						TextPropertyChanged.Execute(arguments);
 					}
@@ -357,7 +365,7 @@ DataColumn
 					if (valueProperty != value)
 					{
 						valueProperty = value;
-						NotifyAllColumnsUpdate();
+						NotifyAllColumnsUpdate(true);
 						compositions::GuiEventArgs arguments;
 						ValuePropertyChanged.Execute(arguments);
 					}
@@ -367,9 +375,20 @@ DataColumn
 DataColumns
 ***********************************************************************/
 
+				void DataColumns::NotifyColumnUpdated(vint index, bool affectItem)
+				{
+					affectItemFlag = affectItem;
+					NotifyUpdateInternal(index, 1, 1);
+					affectItemFlag = true;
+				}
+
 				void DataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
 					dataProvider->NotifyAllColumnsUpdate();
+					if (affectItemFlag)
+					{
+						dataProvider->NotifyAllItemsUpdate();
+					}
 				}
 
 				bool DataColumns::QueryInsert(vint index, const Ptr<DataColumn>& value)
@@ -407,7 +426,6 @@ DataProvider
 
 				void DataProvider::NotifyAllColumnsUpdate()
 				{
-					NotifyAllItemsUpdate();
 					if (columnItemViewCallback)
 					{
 						columnItemViewCallback->OnColumnChanged();
@@ -791,12 +809,12 @@ DataProvider
 
 				IDataVisualizerFactory* DataProvider::GetCellDataVisualizerFactory(vint row, vint column)
 				{
-					return columns[row]->GetVisualizerFactory().Obj();
+					return columns[column]->GetVisualizerFactory().Obj();
 				}
 
 				IDataEditorFactory* DataProvider::GetCellDataEditorFactory(vint row, vint column)
 				{
-					return columns[row]->GetEditorFactory().Obj();
+					return columns[column]->GetEditorFactory().Obj();
 				}
 
 				description::Value DataProvider::GetBindingCellValue(vint row, vint column)

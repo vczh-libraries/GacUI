@@ -1,5 +1,6 @@
 #include "GuiListControlItemArrangers.h"
 #include "../Templates/GuiControlTemplates.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -45,6 +46,42 @@ RangedItemArrangerBase
 					return visibleCount * itemSize;
 				}
 
+				RangedItemArrangerBase::ItemStyleRecord RangedItemArrangerBase::CreateStyle(vint index)
+				{
+					GuiSelectableButton* backgroundButton = nullptr;
+					if (listControl->GetDisplayItemBackground())
+					{
+						backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
+						backgroundButton->SetAutoSelection(false);
+					}
+
+					auto itemStyle = callback->RequestItem(index, backgroundButton->GetBoundsComposition());
+					if (backgroundButton)
+					{
+						itemStyle->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						itemStyle->SelectedChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+						{
+							backgroundButton->SetSelected(itemStyle->GetSelected());
+						});
+						backgroundButton->GetContainerComposition()->AddChild(itemStyle);
+					}
+					return { itemStyle, backgroundButton };
+				}
+
+				void RangedItemArrangerBase::DeleteStyle(ItemStyleRecord style)
+				{
+					callback->ReleaseItem(style.key);
+					if (style.value)
+					{
+						SafeDeleteControl(style.value);
+					}
+				}
+
+				compositions::GuiBoundsComposition* RangedItemArrangerBase::GetStyleBounds(ItemStyleRecord style)
+				{
+					return style.value ? style.value->GetBoundsComposition() : style.key;
+				}
+
 				void RangedItemArrangerBase::ClearStyles()
 				{
 					startIndex = 0;
@@ -52,8 +89,7 @@ RangedItemArrangerBase
 					{
 						for (vint i = 0; i < visibleStyles.Count(); i++)
 						{
-							auto style = visibleStyles[i];
-							callback->ReleaseItem(style);
+							DeleteStyle(visibleStyles[i]);
 						}
 					}
 					visibleStyles.Clear();
@@ -76,7 +112,7 @@ RangedItemArrangerBase
 						auto style
 							= startIndex <= i && i <= endIndex
 							? visibleStyles[i - startIndex]
-							: callback->RequestItem(i)
+							: CreateStyle(i)
 							;
 						newVisibleStyles.Add(style);
 
@@ -100,8 +136,7 @@ RangedItemArrangerBase
 						vint index = startIndex + i;
 						if (index < newStartIndex || index > newEndIndex)
 						{
-							auto style = visibleStyles[i];
-							callback->ReleaseItem(style);
+							DeleteStyle(visibleStyles[i]);
 						}
 					}
 					CopyFrom(visibleStyles, newVisibleStyles);
@@ -130,8 +165,8 @@ RangedItemArrangerBase
 						bounds.y1 -= viewBounds.y1;
 						bounds.y2 -= viewBounds.y1;
 
-						callback->SetStyleAlignmentToParent(style, alignmentToParent);
-						callback->SetStyleBounds(style, bounds);
+						callback->SetStyleAlignmentToParent(GetStyleBounds(style), alignmentToParent);
+						callback->SetStyleBounds(GetStyleBounds(style), bounds);
 					}
 					EndPlaceItem(false, viewBounds, startIndex);
 				}
@@ -161,7 +196,7 @@ RangedItemArrangerBase
 						{
 							vint visibleCount = visibleStyles.Count();
 							vint itemCount = itemProvider->Count();
-							SortedList<GuiListControl::ItemStyle*> reusedStyles;
+							SortedList<ItemStyleRecord> reusedStyles;
 							for (vint i = 0; i < visibleCount; i++)
 							{
 								vint index = startIndex + i;
@@ -195,8 +230,7 @@ RangedItemArrangerBase
 								}
 								if (oldIndex == -1)
 								{
-									auto style = callback->RequestItem(index);
-									visibleStyles.Add(style);
+									visibleStyles.Add(CreateStyle(index));
 								}
 							}
 
@@ -205,14 +239,14 @@ RangedItemArrangerBase
 								auto style = visibleStyles[i];
 								if (!reusedStyles.Contains(style))
 								{
-									callback->ReleaseItem(style);
+									DeleteStyle(style);
 								}
 							}
 
 							visibleStyles.RemoveRange(0, visibleCount);
 							for (vint i = 0; i < visibleStyles.Count(); i++)
 							{
-								visibleStyles[i]->SetIndex(startIndex + i);
+								visibleStyles[i].key->SetIndex(startIndex + i);
 							}
 						}
 						suppressOnViewChanged = false;
@@ -264,7 +298,7 @@ RangedItemArrangerBase
 				{
 					if (startIndex <= itemIndex && itemIndex < startIndex + visibleStyles.Count())
 					{
-						return visibleStyles[itemIndex - startIndex];
+						return visibleStyles[itemIndex - startIndex].key;
 					}
 					else
 					{
@@ -274,8 +308,14 @@ RangedItemArrangerBase
 
 				vint RangedItemArrangerBase::GetVisibleIndex(GuiListControl::ItemStyle* style)
 				{
-					vint index = visibleStyles.IndexOf(style);
-					return index == -1 ? -1 : index + startIndex;
+					for (vint i = 0; i < visibleStyles.Count(); i++)
+					{
+						if (visibleStyles[i].key == style)
+						{
+							return i + startIndex;
+						}
+					}
+					return -1;
 				}
 
 				void RangedItemArrangerBase::OnViewChanged(Rect bounds)
@@ -318,7 +358,7 @@ FixedHeightItemArranger
 					}
 				}
 
-				void FixedHeightItemArranger::PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void FixedHeightItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					vint top = GetYOffset() + index * rowHeight;
 					if (pi_width == -1)
@@ -333,7 +373,7 @@ FixedHeightItemArranger
 					}
 					if (forMoving)
 					{
-						vint styleHeight = callback->GetStylePreferredSize(style).y;
+						vint styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
 						if (pim_rowHeight < styleHeight)
 						{
 							pim_rowHeight = styleHeight;
@@ -341,7 +381,7 @@ FixedHeightItemArranger
 					}
 				}
 
-				bool FixedHeightItemArranger::IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)
+				bool FixedHeightItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 				{
 					return bounds.Top() >= viewBounds.Bottom();
 				}
@@ -488,7 +528,7 @@ FixedSizeMultiColumnItemArranger
 					}
 				}
 
-				void FixedSizeMultiColumnItemArranger::PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void FixedSizeMultiColumnItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					vint rowItems = viewBounds.Width() / itemSize.x;
 					if (rowItems < 1) rowItems = 1;
@@ -498,13 +538,13 @@ FixedSizeMultiColumnItemArranger
 					bounds = Rect(Point(col * itemSize.x, row * itemSize.y), itemSize);
 					if (forMoving)
 					{
-						Size styleSize = callback->GetStylePreferredSize(style);
+						Size styleSize = callback->GetStylePreferredSize(GetStyleBounds(style));
 						if (pim_itemSize.x < styleSize.x) pim_itemSize.x = styleSize.x;
 						if (pim_itemSize.y < styleSize.y) pim_itemSize.y = styleSize.y;
 					}
 				}
 
-				bool FixedSizeMultiColumnItemArranger::IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)
+				bool FixedSizeMultiColumnItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 				{
 					return bounds.Top() >= viewBounds.Bottom();
 				}
@@ -687,7 +727,7 @@ FixedHeightMultiColumnItemArranger
 					}
 				}
 
-				void FixedHeightMultiColumnItemArranger::PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+				void FixedHeightMultiColumnItemArranger::PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 				{
 					vint rows = viewBounds.Height() / itemHeight;
 					if (rows < 1) rows = 1;
@@ -699,7 +739,7 @@ FixedHeightMultiColumnItemArranger
 						pi_currentWidth = 0;
 					}
 
-					Size styleSize = callback->GetStylePreferredSize(style);
+					Size styleSize = callback->GetStylePreferredSize(GetStyleBounds(style));
 					if (pi_currentWidth < styleSize.x) pi_currentWidth = styleSize.x;
 					bounds = Rect(Point(pi_totalWidth + viewBounds.Left(), itemHeight * row), Size(0, 0));
 					if (forMoving)
@@ -708,7 +748,7 @@ FixedHeightMultiColumnItemArranger
 					}
 				}
 
-				bool FixedHeightMultiColumnItemArranger::IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)
+				bool FixedHeightMultiColumnItemArranger::IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 				{
 					return bounds.Left() >= viewBounds.Right();
 				}
@@ -815,7 +855,7 @@ FixedHeightMultiColumnItemArranger
 							Point location = viewBounds.LeftTop();
 							if (minIndex <= itemIndex && itemIndex <= maxIndex)
 							{
-								Rect bounds = callback->GetStyleBounds(visibleStyles[itemIndex - startIndex]);
+								Rect bounds = callback->GetStyleBounds(GetStyleBounds(visibleStyles[itemIndex - startIndex]));
 								if (0 < bounds.Bottom() && bounds.Top() < viewBounds.Width() && bounds.Width() > viewBounds.Width())
 								{
 									break;

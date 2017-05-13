@@ -8268,7 +8268,6 @@ Attribute
 
 			class IValueFunctionProxy;
 			class IValueInterfaceProxy;
-			class IValueListener;
 			class IValueSubscription;
 
 			class IValueEnumerable;
@@ -11015,18 +11014,13 @@ Interface Implementation Proxy
 				virtual Value					Invoke(Ptr<IValueList> arguments) = 0;
 			};
 
-			class IValueListener : public virtual IDescriptable, public Description<IValueListener>
-			{
-			public:
-				virtual IValueSubscription*		GetSubscription() = 0;
-				virtual bool					GetStopped() = 0;
-				virtual bool					StopListening() = 0;
-			};
-
 			class IValueSubscription : public virtual IDescriptable, public Description<IValueSubscription>
 			{
+				typedef void ValueChangedProc(const Value& newValue);
 			public:
-				virtual Ptr<IValueListener>		Subscribe(const Func<void(const Value&)>& callback) = 0;
+				Event<ValueChangedProc>			ValueChanged;
+
+				virtual bool					Open() = 0;
 				virtual bool					Update() = 0;
 				virtual bool					Close() = 0;
 			};
@@ -15064,7 +15058,6 @@ Predefined Types
 			DECL_TYPE_INFO(IValueInterfaceProxy)
 			DECL_TYPE_INFO(IValueFunctionProxy)
 
-			DECL_TYPE_INFO(IValueListener)
 			DECL_TYPE_INFO(IValueSubscription)
 			DECL_TYPE_INFO(IValueCallStack)
 			DECL_TYPE_INFO(IValueException)
@@ -15257,27 +15250,10 @@ Interface Implementation Proxy (Implement)
 				}
 			END_INTERFACE_PROXY(IValueDictionary)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueListener)
-				IValueSubscription* GetSubscription()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetSubscription);
-				}
-
-				bool GetStopped()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetStopped);
-				}
-
-				bool StopListening()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(StopListening);
-				}
-			END_INTERFACE_PROXY(IValueListener)
-
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueSubscription)
-				Ptr<IValueListener> Subscribe(const Func<void(const Value&)>& callback)override
+				bool Open()override
 				{
-					INVOKEGET_INTERFACE_PROXY(Subscribe, callback);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Open);
 				}
 
 				bool Update()override

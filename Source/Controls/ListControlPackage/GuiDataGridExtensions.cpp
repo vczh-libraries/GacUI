@@ -131,7 +131,7 @@ DataVisualizerFactory
 DataEditorBase
 ***********************************************************************/
 
-				void DataEditorBase::RequestSaveData()
+				void DataEditorBase::OnCellValueChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					dataGridContext->RequestSaveData();
 				}
@@ -181,10 +181,16 @@ DataEditorBase
 						editorTemplate->SetRowValue(itemProvider->GetBindingValue(row));
 						editorTemplate->SetCellValue(dataGridView->GetBindingCellValue(row, column));
 					}
+					editorTemplate->CellValueChanged.AttachMethod(this, &DataEditorBase::OnCellValueChanged);
 				}
 
-				void DataEditorBase::ReinstallEditor()
+				bool DataEditorBase::GetCellValueSaved()
 				{
+					if (editorTemplate)
+					{
+						return editorTemplate->GetCellValueSaved();
+					}
+					return true;
 				}
 
 /***********************************************************************
@@ -208,10 +214,6 @@ DataEditorFactory
 
 					ItemTemplate* itemTemplate = templateFactory(dataGridContext->GetViewModelContext());
 					CHECK_ERROR(itemTemplate, L"DataEditorFactory::CreateEditor(IDataGridContext*)#An instance of GuiGridEditorTemplate is expected.");
-					itemTemplate->CellValueChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-					{
-						editor->RequestSaveData();
-					});
 					editor->editorTemplate = itemTemplate;
 					return editor;
 				}
@@ -379,6 +381,7 @@ HyperlinkVisualizerTemplate
 					:SubColumnVisualizerTemplate(true)
 				{
 					text->SetColor(Color(0, 0, 255));
+					text->SetEllipse(true);
 					GetEventReceiver()->mouseEnter.AttachMethod(this, &HyperlinkVisualizerTemplate::label_MouseEnter);
 					GetEventReceiver()->mouseLeave.AttachMethod(this, &HyperlinkVisualizerTemplate::label_MouseLeave);
 					SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand));

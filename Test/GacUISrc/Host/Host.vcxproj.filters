@@ -75,6 +75,12 @@
     <Xml Include="Resources\FullControlTest\Images\LargeImages.xml">
       <Filter>Resource Files\FullControlTest\Images</Filter>
     </Xml>
+    <Xml Include="Resources\FullControlTest\Images\MiscImages.xml">
+      <Filter>Resource Files\FullControlTest\Images</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\DataGridComponents.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">

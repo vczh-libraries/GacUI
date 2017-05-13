@@ -18,7 +18,8 @@ GuiControl::EmptyStyleController
 
 			GuiControl::EmptyStyleController::EmptyStyleController()
 			{
-				boundsComposition=new GuiBoundsComposition;
+				boundsComposition = new GuiBoundsComposition;
+				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
 			GuiControl::EmptyStyleController::~EmptyStyleController()
@@ -87,6 +88,7 @@ GuiControl
 
 			void GuiControl::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
+				RenderTargetChanged.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiControl::OnBeforeReleaseGraphicsHost()
@@ -182,6 +184,7 @@ GuiControl
 				,tooltipWidth(50)
 			{
 				boundsComposition->SetAssociatedControl(this);
+				RenderTargetChanged.SetAssociatedComposition(boundsComposition);
 				VisibleChanged.SetAssociatedComposition(boundsComposition);
 				EnabledChanged.SetAssociatedComposition(boundsComposition);
 				VisuallyEnabledChanged.SetAssociatedComposition(boundsComposition);

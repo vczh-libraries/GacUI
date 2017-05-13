@@ -76,6 +76,8 @@ GuiInstanceRootObject
 				else
 				{
 					subscriptions.Add(subscription);
+					subscription->Open();
+					subscription->Update();
 					return subscription;
 				}
 			}
@@ -650,6 +652,8 @@ GuiGridEditorTemplate
 			GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiGridEditorTemplate::GuiGridEditorTemplate()
+				:CellValueSaved_(true)
+				, FocusControl_(nullptr)
 			{
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}

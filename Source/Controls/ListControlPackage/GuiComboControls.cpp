@@ -103,12 +103,9 @@ GuiComboBoxListControl
 						auto item = containedListControl->GetItemProvider()->GetBindingValue(itemIndex);
 						if (!item.IsNull())
 						{
-							auto style = itemStyleProperty(item);
-							style->SetText(GetText());
-							style->SetFont(GetFont());
-							style->SetVisuallyEnabled(GetVisuallyEnabled());
-							if (itemStyleController)
+							if (auto style = itemStyleProperty(item))
 							{
+								itemStyleController = style;
 								itemStyleController->SetText(GetText());
 								itemStyleController->SetFont(GetFont());
 								itemStyleController->SetVisuallyEnabled(GetVisuallyEnabled());

@@ -414,9 +414,10 @@ Resource
 			void									SavePrecompiledBinary(stream::IStream& stream);
 
 			/// <summary>Precompile this resource to improve performance.</summary>
+			/// <returns>The resource folder contains all precompiled result. The folder will be added to the resource if there is no error.</returns>
 			/// <param name="callback">A callback to receive progress.</param>
 			/// <param name="errors">All collected errors during precompiling a resource.</param>
-			void									Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
+			Ptr<GuiResourceFolder>					Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
 
 			/// <summary>Initialize a precompiled resource.</summary>
 			/// <param name="usage">In which role an application is initializing this resource.</param>

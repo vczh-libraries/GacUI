@@ -18823,7 +18823,6 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueDictionary, system::Dictionary)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueInterfaceProxy, system::InterfaceProxy)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueFunctionProxy, system::Function)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueListener, system::Listener)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueSubscription, system::Subscription)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueCallStack, system::CallStack)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueException, system::Exception)
@@ -19470,14 +19469,9 @@ LoadPredefinedTypes
 				CLASS_MEMBER_METHOD(Invoke, { L"arguments" })
 			END_INTERFACE_MEMBER(IValueFunctionProxy)
 
-			BEGIN_INTERFACE_MEMBER(IValueListener)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Subscription)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Stopped)
-				CLASS_MEMBER_METHOD(StopListening, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IValueListener)
-
 			BEGIN_INTERFACE_MEMBER(IValueSubscription)
-				CLASS_MEMBER_METHOD(Subscribe, { L"callback" })
+				CLASS_MEMBER_EVENT(ValueChanged)
+				CLASS_MEMBER_METHOD(Open, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Update, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Close, NO_PARAMETER)
 			END_CLASS_MEMBER(IValueSubscription)
@@ -19780,7 +19774,6 @@ LoadPredefinedTypes
 					ADD_TYPE_INFO(IValueInterfaceProxy)
 					ADD_TYPE_INFO(IValueFunctionProxy)
 
-					ADD_TYPE_INFO(IValueListener)
 					ADD_TYPE_INFO(IValueSubscription)
 					ADD_TYPE_INFO(IValueCallStack)
 					ADD_TYPE_INFO(IValueException)

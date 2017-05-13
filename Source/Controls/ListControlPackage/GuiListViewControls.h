@@ -321,7 +321,7 @@ ListViewItemProvider
 					GuiMenu*										dropdownPopup = nullptr;
 					ColumnSortingState								sortingState = ColumnSortingState::NotSorted;
 					
-					void											NotifyUpdate();
+					void											NotifyUpdate(bool affectItem);
 				public:
 					/// <summary>Create a column with the specified text and size.</summary>
 					/// <param name="_text">The specified text.</param>
@@ -384,9 +384,12 @@ ListViewItemProvider
 				/// <summary>List view column container.</summary>
 				class ListViewColumns : public ItemsBase<Ptr<ListViewColumn>>
 				{
+					friend class ListViewColumn;
 				protected:
 					IListViewItemProvider*							itemProvider;
+					bool											affectItemFlag = true;
 
+					void											NotifyColumnUpdated(vint column, bool affectItem);
 					void											AfterInsert(vint index, const Ptr<ListViewColumn>& value)override;
 					void											BeforeRemove(vint index, const Ptr<ListViewColumn>& value)override;
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;

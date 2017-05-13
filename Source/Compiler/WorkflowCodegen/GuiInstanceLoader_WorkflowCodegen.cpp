@@ -19,15 +19,15 @@ namespace vl
 FindInstanceLoadingSource
 ***********************************************************************/
 
-		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
+		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName)
 		{
-			vint index = context->namespaces.Keys().IndexOf(ctor->typeNamespace);
+			vint index = context->namespaces.Keys().IndexOf(namespaceName);
 			if (index != -1)
 			{
 				Ptr<GuiInstanceContext::NamespaceInfo> namespaceInfo = context->namespaces.Values()[index];
 				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
 				{
-					auto fullName = GlobalStringKey::Get(ns->prefix + ctor->typeName.ToString() + ns->postfix);
+					auto fullName = GlobalStringKey::Get(ns->prefix + typeName + ns->postfix);
 					if (auto loader = GetInstanceLoaderManager()->GetLoader(fullName))
 					{
 						return InstanceLoadingSource(loader, fullName);
@@ -35,6 +35,11 @@ FindInstanceLoadingSource
 				}
 			}
 			return InstanceLoadingSource();
+		}
+
+		InstanceLoadingSource FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor)
+		{
+			return FindInstanceLoadingSource(context, ctor->typeNamespace, ctor->typeName.ToString());
 		}
 
 /***********************************************************************
@@ -476,7 +481,8 @@ Workflow_GenerateInstanceClass
 
 			if (auto group = baseType->GetTypeDescriptor()->GetConstructorGroup())
 			{
-				vint count = group->GetMethod(0)->GetParameterCount();
+				auto ctorInfo = group->GetMethod(0);
+				vint count = ctorInfo->GetParameterCount();
 				if (count > 0)
 				{
 					if (!beforePrecompile)
@@ -494,9 +500,7 @@ Workflow_GenerateInstanceClass
 						call->type = CopyType(instanceClass->baseTypes[0]);
 						for (vint i = 0; i < count; i++)
 						{
-							auto nullExpr = MakePtr<WfLiteralExpression>();
-							nullExpr->value = WfLiteralValue::Null;
-							call->arguments.Add(nullExpr);
+							call->arguments.Add(CreateDefaultValue(ctorInfo->GetParameter(i)->GetType()));
 						}
 					}
 				}
@@ -508,19 +512,33 @@ Workflow_GenerateInstanceClass
 
 			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
 			{
-				if (auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, param->className.ToString() + L"^", param->classPosition, errors))
+				bool isReferenceType = true;
+				auto paramTd = GetTypeDescriptor(param->className.ToString());
+				if (paramTd)
+				{
+					isReferenceType = (paramTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
+				}
+
+				if (auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, param->className.ToString() + (isReferenceType ? L"^" : L""), param->classPosition, errors))
 				{
 					if (!beforePrecompile)
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
 						addDecl(decl);
-						
+
 						decl->name.value = L"<parameter>" + param->name.ToString();
 						decl->type = CopyType(type);
 
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
-						decl->expression = nullExpr;
+						if (isReferenceType)
+						{
+							auto nullExpr = MakePtr<WfLiteralExpression>();
+							nullExpr->value = WfLiteralValue::Null;
+							decl->expression = nullExpr;
+						}
+						else
+						{
+							decl->expression = CreateDefaultValue(MakePtr<TypeDescriptorTypeInfo>(paramTd, TypeInfoHint::Normal).Obj());
+						}
 
 						Workflow_RecordScriptPosition(precompileContext, param->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
@@ -796,6 +814,17 @@ Workflow_GenerateInstanceClass
 			{
 				auto ref = MakePtr<WfReferenceExpression>();
 				ref->name.value = L"ClearSubscriptions";
+
+				auto call = MakePtr<WfCallExpression>();
+				call->function = ref;
+
+				auto stat = MakePtr<WfExpressionStatement>();
+				stat->expression = call;
+				dtorBlock->statements.Add(stat);
+			}
+			{
+				auto ref = MakePtr<WfReferenceExpression>();
+				ref->name.value = L"ClearComponents";
 
 				auto call = MakePtr<WfCallExpression>();
 				call->function = ref;

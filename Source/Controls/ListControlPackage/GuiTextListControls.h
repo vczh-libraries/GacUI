@@ -49,7 +49,6 @@ DefaultTextListItemTemplate
 				protected:
 					using BulletStyle = GuiSelectableButton::IStyleController;
 
-					GuiSelectableButton*					backgroundButton = nullptr;
 					GuiSelectableButton*					bulletButton = nullptr;
 					elements::GuiSolidLabelElement*			textElement = nullptr;
 					bool									supressEdit = false;
@@ -58,7 +57,6 @@ DefaultTextListItemTemplate
 					void									OnInitialize()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnCheckedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

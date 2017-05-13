@@ -27,7 +27,7 @@ DefaultDataGridItemTemplate
 
 				class DefaultDataGridItemTemplate
 					: public DefaultListViewItemTemplate
-					, private ListViewColumnItemArranger::IColumnItemViewCallback
+					, public ListViewColumnItemArranger::IColumnItemViewCallback
 				{
 				protected:
 					compositions::GuiTableComposition*					textTable = nullptr;
@@ -52,9 +52,11 @@ DefaultDataGridItemTemplate
 					~DefaultDataGridItemTemplate();
 
 					void												UpdateSubItemSize();
-					void												ForceSetEditor(vint column, IDataEditor* editor);
+					bool												IsEditorOpened();
+					void												NotifyOpenEditor(vint column, IDataEditor* editor);
 					void												NotifyCloseEditor();
 					void												NotifySelectCell(vint column);
+					void												NotifyCellEdited();
 				};
 			}
 
@@ -82,11 +84,12 @@ GuiVirtualDataGrid
 				bool													currentEditorOpeningEditor = false;
 
 				void													OnItemModified(vint start, vint count, vint newCount)override;
+				void													OnStyleUninstalled(ItemStyle* style)override;
 
 				void													NotifyCloseEditor();
 				void													NotifySelectCell(vint row, vint column);
-				list::IDataEditor*										OpenEditor(vint row, vint column, list::IDataEditorFactory* editorFactory);
-				void													CloseEditor(bool forOpenNewEditor);
+				bool													StartEdit(vint row, vint column);
+				void													StopEdit(bool forOpenNewEditor);
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 
 			public:

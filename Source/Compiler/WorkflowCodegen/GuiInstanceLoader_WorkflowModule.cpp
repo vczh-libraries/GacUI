@@ -179,9 +179,7 @@ Variable
 				}
 			}
 
-			auto literal = MakePtr<WfLiteralExpression>();
-			literal->value = WfLiteralValue::Null;
-			var->expression = literal;
+			var->expression = CreateDefaultValue(typeInfo);
 
 			var->classMember = MakePtr<WfClassMember>();
 			var->classMember->kind = WfClassMemberKind::Normal;

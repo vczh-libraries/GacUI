@@ -224,9 +224,11 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Xml Include="Resources\FullControlTest\DataGridComponents.xml" />
     <Xml Include="Resources\FullControlTest\DataGridTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Images\ImageLoader.xml" />
     <Xml Include="Resources\FullControlTest\Images\LargeImages.xml" />
+    <Xml Include="Resources\FullControlTest\Images\MiscImages.xml" />
     <Xml Include="Resources\FullControlTest\Images\SmallImages.xml" />
     <Xml Include="Resources\FullControlTest\ListViewTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Resource.xml" />

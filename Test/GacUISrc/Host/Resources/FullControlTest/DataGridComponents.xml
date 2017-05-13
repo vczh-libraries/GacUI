@@ -1,0 +1,157 @@
+<Folder>
+  <Folder name="GenderComponents">
+    <Instance name="GenderDisplayerResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::GenderDisplayer">
+        <ref.Members>
+          <![CDATA[
+            prop Gender : MyGender = Male {}
+          ]]>
+        </ref.Members>
+        <CustomControl ref.Name="self">
+          <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2" MinSizeLimitation="LimitToElement">
+            <ImageFrame HorizontalAlignment="Left" VerticalAlignment="Center">
+              <att.Image-bind>(cast (GuiImageData^) self.ResolveResource("res", $"MiscImages/$(ToString(self.Gender))", true)).Image</att.Image-bind>
+            </ImageFrame>
+          </Bounds>
+        </CustomControl>
+      </Instance>
+    </Instance>
+
+    <Instance name="GenderVisualizerResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::GenderVisualizer" xmlns:demo="demo::*">
+        <GridVisualizerTemplate ref.Name="self">
+          <demo:GenderDisplayer Gender-bind="(cast MyGender self.CellValue) ?? MyGender::Male">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </demo:GenderDisplayer>
+        </GridVisualizerTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="GenderItemTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::GenderItemTemplate" xmlns:demo="demo::*">
+        <ref.Parameter Name="SelectedGender" Class="demo::MyGender"/>
+        <TextListItemTemplate MinSizeLimitation="LimitToElementAndChildren">
+          <demo:GenderDisplayer Gender-eval="SelectedGender">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </demo:GenderDisplayer>
+        </TextListItemTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="GenderEditorResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::GenderEditor" xmlns:demo="demo::*">
+        <ref.Members>
+          <![CDATA[
+            var items : MyGender[] = 
+            {
+              Male of MyGender
+              Female of MyGender
+            };
+          ]]>
+        </ref.Members>
+        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem">
+          <ComboBox ref.Name="comboBox" ItemTemplate="demo:GenderItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <att.ListControl>
+              <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:GenderItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
+            </att.ListControl>
+          </ComboBox>
+        </GridEditorTemplate>
+      </Instance>
+    </Instance>
+  </Folder>
+  
+  <Folder name="CategoryComponents">
+    <Instance name="CategoryDisplayerResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::CategoryDisplayer">
+        <ref.Members>
+          <![CDATA[
+            prop Category : MyCategory = Black {}
+          ]]>
+        </ref.Members>
+        <CustomControl ref.Name="self">
+          <Table AlignmentToParent="left:2 top:2 right:2 bottom:2" MinSizeLimitation="LimitToElementAndChildren">
+            <att.Rows>
+              <_>composeType:Percentage percentage:0.5</_>
+              <_>composeType:Absolute absolute:16</_>
+              <_>composeType:Percentage percentage:0.5</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Absolute absolute:2</_>
+              <_>composeType:Absolute absolute:16</_>
+              <_>composeType:Absolute absolute:2</_>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Columns>
+
+            <Cell Site="row:1 column:1">
+              <SolidBorder Color="#000000"/>
+              <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+                <SolidBackground Color-bind="ToColor(self.Category)"/>
+              </Bounds>
+            </Cell>
+
+            <Cell Site="row:0 column:3 rowSpan:3">
+              <SolidLabel Text-bind="ToString(self.Category)" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center" Ellipse="true"/>
+            </Cell>
+          </Table>
+        </CustomControl>
+      </Instance>
+    </Instance>
+
+    <Instance name="CategoryVisualizerResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::CategoryVisualizer" xmlns:demo="demo::*">
+        <GridVisualizerTemplate ref.Name="self">
+          <demo:CategoryDisplayer Category-bind="(cast MyCategory self.CellValue) ?? MyCategory::Black" Font-bind="self.Font">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </demo:CategoryDisplayer>
+        </GridVisualizerTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="CategoryItemTemplateResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::CategoryItemTemplate" xmlns:demo="demo::*">
+        <ref.Parameter Name="SelectedCategory" Class="demo::MyCategory"/>
+        <TextListItemTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+          <demo:CategoryDisplayer Category-eval="SelectedCategory" Font-bind="self.Font">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </demo:CategoryDisplayer>
+        </TextListItemTemplate>
+      </Instance>
+    </Instance>
+
+    <Instance name="CategoryEditorResource">
+      <Instance ref.CodeBehind="false" ref.Class="demo::CategoryEditor" xmlns:demo="demo::*">
+        <ref.Members>
+          <![CDATA[
+            var items : MyCategory[] = 
+            {
+              Black of MyCategory
+              Red of MyCategory
+              Lime of MyCategory
+              Blue of MyCategory
+              White of MyCategory
+            };
+          ]]>
+        </ref.Members>
+        <GridEditorTemplate ref.Name="self" CellValue-bind="comboBox.SelectedItem">
+          <ComboBox ref.Name="comboBox" ItemTemplate="demo:CategoryItemTemplate" SelectedIndex-bind="self.items.IndexOf(self.CellValue)">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <att.ListControl>
+              <BindableTextList ItemSource-eval="self.items" ItemTemplate="demo:CategoryItemTemplate" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
+            </att.ListControl>
+          </ComboBox>
+        </GridEditorTemplate>
+      </Instance>
+    </Instance>
+  </Folder>
+
+  <Instance name="TextEditorResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TextEditor">
+      <GridEditorTemplate ref.Name="self" CellValue-bind="textBox.Text" FocusControl-ref="textBox">
+        <SinglelineTextBox ref.Name="textBox" Text-bind="(cast string self.CellValue) ?? ''">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </SinglelineTextBox>
+      </GridEditorTemplate>
+    </Instance>
+  </Instance>
+</Folder>

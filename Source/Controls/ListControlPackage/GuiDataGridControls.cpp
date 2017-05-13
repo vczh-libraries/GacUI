@@ -78,13 +78,7 @@ DefaultDataGridItemTemplate
 							}
 
 							vint currentRow = GetIndex();
-							auto factory = openEditor ? GetDataEditorFactory(currentRow, index) : nullptr;
-							currentEditor = dataGrid->OpenEditor(currentRow, index, factory);
-							if (currentEditor)
-							{
-								currentEditor->GetTemplate()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-								sender->AddChild(currentEditor->GetTemplate());
-							}
+							dataGrid->StartEdit(currentRow, index);
 						}
 					}
 				}
@@ -95,7 +89,6 @@ DefaultDataGridItemTemplate
 					{
 						if (!dataGrid->currentEditor) return false;
 						auto editorComposition = dataGrid->currentEditor->GetTemplate();
-						auto stopComposition = backgroundButton->GetContainerComposition();
 						auto currentComposition = arguments.eventSource;
 
 						while (currentComposition)
@@ -105,7 +98,7 @@ DefaultDataGridItemTemplate
 								arguments.handled = true;
 								return true;
 							}
-							else if (currentComposition == stopComposition)
+							else if (currentComposition == this)
 							{
 								break;
 							}
@@ -166,7 +159,7 @@ DefaultDataGridItemTemplate
 						textTable->SetRowsAndColumns(1, 1);
 						textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
 						textTable->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
-						backgroundButton->GetContainerComposition()->AddChild(textTable);
+						AddChild(textTable);
 					}
 
 					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
@@ -274,7 +267,12 @@ DefaultDataGridItemTemplate
 					}
 				}
 
-				void DefaultDataGridItemTemplate::ForceSetEditor(vint column, IDataEditor* editor)
+				bool DefaultDataGridItemTemplate::IsEditorOpened()
+				{
+					return currentEditor != nullptr;
+				}
+
+				void DefaultDataGridItemTemplate::NotifyOpenEditor(vint column, IDataEditor* editor)
 				{
 					currentEditor = editor;
 					if (currentEditor)
@@ -287,6 +285,10 @@ DefaultDataGridItemTemplate
 						}
 						editorBounds->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						cell->AddChild(editorBounds);
+						if (auto focusControl = currentEditor->GetTemplate()->GetFocusControl())
+						{
+							focusControl->SetFocus();
+						}
 					}
 				}
 
@@ -310,6 +312,14 @@ DefaultDataGridItemTemplate
 						dataVisualizers[i]->SetSelected(i == column);
 					}
 				}
+
+				void DefaultDataGridItemTemplate::NotifyCellEdited()
+				{
+					for (vint i = 0; i < dataVisualizers.Count(); i++)
+					{
+						dataVisualizers[i]->BeforeVisualizeCell(listControl->GetItemProvider(), GetIndex(), i);
+					}
+				}
 			}
 				
 /***********************************************************************
@@ -323,7 +333,21 @@ GuiVirtualDataGrid (Editor)
 				GuiVirtualListView::OnItemModified(start, count, newCount);
 				if(!GetItemProvider()->IsEditing())
 				{
-					CloseEditor(false);
+					StopEdit(false);
+				}
+			}
+
+			void GuiVirtualDataGrid::OnStyleUninstalled(ItemStyle* style)
+			{
+				GuiVirtualListView::OnStyleUninstalled(style);
+				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
+				{
+					if (itemStyle->IsEditorOpened())
+					{
+						itemStyle->NotifyCloseEditor();
+						currentEditor = nullptr;
+						currentEditorPos = { -1,-1 };
+					}
 				}
 			}
 
@@ -344,29 +368,36 @@ GuiVirtualDataGrid (Editor)
 				selectedCell = { row, column };
 				SelectedCellChanged.Execute(GetNotifyEventArguments());
 
-				auto style = GetArranger()->GetVisibleStyle(currentEditorPos.row);
+				auto style = GetArranger()->GetVisibleStyle(row);
 				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
 				{
 					itemStyle->NotifySelectCell(column);
 				}
 			}
 
-			list::IDataEditor* GuiVirtualDataGrid::OpenEditor(vint row, vint column, list::IDataEditorFactory* editorFactory)
+			bool GuiVirtualDataGrid::StartEdit(vint row, vint column)
 			{
-				CloseEditor(true);
+				StopEdit(true);
 				NotifySelectCell(row, column);
-				if (editorFactory)
+
+				auto style = GetArranger()->GetVisibleStyle(row);
+				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
 				{
-					currentEditorOpeningEditor = true;
-					currentEditorPos = { row,column };
-					currentEditor = editorFactory->CreateEditor(this);
-					currentEditor->BeforeEditCell(GetItemProvider(), row, column);
-					currentEditorOpeningEditor = false;
+					if (auto factory = dataGridView->GetCellDataEditorFactory(row, column))
+					{
+						currentEditorOpeningEditor = true;
+						currentEditorPos = { row,column };
+						currentEditor = factory->CreateEditor(this);
+						currentEditor->BeforeEditCell(GetItemProvider(), row, column);
+						itemStyle->NotifyOpenEditor(column, currentEditor.Obj());
+						currentEditorOpeningEditor = false;
+						return true;
+					}
 				}
-				return currentEditor.Obj();
+				return false;
 			}
 
-			void GuiVirtualDataGrid::CloseEditor(bool forOpenNewEditor)
+			void GuiVirtualDataGrid::StopEdit(bool forOpenNewEditor)
 			{
 				if (GetItemProvider()->IsEditing())
 				{
@@ -379,7 +410,6 @@ GuiVirtualDataGrid (Editor)
 						if (currentEditor)
 						{
 							NotifyCloseEditor();
-							currentEditor = nullptr;
 						}
 						if (!forOpenNewEditor)
 						{
@@ -387,6 +417,7 @@ GuiVirtualDataGrid (Editor)
 						}
 					}
 				}
+				currentEditor = nullptr;
 				currentEditorPos = { -1,-1 };
 			}
 
@@ -424,21 +455,15 @@ GuiVirtualDataGrid (IDataGridContext)
 					dataGridView->SetBindingCellValue(currentEditorPos.row, currentEditorPos.column, currentEditor->GetTemplate()->GetCellValue());
 					GetItemProvider()->PopEditing();
 
-					if (currentEditor)
+					auto style = GetArranger()->GetVisibleStyle(currentEditorPos.row);
+					if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
 					{
-						if (auto arranger = GetArranger())
-						{
-							auto style = arranger->GetVisibleStyle(currentEditorPos.column);
-							if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
-							{
-								itemStyle->ForceSetEditor(currentEditorPos.column, currentEditor.Obj());
-								currentEditor->ReinstallEditor();
-								if (focusedControl)
-								{
-									focusedControl->SetFocus();
-								}
-							}
-						}
+						itemStyle->NotifyCellEdited();
+					}
+
+					if (currentEditor && focusedControl)
+					{
+						focusedControl->SetFocus();
 					}
 				}
 			}
@@ -495,7 +520,6 @@ GuiVirtualDataGrid
 
 			GuiVirtualDataGrid::~GuiVirtualDataGrid()
 			{
-				SetSelectedCell({ -1, -1 });
 			}
 
 			GuiListControl::IItemProvider* GuiVirtualDataGrid::GetItemProvider()
@@ -518,27 +542,33 @@ GuiVirtualDataGrid
 
 			void GuiVirtualDataGrid::SetSelectedCell(const GridPos& value)
 			{
-				if (selectedCell != value)
+				if (selectedCell == value)
 				{
-					if (value.row == -1 || value.column == -1)
-					{
-						CloseEditor(false);
-					}
-					else if (0 <= value.row && value.row < GetItemProvider()->Count() && 0 <= value.column && value.column < listViewItemView->GetColumnCount())
-					{
-						OpenEditor(value.row, value.column, nullptr);
-					}
-					else
-					{
-						return;
-					}
+					return;
 				}
 
-				if (0 <= value.row && value.row < GetItemProvider()->Count())
+				bool validPos = 0 <= value.row && value.row < GetItemProvider()->Count() && 0 <= value.column && value.column < listViewItemView->GetColumnCount();
+				StopEdit(true);
+
+				if (validPos)
+				{
+					NotifySelectCell(value.row, value.column);
+				}
+				else
+				{
+					NotifySelectCell(-1, -1);
+				}
+
+				if (validPos)
 				{
 					EnsureItemVisible(value.row);
 					ClearSelection();
 					SetSelected(value.row, true);
+					StartEdit(value.row, value.column);
+				}
+				else
+				{
+					ClearSelection();
 				}
 			}
 		}

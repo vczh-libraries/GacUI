@@ -88,9 +88,9 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged()
 				{
 					arranger->RebuildColumns();
-					FOREACH(templates::GuiListItemTemplate*, itemStyle, arranger->visibleStyles)
+					FOREACH(ItemStyleRecord, style, arranger->visibleStyles)
 					{
-						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(itemStyle))
+						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style.key))
 						{
 							callback->OnColumnChanged();
 						}
@@ -405,12 +405,12 @@ ListViewItem
 ListViewColumn
 ***********************************************************************/
 
-				void ListViewColumn::NotifyUpdate()
+				void ListViewColumn::NotifyUpdate(bool affectItem)
 				{
 					if (owner)
 					{
 						vint index = owner->IndexOf(this);
-						owner->NotifyUpdate(index, 1);
+						owner->NotifyColumnUpdated(index, affectItem);
 					}
 				}
 
@@ -427,8 +427,11 @@ ListViewColumn
 
 				void ListViewColumn::SetText(const WString& value)
 				{
-					text = value;
-					NotifyUpdate();
+					if (text != value)
+					{
+						text = value;
+						NotifyUpdate(false);
+					}
 				}
 
 				ItemProperty<WString> ListViewColumn::GetTextProperty()
@@ -439,7 +442,7 @@ ListViewColumn
 				void ListViewColumn::SetTextProperty(const ItemProperty<WString>& value)
 				{
 					textProperty = value;
-					NotifyUpdate();
+					NotifyUpdate(true);
 				}
 
 				vint ListViewColumn::GetSize()
@@ -449,8 +452,11 @@ ListViewColumn
 
 				void ListViewColumn::SetSize(vint value)
 				{
-					size = value;
-					NotifyUpdate();
+					if (size != value)
+					{
+						size = value;
+						NotifyUpdate(false);
+					}
 				}
 
 				GuiMenu* ListViewColumn::GetDropdownPopup()
@@ -460,8 +466,11 @@ ListViewColumn
 
 				void ListViewColumn::SetDropdownPopup(GuiMenu* value)
 				{
-					dropdownPopup = value;
-					NotifyUpdate();
+					if (dropdownPopup != value)
+					{
+						dropdownPopup = value;
+						NotifyUpdate(false);
+					}
 				}
 
 				ColumnSortingState ListViewColumn::GetSortingState()
@@ -471,8 +480,11 @@ ListViewColumn
 
 				void ListViewColumn::SetSortingState(ColumnSortingState value)
 				{
-					sortingState = value;
-					NotifyUpdate();
+					if (sortingState != value)
+					{
+						sortingState = value;
+						NotifyUpdate(false);
+					}
 				}
 
 /***********************************************************************
@@ -497,6 +509,13 @@ ListViewDataColumns
 ListViewColumns
 ***********************************************************************/
 
+				void ListViewColumns::NotifyColumnUpdated(vint column, bool affectItem)
+				{
+					affectItemFlag = affectItem;
+					NotifyUpdate(column, 1);
+					affectItemFlag = true;
+				}
+
 				void ListViewColumns::AfterInsert(vint index, const Ptr<ListViewColumn>& value)
 				{
 					ItemsBase<Ptr<ListViewColumn>>::AfterInsert(index, value);
@@ -512,7 +531,10 @@ ListViewColumns
 				void ListViewColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
 					itemProvider->NotifyAllColumnsUpdate();
-					itemProvider->NotifyAllItemsUpdate();
+					if (affectItemFlag)
+					{
+						itemProvider->NotifyAllItemsUpdate();
+					}
 				}
 
 				ListViewColumns::ListViewColumns(IListViewItemProvider* _itemProvider)

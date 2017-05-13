@@ -48,8 +48,10 @@
   <Instance name="ListViewTabPageResource" content="File">ListViewTabPage.xml</Instance>
   <Instance name="TreeViewTabPageResource" content="File">TreeViewTabPage.xml</Instance>
   <Instance name="DataGridTabPageResource" content="File">DataGridTabPage.xml</Instance>
+  <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
   <Folder name="LargeImages" content="Link">Images/LargeImages.xml</Folder>
   <Folder name="SmallImages" content="Link">Images/SmallImages.xml</Folder>
+  <Folder name="MiscImages" content="Link">Images/MiscImages.xml</Folder>
   <Script name="ImageLoaderResource" content="File">Images/ImageLoader.xml</Script>
 
   <Script name="ViewModelResource">
@@ -120,23 +122,40 @@
           {
             switch (value)
             {
-              case Black:   { return "Black"; }
-              case Red:     { return "Red"; }
-              case Lime:    { return "Lime"; }
-              case Blue:    { return "Blue"; }
-              case White:   { return "White"; }
-              default: { raise "Wrong!"; }
+              case Black:   { return "Black";  }
+              case Red:     { return "Red";    }
+              case Lime:    { return "Lime";   }
+              case Blue:    { return "Blue";   }
+              case White:   { return "White";  }
             }
+            return "";
+          }
+          
+          func ToColor(value : MyCategory) : Color
+          {
+            switch (value)
+            {
+              case Red:     { return cast Color "#FF0000"; }
+              case Lime:    { return cast Color "#00FF00"; }
+              case Blue:    { return cast Color "#0000FF"; }
+              case White:   { return cast Color "#FFFFFF"; }
+            }
+            return cast Color "#000000";
           }
           
           func ToString(value : MyGender) : string
           {
             switch (value)
             {
-              case Male:    { return "Male"; }
+              case Male:    { return "Male";   }
               case Female:  { return "Female"; }
-              default: { raise "Wrong!"; }
             }
+            return "";
+          }
+          
+          func ToString(value : DateTime) : string
+          {
+            return $"$(value.month)/$(value.day)/$(value.year)";
           }
         }
       ]]>

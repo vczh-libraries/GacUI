@@ -1231,12 +1231,12 @@ GuiResource
 			SaveResourceFolderToBinary(writer, typeNames);
 		}
 
-		void GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
+		Ptr<GuiResourceFolder> GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
 			if (GetFolder(L"Precompiled"))
 			{
 				errors.Add(GuiResourceError({ this }, L"A precompiled resource cannot be compiled again."));
-				return;
+				return nullptr;
 			}
 
 			GuiResourcePrecompileContext context;
@@ -1274,10 +1274,11 @@ GuiResource
 				}
 				if (errors.Count() > 0)
 				{
-					return;
+					return context.targetFolder;
 				}
 			}
 			AddFolder(L"Precompiled", context.targetFolder);
+			return context.targetFolder;
 		}
 
 		void GuiResource::Initialize(GuiResourceUsage usage)

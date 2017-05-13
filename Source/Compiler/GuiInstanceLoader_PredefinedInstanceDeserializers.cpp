@@ -65,7 +65,7 @@ GuiTemplatePropertyDeserializer
 
 			bool CanDeserialize(description::ITypeInfo* typeInfo)override
 			{
-				return IsTemplatePropertyType(typeInfo);
+				return IsTemplatePropertyType(typeInfo) || IsDataVisualizerFactoryType(typeInfo) || IsDataEditorFactoryType(typeInfo);
 			}
 
 			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
@@ -96,13 +96,33 @@ GuiTemplatePropertyDeserializer
 					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
 					if (!controlTemplateTd)
 					{
+						auto index = INVLOC.FindFirst(controlTemplateName, L":", Locale::None);
+						GlobalStringKey namespaceName;
+						auto typeName = controlTemplateName;
+						if (index.key != -1)
+						{
+							namespaceName = GlobalStringKey::Get(controlTemplateName.Left(index.key));
+							typeName = controlTemplateName.Right(controlTemplateName.Length() - index.key - index.value);
+						}
+
+						auto source = FindInstanceLoadingSource(resolvingResult.context, namespaceName, typeName);
+						if (auto typeInfo = GetInstanceLoaderManager()->GetTypeInfoForType(source.typeName))
+						{
+							controlTemplateTd = typeInfo->GetTypeDescriptor();
+						}
+					}
+					if (controlTemplateTd)
+					{
+						tds.Add(controlTemplateTd);
+					}
+					else
+					{
 						errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
 							L"Precompile: Type \"" +
 							controlTemplateName +
 							L"\" does not exist."));
 						continue;
 					}
-					tds.Add(controlTemplateTd);
 				}
 			}
 
@@ -153,7 +173,7 @@ GuiTemplatePropertyDeserializer
 					ITypeInfo* viewModelType = nullptr;
 					{
 						auto ctors = controlTemplateTd->GetConstructorGroup();
-						if (ctors->GetMethodCount() != 1)
+						if (!ctors || ctors->GetMethodCount() != 1)
 						{
 							errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition,
 								L"Precompile: To use type \"" +
@@ -275,6 +295,12 @@ GuiTemplatePropertyDeserializer
 					if (index > 0)
 					{
 						createStyle->arguments.Add(previousFactory);
+					}
+					else
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						createStyle->arguments.Add(nullExpr);
 					}
 					previousFactory = createStyle;
 				}
@@ -449,6 +475,7 @@ GuiItemPropertyDeserializer
 				bool isWritableItemProperty = IsWritableItemPropertyType(typeInfo);
 
 				auto funcDecl = MakePtr<WfFunctionDeclaration>();
+				ITypeInfo* acceptValueType = nullptr;
 				funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
 				{
 					auto genericType = typeInfo->GetElementType();
@@ -465,7 +492,7 @@ GuiItemPropertyDeserializer
 						{
 							auto argument = MakePtr<WfFunctionArgument>();
 							argument->name.value = L"<value>";
-							argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(2));
+							argument->type = GetTypeFromTypeInfo((acceptValueType = genericType->GetGenericArgument(2)));
 							funcDecl->arguments.Add(argument);
 						}
 						{
@@ -525,7 +552,18 @@ GuiItemPropertyDeserializer
 							auto assignExpr = MakePtr<WfBinaryExpression>();
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = CopyExpression(propertyExpression);
-							assignExpr->second = refValue;
+
+							if (acceptValueType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
+							{
+								auto castExpr = MakePtr<WfExpectedTypeCastExpression>();
+								castExpr->strategy = WfTypeCastingStrategy::Strong;
+								castExpr->expression = refValue;
+								assignExpr->second = castExpr;
+							}
+							else
+							{
+								assignExpr->second = refValue;
+							}
 
 							auto stat = MakePtr<WfExpressionStatement>();
 							stat->expression = assignExpr;

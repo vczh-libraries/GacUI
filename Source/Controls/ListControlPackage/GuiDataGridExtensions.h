@@ -79,7 +79,7 @@ Extension Bases
 					IDataGridContext*									dataGridContext = nullptr;
 					templates::GuiGridEditorTemplate*					editorTemplate = nullptr;
 
-					void												RequestSaveData();
+					void												OnCellValueChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					/// <summary>Create the data editor.</summary>
 					DataEditorBase();
@@ -89,7 +89,7 @@ Extension Bases
 					templates::GuiGridEditorTemplate*					GetTemplate()override;
 					void												NotifyDeletedTemplate()override;
 					void												BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
-					void												ReinstallEditor()override;
+					bool												GetCellValueSaved()override;
 				};
 				
 				class DataEditorFactory : public Object, public virtual IDataEditorFactory, public Description<DataEditorFactory>

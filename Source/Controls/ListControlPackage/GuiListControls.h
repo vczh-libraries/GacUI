@@ -62,7 +62,8 @@ List Control
 					/// <summary>Request an item control representing an item in the item provider. This function is suggested to call when an item control gets into the visible area.</summary>
 					/// <returns>The item control.</returns>
 					/// <param name="itemIndex">The index of the item in the item provider.</param>
-					virtual ItemStyle*								RequestItem(vint itemIndex)=0;
+					/// <param name="itemComposition">The composition that represents the item. Set to null if the item style is expected to be put directly into the list control.</param>
+					virtual ItemStyle*								RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)=0;
 					/// <summary>Release an item control. This function is suggested to call when an item control gets out of the visible area.</summary>
 					/// <param name="style">The item control.</param>
 					virtual void									ReleaseItem(ItemStyle* style)=0;
@@ -72,19 +73,19 @@ List Control
 					/// <summary>Get the preferred size of an item control.</summary>
 					/// <returns>The preferred size of an item control.</returns>
 					/// <param name="style">The item control.</param>
-					virtual Size									GetStylePreferredSize(ItemStyle* style)=0;
+					virtual Size									GetStylePreferredSize(compositions::GuiBoundsComposition* style)=0;
 					/// <summary>Set the alignment of an item control.</summary>
 					/// <param name="style">The item control.</param>
 					/// <param name="margin">The new alignment.</param>
-					virtual void									SetStyleAlignmentToParent(ItemStyle* style, Margin margin)=0;
+					virtual void									SetStyleAlignmentToParent(compositions::GuiBoundsComposition* style, Margin margin)=0;
 					/// <summary>Get the bounds of an item control.</summary>
 					/// <returns>The bounds of an item control.</returns>
 					/// <param name="style">The item control.</param>
-					virtual Rect									GetStyleBounds(ItemStyle* style)=0;
+					virtual Rect									GetStyleBounds(compositions::GuiBoundsComposition* style)=0;
 					/// <summary>Set the bounds of an item control.</summary>
 					/// <param name="style">The item control.</param>
 					/// <param name="bounds">The new bounds.</param>
-					virtual void									SetStyleBounds(ItemStyle* style, Rect bounds)=0;
+					virtual void									SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)=0;
 					/// <summary>Get the <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</summary>
 					/// <returns>The <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</returns>
 					virtual compositions::GuiGraphicsComposition*	GetContainerComposition()=0;
@@ -199,7 +200,7 @@ List Control
 					IItemProvider*								itemProvider = nullptr;
 					InstalledStyleMap							installedStyles;
 
-					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex);
+					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition);
 					ItemStyle*									UninstallStyle(vint index);
 					void										OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
@@ -210,13 +211,13 @@ List Control
 
 					void										OnAttached(IItemProvider* provider)override;
 					void										OnItemModified(vint start, vint count, vint newCount)override;
-					ItemStyle*									RequestItem(vint itemIndex)override;
+					ItemStyle*									RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)override;
 					void										ReleaseItem(ItemStyle* style)override;
 					void										SetViewLocation(Point value)override;
-					Size										GetStylePreferredSize(ItemStyle* style)override;
-					void										SetStyleAlignmentToParent(ItemStyle* style, Margin margin)override;
-					Rect										GetStyleBounds(ItemStyle* style)override;
-					void										SetStyleBounds(ItemStyle* style, Rect bounds)override;
+					Size										GetStylePreferredSize(compositions::GuiBoundsComposition* style)override;
+					void										SetStyleAlignmentToParent(compositions::GuiBoundsComposition* style, Margin margin)override;
+					Rect										GetStyleBounds(compositions::GuiBoundsComposition* style)override;
+					void										SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)override;
 					compositions::GuiGraphicsComposition*		GetContainerComposition()override;
 					void										OnTotalSizeChanged()override;
 				};
@@ -231,6 +232,7 @@ List Control
 				Ptr<IItemArranger>								itemArranger;
 				Ptr<compositions::IGuiAxis>						axis;
 				Size											fullSize;
+				bool											displayItemBackground = true;
 
 				virtual void									OnItemModified(vint start, vint count, vint newCount);
 				virtual void									OnStyleInstalled(vint itemIndex, ItemStyle* style);
@@ -348,6 +350,12 @@ List Control
 				/// <returns>The adopted size, making the list control just enough to display several items.</returns>
 				/// <param name="expectedSize">The expected size, to provide a guidance.</param>
 				virtual Size									GetAdoptedSize(Size expectedSize);
+				/// <summary>Test if the list control displays predefined item background.</summary>
+				/// <returns>Returns true if the list control displays predefined item background.</returns>
+				bool											GetDisplayItemBackground();
+				/// <summary>Set if the list control displays predefined item background.</summary>
+				/// <param name="value">Set to true to display item background.</param>
+				void											SetDisplayItemBackground(bool value);
 			};
 
 /***********************************************************************

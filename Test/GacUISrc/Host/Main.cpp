@@ -20,6 +20,7 @@ using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::collections;
 using namespace vl::filesystem;
+using namespace vl::workflow;
 using namespace vl::workflow::cppcodegen;
 
 //#define GUI_GRAPHICS_RENDERER_GDI
@@ -106,62 +107,84 @@ void GuiMain_Resource()
 	{
 		List<GuiResourceError> errors;
 		auto resource = GuiResource::LoadFromXml(LR"(Resources/FullControlTest/Resource.xml)", errors);
-		resource->Precompile(nullptr, errors);
+		auto precompiledFolder = resource->Precompile(nullptr, errors);
+		auto compiled = precompiledFolder ? precompiledFolder->GetValueByPath(L"Workflow/InstanceClass").Cast<GuiInstanceCompiledWorkflow>() : nullptr;
 
 		{
 			List<WString> output;
 			GuiResourceError::SortAndLog(errors, output);
 			File(BINARY_FOLDER L"UI.error.txt").WriteAllLines(output, true, BomEncoder::Utf16);
 		}
-		CHECK_ERROR(errors.Count() == 0, L"Error");
-
+		if (compiled)
 		{
-			auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");
-			auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
+			WString text;
+			if (compiled->assembly)
 			{
-				WString text;
 				auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
-				FOREACH_INDEXER(WString, code, codeIndex, compiled->assembly->insAfterCodegen->moduleCodes)
+				FOREACH_INDEXER(WString, code, codeIndex, codes)
 				{
 					text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
 					text += code + L"\r\n";
 				}
-				File(BINARY_FOLDER L"UI.txt").WriteAllText(text);
 			}
+			else
 			{
-				auto input = MakePtr<WfCppInput>(L"Demo");
-				input->comment = L"Source: Host.sln";
-				input->normalIncludes.Add(L"../../../../Source/GacUI.h");
-				input->normalIncludes.Add(L"../Helpers.h");
-				input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
-				auto output = GenerateCppFiles(input, compiled->metadata.Obj());
-				FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
+				FOREACH_INDEXER(GuiInstanceCompiledWorkflow::ModuleRecord, moduleRecord, codeIndex, compiled->modules)
 				{
-					WString code = output->cppFiles.Values()[index];
-					File file(L"../TestCppCodegen/Source/" + fileName);
-
-					if (file.Exists())
+					WString code;
 					{
-						WString inputText;
-						BomEncoder::Encoding inputEncoding;
-						bool inputBom;
-						file.ReadAllTextWithEncodingTesting(inputText, inputEncoding, inputBom);
-						code = MergeCppFileContent(inputText, code);
-					}
-
-					if (file.Exists())
-					{
-						WString inputText;
-						BomEncoder::Encoding inputEncoding;
-						bool inputBom;
-						file.ReadAllTextWithEncodingTesting(inputText, inputEncoding, inputBom);
-						if (inputText == code)
+						MemoryStream stream;
 						{
-							continue;
+							StreamWriter writer(stream);
+							WfPrint(moduleRecord.module, L"", writer);
+						}
+						stream.SeekFromBegin(0);
+						{
+							StreamReader reader(stream);
+							code = reader.ReadToEnd();
 						}
 					}
-					file.WriteAllText(code, true, BomEncoder::Utf8);
+					text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(compiled->modules.Count()) + L")================================\r\n";
+					text += code + L"\r\n";
 				}
+			}
+			File(BINARY_FOLDER L"UI.txt").WriteAllText(text);
+		}
+		CHECK_ERROR(errors.Count() == 0, L"Error");
+
+		{
+			auto input = MakePtr<WfCppInput>(L"Demo");
+			input->comment = L"Source: Host.sln";
+			input->normalIncludes.Add(L"../../../../Source/GacUI.h");
+			input->normalIncludes.Add(L"../Helpers.h");
+			input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
+			auto output = GenerateCppFiles(input, compiled->metadata.Obj());
+			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
+			{
+				WString code = output->cppFiles.Values()[index];
+				File file(L"../TestCppCodegen/Source/" + fileName);
+
+				if (file.Exists())
+				{
+					WString inputText;
+					BomEncoder::Encoding inputEncoding;
+					bool inputBom;
+					file.ReadAllTextWithEncodingTesting(inputText, inputEncoding, inputBom);
+					code = MergeCppFileContent(inputText, code);
+				}
+
+				if (file.Exists())
+				{
+					WString inputText;
+					BomEncoder::Encoding inputEncoding;
+					bool inputBom;
+					file.ReadAllTextWithEncodingTesting(inputText, inputEncoding, inputBom);
+					if (inputText == code)
+					{
+						continue;
+					}
+				}
+				file.WriteAllText(code, true, BomEncoder::Utf8);
 			}
 		}
 

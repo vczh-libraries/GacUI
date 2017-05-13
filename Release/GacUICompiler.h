@@ -437,6 +437,77 @@ Instance Style Context
 #endif
 
 /***********************************************************************
+GUIINSTANCEHELPERTYPES.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI Reflection: Instance Helper Types
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
+
+
+#if defined(__APPLE__) || defined(__APPLE_CC__)
+
+using namespace vl;
+using namespace vl::presentation;
+using namespace vl::presentation::elements;
+using namespace vl::presentation::compositions;
+using namespace vl::presentation::controls;
+using namespace vl::presentation::templates;
+using namespace vl::presentation::theme;
+
+#endif
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+Helper Types
+***********************************************************************/
+
+		namespace helper_types
+		{
+			struct SiteValue
+			{
+				vint			row = 0;
+				vint			column = 0;
+				vint			rowSpan = 1;
+				vint			columnSpan = 1;
+			};
+		}
+	}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+Type List
+***********************************************************************/
+
+#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
+			F(presentation::helper_types::SiteValue)\
+
+			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
+		}
+	}
+
+#endif
+}
+
+#endif
+
+/***********************************************************************
 GUIINSTANCELOADER.H
 ***********************************************************************/
 /***********************************************************************
@@ -648,90 +719,6 @@ Instance Loader Manager
 #endif
 
 /***********************************************************************
-GUIINSTANCEHELPERTYPES.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI Reflection: Instance Helper Types
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
-#define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEHELPERTYPES
-
-
-#if defined(__APPLE__) || defined(__APPLE_CC__)
-
-using namespace vl;
-using namespace vl::presentation;
-using namespace vl::presentation::elements;
-using namespace vl::presentation::compositions;
-using namespace vl::presentation::controls;
-using namespace vl::presentation::templates;
-using namespace vl::presentation::theme;
-
-#endif
-
-namespace vl
-{
-	namespace presentation
-	{
-
-/***********************************************************************
-Helper Types
-***********************************************************************/
-
-		namespace helper_types
-		{
-			struct SiteValue
-			{
-				vint			row;
-				vint			column;
-				vint			rowSpan;
-				vint			columnSpan;
-
-				SiteValue() :row(0), column(0), rowSpan(1), columnSpan(1){}
-			};
-
-			enum class ListViewViewType
-			{
-				BigIcon,
-				SmallIcon,
-				List,
-				Tile,
-				Information,
-				Detail,
-			};
-		}
-	}
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-	namespace reflection
-	{
-		namespace description
-		{
-
-/***********************************************************************
-Type List
-***********************************************************************/
-
-#define GUIREFLECTIONHELPERTYPES_TYPELIST(F)\
-			F(presentation::helper_types::SiteValue)\
-			F(presentation::helper_types::ListViewViewType)\
-
-			GUIREFLECTIONHELPERTYPES_TYPELIST(DECL_TYPE_INFO)
-		}
-	}
-
-#endif
-}
-
-#endif
-
-/***********************************************************************
 WORKFLOWCODEGEN\GUIINSTANCELOADER_WORKFLOWCODEGEN.H
 ***********************************************************************/
 /***********************************************************************
@@ -800,6 +787,7 @@ WorkflowCompiler (Parser)
 WorkflowCompiler (Installation)
 ***********************************************************************/
 
+		extern Ptr<workflow::WfExpression>						Workflow_GetUriProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallUriProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& protocol, const WString& path, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallBindProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression);
 		extern Ptr<workflow::WfStatement>						Workflow_InstallEvalProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, Ptr<workflow::WfExpression> evalExpression, GuiResourceTextPos attPosition, GuiResourceError::List& errors);
@@ -854,6 +842,7 @@ WorkflowCompiler (Compile)
 		extern void												Workflow_GenerateCreating(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 		extern void												Workflow_GenerateBindings(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 
+		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName);
 		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
 		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
 		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex);
@@ -987,7 +976,7 @@ namespace vl
 			using namespace compositions;
 			using namespace theme;
 			using namespace helper_types;
-		
+
 			using namespace elements;
 			using namespace compositions;
 			using namespace controls;

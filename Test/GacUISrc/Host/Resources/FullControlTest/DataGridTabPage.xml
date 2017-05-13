@@ -1,15 +1,8 @@
-<Instance ref.CodeBehind="false" ref.Class="demo::DataGridTabPage">
-  <ref.Members>
-    <![CDATA[
-      var tempData : MyDataItem^[] = null;
-    ]]>
-  </ref.Members>
+<Instance ref.CodeBehind="false" ref.Class="demo::DataGridTabPage" xmlns:demo="demo::*">
   <ref.Ctor>
     <![CDATA[
-      Application::GetApplication().InvokeInMainThread(func():void
       {
-        /* This code will be executed after demo::DataGridTabPage is put on the window, so that dataGrid.RelatedControlHost doesn't return null. */
-        tempData = 
+        var tempData : MyDataItem^[] = 
         {
           new MyDataItem^("涼宮 春日",     Female, Lime,  (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
           new MyDataItem^("キョン",        Male,   Black, (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
@@ -17,17 +10,16 @@
           new MyDataItem^("朝比奈 实玖瑠", Female, Red,   (cast DateTime "1987-08-30 00:00:00.000"),  "http://www.haruhi.tv/")
           new MyDataItem^("古泉 一树",     Male,   Blue,  (cast DateTime "1986-08-12 00:00:00.000"),  "http://www.haruhi.tv/")
         };
-        
-        var host = dataGrid.RelatedControlHost;
-        var largeImage =  cast (GuiImageData^) host.ResolveResource("res", "LargeImages/Task", true);
-        var smallImage =  cast (GuiImageData^) host.ResolveResource("res", "SmallImages/Task", true);
+
+        var largeImage = cast (GuiImageData^) (ResolveResource("res", "LargeImages/Task", true));
+        var smallImage = cast (GuiImageData^) (ResolveResource("res", "SmallImages/Task", true));
         for(item in tempData)
         {
           item.LargeImage = largeImage;
           item.SmallImage = smallImage;
         }
         dataGrid.ItemSource = tempData;
-      });
+      }
     ]]>
   </ref.Ctor>
   <TabPage ref.Name="self" Text="BindableDataGrid">
@@ -101,92 +93,38 @@
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.LargeImageProperty>LargeImage</att.LargeImageProperty>
           <att.SmallImageProperty>SmallImage</att.SmallImageProperty>
-          
+
           <att.Columns>
-            <DataColumn Text="Name">
+            <DataColumn Text="Name" Size="120">
               <att.TextProperty>Name</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Name = cast string value;
-                      return null;
-                    }
-                    return itemToBind.Name;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Name</att.ValueProperty>
+              <att.EditorFactory>demo:TextEditor</att.EditorFactory>
             </DataColumn>
-            <DataColumn Text="Gender">
+
+            <DataColumn Text="Gender" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Gender)</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Gender = cast MyGender value;
-                      return null;
-                    }
-                    return itemToBind.Gender;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Gender</att.ValueProperty>
+              <att.VisualizerFactory>demo:GenderVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:GenderEditor</att.EditorFactory>
             </DataColumn>
-            <DataColumn Text="Category">
+
+            <DataColumn Text="Category" Size="80">
               <att.TextProperty>demo::ToString(itemToBind.Category)</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Category = cast MyCategory value;
-                      return null;
-                    }
-                    return itemToBind.Category;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Category</att.ValueProperty>
+              <att.VisualizerFactory>demo:CategoryVisualizer;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:CategoryEditor</att.EditorFactory>
             </DataColumn>
-            <DataColumn Text="Birthday">
-              <att.TextProperty>cast string (itemToBind.Birthday)</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Birthday = cast DateTime value;
-                      return null;
-                    }
-                    return itemToBind.Birthday;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+
+            <DataColumn Text="Birthday" Size="80">
+              <att.TextProperty>demo::ToString(itemToBind.Birthday)</att.TextProperty>
+              <att.ValueProperty>Birthday</att.ValueProperty>
             </DataColumn>
-            <DataColumn Text="Website">
+
+            <DataColumn Text="Website" Size="160">
               <att.TextProperty>Website</att.TextProperty>
-              <att.ValueProperty-eval>
-                <![CDATA[
-                  func(item : object, value : object, update : bool) : object
-                  {
-                    var itemToBind = cast (demo::MyDataItem^) item;
-                    if (update)
-                    {
-                      itemToBind.Website = cast string value;
-                      return null;
-                    }
-                    return itemToBind.Website;
-                  }
-                ]]>
-              </att.ValueProperty-eval>
+              <att.ValueProperty>Website</att.ValueProperty>
+              <att.VisualizerFactory>HyperlinkVisualizerTemplate;CellBorderVisualizerTemplate</att.VisualizerFactory>
+              <att.EditorFactory>demo:TextEditor</att.EditorFactory>
             </DataColumn>
           </att.Columns>
 
