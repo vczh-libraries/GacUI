@@ -107,17 +107,14 @@ void GuiMain_Resource()
 	{
 		List<GuiResourceError> errors;
 		auto resource = GuiResource::LoadFromXml(LR"(Resources/FullControlTest/Resource.xml)", errors);
-		get the item from here
-		resource->Precompile(nullptr, errors);
+		auto precompiledFolder = resource->Precompile(nullptr, errors);
+		auto compiled = precompiledFolder ? precompiledFolder->GetValueByPath(L"Workflow/InstanceClass").Cast<GuiInstanceCompiledWorkflow>() : nullptr;
 
 		{
 			List<WString> output;
 			GuiResourceError::SortAndLog(errors, output);
 			File(BINARY_FOLDER L"UI.error.txt").WriteAllLines(output, true, BomEncoder::Utf16);
 		}
-
-		auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");
-		auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
 		if (compiled)
 		{
 			WString text;

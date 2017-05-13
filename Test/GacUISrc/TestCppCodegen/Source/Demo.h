@@ -63,31 +63,35 @@ namespace vl_workflow_global
 	struct __vwsnf39_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf3_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf40_Demo_demo_TreeViewTabPageConstructor___vwsn_initialize_instance__;
-	struct __vwsnf41_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
-	struct __vwsnf42_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+	struct __vwsnf41_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+	struct __vwsnf42_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
 	struct __vwsnf43_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
-	struct __vwsnf44_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
-	struct __vwsnf45_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
-	struct __vwsnf46_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
-	struct __vwsnf47_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
-	struct __vwsnf48_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-	struct __vwsnf49_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+	struct __vwsnf44_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+	struct __vwsnf45_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+	struct __vwsnf46_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
+	struct __vwsnf47_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
+	struct __vwsnf48_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+	struct __vwsnf49_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
 	struct __vwsnf4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf50_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+	struct __vwsnf51_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+	struct __vwsnf52_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
 	struct __vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf6_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf8_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf9_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
-	class __vwsnc10_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc10_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc11_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc1_Demo_demo_MainWindow_CreateViewModel__demo_IViewModel;
-	class __vwsnc2_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc3_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc2_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc3_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc4_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc5_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc6_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc7_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc8_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-	class __vwsnc9_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc5_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc6_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc7_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc8_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc9_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 }
 
 namespace demo
@@ -121,18 +125,22 @@ namespace demo
 	class TextListTabPage;
 	class TreeViewTabPageConstructor;
 	class TreeViewTabPage;
+	class TextEditorConstructor;
+	class TextEditor;
 	class CategoryDisplayerConstructor;
 	class CategoryDisplayer;
 	class CategoryVisualizerConstructor;
 	class CategoryVisualizer;
+	class GenderComboItemTemplateConstructor;
+	class GenderComboItemTemplate;
 	class GenderDisplayerConstructor;
 	class GenderDisplayer;
 	class GenderEditorConstructor;
 	class GenderEditor;
+	class GenderItemTemplateConstructor;
+	class GenderItemTemplate;
 	class GenderVisualizerConstructor;
 	class GenderVisualizer;
-	class TextEditorConstructor;
-	class TextEditor;
 	class MyTextItem;
 	class MyDataItem;
 	class IViewModel;
@@ -462,14 +470,47 @@ namespace demo
 		~TreeViewTabPage();
 	};
 
+	class TextEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<TextEditorConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditorConstructor>;
+#endif
+	protected:
+		::demo::TextEditor* self = static_cast<::demo::TextEditor*>(nullptr);
+		::vl::presentation::controls::GuiSinglelineTextBox* textBox = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		void __vwsn_initialize_instance_(::demo::TextEditor* __vwsn_this_);
+	public:
+		TextEditorConstructor();
+	};
+
+	class TextEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::TextEditorConstructor, public ::vl::reflection::Description<TextEditor>
+	{
+		friend class ::demo::TextEditorConstructor;
+		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditor>;
+#endif
+	public:
+		TextEditor();
+		~TextEditor();
+	};
+
 	class CategoryDisplayerConstructor : public ::vl::Object, public ::vl::reflection::Description<CategoryDisplayerConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryDisplayerConstructor>;
 #endif
@@ -490,12 +531,12 @@ namespace demo
 	class CategoryDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::CategoryDisplayerConstructor, public ::vl::reflection::Description<CategoryDisplayer>
 	{
 		friend class ::demo::CategoryDisplayerConstructor;
-		friend class ::vl_workflow_global::__vwsnc2_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc3_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc4_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf41_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf42_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf43_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryDisplayer>;
 #endif
@@ -510,8 +551,8 @@ namespace demo
 
 	class CategoryVisualizerConstructor : public ::vl::Object, public ::vl::reflection::Description<CategoryVisualizerConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryVisualizerConstructor>;
 #endif
@@ -527,8 +568,8 @@ namespace demo
 	class CategoryVisualizer : public ::vl::presentation::templates::GuiGridVisualizerTemplate, public ::demo::CategoryVisualizerConstructor, public ::vl::reflection::Description<CategoryVisualizer>
 	{
 		friend class ::demo::CategoryVisualizerConstructor;
-		friend class ::vl_workflow_global::__vwsnc5_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf44_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryVisualizer>;
 #endif
@@ -537,10 +578,38 @@ namespace demo
 		~CategoryVisualizer();
 	};
 
+	class GenderComboItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderComboItemTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderComboItemTemplateConstructor>;
+#endif
+	protected:
+		::demo::MyGender SelectedGender = static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(0));
+		::demo::GenderComboItemTemplate* __vwsn_precompile_0 = static_cast<::demo::GenderComboItemTemplate*>(nullptr);
+		::demo::GenderDisplayer* __vwsn_precompile_1 = static_cast<::demo::GenderDisplayer*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		void __vwsn_initialize_instance_(::demo::GenderComboItemTemplate* __vwsn_this_);
+	public:
+		GenderComboItemTemplateConstructor();
+	};
+
+	class GenderComboItemTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::demo::GenderComboItemTemplateConstructor, public ::vl::reflection::Description<GenderComboItemTemplate>
+	{
+		friend class ::demo::GenderComboItemTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderComboItemTemplate>;
+#endif
+	public:
+		::demo::MyGender __vwsn_parameter_SelectedGender = static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(0));
+		::demo::MyGender GetSelectedGender();
+		GenderComboItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender);
+		~GenderComboItemTemplate();
+	};
+
 	class GenderDisplayerConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderDisplayerConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderDisplayerConstructor>;
 #endif
@@ -556,8 +625,8 @@ namespace demo
 	class GenderDisplayer : public ::vl::presentation::controls::GuiCustomControl, public ::demo::GenderDisplayerConstructor, public ::vl::reflection::Description<GenderDisplayer>
 	{
 		friend class ::demo::GenderDisplayerConstructor;
-		friend class ::vl_workflow_global::__vwsnc6_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderDisplayer>;
 #endif
@@ -572,8 +641,12 @@ namespace demo
 
 	class GenderEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderEditorConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf50_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf51_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderEditorConstructor>;
 #endif
@@ -589,8 +662,12 @@ namespace demo
 	class GenderEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::GenderEditorConstructor, public ::vl::reflection::Description<GenderEditor>
 	{
 		friend class ::demo::GenderEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc7_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf50_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf51_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderEditor>;
 #endif
@@ -601,10 +678,38 @@ namespace demo
 		~GenderEditor();
 	};
 
+	class GenderItemTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderItemTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplateConstructor>;
+#endif
+	protected:
+		::demo::MyGender SelectedGender = static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(0));
+		::demo::GenderItemTemplate* __vwsn_precompile_0 = static_cast<::demo::GenderItemTemplate*>(nullptr);
+		::demo::GenderDisplayer* __vwsn_precompile_1 = static_cast<::demo::GenderDisplayer*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		void __vwsn_initialize_instance_(::demo::GenderItemTemplate* __vwsn_this_);
+	public:
+		GenderItemTemplateConstructor();
+	};
+
+	class GenderItemTemplate : public ::vl::presentation::templates::GuiTextListItemTemplate, public ::demo::GenderItemTemplateConstructor, public ::vl::reflection::Description<GenderItemTemplate>
+	{
+		friend class ::demo::GenderItemTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplate>;
+#endif
+	public:
+		::demo::MyGender __vwsn_parameter_SelectedGender = static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(0));
+		::demo::MyGender GetSelectedGender();
+		GenderItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender);
+		~GenderItemTemplate();
+	};
+
 	class GenderVisualizerConstructor : public ::vl::Object, public ::vl::reflection::Description<GenderVisualizerConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc11_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf52_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderVisualizerConstructor>;
 #endif
@@ -620,47 +725,14 @@ namespace demo
 	class GenderVisualizer : public ::vl::presentation::templates::GuiGridVisualizerTemplate, public ::demo::GenderVisualizerConstructor, public ::vl::reflection::Description<GenderVisualizer>
 	{
 		friend class ::demo::GenderVisualizerConstructor;
-		friend class ::vl_workflow_global::__vwsnc8_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
+		friend class ::vl_workflow_global::__vwsnc11_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf52_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__;
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderVisualizer>;
 #endif
 	public:
 		GenderVisualizer();
 		~GenderVisualizer();
-	};
-
-	class TextEditorConstructor : public ::vl::Object, public ::vl::reflection::Description<TextEditorConstructor>
-	{
-		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditorConstructor>;
-#endif
-	protected:
-		::demo::TextEditor* self = static_cast<::demo::TextEditor*>(nullptr);
-		::vl::presentation::controls::GuiSinglelineTextBox* textBox = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		void __vwsn_initialize_instance_(::demo::TextEditor* __vwsn_this_);
-	public:
-		TextEditorConstructor();
-	};
-
-	class TextEditor : public ::vl::presentation::templates::GuiGridEditorTemplate, public ::demo::TextEditorConstructor, public ::vl::reflection::Description<TextEditor>
-	{
-		friend class ::demo::TextEditorConstructor;
-		friend class ::vl_workflow_global::__vwsnc10_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc9_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__;
-#ifndef VCZH_DEBUG_NO_REFLECTION
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextEditor>;
-#endif
-	public:
-		TextEditor();
-		~TextEditor();
 	};
 
 	class MyTextItem : public ::vl::Object, public ::vl::reflection::Description<MyTextItem>
@@ -1052,20 +1124,20 @@ Closures
 		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
-	struct __vwsnf41_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__
+	struct __vwsnf41_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__
 	{
-		::demo::CategoryDisplayerConstructor* __vwsnthis_0;
+		::demo::TextEditorConstructor* __vwsnthis_0;
 
-		__vwsnf41_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0);
+		__vwsnf41_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__(::demo::TextEditorConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf42_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__
+	struct __vwsnf42_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__
 	{
-		::demo::CategoryDisplayerConstructor* __vwsnthis_0;
+		::demo::TextEditorConstructor* __vwsnthis_0;
 
-		__vwsnf42_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0);
+		__vwsnf42_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__(::demo::TextEditorConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
@@ -1079,58 +1151,58 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf44_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__
+	struct __vwsnf44_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__
+	{
+		::demo::CategoryDisplayerConstructor* __vwsnthis_0;
+
+		__vwsnf44_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf45_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__
+	{
+		::demo::CategoryDisplayerConstructor* __vwsnthis_0;
+
+		__vwsnf45_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance__(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf46_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__
 	{
 		::demo::CategoryVisualizerConstructor* __vwsnthis_0;
 
-		__vwsnf44_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__(::demo::CategoryVisualizerConstructor* __vwsnctorthis_0);
+		__vwsnf46_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance__(::demo::CategoryVisualizerConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf45_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__
+	struct __vwsnf47_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__
 	{
 		::demo::GenderDisplayerConstructor* __vwsnthis_0;
 
-		__vwsnf45_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(::demo::GenderDisplayerConstructor* __vwsnctorthis_0);
+		__vwsnf47_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance__(::demo::GenderDisplayerConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf46_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__
+	struct __vwsnf48_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__
 	{
 		::demo::GenderEditorConstructor* __vwsnthis_0;
 
-		__vwsnf46_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__(::demo::GenderEditorConstructor* __vwsnctorthis_0);
+		__vwsnf48_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__(::demo::GenderEditorConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
-	struct __vwsnf47_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__
+	struct __vwsnf49_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__
 	{
-		::demo::GenderVisualizerConstructor* __vwsnthis_0;
+		::demo::GenderEditorConstructor* __vwsnthis_0;
 
-		__vwsnf47_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__(::demo::GenderVisualizerConstructor* __vwsnctorthis_0);
+		__vwsnf49_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__(::demo::GenderEditorConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf48_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__
-	{
-		::demo::TextEditorConstructor* __vwsnthis_0;
-
-		__vwsnf48_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__(::demo::TextEditorConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsnf49_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__
-	{
-		::demo::TextEditorConstructor* __vwsnthis_0;
-
-		__vwsnf49_Demo_demo_TextEditorConstructor___vwsn_initialize_instance__(::demo::TextEditorConstructor* __vwsnctorthis_0);
-
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		::vl::presentation::templates::GuiControlTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -1140,6 +1212,33 @@ Closures
 		__vwsnf4_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__(::demo::DataGridTabPageConstructor* __vwsnctorthis_0);
 
 		::vl::reflection::description::Value operator()(const ::vl::reflection::description::Value& __vwsn_item_, const ::vl::reflection::description::Value& __vwsn_value_, bool __vwsn_update_) const;
+	};
+
+	struct __vwsnf50_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__
+	{
+		::demo::GenderEditorConstructor* __vwsnthis_0;
+
+		__vwsnf50_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__(::demo::GenderEditorConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf51_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__
+	{
+		::demo::GenderEditorConstructor* __vwsnthis_0;
+
+		__vwsnf51_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance__(::demo::GenderEditorConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf52_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__
+	{
+		::demo::GenderVisualizerConstructor* __vwsnthis_0;
+
+		__vwsnf52_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance__(::demo::GenderVisualizerConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -1187,14 +1286,32 @@ Closures
 		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
-	class __vwsnc10_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc10_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::demo::TextEditorConstructor* __vwsnthis_0;
+		::demo::GenderEditorConstructor* __vwsnthis_0;
 
-		__vwsnc10_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::TextEditorConstructor* __vwsnctorthis_0);
+		__vwsnc10_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderEditorConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiComboBoxListControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc11_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::GenderVisualizerConstructor* __vwsnthis_0;
+
+		__vwsnc11_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderVisualizerConstructor* __vwsnctorthis_0);
+
+		::demo::GenderVisualizer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -1216,37 +1333,37 @@ Closures
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> GetTextItems() override;
 	};
 
-	class __vwsnc2_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc2_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::demo::CategoryDisplayerConstructor* __vwsnthis_0;
+		::demo::TextEditorConstructor* __vwsnthis_0;
 
-		__vwsnc2_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0);
+		__vwsnc2_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::TextEditorConstructor* __vwsnctorthis_0);
 
-		::demo::CategoryDisplayer* __vwsn_bind_cache_0 = nullptr;
+		::demo::TextEditor* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
 	};
 
-	class __vwsnc3_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc3_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::demo::CategoryDisplayerConstructor* __vwsnthis_0;
+		::demo::TextEditorConstructor* __vwsnthis_0;
 
-		__vwsnc3_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0);
+		__vwsnc3_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::TextEditorConstructor* __vwsnctorthis_0);
 
-		::demo::CategoryDisplayer* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -1264,18 +1381,54 @@ Closures
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc5_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::CategoryDisplayerConstructor* __vwsnthis_0;
+
+		__vwsnc5_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0);
+
+		::demo::CategoryDisplayer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc6_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::CategoryDisplayerConstructor* __vwsnthis_0;
+
+		__vwsnc6_Demo_demo_CategoryDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::CategoryDisplayerConstructor* __vwsnctorthis_0);
+
+		::demo::CategoryDisplayer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
 	};
 
-	class __vwsnc5_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc7_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::CategoryVisualizerConstructor* __vwsnthis_0;
 
-		__vwsnc5_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::CategoryVisualizerConstructor* __vwsnctorthis_0);
+		__vwsnc7_Demo_demo_CategoryVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::CategoryVisualizerConstructor* __vwsnctorthis_0);
 
 		::demo::CategoryVisualizer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -1288,12 +1441,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc6_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc8_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::GenderDisplayerConstructor* __vwsnthis_0;
 
-		__vwsnc6_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderDisplayerConstructor* __vwsnctorthis_0);
+		__vwsnc8_Demo_demo_GenderDisplayerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderDisplayerConstructor* __vwsnctorthis_0);
 
 		::demo::GenderDisplayer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -1306,50 +1459,14 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc7_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc9_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::GenderEditorConstructor* __vwsnthis_0;
 
-		__vwsnc7_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderEditorConstructor* __vwsnctorthis_0);
+		__vwsnc9_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderEditorConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiComboBoxListControl* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc8_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::GenderVisualizerConstructor* __vwsnthis_0;
-
-		__vwsnc8_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderVisualizerConstructor* __vwsnctorthis_0);
-
-		::demo::GenderVisualizer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc9_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::TextEditorConstructor* __vwsnthis_0;
-
-		__vwsnc9_Demo_demo_TextEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::TextEditorConstructor* __vwsnctorthis_0);
-
-		::demo::TextEditor* __vwsn_bind_cache_0 = nullptr;
+		::demo::GenderEditor* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
