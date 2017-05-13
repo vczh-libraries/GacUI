@@ -1419,13 +1419,14 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiControl)
 				CLASS_MEMBER_CONSTRUCTOR(GuiControl*(GuiControl::IStyleController*), {L"styleController"})
 
+				CLASS_MEMBER_GUIEVENT(RenderTargetChanged)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(StyleController)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(FocusableComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ChildrenCount)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedControlHost)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(RelatedControlHost, RenderTargetChanged)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(VisuallyEnabled)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Enabled)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Visible)
@@ -1720,6 +1721,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Arranger)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Axis)
+				CLASS_MEMBER_PROPERTY_FAST(DisplayItemBackground)
 
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})
@@ -1734,7 +1736,7 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IItemArrangerCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
-				CLASS_MEMBER_METHOD(RequestItem, {L"itemIndex"})
+				CLASS_MEMBER_METHOD(RequestItem, {L"itemIndex" _ L"itemComposition"})
 				CLASS_MEMBER_METHOD(ReleaseItem, {L"style"})
 				CLASS_MEMBER_METHOD(SetViewLocation, {L"value"})
 				CLASS_MEMBER_METHOD(GetStylePreferredSize, {L"style"})
@@ -2438,9 +2440,9 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Factory)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Template)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(CellValueSaved)
 
 				CLASS_MEMBER_METHOD(BeforeEditCell, {L"itemProvider" _ L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(ReinstallEditor, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDataEditor)
 
 			BEGIN_INTERFACE_MEMBER(IDataGridView)
@@ -2491,18 +2493,22 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(MainColumnVisualizerTemplate)
 				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(MainColumnVisualizerTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(MainColumnVisualizerTemplate)
 
 			BEGIN_CLASS_MEMBER(SubColumnVisualizerTemplate)
 				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(SubColumnVisualizerTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(SubColumnVisualizerTemplate)
 
 			BEGIN_CLASS_MEMBER(HyperlinkVisualizerTemplate)
 				CLASS_MEMBER_BASE(SubColumnVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(HyperlinkVisualizerTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(HyperlinkVisualizerTemplate)
 
 			BEGIN_CLASS_MEMBER(CellBorderVisualizerTemplate)
 				CLASS_MEMBER_BASE(GuiGridVisualizerTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(CellBorderVisualizerTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(CellBorderVisualizerTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiDatePicker)

@@ -3657,9 +3657,10 @@ Resource
 			void									SavePrecompiledBinary(stream::IStream& stream);
 
 			/// <summary>Precompile this resource to improve performance.</summary>
+			/// <returns>The resource folder contains all precompiled result. The folder will be added to the resource if there is no error.</returns>
 			/// <param name="callback">A callback to receive progress.</param>
 			/// <param name="errors">All collected errors during precompiling a resource.</param>
-			void									Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
+			Ptr<GuiResourceFolder>					Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
 
 			/// <summary>Initialize a precompiled resource.</summary>
 			/// <param name="usage">In which role an application is initializing this resource.</param>
@@ -8825,6 +8826,8 @@ Item Template
 #define GuiGridEditorTemplate_PROPERTIES(F)\
 				F(GuiGridEditorTemplate, description::Value, RowValue)\
 				F(GuiGridEditorTemplate, description::Value, CellValue)\
+				F(GuiGridEditorTemplate, bool, CellValueSaved)\
+				F(GuiGridEditorTemplate, controls::GuiControl*, FocusControl)\
 
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -8982,6 +8985,8 @@ Basic Construction
 				GuiControl(IStyleController* _styleController);
 				~GuiControl();
 
+				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
+				compositions::GuiNotifyEvent			RenderTargetChanged;
 				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
 				compositions::GuiNotifyEvent			VisibleChanged;
 				/// <summary>Enabled event. This event will be raised when the enabling state of the control is changed.</summary>
@@ -10869,7 +10874,8 @@ List Control
 					/// <summary>Request an item control representing an item in the item provider. This function is suggested to call when an item control gets into the visible area.</summary>
 					/// <returns>The item control.</returns>
 					/// <param name="itemIndex">The index of the item in the item provider.</param>
-					virtual ItemStyle*								RequestItem(vint itemIndex)=0;
+					/// <param name="itemComposition">The composition that represents the item. Set to null if the item style is expected to be put directly into the list control.</param>
+					virtual ItemStyle*								RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)=0;
 					/// <summary>Release an item control. This function is suggested to call when an item control gets out of the visible area.</summary>
 					/// <param name="style">The item control.</param>
 					virtual void									ReleaseItem(ItemStyle* style)=0;
@@ -10879,19 +10885,19 @@ List Control
 					/// <summary>Get the preferred size of an item control.</summary>
 					/// <returns>The preferred size of an item control.</returns>
 					/// <param name="style">The item control.</param>
-					virtual Size									GetStylePreferredSize(ItemStyle* style)=0;
+					virtual Size									GetStylePreferredSize(compositions::GuiBoundsComposition* style)=0;
 					/// <summary>Set the alignment of an item control.</summary>
 					/// <param name="style">The item control.</param>
 					/// <param name="margin">The new alignment.</param>
-					virtual void									SetStyleAlignmentToParent(ItemStyle* style, Margin margin)=0;
+					virtual void									SetStyleAlignmentToParent(compositions::GuiBoundsComposition* style, Margin margin)=0;
 					/// <summary>Get the bounds of an item control.</summary>
 					/// <returns>The bounds of an item control.</returns>
 					/// <param name="style">The item control.</param>
-					virtual Rect									GetStyleBounds(ItemStyle* style)=0;
+					virtual Rect									GetStyleBounds(compositions::GuiBoundsComposition* style)=0;
 					/// <summary>Set the bounds of an item control.</summary>
 					/// <param name="style">The item control.</param>
 					/// <param name="bounds">The new bounds.</param>
-					virtual void									SetStyleBounds(ItemStyle* style, Rect bounds)=0;
+					virtual void									SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)=0;
 					/// <summary>Get the <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</summary>
 					/// <returns>The <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</returns>
 					virtual compositions::GuiGraphicsComposition*	GetContainerComposition()=0;
@@ -11006,7 +11012,7 @@ List Control
 					IItemProvider*								itemProvider = nullptr;
 					InstalledStyleMap							installedStyles;
 
-					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex);
+					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition);
 					ItemStyle*									UninstallStyle(vint index);
 					void										OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
@@ -11017,13 +11023,13 @@ List Control
 
 					void										OnAttached(IItemProvider* provider)override;
 					void										OnItemModified(vint start, vint count, vint newCount)override;
-					ItemStyle*									RequestItem(vint itemIndex)override;
+					ItemStyle*									RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)override;
 					void										ReleaseItem(ItemStyle* style)override;
 					void										SetViewLocation(Point value)override;
-					Size										GetStylePreferredSize(ItemStyle* style)override;
-					void										SetStyleAlignmentToParent(ItemStyle* style, Margin margin)override;
-					Rect										GetStyleBounds(ItemStyle* style)override;
-					void										SetStyleBounds(ItemStyle* style, Rect bounds)override;
+					Size										GetStylePreferredSize(compositions::GuiBoundsComposition* style)override;
+					void										SetStyleAlignmentToParent(compositions::GuiBoundsComposition* style, Margin margin)override;
+					Rect										GetStyleBounds(compositions::GuiBoundsComposition* style)override;
+					void										SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)override;
 					compositions::GuiGraphicsComposition*		GetContainerComposition()override;
 					void										OnTotalSizeChanged()override;
 				};
@@ -11038,6 +11044,7 @@ List Control
 				Ptr<IItemArranger>								itemArranger;
 				Ptr<compositions::IGuiAxis>						axis;
 				Size											fullSize;
+				bool											displayItemBackground = true;
 
 				virtual void									OnItemModified(vint start, vint count, vint newCount);
 				virtual void									OnStyleInstalled(vint itemIndex, ItemStyle* style);
@@ -11155,6 +11162,12 @@ List Control
 				/// <returns>The adopted size, making the list control just enough to display several items.</returns>
 				/// <param name="expectedSize">The expected size, to provide a guidance.</param>
 				virtual Size									GetAdoptedSize(Size expectedSize);
+				/// <summary>Test if the list control displays predefined item background.</summary>
+				/// <returns>Returns true if the list control displays predefined item background.</returns>
+				bool											GetDisplayItemBackground();
+				/// <summary>Set if the list control displays predefined item background.</summary>
+				/// <param name="value">Set to true to display item background.</param>
+				void											SetDisplayItemBackground(bool value);
 			};
 
 /***********************************************************************
@@ -11334,7 +11347,6 @@ DefaultTextListItemTemplate
 				protected:
 					using BulletStyle = GuiSelectableButton::IStyleController;
 
-					GuiSelectableButton*					backgroundButton = nullptr;
 					GuiSelectableButton*					bulletButton = nullptr;
 					elements::GuiSolidLabelElement*			textElement = nullptr;
 					bool									supressEdit = false;
@@ -11343,7 +11355,6 @@ DefaultTextListItemTemplate
 					void									OnInitialize()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnCheckedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -11546,8 +11557,10 @@ Predefined ItemArranger
 				/// <summary>Ranged item arranger. This arranger implements most of the common functionality for those arrangers that display a continuing subset of item at a time.</summary>
 				class RangedItemArrangerBase : public Object, virtual public GuiListControl::IItemArranger, public Description<RangedItemArrangerBase>
 				{
-					typedef collections::List<GuiListControl::ItemStyle*>		StyleList;
 				protected:
+					using ItemStyleRecord = collections::Pair<GuiListControl::ItemStyle*, GuiSelectableButton*>;
+					typedef collections::List<ItemStyleRecord>	StyleList;
+
 					GuiListControl*								listControl = nullptr;
 					GuiListControl::IItemArrangerCallback*		callback = nullptr;
 					GuiListControl::IItemProvider*				itemProvider = nullptr;
@@ -11561,13 +11574,16 @@ Predefined ItemArranger
 
 					void										InvalidateAdoptedSize();
 					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
+					ItemStyleRecord								CreateStyle(vint index);
+					void										DeleteStyle(ItemStyleRecord style);
+					compositions::GuiBoundsComposition*			GetStyleBounds(ItemStyleRecord style);
 					void										ClearStyles();
 					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds);
 					virtual void								RearrangeItemBounds();
 
 					virtual void								BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
-					virtual void								PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
-					virtual bool								IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds) = 0;
+					virtual void								PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
+					virtual bool								IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
 					virtual bool								EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
 					virtual void								InvalidateItemSizeCache() = 0;
 					virtual Size								OnCalculateTotalSize() = 0;
@@ -11602,8 +11618,8 @@ Predefined ItemArranger
 					virtual vint								GetYOffset();
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-					bool										IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;
@@ -11629,8 +11645,8 @@ Predefined ItemArranger
 					void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-					bool										IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;
@@ -11658,8 +11674,8 @@ Predefined ItemArranger
 					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
 
 					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, vint index, GuiListControl::ItemStyle* style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-					bool										IsItemOutOfViewBounds(vint index, GuiListControl::ItemStyle* style, Rect bounds, Rect viewBounds)override;
+					void										PlaceItem(bool forMoving, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
 					void										InvalidateItemSizeCache()override;
 					Size										OnCalculateTotalSize()override;
@@ -12254,7 +12270,7 @@ ListViewItemProvider
 					GuiMenu*										dropdownPopup = nullptr;
 					ColumnSortingState								sortingState = ColumnSortingState::NotSorted;
 					
-					void											NotifyUpdate();
+					void											NotifyUpdate(bool affectItem);
 				public:
 					/// <summary>Create a column with the specified text and size.</summary>
 					/// <param name="_text">The specified text.</param>
@@ -12317,9 +12333,12 @@ ListViewItemProvider
 				/// <summary>List view column container.</summary>
 				class ListViewColumns : public ItemsBase<Ptr<ListViewColumn>>
 				{
+					friend class ListViewColumn;
 				protected:
 					IListViewItemProvider*							itemProvider;
+					bool											affectItemFlag = true;
 
+					void											NotifyColumnUpdated(vint column, bool affectItem);
 					void											AfterInsert(vint index, const Ptr<ListViewColumn>& value)override;
 					void											BeforeRemove(vint index, const Ptr<ListViewColumn>& value)override;
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
@@ -12796,6 +12815,7 @@ GuiVirtualTreeListControl
 
 				void								OnItemMouseEvent(compositions::GuiNodeMouseEvent& nodeEvent, compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);
 				void								OnItemNotifyEvent(compositions::GuiNodeNotifyEvent& nodeEvent, compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
+				void								OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a tree list control in virtual mode.</summary>
 				/// <param name="_styleProvider">The style provider for this control.</param>
@@ -12988,7 +13008,6 @@ DefaultTreeItemTemplate
 				class DefaultTreeItemTemplate : public templates::GuiTreeItemTemplate
 				{
 				protected:
-					GuiSelectableButton*					backgroundButton = nullptr;
 					GuiSelectableButton*					expandingButton = nullptr;
 					compositions::GuiTableComposition*		table = nullptr;
 					elements::GuiImageFrameElement*			imageElement = nullptr;
@@ -12997,14 +13016,11 @@ DefaultTreeItemTemplate
 					void									OnInitialize()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnTextColorChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnExpandingChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnExpandableChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnLevelChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void									OnImageChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void									SwitchNodeExpanding();
-					void									OnBackgroundButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void									OnExpandingButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void									OnExpandingButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
@@ -13110,7 +13126,7 @@ ComboBox with GuiListControl
 			class GuiComboBoxListControl : public GuiComboBoxBase, public Description<GuiComboBoxListControl>
 			{
 			public:
-				using ItemStyleProperty = TemplateProperty<templates::GuiControlTemplate>;
+				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
 
 				/// <summary>Style controller interface for <see cref="GuiComboBoxListControl"/>.</summary>
 				class IStyleController : public virtual GuiComboBoxBase::IStyleController, public Description<IStyleController>
@@ -13125,7 +13141,7 @@ ComboBox with GuiListControl
 				IStyleController*							styleController = nullptr;
 				GuiSelectableListControl*					containedListControl = nullptr;
 				ItemStyleProperty							itemStyleProperty;
-				templates::GuiControlTemplate*				itemStyleController = nullptr;
+				templates::GuiTemplate*						itemStyleController = nullptr;
 
 				bool										IsAltAvailable()override;
 				void										OnActiveAlt()override;
@@ -15269,8 +15285,9 @@ Datagrid Interfaces
 					/// <param name="column">The column number of the cell.</param>
 					virtual void										BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column) = 0;
 
-					/// <summary>Called when an editor is reinstalled during editing.</summary>
-					virtual void										ReinstallEditor() = 0;
+					/// <summary>Test if the edit has saved the data.</summary>
+					/// <returns>Returns true if the data is saved.</returns>
+					virtual bool										GetCellValueSaved() = 0;
 				};
 
 				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>
@@ -15357,11 +15374,6 @@ namespace vl
 			{
 				class DefaultListViewItemTemplate : public templates::GuiListItemTemplate
 				{
-				protected:
-					GuiSelectableButton*					backgroundButton = nullptr;
-
-					void									OnInitialize()override;
-					void									OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					DefaultListViewItemTemplate();
 					~DefaultListViewItemTemplate();
@@ -15445,7 +15457,7 @@ namespace vl
 
 				class DetailListViewItemTemplate
 					: public DefaultListViewItemTemplate
-					, protected virtual ListViewColumnItemArranger::IColumnItemViewCallback
+					, public virtual ListViewColumnItemArranger::IColumnItemViewCallback
 				{
 					typedef collections::Array<elements::GuiSolidLabelElement*>		SubItemList;
 					typedef ListViewColumnItemArranger::IColumnItemView				IColumnItemView;
@@ -15500,7 +15512,7 @@ DefaultDataGridItemTemplate
 
 				class DefaultDataGridItemTemplate
 					: public DefaultListViewItemTemplate
-					, private ListViewColumnItemArranger::IColumnItemViewCallback
+					, public ListViewColumnItemArranger::IColumnItemViewCallback
 				{
 				protected:
 					compositions::GuiTableComposition*					textTable = nullptr;
@@ -15525,9 +15537,11 @@ DefaultDataGridItemTemplate
 					~DefaultDataGridItemTemplate();
 
 					void												UpdateSubItemSize();
-					void												ForceSetEditor(vint column, IDataEditor* editor);
+					bool												IsEditorOpened();
+					void												NotifyOpenEditor(vint column, IDataEditor* editor);
 					void												NotifyCloseEditor();
 					void												NotifySelectCell(vint column);
+					void												NotifyCellEdited();
 				};
 			}
 
@@ -15555,11 +15569,12 @@ GuiVirtualDataGrid
 				bool													currentEditorOpeningEditor = false;
 
 				void													OnItemModified(vint start, vint count, vint newCount)override;
+				void													OnStyleUninstalled(ItemStyle* style)override;
 
 				void													NotifyCloseEditor();
 				void													NotifySelectCell(vint row, vint column);
-				list::IDataEditor*										OpenEditor(vint row, vint column, list::IDataEditorFactory* editorFactory);
-				void													CloseEditor(bool forOpenNewEditor);
+				bool													StartEdit(vint row, vint column);
+				void													StopEdit(bool forOpenNewEditor);
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 
 			public:
@@ -16212,7 +16227,7 @@ DataColumn
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
-					void												NotifyAllColumnsUpdate();
+					void												NotifyAllColumnsUpdate(bool affectItem);
 				public:
 					DataColumn();
 					~DataColumn();
@@ -16303,9 +16318,12 @@ DataColumn
 
 				class DataColumns : public ItemsBase<Ptr<DataColumn>>
 				{
+					friend class DataColumn;
 				protected:
 					DataProvider*										dataProvider = nullptr;
+					bool												affectItemFlag = true;
 
+					void												NotifyColumnUpdated(vint index, bool affectItem);
 					void												NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 					bool												QueryInsert(vint index, const Ptr<DataColumn>& value)override;
 					void												AfterInsert(vint index, const Ptr<DataColumn>& value)override;
@@ -17402,7 +17420,7 @@ Extension Bases
 					IDataGridContext*									dataGridContext = nullptr;
 					templates::GuiGridEditorTemplate*					editorTemplate = nullptr;
 
-					void												RequestSaveData();
+					void												OnCellValueChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					/// <summary>Create the data editor.</summary>
 					DataEditorBase();
@@ -17412,7 +17430,7 @@ Extension Bases
 					templates::GuiGridEditorTemplate*					GetTemplate()override;
 					void												NotifyDeletedTemplate()override;
 					void												BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column)override;
-					void												ReinstallEditor()override;
+					bool												GetCellValueSaved()override;
 				};
 				
 				class DataEditorFactory : public Object, public virtual IDataEditorFactory, public Description<DataEditorFactory>
