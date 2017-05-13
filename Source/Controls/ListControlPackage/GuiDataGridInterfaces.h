@@ -116,8 +116,9 @@ Datagrid Interfaces
 					/// <param name="column">The column number of the cell.</param>
 					virtual void										BeforeEditCell(GuiListControl::IItemProvider* itemProvider, vint row, vint column) = 0;
 
-					/// <summary>Called when an editor is reinstalled during editing.</summary>
-					virtual void										ReinstallEditor() = 0;
+					/// <summary>Test if the edit has saved the data.</summary>
+					/// <returns>Returns true if the data is saved.</returns>
+					virtual bool										GetCellValueSaved() = 0;
 				};
 
 				/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for [T:vl.presentation.controls.GuiVirtualDataGrid].</summary>

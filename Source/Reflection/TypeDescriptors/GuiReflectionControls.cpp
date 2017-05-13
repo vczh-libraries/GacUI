@@ -1205,9 +1205,9 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Factory)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Template)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(CellValueSaved)
 
 				CLASS_MEMBER_METHOD(BeforeEditCell, {L"itemProvider" _ L"row" _ L"column"})
-				CLASS_MEMBER_METHOD(ReinstallEditor, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDataEditor)
 
 			BEGIN_INTERFACE_MEMBER(IDataGridView)

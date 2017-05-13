@@ -652,6 +652,7 @@ GuiGridEditorTemplate
 			GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiGridEditorTemplate::GuiGridEditorTemplate()
+				:CellValueSaved_(true)
 			{
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}

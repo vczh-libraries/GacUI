@@ -612,6 +612,7 @@ Item Template
 #define GuiGridEditorTemplate_PROPERTIES(F)\
 				F(GuiGridEditorTemplate, description::Value, RowValue)\
 				F(GuiGridEditorTemplate, description::Value, CellValue)\
+				F(GuiGridEditorTemplate, bool, CellValueSaved)\
 
 				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
