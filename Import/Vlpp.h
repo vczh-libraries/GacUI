@@ -11222,6 +11222,22 @@ Coroutine (Async)
 Libraries
 ***********************************************************************/
 
+#define REFLECTION_PREDEFINED_PRIMITIVE_TYPES(F)\
+			F(vuint8_t)		\
+			F(vuint16_t)	\
+			F(vuint32_t)	\
+			F(vuint64_t)	\
+			F(vint8_t)		\
+			F(vint16_t)		\
+			F(vint32_t)		\
+			F(vint64_t)		\
+			F(float)		\
+			F(double)		\
+			F(bool)			\
+			F(wchar_t)		\
+			F(WString)		\
+			F(Locale)		\
+
 			class Sys : public Description<Sys>
 			{
 			public:
@@ -11230,6 +11246,11 @@ Libraries
 				static WString		Right(const WString& value, vint length)			{ return value.Right(length); }
 				static WString		Mid(const WString& value, vint start, vint length)	{ return value.Sub(start, length); }
 				static vint			Find(const WString& value, const WString& substr)	{ return INVLOC.FindFirst(value, substr, Locale::Normalization::None).key; }
+
+#define DEFINE_COMPARE(TYPE) static vint Compare(TYPE a, TYPE b);
+				REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
+				DEFINE_COMPARE(DateTime)
+#undef DEFINE_COMPARE
 
 				static Ptr<IValueEnumerable>		ReverseEnumerable(Ptr<IValueEnumerable> value);
 			};
@@ -15024,73 +15045,58 @@ Predefined Types
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-			DECL_TYPE_INFO(Sys)
-			DECL_TYPE_INFO(Math)
+#define REFLECTION_PREDEFINED_COMPLEX_TYPES(F, VOID_TYPE)\
+			F(Sys)							\
+			F(Math)							\
+			F(VOID_TYPE)					\
+			F(VoidValue)					\
+			F(IDescriptable)				\
+			F(DescriptableObject)			\
+			F(DateTime)						\
+			F(IValueEnumerator)				\
+			F(IValueEnumerable)				\
+			F(IValueReadonlyList)			\
+			F(IValueList)					\
+			F(IValueObservableList)			\
+			F(IValueReadonlyDictionary)		\
+			F(IValueDictionary)				\
+			F(IValueInterfaceProxy)			\
+			F(IValueFunctionProxy)			\
+			F(IValueSubscription)			\
+			F(IValueCallStack)				\
+			F(IValueException)				\
+			F(CoroutineStatus)				\
+			F(CoroutineResult)				\
+			F(ICoroutine)					\
+			F(EnumerableCoroutine::IImpl)	\
+			F(EnumerableCoroutine)			\
+			F(AsyncStatus)					\
+			F(IAsync)						\
+			F(IPromise)						\
+			F(IFuture)						\
+			F(IAsyncScheduler)				\
+			F(AsyncCoroutine::IImpl)		\
+			F(AsyncCoroutine)				\
+			F(IBoxedValue)					\
+			F(IBoxedValue::CompareResult)	\
+			F(IValueType)					\
+			F(IEnumType)					\
+			F(ISerializableType)			\
+			F(ITypeInfo)					\
+			F(ITypeInfo::Decorator)			\
+			F(IMemberInfo)					\
+			F(IEventHandler)				\
+			F(IEventInfo)					\
+			F(IPropertyInfo)				\
+			F(IParameterInfo)				\
+			F(IMethodInfo)					\
+			F(IMethodGroupInfo)				\
+			F(TypeDescriptorFlags)			\
+			F(ITypeDescriptor)				\
 
-			DECL_TYPE_INFO(void)
-			DECL_TYPE_INFO(VoidValue)
-			DECL_TYPE_INFO(IDescriptable)
-			DECL_TYPE_INFO(DescriptableObject)
 			DECL_TYPE_INFO(Value)
-			DECL_TYPE_INFO(vuint8_t)
-			DECL_TYPE_INFO(vuint16_t)
-			DECL_TYPE_INFO(vuint32_t)
-			DECL_TYPE_INFO(vuint64_t)
-			DECL_TYPE_INFO(vint8_t)
-			DECL_TYPE_INFO(vint16_t)
-			DECL_TYPE_INFO(vint32_t)
-			DECL_TYPE_INFO(vint64_t)
-			DECL_TYPE_INFO(float)
-			DECL_TYPE_INFO(double)
-			DECL_TYPE_INFO(bool)
-			DECL_TYPE_INFO(wchar_t)
-			DECL_TYPE_INFO(WString)
-			DECL_TYPE_INFO(Locale)
-			DECL_TYPE_INFO(DateTime)
-
-			DECL_TYPE_INFO(IValueEnumerator)
-			DECL_TYPE_INFO(IValueEnumerable)
-			DECL_TYPE_INFO(IValueReadonlyList)
-			DECL_TYPE_INFO(IValueList)
-			DECL_TYPE_INFO(IValueObservableList)
-			DECL_TYPE_INFO(IValueReadonlyDictionary)
-			DECL_TYPE_INFO(IValueDictionary)
-			DECL_TYPE_INFO(IValueInterfaceProxy)
-			DECL_TYPE_INFO(IValueFunctionProxy)
-
-			DECL_TYPE_INFO(IValueSubscription)
-			DECL_TYPE_INFO(IValueCallStack)
-			DECL_TYPE_INFO(IValueException)
-
-			DECL_TYPE_INFO(CoroutineStatus)
-			DECL_TYPE_INFO(CoroutineResult)
-			DECL_TYPE_INFO(ICoroutine)
-			DECL_TYPE_INFO(EnumerableCoroutine::IImpl)
-			DECL_TYPE_INFO(EnumerableCoroutine)
-			DECL_TYPE_INFO(AsyncStatus)
-			DECL_TYPE_INFO(IAsync)
-			DECL_TYPE_INFO(IPromise)
-			DECL_TYPE_INFO(IFuture)
-			DECL_TYPE_INFO(IAsyncScheduler)
-			DECL_TYPE_INFO(AsyncCoroutine::IImpl)
-			DECL_TYPE_INFO(AsyncCoroutine)
-
-			DECL_TYPE_INFO(IBoxedValue)
-			DECL_TYPE_INFO(IBoxedValue::CompareResult)
-			DECL_TYPE_INFO(IValueType)
-			DECL_TYPE_INFO(IEnumType)
-			DECL_TYPE_INFO(ISerializableType)
-			DECL_TYPE_INFO(ITypeInfo)
-			DECL_TYPE_INFO(ITypeInfo::Decorator)
-			DECL_TYPE_INFO(IMemberInfo)
-			DECL_TYPE_INFO(IEventHandler)
-			DECL_TYPE_INFO(IEventInfo)
-			DECL_TYPE_INFO(IPropertyInfo)
-			DECL_TYPE_INFO(IParameterInfo)
-			DECL_TYPE_INFO(IMethodInfo)
-			DECL_TYPE_INFO(IMethodGroupInfo)
-			DECL_TYPE_INFO(TypeDescriptorFlags)
-			DECL_TYPE_INFO(ITypeDescriptor)
+			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DECL_TYPE_INFO)
+			REFLECTION_PREDEFINED_COMPLEX_TYPES(DECL_TYPE_INFO, void)
 
 #endif
 

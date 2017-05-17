@@ -8935,7 +8935,7 @@ Helper Functions
 									ITypeInfo* argumentType = genericType->GetGenericArgument(j + 1);
 									if (!CanConvertToType(types[j].Obj(), argumentType, false))
 									{
-										functionErrors.Add(WfErrors::FunctionArgumentTypeMismatched(node, result, i + 1, types[j].Obj(), argumentType));
+										functionErrors.Add(WfErrors::FunctionArgumentTypeMismatched(node, result, j + 1, types[j].Obj(), argumentType));
 										failed = true;
 									}
 								}

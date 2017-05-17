@@ -18765,6 +18765,24 @@ Libraries
 				}
 				return new system_sys::ReverseEnumerable(list);
 			}
+
+#define DEFINE_COMPARE(TYPE)\
+			vint Sys::Compare(TYPE a, TYPE b)\
+			{\
+				auto result = TypedValueSerializerProvider<TYPE>::Compare(a, b);\
+				switch (result)\
+				{\
+				case IBoxedValue::Smaller:	return -1;\
+				case IBoxedValue::Greater:	return 1;\
+				case IBoxedValue::Equal:	return 0;\
+				default:\
+					CHECK_FAIL(L"Unexpected compare result.");\
+				}\
+			}\
+
+			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
+			DEFINE_COMPARE(DateTime)
+#undef DEFINE_COMPARE
 		}
 	}
 }
@@ -18870,20 +18888,7 @@ TypedValueSerializerProvider
 				return IBoxedValue::Equal;\
 			}\
 
-			DEFINE_COMPARE(vuint8_t)
-			DEFINE_COMPARE(vuint16_t)
-			DEFINE_COMPARE(vuint32_t)
-			DEFINE_COMPARE(vuint64_t)
-			DEFINE_COMPARE(vint8_t)
-			DEFINE_COMPARE(vint16_t)
-			DEFINE_COMPARE(vint32_t)
-			DEFINE_COMPARE(vint64_t)
-			DEFINE_COMPARE(float)
-			DEFINE_COMPARE(double)
-			DEFINE_COMPARE(bool)
-			DEFINE_COMPARE(wchar_t)
-			DEFINE_COMPARE(WString)
-			DEFINE_COMPARE(Locale)
+			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
 
 #undef DEFINE_COMPARE
 
@@ -19251,7 +19256,11 @@ DateTimeValueSerializer
 
 			IBoxedValue::CompareResult TypedValueSerializerProvider<DateTime>::Compare(const DateTime& a, const DateTime& b)
 			{
-				return IBoxedValue::NotComparable;
+				auto ta = a.filetime;
+				auto tb = b.filetime;
+				if (ta < tb) return IBoxedValue::Smaller;
+				if (ta > tb) return IBoxedValue::Greater;
+				return IBoxedValue::Equal;
 			}
 
 /***********************************************************************
@@ -19342,6 +19351,11 @@ LoadPredefinedTypes
 				CLASS_MEMBER_STATIC_METHOD(Mid, { L"value" _ L"start" _ L"length" })
 				CLASS_MEMBER_STATIC_METHOD(Find, { L"value" _ L"substr" })
 				CLASS_MEMBER_STATIC_METHOD(ReverseEnumerable, { L"value" })
+
+#define DEFINE_COMPARE(TYPE) CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Compare, PROTECT_PARAMETERS({L"a" _ L"b"}), vint(*)(TYPE, TYPE))
+				REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
+				DEFINE_COMPARE(DateTime)
+#undef DEFINE_COMPARE
 			END_CLASS_MEMBER(Sys)
 
 			BEGIN_CLASS_MEMBER(Math)
@@ -19397,6 +19411,7 @@ LoadPredefinedTypes
 			END_INTERFACE_MEMBER(IDescriptable)
 
 			BEGIN_STRUCT_MEMBER(DateTime)
+				valueType = new SerializableValueType<DateTime>();
 				serializableType = new SerializableType<DateTime>();
 				STRUCT_MEMBER(year)
 				STRUCT_MEMBER(month)
@@ -19732,81 +19747,13 @@ LoadPredefinedTypes
 			class PredefinedTypeLoader : public Object, public ITypeLoader
 			{
 			public:
-				template<typename T>
-				void AddPrimitiveType(ITypeManager* manager)
-				{
-					manager->SetTypeDescriptor(TypeInfo<T>::content.typeName, new PrimitiveTypeDescriptor<T>());
-				}
-
 				void Load(ITypeManager* manager)override
 				{
 					manager->SetTypeDescriptor(TypeInfo<Value>::content.typeName, new TypedValueTypeDescriptorBase<Value, TypeDescriptorFlags::Object>);
-					AddPrimitiveType<vuint8_t>(manager);
-					AddPrimitiveType<vuint16_t>(manager);
-					AddPrimitiveType<vuint32_t>(manager);
-					AddPrimitiveType<vuint64_t>(manager);
-					AddPrimitiveType<vint8_t>(manager);
-					AddPrimitiveType<vint16_t>(manager);
-					AddPrimitiveType<vint32_t>(manager);
-					AddPrimitiveType<vint64_t>(manager);
-					AddPrimitiveType<float>(manager);
-					AddPrimitiveType<double>(manager);
-					AddPrimitiveType<wchar_t>(manager);
-					AddPrimitiveType<WString>(manager);
-					AddPrimitiveType<Locale>(manager);
-					AddPrimitiveType<bool>(manager);
-
-					ADD_TYPE_INFO(Sys)
-					ADD_TYPE_INFO(Math)
-
-					ADD_TYPE_INFO(VoidValue)
-					ADD_TYPE_INFO(IDescriptable)
-					ADD_TYPE_INFO(DescriptableObject)
-					ADD_TYPE_INFO(DateTime)
-
-					ADD_TYPE_INFO(IValueEnumerator)
-					ADD_TYPE_INFO(IValueEnumerable)
-					ADD_TYPE_INFO(IValueReadonlyList)
-					ADD_TYPE_INFO(IValueList)
-					ADD_TYPE_INFO(IValueObservableList)
-					ADD_TYPE_INFO(IValueReadonlyDictionary)
-					ADD_TYPE_INFO(IValueDictionary)
-					ADD_TYPE_INFO(IValueInterfaceProxy)
-					ADD_TYPE_INFO(IValueFunctionProxy)
-
-					ADD_TYPE_INFO(IValueSubscription)
-					ADD_TYPE_INFO(IValueCallStack)
-					ADD_TYPE_INFO(IValueException)
-
-					ADD_TYPE_INFO(CoroutineStatus)
-					ADD_TYPE_INFO(CoroutineResult)
-					ADD_TYPE_INFO(ICoroutine)
-					ADD_TYPE_INFO(EnumerableCoroutine::IImpl)
-					ADD_TYPE_INFO(EnumerableCoroutine)
-					ADD_TYPE_INFO(AsyncStatus)
-					ADD_TYPE_INFO(IAsync)
-					ADD_TYPE_INFO(IPromise)
-					ADD_TYPE_INFO(IFuture)
-					ADD_TYPE_INFO(IAsyncScheduler)
-					ADD_TYPE_INFO(AsyncCoroutine::IImpl)
-					ADD_TYPE_INFO(AsyncCoroutine)
-
-					ADD_TYPE_INFO(IBoxedValue)
-					ADD_TYPE_INFO(IBoxedValue::CompareResult)
-					ADD_TYPE_INFO(IValueType)
-					ADD_TYPE_INFO(IEnumType)
-					ADD_TYPE_INFO(ISerializableType)
-					ADD_TYPE_INFO(ITypeInfo)
-					ADD_TYPE_INFO(ITypeInfo::Decorator)
-					ADD_TYPE_INFO(IMemberInfo)
-					ADD_TYPE_INFO(IEventHandler)
-					ADD_TYPE_INFO(IEventInfo)
-					ADD_TYPE_INFO(IPropertyInfo)
-					ADD_TYPE_INFO(IParameterInfo)
-					ADD_TYPE_INFO(IMethodInfo)
-					ADD_TYPE_INFO(IMethodGroupInfo)
-					ADD_TYPE_INFO(TypeDescriptorFlags)
-					ADD_TYPE_INFO(ITypeDescriptor)
+#define ADD_PRIMITIVE_TYPE(TYPE) manager->SetTypeDescriptor(TypeInfo<TYPE>::content.typeName, new PrimitiveTypeDescriptor<TYPE>());
+					REFLECTION_PREDEFINED_PRIMITIVE_TYPES(ADD_PRIMITIVE_TYPE)
+#undef ADD_PRIMITIVE_TYPE
+					REFLECTION_PREDEFINED_COMPLEX_TYPES(ADD_TYPE_INFO, VoidValue)
 				}
 
 				void Unload(ITypeManager* manager)override
