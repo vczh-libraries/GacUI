@@ -319,18 +319,22 @@ DataColumn
 
 				void DataColumn::SetFilter(Ptr<IDataFilter> value)
 				{
+					if (associatedFilter) associatedFilter->SetCallback(nullptr);
 					associatedFilter = value;
+					if (associatedFilter) associatedFilter->SetCallback(dataProvider);
 					NotifyAllColumnsUpdate(false);
 				}
 
 				Ptr<IDataSorter> DataColumn::GetSorter()
 				{
-					return associiatedSorter;
+					return associatedSorter;
 				}
 
 				void DataColumn::SetSorter(Ptr<IDataSorter> value)
 				{
-					associiatedSorter = value;
+					if (associatedSorter) associatedSorter->SetCallback(nullptr);
+					associatedSorter = value;
+					if (associatedSorter) associatedSorter->SetCallback(dataProvider);
 					NotifyAllColumnsUpdate(false);
 				}
 
@@ -484,6 +488,7 @@ DataProvider
 
 				void DataProvider::OnProcessorChanged()
 				{
+					RebuildFilter();
 					ReorderRows(true);
 				}
 

@@ -201,7 +201,7 @@ DataColumn
 					bool												ownPopup = true;
 					GuiMenu*											popup = nullptr;
 					Ptr<IDataFilter>									associatedFilter;
-					Ptr<IDataSorter>									associiatedSorter;
+					Ptr<IDataSorter>									associatedSorter;
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
