@@ -584,7 +584,7 @@ DataProvider
 					{
 						for (vint i = 0; i < rowCount; i++)
 						{
-							if (currentFilter->Filter(GetBindingValue(i)))
+							if (currentFilter->Filter(itemSource->Get(i)))
 							{
 								virtualRowToSourceRow.Add(i);
 							}
@@ -606,7 +606,7 @@ DataProvider
 							virtualRowToSourceRow.Count(),
 							[=](vint a, vint b)
 							{
-								return sorter->Compare(GetBindingValue(a), GetBindingValue(b));
+								return sorter->Compare(itemSource->Get(a), itemSource->Get(b));
 							});
 					}
 
@@ -804,12 +804,13 @@ DataProvider
 
 					for (vint i = 0; i < columns.Count(); i++)
 					{
-						columns[column]->sortingState =
+						columns[i]->sortingState =
 							i != column ? ColumnSortingState::NotSorted :
 							ascending ? ColumnSortingState::Ascending :
 							ColumnSortingState::Descending
 							;
 					}
+					NotifyAllColumnsUpdate();
 					ReorderRows(true);
 				}
 
