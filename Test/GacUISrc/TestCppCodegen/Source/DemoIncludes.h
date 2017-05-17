@@ -36,6 +36,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::DataGridTabPageConstructor)
 			DECL_TYPE_INFO(::demo::DateEditor)
 			DECL_TYPE_INFO(::demo::DateEditorConstructor)
+			DECL_TYPE_INFO(::demo::DateFilter)
+			DECL_TYPE_INFO(::demo::DateFilterConstructor)
 			DECL_TYPE_INFO(::demo::GenderDisplayer)
 			DECL_TYPE_INFO(::demo::GenderDisplayerConstructor)
 			DECL_TYPE_INFO(::demo::GenderEditor)

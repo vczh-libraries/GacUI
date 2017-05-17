@@ -254,6 +254,10 @@ DataColumn
 
 				DataColumn::~DataColumn()
 				{
+					if (popup && ownPopup)
+					{
+						SafeDeleteControl(popup);
+					}
 				}
 
 				WString DataColumn::GetText()
@@ -282,6 +286,16 @@ DataColumn
 						size = value;
 						NotifyAllColumnsUpdate(false);
 					}
+				}
+
+				bool DataColumn::GetOwnPopup()
+				{
+					return ownPopup;
+				}
+
+				void DataColumn::SetOwnPopup(bool value)
+				{
+					ownPopup = value;
 				}
 
 				GuiMenu* DataColumn::GetPopup()

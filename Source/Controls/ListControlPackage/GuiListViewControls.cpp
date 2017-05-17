@@ -420,6 +420,14 @@ ListViewColumn
 				{
 				}
 
+				ListViewColumn::~ListViewColumn()
+				{
+					if (dropdownPopup && ownPopup)
+					{
+						SafeDeleteControl(dropdownPopup);
+					}
+				}
+
 				const WString& ListViewColumn::GetText()
 				{
 					return text;
@@ -457,6 +465,16 @@ ListViewColumn
 						size = value;
 						NotifyUpdate(false);
 					}
+				}
+
+				bool ListViewColumn::GetOwnPopup()
+				{
+					return ownPopup;
+				}
+
+				void ListViewColumn::SetOwnPopup(bool value)
+				{
+					ownPopup = value;
 				}
 
 				GuiMenu* ListViewColumn::GetDropdownPopup()

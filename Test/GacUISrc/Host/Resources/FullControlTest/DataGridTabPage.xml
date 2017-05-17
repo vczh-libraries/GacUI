@@ -123,6 +123,14 @@
               <att.ValueProperty>Birthday</att.ValueProperty>
               <att.EditorFactory>demo:DateEditor</att.EditorFactory>
               <att.Sorter>[Sys::CompareDateTime($1.Birthday, $2.Birthday)]</att.Sorter>
+              <att.Filter-eval>dateFilter.Filter</att.Filter-eval>
+              <att.Popup>
+                <ToolstripMenu>
+                  <demo:DateFilter ref.Name="dateFilter">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  </demo:DateFilter>
+                </ToolstripMenu>
+              </att.Popup>
             </DataColumn>
 
             <DataColumn Text="Website" Size="160">

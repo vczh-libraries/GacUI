@@ -318,6 +318,7 @@ ListViewItemProvider
 					WString											text;
 					ItemProperty<WString>							textProperty;
 					vint											size;
+					bool											ownPopup = true;
 					GuiMenu*										dropdownPopup = nullptr;
 					ColumnSortingState								sortingState = ColumnSortingState::NotSorted;
 					
@@ -327,6 +328,7 @@ ListViewItemProvider
 					/// <param name="_text">The specified text.</param>
 					/// <param name="_size">The specified size.</param>
 					ListViewColumn(const WString& _text=L"", vint _size=160);
+					~ListViewColumn();
 					
 					/// <summary>Get the text of this item.</summary>
 					/// <returns>The text of this item.</returns>
@@ -346,6 +348,12 @@ ListViewItemProvider
 					/// <summary>Set the size of this item.</summary>
 					/// <param name="value">The size of this item.</param>
 					void											SetSize(vint value);
+					/// <summary>Test if the column owns the popup. Owned popup will be deleted in the destructor.</summary>
+					/// <returns>Returns true if the column owns the popup.</returns>
+					bool											GetOwnPopup();
+					/// <summary>Set if the column owns the popup.</summary>
+					/// <param name="value">Set to true to let the column own the popup.</param>
+					void											SetOwnPopup(bool value);
 					/// <summary>Get the dropdown context menu of this item.</summary>
 					/// <returns>The dropdown context menu of this item.</returns>
 					GuiMenu*										GetDropdownPopup();

@@ -601,10 +601,13 @@ Helper Functions
 			{
 				if(value)
 				{
-					GuiGraphicsComposition* bounds=value->GetBoundsComposition();
-					if(bounds->GetParent())
+					if (value->GetRelatedControlHost() != value)
 					{
-						bounds->GetParent()->RemoveChild(bounds);
+						GuiGraphicsComposition* bounds = value->GetBoundsComposition();
+						if (bounds->GetParent())
+						{
+							bounds->GetParent()->RemoveChild(bounds);
+						}
 					}
 					delete value;
 				}

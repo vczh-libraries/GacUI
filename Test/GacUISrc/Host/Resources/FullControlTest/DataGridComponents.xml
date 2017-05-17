@@ -60,7 +60,7 @@
       </Instance>
     </Instance>
   </Folder>
-  
+
   <Folder name="CategoryComponents">
     <Instance name="CategoryDisplayerResource">
       <Instance ref.CodeBehind="false" ref.Class="demo::CategoryDisplayer">
@@ -162,6 +162,91 @@
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </DateComboBox>
       </GridEditorTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="DateFilterResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::DateFilter">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Private
+          var callback : IDataProcessorCallback* = null;
+          
+          @cpp:Private
+          func UpdateFilter() : void
+          {
+            if (callback is not null)
+            {
+              callback.OnProcessorChanged();
+            }
+          }
+
+          prop Filter : IDataFilter^ = null {const, not observe}
+        ]]>
+      </ref.Members>
+      <ref.Ctor>
+        <![CDATA[
+          SetFilter(
+            new IDataFilter^
+            {
+              override func SetCallback(value : IDataProcessorCallback*) : void
+              {
+                callback = value;
+              }
+            
+              override func Filter(row : object) : bool
+              {
+                var date = (cast (MyDataItem^) row).Birthday;
+                if (checkFrom.Selected)
+                {
+                  if (Sys::CompareDateTime(date, dateFrom.SelectedDate) < 0)
+                  {
+                    return false;
+                  }
+                }
+                if (checkTo.Selected)
+                {
+                  if (Sys::CompareDateTime(date, dateTo.SelectedDate) > 0)
+                  {
+                    return false;
+                  }
+                }
+                return true;
+              }
+            }
+          );
+        ]]>
+      </ref.Ctor>
+      <CustomControl ref.Name="self">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <CheckBox ref.Name="checkFrom" Text="From:" ev.SelectedChanged-eval="self.UpdateFilter();"/>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <DateComboBox ref.Name="dateFrom" Enabled-bind="checkFrom.Selected" SelectedDate="1988-01-01 00:00:00.000" ev.SelectedDateChanged-eval="self.UpdateFilter();">
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+            </DateComboBox>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <CheckBox ref.Name="checkTo" Text="To:" ev.SelectedChanged-eval="self.UpdateFilter();"/>
+          </Cell>
+          <Cell Site="row:1 column:1">
+            <DateComboBox ref.Name="dateTo" Enabled-bind="checkTo.Selected" SelectedDate="2000-01-01 00:00:00.000" ev.SelectedDateChanged-eval="self.UpdateFilter();">
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+            </DateComboBox>
+          </Cell>
+        </Table>
+      </CustomControl>
     </Instance>
   </Instance>
 </Folder>

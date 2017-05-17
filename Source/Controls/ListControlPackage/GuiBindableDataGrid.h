@@ -198,6 +198,7 @@ DataColumn
 					WString												text;
 					vint												size = 160;
 					ColumnSortingState									sortingState = ColumnSortingState::NotSorted;
+					bool												ownPopup = true;
 					GuiMenu*											popup = nullptr;
 					Ptr<IDataFilter>									associatedFilter;
 					Ptr<IDataSorter>									associiatedSorter;
@@ -227,6 +228,13 @@ DataColumn
 					/// <summary>Set the size for the column.</summary>
 					/// <param name="value">The size for the column.</param>
 					void												SetSize(vint value);
+
+					/// <summary>Test if the column owns the popup. Owned popup will be deleted in the destructor.</summary>
+					/// <returns>Returns true if the column owns the popup.</returns>
+					bool												GetOwnPopup();
+					/// <summary>Set if the column owns the popup.</summary>
+					/// <param name="value">Set to true to let the column own the popup.</param>
+					void												SetOwnPopup(bool value);
 
 					/// <summary>Get the popup for the column.</summary>
 					/// <returns>The popup for the column.</returns>
