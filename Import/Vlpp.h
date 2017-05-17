@@ -11264,20 +11264,14 @@ Libraries
 				static vint64_t		Abs(vint64_t value)				{ return value > 0 ? value : -value; }
 				static float		Abs(float value)				{ return value > 0 ? value : -value; }
 				static double		Abs(double value)				{ return value > 0 ? value : -value; }
+				
+#define DEFINE_MINMAX(TYPE)\
+				static TYPE Min(TYPE a, TYPE b);\
+				static TYPE Max(TYPE a, TYPE b);\
 
-				static vint8_t		Max(vint8_t a, vint8_t b)		{ return a > b ? a : b; }
-				static vint16_t		Max(vint16_t a, vint16_t b)		{ return a > b ? a : b; }
-				static vint32_t		Max(vint32_t a, vint32_t b)		{ return a > b ? a : b; }
-				static vint64_t		Max(vint64_t a, vint64_t b)		{ return a > b ? a : b; }
-				static float		Max(float a, float b)			{ return a > b ? a : b; }
-				static double		Max(double a, double b)			{ return a > b ? a : b; }
-
-				static vint8_t		Min(vint8_t a, vint8_t b)		{ return a < b ? a : b; }
-				static vint16_t		Min(vint16_t a, vint16_t b)		{ return a < b ? a : b; }
-				static vint32_t		Min(vint32_t a, vint32_t b)		{ return a < b ? a : b; }
-				static vint64_t		Min(vint64_t a, vint64_t b)		{ return a < b ? a : b; }
-				static float		Min(float a, float b)			{ return a < b ? a : b; }
-				static double		Min(double a, double b)			{ return a < b ? a : b; }
+				REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_MINMAX)
+				DEFINE_MINMAX(DateTime)
+#undef DEFINE_MINMAX
 
 				static double		Sin(double value)				{ return sin(value); }
 				static double		Cos(double value)				{ return cos(value); }

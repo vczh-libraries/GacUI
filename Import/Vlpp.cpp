@@ -18783,6 +18783,20 @@ Libraries
 			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
 			DEFINE_COMPARE(DateTime)
 #undef DEFINE_COMPARE
+
+#define DEFINE_MINMAX(TYPE)\
+			TYPE Math::Min(TYPE a, TYPE b)\
+			{\
+				return Sys::Compare(a, b) < 0 ? a : b;\
+			}\
+			TYPE Math::Max(TYPE a, TYPE b)\
+			{\
+				return Sys::Compare(a, b) > 0 ? a : b;\
+			}\
+
+			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_MINMAX)
+			DEFINE_MINMAX(DateTime)
+#undef DEFINE_MINMAX
 		}
 	}
 }
@@ -19344,6 +19358,26 @@ LoadPredefinedTypes
 				};
 			};
 
+#define PT(TYPE) PT_##TYPE
+#define PT_vint Int
+#define PT_vint8_t Int8
+#define PT_vint16_t Int16
+#define PT_vint32_t Int32
+#define PT_vint64_t Int64
+#define PT_vuint8_t UInt8
+#define PT_vuint16_t UInt16
+#define PT_vuint32_t UInt32
+#define PT_vuint64_t UInt64
+#define PT_float Single
+#define PT_double Double
+#define PT_bool Bool
+#define PT_wchar_t Char
+#define PT_WString String
+#define PT_Locale Locale
+#define PT_DateTime DateTime
+#define PT_CONCAT_(A, B) A##B
+#define PT_CONCAT(A, B) PT_CONCAT_(A, B)
+
 			BEGIN_CLASS_MEMBER(Sys)
 				CLASS_MEMBER_STATIC_METHOD(Len, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(Left, { L"value" _ L"length" })
@@ -19351,34 +19385,34 @@ LoadPredefinedTypes
 				CLASS_MEMBER_STATIC_METHOD(Mid, { L"value" _ L"start" _ L"length" })
 				CLASS_MEMBER_STATIC_METHOD(Find, { L"value" _ L"substr" })
 				CLASS_MEMBER_STATIC_METHOD(ReverseEnumerable, { L"value" })
-
-#define DEFINE_COMPARE(TYPE) CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Compare, PROTECT_PARAMETERS({L"a" _ L"b"}), vint(*)(TYPE, TYPE))
+#pragma push_macro("CompareString")
+#if defined CompareString
+#undef CompareString
+#endif
+#define DEFINE_COMPARE(TYPE) CLASS_MEMBER_STATIC_EXTERNALMETHOD(PT_CONCAT(Compare, PT(TYPE)), PROTECT_PARAMETERS({L"a" _ L"b"}), vint(*)(TYPE, TYPE), vl::reflection::description::Sys::Compare)
 				REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
 				DEFINE_COMPARE(DateTime)
+				DEFINE_COMPARE(vint)
 #undef DEFINE_COMPARE
+#pragma pop_macro("CompareString")
 			END_CLASS_MEMBER(Sys)
 
 			BEGIN_CLASS_MEMBER(Math)
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint8_t(*)(vint8_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint16_t(*)(vint16_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint32_t(*)(vint32_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, vint64_t(*)(vint64_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, float(*)(float))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Abs, { L"value" }, double(*)(double))
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsInt8, { L"value" }, vint8_t(*)(vint8_t), vl::reflection::description::Math::Abs)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsInt16, { L"value" }, vint16_t(*)(vint16_t), vl::reflection::description::Math::Abs)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsInt32, { L"value" }, vint32_t(*)(vint32_t), vl::reflection::description::Math::Abs)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsInt64, { L"value" }, vint64_t(*)(vint64_t), vl::reflection::description::Math::Abs)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsSingle, { L"value" }, float(*)(float), vl::reflection::description::Math::Abs)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(AbsDouble, { L"value" }, double(*)(double), vl::reflection::description::Math::Abs)
 
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, vint8_t(*)(vint8_t, vint8_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, vint16_t(*)(vint16_t, vint16_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, vint32_t(*)(vint32_t, vint32_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, vint64_t(*)(vint64_t, vint64_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, float(*)(float, float))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Max, { L"a" _ L"b" }, double(*)(double, double))
+#define DEFINE_MINMAX(TYPE)\
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(PT_CONCAT(Min, PT(TYPE)), PROTECT_PARAMETERS({L"a" _ L"b"}), TYPE(*)(TYPE, TYPE), vl::reflection::description::Math::Min)\
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(PT_CONCAT(Max, PT(TYPE)), PROTECT_PARAMETERS({L"a" _ L"b"}), TYPE(*)(TYPE, TYPE), vl::reflection::description::Math::Max)\
 
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, vint8_t(*)(vint8_t, vint8_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, vint16_t(*)(vint16_t, vint16_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, vint32_t(*)(vint32_t, vint32_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, vint64_t(*)(vint64_t, vint64_t))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, float(*)(float, float))
-				CLASS_MEMBER_STATIC_METHOD_OVERLOAD(Min, { L"a" _ L"b" }, double(*)(double, double))
+				REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_MINMAX)
+				DEFINE_MINMAX(DateTime)
+				DEFINE_MINMAX(vint)
+#undef DEFINE_MINMAX
 
 				CLASS_MEMBER_STATIC_METHOD(Sin, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(Cos, { L"value" })
@@ -19403,6 +19437,24 @@ LoadPredefinedTypes
 				CLASS_MEMBER_STATIC_METHOD(RoundI, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(TruncI, { L"value" })
 			END_CLASS_MEMBER(Math)
+
+#undef PT
+#undef PT_vint8_t
+#undef PT_vint16_t
+#undef PT_vint32_t
+#undef PT_vint64_t
+#undef PT_vuint8_t
+#undef PT_vuint16_t
+#undef PT_vuint32_t
+#undef PT_vuint64_t
+#undef PT_float
+#undef PT_double
+#undef PT_bool
+#undef PT_wchar_t
+#undef PT_WString
+#undef PT_DateTime
+#undef PT_CONCAT_
+#undef PT_CONCAT
 
 			BEGIN_STRUCT_MEMBER_FLAG(VoidValue, TypeDescriptorFlags::Primitive)
 			END_STRUCT_MEMBER(VoidValue)
