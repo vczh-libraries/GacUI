@@ -298,25 +298,25 @@ DataColumn
 					}
 				}
 
-				Ptr<IDataFilter> DataColumn::GetInherentFilter()
+				Ptr<IDataFilter> DataColumn::GetFilter()
 				{
-					return inherentFilter;
+					return associatedFilter;
 				}
 
-				void DataColumn::SetInherentFilter(Ptr<IDataFilter> value)
+				void DataColumn::SetFilter(Ptr<IDataFilter> value)
 				{
-					inherentFilter = value;
+					associatedFilter = value;
 					NotifyAllColumnsUpdate(false);
 				}
 
-				Ptr<IDataSorter> DataColumn::GetInherentSorter()
+				Ptr<IDataSorter> DataColumn::GetSorter()
 				{
-					return inherentSorter;
+					return associiatedSorter;
 				}
 
-				void DataColumn::SetInherentSorter(Ptr<IDataSorter> value)
+				void DataColumn::SetSorter(Ptr<IDataSorter> value)
 				{
-					inherentSorter = value;
+					associiatedSorter = value;
 					NotifyAllColumnsUpdate(false);
 				}
 
@@ -551,8 +551,8 @@ DataProvider
 					CopyFrom(
 						selectedFilters,
 						From(columns)
-						.Select([](Ptr<DataColumn> column) {return column->GetInherentFilter(); })
-						.Where([](Ptr<IDataFilter> filter) {return (bool)filter; })
+						.Select([](Ptr<DataColumn> column) {return column->GetFilter(); })
+						.Where([](Ptr<IDataFilter> filter) {return filter != nullptr; })
 					);
 					if (additionalFilter)
 					{
@@ -774,14 +774,14 @@ DataProvider
 
 				bool DataProvider::IsColumnSortable(vint column)
 				{
-					return columns[column]->GetInherentSorter();
+					return columns[column]->GetSorter();
 				}
 
 				void DataProvider::SortByColumn(vint column, bool ascending)
 				{
 					if (0 <= column && column < columns.Count())
 					{
-						auto sorter = columns[column]->GetInherentSorter();
+						auto sorter = columns[column]->GetSorter();
 						if (!sorter)
 						{
 							currentSorter = nullptr;
@@ -897,6 +897,16 @@ GuiBindableDataGrid
 			void GuiBindableDataGrid::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
 			{
 				dataProvider->SetItemSource(_itemSource);
+			}
+
+			Ptr<list::IDataFilter> GuiBindableDataGrid::GetAdditionalFilter()
+			{
+				return dataProvider->GetAdditionalFilter();
+			}
+
+			void GuiBindableDataGrid::SetAdditionalFilter(Ptr<list::IDataFilter> value)
+			{
+				dataProvider->SetAdditionalFilter(value);
 			}
 
 			ItemProperty<Ptr<GuiImageData>> GuiBindableDataGrid::GetLargeImageProperty()

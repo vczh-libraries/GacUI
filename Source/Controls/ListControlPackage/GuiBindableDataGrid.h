@@ -199,8 +199,8 @@ DataColumn
 					vint												size = 160;
 					ColumnSortingState									sortingState = ColumnSortingState::NotSorted;
 					GuiMenu*											popup = nullptr;
-					Ptr<IDataFilter>									inherentFilter;
-					Ptr<IDataSorter>									inherentSorter;
+					Ptr<IDataFilter>									associatedFilter;
+					Ptr<IDataSorter>									associiatedSorter;
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
@@ -235,19 +235,19 @@ DataColumn
 					/// <param name="value">The popup for the column.</param>
 					void												SetPopup(GuiMenu* value);
 
-					/// <summary>Get the inherent filter for the column.</summary>
-					/// <returns>The inherent filter for the column.</returns>
-					Ptr<IDataFilter>									GetInherentFilter();
-					/// <summary>Set the inherent filter for the column.</summary>
+					/// <summary>Get the filter for the column.</summary>
+					/// <returns>The filter for the column.</returns>
+					Ptr<IDataFilter>									GetFilter();
+					/// <summary>Set the filter for the column.</summary>
 					/// <param name="value">The filter.</param>
-					void												SetInherentFilter(Ptr<IDataFilter> value);
+					void												SetFilter(Ptr<IDataFilter> value);
 
-					/// <summary>Get the inherent sorter for the column.</summary>
-					/// <returns>The inherent sorter for the column.</returns>
-					Ptr<IDataSorter>									GetInherentSorter();
-					/// <summary>Set the inherent sorter for the column.</summary>
+					/// <summary>Get the sorter for the column.</summary>
+					/// <returns>The sorter for the column.</returns>
+					Ptr<IDataSorter>									GetSorter();
+					/// <summary>Set the sorter for the column.</summary>
 					/// <param name="value">The sorter.</param>
-					void												SetInherentSorter(Ptr<IDataSorter> value);
+					void												SetSorter(Ptr<IDataSorter> value);
 
 					/// <summary>Get the visualizer factory for the column.</summary>
 					/// <returns>The the visualizer factory for the column.</returns>
@@ -364,11 +364,7 @@ DataProvider
 					Ptr<description::IValueEnumerable>					GetItemSource();
 					void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 					
-					/// <summary>Get the additional filter.</summary>
-					/// <returns>The additional filter.</returns>
 					Ptr<IDataFilter>									GetAdditionalFilter();
-					/// <summary>Set the additional filter. This filter will be composed with inherent filters of all column to be the final filter.</summary>
-					/// <param name="value">The additional filter.</param>
 					void												SetAdditionalFilter(Ptr<IDataFilter> value);
 
 					// ===================== GuiListControl::IItemProvider =====================
@@ -444,6 +440,13 @@ GuiBindableDataGrid
 				/// <summary>Set the item source.</summary>
 				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
+
+				/// <summary>Get the additional filter.</summary>
+				/// <returns>The additional filter.</returns>
+				Ptr<list::IDataFilter>								GetAdditionalFilter();
+				/// <summary>Set the additional filter. This filter will be composed with filters of all column to be the final filter.</summary>
+				/// <param name="value">The additional filter.</param>
+				void												SetAdditionalFilter(Ptr<list::IDataFilter> value);
 
 				/// <summary>Large image property name changed event.</summary>
 				compositions::GuiNotifyEvent						LargeImagePropertyChanged;
