@@ -18,11 +18,11 @@ namespace vl
 DataFilterBase
 ***********************************************************************/
 
-				void DataFilterBase::InvokeOnFilterChanged()
+				void DataFilterBase::InvokeOnProcessorChanged()
 				{
 					if (callback)
 					{
-						callback->OnFilterChanged();
+						callback->OnProcessorChanged();
 					}
 				}
 
@@ -30,7 +30,7 @@ DataFilterBase
 				{
 				}
 
-				void DataFilterBase::SetCallback(IDataFilterCallback* value)
+				void DataFilterBase::SetCallback(IDataProcessorCallback* value)
 				{
 					callback = value;
 				}
@@ -49,7 +49,7 @@ DataMultipleFilter
 					if (filters.Contains(value.Obj())) return false;
 					filters.Add(value);
 					value->SetCallback(callback);
-					InvokeOnFilterChanged();
+					InvokeOnProcessorChanged();
 					return true;
 				}
 
@@ -59,11 +59,11 @@ DataMultipleFilter
 					if (!filters.Contains(value.Obj())) return false;
 					value->SetCallback(nullptr);
 					filters.Remove(value.Obj());
-					InvokeOnFilterChanged();
+					InvokeOnProcessorChanged();
 					return true;
 				}
 
-				void DataMultipleFilter::SetCallback(IDataFilterCallback* value)
+				void DataMultipleFilter::SetCallback(IDataProcessorCallback* value)
 				{
 					DataFilterBase::SetCallback(value);
 					for (vint i = 0; i < filters.Count(); i++)
@@ -80,7 +80,7 @@ DataAndFilter
 				{
 				}
 
-				bool DataAndFilter::Filter(vint row)
+				bool DataAndFilter::Filter(const description::Value& row)
 				{
 					return From(filters)
 						.All([row](Ptr<IDataFilter> filter)
@@ -97,7 +97,7 @@ DataOrFilter
 				{
 				}
 
-				bool DataOrFilter::Filter(vint row)
+				bool DataOrFilter::Filter(const description::Value& row)
 				{
 					return From(filters)
 						.Any([row](Ptr<IDataFilter> filter)
@@ -117,31 +117,43 @@ DataNotFilter
 				bool DataNotFilter::SetSubFilter(Ptr<IDataFilter> value)
 				{
 					if (filter == value) return false;
-					if (filter)
-					{
-						filter->SetCallback(nullptr);
-					}
+					if (filter) filter->SetCallback(nullptr);
 					filter = value;
-					if (filter)
-					{
-						filter->SetCallback(callback);
-					}
-					InvokeOnFilterChanged();
+					if (filter) filter->SetCallback(callback);
+					InvokeOnProcessorChanged();
 					return true;
 				}
 
-				void DataNotFilter::SetCallback(IDataFilterCallback* value)
+				void DataNotFilter::SetCallback(IDataProcessorCallback* value)
 				{
 					DataFilterBase::SetCallback(value);
-					if (filter)
+					if (filter) filter->SetCallback(value);
+				}
+
+				bool DataNotFilter::Filter(const description::Value& row)
+				{
+					return filter ? true : !filter->Filter(row);
+				}
+
+/***********************************************************************
+DataSorterBase
+***********************************************************************/
+
+				void DataSorterBase::InvokeOnProcessorChanged()
+				{
+					if (callback)
 					{
-						filter->SetCallback(value);
+						callback->OnProcessorChanged();
 					}
 				}
 
-				bool DataNotFilter::Filter(vint row)
+				DataSorterBase::DataSorterBase()
 				{
-					return filter ? true : !filter->Filter(row);
+				}
+
+				void DataSorterBase::SetCallback(IDataProcessorCallback* value)
+				{
+					callback = value;
 				}
 
 /***********************************************************************
@@ -155,18 +167,29 @@ DataMultipleSorter
 				bool DataMultipleSorter::SetLeftSorter(Ptr<IDataSorter> value)
 				{
 					if (leftSorter == value) return false;
+					if (leftSorter) leftSorter->SetCallback(nullptr);
 					leftSorter = value;
+					if (leftSorter) leftSorter->SetCallback(callback);
 					return true;
 				}
 
 				bool DataMultipleSorter::SetRightSorter(Ptr<IDataSorter> value)
 				{
 					if (rightSorter == value) return false;
+					if (rightSorter) rightSorter->SetCallback(nullptr);
 					rightSorter = value;
+					if (rightSorter) rightSorter->SetCallback(callback);
 					return true;
 				}
 
-				vint DataMultipleSorter::Compare(vint row1, vint row2)
+				void DataMultipleSorter::SetCallback(IDataProcessorCallback* value)
+				{
+					DataSorterBase::SetCallback(value);
+					if (leftSorter) leftSorter->SetCallback(value);
+					if (rightSorter) rightSorter->SetCallback(value);
+				}
+
+				vint DataMultipleSorter::Compare(const description::Value& row1, const description::Value& row2)
 				{
 					if (leftSorter)
 					{
@@ -192,11 +215,19 @@ DataReverseSorter
 				bool DataReverseSorter::SetSubSorter(Ptr<IDataSorter> value)
 				{
 					if (sorter == value) return false;
+					if (sorter) sorter->SetCallback(nullptr);
 					sorter = value;
+					if (sorter) sorter->SetCallback(callback);
 					return true;
 				}
 
-				vint DataReverseSorter::Compare(vint row1, vint row2)
+				void DataReverseSorter::SetCallback(IDataProcessorCallback* value)
+				{
+					DataSorterBase::SetCallback(value);
+					if (sorter) sorter->SetCallback(value);
+				}
+
+				vint DataReverseSorter::Compare(const description::Value& row1, const description::Value& row2)
 				{
 					return sorter ? -sorter->Compare(row1, row2) : 0;
 				}
@@ -437,7 +468,7 @@ DataProvider
 					return this;
 				}
 
-				void DataProvider::OnFilterChanged()
+				void DataProvider::OnProcessorChanged()
 				{
 					ReorderRows(true);
 				}
@@ -553,7 +584,7 @@ DataProvider
 					{
 						for (vint i = 0; i < rowCount; i++)
 						{
-							if (currentFilter->Filter(i))
+							if (currentFilter->Filter(GetBindingValue(i)))
 							{
 								virtualRowToSourceRow.Add(i);
 							}
@@ -570,7 +601,13 @@ DataProvider
 					if (currentSorter && virtualRowToSourceRow.Count() > 0)
 					{
 						IDataSorter* sorter = currentSorter.Obj();
-						SortLambda(&virtualRowToSourceRow[0], virtualRowToSourceRow.Count(), [sorter](vint a, vint b) {return sorter->Compare(a, b); });
+						SortLambda(
+							&virtualRowToSourceRow[0],
+							virtualRowToSourceRow.Count(),
+							[=](vint a, vint b)
+							{
+								return sorter->Compare(GetBindingValue(a), GetBindingValue(b));
+							});
 					}
 
 					if (invokeCallback)

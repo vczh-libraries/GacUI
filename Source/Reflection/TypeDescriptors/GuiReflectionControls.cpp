@@ -1342,12 +1342,12 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
 			END_CLASS_MEMBER(GuiBindableTreeView)
 
-			BEGIN_INTERFACE_MEMBER(IDataFilterCallback)
+			BEGIN_INTERFACE_MEMBER(IDataProcessorCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
-				CLASS_MEMBER_METHOD(OnFilterChanged, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IDataFilterCallback)
+				CLASS_MEMBER_METHOD(OnProcessorChanged, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IDataProcessorCallback)
 
 			BEGIN_INTERFACE_MEMBER(IDataFilter)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -1359,6 +1359,7 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER(IDataSorter)
 				CLASS_MEMBER_BASE(IDescriptable)
 
+				CLASS_MEMBER_METHOD(SetCallback, { L"value" })
 				CLASS_MEMBER_METHOD(Compare, { L"row1" _ L"row2" })
 			END_INTERFACE_MEMBER(IDataSorter)
 
@@ -1390,8 +1391,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetSubFilter, {L"value"})
 			END_CLASS_MEMBER(DataNotFilter)
 
-			BEGIN_CLASS_MEMBER(DataMultipleSorter)
+			BEGIN_CLASS_MEMBER(DataSorterBase)
 				CLASS_MEMBER_BASE(IDataSorter)
+			END_CLASS_MEMBER(DataSorterBase)
+
+			BEGIN_CLASS_MEMBER(DataMultipleSorter)
+				CLASS_MEMBER_BASE(DataSorterBase)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataMultipleSorter>(), NO_PARAMETER)
 
 				CLASS_MEMBER_METHOD(SetLeftSorter, {L"value"})
@@ -1399,7 +1404,7 @@ Type Declaration
 			END_CLASS_MEMBER(DataMultipleSorter)
 
 			BEGIN_CLASS_MEMBER(DataReverseSorter)
-				CLASS_MEMBER_BASE(DataMultipleSorter)
+				CLASS_MEMBER_BASE(DataSorterBase)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataReverseSorter>(), NO_PARAMETER)
 				
 				CLASS_MEMBER_METHOD(SetSubSorter, {L"value"})

@@ -26,24 +26,25 @@ namespace vl
 Interfaces
 ***********************************************************************/
 
-				class IDataFilterCallback : public virtual IDescriptable, public Description<IDataFilterCallback>
+				class IDataProcessorCallback : public virtual IDescriptable, public Description<IDataProcessorCallback>
 				{
 				public:
 					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
-					virtual void										OnFilterChanged() = 0;
+					virtual void										OnProcessorChanged() = 0;
 				};
 
 				class IDataFilter : public virtual IDescriptable, public Description<IDataFilter>
 				{
 				public:
-					virtual void										SetCallback(IDataFilterCallback* value) = 0;
-					virtual bool										Filter(vint row) = 0;
+					virtual void										SetCallback(IDataProcessorCallback* value) = 0;
+					virtual bool										Filter(const description::Value& row) = 0;
 				};
 
 				class IDataSorter : public virtual IDescriptable, public Description<IDataSorter>
 				{
 				public:
-					virtual vint										Compare(vint row1, vint row2) = 0;
+					virtual void										SetCallback(IDataProcessorCallback* value) = 0;
+					virtual vint										Compare(const description::Value& row1, const description::Value& row2) = 0;
 				};
 
 /***********************************************************************
@@ -54,14 +55,14 @@ Filter Extensions
 				class DataFilterBase : public Object, public virtual IDataFilter, public Description<DataFilterBase>
 				{
 				protected:
-					IDataFilterCallback*								callback = nullptr;
+					IDataProcessorCallback*								callback = nullptr;
 
 					/// <summary>Called when the structure or properties for this filter is changed.</summary>
-					void												InvokeOnFilterChanged();
+					void												InvokeOnProcessorChanged();
 				public:
 					DataFilterBase();
 
-					void												SetCallback(IDataFilterCallback* value)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
 				};
 				
 				/// <summary>Base class for a <see cref="IDataFilter"/> that contains multiple sub filters.</summary>
@@ -81,7 +82,7 @@ Filter Extensions
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub filter.</param>
 					bool												RemoveSubFilter(Ptr<IDataFilter> value);
-					void												SetCallback(IDataFilterCallback* value)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
 				};
 
 				/// <summary>A filter that keep a row if all sub filters agree.</summary>
@@ -91,7 +92,7 @@ Filter Extensions
 					/// <summary>Create the filter.</summary>
 					DataAndFilter();
 
-					bool												Filter(vint row)override;
+					bool												Filter(const description::Value& row)override;
 				};
 				
 				/// <summary>A filter that keep a row if one of all sub filters agrees.</summary>
@@ -101,7 +102,7 @@ Filter Extensions
 					/// <summary>Create the filter.</summary>
 					DataOrFilter();
 
-					bool												Filter(vint row)override;
+					bool												Filter(const description::Value& row)override;
 				};
 				
 				/// <summary>A filter that keep a row if the sub filter not agrees.</summary>
@@ -117,16 +118,30 @@ Filter Extensions
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub filter.</param>
 					bool												SetSubFilter(Ptr<IDataFilter> value);
-					void												SetCallback(IDataFilterCallback* value)override;
-					bool												Filter(vint row)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
+					bool												Filter(const description::Value& row)override;
 				};
 
 /***********************************************************************
 Sorter Extensions
 ***********************************************************************/
+
+				/// <summary>Base class for <see cref="IDataSorter"/>.</summary>
+				class DataSorterBase : public Object, public virtual IDataSorter, public Description<DataSorterBase>
+				{
+				protected:
+					IDataProcessorCallback*								callback = nullptr;
+
+					/// <summary>Called when the structure or properties for this filter is changed.</summary>
+					void												InvokeOnProcessorChanged();
+				public:
+					DataSorterBase();
+
+					void												SetCallback(IDataProcessorCallback* value)override;
+				};
 				
 				/// <summary>A multi-level <see cref="IDataSorter"/>.</summary>
-				class DataMultipleSorter : public Object, public virtual IDataSorter, public Description<DataMultipleSorter>
+				class DataMultipleSorter : public DataSorterBase, public Description<DataMultipleSorter>
 				{
 				protected:
 					Ptr<IDataSorter>							leftSorter;
@@ -143,11 +158,12 @@ Sorter Extensions
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub sorter.</param>
 					bool												SetRightSorter(Ptr<IDataSorter> value);
-					vint												Compare(vint row1, vint row2)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
+					vint												Compare(const description::Value& row1, const description::Value& row2)override;
 				};
 				
 				/// <summary>A reverse order <see cref="IDataSorter"/>.</summary>
-				class DataReverseSorter : public Object, public virtual IDataSorter, public Description<DataReverseSorter>
+				class DataReverseSorter : public DataSorterBase, public Description<DataReverseSorter>
 				{
 				protected:
 					Ptr<IDataSorter>							sorter;
@@ -159,7 +175,8 @@ Sorter Extensions
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub sorter.</param>
 					bool												SetSubSorter(Ptr<IDataSorter> value);
-					vint												Compare(vint row1, vint row2)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
+					vint												Compare(const description::Value& row1, const description::Value& row2)override;
 				};
 
 /***********************************************************************
@@ -302,7 +319,7 @@ DataProvider
 					, public virtual IListViewItemView
 					, public virtual ListViewColumnItemArranger::IColumnItemView
 					, public virtual IDataGridView
-					, protected virtual IDataFilterCallback
+					, protected virtual IDataProcessorCallback
 					, protected virtual IListViewItemProvider
 					, public Description<DataProvider>
 				{
@@ -326,7 +343,7 @@ DataProvider
 					void													NotifyAllColumnsUpdate()override;
 					GuiListControl::IItemProvider*							GetItemProvider()override;
 
-					void													OnFilterChanged()override;
+					void													OnProcessorChanged()override;
 					void													OnItemSourceModified(vint start, vint count, vint newCount);
 
 					void													RebuildFilter();
