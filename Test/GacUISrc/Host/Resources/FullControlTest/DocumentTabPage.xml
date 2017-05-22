@@ -1,6 +1,6 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DocumentTabPage" xmlns:demo="demo::*">
   <TabPage ref.Name="self" Text="Document Editor">
-    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
       <att.Rows>
         <_>composeType:MinSize</_>
         <_>composeType:MinSize</_>
@@ -10,11 +10,172 @@
         <_>composeType:Percentage percentage:1.0</_>
       </att.Columns>
 
+      <Cell Site="row:0 column:0">
+
+      </Cell>
+
+      <Cell Site="row:1 column:1">
+
+      </Cell>
+
       <Cell Site="row:2 column:0">
         <DocumentViewer EditMode="Editable">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </DocumentViewer>
       </Cell>
     </Table>
+
+    <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" ShortcutBuilder="Ctrl+Z">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" ShortcutBuilder="Ctrl+Y">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" ShortcutBuilder="Ctrl+C">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" ShortcutBuilder="Ctrl+Z">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" ShortcutBuilder="Ctrl+V">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://ToolbarImages/Delete">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandSelect" Text="Select All" ShortcutBuilder="Ctrl+A">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image" Image-uri="res://ToolbarImages/Image">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandEditHyperlink" Text="Edit Hyperlink ..." Image-uri="res://ToolbarImages/Link">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandRemoveHyperlink" Text="Remove Hyperlink" Image-uri="res://ToolbarImages/RemoveLink">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandBold" Text="Bold" Image-uri="res://ToolbarImages/Bold">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandItalic" Text="Italic" Image-uri="res://ToolbarImages/Italic">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandUnderline" Text="Underline" Image-uri="res://ToolbarImages/Underline">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandStrike" Text="Strike" Image-uri="res://ToolbarImages/Strike">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandFont" Text="Set Font ..." Image-uri="res://ToolbarImages/Font">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandColor" Text="Text Color ..." Image-uri="res://ToolbarImages/Color">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandBackColor" Text="Background Color ..." Image-uri="res://ToolbarImages/BackColor">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
   </TabPage>
 </Instance>

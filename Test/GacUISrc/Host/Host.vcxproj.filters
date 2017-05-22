@@ -19,6 +19,9 @@
     <Filter Include="Resource Files\FullControlTest\Images">
       <UniqueIdentifier>{a40decff-8c63-4e20-ab05-7875215f460e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\FullControlTest\TooltipImages">
+      <UniqueIdentifier>{95fce359-8933-46d9-91ff-4599b1f26903}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Resources\UI2_Properties.xml">
@@ -83,6 +86,9 @@
     </Xml>
     <Xml Include="Resources\FullControlTest\DocumentTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\ToolbarImages\Images.xml">
+      <Filter>Resource Files\FullControlTest\TooltipImages</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

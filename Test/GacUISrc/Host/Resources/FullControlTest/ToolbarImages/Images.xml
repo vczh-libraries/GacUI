@@ -1,0 +1,18 @@
+<Folder>
+  <Image name="Undo" content="File">_Undo.png</Image>
+  <Image name="Redo" content="File">_Redo.png</Image>
+  <Image name="Copy" content="File">_Copy.png</Image>
+  <Image name="Cut" content="File">_Cut.png</Image>
+  <Image name="Paste" content="File">_Paste.png</Image>
+  <Image name="Delete" content="File">_Delete.png</Image>
+  <Image name="Image" content="File">e_Image.png</Image>
+  <Image name="Link" content="File">e_Image.png</Image>
+  <Image name="RemoveLink" content="File">e_RemoveLink.png</Image>
+  <Image name="Bold" content="File">s_Bold.png</Image>
+  <Image name="Italic" content="File">s_Italic.png</Image>
+  <Image name="Underline" content="File">s_Underline.png</Image>
+  <Image name="Strike" content="File">s_Strike.png</Image>
+  <Image name="Color" content="File">s_Color.png</Image>
+  <Image name="BackColor" content="File">s_BackColor.png</Image>
+  <Image name="Font" content="File">s_Font.png</Image>
+</Folder>
