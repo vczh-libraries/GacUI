@@ -351,6 +351,7 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentTabPage* self = static_cast<::demo::DocumentTabPage*>(nullptr);
+		::vl::presentation::controls::GuiDocumentViewer* document = static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandUndo = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandRedo = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandCopy = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
@@ -425,8 +426,7 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_51 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_52 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_53 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_precompile_54 = static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_55 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_54 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::DocumentTabPage* __vwsn_this_);
 	public:
 		DocumentTabPageConstructor();

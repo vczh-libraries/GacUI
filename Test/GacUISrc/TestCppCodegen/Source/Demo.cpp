@@ -929,6 +929,10 @@ Closures
 
 	void __vwsnf47_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::ViewOnly);
+		::vl::__vwsn::This(__vwsnthis_0->commandViewOnly)->SetSelected(true);
+		::vl::__vwsn::This(__vwsnthis_0->commandSelectable)->SetSelected(false);
+		::vl::__vwsn::This(__vwsnthis_0->commandEditable)->SetSelected(false);
 	}
 
 	//-------------------------------------------------------------------
@@ -940,6 +944,10 @@ Closures
 
 	void __vwsnf48_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Selectable);
+		::vl::__vwsn::This(__vwsnthis_0->commandViewOnly)->SetSelected(false);
+		::vl::__vwsn::This(__vwsnthis_0->commandSelectable)->SetSelected(true);
+		::vl::__vwsn::This(__vwsnthis_0->commandEditable)->SetSelected(false);
 	}
 
 	//-------------------------------------------------------------------
@@ -951,6 +959,10 @@ Closures
 
 	void __vwsnf49_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
+		::vl::__vwsn::This(__vwsnthis_0->document)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		::vl::__vwsn::This(__vwsnthis_0->commandViewOnly)->SetSelected(false);
+		::vl::__vwsn::This(__vwsnthis_0->commandSelectable)->SetSelected(false);
+		::vl::__vwsn::This(__vwsnthis_0->commandEditable)->SetSelected(true);
 	}
 
 	//-------------------------------------------------------------------
@@ -3895,17 +3907,17 @@ Class (::demo::DocumentTabPageConstructor)
 		}
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentViewerStyle();
-			(this->__vwsn_precompile_54 = new ::vl::presentation::controls::GuiDocumentViewer(__vwsn_controlStyle_));
+			(this->document = new ::vl::presentation::controls::GuiDocumentViewer(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_54)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+			::vl::__vwsn::This(this->document)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
 		}
-		(this->__vwsn_precompile_55 = ::vl::__vwsn::This(this->__vwsn_precompile_54)->GetBoundsComposition());
+		(this->__vwsn_precompile_54 = ::vl::__vwsn::This(this->document)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_55)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_54)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_53)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_54)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_53)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->document)->GetBoundsComposition()));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_53));
@@ -4065,6 +4077,9 @@ Class (::demo::DocumentTabPageConstructor)
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandSelectable));
 		}
 		(this->commandEditable = new ::vl::presentation::controls::GuiToolstripCommand());
+		{
+			::vl::__vwsn::This(this->commandEditable)->SetSelected(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+		}
 		{
 			::vl::__vwsn::This(this->commandEditable)->SetText(::vl::WString(L"Editable", false));
 		}
@@ -6533,7 +6548,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_52)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_53)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_54)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_55)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
@@ -6558,6 +6572,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(commandUnderline)
 				CLASS_MEMBER_FIELD(commandUndo)
 				CLASS_MEMBER_FIELD(commandViewOnly)
+				CLASS_MEMBER_FIELD(document)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::DocumentTabPageConstructor)
 

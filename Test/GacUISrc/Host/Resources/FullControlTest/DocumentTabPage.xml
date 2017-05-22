@@ -75,7 +75,7 @@
       </Cell>
 
       <Cell Site="row:2 column:0">
-        <DocumentViewer EditMode="Editable">
+        <DocumentViewer ref.Name="document" EditMode="Editable">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
         </DocumentViewer>
       </Cell>
@@ -238,6 +238,10 @@
       <ev.Executed-eval>
         <![CDATA[
           {
+            document.EditMode = ViewOnly;
+            commandViewOnly.Selected = true;
+            commandSelectable.Selected = false;
+            commandEditable.Selected = false;
           }
         ]]>
       </ev.Executed-eval>
@@ -247,15 +251,23 @@
       <ev.Executed-eval>
         <![CDATA[
           {
+            document.EditMode = Selectable;
+            commandViewOnly.Selected = false;
+            commandSelectable.Selected = true;
+            commandEditable.Selected = false;
           }
         ]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable">
+    <ToolstripCommand ref.Name="commandEditable" Text="Editable" Selected="true" Image-uri="res://ToolbarImages/Editable">
       <ev.Executed-eval>
         <![CDATA[
           {
+            document.EditMode = Editable;
+            commandViewOnly.Selected = false;
+            commandSelectable.Selected = false;
+            commandEditable.Selected = true;
           }
         ]]>
       </ev.Executed-eval>
