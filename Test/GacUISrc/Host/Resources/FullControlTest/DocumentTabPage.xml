@@ -11,11 +11,67 @@
       </att.Columns>
 
       <Cell Site="row:0 column:0">
-
+        <ToolstripMenuBar>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <MenuBarButton Text="Edit" Alt="E">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandUndo" Alt="U"/>
+              <MenuItemButton Command-ref="commandRedo" Alt="R"/>
+              <MenuSplitter/>
+              <MenuItemButton Command-ref="commandCopy" Alt="C"/>
+              <MenuItemButton Command-ref="commandCut" Alt="X"/>
+              <MenuItemButton Command-ref="commandPaste" Alt="P"/>
+              <MenuSplitter/>
+              <MenuItemButton Command-ref="commandDelete" Alt="D"/>
+              <MenuSplitter/>
+              <MenuItemButton Command-ref="commandSelect" Alt="S"/>
+            </att.SubMenu-set>
+          </MenuBarButton>
+          <MenuBarButton Text="Object" Alt="O">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandInsertImage" Alt="I"/>
+              <MenuItemButton Command-ref="commandEditHyperlink" Alt="L"/>
+              <MenuItemButton Command-ref="commandRemoveHyperlink" Alt="R"/>
+            </att.SubMenu-set>
+          </MenuBarButton>
+          <MenuBarButton Text="View" Alt="V">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandViewOnly" Alt="V"/>
+              <MenuItemButton Command-ref="commandSelectable" Alt="S"/>
+              <MenuItemButton Command-ref="commandEditable" Alt="E"/>
+            </att.SubMenu-set>
+          </MenuBarButton>
+        </ToolstripMenuBar>
       </Cell>
 
-      <Cell Site="row:1 column:1">
-
+      <Cell Site="row:1 column:0">
+        <ToolstripToolBar>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ToolstripButton Command-ref="commandViewOnly" Alt="V"/>
+          <ToolstripButton Command-ref="commandSelectable" Alt="S"/>
+          <ToolstripButton Command-ref="commandEditable" Alt="E"/>
+          <ToolstripSplitter/>
+          <ToolstripButton Command-ref="commandUndo" Alt="U"/>
+          <ToolstripButton Command-ref="commandRedo" Alt="R"/>
+          <ToolstripSplitter/>
+          <ToolstripButton Command-ref="commandCopy" Alt="C"/>
+          <ToolstripButton Command-ref="commandCut" Alt="X"/>
+          <ToolstripButton Command-ref="commandPaste" Alt="P"/>
+          <ToolstripSplitter/>
+          <ToolstripButton Command-ref="commandDelete" Alt="D"/>
+          <ToolstripSplitter/>
+          <ToolstripButton Command-ref="commandInsertImage" Alt="I"/>
+          <ToolstripButton Command-ref="commandEditHyperlink" Alt="L"/>
+          <ToolstripButton Command-ref="commandRemoveHyperlink" Alt="R"/>
+          <ToolstripSplitter/>
+          <ToolstripButton Command-ref="commandBold" Alt="B"/>
+          <ToolstripButton Command-ref="commandItalic" Alt="I"/>
+          <ToolstripButton Command-ref="commandUnderline" Alt="U"/>
+          <ToolstripButton Command-ref="commandStrike" Alt="S"/>
+          <ToolstripButton Command-ref="commandFont" Alt="F"/>
+          <ToolstripButton Command-ref="commandColor" Alt="C"/>
+          <ToolstripButton Command-ref="commandBackColor" Alt="K"/>
+        </ToolstripToolBar>
       </Cell>
 
       <Cell Site="row:2 column:0">
@@ -170,6 +226,33 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandBackColor" Text="Background Color ..." Image-uri="res://ToolbarImages/BackColor">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable">
+      <ev.Executed-eval>
+        <![CDATA[
+          {
+          }
+        ]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable">
       <ev.Executed-eval>
         <![CDATA[
           {

@@ -15,4 +15,7 @@
   <Image name="Color" content="File">s_Color.png</Image>
   <Image name="BackColor" content="File">s_BackColor.png</Image>
   <Image name="Font" content="File">s_Font.png</Image>
+  <Image name="ViewOnly" content="File">m_ViewOnly.png</Image>
+  <Image name="Selectable" content="File">m_Selectable.png</Image>
+  <Image name="Editable" content="File">m_Editable.png</Image>
 </Folder>
