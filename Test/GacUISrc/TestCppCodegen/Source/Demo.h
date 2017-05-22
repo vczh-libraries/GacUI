@@ -153,6 +153,8 @@ namespace demo
 
 	class DataGridTabPageConstructor;
 	class DataGridTabPage;
+	class DocumentTabPageConstructor;
+	class DocumentTabPage;
 	class ListViewTabPageConstructor;
 	class ListViewTabPage;
 	class MainWindowConstructor;
@@ -302,6 +304,33 @@ namespace demo
 		~DataGridTabPage();
 	};
 
+	class DocumentTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentTabPageConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTabPageConstructor>;
+#endif
+	protected:
+		::demo::DocumentTabPage* self = static_cast<::demo::DocumentTabPage*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_precompile_2 = static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		void __vwsn_initialize_instance_(::demo::DocumentTabPage* __vwsn_this_);
+	public:
+		DocumentTabPageConstructor();
+	};
+
+	class DocumentTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::DocumentTabPageConstructor, public ::vl::reflection::Description<DocumentTabPage>
+	{
+		friend class ::demo::DocumentTabPageConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTabPage>;
+#endif
+	public:
+		DocumentTabPage();
+		~DocumentTabPage();
+	};
+
 	class ListViewTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<ListViewTabPageConstructor>
 	{
 		friend struct ::vl_workflow_global::__vwsnf30_Demo_demo_ListViewTabPageConstructor___vwsn_initialize_instance__;
@@ -383,7 +412,8 @@ namespace demo
 		::demo::ListViewTabPage* __vwsn_precompile_6 = static_cast<::demo::ListViewTabPage*>(nullptr);
 		::demo::TreeViewTabPage* __vwsn_precompile_7 = static_cast<::demo::TreeViewTabPage*>(nullptr);
 		::demo::DataGridTabPage* __vwsn_precompile_8 = static_cast<::demo::DataGridTabPage*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::demo::DocumentTabPage* __vwsn_precompile_9 = static_cast<::demo::DocumentTabPage*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_);
 	public:
 		MainWindowConstructor();

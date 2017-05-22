@@ -3195,6 +3195,79 @@ Class (::demo::DataGridTabPage)
 	}
 
 /***********************************************************************
+Class (::demo::DocumentTabPageConstructor)
+***********************************************************************/
+
+	void DocumentTabPageConstructor::__vwsn_initialize_instance_(::demo::DocumentTabPage* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(this->self)->SetText(::vl::WString(L"Document Editor", false));
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(3, 1);
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(1, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(2, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(0, [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = 1.0; return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(2, 0, 1, 1);
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentViewerStyle();
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiDocumentViewer(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		}
+		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = 0; __vwsn_temp__.top = 0; __vwsn_temp__.right = 0; __vwsn_temp__.bottom = 0; return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+	}
+
+	DocumentTabPageConstructor::DocumentTabPageConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::demo::DocumentTabPage)
+***********************************************************************/
+
+	DocumentTabPage::DocumentTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::DocumentTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
+	}
+
+	DocumentTabPage::~DocumentTabPage()
+	{
+		this->ClearSubscriptions();
+		this->ClearComponents();
+	}
+
+/***********************************************************************
 Class (::demo::ListViewTabPageConstructor)
 ***********************************************************************/
 
@@ -3508,9 +3581,9 @@ Class (::demo::MainWindowConstructor)
 	void MainWindowConstructor::__vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
-		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
+		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = 640; __vwsn_temp__.y = 480; return __vwsn_temp__; }());
@@ -3578,6 +3651,14 @@ Class (::demo::MainWindowConstructor)
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetPages());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_2));
+		}
+		(this->__vwsn_precompile_9 = new ::demo::DocumentTabPage());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlt(::vl::WString(L"D", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_9));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
@@ -5167,6 +5248,8 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(demo::DateEditorConstructor)
 			IMPL_CPP_TYPE_INFO(demo::DateFilter)
 			IMPL_CPP_TYPE_INFO(demo::DateFilterConstructor)
+			IMPL_CPP_TYPE_INFO(demo::DocumentTabPage)
+			IMPL_CPP_TYPE_INFO(demo::DocumentTabPageConstructor)
 			IMPL_CPP_TYPE_INFO(demo::GenderDisplayer)
 			IMPL_CPP_TYPE_INFO(demo::GenderDisplayerConstructor)
 			IMPL_CPP_TYPE_INFO(demo::GenderEditor)
@@ -5330,6 +5413,20 @@ namespace vl
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::DateFilterConstructor)
 
+			BEGIN_CLASS_MEMBER(::demo::DocumentTabPage)
+				CLASS_MEMBER_CONSTRUCTOR(::demo::DocumentTabPage*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::demo::DocumentTabPage)
+
+			BEGIN_CLASS_MEMBER(::demo::DocumentTabPageConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::DocumentTabPageConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(self)
+			END_CLASS_MEMBER(::demo::DocumentTabPageConstructor)
+
 			BEGIN_CLASS_MEMBER(::demo::GenderDisplayer)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::GenderDisplayer*(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetGender, NO_PARAMETER)
@@ -5444,6 +5541,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
@@ -5652,6 +5750,8 @@ namespace vl
 					ADD_TYPE_INFO(::demo::DateEditorConstructor)
 					ADD_TYPE_INFO(::demo::DateFilter)
 					ADD_TYPE_INFO(::demo::DateFilterConstructor)
+					ADD_TYPE_INFO(::demo::DocumentTabPage)
+					ADD_TYPE_INFO(::demo::DocumentTabPageConstructor)
 					ADD_TYPE_INFO(::demo::GenderDisplayer)
 					ADD_TYPE_INFO(::demo::GenderDisplayerConstructor)
 					ADD_TYPE_INFO(::demo::GenderEditor)

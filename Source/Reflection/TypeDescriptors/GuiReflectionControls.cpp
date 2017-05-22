@@ -561,6 +561,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearSelection, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSelectableListControl)
 
+			BEGIN_CLASS_MEMBER(ItemProviderBase)
+				CLASS_MEMBER_BASE(GuiListControl::IItemProvider)
+			END_CLASS_MEMBER(ItemProviderBase)
+
 			BEGIN_CLASS_MEMBER(RangedItemArrangerBase)
 				CLASS_MEMBER_BASE(GuiListControl::IItemArranger)
 			END_CLASS_MEMBER(RangedItemArrangerBase)
@@ -1429,6 +1433,14 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ValueProperty)
 			END_CLASS_MEMBER(DataColumn)
+
+			BEGIN_CLASS_MEMBER(DataProvider)
+				CLASS_MEMBER_BASE(ItemProviderBase)
+				CLASS_MEMBER_BASE(IListViewItemView)
+				CLASS_MEMBER_BASE(ListViewColumnItemArranger::IColumnItemView)
+				CLASS_MEMBER_BASE(IDataGridView)
+				CLASS_MEMBER_BASE(IDataProcessorCallback)
+			END_CLASS_MEMBER(DataProvider)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)

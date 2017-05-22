@@ -1,0 +1,20 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::DocumentTabPage" xmlns:demo="demo::*">
+  <TabPage ref.Name="self" Text="Document Editor">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+      <att.Rows>
+        <_>composeType:MinSize</_>
+        <_>composeType:MinSize</_>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Columns>
+
+      <Cell Site="row:2 column:0">
+        <DocumentViewer EditMode="Editable">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </DocumentViewer>
+      </Cell>
+    </Table>
+  </TabPage>
+</Instance>
