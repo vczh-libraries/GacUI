@@ -79,6 +79,8 @@ Common Interface
 				Ptr<compositions::GuiShortcutKeyManager>			internalShortcutKeyManager;
 				bool												preventEnterDueToAutoComplete;
 
+				void												InvokeUndoRedoChanged();
+				void												InvokeModifiedChanged();
 				void												UpdateCaretPoint();
 				void												Move(TextPos pos, bool shift);
 				void												Modify(TextPos start, TextPos end, const WString& input, bool asKeyInput);
@@ -111,6 +113,10 @@ Common Interface
 
 				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent						SelectionChanged;
+				/// <summary>Undo redo status changed event.</summary>
+				compositions::GuiNotifyEvent						UndoRedoChanged;
+				/// <summary>Modified status changed event.</summary>
+				compositions::GuiNotifyEvent						ModifiedChanged;
 
 				//================ clipboard operations
 

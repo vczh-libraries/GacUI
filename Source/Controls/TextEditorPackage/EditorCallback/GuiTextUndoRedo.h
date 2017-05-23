@@ -46,6 +46,9 @@ Undo Redo
 				GuiGeneralUndoRedoProcessor();
 				~GuiGeneralUndoRedoProcessor();
 
+				Event<void()>								UndoRedoChanged;
+				Event<void()>								ModifiedChanged;
+
 				bool										CanUndo();
 				bool										CanRedo();
 				void										ClearUndoRedo();

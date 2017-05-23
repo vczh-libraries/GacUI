@@ -1041,6 +1041,7 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkChanged)
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkExecuted)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+				CLASS_MEMBER_GUIEVENT(UndoRedoChanged)
 
 				CLASS_MEMBER_METHOD(AddDocumentItem, { L"value" })
 				CLASS_MEMBER_METHOD(RemoveDocumentItem, { L"value" })
@@ -1051,6 +1052,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ActiveHyperlinkReference)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionModel, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Modified)
 
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
@@ -1117,6 +1119,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextBoxCommonInterface)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+				CLASS_MEMBER_GUIEVENT(UndoRedoChanged)
 				
 				CLASS_MEMBER_PROPERTY_FAST(Readonly)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
@@ -1129,7 +1132,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxWidth)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxHeight)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditVersion)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Modified)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Modified)
 
 				CLASS_MEMBER_METHOD(CanCut, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CanCopy, NO_PARAMETER)

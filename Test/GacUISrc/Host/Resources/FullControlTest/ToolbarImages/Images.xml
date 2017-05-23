@@ -6,7 +6,7 @@
   <Image name="Paste" content="File">_Paste.png</Image>
   <Image name="Delete" content="File">_Delete.png</Image>
   <Image name="Image" content="File">e_Image.png</Image>
-  <Image name="Link" content="File">e_Image.png</Image>
+  <Image name="Link" content="File">e_Link.png</Image>
   <Image name="RemoveLink" content="File">e_RemoveLink.png</Image>
   <Image name="Bold" content="File">s_Bold.png</Image>
   <Image name="Italic" content="File">s_Italic.png</Image>

@@ -43,6 +43,16 @@ GuiDocumentItem
 /***********************************************************************
 GuiDocumentCommonInterface
 ***********************************************************************/
+			
+			void GuiDocumentCommonInterface::InvokeUndoRedoChanged()
+			{
+				UndoRedoChanged.Execute(documentControl->GetNotifyEventArguments());
+			}
+
+			void GuiDocumentCommonInterface::InvokeModifiedChanged()
+			{
+				ModifiedChanged.Execute(documentControl->GetNotifyEventArguments());
+			}
 
 			void GuiDocumentCommonInterface::UpdateCaretPoint()
 			{
@@ -223,6 +233,11 @@ GuiDocumentCommonInterface
 				ActiveHyperlinkChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
 				ActiveHyperlinkExecuted.SetAssociatedComposition(_sender->GetBoundsComposition());
 				SelectionChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+				UndoRedoChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+				ModifiedChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+
+				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiDocumentCommonInterface::InvokeUndoRedoChanged);
+				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
 			}
 
 			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun> hyperlink, vint paragraphIndex)

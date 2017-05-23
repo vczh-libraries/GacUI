@@ -44,6 +44,8 @@ GuiGeneralUndoRedoProcessor
 				
 					steps.Add(step);
 					firstFutureStep=steps.Count();
+					UndoRedoChanged();
+					ModifiedChanged();
 				}
 			}
 
@@ -77,6 +79,7 @@ GuiGeneralUndoRedoProcessor
 				if(!performingUndoRedo)
 				{
 					savedStep=firstFutureStep;
+					ModifiedChanged();
 				}
 			}
 
@@ -87,6 +90,8 @@ GuiGeneralUndoRedoProcessor
 				firstFutureStep--;
 				steps[firstFutureStep]->Undo();
 				performingUndoRedo=false;
+				UndoRedoChanged();
+				ModifiedChanged();
 				return true;
 			}
 
@@ -97,6 +102,8 @@ GuiGeneralUndoRedoProcessor
 				firstFutureStep++;
 				steps[firstFutureStep-1]->Redo();
 				performingUndoRedo=false;
+				UndoRedoChanged();
+				ModifiedChanged();
 				return true;
 			}
 

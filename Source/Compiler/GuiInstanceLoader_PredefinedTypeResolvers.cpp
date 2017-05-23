@@ -45,6 +45,17 @@ namespace vl
 				}
 			}
 
+			void Visit(WfVirtualStatement* node)override
+			{
+				traverse_visitor::StatementVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					Workflow_RecordScriptPosition(context, record.position, node->expandedStatement, record.availableAfter);
+				}
+			}
+
 			void Visit(WfVirtualDeclaration* node)override
 			{
 				traverse_visitor::DeclarationVisitor::Visit(node);

@@ -71,6 +71,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(AddSubscription, {L"subscription"})
 				CLASS_MEMBER_METHOD(RemoveSubscription, {L"subscription"})
 				CLASS_MEMBER_METHOD(ContainsSubscription, {L"subscription"})
+				CLASS_MEMBER_METHOD(UpdateSubscriptions, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ClearSubscriptions, NO_PARAMETER)
 
 				CLASS_MEMBER_METHOD(AddComponent, {L"component"})

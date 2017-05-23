@@ -2734,7 +2734,15 @@ CheckScopes_SymbolType
 							{
 								if (symbol->type)
 								{
+									vint currentErrorCount = manager->errors.Count();
 									symbol->typeInfo = CreateTypeInfoFromType(scope.Obj(), symbol->type);
+									if (symbol->creatorNode)
+									{
+										for (vint i = currentErrorCount; i < manager->errors.Count(); i++)
+										{
+											manager->errors[i]->parsingTree = symbol->creatorNode.Obj();
+										}
+									}
 								}
 							}
 						}

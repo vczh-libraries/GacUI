@@ -1,4 +1,39 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DocumentTabPage" xmlns:demo="demo::*">
+  <ref.Members>
+    <![CDATA[
+      event ClipboardUpdated();
+      
+      var ccSource : GuiWindow* = null;
+      var ccHandler : system::reflection::EventHandler^ = null;
+
+      func OnClipboardUpdated(sender : Graphics*, arguments: GuiEventArgs*) : void
+      {
+        ClipboardUpdated();
+      }
+
+      func OnRenderTargetChanged(sender : Graphics*, arguments: GuiEventArgs*) : void
+      {
+        if (ccSource is not null)
+        {
+          detach(ccSource.ClipboardUpdated, ccHandler);
+          ccSource = null;
+          ccHandler = null;
+        }
+
+        ccSource = RelatedControlHost as GuiWindow*;
+        if (ccSource is not null)
+        {
+          ccHandler = attach(ccSource.ClipboardUpdated, OnClipboardUpdated);
+        }
+        ClipboardUpdated();
+      }
+    ]]>
+  </ref.Members>
+  <ref.Ctor>
+    <![CDATA[
+      attach(self.RenderTargetChanged, OnRenderTargetChanged);
+    ]]>
+  </ref.Ctor>
   <TabPage ref.Name="self" Text="Document Editor">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
       <att.Rows>
@@ -82,65 +117,50 @@
     </Table>
 
     <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://ToolbarImages/Undo" ShortcutBuilder="Ctrl+Z">
+      <att.Enabled-bind>document.observe as _(_.CanUndo() on _.UndoRedoChanged)</att.Enabled-bind>
       <ev.Executed-eval>
-        <![CDATA[
-          {
-          }
-        ]]>
+        <![CDATA[document.Undo();]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://ToolbarImages/Redo" ShortcutBuilder="Ctrl+Y">
+      <att.Enabled-bind>document.observe as _(_.CanRedo() on _.UndoRedoChanged)</att.Enabled-bind>
       <ev.Executed-eval>
-        <![CDATA[
-          {
-          }
-        ]]>
+        <![CDATA[document.Redo();]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://ToolbarImages/Copy" ShortcutBuilder="Ctrl+C">
+      <att.Enabled-bind>document.observe as _(_.CanCopy() on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
-        <![CDATA[
-          {
-          }
-        ]]>
+        <![CDATA[document.Copy();]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" ShortcutBuilder="Ctrl+Z">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
-        <![CDATA[
-          {
-          }
-        ]]>
+        <![CDATA[document.Cut();]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" ShortcutBuilder="Ctrl+V">
+      <att.Enabled-bind>self.observe as _(document.CanPaste() on _.ClipboardUpdated)</att.Enabled-bind>
       <ev.Executed-eval>
-        <![CDATA[
-          {
-          }
-        ]]>
+        <![CDATA[document.Paste();]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://ToolbarImages/Delete">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
-        <![CDATA[
-          {
-          }
-        ]]>
+        <![CDATA[document.SetSelectionText("");]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandSelect" Text="Select All" ShortcutBuilder="Ctrl+A">
       <ev.Executed-eval>
-        <![CDATA[
-          {
-          }
-        ]]>
+        <![CDATA[document.SelectAll();]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
@@ -242,6 +262,7 @@
             commandViewOnly.Selected = true;
             commandSelectable.Selected = false;
             commandEditable.Selected = false;
+            self.UpdateSubscriptions();
           }
         ]]>
       </ev.Executed-eval>
@@ -255,6 +276,7 @@
             commandViewOnly.Selected = false;
             commandSelectable.Selected = true;
             commandEditable.Selected = false;
+            self.UpdateSubscriptions();
           }
         ]]>
       </ev.Executed-eval>
@@ -268,6 +290,7 @@
             commandViewOnly.Selected = false;
             commandSelectable.Selected = false;
             commandEditable.Selected = true;
+            self.UpdateSubscriptions();
           }
         ]]>
       </ev.Executed-eval>

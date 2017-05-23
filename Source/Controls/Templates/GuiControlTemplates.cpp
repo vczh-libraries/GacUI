@@ -92,6 +92,14 @@ GuiInstanceRootObject
 				return subscriptions.Contains(subscription.Obj());
 			}
 
+			void GuiInstanceRootObject::UpdateSubscriptions()
+			{
+				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+				{
+					subscription->Update();
+				}
+			}
+
 			void GuiInstanceRootObject::ClearSubscriptions()
 			{
 				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)

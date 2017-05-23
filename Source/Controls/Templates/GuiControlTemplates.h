@@ -143,6 +143,8 @@ namespace vl
 				/// <param name="subscription">The subscription to test.</param>
 				bool											ContainsSubscription(Ptr<description::IValueSubscription> subscription);
 				/// <summary>Clear all subscriptions.</summary>
+				void											UpdateSubscriptions();
+				/// <summary>Clear all subscriptions.</summary>
 				void											ClearSubscriptions();
 
 				/// <summary>Add a component. When this control host is disposing, all attached components will be deleted.</summary>

@@ -80,6 +80,8 @@ GuiDocumentCommonInterface
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
 
 			protected:
+				void										InvokeUndoRedoChanged();
+				void										InvokeModifiedChanged();
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
@@ -121,6 +123,10 @@ GuiDocumentCommonInterface
 
 				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent				SelectionChanged;
+				/// <summary>Undo redo status changed event.</summary>
+				compositions::GuiNotifyEvent				UndoRedoChanged;
+				/// <summary>Modified status changed event.</summary>
+				compositions::GuiNotifyEvent				ModifiedChanged;
 				
 				/// <summary>Get the document.</summary>
 				/// <returns>The document.</returns>
