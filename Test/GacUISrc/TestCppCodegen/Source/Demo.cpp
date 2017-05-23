@@ -5763,7 +5763,7 @@ Class (::demo::DocumentTabPage)
 		(this->ccSource = ::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(this->GetRelatedControlHost()));
 		if ((this->ccSource != nullptr))
 		{
-			(this->ccHandler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->ccSource)->ClipboardUpdated, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this.Obj(), &::demo::DocumentTabPage::OnClipboardUpdated)));
+			(this->ccHandler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->ccSource)->ClipboardUpdated, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &::demo::DocumentTabPage::OnClipboardUpdated)));
 		}
 		::vl::__vwsn::EventInvoke(this->ClipboardUpdated)();
 	}
@@ -5780,7 +5780,7 @@ Class (::demo::DocumentTabPage)
 
 	void DocumentTabPage::__vwsn_instance_ctor_()
 	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->RenderTargetChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this.Obj(), &::demo::DocumentTabPage::OnRenderTargetChanged));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->RenderTargetChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &::demo::DocumentTabPage::OnRenderTargetChanged));
 	}
 
 	DocumentTabPage::~DocumentTabPage()
@@ -8404,9 +8404,3 @@ namespace vl
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
-// UNUSED_USER_CONTENT:
-//	USERIMPL(/* ::demo::IViewModel */)
-//	::vl::Ptr<::demo::IViewModel> IViewModel::Create()
-//	{
-//		throw ::vl::Exception(L"You should implement this function.");
-//	}

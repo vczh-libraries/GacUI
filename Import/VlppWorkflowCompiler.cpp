@@ -15809,10 +15809,6 @@ WfGenerateExpressionVisitor
 						[&](IMethodInfo* methodInfo)
 						{
 							VisitThisExpression(node, methodInfo->GetOwnerTypeDescriptor());
-							if (result.type->GetDecorator() == ITypeInfo::SharedPtr)
-							{
-								writer.WriteString(L".Obj()");
-							}
 							return true;
 						},
 						[&](IPropertyInfo* propertyInfo)
