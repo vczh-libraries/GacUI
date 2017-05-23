@@ -192,42 +192,63 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandBold" Text="Bold" Image-uri="res://ToolbarImages/Bold">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).bold == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            var style = new DocumentStyleProperties^();
+            style.bold = not commandBold.Selected;
+            document.EditStyle(document.CaretBegin, document.CaretEnd, style);
           }
         ]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandItalic" Text="Italic" Image-uri="res://ToolbarImages/Italic">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).italic == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            var style = new DocumentStyleProperties^();
+            style.italic = not commandItalic.Selected;
+            document.EditStyle(document.CaretBegin, document.CaretEnd, style);
           }
         ]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandUnderline" Text="Underline" Image-uri="res://ToolbarImages/Underline">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).underline == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            var style = new DocumentStyleProperties^();
+            style.underline = not commandUnderline.Selected;
+            document.EditStyle(document.CaretBegin, document.CaretEnd, style);
           }
         ]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandStrike" Text="Strike" Image-uri="res://ToolbarImages/Strike">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).strikeline == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            var style = new DocumentStyleProperties^();
+            style.strikeline = not commandStrike.Selected;
+            document.EditStyle(document.CaretBegin, document.CaretEnd, style);
           }
         ]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandFont" Text="Set Font ..." Image-uri="res://ToolbarImages/Font">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
@@ -237,6 +258,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandColor" Text="Text Color ..." Image-uri="res://ToolbarImages/Color">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
@@ -246,6 +268,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandBackColor" Text="Background Color ..." Image-uri="res://ToolbarImages/BackColor">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {

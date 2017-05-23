@@ -786,6 +786,12 @@ GuiDocumentCommonInterface
 
 			Ptr<DocumentStyleProperties> GuiDocumentCommonInterface::SummarizeStyle(TextPos begin, TextPos end)
 			{
+				if (begin>end)
+				{
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 				return documentElement->SummarizeStyle(begin, end);
 			}
 
