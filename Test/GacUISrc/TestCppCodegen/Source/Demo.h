@@ -434,6 +434,8 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripCommand* commandItalic = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandUnderline = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandStrike = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
+		::vl::presentation::controls::GuiColorDialog* dialogColor = static_cast<::vl::presentation::controls::GuiColorDialog*>(nullptr);
+		::vl::presentation::controls::GuiFontDialog* dialogFont = static_cast<::vl::presentation::controls::GuiFontDialog*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandFont = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandColor = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandBackColor = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);

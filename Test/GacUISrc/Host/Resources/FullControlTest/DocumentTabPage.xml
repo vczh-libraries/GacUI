@@ -247,11 +247,34 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
+    <ColorDialog ref.Name="dialogColor" EnabledCustomColor="false"/>
+    <FontDialog ref.Name="dialogFont" ShowEffect="false" ShowSelection="true" ForceFontExist="true"/>
+
     <ToolstripCommand ref.Name="commandFont" Text="Set Font ..." Image-uri="res://ToolbarImages/Font">
       <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            var begin = document.CaretBegin;
+            var end = document.CaretEnd;
+            var style = document.SummarizeStyle(begin, end);
+            
+            var baselineFont = document.Font;
+            dialogFont.SelectedFont = 
+            {
+              fontFamily:   ( style.face is null ? baselineFont.fontFamily : cast string style.face   )
+              size:         ( style.size is null ? baselineFont.size       : cast int style.size.size )
+            };
+            
+            if (dialogFont.ShowDialog())
+            {
+              style = new DocumentStyleProperties^();
+              var selectedFont = dialogFont.SelectedFont;
+              
+              style.face = selectedFont.fontFamily;
+              style.size = {size:selectedFont.size relative:false};
+              document.EditStyle(begin, end, style);
+            }
           }
         ]]>
       </ev.Executed-eval>
@@ -262,6 +285,23 @@
       <ev.Executed-eval>
         <![CDATA[
           {
+            var begin = document.CaretBegin;
+            var end = document.CaretEnd;
+            var selectedColor = document.SummarizeStyle(begin, end).color;
+            if (selectedColor is null)
+            {
+              dialogColor.SelectedColor = cast Color "#000000";
+            }
+            else
+            {
+              dialogColor.SelectedColor = cast Color selectedColor;
+            }
+            if (dialogColor.ShowDialog())
+            {
+              var style = new DocumentStyleProperties^();
+              style.color = dialogColor.SelectedColor;
+              document.EditStyle(begin, end, style);
+            }
           }
         ]]>
       </ev.Executed-eval>
@@ -272,6 +312,23 @@
       <ev.Executed-eval>
         <![CDATA[
           {
+            var begin = document.CaretBegin;
+            var end = document.CaretEnd;
+            var selectedColor = document.SummarizeStyle(begin, end).backgroundColor;
+            if (selectedColor is null)
+            {
+              dialogColor.SelectedColor = cast Color "#000000";
+            }
+            else
+            {
+              dialogColor.SelectedColor = cast Color selectedColor;
+            }
+            if (dialogColor.ShowDialog())
+            {
+              var style = new DocumentStyleProperties^();
+              style.backgroundColor = dialogColor.SelectedColor;
+              document.EditStyle(begin, end, style);
+            }
           }
         ]]>
       </ev.Executed-eval>

@@ -182,10 +182,10 @@ Dialogs
 				/// <param name="value">The selected color.</param>
 				void												SetSelectedColor(Color value);
 				
-				/// <summary>Get if the selected font is alreadt selected on the dialog when it is opened.</summary>
+				/// <summary>Get if the selected font is already selected on the dialog when it is opened.</summary>
 				/// <returns>Returns true if the selected font is already selected on the dialog when it is opened.</returns>
 				bool												GetShowSelection();
-				/// <summary>Set if the selected font is alreadt selected on the dialog when it is opened.</summary>
+				/// <summary>Set if the selected font is already selected on the dialog when it is opened.</summary>
 				/// <param name="value">Set to true to select the selected font when the dialog is opened.</param>
 				void												SetShowSelection(bool value);
 				
