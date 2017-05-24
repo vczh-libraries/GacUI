@@ -1419,7 +1419,7 @@ Closures
 		auto end = ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd();
 		auto style = ::vl::__vwsn::This(__vwsnthis_0->document)->SummarizeStyle(begin, end);
 		auto baselineFont = ::vl::__vwsn::This(__vwsnthis_0->document)->GetFont();
-		::vl::__vwsn::This(__vwsnthis_0->dialogFont)->SetSelectedFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ((! static_cast<bool>(::vl::__vwsn::This(style.Obj())->face)) ? baselineFont.fontFamily : ::vl::__vwsn::This(style.Obj())->face.Value()); __vwsn_temp__.size = ((! static_cast<bool>(::vl::__vwsn::This(style.Obj())->size)) ? baselineFont.size : static_cast<::vl::vint32_t>(::vl::__vwsn::This(style.Obj())->size.size)); return __vwsn_temp__; }());
+		::vl::__vwsn::This(__vwsnthis_0->dialogFont)->SetSelectedFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ((! static_cast<bool>(::vl::__vwsn::This(style.Obj())->face)) ? baselineFont.fontFamily : ::vl::__vwsn::This(style.Obj())->face.Value()); __vwsn_temp__.size = ((! static_cast<bool>(::vl::__vwsn::This(style.Obj())->size)) ? baselineFont.size : static_cast<::vl::vint32_t>(::vl::__vwsn::This(style.Obj())->size.Value().size)); return __vwsn_temp__; }());
 		if (::vl::__vwsn::This(__vwsnthis_0->dialogFont)->ShowDialog())
 		{
 			(style = ::vl::Ptr<::vl::presentation::DocumentStyleProperties>(new ::vl::presentation::DocumentStyleProperties()));
