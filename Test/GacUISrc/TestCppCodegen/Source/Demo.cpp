@@ -2305,7 +2305,7 @@ Closures
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc10_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc10_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -2316,7 +2316,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = __vwsnthis_0->self);
-			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ClipboardUpdated, ::vl::Func<void()>(this, &__vwsnc10_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetBoundsComposition())->GetEventReceiver()->clipboardNotify, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc10_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
 			return true;
 		}
 		return false;
@@ -2337,7 +2337,7 @@ Closures
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ClipboardUpdated, __vwsn_bind_handler_0_0);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetBoundsComposition())->GetEventReceiver()->clipboardNotify, __vwsn_bind_handler_0_0);
 			(__vwsn_bind_cache_0 = static_cast<::demo::DocumentTabPage*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
@@ -5814,27 +5814,6 @@ Class (::demo::DocumentTabPageConstructor)
 Class (::demo::DocumentTabPage)
 ***********************************************************************/
 
-	void DocumentTabPage::OnClipboardUpdated(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
-	{
-		::vl::__vwsn::EventInvoke(this->ClipboardUpdated)();
-	}
-
-	void DocumentTabPage::OnRenderTargetChanged(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
-	{
-		if ((this->ccSource != nullptr))
-		{
-			::vl::__vwsn::EventDetach(::vl::__vwsn::This(this->ccSource)->ClipboardUpdated, this->ccHandler);
-			(this->ccSource = static_cast<::vl::presentation::controls::GuiWindow*>(nullptr));
-			(this->ccHandler = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-		}
-		(this->ccSource = ::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(this->GetRelatedControlHost()));
-		if ((this->ccSource != nullptr))
-		{
-			(this->ccHandler = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->ccSource)->ClipboardUpdated, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &::demo::DocumentTabPage::OnClipboardUpdated)));
-		}
-		::vl::__vwsn::EventInvoke(this->ClipboardUpdated)();
-	}
-
 	DocumentTabPage::DocumentTabPage()
 		: ::vl::presentation::controls::GuiTabPage(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
 	{
@@ -5842,12 +5821,6 @@ Class (::demo::DocumentTabPage)
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
-		this->__vwsn_instance_ctor_();
-	}
-
-	void DocumentTabPage::__vwsn_instance_ctor_()
-	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->RenderTargetChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &::demo::DocumentTabPage::OnRenderTargetChanged));
 	}
 
 	DocumentTabPage::~DocumentTabPage()
@@ -8004,12 +7977,6 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::demo::DocumentTabPage)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::DocumentTabPage*(), NO_PARAMETER)
-				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(OnClipboardUpdated, { L"sender" _ L"arguments" })
-				CLASS_MEMBER_METHOD(OnRenderTargetChanged, { L"sender" _ L"arguments" })
-				CLASS_MEMBER_EVENT(ClipboardUpdated)
-				CLASS_MEMBER_FIELD(ccHandler)
-				CLASS_MEMBER_FIELD(ccSource)
 			END_CLASS_MEMBER(::demo::DocumentTabPage)
 
 			BEGIN_CLASS_MEMBER(::demo::DocumentTabPageConstructor)

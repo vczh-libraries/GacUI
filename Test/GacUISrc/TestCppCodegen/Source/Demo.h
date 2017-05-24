@@ -563,13 +563,7 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTabPage>;
 #endif
 	public:
-		::vl::Event<void()> ClipboardUpdated;
-		::vl::presentation::controls::GuiWindow* ccSource = static_cast<::vl::presentation::controls::GuiWindow*>(nullptr);
-		::vl::Ptr<::vl::reflection::description::IEventHandler> ccHandler = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		void OnClipboardUpdated(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments);
-		void OnRenderTargetChanged(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments);
 		DocumentTabPage();
-		void __vwsn_instance_ctor_();
 		~DocumentTabPage();
 	};
 
@@ -2315,7 +2309,7 @@ Closures
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;

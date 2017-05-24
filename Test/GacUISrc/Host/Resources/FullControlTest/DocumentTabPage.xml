@@ -1,39 +1,4 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DocumentTabPage" xmlns:demo="demo::*">
-  <ref.Members>
-    <![CDATA[
-      event ClipboardUpdated();
-      
-      var ccSource : GuiWindow* = null;
-      var ccHandler : system::reflection::EventHandler^ = null;
-
-      func OnClipboardUpdated(sender : Graphics*, arguments: GuiEventArgs*) : void
-      {
-        ClipboardUpdated();
-      }
-
-      func OnRenderTargetChanged(sender : Graphics*, arguments: GuiEventArgs*) : void
-      {
-        if (ccSource is not null)
-        {
-          detach(ccSource.ClipboardUpdated, ccHandler);
-          ccSource = null;
-          ccHandler = null;
-        }
-
-        ccSource = RelatedControlHost as GuiWindow*;
-        if (ccSource is not null)
-        {
-          ccHandler = attach(ccSource.ClipboardUpdated, OnClipboardUpdated);
-        }
-        ClipboardUpdated();
-      }
-    ]]>
-  </ref.Members>
-  <ref.Ctor>
-    <![CDATA[
-      attach(self.RenderTargetChanged, OnRenderTargetChanged);
-    ]]>
-  </ref.Ctor>
   <TabPage ref.Name="self" Text="Document Editor">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
       <att.Rows>
@@ -137,7 +102,7 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" ShortcutBuilder="Ctrl+Z">
+    <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" ShortcutBuilder="Ctrl+X">
       <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[document.Cut();]]>
@@ -145,7 +110,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://ToolbarImages/Paste" ShortcutBuilder="Ctrl+V">
-      <att.Enabled-bind>self.observe as _(document.CanPaste() on _.ClipboardUpdated)</att.Enabled-bind>
+      <att.Enabled-bind>self.observe as _(document.CanPaste() on _.BoundsComposition.clipboardNotify)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[document.Paste();]]>
       </ev.Executed-eval>

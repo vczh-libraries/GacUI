@@ -481,6 +481,8 @@ Event Receiver
 				GuiNotifyEvent					caretNotify;
 				/// <summary>Clipboard notify event. This event is raised when the content in the system clipboard is changed.</summary>
 				GuiNotifyEvent					clipboardNotify;
+				/// <summary>Render target changed event. This event is raised when the render target of this composition is changed.</summary>
+				GuiNotifyEvent					renderTargetChanged;
 			};
 		}
 	}

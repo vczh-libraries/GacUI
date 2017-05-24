@@ -80,6 +80,11 @@ GuiGraphicsComposition
 						renderer->SetRenderTarget(renderTarget);
 					}
 				}
+
+				if (HasEventReceiver())
+				{
+					GetEventReceiver()->renderTargetChanged.Execute(GuiEventArgs(this));
+				}
 				if (associatedControl)
 				{
 					associatedControl->OnRenderTargetChanged(renderTarget);
