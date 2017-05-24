@@ -94,6 +94,50 @@ void EnumerateFontFamilies(const Func<void(const WString&)>& callback)
 #define BINARY_FOLDER L"../TestCppCodegen/"
 #define SOURCE_FOLDER L"../TestCppCodegen/Source/"
 
+class DebugCallback : public Object, public IGuiResourcePrecompileCallback
+{
+public:
+	vint lastPassIndex = -1;
+
+	void PrintPassName(vint passIndex)
+	{
+		if (lastPassIndex != passIndex)
+		{
+			lastPassIndex = passIndex;
+#if defined VCZH_MSVC && defined _DEBUG
+
+#define PRINT_PASS(PASS)\
+			case IGuiResourceTypeResolver_Precompile::PASS:\
+				OutputDebugString((itow(passIndex + 1) + L"/" + itow(IGuiResourceTypeResolver_Precompile::Instance_Max + 1) + L": " L ## #PASS L"\r\n").Buffer());\
+				break;\
+
+			switch (passIndex)
+			{
+			PRINT_PASS(Workflow_Collect)
+			PRINT_PASS(Workflow_Compile)
+			PRINT_PASS(Instance_CollectInstanceTypes)
+			PRINT_PASS(Instance_CompileInstanceTypes)
+			PRINT_PASS(Instance_CollectEventHandlers)
+			PRINT_PASS(Instance_CompileEventHandlers)
+			PRINT_PASS(Instance_GenerateInstanceClass)
+			PRINT_PASS(Instance_CompileInstanceClass)
+			}
+#endif
+		}
+	}
+
+	void OnPerPass(vint passIndex)override
+	{
+		PrintPassName(passIndex);
+	}
+
+	void OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource)override
+	{
+		PrintPassName(passIndex);
+		OutputDebugString((L"    " + resource->GetResourcePath() + L"\r\n").Buffer());
+	}
+};
+
 void GuiMain_Resource()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -107,7 +151,8 @@ void GuiMain_Resource()
 	{
 		List<GuiResourceError> errors;
 		auto resource = GuiResource::LoadFromXml(LR"(Resources/FullControlTest/Resource.xml)", errors);
-		auto precompiledFolder = resource->Precompile(nullptr, errors);
+		DebugCallback debugCallback;
+		auto precompiledFolder = resource->Precompile(&debugCallback, errors);
 		auto compiled = precompiledFolder ? precompiledFolder->GetValueByPath(L"Workflow/InstanceClass").Cast<GuiInstanceCompiledWorkflow>() : nullptr;
 
 		{
