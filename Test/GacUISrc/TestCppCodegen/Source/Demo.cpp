@@ -4802,8 +4802,7 @@ Class (::demo::DataGridTabPage)
 
 	DataGridTabPage::~DataGridTabPage()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 /***********************************************************************
@@ -5337,7 +5336,7 @@ Class (::demo::DocumentTabPageConstructor)
 		}
 		(this->commandCut = new ::vl::presentation::controls::GuiToolstripCommand());
 		{
-			::vl::__vwsn::This(this->commandCut)->SetShortcutBuilder(::vl::WString(L"Ctrl+Z", false));
+			::vl::__vwsn::This(this->commandCut)->SetShortcutBuilder(::vl::WString(L"Ctrl+X", false));
 		}
 		{
 			::vl::__vwsn::This(this->commandCut)->SetText(::vl::WString(L"Cut", false));
@@ -5825,8 +5824,7 @@ Class (::demo::DocumentTabPage)
 
 	DocumentTabPage::~DocumentTabPage()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 /***********************************************************************
@@ -6132,8 +6130,7 @@ Class (::demo::ListViewTabPage)
 
 	ListViewTabPage::~ListViewTabPage()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 /***********************************************************************
@@ -6539,8 +6536,7 @@ Class (::demo::TextListTabPage)
 
 	TextListTabPage::~TextListTabPage()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 /***********************************************************************
@@ -6839,8 +6835,7 @@ Class (::demo::TreeViewTabPage)
 
 	TreeViewTabPage::~TreeViewTabPage()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 /***********************************************************************
@@ -6894,8 +6889,7 @@ Class (::demo::DateEditor)
 
 	DateEditor::~DateEditor()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
 	}
 
 /***********************************************************************
@@ -7071,8 +7065,7 @@ Class (::demo::DateFilter)
 
 	DateFilter::~DateFilter()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 /***********************************************************************
@@ -7126,8 +7119,7 @@ Class (::demo::TextEditor)
 
 	TextEditor::~TextEditor()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
 	}
 
 /***********************************************************************
@@ -7251,8 +7243,7 @@ Class (::demo::CategoryDisplayer)
 
 	CategoryDisplayer::~CategoryDisplayer()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 /***********************************************************************
@@ -7322,8 +7313,7 @@ Class (::demo::CategoryEditor)
 
 	CategoryEditor::~CategoryEditor()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
 	}
 
 /***********************************************************************
@@ -7379,8 +7369,7 @@ Class (::demo::CategoryItemTemplate)
 
 	CategoryItemTemplate::~CategoryItemTemplate()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
 	}
 
 /***********************************************************************
@@ -7428,8 +7417,7 @@ Class (::demo::CategoryVisualizer)
 
 	CategoryVisualizer::~CategoryVisualizer()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
 	}
 
 /***********************************************************************
@@ -7498,8 +7486,7 @@ Class (::demo::GenderDisplayer)
 
 	GenderDisplayer::~GenderDisplayer()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 /***********************************************************************
@@ -7569,8 +7556,7 @@ Class (::demo::GenderEditor)
 
 	GenderEditor::~GenderEditor()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
 	}
 
 /***********************************************************************
@@ -7621,8 +7607,7 @@ Class (::demo::GenderItemTemplate)
 
 	GenderItemTemplate::~GenderItemTemplate()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
 	}
 
 /***********************************************************************
@@ -7665,8 +7650,7 @@ Class (::demo::GenderVisualizer)
 
 	GenderVisualizer::~GenderVisualizer()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
 	}
 
 /***********************************************************************

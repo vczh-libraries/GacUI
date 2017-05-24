@@ -48,8 +48,7 @@ namespace demo
 
 	MainWindow::~MainWindow()
 	{
-		this->ClearSubscriptions();
-		this->ClearComponents();
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
 	}
 
 }

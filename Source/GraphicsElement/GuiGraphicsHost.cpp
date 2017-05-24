@@ -868,6 +868,7 @@ GuiGraphicsHost
 
 			GuiGraphicsHost::~GuiGraphicsHost()
 			{
+				NotifyFinalizeInstance(windowComposition);
 				if(shortcutKeyManager)
 				{
 					delete shortcutKeyManager;

@@ -467,7 +467,7 @@ GuiCustomControl
 			GuiCustomControl::~GuiCustomControl()
 			{
 				FinalizeAggregation();
-				FinalizeInstance();
+				FinalizeInstanceRecursively(this);
 			}
 		}
 	}

@@ -34,18 +34,52 @@ GuiComponent
 GuiInstanceRootObject
 ***********************************************************************/
 
-			void GuiInstanceRootObject::FinalizeInstance()
-			{
-				ClearSubscriptions();
-				ClearComponents();
-			}
-
 			GuiInstanceRootObject::GuiInstanceRootObject()
 			{
 			}
 
 			GuiInstanceRootObject::~GuiInstanceRootObject()
 			{
+			}
+
+			bool GuiInstanceRootObject::FinalizeInstance()
+			{
+				if (!finalized)
+				{
+					finalized = true;
+
+					FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+					{
+						subscription->Close();
+					}
+					FOREACH(GuiComponent*, component, components)
+					{
+						component->Detach(this);
+					}
+
+					subscriptions.Clear();
+					for (vint i = 0; i<components.Count(); i++)
+					{
+						delete components[i];
+					}
+					components.Clear();
+
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject)
+			{
+				NotifyFinalizeInstance(thisObject);
+			}
+
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiControl* thisObject)
+			{
+				NotifyFinalizeInstance(thisObject);
 			}
 
 			void GuiInstanceRootObject::SetResourceResolver(Ptr<GuiResourcePathResolver> resolver)
@@ -69,9 +103,10 @@ GuiInstanceRootObject
 
 			Ptr<description::IValueSubscription> GuiInstanceRootObject::AddSubscription(Ptr<description::IValueSubscription> subscription)
 			{
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddSubscription(Ptr<IValueSubscription>)#Cannot add subscription after finalizing.");
 				if (subscriptions.Contains(subscription.Obj()))
 				{
-					return 0;
+					return nullptr;
 				}
 				else
 				{
@@ -82,16 +117,6 @@ GuiInstanceRootObject
 				}
 			}
 
-			bool GuiInstanceRootObject::RemoveSubscription(Ptr<description::IValueSubscription> subscription)
-			{
-				return subscriptions.Remove(subscription.Obj());
-			}
-
-			bool GuiInstanceRootObject::ContainsSubscription(Ptr<description::IValueSubscription> subscription)
-			{
-				return subscriptions.Contains(subscription.Obj());
-			}
-
 			void GuiInstanceRootObject::UpdateSubscriptions()
 			{
 				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
@@ -100,17 +125,9 @@ GuiInstanceRootObject
 				}
 			}
 
-			void GuiInstanceRootObject::ClearSubscriptions()
-			{
-				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
-				{
-					subscription->Close();
-				}
-				subscriptions.Clear();
-			}
-
 			bool GuiInstanceRootObject::AddComponent(GuiComponent* component)
 			{
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddComponent(GuiComponent*>)#Cannot add component after finalizing.");
 				if(components.Contains(component))
 				{
 					return false;
@@ -126,37 +143,6 @@ GuiInstanceRootObject
 			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
 			{
 				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
-			}
-
-			bool GuiInstanceRootObject::RemoveComponent(GuiComponent* component)
-			{
-				vint index = components.IndexOf(component);
-				if (index == -1)
-				{
-					return false;
-				}
-				{
-					component->Detach(this);
-					return components.RemoveAt(index);
-				}
-			}
-
-			bool GuiInstanceRootObject::ContainsComponent(GuiComponent* component)
-			{
-				return components.Contains(component);
-			}
-
-			void GuiInstanceRootObject::ClearComponents()
-			{
-				for(vint i=0;i<components.Count();i++)
-				{
-					components[i]->Detach(this);
-				}
-				for(vint i=0;i<components.Count();i++)
-				{
-					delete components[i];
-				}
-				components.Clear();
 			}
 		}
 		namespace templates
@@ -179,7 +165,7 @@ GuiTemplate
 
 			GuiTemplate::~GuiTemplate()
 			{
-				FinalizeInstance();
+				FinalizeInstanceRecursively(this);
 			}
 
 /***********************************************************************
