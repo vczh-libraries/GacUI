@@ -121,8 +121,11 @@ namespace vl
 				~GuiInstanceRootObject();
 
 				/// <summary>Clear all subscriptions and components.</summary>
-				/// <returns>Returns true if this object has not been finalized.</returns>
-				bool											FinalizeInstance();
+				void											FinalizeInstance();
+
+				/// <summary>Test has the object been finalized.</summary>
+				/// <returns>Returns true if this object has been finalized.</returns>
+				bool											IsFinalized();
 
 				void											FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject);
 				void											FinalizeInstanceRecursively(GuiControl* thisObject);

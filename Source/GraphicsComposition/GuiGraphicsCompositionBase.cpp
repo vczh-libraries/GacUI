@@ -617,9 +617,13 @@ Helper Functions
 					bool finalized = false;
 					if (auto root = dynamic_cast<GuiInstanceRootObject*>(value))
 					{
-						if (root->FinalizeInstance())
+						if (root->IsFinalized())
 						{
 							finalized = true;
+						}
+						else
+						{
+							root->FinalizeInstance();
 						}
 					}
 
@@ -627,9 +631,13 @@ Helper Functions
 					{
 						if (auto root = dynamic_cast<GuiInstanceRootObject*>(control))
 						{
-							if (root->FinalizeInstance())
+							if (root->IsFinalized())
 							{
 								finalized = true;
+							}
+							else
+							{
+								root->FinalizeInstance();
 							}
 						}
 					}
@@ -647,7 +655,6 @@ Helper Functions
 
 			void SafeDeleteControlInternal(controls::GuiControl* value)
 			{
-				NotifyFinalizeInstance(value);
 				if(value)
 				{
 					if (value->GetRelatedControlHost() != value)

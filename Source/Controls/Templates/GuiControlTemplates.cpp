@@ -42,7 +42,7 @@ GuiInstanceRootObject
 			{
 			}
 
-			bool GuiInstanceRootObject::FinalizeInstance()
+			void GuiInstanceRootObject::FinalizeInstance()
 			{
 				if (!finalized)
 				{
@@ -63,23 +63,28 @@ GuiInstanceRootObject
 						delete components[i];
 					}
 					components.Clear();
+				}
+			}
 
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+			bool GuiInstanceRootObject::IsFinalized()
+			{
+				return finalized;
 			}
 
 			void GuiInstanceRootObject::FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject)
 			{
-				NotifyFinalizeInstance(thisObject);
+				if (!finalized)
+				{
+					NotifyFinalizeInstance(thisObject);
+				}
 			}
 
 			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiControl* thisObject)
 			{
-				NotifyFinalizeInstance(thisObject);
+				if (!finalized)
+				{
+					NotifyFinalizeInstance(thisObject);
+				}
 			}
 
 			void GuiInstanceRootObject::SetResourceResolver(Ptr<GuiResourcePathResolver> resolver)

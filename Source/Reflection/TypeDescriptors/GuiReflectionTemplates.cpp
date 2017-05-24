@@ -65,7 +65,6 @@ Type Declaration
 			END_CLASS_MEMBER(GuiComponent)
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
-				CLASS_MEMBER_METHOD(FinalizeInstance, NO_PARAMETER)
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiGraphicsComposition*))
 				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiControl*))
 				CLASS_MEMBER_METHOD(SetResourceResolver, {L"resolver"})
