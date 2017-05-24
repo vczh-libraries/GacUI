@@ -695,11 +695,11 @@ GuiDocumentCommonInterface
 				documentElement->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
 			}
 
-			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model)
+			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
 				EditTextInternal(begin, end, [=](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
-					documentElement->EditRun(begin, end, model);
+					documentElement->EditRun(begin, end, model, copy);
 					paragraphCount=model->paragraphs.Count();
 					lastParagraphLength=paragraphCount==0?0:model->paragraphs[paragraphCount-1]->GetText(false).Length();
 				});
@@ -958,7 +958,7 @@ GuiDocumentCommonInterface
 					end=temp;
 				}
 
-				EditRun(begin, end, value);
+				EditRun(begin, end, value, true);
 			}
 
 			//================ clipboard operations

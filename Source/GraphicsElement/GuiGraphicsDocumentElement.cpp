@@ -915,7 +915,7 @@ GuiDocumentElement
 				}
 			}
 
-			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model)
+			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
 				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
 				if (elementRenderer)
@@ -927,7 +927,7 @@ GuiDocumentElement
 						end = temp;
 					}
 
-					vint newRows = document->EditRun(begin, end, model);
+					vint newRows = document->EditRun(begin, end, model, copy);
 					if (newRows != -1)
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);

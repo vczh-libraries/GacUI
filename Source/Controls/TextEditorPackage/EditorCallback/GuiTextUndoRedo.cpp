@@ -185,7 +185,7 @@ GuiDocumentUndoRedoProcessor::ReplaceModelStep
 				GuiDocumentCommonInterface* ci=dynamic_cast<GuiDocumentCommonInterface*>(processor->ownerComposition->GetRelatedControl());
 				if(ci)
 				{
-					ci->EditRun(arguments.inputStart, arguments.inputEnd, arguments.originalModel);
+					ci->EditRun(arguments.inputStart, arguments.inputEnd, arguments.originalModel, true);
 					ci->SetCaret(arguments.originalStart, arguments.originalEnd);
 				}
 			}
@@ -195,7 +195,7 @@ GuiDocumentUndoRedoProcessor::ReplaceModelStep
 				GuiDocumentCommonInterface* ci=dynamic_cast<GuiDocumentCommonInterface*>(processor->ownerComposition->GetRelatedControl());
 				if(ci)
 				{
-					ci->EditRun(arguments.originalStart, arguments.originalEnd, arguments.inputModel);
+					ci->EditRun(arguments.originalStart, arguments.originalEnd, arguments.inputModel, true);
 					ci->SetCaret(arguments.inputStart, arguments.inputEnd);
 				}
 			}
