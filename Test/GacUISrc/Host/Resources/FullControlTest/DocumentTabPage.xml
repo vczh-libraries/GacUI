@@ -1,4 +1,30 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::DocumentTabPage" xmlns:demo="demo::*">
+  <ref.Members>
+    <![CDATA[
+      @cpp:Private
+      func SetEditMode(editMode: DocumentCommonInterface::EditMode) : void
+      {
+        var command =
+          editMode == DocumentCommonInterface::EditMode::ViewOnly ? commandViewOnly :
+          editMode == DocumentCommonInterface::EditMode::Selectable ? commandSelectable :
+          commandEditable;
+
+        document.EditMode = editMode;
+        commandViewOnly.Selected = (command == commandViewOnly);
+        commandSelectable.Selected = (command == commandSelectable);
+        commandEditable.Selected = (command == commandEditable);
+        buttonView.Image = command.Image;
+        self.UpdateSubscriptions();
+      }
+    ]]>
+  </ref.Members>
+  <ref.Ctor>
+    <![CDATA[
+      {
+        SetEditMode(Editable);
+      }
+    ]]>
+  </ref.Ctor>
   <TabPage ref.Name="self" Text="Document Editor">
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
       <att.Rows>
@@ -25,13 +51,13 @@
               <MenuItemButton Command-ref="commandDelete" Alt="D"/>
               <MenuSplitter/>
               <MenuItemButton Command-ref="commandSelect" Alt="S"/>
-            </att.SubMenu-set>
-          </MenuBarButton>
-          <MenuBarButton Text="Object" Alt="O">
-            <att.SubMenu-set>
-              <MenuItemButton Command-ref="commandInsertImage" Alt="I"/>
-              <MenuItemButton Command-ref="commandEditHyperlink" Alt="L"/>
-              <MenuItemButton Command-ref="commandRemoveHyperlink" Alt="R"/>
+              <MenuItemButton Text="Object" Alt="O">
+                <att.SubMenu-set>
+                  <MenuItemButton Command-ref="commandInsertImage" Alt="I"/>
+                  <MenuItemButton Command-ref="commandEditHyperlink" Alt="L"/>
+                  <MenuItemButton Command-ref="commandRemoveHyperlink" Alt="R"/>
+                </att.SubMenu-set>
+              </MenuItemButton>
             </att.SubMenu-set>
           </MenuBarButton>
           <MenuBarButton Text="View" Alt="V">
@@ -47,9 +73,13 @@
       <Cell Site="row:1 column:0">
         <ToolstripToolBar>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <ToolstripButton Command-ref="commandViewOnly" Alt="V"/>
-          <ToolstripButton Command-ref="commandSelectable" Alt="S"/>
-          <ToolstripButton Command-ref="commandEditable" Alt="E"/>
+          <ToolstripDropdownButton ref.Name="buttonView">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandViewOnly" Alt="V"/>
+              <MenuItemButton Command-ref="commandSelectable" Alt="S"/>
+              <MenuItemButton Command-ref="commandEditable" Alt="E"/>
+            </att.SubMenu-set>
+          </ToolstripDropdownButton>
           <ToolstripSplitter/>
           <ToolstripButton Command-ref="commandUndo" Alt="U"/>
           <ToolstripButton Command-ref="commandRedo" Alt="R"/>
@@ -301,43 +331,19 @@
 
     <ToolstripCommand ref.Name="commandViewOnly" Text="Preview" Image-uri="res://ToolbarImages/ViewOnly">
       <ev.Executed-eval>
-        <![CDATA[
-          {
-            document.EditMode = ViewOnly;
-            commandViewOnly.Selected = true;
-            commandSelectable.Selected = false;
-            commandEditable.Selected = false;
-            self.UpdateSubscriptions();
-          }
-        ]]>
+        <![CDATA[self.SetEditMode(ViewOnly);]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandSelectable" Text="Selectable" Image-uri="res://ToolbarImages/Selectable">
       <ev.Executed-eval>
-        <![CDATA[
-          {
-            document.EditMode = Selectable;
-            commandViewOnly.Selected = false;
-            commandSelectable.Selected = true;
-            commandEditable.Selected = false;
-            self.UpdateSubscriptions();
-          }
-        ]]>
+        <![CDATA[self.SetEditMode(Selectable);]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandEditable" Text="Editable" Selected="true" Image-uri="res://ToolbarImages/Editable">
+    <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable">
       <ev.Executed-eval>
-        <![CDATA[
-          {
-            document.EditMode = Editable;
-            commandViewOnly.Selected = false;
-            commandSelectable.Selected = false;
-            commandEditable.Selected = true;
-            self.UpdateSubscriptions();
-          }
-        ]]>
+        <![CDATA[self.SetEditMode(Editable);]]>
       </ev.Executed-eval>
     </ToolstripCommand>
   </TabPage>

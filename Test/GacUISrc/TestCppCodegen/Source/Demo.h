@@ -419,6 +419,7 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentTabPage* self = static_cast<::demo::DocumentTabPage*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* buttonView = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiDocumentViewer* document = static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandUndo = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
 		::vl::presentation::controls::GuiToolstripCommand* commandRedo = static_cast<::vl::presentation::controls::GuiToolstripCommand*>(nullptr);
@@ -470,33 +471,34 @@ namespace demo
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_25 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_26 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
 		::vl::presentation::controls::GuiToolstripToolBar* __vwsn_precompile_27 = static_cast<::vl::presentation::controls::GuiToolstripToolBar*>(nullptr);
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_28 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_28 = static_cast<::vl::presentation::controls::GuiToolstripMenu*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_29 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_30 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::controls::GuiControl* __vwsn_precompile_31 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_32 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_31 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_32 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_33 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::controls::GuiControl* __vwsn_precompile_34 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_35 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_34 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_35 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_36 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_37 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::controls::GuiControl* __vwsn_precompile_38 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_39 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::controls::GuiControl* __vwsn_precompile_40 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_41 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_38 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_39 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_40 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_41 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_42 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_43 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::controls::GuiControl* __vwsn_precompile_44 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_45 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_44 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiControl* __vwsn_precompile_45 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_46 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_47 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_48 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_49 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_50 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_51 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_52 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_53 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_54 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_52 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_53 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_54 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_55 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::DocumentTabPage* __vwsn_this_);
 	public:
 		DocumentTabPageConstructor();
@@ -562,8 +564,11 @@ namespace demo
 #ifndef VCZH_DEBUG_NO_REFLECTION
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DocumentTabPage>;
 #endif
+	private:
+		void SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode editMode);
 	public:
 		DocumentTabPage();
+		void __vwsn_instance_ctor_();
 		~DocumentTabPage();
 	};
 

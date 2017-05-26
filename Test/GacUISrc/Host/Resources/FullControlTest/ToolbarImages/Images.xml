@@ -18,4 +18,7 @@
   <Image name="ViewOnly" content="File">m_ViewOnly.png</Image>
   <Image name="Selectable" content="File">m_Selectable.png</Image>
   <Image name="Editable" content="File">m_Editable.png</Image>
+  <Image name="TextAlignLeft" content="File">a_TextAlignLeft.png</Image>
+  <Image name="TextAlignCenter" content="File">a_TextAlignCenter.png</Image>
+  <Image name="TextAlignRight" content="File">a_TextAlignRight.png</Image>
 </Folder>
