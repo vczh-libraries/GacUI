@@ -249,6 +249,11 @@ GuiDocumentCommonInterface
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="alignments">The alignment for each paragraph.</param>
 				void										SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
+				/// <summary>Summarize the text alignment in a specified range.</summary>
+				/// <returns>The text alignment summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<Alignment>							SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 				//================ editing control
 

@@ -16,6 +16,29 @@
         buttonView.Image = command.Image;
         self.UpdateSubscriptions();
       }
+      
+      @cpp:Private
+      func SelectAlignmentCommand() : ToolstripCommand*
+      {
+        var alignment = document.SummarizeParagraphAlignment(document.CaretBegin, document.CaretEnd);
+        return
+          alignment == Alignment::Left ? commandAlignLeft :
+          alignment == Alignment::Center ? commandAlignCenter :
+          alignment == Alignment::Right ? commandAlignRight :
+          null;
+      }
+      
+      @cpp:Private
+      func SelectAlignmentImage() : GuiImageData^
+      {
+        var command = SelectAlignmentCommand();
+        return command is null ? (cast (GuiImageData^) self.ResolveResource("res", "ToolbarImages/TextAlign", true)) : command.Image;
+      }
+      
+      @cpp:Private
+      func SetAlignment(alignment : Alignment) : void
+      {
+      }
     ]]>
   </ref.Members>
   <ref.Ctor>
@@ -50,12 +73,19 @@
               <MenuSplitter/>
               <MenuItemButton Command-ref="commandDelete" Alt="D"/>
               <MenuSplitter/>
-              <MenuItemButton Command-ref="commandSelect" Alt="S"/>
+              <MenuItemButton Command-ref="commandSelect" Alt="A"/>
               <MenuItemButton Text="Object" Alt="O">
                 <att.SubMenu-set>
                   <MenuItemButton Command-ref="commandInsertImage" Alt="I"/>
                   <MenuItemButton Command-ref="commandEditHyperlink" Alt="L"/>
                   <MenuItemButton Command-ref="commandRemoveHyperlink" Alt="R"/>
+                </att.SubMenu-set>
+              </MenuItemButton>
+              <MenuItemButton Text="Paragram Alignment" Alt="P">
+                <att.SubMenu-set>
+                  <MenuItemButton Command-ref="commandAlignLeft" Alt="L"/>
+                  <MenuItemButton Command-ref="commandAlignCenter" Alt="C"/>
+                  <MenuItemButton Command-ref="commandAlignRight" Alt="R"/>
                 </att.SubMenu-set>
               </MenuItemButton>
             </att.SubMenu-set>
@@ -73,11 +103,19 @@
       <Cell Site="row:1 column:0">
         <ToolstripToolBar>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <ToolstripDropdownButton ref.Name="buttonView">
+          <ToolstripDropdownButton ref.Name="buttonView" Alt="V">
             <att.SubMenu-set>
               <MenuItemButton Command-ref="commandViewOnly" Alt="V"/>
               <MenuItemButton Command-ref="commandSelectable" Alt="S"/>
               <MenuItemButton Command-ref="commandEditable" Alt="E"/>
+            </att.SubMenu-set>
+          </ToolstripDropdownButton>
+          <ToolstripDropdownButton ref.Name="buttonAlignment" Alt="P">
+            <att.Image-bind>document.observe as _(self.SelectAlignmentImage() on _.SelectionChanged)</att.Image-bind>
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandAlignLeft" Alt="L"/>
+              <MenuItemButton Command-ref="commandAlignCenter" Alt="C"/>
+              <MenuItemButton Command-ref="commandAlignRight" Alt="R"/>
             </att.SubMenu-set>
           </ToolstripDropdownButton>
           <ToolstripSplitter/>
@@ -344,6 +382,30 @@
     <ToolstripCommand ref.Name="commandEditable" Text="Editable" Image-uri="res://ToolbarImages/Editable">
       <ev.Executed-eval>
         <![CDATA[self.SetEditMode(Editable);]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandAlignLeft" Text="Set Alignment to Left" Image-uri="res://ToolbarImages/TextAlignLeft">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignLeft on _.SelectionChanged)</att.Selected-bind>
+      <ev.Executed-eval>
+        <![CDATA[self.SetAlignment(Left);]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandAlignCenter" Text="Set Alignment to Center" Image-uri="res://ToolbarImages/TextAlignCenter">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignCenter on _.SelectionChanged)</att.Selected-bind>
+      <ev.Executed-eval>
+        <![CDATA[self.SetAlignment(Center);]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
+    <ToolstripCommand ref.Name="commandAlignRight" Text="Set Alignment to Right" Image-uri="res://ToolbarImages/TextAlignRight">
+      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignRight on _.SelectionChanged)</att.Selected-bind>
+      <ev.Executed-eval>
+        <![CDATA[self.SetAlignment(Right);]]>
       </ev.Executed-eval>
     </ToolstripCommand>
   </TabPage>

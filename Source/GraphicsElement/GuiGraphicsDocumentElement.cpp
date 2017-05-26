@@ -1149,6 +1149,23 @@ GuiDocumentElement
 				}
 			}
 
+			Nullable<Alignment> GuiDocumentElement::SummarizeParagraphAlignment(TextPos begin, TextPos end)
+			{
+				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
+				if (elementRenderer)
+				{
+					if (begin > end)
+					{
+						TextPos temp = begin;
+						begin = end;
+						end = temp;
+					}
+
+					return document->SummarizeParagraphAlignment(begin, end);
+				}
+				return {};
+			}
+
 			Ptr<DocumentHyperlinkRun> GuiDocumentElement::GetHyperlinkFromPoint(Point point)
 			{
 				auto elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();

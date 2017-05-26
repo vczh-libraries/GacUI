@@ -2135,5 +2135,40 @@ DocumentModel::ClearStyle
 			}
 			return style;
 		}
+
+		Nullable<Alignment> DocumentModel::SummarizeParagraphAlignment(TextPos begin, TextPos end)
+		{
+			bool left = false;
+			bool center = false;
+			bool right = false;
+
+			RunRangeMap runRanges;
+			if (!CheckEditRange(begin, end, runRanges)) return {};
+
+			for (vint i = begin.row; i <= end.row; i++)
+			{
+				auto paragraph = paragraphs[i];
+				if (paragraph->alignment)
+				{
+					switch (paragraph->alignment.Value())
+					{
+					case Alignment::Left:
+						left = true;
+						break;
+					case Alignment::Center:
+						center = true;
+						break;
+					case Alignment::Right:
+						right = true;
+						break;
+					}
+				}
+			}
+
+			if (left && !center && !right) return Alignment::Left;
+			if (!left && center && !right) return Alignment::Center;
+			if (!left && !center && right) return Alignment::Right;
+			return {};
+		}
 	}
 }

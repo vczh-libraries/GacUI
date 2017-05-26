@@ -824,6 +824,17 @@ GuiDocumentCommonInterface
 				}
 			}
 
+			Nullable<Alignment> GuiDocumentCommonInterface::SummarizeParagraphAlignment(TextPos begin, TextPos end)
+			{
+				if (begin>end)
+				{
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
+				return documentElement->SummarizeParagraphAlignment(begin, end);
+			}
+
 			//================ editing control
 
 			WString GuiDocumentCommonInterface::GetActiveHyperlinkReference()

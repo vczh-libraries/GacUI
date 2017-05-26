@@ -21,4 +21,5 @@
   <Image name="TextAlignLeft" content="File">a_TextAlignLeft.png</Image>
   <Image name="TextAlignCenter" content="File">a_TextAlignCenter.png</Image>
   <Image name="TextAlignRight" content="File">a_TextAlignRight.png</Image>
+  <Image name="TextAlign" content="File">a_Align.png</Image>
 </Folder>
