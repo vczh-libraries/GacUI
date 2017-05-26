@@ -304,20 +304,24 @@ ResolveExpressionResult
 			{
 				Ptr<ITypeInfo> getterType = CopyTypeInfo(_propertyInfo->GetReturn());
 				Ptr<ITypeInfo> setterType;
-				if (IMethodInfo* setter = _propertyInfo->GetSetter())
+
+				if (getterType)
 				{
-					setterType = getterType;
-					if (setter->GetParameterCount() == 1 && !IsSameType(getterType.Obj(), setter->GetParameter(0)->GetType()))
+					if (IMethodInfo* setter = _propertyInfo->GetSetter())
 					{
-						setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
+						setterType = getterType;
+						if (setter->GetParameterCount() == 1 && !IsSameType(getterType.Obj(), setter->GetParameter(0)->GetType()))
+						{
+							setterType = CopyTypeInfo(setter->GetParameter(0)->GetType());
+						}
 					}
-				}
-				else if (_propertyInfo->IsWritable())
-				{
-					auto td = _propertyInfo->GetOwnerTypeDescriptor();
-					if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+					else if (_propertyInfo->IsWritable())
 					{
-						setterType = CopyTypeInfo(_propertyInfo->GetReturn());
+						auto td = _propertyInfo->GetOwnerTypeDescriptor();
+						if ((td->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+						{
+							setterType = CopyTypeInfo(_propertyInfo->GetReturn());
+						}
 					}
 				}
 
@@ -3604,9 +3608,9 @@ WfErrors
 				return new ParsingError(node, L"B6: \"" + scopeName->GetFriendlyName() + L"\" is not a type.");
 			}
 
-			Ptr<parsing::ParsingError> WfErrors::TypeNotExists(WfType* node, Ptr<WfLexicalSymbol> symbol)
+			Ptr<parsing::ParsingError> WfErrors::TypeNotExists(WfType* node, const ResolveExpressionResult& result)
 			{
-				return new ParsingError(node, L"B6: \"" + symbol->name + L"\" is not a type.");
+				return new ParsingError(node, L"B6: \"" + result.GetFriendlyName() + L"\" is not a type.");
 			}
 
 			Ptr<parsing::ParsingError> WfErrors::TypeNotForValue(WfType* node, reflection::description::ITypeInfo* typeInfo)
@@ -4066,148 +4070,217 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
-WfObservingDependency
+observing expressions:
+	WfObserveExpression
+	WfMemberExpression that detects the event
 ***********************************************************************/
 
-			WfObservingDependency::WfObservingDependency(WfObservingDependency& dependency)
-				:dependencies(dependency.dependencies)
+			class BindContext : public Object
 			{
-				CopyFrom(inputObserves, dependency.inputObserves);
-			}
+				typedef collections::List<WfExpression*>							ExprList;
+				typedef collections::Dictionary<WfExpression*, WfExpression*>		ExprMap;
+				typedef collections::Group<WfExpression*, WfExpression*>			ExprGroup;
+				typedef collections::Group<WfExpression*, IEventInfo*>				ExprEventGroup;
+			public:
+				ExprMap											observeParents;
+				ExprEventGroup									observeEvents;
+				ExprList										orderedObserves;
+				ExprList										cachedExprs;	// expression that need to cache its value
+				ExprMap											renames;		// expression -> the expression being renamed
 
-			WfObservingDependency::WfObservingDependency(DependencyGroup& _dependencies)
-				:dependencies(_dependencies)
-			{
-			}
+				ExprGroup										exprAffects;	// observe expression -> all expressions that it can cause to change
+				ExprGroup										exprCauses;		// expression -> observe expressions that cause it to change
+				ExprGroup										observeAffects;	// observe expression -> all observe expressions that it can cause to change
+				ExprGroup										observeCauses;	// observe expression -> observe expressions that cause it to change
 
-			WfObservingDependency::WfObservingDependency(DependencyGroup& _dependencies, ObserveList& _inputObserves)
-				:dependencies(_dependencies)
-			{
-				CopyFrom(inputObserves, _inputObserves);
-			}
-
-			void WfObservingDependency::AddInternal(WfExpression* observe, WfExpression* dependedObserve)
-			{
-				auto index = dependencies.Keys().IndexOf(dependedObserve);
-				if (index == -1)
+				WString GetCacheVariableName(vint index)
 				{
-					dependencies.Add(dependedObserve, observe);
+					return L"<bind-cache>" + itow(index);
 				}
-				else if (!dependencies.GetByIndex(index).Contains(observe))
+
+				vint GetCachedExpressionIndex(WfExpression* expression, bool ensureExists)
 				{
-					dependencies.Add(dependedObserve, observe);
-				}
-			}
-
-			void WfObservingDependency::Prepare(WfExpression* observe)
-			{
-				AddInternal(0, observe);
-
-				if (!outputObserves.Contains(observe))
-				{
-					outputObserves.Add(observe);
-				}
-			}
-
-			void WfObservingDependency::Add(WfExpression* observe)
-			{
-				Add(observe, *this);
-			}
-
-			void WfObservingDependency::Add(WfExpression* observe, WfObservingDependency& dependency)
-			{
-				Prepare(observe);
-				FOREACH(WfExpression*, dependedObserve, dependency.inputObserves)
-				{
-					AddInternal(observe, dependedObserve);
-				}
-			}
-
-			void WfObservingDependency::TurnToInput()
-			{
-				if (outputObserves.Count() > 0)
-				{
-					CopyFrom(inputObserves, outputObserves);
-					outputObserves.Clear();
-				}
-			}
-
-			void WfObservingDependency::Cleanup()
-			{
-				SortedList<WfExpression*> all;
-				CopyFrom(all, From(dependencies.Keys()).Distinct());
-
-				vint count = dependencies.Keys().Count();
-				for (vint i = 0; i < count; i++)
-				{
-					const auto& values = dependencies.GetByIndex(i);
-					if (values.Contains(0) && values.Count()>1)
+					vint index = cachedExprs.IndexOf(expression);
+					if (ensureExists)
 					{
-						dependencies.Remove(dependencies.Keys()[i], 0);
+						CHECK_ERROR(index != -1, L"BindContext::GetCachedExpressionIndex(WfExpression*, bool)#Cached expression not exists.");
 					}
+					return index;
+				}
 
-					FOREACH(WfExpression*, value, values)
+				vint GetCachedExpressionIndexRecursively(WfExpression* expression, bool ensureExists)
+				{
+					WfExpression* cache = expression;
+					while (true)
 					{
-						all.Remove(value);
+						vint index = renames.Keys().IndexOf(cache);
+						if (index == -1)
+						{
+							return GetCachedExpressionIndex(cache, ensureExists);
+						}
+						else
+						{
+							cache = renames.Values()[index];
+						}
 					}
 				}
+			};
 
-				FOREACH(WfExpression*, observe, all)
-				{
-					dependencies.Add(0, observe);
-				}
-			}
+			struct CallbackInfo
+			{
+				WfExpression*									observe;
+				IEventInfo*										eventInfo;
+				vint											eventIndex;
+				WString											handlerName;
+				WString											callbackName;
+			};
+
+			struct BindCallbackInfo
+			{
+				Dictionary<WString, Ptr<ITypeInfo>>				handlerVariables;
+				Dictionary<WString, Ptr<ITypeInfo>>				callbackFunctions;
+				Group<WfExpression*, CallbackInfo>				observeCallbackInfos;
+			};
 
 /***********************************************************************
-GetObservingDependency
+CreateBindContext
 ***********************************************************************/
 
-			class GetObservingDependencyVisitor
-				: public traverse_visitor::ExpressionVisitor
-				, public traverse_visitor::VirtualExpressionVisitor
+			class CreateBindContextVisitor : public Object, public WfExpression::IVisitor
 			{
 			public:
 				WfLexicalScopeManager*				manager;
-				WfObservingDependency&				dependency;
+				BindContext&						context;
 
-				GetObservingDependencyVisitor(WfLexicalScopeManager* _manager, WfObservingDependency& _dependency)
+				CreateBindContextVisitor(WfLexicalScopeManager* _manager, BindContext& _context)
 					:manager(_manager)
-					, dependency(_dependency)
+					, context(_context)
 				{
 				}
 
-				void VisitField(WfExpression* node)override
+				void Call(WfExpression* node)
 				{
 					node->Accept(this);
 				}
 
-				void VisitField(WfType* node)override
+				void ObservableDepend(WfExpression* expr, WfExpression* parent)
 				{
-					// No need to traverse inside a type
+					context.orderedObserves.Add(expr);
+					context.observeParents.Add(expr, parent);
+					DirectDepend(expr, parent, false);
+					{
+						auto cache = parent;
+						while (true)
+						{
+							vint index = context.renames.Keys().IndexOf(cache);
+							if (index == -1)
+							{
+								index = context.cachedExprs.IndexOf(cache);
+								if (index == -1)
+								{
+									context.cachedExprs.Add(cache);
+								}
+								break;
+							}
+							else
+							{
+								cache = context.renames.Values()[index];
+							}
+						}
+					}
+
+					vint index = context.exprCauses.Keys().IndexOf(parent);
+					if (index != -1)
+					{
+						FOREACH(WfExpression*, observe, context.exprCauses.GetByIndex(index))
+						{
+							context.observeAffects.Add(observe, expr);
+							context.observeCauses.Add(expr, observe);
+						}
+					}
+
+					context.exprAffects.Add(expr, expr);
+					context.exprCauses.Add(expr, expr);
 				}
 
-				void VisitField(WfStatement* node)override
+				void DirectDepend(WfExpression* expr, WfExpression* depended, bool processDepended = true)
 				{
-					// No need to traverse inside a statement
+					if (processDepended)
+					{
+						Call(depended);
+					}
+
+					vint index = context.exprCauses.Keys().IndexOf(depended);
+					if (index != -1)
+					{
+						FOREACH(WfExpression*, observe, context.exprCauses.GetByIndex(index))
+						{
+							context.exprCauses.Add(expr, observe);
+							context.exprAffects.Add(observe, expr);
+						}
+					}
 				}
 
-				void VisitField(WfDeclaration* node)override
+				void Visit(WfThisExpression* node)override
 				{
-					// No need to traverse inside a declaration
+					// root expression, nothing to do
 				}
 
-				void Dispatch(WfVirtualExpression* node)override
+				void Visit(WfTopQualifiedExpression* node)override
 				{
-					node->Accept(static_cast<traverse_visitor::VirtualExpressionVisitor*>(this));
+					// root expression, nothing to do
+				}
+
+				void Visit(WfReferenceExpression* node)override
+				{
+					auto result = manager->expressionResolvings[node];
+					if (result.symbol)
+					{
+						auto scope = result.symbol->ownerScope;
+						if (auto letExpr = dynamic_cast<WfLetExpression*>(scope->ownerNode.Obj()))
+						{
+							auto letVar = From(letExpr->variables)
+								.Where([=](const Ptr<WfLetVariable>& letVar)
+								{
+									return letVar->name.value == node->name.value;
+								})
+								.First();
+							context.renames.Add(node, letVar->value.Obj());
+							DirectDepend(node, letVar->value.Obj(), false);
+						}
+						else if (auto observeExpr = dynamic_cast<WfObserveExpression*>(scope->ownerNode.Obj()))
+						{
+							context.renames.Add(node, observeExpr->parent.Obj());
+							DirectDepend(node, observeExpr->parent.Obj());
+						}
+					}
+				}
+
+				void Visit(WfOrderedNameExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfOrderedLambdaExpression* node)override
+				{
+					// root expression, nothing to do
 				}
 
 				void Visit(WfMemberExpression* node)override
 				{
-					WfObservingDependency parent(dependency);
-					GetObservingDependency(manager, node->parent, parent);
-					parent.TurnToInput();
+					Call(node->parent.Obj());
 
-					if (dependency.inputObserves.Count() == 0)
+					auto scope = manager->nodeScopes[node].Obj();
+					while (scope)
+					{
+						if (scope->ownerNode.Cast<WfObserveExpression>())
+						{
+							break;
+						}
+						scope = scope->parentScope.Obj();
+					}
+
+					if (!scope)
 					{
 						auto memberResult = manager->expressionResolvings[node];
 						if (memberResult.propertyInfo)
@@ -4220,29 +4293,171 @@ GetObservingDependency
 							}
 							if (ev)
 							{
-								dependency.Add(node, parent);
+								ObservableDepend(node, node->parent.Obj());
+								context.observeEvents.Add(node, ev);
+								return;
 							}
 						}
 					}
+
+					DirectDepend(node, node->parent.Obj(), false);
+				}
+
+				void Visit(WfChildExpression* node)override
+				{
+					DirectDepend(node, node->parent.Obj());
+				}
+
+				void Visit(WfLiteralExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfFloatingExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfIntegerExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfStringExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfUnaryExpression* node)override
+				{
+					DirectDepend(node, node->operand.Obj());
+				}
+
+				void Visit(WfBinaryExpression* node)override
+				{
+					DirectDepend(node, node->first.Obj());
+					DirectDepend(node, node->second.Obj());
+				}
+
+				void Visit(WfLetExpression* node)override
+				{
+					FOREACH(Ptr<WfLetVariable>, var, node->variables)
+					{
+						DirectDepend(node, var->value.Obj());
+					}
+					DirectDepend(node, node->expression.Obj());
+				}
+
+				void Visit(WfIfExpression* node)override
+				{
+					DirectDepend(node, node->condition.Obj());
+					DirectDepend(node, node->trueBranch.Obj());
+					DirectDepend(node, node->falseBranch.Obj());
+				}
+
+				void Visit(WfRangeExpression* node)override
+				{
+					DirectDepend(node, node->begin.Obj());
+					DirectDepend(node, node->end.Obj());
+				}
+
+				void Visit(WfSetTestingExpression* node)override
+				{
+					DirectDepend(node, node->collection.Obj());
+					DirectDepend(node, node->element.Obj());
+				}
+
+				void Visit(WfConstructorExpression* node)override
+				{
+					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					{
+						DirectDepend(node, argument->key.Obj());
+						DirectDepend(node, argument->value.Obj());
+					}
+				}
+
+				void Visit(WfInferExpression* node)override
+				{
+					DirectDepend(node, node->expression.Obj());
+				}
+
+				void Visit(WfTypeCastingExpression* node)override
+				{
+					DirectDepend(node, node->expression.Obj());
+				}
+
+				void Visit(WfTypeTestingExpression* node)override
+				{
+					DirectDepend(node, node->expression.Obj());
+				}
+
+				void Visit(WfTypeOfTypeExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfTypeOfExpressionExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfAttachEventExpression* node)override
+				{
+					DirectDepend(node, node->event.Obj());
+					DirectDepend(node, node->function.Obj());
+				}
+
+				void Visit(WfDetachEventExpression* node)override
+				{
+					DirectDepend(node, node->event.Obj());
+					DirectDepend(node, node->handler.Obj());
 				}
 
 				void Visit(WfObserveExpression* node)override
 				{
-					WfObservingDependency parent(dependency);
-					GetObservingDependency(manager, node->parent, parent);
-					parent.TurnToInput();
+					Call(node->parent.Obj());
+					ObservableDepend(node, node->parent.Obj());
+					Call(node->expression.Obj());
+					FOREACH(Ptr<WfExpression>, eventExpr, node->events)
+					{
+						auto result = manager->expressionResolvings[eventExpr.Obj()];
+						context.observeEvents.Add(node, result.eventInfo);
+						Call(eventExpr.Obj());
+					}
+				}
 
-					dependency.Add(node, parent);
-					dependency.TurnToInput();
-					GetObservingDependency(manager, node->expression, dependency);
+				void Visit(WfCallExpression* node)override
+				{
+					DirectDepend(node, node->function.Obj());
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						DirectDepend(node, argument.Obj());
+					}
+				}
+
+				void Visit(WfFunctionExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfNewClassExpression* node)override
+				{
+					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					{
+						DirectDepend(node, argument.Obj());
+					}
+				}
+
+				void Visit(WfNewInterfaceExpression* node)override
+				{
+					// root expression, nothing to do
+				}
+
+				void Visit(WfVirtualExpression* node)override
+				{
+					DirectDepend(node, node->expandedExpression.Obj());
 				}
 			};
-
-			void GetObservingDependency(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, WfObservingDependency& dependency)
-			{
-				GetObservingDependencyVisitor visitor(manager, dependency);
-				expression->Accept(&visitor);
-			}
 
 /***********************************************************************
 Copy(Type|Expression|Statement|Declaration)
@@ -4284,18 +4499,43 @@ ExpandObserveExpression
 				, public copy_visitor::VirtualExpressionVisitor
 			{
 			public:
-				Dictionary<WfExpression*, WString>&		cacheNames;
-				Dictionary<WString, WString>&			referenceReplacement;
+				BindContext&									context;
 
-				ExpandObserveExpressionVisitor(Dictionary<WfExpression*, WString>& _cacheNames, collections::Dictionary<WString, WString>& _referenceReplacement)
-					:cacheNames(_cacheNames)
-					, referenceReplacement(_referenceReplacement)
+				ExpandObserveExpressionVisitor(BindContext& _context)
+					:context(_context)
 				{
+				}
+
+				static Ptr<WfExpression> Execute(WfExpression* expression, BindContext& context, bool expandImmediately = true)
+				{
+					if (!expression)
+					{
+						return nullptr;
+					}
+
+					{
+						vint index = context.GetCachedExpressionIndexRecursively(expression, false);
+						if (index != -1)
+						{
+							if (expandImmediately)
+							{
+								return CreateReference(context.GetCacheVariableName(index));
+							}
+							else
+							{
+								expression = context.cachedExprs[index];
+							}
+						}
+					}
+
+					ExpandObserveExpressionVisitor visitor(context);
+					expression->Accept(&visitor);
+					return visitor.result.Cast<WfExpression>();
 				}
 
 				vl::Ptr<WfExpression> CreateField(vl::Ptr<WfExpression> from)override
 				{
-					return ExpandObserveExpression(from.Obj(), cacheNames, referenceReplacement);
+					return Execute(from.Obj(), context);
 				}
 
 				vl::Ptr<WfType> CreateField(vl::Ptr<WfType> from)override
@@ -4319,59 +4559,34 @@ ExpandObserveExpression
 					return result;
 				}
 
-				void Visit(WfReferenceExpression* node)override
+				void Visit(WfLetExpression* node)override
 				{
-					vint index = referenceReplacement.Keys().IndexOf(node->name.value);
-					if (index == -1)
+					auto letExpr = MakePtr<WfLetExpression>();
+					FOREACH(Ptr<WfLetVariable>, var, node->variables)
 					{
-						result = CopyExpression(node);
+						if (context.GetCachedExpressionIndexRecursively(var->value.Obj(), false) == -1)
+						{
+							auto letVar = MakePtr<WfLetVariable>();
+							letVar->name.value = var->name.value;
+							letVar->value = Execute(var->value.Obj(), context);
+							letExpr->variables.Add(letVar);
+						}
+					}
+
+					if (letExpr->variables.Count() == 0)
+					{
+						result = Execute(node->expression.Obj(), context);
 					}
 					else
 					{
-						result = CreateReference(referenceReplacement.Values()[index]);
+						letExpr->expression = Execute(node->expression.Obj(), context);
+						result = letExpr;
 					}
-				}
-
-				void Visit(WfOrderedLambdaExpression* node)override
-				{
-					result = CopyExpression(node);
-				}
-
-				void Visit(WfLetExpression* node)override
-				{
-					Dictionary<WString, WString> overrided;
-					auto expr = MakePtr<WfLetExpression>();
-
-					FOREACH(Ptr<WfLetVariable>, var, node->variables)
-					{
-						auto key = var->name.value;
-						vint index = referenceReplacement.Keys().IndexOf(key);
-						if (index != -1)
-						{
-							auto value = referenceReplacement.Values()[index];
-							referenceReplacement.Remove(key);
-							overrided.Add(key, value);
-						}
-
-						auto newVar = MakePtr<WfLetVariable>();
-						newVar->name.value = key;
-						newVar->value = CreateField(var->value);
-						expr->variables.Add(newVar);
-					}
-
-					expr->expression = CreateField(node->expression);
-					CopyFrom(referenceReplacement, overrided, true);
-
-					result = expr;
 				}
 
 				void Visit(WfObserveExpression* node)override
 				{
-					if (cacheNames.Count() == 0)
-					{
-						result = CopyExpression(node);
-					}
-					else if (node->observeType == WfObserveType::SimpleObserve)
+					if (node->observeType == WfObserveType::SimpleObserve)
 					{
 						auto expr = MakePtr<WfMemberExpression>();
 						expr->parent = CreateField(node->parent);
@@ -4380,72 +4595,10 @@ ExpandObserveExpression
 					}
 					else
 					{
-						auto var = MakePtr<WfLetVariable>();
-						var->name.value = node->name.value;
-						var->value = CreateField(node->parent);
-
-						auto expr = MakePtr<WfLetExpression>();
-						expr->variables.Add(var);
-						expr->expression = CreateField(node->expression);
-						result = expr;
+						result = CreateField(node->expression);
 					}
-				}
-
-				void Visit(WfBindExpression* node)override
-				{
-					result = CopyExpression(node);
 				}
 			};
-
-			Ptr<WfExpression> ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache)
-			{
-				if (!expression)
-				{
-					return nullptr;
-				}
-
-				if (useCache)
-				{
-					vint index = cacheNames.Keys().IndexOf(expression);
-					if (index != -1)
-					{
-						return CreateReference(cacheNames.Values()[index]);
-					}
-				}
-
-				ExpandObserveExpressionVisitor visitor(cacheNames, referenceReplacement);
-				expression->Accept(&visitor);
-				return visitor.result.Cast<WfExpression>();
-			}
-
-/***********************************************************************
-DecodeObserveExpression
-***********************************************************************/
-
-			void DecodeObserveExpression(WfLexicalScopeManager* manager, WfExpression* observe, List<IEventInfo*>& events, WfExpression*& parent)
-			{
-				if (auto observeExpr = dynamic_cast<WfObserveExpression*>(observe))
-				{
-					parent = observeExpr->parent.Obj();
-					FOREACH(Ptr<WfExpression>, eventExpr, observeExpr->events)
-					{
-						auto result = manager->expressionResolvings[eventExpr.Obj()];
-						events.Add(result.eventInfo);
-					}
-				}
-				else if (auto memberExpr = dynamic_cast<WfMemberExpression*>(observe))
-				{
-					parent = memberExpr->parent.Obj();
-					auto result = manager->expressionResolvings[memberExpr];
-					auto td = result.propertyInfo->GetOwnerTypeDescriptor();
-					auto ev = result.propertyInfo->GetValueChangedEvent();
-					if (!ev)
-					{
-						ev = td->GetEventByName(result.propertyInfo->GetName() + L"Changed", true);
-					}
-					events.Add(ev);
-				}
-			}
 
 /***********************************************************************
 CreateDefaultValue
@@ -4604,8 +4757,9 @@ IValueSubscription::Subscribe
 ExpandObserveEvent
 ***********************************************************************/
 
-			Ptr<WfExpression> ExpandObserveEvent(WfLexicalScopeManager* manager, const WString& cacheName, WfExpression* observe, vint eventIndex)
+			Ptr<WfExpression> ExpandObserveEvent(WfLexicalScopeManager* manager, WfExpression* observe, vint eventIndex, BindContext& context)
 			{
+				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(context.observeParents[observe], true));
 				if (auto observeExpr = dynamic_cast<WfObserveExpression*>(observe))
 				{
 					if (observeExpr->observeType == WfObserveType::SimpleObserve)
@@ -4617,23 +4771,12 @@ ExpandObserveEvent
 					}
 					else
 					{
-						Dictionary<WfExpression*, WString> cacheNames;
-						Dictionary<WString, WString> referenceReplacement;
-						referenceReplacement.Add(observeExpr->name.value, cacheName);
-						return ExpandObserveExpression(observeExpr->events[eventIndex].Obj(), cacheNames, referenceReplacement);
+						return ExpandObserveExpressionVisitor::Execute(observeExpr->events[eventIndex].Obj(), context);
 					}
 				}
 				else
 				{
-					auto memberExpr = dynamic_cast<WfMemberExpression*>(observe);
-					auto result = manager->expressionResolvings[memberExpr];
-					auto td = result.propertyInfo->GetOwnerTypeDescriptor();
-					auto ev = result.propertyInfo->GetValueChangedEvent();
-					if (!ev)
-					{
-						ev = td->GetEventByName(result.propertyInfo->GetName() + L"Changed", true);
-					}
-					auto eventName = ev->GetName();
+					auto eventName = context.observeEvents[observe][0]->GetName();
 
 					auto expr = MakePtr<WfMemberExpression>();
 					expr->parent = CreateReference(cacheName);
@@ -4644,39 +4787,15 @@ ExpandObserveEvent
 			}
 
 /***********************************************************************
-ObserveInfo
-***********************************************************************/
-
-			struct CallbackInfo
-			{
-				WfExpression*									observe;
-				IEventInfo*										eventInfo;
-				vint											eventIndex;
-				WString											handlerName;
-				WString											callbackName;
-			};
-
-			struct BindCallbackInfo
-			{
-				Dictionary<WfExpression*, WfExpression*>		observeParents;
-				Dictionary<WfExpression*, WString>				cacheNames;
-				Dictionary<WString, Ptr<ITypeInfo>>				variableTypes;
-
-				Dictionary<vint, WfExpression*>					orderedObserves;
-				Group<WfExpression*, CallbackInfo>				observeCallbackInfos;
-			};
-
-/***********************************************************************
 CreateBindAttachStatement
 ***********************************************************************/
 
-			void CreateBindAttachStatement(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager, WfExpression* observe, BindCallbackInfo& info)
+			void CreateBindAttachStatement(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager, WfExpression* observe, BindContext& context, BindCallbackInfo& info)
 			{
-				auto cachedName = info.cacheNames[info.observeParents[observe]];
 				FOREACH(CallbackInfo, callbackInfo, info.observeCallbackInfos[observe])
 				{
 					auto attach = MakePtr<WfAttachEventExpression>();
-					attach->event = ExpandObserveEvent(manager, cachedName, observe, callbackInfo.eventIndex);
+					attach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
 					attach->function = CreateReference(callbackInfo.callbackName);
 
 					auto assign = MakePtr<WfBinaryExpression>();
@@ -4694,13 +4813,12 @@ CreateBindAttachStatement
 CreateBindDetachStatement
 ***********************************************************************/
 
-			void CreateBindDetachStatement(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager, WfExpression* observe, BindCallbackInfo& info)
+			void CreateBindDetachStatement(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager, WfExpression* observe, BindContext& context, BindCallbackInfo& info)
 			{
-				auto cachedName = info.cacheNames[info.observeParents[observe]];
 				FOREACH(CallbackInfo, callbackInfo, info.observeCallbackInfos[observe])
 				{
 					auto detach = MakePtr<WfDetachEventExpression>();
-					detach->event = ExpandObserveEvent(manager, cachedName, observe, callbackInfo.eventIndex);
+					detach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
 					detach->handler = CreateReference(callbackInfo.handlerName);
 
 					auto stat = MakePtr<WfExpressionStatement>();
@@ -4713,16 +4831,15 @@ CreateBindDetachStatement
 CreateBindCacheAssignStatement
 ***********************************************************************/
 
-			void CreateBindCacheAssignStatement(Ptr<WfBlockStatement> block, WfExpression* observe, BindCallbackInfo& info)
+			void CreateBindCacheAssignStatement(Ptr<WfBlockStatement> block, WfExpression* observe, BindContext& context)
 			{
-				auto parent = info.observeParents[observe];
-				auto name = info.cacheNames[parent];
+				auto parent = context.observeParents[observe];
+				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(parent, true));
 
 				auto assign = MakePtr<WfBinaryExpression>();
 				assign->op = WfBinaryOperator::Assign;
-				assign->first = CreateReference(name);
-				Dictionary<WString, WString> referenceReplacement;
-				assign->second = ExpandObserveExpression(parent, info.cacheNames, referenceReplacement, false);
+				assign->first = CreateReference(cacheName);
+				assign->second = ExpandObserveExpressionVisitor::Execute(parent, context, false);
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = assign;
@@ -4733,7 +4850,7 @@ CreateBindCacheAssignStatement
 IValueSubscription::Open
 ***********************************************************************/
 
-			Ptr<WfFunctionDeclaration> CreateBindOpenFunction(WfLexicalScopeManager* manager, WfObservingDependency& dependency, BindCallbackInfo& info)
+			Ptr<WfFunctionDeclaration> CreateBindOpenFunction(WfLexicalScopeManager* manager, BindContext& context, BindCallbackInfo& info)
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				func->name.value = L"Open";
@@ -4771,53 +4888,51 @@ IValueSubscription::Open
 						ifBlock->statements.Add(stat);
 					}
 					{
-						Group<WfExpression*, WfExpression*> reversedDependencies;
-						FOREACH_INDEXER(WfExpression*, key, index, dependency.dependencies.Keys())
-						{
-							FOREACH(WfExpression*, value, dependency.dependencies.GetByIndex(index))
-							{
-								if (value)
-								{
-									reversedDependencies.Add(value, key);
-								}
-							}
-						}
+						SortedList<vint> assignedParents;
+						SortedList<WfExpression*> observes;
+						CopyFrom(observes, context.observeParents.Keys());
 
 						SortedList<WfExpression*> freeObserves;
-						while (reversedDependencies.Count() > 0)
+						while (observes.Count() > 0)
 						{
 							CopyFrom(
 								freeObserves,
-								From(reversedDependencies.Keys())
-								.Where([&](WfExpression* observe)
-							{
-								return From(reversedDependencies[observe])
-									.All([&](WfExpression* parent)
-								{
-									return !reversedDependencies.Contains(parent);
-								});
-							})
-							);
+								From(observes)
+									.Where([&](WfExpression* observe)
+									{
+										return !context.observeCauses.Keys().Contains(observe) ||
+											From(context.observeCauses[observe])
+											.All([&](WfExpression* depended)
+											{
+												return !observes.Contains(depended);
+											});
+									})
+								);
 
-							FOREACH(WfExpression*, observe, info.orderedObserves.Values())
+							FOREACH(WfExpression*, observe, context.orderedObserves)
 							{
 								if (freeObserves.Contains(observe))
 								{
-									CreateBindCacheAssignStatement(ifBlock, observe, info);
+									auto parent = context.GetCachedExpressionIndexRecursively(context.observeParents[observe], true);
+									if (!assignedParents.Contains(parent))
+									{
+										assignedParents.Add(parent);
+										CreateBindCacheAssignStatement(ifBlock, observe, context);
+									}
 								}
 							}
 
 							FOREACH(WfExpression*, observe, freeObserves)
 							{
-								reversedDependencies.Remove(observe);
+								observes.Remove(observe);
 							}
 							freeObserves.Clear();
 						}
 					}
 					{
-						FOREACH(WfExpression*, observe, info.orderedObserves.Values())
+						FOREACH(WfExpression*, observe, context.orderedObserves)
 						{
-							CreateBindAttachStatement(ifBlock, manager, observe, info);
+							CreateBindAttachStatement(ifBlock, manager, observe, context, info);
 						}
 					}
 					{
@@ -4910,7 +5025,7 @@ IValueSubscription::Update
 IValueSubscription::Close
 ***********************************************************************/
 
-			Ptr<WfFunctionDeclaration> CreateBindCloseFunction(WfLexicalScopeManager* manager, BindCallbackInfo& info)
+			Ptr<WfFunctionDeclaration> CreateBindCloseFunction(WfLexicalScopeManager* manager, BindContext& context, BindCallbackInfo& info)
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				func->name.value = L"Close";
@@ -4947,35 +5062,40 @@ IValueSubscription::Close
 						stat->expression = assign;
 						ifBlock->statements.Add(stat);
 					}
-					FOREACH(WfExpression*, observe, info.orderedObserves.Values())
+					FOREACH(WfExpression*, observe, context.orderedObserves)
 					{
-						WString cachedName = info.cacheNames[info.observeParents[observe]];
-						CreateBindDetachStatement(ifBlock, manager, observe, info);
+						CreateBindDetachStatement(ifBlock, manager, observe, context, info);
 					}
 
-					SortedList<WString> callbackFunctions;
-					for (vint i = 0; i < info.observeCallbackInfos.Count(); i++)
+					for (vint i = 0; i < context.cachedExprs.Count(); i++)
 					{
-						const auto& values = info.observeCallbackInfos.GetByIndex(i);
-						FOREACH(CallbackInfo, callbackInfo, values)
-						{
-							callbackFunctions.Add(callbackInfo.callbackName);
-						}
-					}
-					FOREACH_INDEXER(WString, name, index, info.variableTypes.Keys())
-					{
-						if (!callbackFunctions.Contains(name))
-						{
-							auto assign = MakePtr<WfBinaryExpression>();
-							assign->op = WfBinaryOperator::Assign;
-							assign->first = CreateReference(name);
-							assign->second = CreateDefaultValue(info.variableTypes.Values()[index].Obj());
+						auto cacheName = context.GetCacheVariableName(i);
+						auto type = manager->expressionResolvings[context.cachedExprs[i]].type;
 
-							auto stat = MakePtr<WfExpressionStatement>();
-							stat->expression = assign;
-							ifBlock->statements.Add(stat);
-						}
+						auto assign = MakePtr<WfBinaryExpression>();
+						assign->op = WfBinaryOperator::Assign;
+						assign->first = CreateReference(cacheName);
+						assign->second = CreateDefaultValue(type.Obj());
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = assign;
+						ifBlock->statements.Add(stat);
 					}
+					for (vint i = 0; i < info.handlerVariables.Count(); i++)
+					{
+						auto cacheName = info.handlerVariables.Keys()[i];
+						auto result = info.handlerVariables.Values()[i];
+
+						auto assign = MakePtr<WfBinaryExpression>();
+						assign->op = WfBinaryOperator::Assign;
+						assign->first = CreateReference(cacheName);
+						assign->second = CreateDefaultValue(result.Obj());
+
+						auto stat = MakePtr<WfExpressionStatement>();
+						stat->expression = assign;
+						ifBlock->statements.Add(stat);
+					}
+
 					{
 						auto literal = MakePtr<WfLiteralExpression>();
 						literal->value = WfLiteralValue::True;
@@ -5003,11 +5123,8 @@ ExpandBindExpression
 
 			void ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node)
 			{
-				Group<WfExpression*, WfExpression*> group;
-				WfObservingDependency dependency(group);
-				GetObservingDependency(manager, node->expression, dependency);
-				dependency.Cleanup();
-
+				BindContext context;
+				CreateBindContextVisitor(manager, context).Call(node->expression.Obj());
 				BindCallbackInfo bcInfo;
 						
 				auto newSubscription = MakePtr<WfNewInterfaceExpression>();
@@ -5034,52 +5151,31 @@ ExpandBindExpression
 						}
 					};
 
-					CopyFrom(
-						orderedObserves,
-						From(dependency.dependencies.Keys())
-							.Where([](WfExpression* expr)
-							{
-								return expr != nullptr;
-							})
-							.OrderBy([&](WfExpression* a, WfExpression* b)
-							{
-								auto codeA = printExpression(a);
-								auto codeB = printExpression(b);
-								auto compare = WString::Compare(codeA, codeB);
-								if (compare) return compare;
-								return a->codeRange.start.index - b->codeRange.start.index;
-							})
-						);
-
-					FOREACH_INDEXER(WfExpression*, observe, observeIndex, orderedObserves)
+					FOREACH_INDEXER(WfExpression*, parent, index, context.cachedExprs)
 					{
-						List<IEventInfo*> events;
-						WfExpression* parent = 0;
-						DecodeObserveExpression(manager, observe, events, parent);
-
-						WString cacheName = L"<bind-cache>" + itow(observeIndex);
-						bcInfo.cacheNames.Add(parent, cacheName);
-						bcInfo.observeParents.Add(observe, parent);
-						bcInfo.orderedObserves.Add(observeIndex, observe);
+						WString cacheName = context.GetCacheVariableName(index);
 						{
 							auto elementType = manager->expressionResolvings[parent].type;
-							bcInfo.variableTypes.Add(cacheName, elementType);
 							newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(cacheName, elementType.Obj())));
 						}
+					}
 
+					FOREACH_INDEXER(WfExpression*, observe, observeIndex, context.orderedObserves)
+					{
+						const auto& events = context.observeEvents[observe];
 						FOREACH_INDEXER(IEventInfo*, ev, eventIndex, events)
 						{
 							WString handlerName = L"<bind-handler>" + itow(observeIndex) + L"_" + itow(eventIndex);
 							{
 								auto elementType = TypeInfoRetriver<Ptr<IEventHandler>>::CreateTypeInfo();
-								bcInfo.variableTypes.Add(handlerName, elementType);
+								bcInfo.handlerVariables.Add(handlerName, elementType);
 								newSubscription->declarations.Add(AssignNormalMember(CreateWritableVariable(handlerName, elementType.Obj())));
 							}
 						
 							WString callbackName = L"<bind-callback>" + itow(observeIndex) + L"_" + itow(eventIndex);
 							{
 								auto elementType = CopyTypeInfo(ev->GetHandlerType());
-								bcInfo.variableTypes.Add(callbackName, elementType);
+								bcInfo.callbackFunctions.Add(callbackName, elementType);
 							}
 
 							CallbackInfo callbackInfo;
@@ -5104,8 +5200,7 @@ ExpandBindExpression
 						{
 							auto var = MakePtr<WfVariableDeclaration>();
 							var->name.value = L"<bind-activator-result>";
-							Dictionary<WString, WString> referenceReplacement;
-							var->expression = ExpandObserveExpression(node->expression.Obj(), bcInfo.cacheNames, referenceReplacement);
+							var->expression = ExpandObserveExpressionVisitor::Execute(node->expression.Obj(), context);
 
 							auto varStat = MakePtr<WfVariableStatement>();
 							varStat->variable = var;
@@ -5123,7 +5218,7 @@ ExpandBindExpression
 					
 						newSubscription->declarations.Add(AssignNormalMember(func));
 					}
-					FOREACH(WfExpression*, observe, bcInfo.orderedObserves.Values())
+					FOREACH(WfExpression*, observe, context.orderedObserves)
 					{
 						FOREACH(CallbackInfo, callbackInfo, bcInfo.observeCallbackInfos[observe])
 						{
@@ -5131,7 +5226,7 @@ ExpandBindExpression
 							func->name.value = callbackInfo.callbackName;
 							func->anonymity = WfFunctionAnonymity::Named;
 							{
-								auto genericType = bcInfo.variableTypes[callbackInfo.callbackName]->GetElementType();
+								auto genericType = bcInfo.callbackFunctions[callbackInfo.callbackName]->GetElementType();
 								func->returnType = GetTypeFromTypeInfo(genericType->GetGenericArgument(0));
 								vint count = genericType->GetGenericArgumentCount();
 								for (vint i = 1; i < count; i++)
@@ -5150,10 +5245,10 @@ ExpandBindExpression
 								for (vint i = 0; i < affected.Count(); i++)
 								{
 									auto current = affected[i];
-									vint dependencyIndex = dependency.dependencies.Keys().IndexOf(current);
+									vint dependencyIndex = context.observeAffects.Keys().IndexOf(current);
 									if (dependencyIndex != -1)
 									{
-										FOREACH(WfExpression*, affectedObserve, dependency.dependencies.GetByIndex(dependencyIndex))
+										FOREACH(WfExpression*, affectedObserve, context.observeAffects.GetByIndex(dependencyIndex))
 										{
 											if (affectedObserve && !affected.Contains(affectedObserve))
 											{
@@ -5166,15 +5261,23 @@ ExpandBindExpression
 
 								FOREACH(WfExpression*, affectedObserve, From(affected).Reverse())
 								{
-									CreateBindDetachStatement(block, manager, affectedObserve, bcInfo);
+									CreateBindDetachStatement(block, manager, affectedObserve, context, bcInfo);
+								}
+								{
+									SortedList<vint> assignedParents;
+									FOREACH(WfExpression*, affectedObserve, affected)
+									{
+										auto parent = context.GetCachedExpressionIndexRecursively(context.observeParents[affectedObserve], true);
+										if (!assignedParents.Contains(parent))
+										{
+											assignedParents.Add(parent);
+											CreateBindCacheAssignStatement(block, affectedObserve, context);
+										}
+									}
 								}
 								FOREACH(WfExpression*, affectedObserve, affected)
 								{
-									CreateBindCacheAssignStatement(block, affectedObserve, bcInfo);
-								}
-								FOREACH(WfExpression*, affectedObserve, affected)
-								{
-									CreateBindAttachStatement(block, manager, affectedObserve, bcInfo);
+									CreateBindAttachStatement(block, manager, affectedObserve, context, bcInfo);
 								}
 							}
 							{
@@ -5192,9 +5295,9 @@ ExpandBindExpression
 						}
 					}
 				}
-				newSubscription->declarations.Add(AssignOverrideMember(CreateBindOpenFunction(manager, dependency, bcInfo)));
+				newSubscription->declarations.Add(AssignOverrideMember(CreateBindOpenFunction(manager, context, bcInfo)));
 				newSubscription->declarations.Add(AssignOverrideMember(CreateBindUpdateFunction(bcInfo)));
-				newSubscription->declarations.Add(AssignOverrideMember(CreateBindCloseFunction(manager, bcInfo)));
+				newSubscription->declarations.Add(AssignOverrideMember(CreateBindCloseFunction(manager, context, bcInfo)));
 			}
 		}
 	}
@@ -8205,7 +8308,7 @@ GetScopeNameFromReferenceType
 						}
 						else
 						{
-							manager->errors.Add(WfErrors::TypeNotExists(node, results[0].symbol));
+							manager->errors.Add(WfErrors::TypeNotExists(node, results[0]));
 						}
 					}
 					else
@@ -8538,7 +8641,7 @@ CreateTypeInfoFromType
 CreateTypeInfoFromType
 ***********************************************************************/
 			
-			Ptr<reflection::description::ITypeInfo>	CopyTypeInfo(reflection::description::ITypeInfo* typeInfo)
+			Ptr<reflection::description::ITypeInfo>	CopyTypeInfoInternal(reflection::description::ITypeInfo* typeInfo)
 			{
 				switch (typeInfo->GetDecorator())
 				{
@@ -8551,18 +8654,24 @@ CreateTypeInfoFromType
 				case ITypeInfo::TypeDescriptor:
 					return MakePtr<TypeDescriptorTypeInfo>(typeInfo->GetTypeDescriptor(), typeInfo->GetHint());
 				case ITypeInfo::Generic:
+				{
+					auto impl = MakePtr<GenericTypeInfo>(typeInfo->GetElementType());
+					vint count = typeInfo->GetGenericArgumentCount();
+					for (vint i = 0; i < count; i++)
 					{
-						auto impl = MakePtr<GenericTypeInfo>(typeInfo->GetElementType());
-						vint count = typeInfo->GetGenericArgumentCount();
-						for (vint i = 0; i < count; i++)
-						{
-							impl->AddGenericArgument(CopyTypeInfo(typeInfo->GetGenericArgument(i)));
-						}
-						return impl;
+						impl->AddGenericArgument(CopyTypeInfo(typeInfo->GetGenericArgument(i)));
 					}
-				default:
-					return 0;
+					return impl;
 				}
+				default:;
+					return nullptr;
+				}
+			}
+			
+			Ptr<reflection::description::ITypeInfo>	CopyTypeInfo(reflection::description::ITypeInfo* typeInfo)
+			{
+				if (!typeInfo) return nullptr;
+				return CopyTypeInfoInternal(typeInfo);
 			}
 
 /***********************************************************************
@@ -10758,23 +10867,25 @@ ValidateSemantic(Expression)
 
 						if (typeA && typeB)
 						{
-							auto stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
-							if (CanConvertToType(typeA.Obj(), stringType.Obj(), false) && CanConvertToType(typeB.Obj(), stringType.Obj(), false))
+							if (typeA->GetDecorator() == ITypeInfo::TypeDescriptor && typeB->GetDecorator() == ITypeInfo::TypeDescriptor)
 							{
-								results.Add(ResolveExpressionResult::ReadonlyType(stringType));
-							}
-							else if (auto type = GetMergedType(typeA, typeB))
-							{
-								if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
+								auto stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+								if (CanConvertToType(typeA.Obj(), stringType.Obj(), false) && CanConvertToType(typeB.Obj(), stringType.Obj(), false))
 								{
-									manager->errors.Add(WfErrors::IncorrectTypeForUnion(node->first.Obj(), type.Obj()));
+									results.Add(ResolveExpressionResult::ReadonlyType(stringType));
+									return;
 								}
-								results.Add(ResolveExpressionResult::ReadonlyType(type));
+								else if (auto type = GetMergedType(typeA, typeB))
+								{
+									if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
+									{
+										manager->errors.Add(WfErrors::IncorrectTypeForUnion(node->first.Obj(), type.Obj()));
+									}
+									results.Add(ResolveExpressionResult::ReadonlyType(type));
+									return;
+								}
 							}
-							else
-							{
-								manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
-							}
+							manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
 						}
 					}
 					else if (node->op == WfBinaryOperator::Intersect)
@@ -10784,18 +10895,19 @@ ValidateSemantic(Expression)
 
 						if (typeA && typeB)
 						{
-							if (auto type = GetMergedType(typeA, typeB))
+							if (typeA->GetDecorator() == ITypeInfo::TypeDescriptor && typeB->GetDecorator() == ITypeInfo::TypeDescriptor)
 							{
-								if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
+								if (auto type = GetMergedType(typeA, typeB))
 								{
-									manager->errors.Add(WfErrors::IncorrectTypeForIntersect(node->first.Obj(), type.Obj()));
+									if (type->GetTypeDescriptor()->GetTypeDescriptorFlags() != TypeDescriptorFlags::FlagEnum)
+									{
+										manager->errors.Add(WfErrors::IncorrectTypeForIntersect(node->first.Obj(), type.Obj()));
+									}
+									results.Add(ResolveExpressionResult::ReadonlyType(type));
+									return;
 								}
-								results.Add(ResolveExpressionResult::ReadonlyType(type));
 							}
-							else
-							{
-								manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
-							}
+							manager->errors.Add(WfErrors::CannotMergeTwoType(node, typeA.Obj(), typeB.Obj()));
 						}
 					}
 					else if (node->op == WfBinaryOperator::FailedThen)
@@ -15829,12 +15941,20 @@ WfGenerateExpressionVisitor
 							if ((result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 							{
 								auto enumType = result.type->GetTypeDescriptor()->GetEnumType();
+								auto enumValueType = result.type->GetDecorator() == ITypeInfo::TypeDescriptor
+									? result.type
+									: MakePtr<TypeDescriptorTypeInfo>(result.type->GetTypeDescriptor(), TypeInfoHint::Normal)
+									;
 								vint index = enumType->IndexOfItem(name);
 								if (index != -1)
 								{
-									writer.WriteString(config->ConvertType(result.type.Obj()));
-									writer.WriteString(L"::");
-									writer.WriteString(name);
+									ITypeInfo* types[] = { enumValueType.Obj(),result.type.Obj() };
+									ConvertMultipleTypes(types, (sizeof(types) / sizeof(*types)), [=]()
+									{
+										writer.WriteString(config->ConvertType(result.type->GetTypeDescriptor()));
+										writer.WriteString(L"::");
+										writer.WriteString(name);
+									});
 									return;
 								}
 							}
@@ -21534,36 +21654,14 @@ GenerateInstructions(Expression)
 								mergedType = GetMergedType(firstType, secondType);
 								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
 								{
-									switch (mergedType->GetTypeDescriptor()->GetTypeDescriptorFlags())
+									GenerateExpressionInstructions(context, node->first);
+									GenerateExpressionInstructions(context, node->second);
+									INSTRUCTION(Ins::CompareValue());
+									if (node->op == WfBinaryOperator::NE)
 									{
-									case TypeDescriptorFlags::Object:
-									case TypeDescriptorFlags::Struct:
-										GenerateExpressionInstructions(context, node->first);
-										GenerateExpressionInstructions(context, node->second);
-										INSTRUCTION(Ins::CompareValue());
-										if (node->op == WfBinaryOperator::NE)
-										{
-											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
-										}
-										return;
-									case TypeDescriptorFlags::FlagEnum:
-									case TypeDescriptorFlags::NormalEnum:
-										GenerateExpressionInstructions(context, node->first);
-										INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
-										GenerateExpressionInstructions(context, node->second);
-										INSTRUCTION(Ins::ConvertToType(Value::BoxedValue, description::GetTypeDescriptor<vuint64_t>()));
-										INSTRUCTION(Ins::CompareLiteral(WfInsType::U8));
-										if (node->op == WfBinaryOperator::NE)
-										{
-											INSTRUCTION(Ins::OpNE());
-										}
-										else
-										{
-											INSTRUCTION(Ins::OpEQ());
-										}
-										return;
-									default:;
+										INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 									}
+									return;
 								}
 							}
 						}

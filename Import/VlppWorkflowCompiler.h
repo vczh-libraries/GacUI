@@ -3601,34 +3601,12 @@ Scope Analyzing
 Semantic Analyzing
 ***********************************************************************/
 
-			class WfObservingDependency : public Object
-			{
-				typedef collections::Group<WfExpression*, WfExpression*>			DependencyGroup;
-				typedef collections::List<WfExpression*>							ObserveList;
-			public:
-				ObserveList							inputObserves;
-				ObserveList							outputObserves;
-				DependencyGroup&					dependencies;
-				
-				WfObservingDependency(WfObservingDependency& dependency);
-				WfObservingDependency(DependencyGroup& _dependencies);
-				WfObservingDependency(DependencyGroup& _dependencies, ObserveList& _inputObserves);
-				
-				void								Prepare(WfExpression* observe);
-				void								AddInternal(WfExpression* observe, WfExpression* dependedObserve);
-				void								Add(WfExpression* observe);
-				void								Add(WfExpression* observe, WfObservingDependency& dependency);
-				void								TurnToInput();
-				void								Cleanup();
-			};
-
 			extern void										ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern void										ValidateClassMemberSemantic(WfLexicalScopeManager* manager, Ptr<typeimpl::WfCustomType> td, Ptr<WfClassDeclaration> classDecl, Ptr<WfDeclaration> memberDecl);
 			extern void										ValidateDeclarationSemantic(WfLexicalScopeManager* manager, Ptr<WfDeclaration> declaration);
 			extern void										ValidateStatementSemantic(WfLexicalScopeManager* manager, Ptr<WfStatement> statement);
 			extern void										ValidateExpressionSemantic(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType, collections::List<ResolveExpressionResult>& results);
 			extern void										ValidateConstantExpression(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, Ptr<reflection::description::ITypeInfo> expectedType);
-			extern void										GetObservingDependency(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, WfObservingDependency& dependency);
 
 			extern Ptr<WfLexicalScopeName>					GetExpressionScopeName(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
 			extern reflection::description::IEventInfo*		GetExpressionEventInfo(WfLexicalScopeManager* manager, Ptr<WfExpression> expression);
@@ -3641,7 +3619,6 @@ Semantic Analyzing
 Expanding Virtual Nodes
 ***********************************************************************/
 
-			extern Ptr<WfExpression>						ExpandObserveExpression(WfExpression* expression, collections::Dictionary<WfExpression*, WString>& cacheNames, collections::Dictionary<WString, WString>& referenceReplacement, bool useCache = true);
 			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
 			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression);
 			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement);
@@ -3723,7 +3700,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			NullableToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);
 				static Ptr<parsing::ParsingError>			ChildOfNonReferenceType(WfType* node);
 				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, Ptr<WfLexicalScopeName> scopeName);
-				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, Ptr<WfLexicalSymbol> symbol);
+				static Ptr<parsing::ParsingError>			TypeNotExists(WfType* node, const ResolveExpressionResult& result);
 				static Ptr<parsing::ParsingError>			TypeNotForValue(WfType* node, reflection::description::ITypeInfo* typeInfo);
 				
 				// C: Statement error
