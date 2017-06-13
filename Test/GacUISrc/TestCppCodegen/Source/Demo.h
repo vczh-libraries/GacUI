@@ -533,9 +533,9 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_49 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiControl* __vwsn_precompile_50 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_51 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_52 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::controls::GuiToolstripMenu* __vwsn_precompile_52 = static_cast<::vl::presentation::controls::GuiToolstripMenu*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_53 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::controls::GuiControl* __vwsn_precompile_54 = static_cast<::vl::presentation::controls::GuiControl*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_54 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_55 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_56 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_57 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
@@ -543,9 +543,10 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_59 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_60 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_61 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_62 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_63 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_64 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_62 = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_63 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_64 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_65 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::DocumentTabPage* __vwsn_this_);
 	public:
 		DocumentTabPageConstructor();
@@ -789,7 +790,7 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextListTabPage>;
 #endif
 	public:
-		::vl::vint32_t counter = 0;
+		::vl::vint32_t counter = static_cast<::vl::vint32_t>(0);
 		::vl::Ptr<::demo::IViewModel> __vwsn_parameter_ViewModel = ::vl::Ptr<::demo::IViewModel>();
 		::vl::Ptr<::demo::IViewModel> GetViewModel();
 		TextListTabPage(::vl::Ptr<::demo::IViewModel> __vwsn_ctor_parameter_ViewModel);
@@ -1097,7 +1098,7 @@ namespace demo
 #endif
 	protected:
 		::demo::CategoryItemTemplate* self = static_cast<::demo::CategoryItemTemplate*>(nullptr);
-		::demo::MyCategory SelectedCategory = static_cast<::demo::MyCategory>(static_cast<::vl::vuint64_t>(0));
+		::demo::MyCategory SelectedCategory = static_cast<::demo::MyCategory>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0)));
 		::demo::CategoryDisplayer* __vwsn_precompile_0 = static_cast<::demo::CategoryDisplayer*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::CategoryItemTemplate* __vwsn_this_);
@@ -1114,7 +1115,7 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CategoryItemTemplate>;
 #endif
 	public:
-		::demo::MyCategory __vwsn_parameter_SelectedCategory = static_cast<::demo::MyCategory>(static_cast<::vl::vuint64_t>(0));
+		::demo::MyCategory __vwsn_parameter_SelectedCategory = static_cast<::demo::MyCategory>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0)));
 		::demo::MyCategory GetSelectedCategory();
 		CategoryItemTemplate(::demo::MyCategory __vwsn_ctor_parameter_SelectedCategory);
 		~CategoryItemTemplate();
@@ -1231,7 +1232,7 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplateConstructor>;
 #endif
 	protected:
-		::demo::MyGender SelectedGender = static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(0));
+		::demo::MyGender SelectedGender = static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0)));
 		::demo::GenderItemTemplate* __vwsn_precompile_0 = static_cast<::demo::GenderItemTemplate*>(nullptr);
 		::demo::GenderDisplayer* __vwsn_precompile_1 = static_cast<::demo::GenderDisplayer*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
@@ -1247,7 +1248,7 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplate>;
 #endif
 	public:
-		::demo::MyGender __vwsn_parameter_SelectedGender = static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(0));
+		::demo::MyGender __vwsn_parameter_SelectedGender = static_cast<::demo::MyGender>(static_cast<::vl::vuint64_t>(static_cast<::vl::vint32_t>(0)));
 		::demo::MyGender GetSelectedGender();
 		GenderItemTemplate(::demo::MyGender __vwsn_ctor_parameter_SelectedGender);
 		~GenderItemTemplate();

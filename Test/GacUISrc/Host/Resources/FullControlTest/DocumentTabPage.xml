@@ -128,10 +128,13 @@
           <ToolstripSplitter/>
           <ToolstripButton Command-ref="commandDelete" Alt="D"/>
           <ToolstripSplitter/>
-          <ToolstripButton Command-ref="commandInsertImage" Alt="I"/>
-          <ToolstripButton Command-ref="commandEditHyperlink" Alt="L"/>
-          <ToolstripButton Command-ref="commandRemoveHyperlink" Alt="R"/>
-          <ToolstripSplitter/>
+          <ToolstripSplitButton Command-ref="commandInsertImage" Alt="I">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandInsertImage" Alt="I"/>
+              <MenuItemButton Command-ref="commandEditHyperlink" Alt="L"/>
+              <MenuItemButton Command-ref="commandRemoveHyperlink" Alt="R"/>
+            </att.SubMenu-set>
+          </ToolstripSplitButton>
           <ToolstripButton Command-ref="commandBold" Alt="B"/>
           <ToolstripButton Command-ref="commandItalic" Alt="I"/>
           <ToolstripButton Command-ref="commandUnderline" Alt="U"/>
