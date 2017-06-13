@@ -3444,6 +3444,11 @@ WfErrors
 				return new ParsingError(node, L"A13: Integer literal \"" + node->value.value + L"\" out of range.");
 			}
 
+			Ptr<parsing::ParsingError> WfErrors::FloatingLiteralOutOfRange(WfFloatingExpression* node)
+			{
+				return new ParsingError(node, L"A13: Floating literal \"" + node->value.value + L"\" out of range.");
+			}
+
 			Ptr<parsing::ParsingError> WfErrors::CannotMergeTwoType(WfExpression* node, reflection::description::ITypeInfo* firstType, reflection::description::ITypeInfo* secondType)
 			{
 				return new ParsingError(node, L"A14: Failed to merge type \"" + firstType->GetTypeFriendlyName() + L"\" with type \"" + secondType->GetTypeFriendlyName() + L"\" together to calculate the result type.");
@@ -10663,36 +10668,46 @@ ValidateSemantic(Expression)
 
 				void Visit(WfFloatingExpression* node)override
 				{
-					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<double>::CreateTypeInfo()));
-				}
-
-				template<typename T>
-				bool ValidateInteger(const WString& text, ITypeDescriptor*& resultTd)
-				{
-					T value;
-					if (TypedValueSerializerProvider<T>::Deserialize(text, value))
+					auto typeDescriptor = expectedType ? expectedType->GetTypeDescriptor() : nullptr;
+					if (!typeDescriptor || typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object || typeDescriptor == description::GetTypeDescriptor<WString>())
 					{
-						resultTd = description::GetTypeDescriptor<T>();
-						return true;
+						typeDescriptor = description::GetTypeDescriptor<double>();
 					}
-					return false;
+
+					if (auto serializableType = typeDescriptor->GetSerializableType())
+					{
+						Value output;
+						if (serializableType->Deserialize(node->value.value, output))
+						{
+							results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
+							return;
+						}
+					}
+					manager->errors.Add(WfErrors::FloatingLiteralOutOfRange(node));
 				}
 
 				void Visit(WfIntegerExpression* node)override
 				{
-					ITypeDescriptor* typeDescriptor = nullptr;
-#ifndef VCZH_64
-					if (ValidateInteger<vint32_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
-					if (ValidateInteger<vuint32_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+					auto typeDescriptor = expectedType ? expectedType->GetTypeDescriptor() : nullptr;
+					if (!typeDescriptor || typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object || typeDescriptor==description::GetTypeDescriptor<WString>())
+					{
+#ifdef VCZH_64
+						typeDescriptor = description::GetTypeDescriptor<vint64_t>();
+#else
+						typeDescriptor = description::GetTypeDescriptor<vint32_t>();
 #endif
-					if (ValidateInteger<vint64_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
-					if (ValidateInteger<vuint64_t>(node->value.value, typeDescriptor)) goto TYPE_FINISHED;
+					}
 
+					if (auto serializableType = typeDescriptor->GetSerializableType())
+					{
+						Value output;
+						if (serializableType->Deserialize(node->value.value, output))
+						{
+							results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
+							return;
+						}
+					}
 					manager->errors.Add(WfErrors::IntegerLiteralOutOfRange(node));
-					typeDescriptor = description::GetTypeDescriptor<vint>();
-
-				TYPE_FINISHED:
-					results.Add(ResolveExpressionResult::ReadonlyType(MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal)));
 				}
 
 				void Visit(WfStringExpression* node)override
@@ -10970,13 +10985,13 @@ ValidateSemantic(Expression)
 								{
 									static TypeFlag conversionTable[(vint)TypeFlag::Count] = {
 										/*Bool		*/TypeFlag::Unknown,
-										/*I1		*/TypeFlag::I,
-										/*I2		*/TypeFlag::I,
-										/*I4		*/TypeFlag::I,
+										/*I1		*/TypeFlag::I4,
+										/*I2		*/TypeFlag::I4,
+										/*I4		*/TypeFlag::I4,
 										/*I8		*/TypeFlag::I8,
-										/*U1		*/TypeFlag::U,
-										/*U2		*/TypeFlag::U,
-										/*U4		*/TypeFlag::U,
+										/*U1		*/TypeFlag::U4,
+										/*U2		*/TypeFlag::U4,
+										/*U4		*/TypeFlag::U4,
 										/*U8		*/TypeFlag::U8,
 										/*F4		*/TypeFlag::F4,
 										/*F8		*/TypeFlag::F8,
@@ -10994,13 +11009,13 @@ ValidateSemantic(Expression)
 								{
 									static TypeFlag conversionTable[(vint)TypeFlag::Count] = {
 										/*Bool		*/TypeFlag::Unknown,
-										/*I1		*/TypeFlag::I,
-										/*I2		*/TypeFlag::I,
-										/*I4		*/TypeFlag::I,
+										/*I1		*/TypeFlag::I4,
+										/*I2		*/TypeFlag::I4,
+										/*I4		*/TypeFlag::I4,
 										/*I8		*/TypeFlag::I8,
-										/*U1		*/TypeFlag::U,
-										/*U2		*/TypeFlag::U,
-										/*U4		*/TypeFlag::U,
+										/*U1		*/TypeFlag::U4,
+										/*U2		*/TypeFlag::U4,
+										/*U4		*/TypeFlag::U4,
 										/*U8		*/TypeFlag::U8,
 										/*F4		*/TypeFlag::Unknown,
 										/*F8		*/TypeFlag::Unknown,
@@ -11303,12 +11318,43 @@ ValidateSemantic(Expression)
 					}
 					else
 					{
+						ITypeInfo* expectedKeyType = nullptr;
+						ITypeInfo* expectedValueType = nullptr;
+						if (expectedType)
+						{
+							if (expectedType->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								auto genericType = expectedType->GetElementType();
+								if (genericType->GetDecorator() == ITypeInfo::Generic)
+								{
+									if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueDictionary>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyDictionary>())
+									{
+										if (genericType->GetGenericArgumentCount() == 2)
+										{
+											expectedKeyType = genericType->GetGenericArgument(0);
+											expectedValueType = genericType->GetGenericArgument(1);
+										}
+									}
+									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
+									{
+										if (genericType->GetGenericArgumentCount() == 1)
+										{
+											expectedKeyType = genericType->GetGenericArgument(0);
+										}
+									}
+								}
+							}
+						}
+
 						bool map = node->arguments[0]->value;
 						Ptr<ITypeInfo> keyType, valueType;
 						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
 						{
 							{
-								Ptr<ITypeInfo> newKeyType = GetExpressionType(manager, argument->key, 0);
+								Ptr<ITypeInfo> newKeyType = GetExpressionType(manager, argument->key, expectedKeyType);
 								if (!keyType)
 								{
 									keyType = newKeyType;
@@ -11324,7 +11370,7 @@ ValidateSemantic(Expression)
 							}
 							if (map)
 							{
-								Ptr<ITypeInfo> newValueType = GetExpressionType(manager, argument->value, 0);
+								Ptr<ITypeInfo> newValueType = GetExpressionType(manager, argument->value, expectedValueType);
 								if (!valueType)
 								{
 									valueType = newValueType;
@@ -16097,25 +16143,30 @@ WfGenerateExpressionVisitor
 				{
 					auto result = config->manager->expressionResolvings[node];
 					auto td = result.type->GetTypeDescriptor();
+
+					writer.WriteString(L"static_cast<");
+					writer.WriteString(config->ConvertType(td));
+					writer.WriteString(L">(");
 					if (td == description::GetTypeDescriptor<float>())
 					{
 						writer.WriteString(node->value.value + L"f");
 					}
-					else if (td == description::GetTypeDescriptor<double>())
+					else
 					{
 						writer.WriteString(node->value.value);
 					}
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfIntegerExpression* node)override
 				{
 					auto result = config->manager->expressionResolvings[node];
 					auto td = result.type->GetTypeDescriptor();
-					if (td == description::GetTypeDescriptor<vint32_t>())
-					{
-						writer.WriteString(node->value.value);
-					}
-					else if (td == description::GetTypeDescriptor<vuint32_t>())
+
+					writer.WriteString(L"static_cast<");
+					writer.WriteString(config->ConvertType(td));
+					writer.WriteString(L">(");
+					if (td == description::GetTypeDescriptor<vuint32_t>())
 					{
 						writer.WriteString(node->value.value + L"U");
 					}
@@ -16127,6 +16178,11 @@ WfGenerateExpressionVisitor
 					{
 						writer.WriteString(node->value.value + L"UL");
 					}
+					else
+					{
+						writer.WriteString(node->value.value);
+					}
+					writer.WriteString(L")");
 				}
 
 				void Visit(WfStringExpression* node)override
@@ -17832,6 +17888,91 @@ MergeCppFile
 						{
 							userImplFull += L"//" + line + L"\r\n";
 						}
+					}
+				});
+			}
+
+			WString MergeCppMultiPlatform(const WString& code32, const WString& code64)
+			{
+				return GenerateToStream([&](StreamWriter& writer)
+				{
+					const wchar_t* reading32 = code32.Buffer();
+					const wchar_t* reading64 = code64.Buffer();
+					const wchar_t* start32 = reading32;
+					while (true)
+					{
+						vint length = 0;
+						while (reading32[length] && reading64[length])
+						{
+							if (reading32[length] == reading64[length])
+							{
+								length++;
+							}
+							else
+							{
+								break;
+							}
+						}
+
+						writer.WriteString(reading32, length);
+						reading32 += length;
+						reading64 += length;
+
+						if (*reading32 == 0 && *reading64 == 0)
+						{
+							break;
+						}
+
+#define IS_DIGIT(C) (L'0' <= C && C <= L'9')
+
+						if (reading32[0] == L'3' && reading32[1] == L'2' && reading64[0] == L'6' && reading64[1] == L'4')
+						{
+							if (length >= 4)
+							{
+								if (wcsncmp(reading32 - 4, L"vint32_t", 8) == 0 && wcsncmp(reading64 - 4, L"vint64_t", 8) == 0)
+								{
+									reading32 += 4;
+									reading64 += 4;
+									goto NEXT_ROUND;
+								}
+							}
+						}
+						else if (reading64[0] == L'L')
+						{
+							if (reading32[0] == reading64[1] && length >= 1)
+							{
+								if (IS_DIGIT(reading32[-1]) && !IS_DIGIT(reading32[0]))
+								{
+									if (IS_DIGIT(reading64[-1]) && !IS_DIGIT(reading64[1]))
+									{
+										reading64 += 1;
+										goto NEXT_ROUND;
+									}
+								}
+							}
+						}
+						else if (reading64[0] == L'U' && reading64[1] == L'L')
+						{
+							if (reading32[0] == reading64[2] && length >= 1)
+							{
+								if (IS_DIGIT(reading32[-1]) && !IS_DIGIT(reading32[0]))
+								{
+									if (IS_DIGIT(reading64[-1]) && !IS_DIGIT(reading64[2]))
+									{
+										reading64 += 2;
+										goto NEXT_ROUND;
+									}
+								}
+							}
+						}
+						throw Exception(L"The difference at " + itow((vint)(reading32 - start32)) + L"-th character between Input C++ source files are not "
+							L"\"vint32_t\" and \"vint64_t\", "
+							L"\"<number>\" and \"<number>L\", "
+							L"\"<number>\" and \"<number>UL\"."
+							);
+					NEXT_ROUND:;
+
+#undef IS_DIGIT
 					}
 				});
 			}
@@ -21434,33 +21575,20 @@ GenerateInstructions(Expression)
 
 				void Visit(WfFloatingExpression* node)override
 				{
-					INSTRUCTION(Ins::LoadValue(BoxValue(wtof(node->value.value))));
+					auto result = context.manager->expressionResolvings[node];
+					auto td = result.type->GetTypeDescriptor();
+					Value output;
+					td->GetSerializableType()->Deserialize(node->value.value, output);
+					INSTRUCTION(Ins::LoadValue(output));
 				}
 
 				void Visit(WfIntegerExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node];
 					auto td = result.type->GetTypeDescriptor();
-					if (td == description::GetTypeDescriptor<vint32_t>())
-					{
-						INSTRUCTION(Ins::LoadValue(BoxValue((vint32_t)wtoi(node->value.value))));
-					}
-					else if (td == description::GetTypeDescriptor<vuint32_t>())
-					{
-						INSTRUCTION(Ins::LoadValue(BoxValue((vuint32_t)wtou(node->value.value))));
-					}
-					else if (td == description::GetTypeDescriptor<vint64_t>())
-					{
-						INSTRUCTION(Ins::LoadValue(BoxValue((vint64_t)wtoi64(node->value.value))));
-					}
-					else if (td == description::GetTypeDescriptor<vuint64_t>())
-					{
-						INSTRUCTION(Ins::LoadValue(BoxValue((vuint64_t)wtou64(node->value.value))));
-					}
-					else
-					{
-						CHECK_FAIL(L"GenerateExpressionInstructionsVisitor::Visit(WfIntegerExpression*)#Internal error, unknown integer type.");
-					}
+					Value output;
+					td->GetSerializableType()->Deserialize(node->value.value, output);
+					INSTRUCTION(Ins::LoadValue(output));
 				}
 
 				void Visit(WfStringExpression* node)override
@@ -22714,7 +22842,7 @@ GenerateInstructions(Statement)
 					context.functionContext->PopScopeContext();
 				}
 
-				Pair<int, int> GenerateTryProtected(WfStatement* node, Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement)
+				Pair<vint, vint> GenerateTryProtected(WfStatement* node, Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement)
 				{
 					auto catchContext = context.functionContext->PushScopeContext(WfCodegenScopeType::TryCatch);
 					EXIT_CODE(Ins::UninstallTry(0));
@@ -22754,7 +22882,7 @@ GenerateInstructions(Statement)
 					return variableIndex;
 				}
 
-				void GenerateTrap(WfTryStatement* node, vint variableIndex, Pair<int, int> trap)
+				void GenerateTrap(WfTryStatement* node, vint variableIndex, Pair<vint, vint> trap)
 				{
 					context.assembly->instructions[trap.key].indexParameter = context.assembly->instructions.Count();
 					INSTRUCTION(Ins::LoadException());
@@ -22772,7 +22900,7 @@ GenerateInstructions(Statement)
 				{
 					// try
 					auto trap1 = GenerateTryProtected(node, node->protectedStatement, node->finallyStatement);
-					Pair<int, int> trap2 = { -1,-1 };
+					Pair<vint, vint> trap2 = { -1,-1 };
 					auto variableIndex = GenerateExceptionVariable(node);
 
 					// catch

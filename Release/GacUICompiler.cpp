@@ -1408,6 +1408,7 @@ namespace vl
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace controls;
+		using namespace controls::list;
 		using namespace templates;
 
 /***********************************************************************
@@ -1994,6 +1995,156 @@ GuiItemPropertyDeserializer
 		};
 
 /***********************************************************************
+GuiDataProcessorDeserializer
+***********************************************************************/
+
+		class GuiDataProcessorDeserializer : public Object, public IGuiInstanceDeserializer
+		{
+		protected:
+			Ptr<ITypeInfo>						stringType;
+
+		public:
+			GuiDataProcessorDeserializer()
+			{
+				stringType = TypeInfoRetriver<WString>::CreateTypeInfo();
+			}
+
+			bool CanDeserialize(description::ITypeInfo* typeInfo)override
+			{
+				return typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>()
+					|| typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataSorter>();
+			}
+
+			description::ITypeInfo* DeserializeAs(description::ITypeInfo* typeInfo)override
+			{
+				return stringType.Obj();
+			}
+
+			Ptr<workflow::WfExpression> Deserialize(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, description::ITypeInfo* typeInfo, Ptr<workflow::WfExpression> valueExpression, GuiResourceTextPos tagPosition, GuiResourceError::List& errors)override
+			{
+				auto stringExpr = valueExpression.Cast<WfStringExpression>();
+				Ptr<WfExpression> propertyExpression;
+				{
+					propertyExpression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, stringExpr->value.value, tagPosition, errors);
+					if (!propertyExpression)
+					{
+						return nullptr;
+					}
+				};
+
+				vint indexItemType = resolvingResult.envVars.Keys().IndexOf(GlobalStringKey::Get(L"ItemType"));
+				if (indexItemType == -1)
+				{
+					auto error
+						= L"Precompile: env.ItemType must be specified before deserializing \""
+						+ stringExpr->value.value
+						+ L"\" to value of type \""
+						+ typeInfo->GetTypeFriendlyName()
+						+ L"\".";
+					errors.Add(GuiResourceError({ resolvingResult.resource }, tagPosition, error));
+					return nullptr;
+				}
+
+				Ptr<WfType> itemType;
+				{
+					const auto& values = resolvingResult.envVars.GetByIndex(indexItemType);
+					auto itemTypeValue = values[values.Count() - 1];
+
+					itemType = Workflow_ParseType(precompileContext, { resolvingResult.resource }, itemTypeValue->value, itemTypeValue->valuePosition, errors);
+					if (!itemType)
+					{
+						return nullptr;
+					}
+				};
+
+				auto newExpr = MakePtr<WfNewInterfaceExpression>();
+				newExpr->type = GetTypeFromTypeInfo(typeInfo);
+				{
+					auto decl = MakePtr<WfFunctionDeclaration>();
+					newExpr->declarations.Add(decl);
+					decl->classMember = MakePtr<WfClassMember>();
+					decl->classMember->kind = WfClassMemberKind::Override;
+					decl->name.value = L"SetCallback";
+					decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<IDataProcessorCallback*>::CreateTypeInfo().Obj());
+						argument->name.value = L"value";
+						decl->arguments.Add(argument);
+					}
+
+					auto block = MakePtr<WfBlockStatement>();
+					decl->statement = block;
+				}
+				{
+					auto decl = MakePtr<WfFunctionDeclaration>();
+					newExpr->declarations.Add(decl);
+					decl->classMember = MakePtr<WfClassMember>();
+					decl->classMember->kind = WfClassMemberKind::Override;
+
+					List<WString> argumentNames;
+					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>())
+					{
+						decl->name.value = L"Filter";
+						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<bool>::CreateTypeInfo().Obj());
+						argumentNames.Add(L"<row>");
+					}
+					else
+					{
+						decl->name.value = L"Compare";
+						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+						argumentNames.Add(L"<row1>");
+						argumentNames.Add(L"<row2>");
+					}
+
+					FOREACH(WString, name, argumentNames)
+					{
+						auto argument = MakePtr<WfFunctionArgument>();
+						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
+						argument->name.value = name;
+						decl->arguments.Add(argument);
+					}
+
+					auto block = MakePtr<WfBlockStatement>();
+					decl->statement = block;
+
+					auto inferExpr = MakePtr<WfInferExpression>();
+					inferExpr->expression = propertyExpression;
+					{
+						auto funcType = MakePtr<WfFunctionType>();
+						inferExpr->type = funcType;
+
+						funcType->result = CopyType(decl->returnType);
+						for (vint i = 0; i < decl->arguments.Count(); i++)
+						{
+							funcType->arguments.Add(CopyType(itemType));
+						}
+					}
+
+					auto callExpr = MakePtr<WfCallExpression>();
+					callExpr->function = inferExpr;
+					FOREACH_INDEXER(WString, name, index, argumentNames)
+					{
+						auto refExpr = MakePtr<WfReferenceExpression>();
+						refExpr->name.value = name;
+
+						auto castExpr = MakePtr<WfTypeCastingExpression>();
+						castExpr->strategy = WfTypeCastingStrategy::Strong;
+						castExpr->type = (index == 0 ? itemType : CopyType(itemType));
+						castExpr->expression = refExpr;
+
+						callExpr->arguments.Add(castExpr);
+					}
+
+					auto stat = MakePtr<WfReturnStatement>();
+					stat->expression = callExpr;
+					block->statements.Add(stat);
+				}
+				return newExpr;
+			}
+		};
+
+/***********************************************************************
 GuiPredefinedInstanceDeserializersPlugin
 ***********************************************************************/
 
@@ -2013,6 +2164,7 @@ GuiPredefinedInstanceDeserializersPlugin
 				IGuiInstanceLoaderManager* manager = GetInstanceLoaderManager();
 				manager->AddInstanceDeserializer(new GuiTemplatePropertyDeserializer);
 				manager->AddInstanceDeserializer(new GuiItemPropertyDeserializer);
+				manager->AddInstanceDeserializer(new GuiDataProcessorDeserializer);
 			}
 
 			void Unload()override
@@ -2063,6 +2215,17 @@ namespace vl
 				{
 					auto record = sp->nodePositions.Values()[index];
 					Workflow_RecordScriptPosition(context, record.position, node->expandedExpression, record.availableAfter);
+				}
+			}
+
+			void Visit(WfVirtualStatement* node)override
+			{
+				traverse_visitor::StatementVisitor::Visit(node);
+				vint index = sp->nodePositions.Keys().IndexOf(node);
+				if (index != -1)
+				{
+					auto record = sp->nodePositions.Values()[index];
+					Workflow_RecordScriptPosition(context, record.position, node->expandedStatement, record.availableAfter);
 				}
 			}
 
@@ -4675,64 +4838,6 @@ GuiTreeViewInstanceLoader
 			};
 
 /***********************************************************************
-GuiBindableDataGridInstanceLoader
-***********************************************************************/
-
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid, GuiListViewTemplate_StyleProvider, GuiListViewTemplate>
-			class GuiBindableDataGridInstanceLoader : public BASE_TYPE
-			{
-			protected:
-				GlobalStringKey		typeName;
-				GlobalStringKey		_ViewModelContext;
-				
-				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
-				{
-					auto indexViewModelContext = arguments.Keys().IndexOf(_ViewModelContext);
-					if (indexViewModelContext == -1)
-					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
-						nullExpr->value = WfLiteralValue::Null;
-						createControl->arguments.Add(nullExpr);
-					}
-					else
-					{
-						createControl->arguments.Add(arguments.GetByIndex(indexViewModelContext)[0].expression);
-					}
-				}
-			public:
-				GuiBindableDataGridInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, L"CreateListViewStyle")
-				{
-					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::content.typeName);
-					_ViewModelContext = GlobalStringKey::Get(L"ViewModelContext");
-				}
-
-				GlobalStringKey GetTypeName()override
-				{
-					return typeName;
-				}
-
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
-				{
-					propertyNames.Add(_ViewModelContext);
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
-				}
-
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
-				{
-					if (propertyInfo.propertyName == _ViewModelContext)
-					{
-						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Value>::CreateTypeInfo());
-						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
-						info->bindability = GuiInstancePropertyInfo::Bindable;
-						return info;
-					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
-				}
-			};
-#undef BASE_TYPE
-
-/***********************************************************************
 GuiTreeNodeInstanceLoader
 ***********************************************************************/
 
@@ -4930,6 +5035,64 @@ GuiTreeNodeInstanceLoader
 					return nullptr;
 				}
 			};
+
+/***********************************************************************
+GuiBindableDataGridInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid, GuiListViewTemplate_StyleProvider, GuiListViewTemplate>
+			class GuiBindableDataGridInstanceLoader : public BASE_TYPE
+			{
+			protected:
+				GlobalStringKey		typeName;
+				GlobalStringKey		_ViewModelContext;
+				
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					auto indexViewModelContext = arguments.Keys().IndexOf(_ViewModelContext);
+					if (indexViewModelContext == -1)
+					{
+						auto nullExpr = MakePtr<WfLiteralExpression>();
+						nullExpr->value = WfLiteralValue::Null;
+						createControl->arguments.Add(nullExpr);
+					}
+					else
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexViewModelContext)[0].expression);
+					}
+				}
+			public:
+				GuiBindableDataGridInstanceLoader()
+					:BASE_TYPE(description::TypeInfo<GuiBindableDataGrid>::content.typeName, L"CreateListViewStyle")
+				{
+					typeName = GlobalStringKey::Get(description::TypeInfo<GuiBindableDataGrid>::content.typeName);
+					_ViewModelContext = GlobalStringKey::Get(L"ViewModelContext");
+				}
+
+				GlobalStringKey GetTypeName()override
+				{
+					return typeName;
+				}
+
+				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					propertyNames.Add(_ViewModelContext);
+					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _ViewModelContext)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<Value>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						info->bindability = GuiInstancePropertyInfo::Bindable;
+						return info;
+					}
+					return BASE_TYPE::GetPropertyType(propertyInfo);
+				}
+			};
+#undef BASE_TYPE
 
 /***********************************************************************
 Initialization
@@ -7243,21 +7406,11 @@ Workflow_GenerateInstanceClass
 
 			{
 				auto ref = MakePtr<WfReferenceExpression>();
-				ref->name.value = L"ClearSubscriptions";
+				ref->name.value = L"FinalizeInstanceRecursively";
 
 				auto call = MakePtr<WfCallExpression>();
 				call->function = ref;
-
-				auto stat = MakePtr<WfExpressionStatement>();
-				stat->expression = call;
-				dtorBlock->statements.Add(stat);
-			}
-			{
-				auto ref = MakePtr<WfReferenceExpression>();
-				ref->name.value = L"ClearComponents";
-
-				auto call = MakePtr<WfCallExpression>();
-				call->function = ref;
+				call->arguments.Add(MakePtr<WfThisExpression>());
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = call;

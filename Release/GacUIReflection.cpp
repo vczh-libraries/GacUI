@@ -885,6 +885,7 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(lostFocus)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(caretNotify)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(clipboardNotify)
+				CLASS_MEMBER_GUIEVENT_COMPOSITION(renderTargetChanged)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
 				CLASS_MEMBER_PROPERTY_FAST(OwnedElement)
@@ -1795,6 +1796,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearSelection, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSelectableListControl)
 
+			BEGIN_CLASS_MEMBER(ItemProviderBase)
+				CLASS_MEMBER_BASE(GuiListControl::IItemProvider)
+			END_CLASS_MEMBER(ItemProviderBase)
+
 			BEGIN_CLASS_MEMBER(RangedItemArrangerBase)
 				CLASS_MEMBER_BASE(GuiListControl::IItemArranger)
 			END_CLASS_MEMBER(RangedItemArrangerBase)
@@ -1945,6 +1950,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Text)
 				CLASS_MEMBER_PROPERTY_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_FAST(Size)
+				CLASS_MEMBER_PROPERTY_FAST(OwnPopup)
 				CLASS_MEMBER_PROPERTY_FAST(DropdownPopup)
 				CLASS_MEMBER_PROPERTY_FAST(SortingState)
 			END_CLASS_MEMBER(ListViewColumn)
@@ -2270,6 +2276,7 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkChanged)
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkExecuted)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+				CLASS_MEMBER_GUIEVENT(UndoRedoChanged)
 
 				CLASS_MEMBER_METHOD(AddDocumentItem, { L"value" })
 				CLASS_MEMBER_METHOD(RemoveDocumentItem, { L"value" })
@@ -2280,12 +2287,13 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ActiveHyperlinkReference)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionModel, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Modified)
 
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
 				CLASS_MEMBER_METHOD(GetCaretBounds, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(NotifyParagraphUpdated, {L"index" _ L"oldCount" _ L"newCount" _ L"updatedText"})
-				CLASS_MEMBER_METHOD(EditRun, {L"begin" _ L"end" _ L"model"})
+				CLASS_MEMBER_METHOD(EditRun, {L"begin" _ L"end" _ L"model" _ L"copy"})
 				CLASS_MEMBER_METHOD(EditText, {L"begin" _ L"end" _ L"frontSide" _ L"text"})
 				CLASS_MEMBER_METHOD(EditStyle, {L"begin" _ L"end" _ L"style"})
 				CLASS_MEMBER_METHOD(EditImage, {L"begin" _ L"end" _ L"image"})
@@ -2297,6 +2305,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SummarizeStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SetParagraphAlignment, {L"begin" _ L"end" _ L"alignments"})
+				CLASS_MEMBER_METHOD(SummarizeParagraphAlignment, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(SelectAll, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CanCut, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CanCopy, NO_PARAMETER)
@@ -2346,6 +2355,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextBoxCommonInterface)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+				CLASS_MEMBER_GUIEVENT(UndoRedoChanged)
 				
 				CLASS_MEMBER_PROPERTY_FAST(Readonly)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
@@ -2358,7 +2368,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxWidth)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxHeight)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditVersion)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Modified)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Modified)
 
 				CLASS_MEMBER_METHOD(CanCut, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CanCopy, NO_PARAMETER)
@@ -2515,9 +2525,9 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiControl)
 				CONTROL_CONSTRUCTOR_PROVIDER(GuiDatePicker)
 
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(Date, DateChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(DateFormat, DateFormatChanged)
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(DateLocale, DateLocaleChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Date)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(DateFormat)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(DateLocale)
 
 				CLASS_MEMBER_GUIEVENT(DateSelected);
 				CLASS_MEMBER_GUIEVENT(DateNavigated);
@@ -2539,7 +2549,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiComboBoxBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBox*(GuiDateComboBox::IStyleController* _ GuiDatePicker*), {L"styleController" _ L"datePicker"})
 
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectedDate, SelectedDateChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedDate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DatePicker)
 			END_CLASS_MEMBER(GuiDateComboBox)
 
@@ -2576,12 +2586,12 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
 			END_CLASS_MEMBER(GuiBindableTreeView)
 
-			BEGIN_INTERFACE_MEMBER(IDataFilterCallback)
+			BEGIN_INTERFACE_MEMBER(IDataProcessorCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
-				CLASS_MEMBER_METHOD(OnFilterChanged, NO_PARAMETER)
-			END_INTERFACE_MEMBER(IDataFilterCallback)
+				CLASS_MEMBER_METHOD(OnProcessorChanged, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IDataProcessorCallback)
 
 			BEGIN_INTERFACE_MEMBER(IDataFilter)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -2593,6 +2603,7 @@ Type Declaration
 			BEGIN_INTERFACE_MEMBER(IDataSorter)
 				CLASS_MEMBER_BASE(IDescriptable)
 
+				CLASS_MEMBER_METHOD(SetCallback, { L"value" })
 				CLASS_MEMBER_METHOD(Compare, { L"row1" _ L"row2" })
 			END_INTERFACE_MEMBER(IDataSorter)
 
@@ -2624,8 +2635,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetSubFilter, {L"value"})
 			END_CLASS_MEMBER(DataNotFilter)
 
-			BEGIN_CLASS_MEMBER(DataMultipleSorter)
+			BEGIN_CLASS_MEMBER(DataSorterBase)
 				CLASS_MEMBER_BASE(IDataSorter)
+			END_CLASS_MEMBER(DataSorterBase)
+
+			BEGIN_CLASS_MEMBER(DataMultipleSorter)
+				CLASS_MEMBER_BASE(DataSorterBase)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataMultipleSorter>(), NO_PARAMETER)
 
 				CLASS_MEMBER_METHOD(SetLeftSorter, {L"value"})
@@ -2633,7 +2648,7 @@ Type Declaration
 			END_CLASS_MEMBER(DataMultipleSorter)
 
 			BEGIN_CLASS_MEMBER(DataReverseSorter)
-				CLASS_MEMBER_BASE(DataMultipleSorter)
+				CLASS_MEMBER_BASE(DataSorterBase)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DataReverseSorter>(), NO_PARAMETER)
 				
 				CLASS_MEMBER_METHOD(SetSubSorter, {L"value"})
@@ -2644,9 +2659,10 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_FAST(Text)
 				CLASS_MEMBER_PROPERTY_FAST(Size)
+				CLASS_MEMBER_PROPERTY_FAST(OwnPopup)
 				CLASS_MEMBER_PROPERTY_FAST(Popup)
-				CLASS_MEMBER_PROPERTY_FAST(InherentFilter)
-				CLASS_MEMBER_PROPERTY_FAST(InherentSorter)
+				CLASS_MEMBER_PROPERTY_FAST(Filter)
+				CLASS_MEMBER_PROPERTY_FAST(Sorter)
 				CLASS_MEMBER_PROPERTY_FAST(VisualizerFactory)
 				CLASS_MEMBER_PROPERTY_FAST(EditorFactory)
 
@@ -2657,6 +2673,14 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ValueProperty)
 			END_CLASS_MEMBER(DataColumn)
 
+			BEGIN_CLASS_MEMBER(DataProvider)
+				CLASS_MEMBER_BASE(ItemProviderBase)
+				CLASS_MEMBER_BASE(IListViewItemView)
+				CLASS_MEMBER_BASE(ListViewColumnItemArranger::IColumnItemView)
+				CLASS_MEMBER_BASE(IDataGridView)
+				CLASS_MEMBER_BASE(IDataProcessorCallback)
+			END_CLASS_MEMBER(DataProvider)
+
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
 				CLASS_MEMBER_CONSTRUCTOR(GuiBindableDataGrid*(GuiBindableDataGrid::IStyleProvider*, const Value&), {L"styleProvider" _ L"viewModelContext"})
@@ -2664,6 +2688,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
+				CLASS_MEMBER_PROPERTY_FAST(AdditionalFilter)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(LargeImageProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SmallImageProperty)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedRowValue, SelectedCellChanged)
@@ -2940,7 +2965,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
 				CLASS_MEMBER_METHOD(GetCaretBounds, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(NotifyParagraphUpdated, {L"index" _ L"oldCount" _ L"newCount" _ L"updatedText"})
-				CLASS_MEMBER_METHOD(EditRun, {L"begin" _ L"end" _ L"model"})
+				CLASS_MEMBER_METHOD(EditRun, {L"begin" _ L"end" _ L"model" _ L"copy"})
 				CLASS_MEMBER_METHOD(EditText, {L"begin" _ L"end" _ L"frontSide" _ L"text"})
 				CLASS_MEMBER_METHOD(EditStyle, {L"begin" _ L"end" _ L"style"})
 				CLASS_MEMBER_METHOD(EditImage, {L"begin" _ L"end" _ L"image"})
@@ -2952,6 +2977,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SummarizeStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SetParagraphAlignment, {L"begin" _ L"end" _ L"alignments"})
+				CLASS_MEMBER_METHOD(SummarizeParagraphAlignment, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(GetHyperlinkFromPoint, {L"point"})
 			END_CLASS_MEMBER(GuiDocumentElement)
 #undef _
@@ -3262,19 +3288,15 @@ Type Declaration
 			END_CLASS_MEMBER(GuiComponent)
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiGraphicsComposition*))
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiControl*))
 				CLASS_MEMBER_METHOD(SetResourceResolver, {L"resolver"})
 				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path" _ L"ensureExist"})
 
 				CLASS_MEMBER_METHOD(AddSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(RemoveSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(ContainsSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(ClearSubscriptions, NO_PARAMETER)
-
+				CLASS_MEMBER_METHOD(UpdateSubscriptions, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(AddComponent, {L"component"})
 				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
-				CLASS_MEMBER_METHOD(RemoveComponent, {L"component"})
-				CLASS_MEMBER_METHOD(ContainsComponent, {L"component"})
-				CLASS_MEMBER_METHOD(ClearComponents, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiInstanceRootObject)
 
 			BEGIN_CLASS_MEMBER(GuiTemplate)

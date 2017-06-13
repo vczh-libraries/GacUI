@@ -8903,7 +8903,7 @@ ValueType
 					{
 						if (auto typedBox = boxedValue.Cast<TypedBox<T>>())
 						{
-							return ComparePrimitiveInternal(value, typedBox->value, 0);
+							return ComparePrimitiveInternal(value, typedBox->value, (vint)0);
 						}
 						else
 						{

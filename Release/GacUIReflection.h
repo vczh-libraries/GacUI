@@ -297,6 +297,7 @@ Type List (Controls)
 			F(presentation::controls::GuiListControl::IItemProvider)\
 			F(presentation::controls::GuiListControl::IItemArranger)\
 			F(presentation::controls::GuiSelectableListControl)\
+			F(presentation::controls::list::ItemProviderBase)\
 			F(presentation::controls::list::RangedItemArrangerBase)\
 			F(presentation::controls::list::FixedHeightItemArranger)\
 			F(presentation::controls::list::FixedSizeMultiColumnItemArranger)\
@@ -381,7 +382,7 @@ Type List (Controls)
 			F(presentation::controls::GuiBindableTextList)\
 			F(presentation::controls::GuiBindableListView)\
 			F(presentation::controls::GuiBindableTreeView)\
-			F(presentation::controls::list::IDataFilterCallback)\
+			F(presentation::controls::list::IDataProcessorCallback)\
 			F(presentation::controls::list::IDataFilter)\
 			F(presentation::controls::list::IDataSorter)\
 			F(presentation::controls::list::DataFilterBase)\
@@ -389,9 +390,11 @@ Type List (Controls)
 			F(presentation::controls::list::DataAndFilter)\
 			F(presentation::controls::list::DataOrFilter)\
 			F(presentation::controls::list::DataNotFilter)\
+			F(presentation::controls::list::DataSorterBase)\
 			F(presentation::controls::list::DataMultipleSorter)\
 			F(presentation::controls::list::DataReverseSorter)\
 			F(presentation::controls::list::DataColumn)\
+			F(presentation::controls::list::DataProvider)\
 			F(presentation::controls::GuiBindableDataGrid)\
 
 /***********************************************************************
@@ -1114,28 +1117,28 @@ Interface Proxy (Controls)
 				}
 			END_INTERFACE_PROXY(presentation::controls::list::IDataGridView)
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataFilterCallback)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataProcessorCallback)
 
 				presentation::controls::GuiListControl::IItemProvider* GetItemProvider()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemProvider);
 				}
 
-				void OnFilterChanged()override
+				void OnProcessorChanged()override
 				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(OnFilterChanged);
+					INVOKE_INTERFACE_PROXY_NOPARAMS(OnProcessorChanged);
 				}
 
 			END_INTERFACE_PROXY(presentation::controls::list::IDataFilterCallback)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataFilter)
 
-				void SetCallback(presentation::controls::list::IDataFilterCallback* value)override
+				void SetCallback(presentation::controls::list::IDataProcessorCallback* value)override
 				{
 					INVOKE_INTERFACE_PROXY(SetCallback, value);
 				}
 
-				bool Filter(vint row)override
+				bool Filter(const Value& row)override
 				{
 					INVOKEGET_INTERFACE_PROXY(Filter, row);
 				}
@@ -1143,7 +1146,12 @@ Interface Proxy (Controls)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::list::IDataSorter)
 
-				vint Compare(vint row1, vint row2)override
+				void SetCallback(presentation::controls::list::IDataProcessorCallback* value)override
+				{
+					INVOKE_INTERFACE_PROXY(SetCallback, value);
+				}
+
+				vint Compare(const Value& row1, const Value& row2)override
 				{
 					INVOKEGET_INTERFACE_PROXY(Compare, row1, row2);
 				}

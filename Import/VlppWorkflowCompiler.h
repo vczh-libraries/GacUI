@@ -3500,13 +3500,6 @@ Type Analyzing
 				Others,
 				Count,
 				Unknown = -1,
-#ifdef VCZH_64
-				I = I8,
-				U = U8,
-#else
-				I = I4,
-				U = U4,
-#endif
 			};
 
 			extern TypeFlag									GetTypeFlag(reflection::description::ITypeDescriptor* typeDescriptor);
@@ -3668,6 +3661,7 @@ Error Messages
 				static Ptr<parsing::ParsingError>			ExpressionCannotExplicitlyConvertToType(WfExpression* node, reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
 				static Ptr<parsing::ParsingError>			CannotWeakCastToType(WfExpression* node, reflection::description::ITypeInfo* toType);
 				static Ptr<parsing::ParsingError>			IntegerLiteralOutOfRange(WfIntegerExpression* node);
+				static Ptr<parsing::ParsingError>			FloatingLiteralOutOfRange(WfFloatingExpression* node);
 				static Ptr<parsing::ParsingError>			CannotMergeTwoType(WfExpression* node, reflection::description::ITypeInfo* firstType, reflection::description::ITypeInfo* secondType);
 				static Ptr<parsing::ParsingError>			RangeShouldBeInteger(WfExpression* node, reflection::description::ITypeInfo* type);
 				static Ptr<parsing::ParsingError>			UnaryOperatorOnWrongType(WfUnaryExpression* node, reflection::description::ITypeInfo* type);
@@ -4180,6 +4174,7 @@ GenerateCppFiles
 			};
 
 			extern Ptr<WfCppOutput>		GenerateCppFiles(Ptr<WfCppInput> input, analyzer::WfLexicalScopeManager* manager);
+			extern WString				MergeCppMultiPlatform(const WString& code32, const WString& code64);
 			extern WString				MergeCppFileContent(const WString& dst, const WString& src);
 		}
 	}

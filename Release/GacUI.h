@@ -4339,12 +4339,13 @@ Rich Content Document (model)
 			
 			bool							CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
 			Ptr<DocumentModel>				CopyDocument(TextPos begin, TextPos end, bool deepCopy);
+			Ptr<DocumentModel>				CopyDocument();
 			bool							CutParagraph(TextPos position);
 			bool							CutEditRange(TextPos begin, TextPos end);
 			bool							EditContainer(TextPos begin, TextPos end, const Func<void(DocumentParagraphRun*, RunRangeMap&, vint, vint)>& editor);
 			
-			vint							EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model);
-			vint							EditRun(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs);
+			vint							EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> replaceToModel, bool copy);
+			vint							EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs);
 			vint							EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
 			bool							EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
 			Ptr<DocumentImageRun>			EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
@@ -4356,6 +4357,7 @@ Rich Content Document (model)
 			bool							RenameStyle(const WString& oldStyleName, const WString& newStyleName);
 			bool							ClearStyle(TextPos begin, TextPos end);
 			Ptr<DocumentStyleProperties>	SummarizeStyle(TextPos begin, TextPos end);
+			Nullable<Alignment>				SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 			/// <summary>Load a document model from an xml.</summary>
 			/// <returns>The loaded document model.</returns>
@@ -5807,7 +5809,8 @@ Rich Content Document (element)
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="model">The new run.</param>
-				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model);
+				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
+				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy);
 				/// <summary>Edit text in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
@@ -5864,6 +5867,11 @@ Rich Content Document (element)
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="alignments">The alignment for each paragraph.</param>
 				void										SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
+				/// <summary>Summarize the text alignment in a specified range.</summary>
+				/// <returns>The text alignment summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<Alignment>							SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 				/// <summary>Get hyperlink from point.</summary>
 				/// <returns>Corressponding hyperlink id. Returns -1 indicates that the point is not in a hyperlink.</returns>
@@ -6361,6 +6369,8 @@ Event Receiver
 				GuiNotifyEvent					caretNotify;
 				/// <summary>Clipboard notify event. This event is raised when the content in the system clipboard is changed.</summary>
 				GuiNotifyEvent					clipboardNotify;
+				/// <summary>Render target changed event. This event is raised when the render target of this composition is changed.</summary>
+				GuiNotifyEvent					renderTargetChanged;
 			};
 		}
 	}
@@ -6686,6 +6696,14 @@ Basic Construction
 /***********************************************************************
 Helper Functions
 ***********************************************************************/
+
+			/// <summary>Call [M:vl.presentation.controls.GuiInstanceRootObject.FinalizeInstance] in all child root objects.</summary>
+			/// <param name="value">The container control to notify.</param>
+			extern void								NotifyFinalizeInstance(controls::GuiControl* value);
+
+			/// <summary>Call [M:vl.presentation.controls.GuiInstanceRootObject.FinalizeInstance] in all child root objects.</summary>
+			/// <param name="value">The container composition to notify.</param>
+			extern void								NotifyFinalizeInstance(GuiGraphicsComposition* value);
 
 			/// <summary>Safely remove and delete a control.</summary>
 			/// <param name="value">The control to delete.</param>
@@ -8328,11 +8346,21 @@ namespace vl
 				Ptr<GuiResourcePathResolver>					resourceResolver;
 				SubscriptionList								subscriptions;
 				collections::SortedList<GuiComponent*>			components;
+				bool											finalized = false;
 
-				void											FinalizeInstance();
 			public:
 				GuiInstanceRootObject();
 				~GuiInstanceRootObject();
+
+				/// <summary>Clear all subscriptions and components.</summary>
+				void											FinalizeInstance();
+
+				/// <summary>Test has the object been finalized.</summary>
+				/// <returns>Returns true if this object has been finalized.</returns>
+				bool											IsFinalized();
+
+				void											FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject);
+				void											FinalizeInstanceRecursively(GuiControl* thisObject);
 
 				/// <summary>Set the resource resolver to connect the current root object to the resource creating it.</summary>
 				/// <param name="resolver">The resource resolver</param>
@@ -8348,16 +8376,8 @@ namespace vl
 				/// <returns>Returns null if this operation failed.</returns>
 				/// <param name="subscription">The subscription to test.</param>
 				Ptr<description::IValueSubscription>			AddSubscription(Ptr<description::IValueSubscription> subscription);
-				/// <summary>Remove a subscription.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="subscription">The subscription to test.</param>
-				bool											RemoveSubscription(Ptr<description::IValueSubscription> subscription);
-				/// <summary>Test does the window contain the subscription.</summary>
-				/// <returns>Returns true if the window contains the subscription.</returns>
-				/// <param name="subscription">The subscription to test.</param>
-				bool											ContainsSubscription(Ptr<description::IValueSubscription> subscription);
 				/// <summary>Clear all subscriptions.</summary>
-				void											ClearSubscriptions();
+				void											UpdateSubscriptions();
 
 				/// <summary>Add a component. When this control host is disposing, all attached components will be deleted.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
@@ -8368,16 +8388,6 @@ namespace vl
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="controlHost">The controlHost to add.</param>
 				bool											AddControlHostComponent(GuiControlHost* controlHost);
-				/// <summary>Remove a component.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="component">The component to remove.</param>
-				bool											RemoveComponent(GuiComponent* component);
-				/// <summary>Test does the window contain the component.</summary>
-				/// <returns>Returns true if the window contains the component.</returns>
-				/// <param name="component">The component to test.</param>
-				bool											ContainsComponent(GuiComponent* component);
-				/// <summary>Clear all components.</summary>
-				void											ClearComponents();
 			};
 
 			class GuiButton;
@@ -12267,6 +12277,7 @@ ListViewItemProvider
 					WString											text;
 					ItemProperty<WString>							textProperty;
 					vint											size;
+					bool											ownPopup = true;
 					GuiMenu*										dropdownPopup = nullptr;
 					ColumnSortingState								sortingState = ColumnSortingState::NotSorted;
 					
@@ -12276,6 +12287,7 @@ ListViewItemProvider
 					/// <param name="_text">The specified text.</param>
 					/// <param name="_size">The specified size.</param>
 					ListViewColumn(const WString& _text=L"", vint _size=160);
+					~ListViewColumn();
 					
 					/// <summary>Get the text of this item.</summary>
 					/// <returns>The text of this item.</returns>
@@ -12295,6 +12307,12 @@ ListViewItemProvider
 					/// <summary>Set the size of this item.</summary>
 					/// <param name="value">The size of this item.</param>
 					void											SetSize(vint value);
+					/// <summary>Test if the column owns the popup. Owned popup will be deleted in the destructor.</summary>
+					/// <returns>Returns true if the column owns the popup.</returns>
+					bool											GetOwnPopup();
+					/// <summary>Set if the column owns the popup.</summary>
+					/// <param name="value">Set to true to let the column own the popup.</param>
+					void											SetOwnPopup(bool value);
 					/// <summary>Get the dropdown context menu of this item.</summary>
 					/// <returns>The dropdown context menu of this item.</returns>
 					GuiMenu*										GetDropdownPopup();
@@ -13589,10 +13607,10 @@ Dialogs
 				/// <param name="value">The selected color.</param>
 				void												SetSelectedColor(Color value);
 				
-				/// <summary>Get if the selected font is alreadt selected on the dialog when it is opened.</summary>
+				/// <summary>Get if the selected font is already selected on the dialog when it is opened.</summary>
 				/// <returns>Returns true if the selected font is already selected on the dialog when it is opened.</returns>
 				bool												GetShowSelection();
-				/// <summary>Set if the selected font is alreadt selected on the dialog when it is opened.</summary>
+				/// <summary>Set if the selected font is already selected on the dialog when it is opened.</summary>
 				/// <param name="value">Set to true to select the selected font when the dialog is opened.</param>
 				void												SetShowSelection(bool value);
 				
@@ -14200,6 +14218,9 @@ Undo Redo
 				GuiGeneralUndoRedoProcessor();
 				~GuiGeneralUndoRedoProcessor();
 
+				Event<void()>								UndoRedoChanged;
+				Event<void()>								ModifiedChanged;
+
 				bool										CanUndo();
 				bool										CanRedo();
 				void										ClearUndoRedo();
@@ -14407,6 +14428,8 @@ Common Interface
 				Ptr<compositions::GuiShortcutKeyManager>			internalShortcutKeyManager;
 				bool												preventEnterDueToAutoComplete;
 
+				void												InvokeUndoRedoChanged();
+				void												InvokeModifiedChanged();
 				void												UpdateCaretPoint();
 				void												Move(TextPos pos, bool shift);
 				void												Modify(TextPos start, TextPos end, const WString& input, bool asKeyInput);
@@ -14439,6 +14462,10 @@ Common Interface
 
 				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent						SelectionChanged;
+				/// <summary>Undo redo status changed event.</summary>
+				compositions::GuiNotifyEvent						UndoRedoChanged;
+				/// <summary>Modified status changed event.</summary>
+				compositions::GuiNotifyEvent						ModifiedChanged;
 
 				//================ clipboard operations
 
@@ -14865,6 +14892,8 @@ GuiDocumentCommonInterface
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
 
 			protected:
+				void										InvokeUndoRedoChanged();
+				void										InvokeModifiedChanged();
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
@@ -14906,6 +14935,10 @@ GuiDocumentCommonInterface
 
 				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent				SelectionChanged;
+				/// <summary>Undo redo status changed event.</summary>
+				compositions::GuiNotifyEvent				UndoRedoChanged;
+				/// <summary>Modified status changed event.</summary>
+				compositions::GuiNotifyEvent				ModifiedChanged;
 				
 				/// <summary>Get the document.</summary>
 				/// <returns>The document.</returns>
@@ -14970,7 +15003,8 @@ GuiDocumentCommonInterface
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="model">The new run.</param>
-				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model);
+				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
+				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy);
 				/// <summary>Edit text in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
@@ -15027,6 +15061,11 @@ GuiDocumentCommonInterface
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="alignments">The alignment for each paragraph.</param>
 				void										SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
+				/// <summary>Summarize the text alignment in a specified range.</summary>
+				/// <returns>The text alignment summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<Alignment>							SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 				//================ editing control
 
@@ -16066,24 +16105,25 @@ namespace vl
 Interfaces
 ***********************************************************************/
 
-				class IDataFilterCallback : public virtual IDescriptable, public Description<IDataFilterCallback>
+				class IDataProcessorCallback : public virtual IDescriptable, public Description<IDataProcessorCallback>
 				{
 				public:
 					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
-					virtual void										OnFilterChanged() = 0;
+					virtual void										OnProcessorChanged() = 0;
 				};
 
 				class IDataFilter : public virtual IDescriptable, public Description<IDataFilter>
 				{
 				public:
-					virtual void										SetCallback(IDataFilterCallback* value) = 0;
-					virtual bool										Filter(vint row) = 0;
+					virtual void										SetCallback(IDataProcessorCallback* value) = 0;
+					virtual bool										Filter(const description::Value& row) = 0;
 				};
 
 				class IDataSorter : public virtual IDescriptable, public Description<IDataSorter>
 				{
 				public:
-					virtual vint										Compare(vint row1, vint row2) = 0;
+					virtual void										SetCallback(IDataProcessorCallback* value) = 0;
+					virtual vint										Compare(const description::Value& row1, const description::Value& row2) = 0;
 				};
 
 /***********************************************************************
@@ -16094,14 +16134,14 @@ Filter Extensions
 				class DataFilterBase : public Object, public virtual IDataFilter, public Description<DataFilterBase>
 				{
 				protected:
-					IDataFilterCallback*								callback = nullptr;
+					IDataProcessorCallback*								callback = nullptr;
 
 					/// <summary>Called when the structure or properties for this filter is changed.</summary>
-					void												InvokeOnFilterChanged();
+					void												InvokeOnProcessorChanged();
 				public:
 					DataFilterBase();
 
-					void												SetCallback(IDataFilterCallback* value)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
 				};
 				
 				/// <summary>Base class for a <see cref="IDataFilter"/> that contains multiple sub filters.</summary>
@@ -16121,7 +16161,7 @@ Filter Extensions
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub filter.</param>
 					bool												RemoveSubFilter(Ptr<IDataFilter> value);
-					void												SetCallback(IDataFilterCallback* value)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
 				};
 
 				/// <summary>A filter that keep a row if all sub filters agree.</summary>
@@ -16131,7 +16171,7 @@ Filter Extensions
 					/// <summary>Create the filter.</summary>
 					DataAndFilter();
 
-					bool												Filter(vint row)override;
+					bool												Filter(const description::Value& row)override;
 				};
 				
 				/// <summary>A filter that keep a row if one of all sub filters agrees.</summary>
@@ -16141,7 +16181,7 @@ Filter Extensions
 					/// <summary>Create the filter.</summary>
 					DataOrFilter();
 
-					bool												Filter(vint row)override;
+					bool												Filter(const description::Value& row)override;
 				};
 				
 				/// <summary>A filter that keep a row if the sub filter not agrees.</summary>
@@ -16157,16 +16197,30 @@ Filter Extensions
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub filter.</param>
 					bool												SetSubFilter(Ptr<IDataFilter> value);
-					void												SetCallback(IDataFilterCallback* value)override;
-					bool												Filter(vint row)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
+					bool												Filter(const description::Value& row)override;
 				};
 
 /***********************************************************************
 Sorter Extensions
 ***********************************************************************/
+
+				/// <summary>Base class for <see cref="IDataSorter"/>.</summary>
+				class DataSorterBase : public Object, public virtual IDataSorter, public Description<DataSorterBase>
+				{
+				protected:
+					IDataProcessorCallback*								callback = nullptr;
+
+					/// <summary>Called when the structure or properties for this filter is changed.</summary>
+					void												InvokeOnProcessorChanged();
+				public:
+					DataSorterBase();
+
+					void												SetCallback(IDataProcessorCallback* value)override;
+				};
 				
 				/// <summary>A multi-level <see cref="IDataSorter"/>.</summary>
-				class DataMultipleSorter : public Object, public virtual IDataSorter, public Description<DataMultipleSorter>
+				class DataMultipleSorter : public DataSorterBase, public Description<DataMultipleSorter>
 				{
 				protected:
 					Ptr<IDataSorter>							leftSorter;
@@ -16183,11 +16237,12 @@ Sorter Extensions
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub sorter.</param>
 					bool												SetRightSorter(Ptr<IDataSorter> value);
-					vint												Compare(vint row1, vint row2)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
+					vint												Compare(const description::Value& row1, const description::Value& row2)override;
 				};
 				
 				/// <summary>A reverse order <see cref="IDataSorter"/>.</summary>
-				class DataReverseSorter : public Object, public virtual IDataSorter, public Description<DataReverseSorter>
+				class DataReverseSorter : public DataSorterBase, public Description<DataReverseSorter>
 				{
 				protected:
 					Ptr<IDataSorter>							sorter;
@@ -16199,7 +16254,8 @@ Sorter Extensions
 					/// <returns>Returns true if this operation succeeded.</returns>
 					/// <param name="value">The sub sorter.</param>
 					bool												SetSubSorter(Ptr<IDataSorter> value);
-					vint												Compare(vint row1, vint row2)override;
+					void												SetCallback(IDataProcessorCallback* value)override;
+					vint												Compare(const description::Value& row1, const description::Value& row2)override;
 				};
 
 /***********************************************************************
@@ -16221,9 +16277,10 @@ DataColumn
 					WString												text;
 					vint												size = 160;
 					ColumnSortingState									sortingState = ColumnSortingState::NotSorted;
+					bool												ownPopup = true;
 					GuiMenu*											popup = nullptr;
-					Ptr<IDataFilter>									inherentFilter;
-					Ptr<IDataSorter>									inherentSorter;
+					Ptr<IDataFilter>									associatedFilter;
+					Ptr<IDataSorter>									associatedSorter;
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
@@ -16251,6 +16308,13 @@ DataColumn
 					/// <param name="value">The size for the column.</param>
 					void												SetSize(vint value);
 
+					/// <summary>Test if the column owns the popup. Owned popup will be deleted in the destructor.</summary>
+					/// <returns>Returns true if the column owns the popup.</returns>
+					bool												GetOwnPopup();
+					/// <summary>Set if the column owns the popup.</summary>
+					/// <param name="value">Set to true to let the column own the popup.</param>
+					void												SetOwnPopup(bool value);
+
 					/// <summary>Get the popup for the column.</summary>
 					/// <returns>The popup for the column.</returns>
 					GuiMenu*											GetPopup();
@@ -16258,19 +16322,19 @@ DataColumn
 					/// <param name="value">The popup for the column.</param>
 					void												SetPopup(GuiMenu* value);
 
-					/// <summary>Get the inherent filter for the column.</summary>
-					/// <returns>The inherent filter for the column.</returns>
-					Ptr<IDataFilter>									GetInherentFilter();
-					/// <summary>Set the inherent filter for the column.</summary>
+					/// <summary>Get the filter for the column.</summary>
+					/// <returns>The filter for the column.</returns>
+					Ptr<IDataFilter>									GetFilter();
+					/// <summary>Set the filter for the column.</summary>
 					/// <param name="value">The filter.</param>
-					void												SetInherentFilter(Ptr<IDataFilter> value);
+					void												SetFilter(Ptr<IDataFilter> value);
 
-					/// <summary>Get the inherent sorter for the column.</summary>
-					/// <returns>The inherent sorter for the column.</returns>
-					Ptr<IDataSorter>									GetInherentSorter();
-					/// <summary>Set the inherent sorter for the column.</summary>
+					/// <summary>Get the sorter for the column.</summary>
+					/// <returns>The sorter for the column.</returns>
+					Ptr<IDataSorter>									GetSorter();
+					/// <summary>Set the sorter for the column.</summary>
 					/// <param name="value">The sorter.</param>
-					void												SetInherentSorter(Ptr<IDataSorter> value);
+					void												SetSorter(Ptr<IDataSorter> value);
 
 					/// <summary>Get the visualizer factory for the column.</summary>
 					/// <returns>The the visualizer factory for the column.</returns>
@@ -16342,8 +16406,8 @@ DataProvider
 					, public virtual IListViewItemView
 					, public virtual ListViewColumnItemArranger::IColumnItemView
 					, public virtual IDataGridView
-					, protected virtual IDataFilterCallback
-					, protected virtual IListViewItemProvider
+					, public virtual IDataProcessorCallback
+					, public virtual IListViewItemProvider
 					, public Description<DataProvider>
 				{
 					friend class DataColumn;
@@ -16366,7 +16430,7 @@ DataProvider
 					void													NotifyAllColumnsUpdate()override;
 					GuiListControl::IItemProvider*							GetItemProvider()override;
 
-					void													OnFilterChanged()override;
+					void													OnProcessorChanged()override;
 					void													OnItemSourceModified(vint start, vint count, vint newCount);
 
 					void													RebuildFilter();
@@ -16387,11 +16451,7 @@ DataProvider
 					Ptr<description::IValueEnumerable>					GetItemSource();
 					void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 					
-					/// <summary>Get the additional filter.</summary>
-					/// <returns>The additional filter.</returns>
 					Ptr<IDataFilter>									GetAdditionalFilter();
-					/// <summary>Set the additional filter. This filter will be composed with inherent filters of all column to be the final filter.</summary>
-					/// <param name="value">The additional filter.</param>
 					void												SetAdditionalFilter(Ptr<IDataFilter> value);
 
 					// ===================== GuiListControl::IItemProvider =====================
@@ -16468,6 +16528,13 @@ GuiBindableDataGrid
 				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<description::IValueEnumerable> _itemSource);
 
+				/// <summary>Get the additional filter.</summary>
+				/// <returns>The additional filter.</returns>
+				Ptr<list::IDataFilter>								GetAdditionalFilter();
+				/// <summary>Set the additional filter. This filter will be composed with filters of all column to be the final filter.</summary>
+				/// <param name="value">The additional filter.</param>
+				void												SetAdditionalFilter(Ptr<list::IDataFilter> value);
+
 				/// <summary>Large image property name changed event.</summary>
 				compositions::GuiNotifyEvent						LargeImagePropertyChanged;
 				/// <summary>Small image property name changed event.</summary>
@@ -16539,17 +16606,22 @@ namespace vl
 			protected:
 				Ptr<GuiImageData>							image;
 				WString										text;
-				compositions::IGuiShortcutKeyItem*			shortcutKeyItem;
-				bool										enabled;
-				bool										selected;
+				compositions::IGuiShortcutKeyItem*			shortcutKeyItem = nullptr;
+				bool										enabled = true;
+				bool										selected = false;
 				Ptr<compositions::IGuiGraphicsEventHandler>	shortcutKeyItemExecutedHandler;
 				Ptr<ShortcutBuilder>						shortcutBuilder;
-				GuiControlHost*								shortcutOwner;
+
+				GuiInstanceRootObject*						attachedRootObject = nullptr;
+				Ptr<compositions::IGuiGraphicsEventHandler>	renderTargetChangedHandler;
+				GuiControlHost*								shortcutOwner = nullptr;
 
 				void										OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										InvokeDescriptionChanged();
 				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder);
 				void										BuildShortcut(const WString& builderText);
+				void										UpdateShortcutOwner();
 			public:
 				/// <summary>Create the command.</summary>
 				GuiToolstripCommand();

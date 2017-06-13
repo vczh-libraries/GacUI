@@ -1130,7 +1130,7 @@ GuiCustomControl
 			GuiCustomControl::~GuiCustomControl()
 			{
 				FinalizeAggregation();
-				FinalizeInstance();
+				FinalizeInstanceRecursively(this);
 			}
 		}
 	}
@@ -3552,8 +3552,8 @@ GuiControlHost
 
 			GuiControlHost::~GuiControlHost()
 			{
+				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
-				FinalizeInstance();
 				styleController=0;
 				delete host;
 			}
@@ -4539,11 +4539,11 @@ namespace vl
 DataFilterBase
 ***********************************************************************/
 
-				void DataFilterBase::InvokeOnFilterChanged()
+				void DataFilterBase::InvokeOnProcessorChanged()
 				{
 					if (callback)
 					{
-						callback->OnFilterChanged();
+						callback->OnProcessorChanged();
 					}
 				}
 
@@ -4551,7 +4551,7 @@ DataFilterBase
 				{
 				}
 
-				void DataFilterBase::SetCallback(IDataFilterCallback* value)
+				void DataFilterBase::SetCallback(IDataProcessorCallback* value)
 				{
 					callback = value;
 				}
@@ -4570,7 +4570,7 @@ DataMultipleFilter
 					if (filters.Contains(value.Obj())) return false;
 					filters.Add(value);
 					value->SetCallback(callback);
-					InvokeOnFilterChanged();
+					InvokeOnProcessorChanged();
 					return true;
 				}
 
@@ -4580,11 +4580,11 @@ DataMultipleFilter
 					if (!filters.Contains(value.Obj())) return false;
 					value->SetCallback(nullptr);
 					filters.Remove(value.Obj());
-					InvokeOnFilterChanged();
+					InvokeOnProcessorChanged();
 					return true;
 				}
 
-				void DataMultipleFilter::SetCallback(IDataFilterCallback* value)
+				void DataMultipleFilter::SetCallback(IDataProcessorCallback* value)
 				{
 					DataFilterBase::SetCallback(value);
 					for (vint i = 0; i < filters.Count(); i++)
@@ -4601,7 +4601,7 @@ DataAndFilter
 				{
 				}
 
-				bool DataAndFilter::Filter(vint row)
+				bool DataAndFilter::Filter(const description::Value& row)
 				{
 					return From(filters)
 						.All([row](Ptr<IDataFilter> filter)
@@ -4618,7 +4618,7 @@ DataOrFilter
 				{
 				}
 
-				bool DataOrFilter::Filter(vint row)
+				bool DataOrFilter::Filter(const description::Value& row)
 				{
 					return From(filters)
 						.Any([row](Ptr<IDataFilter> filter)
@@ -4638,31 +4638,43 @@ DataNotFilter
 				bool DataNotFilter::SetSubFilter(Ptr<IDataFilter> value)
 				{
 					if (filter == value) return false;
-					if (filter)
-					{
-						filter->SetCallback(nullptr);
-					}
+					if (filter) filter->SetCallback(nullptr);
 					filter = value;
-					if (filter)
-					{
-						filter->SetCallback(callback);
-					}
-					InvokeOnFilterChanged();
+					if (filter) filter->SetCallback(callback);
+					InvokeOnProcessorChanged();
 					return true;
 				}
 
-				void DataNotFilter::SetCallback(IDataFilterCallback* value)
+				void DataNotFilter::SetCallback(IDataProcessorCallback* value)
 				{
 					DataFilterBase::SetCallback(value);
-					if (filter)
+					if (filter) filter->SetCallback(value);
+				}
+
+				bool DataNotFilter::Filter(const description::Value& row)
+				{
+					return filter ? true : !filter->Filter(row);
+				}
+
+/***********************************************************************
+DataSorterBase
+***********************************************************************/
+
+				void DataSorterBase::InvokeOnProcessorChanged()
+				{
+					if (callback)
 					{
-						filter->SetCallback(value);
+						callback->OnProcessorChanged();
 					}
 				}
 
-				bool DataNotFilter::Filter(vint row)
+				DataSorterBase::DataSorterBase()
 				{
-					return filter ? true : !filter->Filter(row);
+				}
+
+				void DataSorterBase::SetCallback(IDataProcessorCallback* value)
+				{
+					callback = value;
 				}
 
 /***********************************************************************
@@ -4676,18 +4688,29 @@ DataMultipleSorter
 				bool DataMultipleSorter::SetLeftSorter(Ptr<IDataSorter> value)
 				{
 					if (leftSorter == value) return false;
+					if (leftSorter) leftSorter->SetCallback(nullptr);
 					leftSorter = value;
+					if (leftSorter) leftSorter->SetCallback(callback);
 					return true;
 				}
 
 				bool DataMultipleSorter::SetRightSorter(Ptr<IDataSorter> value)
 				{
 					if (rightSorter == value) return false;
+					if (rightSorter) rightSorter->SetCallback(nullptr);
 					rightSorter = value;
+					if (rightSorter) rightSorter->SetCallback(callback);
 					return true;
 				}
 
-				vint DataMultipleSorter::Compare(vint row1, vint row2)
+				void DataMultipleSorter::SetCallback(IDataProcessorCallback* value)
+				{
+					DataSorterBase::SetCallback(value);
+					if (leftSorter) leftSorter->SetCallback(value);
+					if (rightSorter) rightSorter->SetCallback(value);
+				}
+
+				vint DataMultipleSorter::Compare(const description::Value& row1, const description::Value& row2)
 				{
 					if (leftSorter)
 					{
@@ -4713,11 +4736,19 @@ DataReverseSorter
 				bool DataReverseSorter::SetSubSorter(Ptr<IDataSorter> value)
 				{
 					if (sorter == value) return false;
+					if (sorter) sorter->SetCallback(nullptr);
 					sorter = value;
+					if (sorter) sorter->SetCallback(callback);
 					return true;
 				}
 
-				vint DataReverseSorter::Compare(vint row1, vint row2)
+				void DataReverseSorter::SetCallback(IDataProcessorCallback* value)
+				{
+					DataSorterBase::SetCallback(value);
+					if (sorter) sorter->SetCallback(value);
+				}
+
+				vint DataReverseSorter::Compare(const description::Value& row1, const description::Value& row2)
 				{
 					return sorter ? -sorter->Compare(row1, row2) : 0;
 				}
@@ -4744,6 +4775,10 @@ DataColumn
 
 				DataColumn::~DataColumn()
 				{
+					if (popup && ownPopup)
+					{
+						SafeDeleteControl(popup);
+					}
 				}
 
 				WString DataColumn::GetText()
@@ -4774,6 +4809,16 @@ DataColumn
 					}
 				}
 
+				bool DataColumn::GetOwnPopup()
+				{
+					return ownPopup;
+				}
+
+				void DataColumn::SetOwnPopup(bool value)
+				{
+					ownPopup = value;
+				}
+
 				GuiMenu* DataColumn::GetPopup()
 				{
 					return popup;
@@ -4788,25 +4833,29 @@ DataColumn
 					}
 				}
 
-				Ptr<IDataFilter> DataColumn::GetInherentFilter()
+				Ptr<IDataFilter> DataColumn::GetFilter()
 				{
-					return inherentFilter;
+					return associatedFilter;
 				}
 
-				void DataColumn::SetInherentFilter(Ptr<IDataFilter> value)
+				void DataColumn::SetFilter(Ptr<IDataFilter> value)
 				{
-					inherentFilter = value;
+					if (associatedFilter) associatedFilter->SetCallback(nullptr);
+					associatedFilter = value;
+					if (associatedFilter) associatedFilter->SetCallback(dataProvider);
 					NotifyAllColumnsUpdate(false);
 				}
 
-				Ptr<IDataSorter> DataColumn::GetInherentSorter()
+				Ptr<IDataSorter> DataColumn::GetSorter()
 				{
-					return inherentSorter;
+					return associatedSorter;
 				}
 
-				void DataColumn::SetInherentSorter(Ptr<IDataSorter> value)
+				void DataColumn::SetSorter(Ptr<IDataSorter> value)
 				{
-					inherentSorter = value;
+					if (associatedSorter) associatedSorter->SetCallback(nullptr);
+					associatedSorter = value;
+					if (associatedSorter) associatedSorter->SetCallback(dataProvider);
 					NotifyAllColumnsUpdate(false);
 				}
 
@@ -4958,8 +5007,9 @@ DataProvider
 					return this;
 				}
 
-				void DataProvider::OnFilterChanged()
+				void DataProvider::OnProcessorChanged()
 				{
+					RebuildFilter();
 					ReorderRows(true);
 				}
 
@@ -5041,8 +5091,8 @@ DataProvider
 					CopyFrom(
 						selectedFilters,
 						From(columns)
-						.Select([](Ptr<DataColumn> column) {return column->GetInherentFilter(); })
-						.Where([](Ptr<IDataFilter> filter) {return (bool)filter; })
+						.Select([](Ptr<DataColumn> column) {return column->GetFilter(); })
+						.Where([](Ptr<IDataFilter> filter) {return filter != nullptr; })
 					);
 					if (additionalFilter)
 					{
@@ -5074,7 +5124,7 @@ DataProvider
 					{
 						for (vint i = 0; i < rowCount; i++)
 						{
-							if (currentFilter->Filter(i))
+							if (currentFilter->Filter(itemSource->Get(i)))
 							{
 								virtualRowToSourceRow.Add(i);
 							}
@@ -5091,7 +5141,13 @@ DataProvider
 					if (currentSorter && virtualRowToSourceRow.Count() > 0)
 					{
 						IDataSorter* sorter = currentSorter.Obj();
-						SortLambda(&virtualRowToSourceRow[0], virtualRowToSourceRow.Count(), [sorter](vint a, vint b) {return sorter->Compare(a, b); });
+						SortLambda(
+							&virtualRowToSourceRow[0],
+							virtualRowToSourceRow.Count(),
+							[=](vint a, vint b)
+							{
+								return sorter->Compare(itemSource->Get(a), itemSource->Get(b));
+							});
 					}
 
 					if (invokeCallback)
@@ -5258,14 +5314,14 @@ DataProvider
 
 				bool DataProvider::IsColumnSortable(vint column)
 				{
-					return columns[column]->GetInherentSorter();
+					return columns[column]->GetSorter();
 				}
 
 				void DataProvider::SortByColumn(vint column, bool ascending)
 				{
 					if (0 <= column && column < columns.Count())
 					{
-						auto sorter = columns[column]->GetInherentSorter();
+						auto sorter = columns[column]->GetSorter();
 						if (!sorter)
 						{
 							currentSorter = nullptr;
@@ -5288,12 +5344,13 @@ DataProvider
 
 					for (vint i = 0; i < columns.Count(); i++)
 					{
-						columns[column]->sortingState =
+						columns[i]->sortingState =
 							i != column ? ColumnSortingState::NotSorted :
 							ascending ? ColumnSortingState::Ascending :
 							ColumnSortingState::Descending
 							;
 					}
+					NotifyAllColumnsUpdate();
 					ReorderRows(true);
 				}
 
@@ -5381,6 +5438,16 @@ GuiBindableDataGrid
 			void GuiBindableDataGrid::SetItemSource(Ptr<description::IValueEnumerable> _itemSource)
 			{
 				dataProvider->SetItemSource(_itemSource);
+			}
+
+			Ptr<list::IDataFilter> GuiBindableDataGrid::GetAdditionalFilter()
+			{
+				return dataProvider->GetAdditionalFilter();
+			}
+
+			void GuiBindableDataGrid::SetAdditionalFilter(Ptr<list::IDataFilter> value)
+			{
+				dataProvider->SetAdditionalFilter(value);
 			}
 
 			ItemProperty<Ptr<GuiImageData>> GuiBindableDataGrid::GetLargeImageProperty()
@@ -6598,7 +6665,7 @@ GuiComboBoxListControl
 			{
 				RemoveStyleController();
 				itemStyleProperty = value;
-				styleController->SetTextVisible(itemStyleProperty);
+				styleController->SetTextVisible(!itemStyleProperty);
 				InstallStyleController(GetSelectedIndex());
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}
@@ -9850,6 +9917,14 @@ ListViewColumn
 				{
 				}
 
+				ListViewColumn::~ListViewColumn()
+				{
+					if (dropdownPopup && ownPopup)
+					{
+						SafeDeleteControl(dropdownPopup);
+					}
+				}
+
 				const WString& ListViewColumn::GetText()
 				{
 					return text;
@@ -9887,6 +9962,16 @@ ListViewColumn
 						size = value;
 						NotifyUpdate(false);
 					}
+				}
+
+				bool ListViewColumn::GetOwnPopup()
+				{
+					return ownPopup;
+				}
+
+				void ListViewColumn::SetOwnPopup(bool value)
+				{
+					ownPopup = value;
 				}
 
 				GuiMenu* ListViewColumn::GetDropdownPopup()
@@ -22174,18 +22259,57 @@ GuiComponent
 GuiInstanceRootObject
 ***********************************************************************/
 
-			void GuiInstanceRootObject::FinalizeInstance()
-			{
-				ClearSubscriptions();
-				ClearComponents();
-			}
-
 			GuiInstanceRootObject::GuiInstanceRootObject()
 			{
 			}
 
 			GuiInstanceRootObject::~GuiInstanceRootObject()
 			{
+			}
+
+			void GuiInstanceRootObject::FinalizeInstance()
+			{
+				if (!finalized)
+				{
+					finalized = true;
+
+					FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+					{
+						subscription->Close();
+					}
+					FOREACH(GuiComponent*, component, components)
+					{
+						component->Detach(this);
+					}
+
+					subscriptions.Clear();
+					for (vint i = 0; i<components.Count(); i++)
+					{
+						delete components[i];
+					}
+					components.Clear();
+				}
+			}
+
+			bool GuiInstanceRootObject::IsFinalized()
+			{
+				return finalized;
+			}
+
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject)
+			{
+				if (!finalized)
+				{
+					NotifyFinalizeInstance(thisObject);
+				}
+			}
+
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiControl* thisObject)
+			{
+				if (!finalized)
+				{
+					NotifyFinalizeInstance(thisObject);
+				}
 			}
 
 			void GuiInstanceRootObject::SetResourceResolver(Ptr<GuiResourcePathResolver> resolver)
@@ -22209,9 +22333,10 @@ GuiInstanceRootObject
 
 			Ptr<description::IValueSubscription> GuiInstanceRootObject::AddSubscription(Ptr<description::IValueSubscription> subscription)
 			{
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddSubscription(Ptr<IValueSubscription>)#Cannot add subscription after finalizing.");
 				if (subscriptions.Contains(subscription.Obj()))
 				{
-					return 0;
+					return nullptr;
 				}
 				else
 				{
@@ -22222,27 +22347,17 @@ GuiInstanceRootObject
 				}
 			}
 
-			bool GuiInstanceRootObject::RemoveSubscription(Ptr<description::IValueSubscription> subscription)
-			{
-				return subscriptions.Remove(subscription.Obj());
-			}
-
-			bool GuiInstanceRootObject::ContainsSubscription(Ptr<description::IValueSubscription> subscription)
-			{
-				return subscriptions.Contains(subscription.Obj());
-			}
-
-			void GuiInstanceRootObject::ClearSubscriptions()
+			void GuiInstanceRootObject::UpdateSubscriptions()
 			{
 				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
 				{
-					subscription->Close();
+					subscription->Update();
 				}
-				subscriptions.Clear();
 			}
 
 			bool GuiInstanceRootObject::AddComponent(GuiComponent* component)
 			{
+				CHECK_ERROR(finalized == false, L"GuiInstanceRootObject::AddComponent(GuiComponent*>)#Cannot add component after finalizing.");
 				if(components.Contains(component))
 				{
 					return false;
@@ -22258,37 +22373,6 @@ GuiInstanceRootObject
 			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
 			{
 				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
-			}
-
-			bool GuiInstanceRootObject::RemoveComponent(GuiComponent* component)
-			{
-				vint index = components.IndexOf(component);
-				if (index == -1)
-				{
-					return false;
-				}
-				{
-					component->Detach(this);
-					return components.RemoveAt(index);
-				}
-			}
-
-			bool GuiInstanceRootObject::ContainsComponent(GuiComponent* component)
-			{
-				return components.Contains(component);
-			}
-
-			void GuiInstanceRootObject::ClearComponents()
-			{
-				for(vint i=0;i<components.Count();i++)
-				{
-					components[i]->Detach(this);
-				}
-				for(vint i=0;i<components.Count();i++)
-				{
-					delete components[i];
-				}
-				components.Clear();
 			}
 		}
 		namespace templates
@@ -22311,7 +22395,7 @@ GuiTemplate
 
 			GuiTemplate::~GuiTemplate()
 			{
-				FinalizeInstance();
+				FinalizeInstanceRecursively(this);
 			}
 
 /***********************************************************************
@@ -23885,6 +23969,16 @@ GuiDocumentItem
 /***********************************************************************
 GuiDocumentCommonInterface
 ***********************************************************************/
+			
+			void GuiDocumentCommonInterface::InvokeUndoRedoChanged()
+			{
+				UndoRedoChanged.Execute(documentControl->GetNotifyEventArguments());
+			}
+
+			void GuiDocumentCommonInterface::InvokeModifiedChanged()
+			{
+				ModifiedChanged.Execute(documentControl->GetNotifyEventArguments());
+			}
 
 			void GuiDocumentCommonInterface::UpdateCaretPoint()
 			{
@@ -24065,6 +24159,11 @@ GuiDocumentCommonInterface
 				ActiveHyperlinkChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
 				ActiveHyperlinkExecuted.SetAssociatedComposition(_sender->GetBoundsComposition());
 				SelectionChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+				UndoRedoChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+				ModifiedChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+
+				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiDocumentCommonInterface::InvokeUndoRedoChanged);
+				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
 			}
 
 			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun> hyperlink, vint paragraphIndex)
@@ -24522,11 +24621,11 @@ GuiDocumentCommonInterface
 				documentElement->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
 			}
 
-			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model)
+			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
 				EditTextInternal(begin, end, [=](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
-					documentElement->EditRun(begin, end, model);
+					documentElement->EditRun(begin, end, model, copy);
 					paragraphCount=model->paragraphs.Count();
 					lastParagraphLength=paragraphCount==0?0:model->paragraphs[paragraphCount-1]->GetText(false).Length();
 				});
@@ -24613,6 +24712,12 @@ GuiDocumentCommonInterface
 
 			Ptr<DocumentStyleProperties> GuiDocumentCommonInterface::SummarizeStyle(TextPos begin, TextPos end)
 			{
+				if (begin>end)
+				{
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 				return documentElement->SummarizeStyle(begin, end);
 			}
 
@@ -24643,6 +24748,17 @@ GuiDocumentCommonInterface
 					documentElement->SetParagraphAlignment(begin, end, alignments);
 					undoRedoProcessor->OnSetAlignment(arguments);
 				}
+			}
+
+			Nullable<Alignment> GuiDocumentCommonInterface::SummarizeParagraphAlignment(TextPos begin, TextPos end)
+			{
+				if (begin>end)
+				{
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
+				return documentElement->SummarizeParagraphAlignment(begin, end);
 			}
 
 			//================ editing control
@@ -24779,7 +24895,7 @@ GuiDocumentCommonInterface
 					end=temp;
 				}
 
-				EditRun(begin, end, value);
+				EditRun(begin, end, value, true);
 			}
 
 			//================ clipboard operations
@@ -25032,6 +25148,16 @@ GuiTextBoxCommonInterface::DefaultCallback
 /***********************************************************************
 GuiTextBoxCommonInterface
 ***********************************************************************/
+			
+			void GuiTextBoxCommonInterface::InvokeUndoRedoChanged()
+			{
+				UndoRedoChanged.Execute(textControl->GetNotifyEventArguments());
+			}
+
+			void GuiTextBoxCommonInterface::InvokeModifiedChanged()
+			{
+				ModifiedChanged.Execute(textControl->GetNotifyEventArguments());
+			}
 
 			void GuiTextBoxCommonInterface::UpdateCaretPoint()
 			{
@@ -25458,6 +25584,11 @@ GuiTextBoxCommonInterface
 				textControl=_textControl;
 				textComposition->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::IBeam));
 				SelectionChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
+				UndoRedoChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
+				ModifiedChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
+
+				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiTextBoxCommonInterface::InvokeUndoRedoChanged);
+				undoRedoProcessor->ModifiedChanged.Add(this, &GuiTextBoxCommonInterface::InvokeModifiedChanged);
 
 				GuiGraphicsComposition* focusableComposition=textControl->GetFocusableComposition();
 				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiTextBoxCommonInterface::OnGotFocus);
@@ -27116,6 +27247,8 @@ GuiGeneralUndoRedoProcessor
 				
 					steps.Add(step);
 					firstFutureStep=steps.Count();
+					UndoRedoChanged();
+					ModifiedChanged();
 				}
 			}
 
@@ -27149,6 +27282,7 @@ GuiGeneralUndoRedoProcessor
 				if(!performingUndoRedo)
 				{
 					savedStep=firstFutureStep;
+					ModifiedChanged();
 				}
 			}
 
@@ -27159,6 +27293,8 @@ GuiGeneralUndoRedoProcessor
 				firstFutureStep--;
 				steps[firstFutureStep]->Undo();
 				performingUndoRedo=false;
+				UndoRedoChanged();
+				ModifiedChanged();
 				return true;
 			}
 
@@ -27169,6 +27305,8 @@ GuiGeneralUndoRedoProcessor
 				firstFutureStep++;
 				steps[firstFutureStep-1]->Redo();
 				performingUndoRedo=false;
+				UndoRedoChanged();
+				ModifiedChanged();
 				return true;
 			}
 
@@ -27250,7 +27388,7 @@ GuiDocumentUndoRedoProcessor::ReplaceModelStep
 				GuiDocumentCommonInterface* ci=dynamic_cast<GuiDocumentCommonInterface*>(processor->ownerComposition->GetRelatedControl());
 				if(ci)
 				{
-					ci->EditRun(arguments.inputStart, arguments.inputEnd, arguments.originalModel);
+					ci->EditRun(arguments.inputStart, arguments.inputEnd, arguments.originalModel, true);
 					ci->SetCaret(arguments.originalStart, arguments.originalEnd);
 				}
 			}
@@ -27260,7 +27398,7 @@ GuiDocumentUndoRedoProcessor::ReplaceModelStep
 				GuiDocumentCommonInterface* ci=dynamic_cast<GuiDocumentCommonInterface*>(processor->ownerComposition->GetRelatedControl());
 				if(ci)
 				{
-					ci->EditRun(arguments.originalStart, arguments.originalEnd, arguments.inputModel);
+					ci->EditRun(arguments.originalStart, arguments.originalEnd, arguments.inputModel, true);
 					ci->SetCaret(arguments.inputStart, arguments.inputEnd);
 				}
 			}
@@ -29633,6 +29771,11 @@ GuiToolstripCommand
 				Executed.ExecuteWithNewSender(arguments, sender);
 			}
 
+			void GuiToolstripCommand::OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				UpdateShortcutOwner();
+			}
+
 			void GuiToolstripCommand::InvokeDescriptionChanged()
 			{
 				GuiEventArgs arguments;
@@ -29641,9 +29784,9 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder)
 			{
-				if(shortcutKeyItem!=value)
+				if (shortcutKeyItem != value)
 				{
-					if(shortcutKeyItem)
+					if (shortcutKeyItem)
 					{
 						shortcutKeyItem->Executed.Detach(shortcutKeyItemExecutedHandler);
 						if (shortcutBuilder)
@@ -29655,13 +29798,13 @@ GuiToolstripCommand
 							}
 						}
 					}
-					shortcutKeyItem=0;
-					shortcutKeyItemExecutedHandler=0;
+					shortcutKeyItem = nullptr;
+					shortcutKeyItemExecutedHandler = nullptr;
 					shortcutBuilder = value ? builder : nullptr;
-					if(value)
+					if (value)
 					{
-						shortcutKeyItem=value;
-						shortcutKeyItemExecutedHandler=shortcutKeyItem->Executed.AttachMethod(this, &GuiToolstripCommand::OnShortcutKeyItemExecuted);
+						shortcutKeyItem = value;
+						shortcutKeyItemExecutedHandler = shortcutKeyItem->Executed.AttachMethod(this, &GuiToolstripCommand::OnShortcutKeyItemExecuted);
 					}
 					InvokeDescriptionChanged();
 				}
@@ -29671,39 +29814,64 @@ GuiToolstripCommand
 			{
 				List<Ptr<ParsingError>> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
-				if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
 				{
-					if (shortcutOwner)
+					if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
 					{
-						if (!shortcutOwner->GetShortcutKeyManager())
+						if (shortcutOwner)
 						{
-							shortcutOwner->SetShortcutKeyManager(new GuiShortcutKeyManager);
-						}
-						if (auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager()))
-						{
-							IGuiShortcutKeyItem* item = manager->TryGetShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-							if (!item)
+							if (!shortcutOwner->GetShortcutKeyManager())
 							{
-								item = manager->CreateShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-								if (item)
+								shortcutOwner->SetShortcutKeyManager(new GuiShortcutKeyManager);
+							}
+							if (auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager()))
+							{
+								IGuiShortcutKeyItem* item = manager->TryGetShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
+								if (!item)
 								{
-									ReplaceShortcut(item, builder);
+									item = manager->CreateShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
+									if (item)
+									{
+										ReplaceShortcut(item, builder);
+									}
 								}
 							}
 						}
+						else
+						{
+							shortcutBuilder = builder;
+						}
 					}
-					else
+				}
+			}
+
+			void GuiToolstripCommand::UpdateShortcutOwner()
+			{
+				GuiControlHost* host = nullptr;
+				if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
+				{
+					host = control->GetRelatedControlHost();
+				}
+				else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
+				{
+					host = composition->GetRelatedControlHost();
+				}
+
+				if (shortcutOwner != host)
+				{
+					if (shortcutOwner)
 					{
-						shortcutBuilder = builder;
+						ReplaceShortcut(nullptr, nullptr);
+						shortcutOwner = nullptr;
+					}
+					shortcutOwner = host;
+					if (shortcutBuilder && !shortcutKeyItem)
+					{
+						BuildShortcut(shortcutBuilder->text);
 					}
 				}
 			}
 
 			GuiToolstripCommand::GuiToolstripCommand()
-				:shortcutKeyItem(0)
-				,enabled(true)
-				,selected(false)
-				,shortcutOwner(0)
 			{
 			}
 
@@ -29713,17 +29881,42 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::Attach(GuiInstanceRootObject* rootObject)
 			{
-				shortcutOwner = dynamic_cast<GuiControlHost*>(rootObject);
-				if (shortcutBuilder && !shortcutKeyItem)
+				GuiGraphicsComposition* rootComposition = nullptr;
+
+				if (attachedRootObject != rootObject)
 				{
-					BuildShortcut(shortcutBuilder->text);
+					if (attachedRootObject)
+					{
+						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
+						{
+							control->RenderTargetChanged.Detach(renderTargetChangedHandler);
+						}
+						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
+						{
+							composition->GetEventReceiver()->renderTargetChanged.Detach(renderTargetChangedHandler);
+						}
+						renderTargetChangedHandler = nullptr;
+					}
+
+					attachedRootObject = rootObject;
+					if (attachedRootObject)
+					{
+						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
+						{
+							renderTargetChangedHandler = control->RenderTargetChanged.AttachMethod(this, &GuiToolstripCommand::OnRenderTargetChanged);
+						}
+						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
+						{
+							renderTargetChangedHandler = composition->GetEventReceiver()->renderTargetChanged.AttachMethod(this, &GuiToolstripCommand::OnRenderTargetChanged);
+						}
+					}
+					UpdateShortcutOwner();
 				}
 			}
 
 			void GuiToolstripCommand::Detach(GuiInstanceRootObject* rootObject)
 			{
-				ReplaceShortcut(0, nullptr);
-				shortcutOwner = 0;
+				Attach(nullptr);
 			}
 
 			Ptr<GuiImageData> GuiToolstripCommand::GetImage()
@@ -31161,6 +31354,11 @@ GuiGraphicsComposition
 						renderer->SetRenderTarget(renderTarget);
 					}
 				}
+
+				if (HasEventReceiver())
+				{
+					GetEventReceiver()->renderTargetChanged.Execute(GuiEventArgs(this));
+				}
 				if (associatedControl)
 				{
 					associatedControl->OnRenderTargetChanged(renderTarget);
@@ -31678,46 +31876,107 @@ GuiGraphicsSite
 Helper Functions
 ***********************************************************************/
 
-			void SafeDeleteControl(controls::GuiControl* value)
+			void NotifyFinalizeInstance(controls::GuiControl* value)
+			{
+				if (value)
+				{
+					NotifyFinalizeInstance(value->GetBoundsComposition());
+				}
+			}
+
+			void NotifyFinalizeInstance(GuiGraphicsComposition* value)
+			{
+				if (value)
+				{
+					bool finalized = false;
+					if (auto root = dynamic_cast<GuiInstanceRootObject*>(value))
+					{
+						if (root->IsFinalized())
+						{
+							finalized = true;
+						}
+						else
+						{
+							root->FinalizeInstance();
+						}
+					}
+
+					if (auto control = value->GetAssociatedControl())
+					{
+						if (auto root = dynamic_cast<GuiInstanceRootObject*>(control))
+						{
+							if (root->IsFinalized())
+							{
+								finalized = true;
+							}
+							else
+							{
+								root->FinalizeInstance();
+							}
+						}
+					}
+
+					if (!finalized)
+					{
+						vint count = value->Children().Count();
+						for (vint i = 0; i < count; i++)
+						{
+							NotifyFinalizeInstance(value->Children()[i]);
+						}
+					}
+				}
+			}
+
+			void SafeDeleteControlInternal(controls::GuiControl* value)
 			{
 				if(value)
 				{
-					GuiGraphicsComposition* bounds=value->GetBoundsComposition();
-					if(bounds->GetParent())
+					if (value->GetRelatedControlHost() != value)
 					{
-						bounds->GetParent()->RemoveChild(bounds);
+						GuiGraphicsComposition* bounds = value->GetBoundsComposition();
+						if (bounds->GetParent())
+						{
+							bounds->GetParent()->RemoveChild(bounds);
+						}
 					}
 					delete value;
 				}
 			}
 
-			void SafeDeleteComposition(GuiGraphicsComposition* value)
+			void SafeDeleteCompositionInternal(GuiGraphicsComposition* value)
 			{
-				if(value)
+				if (value)
 				{
-					if(value->GetParent())
+					if (value->GetParent())
 					{
 						value->GetParent()->RemoveChild(value);
 					}
 
-					if(value->GetAssociatedControl())
+					if (value->GetAssociatedControl())
 					{
-						SafeDeleteControl(value->GetAssociatedControl());
+						SafeDeleteControlInternal(value->GetAssociatedControl());
 					}
 					else
 					{
-						if (auto root = dynamic_cast<GuiInstanceRootObject*>(value))
+						for (vint i = value->Children().Count() - 1; i >= 0; i--)
 						{
-							root->ClearSubscriptions();
-							root->ClearComponents();
-						}
-						for(vint i=value->Children().Count()-1;i>=0;i--)
-						{
-							SafeDeleteComposition(value->Children().Get(i));
+							SafeDeleteCompositionInternal(value->Children().Get(i));
 						}
 						delete value;
 					}
 				}
+			}
+
+			void SafeDeleteControl(controls::GuiControl* value)
+			{
+				NotifyFinalizeInstance(value);
+				SafeDeleteControlInternal(value);
+			}
+
+			void SafeDeleteComposition(GuiGraphicsComposition* value)
+			{
+				NotifyFinalizeInstance(value);
+				SafeDeleteCompositionInternal(value);
 			}
 		}
 	}
@@ -34762,7 +35021,7 @@ GuiDocumentElement
 				}
 			}
 
-			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model)
+			void GuiDocumentElement::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
 				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
 				if (elementRenderer)
@@ -34774,7 +35033,7 @@ GuiDocumentElement
 						end = temp;
 					}
 
-					vint newRows = document->EditRun(begin, end, model);
+					vint newRows = document->EditRun(begin, end, model, copy);
 					if (newRows != -1)
 					{
 						elementRenderer->NotifyParagraphUpdated(begin.row, end.row - begin.row + 1, newRows, true);
@@ -34994,6 +35253,23 @@ GuiDocumentElement
 					}
 					InvokeOnCompositionStateChanged();
 				}
+			}
+
+			Nullable<Alignment> GuiDocumentElement::SummarizeParagraphAlignment(TextPos begin, TextPos end)
+			{
+				auto elementRenderer = renderer.Cast<GuiDocumentElementRenderer>();
+				if (elementRenderer)
+				{
+					if (begin > end)
+					{
+						TextPos temp = begin;
+						begin = end;
+						end = temp;
+					}
+
+					return document->SummarizeParagraphAlignment(begin, end);
+				}
+				return {};
 			}
 
 			Ptr<DocumentHyperlinkRun> GuiDocumentElement::GetHyperlinkFromPoint(Point point)
@@ -36489,6 +36765,7 @@ GuiGraphicsHost
 
 			GuiGraphicsHost::~GuiGraphicsHost()
 			{
+				NotifyFinalizeInstance(windowComposition);
 				if(shortcutKeyManager)
 				{
 					delete shortcutKeyManager;
@@ -39906,7 +40183,7 @@ DocumentModel::EditRangeOperations
 		{
 			// check caret range
 			RunRangeMap runRanges;
-			if(!CheckEditRange(begin, end, runRanges)) return 0;
+			if(!CheckEditRange(begin, end, runRanges)) return nullptr;
 
 			// get ranges
 			for(vint i=begin.row+1;i<end.row;i++)
@@ -39980,6 +40257,18 @@ DocumentModel::EditRangeOperations
 			}
 
 			return newDocument;
+		}
+
+		Ptr<DocumentModel> DocumentModel::CopyDocument()
+		{
+			// determine run ranges
+			RunRangeMap runRanges;
+			vint lastParagraphIndex = paragraphs.Count() - 1;
+			GetRunRangeVisitor::GetRunRange(paragraphs[lastParagraphIndex].Obj(), runRanges);
+			
+			TextPos begin(0, 0);
+			TextPos end(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
+			return CopyDocument(begin, end, true);
 		}
 
 		bool DocumentModel::CutParagraph(TextPos position)
@@ -40069,11 +40358,17 @@ DocumentModel::EditRangeOperations
 DocumentModel::EditRun
 ***********************************************************************/
 
-		vint DocumentModel::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model)
+		vint DocumentModel::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> replaceToModel, bool copy)
 		{
 			// check caret range
 			RunRangeMap runRanges;
 			if(!CheckEditRange(begin, end, runRanges)) return -1;
+
+			auto model = replaceToModel;
+			if (copy)
+			{
+				model = replaceToModel->CopyDocument();
+			}
 
 			// calculate new names for the model's styles to prevent conflicting
 			List<WString> oldNames, newNames;
@@ -40114,10 +40409,10 @@ DocumentModel::EditRun
 			// edit runs
 			Array<Ptr<DocumentParagraphRun>> runs;
 			CopyFrom(runs, model->paragraphs);
-			return EditRun(begin, end, runs);
+			return EditRunNoCopy(begin, end, runs);
 		}
 
-		vint DocumentModel::EditRun(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs)
+		vint DocumentModel::EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs)
 		{
 			// check caret range
 			RunRangeMap runRanges;
@@ -40240,7 +40535,7 @@ DocumentModel::EditText
 			}
 
 			// replace the paragraphs
-			return EditRun(begin, end, runs);
+			return EditRunNoCopy(begin, end, runs);
 		}
 
 /***********************************************************************
@@ -40272,7 +40567,7 @@ DocumentModel::EditImage
 
 			Array<Ptr<DocumentParagraphRun>> runs(1);
 			runs[0]=paragraph;
-			if(EditRun(begin, end, runs))
+			if(EditRunNoCopy(begin, end, runs))
 			{
 				return imageRun;
 			}
@@ -40449,6 +40744,41 @@ DocumentModel::ClearStyle
 				style=new DocumentStyleProperties;
 			}
 			return style;
+		}
+
+		Nullable<Alignment> DocumentModel::SummarizeParagraphAlignment(TextPos begin, TextPos end)
+		{
+			bool left = false;
+			bool center = false;
+			bool right = false;
+
+			RunRangeMap runRanges;
+			if (!CheckEditRange(begin, end, runRanges)) return {};
+
+			for (vint i = begin.row; i <= end.row; i++)
+			{
+				auto paragraph = paragraphs[i];
+				if (paragraph->alignment)
+				{
+					switch (paragraph->alignment.Value())
+					{
+					case Alignment::Left:
+						left = true;
+						break;
+					case Alignment::Center:
+						center = true;
+						break;
+					case Alignment::Right:
+						right = true;
+						break;
+					}
+				}
+			}
+
+			if (left && !center && !right) return Alignment::Left;
+			if (!left && center && !right) return Alignment::Center;
+			if (!left && !center && right) return Alignment::Right;
+			return {};
 		}
 	}
 }
