@@ -226,7 +226,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
 				CLASS_MEMBER_METHOD(GetCaretBounds, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(NotifyParagraphUpdated, {L"index" _ L"oldCount" _ L"newCount" _ L"updatedText"})
-				CLASS_MEMBER_METHOD(EditRun, {L"begin" _ L"end" _ L"model"})
+				CLASS_MEMBER_METHOD(EditRun, {L"begin" _ L"end" _ L"model" _ L"copy"})
 				CLASS_MEMBER_METHOD(EditText, {L"begin" _ L"end" _ L"frontSide" _ L"text"})
 				CLASS_MEMBER_METHOD(EditStyle, {L"begin" _ L"end" _ L"style"})
 				CLASS_MEMBER_METHOD(EditImage, {L"begin" _ L"end" _ L"image"})
@@ -238,6 +238,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SummarizeStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SetParagraphAlignment, {L"begin" _ L"end" _ L"alignments"})
+				CLASS_MEMBER_METHOD(SummarizeParagraphAlignment, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(GetHyperlinkFromPoint, {L"point"})
 			END_CLASS_MEMBER(GuiDocumentElement)
 #undef _

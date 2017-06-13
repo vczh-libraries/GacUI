@@ -1573,7 +1573,7 @@ DocumentModel::EditRangeOperations
 		{
 			// check caret range
 			RunRangeMap runRanges;
-			if(!CheckEditRange(begin, end, runRanges)) return 0;
+			if(!CheckEditRange(begin, end, runRanges)) return nullptr;
 
 			// get ranges
 			for(vint i=begin.row+1;i<end.row;i++)
@@ -1647,6 +1647,18 @@ DocumentModel::EditRangeOperations
 			}
 
 			return newDocument;
+		}
+
+		Ptr<DocumentModel> DocumentModel::CopyDocument()
+		{
+			// determine run ranges
+			RunRangeMap runRanges;
+			vint lastParagraphIndex = paragraphs.Count() - 1;
+			GetRunRangeVisitor::GetRunRange(paragraphs[lastParagraphIndex].Obj(), runRanges);
+			
+			TextPos begin(0, 0);
+			TextPos end(lastParagraphIndex, runRanges[paragraphs[lastParagraphIndex].Obj()].end);
+			return CopyDocument(begin, end, true);
 		}
 
 		bool DocumentModel::CutParagraph(TextPos position)
@@ -1736,11 +1748,17 @@ DocumentModel::EditRangeOperations
 DocumentModel::EditRun
 ***********************************************************************/
 
-		vint DocumentModel::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model)
+		vint DocumentModel::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> replaceToModel, bool copy)
 		{
 			// check caret range
 			RunRangeMap runRanges;
 			if(!CheckEditRange(begin, end, runRanges)) return -1;
+
+			auto model = replaceToModel;
+			if (copy)
+			{
+				model = replaceToModel->CopyDocument();
+			}
 
 			// calculate new names for the model's styles to prevent conflicting
 			List<WString> oldNames, newNames;
@@ -1781,10 +1799,10 @@ DocumentModel::EditRun
 			// edit runs
 			Array<Ptr<DocumentParagraphRun>> runs;
 			CopyFrom(runs, model->paragraphs);
-			return EditRun(begin, end, runs);
+			return EditRunNoCopy(begin, end, runs);
 		}
 
-		vint DocumentModel::EditRun(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs)
+		vint DocumentModel::EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs)
 		{
 			// check caret range
 			RunRangeMap runRanges;
@@ -1907,7 +1925,7 @@ DocumentModel::EditText
 			}
 
 			// replace the paragraphs
-			return EditRun(begin, end, runs);
+			return EditRunNoCopy(begin, end, runs);
 		}
 
 /***********************************************************************
@@ -1939,7 +1957,7 @@ DocumentModel::EditImage
 
 			Array<Ptr<DocumentParagraphRun>> runs(1);
 			runs[0]=paragraph;
-			if(EditRun(begin, end, runs))
+			if(EditRunNoCopy(begin, end, runs))
 			{
 				return imageRun;
 			}
@@ -2116,6 +2134,41 @@ DocumentModel::ClearStyle
 				style=new DocumentStyleProperties;
 			}
 			return style;
+		}
+
+		Nullable<Alignment> DocumentModel::SummarizeParagraphAlignment(TextPos begin, TextPos end)
+		{
+			bool left = false;
+			bool center = false;
+			bool right = false;
+
+			RunRangeMap runRanges;
+			if (!CheckEditRange(begin, end, runRanges)) return {};
+
+			for (vint i = begin.row; i <= end.row; i++)
+			{
+				auto paragraph = paragraphs[i];
+				if (paragraph->alignment)
+				{
+					switch (paragraph->alignment.Value())
+					{
+					case Alignment::Left:
+						left = true;
+						break;
+					case Alignment::Center:
+						center = true;
+						break;
+					case Alignment::Right:
+						right = true;
+						break;
+					}
+				}
+			}
+
+			if (left && !center && !right) return Alignment::Left;
+			if (!left && center && !right) return Alignment::Center;
+			if (!left && !center && right) return Alignment::Right;
+			return {};
 		}
 	}
 }

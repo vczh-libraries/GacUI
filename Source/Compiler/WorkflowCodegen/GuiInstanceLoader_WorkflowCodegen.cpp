@@ -813,21 +813,11 @@ Workflow_GenerateInstanceClass
 
 			{
 				auto ref = MakePtr<WfReferenceExpression>();
-				ref->name.value = L"ClearSubscriptions";
+				ref->name.value = L"FinalizeInstanceRecursively";
 
 				auto call = MakePtr<WfCallExpression>();
 				call->function = ref;
-
-				auto stat = MakePtr<WfExpressionStatement>();
-				stat->expression = call;
-				dtorBlock->statements.Add(stat);
-			}
-			{
-				auto ref = MakePtr<WfReferenceExpression>();
-				ref->name.value = L"ClearComponents";
-
-				auto call = MakePtr<WfCallExpression>();
-				call->function = ref;
+				call->arguments.Add(MakePtr<WfThisExpression>());
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = call;

@@ -327,8 +327,8 @@ DataProvider
 					, public virtual IListViewItemView
 					, public virtual ListViewColumnItemArranger::IColumnItemView
 					, public virtual IDataGridView
-					, protected virtual IDataProcessorCallback
-					, protected virtual IListViewItemProvider
+					, public virtual IDataProcessorCallback
+					, public virtual IListViewItemProvider
 					, public Description<DataProvider>
 				{
 					friend class DataColumn;

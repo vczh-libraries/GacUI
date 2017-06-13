@@ -80,6 +80,8 @@ GuiDocumentCommonInterface
 				Ptr<compositions::GuiShortcutKeyManager>	internalShortcutKeyManager;
 
 			protected:
+				void										InvokeUndoRedoChanged();
+				void										InvokeModifiedChanged();
 				void										UpdateCaretPoint();
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
@@ -121,6 +123,10 @@ GuiDocumentCommonInterface
 
 				/// <summary>Selection changed event.</summary>
 				compositions::GuiNotifyEvent				SelectionChanged;
+				/// <summary>Undo redo status changed event.</summary>
+				compositions::GuiNotifyEvent				UndoRedoChanged;
+				/// <summary>Modified status changed event.</summary>
+				compositions::GuiNotifyEvent				ModifiedChanged;
 				
 				/// <summary>Get the document.</summary>
 				/// <returns>The document.</returns>
@@ -185,7 +191,8 @@ GuiDocumentCommonInterface
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="model">The new run.</param>
-				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model);
+				/// <param name="copy">Set to true to copy the model before editing. Otherwise, objects inside the model will be used directly</param>
+				void										EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy);
 				/// <summary>Edit text in a specified range.</summary>
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
@@ -242,6 +249,11 @@ GuiDocumentCommonInterface
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="alignments">The alignment for each paragraph.</param>
 				void										SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
+				/// <summary>Summarize the text alignment in a specified range.</summary>
+				/// <returns>The text alignment summary.</returns>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				Nullable<Alignment>							SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 				//================ editing control
 

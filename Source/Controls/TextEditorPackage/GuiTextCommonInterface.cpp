@@ -54,6 +54,16 @@ GuiTextBoxCommonInterface::DefaultCallback
 /***********************************************************************
 GuiTextBoxCommonInterface
 ***********************************************************************/
+			
+			void GuiTextBoxCommonInterface::InvokeUndoRedoChanged()
+			{
+				UndoRedoChanged.Execute(textControl->GetNotifyEventArguments());
+			}
+
+			void GuiTextBoxCommonInterface::InvokeModifiedChanged()
+			{
+				ModifiedChanged.Execute(textControl->GetNotifyEventArguments());
+			}
 
 			void GuiTextBoxCommonInterface::UpdateCaretPoint()
 			{
@@ -480,6 +490,11 @@ GuiTextBoxCommonInterface
 				textControl=_textControl;
 				textComposition->SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::IBeam));
 				SelectionChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
+				UndoRedoChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
+				ModifiedChanged.SetAssociatedComposition(textControl->GetBoundsComposition());
+
+				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiTextBoxCommonInterface::InvokeUndoRedoChanged);
+				undoRedoProcessor->ModifiedChanged.Add(this, &GuiTextBoxCommonInterface::InvokeModifiedChanged);
 
 				GuiGraphicsComposition* focusableComposition=textControl->GetFocusableComposition();
 				focusableComposition->GetEventReceiver()->gotFocus.AttachMethod(this, &GuiTextBoxCommonInterface::OnGotFocus);

@@ -286,6 +286,7 @@ Type List (Controls)
 			F(presentation::controls::GuiListControl::IItemProvider)\
 			F(presentation::controls::GuiListControl::IItemArranger)\
 			F(presentation::controls::GuiSelectableListControl)\
+			F(presentation::controls::list::ItemProviderBase)\
 			F(presentation::controls::list::RangedItemArrangerBase)\
 			F(presentation::controls::list::FixedHeightItemArranger)\
 			F(presentation::controls::list::FixedSizeMultiColumnItemArranger)\
@@ -382,6 +383,7 @@ Type List (Controls)
 			F(presentation::controls::list::DataMultipleSorter)\
 			F(presentation::controls::list::DataReverseSorter)\
 			F(presentation::controls::list::DataColumn)\
+			F(presentation::controls::list::DataProvider)\
 			F(presentation::controls::GuiBindableDataGrid)\
 
 /***********************************************************************

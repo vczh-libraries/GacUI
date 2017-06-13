@@ -65,19 +65,15 @@ Type Declaration
 			END_CLASS_MEMBER(GuiComponent)
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiGraphicsComposition*))
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiControl*))
 				CLASS_MEMBER_METHOD(SetResourceResolver, {L"resolver"})
 				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path" _ L"ensureExist"})
 
 				CLASS_MEMBER_METHOD(AddSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(RemoveSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(ContainsSubscription, {L"subscription"})
-				CLASS_MEMBER_METHOD(ClearSubscriptions, NO_PARAMETER)
-
+				CLASS_MEMBER_METHOD(UpdateSubscriptions, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(AddComponent, {L"component"})
 				CLASS_MEMBER_METHOD(AddControlHostComponent, {L"controlHost"})
-				CLASS_MEMBER_METHOD(RemoveComponent, {L"component"})
-				CLASS_MEMBER_METHOD(ContainsComponent, {L"component"})
-				CLASS_MEMBER_METHOD(ClearComponents, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiInstanceRootObject)
 
 			BEGIN_CLASS_MEMBER(GuiTemplate)

@@ -33,17 +33,22 @@ namespace vl
 			protected:
 				Ptr<GuiImageData>							image;
 				WString										text;
-				compositions::IGuiShortcutKeyItem*			shortcutKeyItem;
-				bool										enabled;
-				bool										selected;
+				compositions::IGuiShortcutKeyItem*			shortcutKeyItem = nullptr;
+				bool										enabled = true;
+				bool										selected = false;
 				Ptr<compositions::IGuiGraphicsEventHandler>	shortcutKeyItemExecutedHandler;
 				Ptr<ShortcutBuilder>						shortcutBuilder;
-				GuiControlHost*								shortcutOwner;
+
+				GuiInstanceRootObject*						attachedRootObject = nullptr;
+				Ptr<compositions::IGuiGraphicsEventHandler>	renderTargetChangedHandler;
+				GuiControlHost*								shortcutOwner = nullptr;
 
 				void										OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										InvokeDescriptionChanged();
 				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder);
 				void										BuildShortcut(const WString& builderText);
+				void										UpdateShortcutOwner();
 			public:
 				/// <summary>Create the command.</summary>
 				GuiToolstripCommand();

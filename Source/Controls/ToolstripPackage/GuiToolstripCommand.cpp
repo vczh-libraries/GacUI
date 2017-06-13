@@ -22,6 +22,11 @@ GuiToolstripCommand
 				Executed.ExecuteWithNewSender(arguments, sender);
 			}
 
+			void GuiToolstripCommand::OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				UpdateShortcutOwner();
+			}
+
 			void GuiToolstripCommand::InvokeDescriptionChanged()
 			{
 				GuiEventArgs arguments;
@@ -30,9 +35,9 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder)
 			{
-				if(shortcutKeyItem!=value)
+				if (shortcutKeyItem != value)
 				{
-					if(shortcutKeyItem)
+					if (shortcutKeyItem)
 					{
 						shortcutKeyItem->Executed.Detach(shortcutKeyItemExecutedHandler);
 						if (shortcutBuilder)
@@ -44,13 +49,13 @@ GuiToolstripCommand
 							}
 						}
 					}
-					shortcutKeyItem=0;
-					shortcutKeyItemExecutedHandler=0;
+					shortcutKeyItem = nullptr;
+					shortcutKeyItemExecutedHandler = nullptr;
 					shortcutBuilder = value ? builder : nullptr;
-					if(value)
+					if (value)
 					{
-						shortcutKeyItem=value;
-						shortcutKeyItemExecutedHandler=shortcutKeyItem->Executed.AttachMethod(this, &GuiToolstripCommand::OnShortcutKeyItemExecuted);
+						shortcutKeyItem = value;
+						shortcutKeyItemExecutedHandler = shortcutKeyItem->Executed.AttachMethod(this, &GuiToolstripCommand::OnShortcutKeyItemExecuted);
 					}
 					InvokeDescriptionChanged();
 				}
@@ -60,39 +65,64 @@ GuiToolstripCommand
 			{
 				List<Ptr<ParsingError>> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
-				if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
 				{
-					if (shortcutOwner)
+					if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
 					{
-						if (!shortcutOwner->GetShortcutKeyManager())
+						if (shortcutOwner)
 						{
-							shortcutOwner->SetShortcutKeyManager(new GuiShortcutKeyManager);
-						}
-						if (auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager()))
-						{
-							IGuiShortcutKeyItem* item = manager->TryGetShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-							if (!item)
+							if (!shortcutOwner->GetShortcutKeyManager())
 							{
-								item = manager->CreateShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-								if (item)
+								shortcutOwner->SetShortcutKeyManager(new GuiShortcutKeyManager);
+							}
+							if (auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager()))
+							{
+								IGuiShortcutKeyItem* item = manager->TryGetShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
+								if (!item)
 								{
-									ReplaceShortcut(item, builder);
+									item = manager->CreateShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
+									if (item)
+									{
+										ReplaceShortcut(item, builder);
+									}
 								}
 							}
 						}
+						else
+						{
+							shortcutBuilder = builder;
+						}
 					}
-					else
+				}
+			}
+
+			void GuiToolstripCommand::UpdateShortcutOwner()
+			{
+				GuiControlHost* host = nullptr;
+				if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
+				{
+					host = control->GetRelatedControlHost();
+				}
+				else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
+				{
+					host = composition->GetRelatedControlHost();
+				}
+
+				if (shortcutOwner != host)
+				{
+					if (shortcutOwner)
 					{
-						shortcutBuilder = builder;
+						ReplaceShortcut(nullptr, nullptr);
+						shortcutOwner = nullptr;
+					}
+					shortcutOwner = host;
+					if (shortcutBuilder && !shortcutKeyItem)
+					{
+						BuildShortcut(shortcutBuilder->text);
 					}
 				}
 			}
 
 			GuiToolstripCommand::GuiToolstripCommand()
-				:shortcutKeyItem(0)
-				,enabled(true)
-				,selected(false)
-				,shortcutOwner(0)
 			{
 			}
 
@@ -102,17 +132,42 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::Attach(GuiInstanceRootObject* rootObject)
 			{
-				shortcutOwner = dynamic_cast<GuiControlHost*>(rootObject);
-				if (shortcutBuilder && !shortcutKeyItem)
+				GuiGraphicsComposition* rootComposition = nullptr;
+
+				if (attachedRootObject != rootObject)
 				{
-					BuildShortcut(shortcutBuilder->text);
+					if (attachedRootObject)
+					{
+						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
+						{
+							control->RenderTargetChanged.Detach(renderTargetChangedHandler);
+						}
+						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
+						{
+							composition->GetEventReceiver()->renderTargetChanged.Detach(renderTargetChangedHandler);
+						}
+						renderTargetChangedHandler = nullptr;
+					}
+
+					attachedRootObject = rootObject;
+					if (attachedRootObject)
+					{
+						if (auto control = dynamic_cast<GuiControl*>(attachedRootObject))
+						{
+							renderTargetChangedHandler = control->RenderTargetChanged.AttachMethod(this, &GuiToolstripCommand::OnRenderTargetChanged);
+						}
+						else if (auto composition = dynamic_cast<GuiGraphicsComposition*>(attachedRootObject))
+						{
+							renderTargetChangedHandler = composition->GetEventReceiver()->renderTargetChanged.AttachMethod(this, &GuiToolstripCommand::OnRenderTargetChanged);
+						}
+					}
+					UpdateShortcutOwner();
 				}
 			}
 
 			void GuiToolstripCommand::Detach(GuiInstanceRootObject* rootObject)
 			{
-				ReplaceShortcut(0, nullptr);
-				shortcutOwner = 0;
+				Attach(nullptr);
 			}
 
 			Ptr<GuiImageData> GuiToolstripCommand::GetImage()

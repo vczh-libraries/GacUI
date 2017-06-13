@@ -561,6 +561,10 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearSelection, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSelectableListControl)
 
+			BEGIN_CLASS_MEMBER(ItemProviderBase)
+				CLASS_MEMBER_BASE(GuiListControl::IItemProvider)
+			END_CLASS_MEMBER(ItemProviderBase)
+
 			BEGIN_CLASS_MEMBER(RangedItemArrangerBase)
 				CLASS_MEMBER_BASE(GuiListControl::IItemArranger)
 			END_CLASS_MEMBER(RangedItemArrangerBase)
@@ -1037,6 +1041,7 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkChanged)
 				CLASS_MEMBER_GUIEVENT(ActiveHyperlinkExecuted)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+				CLASS_MEMBER_GUIEVENT(UndoRedoChanged)
 
 				CLASS_MEMBER_METHOD(AddDocumentItem, { L"value" })
 				CLASS_MEMBER_METHOD(RemoveDocumentItem, { L"value" })
@@ -1047,12 +1052,13 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ActiveHyperlinkReference)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionModel, SelectionChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Modified)
 
 				CLASS_MEMBER_METHOD(SetCaret, {L"begin" _ L"end" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(CalculateCaretFromPoint, {L"point"})
 				CLASS_MEMBER_METHOD(GetCaretBounds, {L"caret" _ L"frontSide"})
 				CLASS_MEMBER_METHOD(NotifyParagraphUpdated, {L"index" _ L"oldCount" _ L"newCount" _ L"updatedText"})
-				CLASS_MEMBER_METHOD(EditRun, {L"begin" _ L"end" _ L"model"})
+				CLASS_MEMBER_METHOD(EditRun, {L"begin" _ L"end" _ L"model" _ L"copy"})
 				CLASS_MEMBER_METHOD(EditText, {L"begin" _ L"end" _ L"frontSide" _ L"text"})
 				CLASS_MEMBER_METHOD(EditStyle, {L"begin" _ L"end" _ L"style"})
 				CLASS_MEMBER_METHOD(EditImage, {L"begin" _ L"end" _ L"image"})
@@ -1064,6 +1070,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ClearStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SummarizeStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SetParagraphAlignment, {L"begin" _ L"end" _ L"alignments"})
+				CLASS_MEMBER_METHOD(SummarizeParagraphAlignment, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(SelectAll, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CanCut, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CanCopy, NO_PARAMETER)
@@ -1113,6 +1120,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextBoxCommonInterface)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
+				CLASS_MEMBER_GUIEVENT(UndoRedoChanged)
 				
 				CLASS_MEMBER_PROPERTY_FAST(Readonly)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectionText, SelectionChanged)
@@ -1125,7 +1133,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxWidth)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MaxHeight)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditVersion)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Modified)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Modified)
 
 				CLASS_MEMBER_METHOD(CanCut, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CanCopy, NO_PARAMETER)
@@ -1429,6 +1437,14 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ValueProperty)
 			END_CLASS_MEMBER(DataColumn)
+
+			BEGIN_CLASS_MEMBER(DataProvider)
+				CLASS_MEMBER_BASE(ItemProviderBase)
+				CLASS_MEMBER_BASE(IListViewItemView)
+				CLASS_MEMBER_BASE(ListViewColumnItemArranger::IColumnItemView)
+				CLASS_MEMBER_BASE(IDataGridView)
+				CLASS_MEMBER_BASE(IDataProcessorCallback)
+			END_CLASS_MEMBER(DataProvider)
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)

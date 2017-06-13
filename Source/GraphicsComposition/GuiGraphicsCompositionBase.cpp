@@ -80,6 +80,11 @@ GuiGraphicsComposition
 						renderer->SetRenderTarget(renderTarget);
 					}
 				}
+
+				if (HasEventReceiver())
+				{
+					GetEventReceiver()->renderTargetChanged.Execute(GuiEventArgs(this));
+				}
 				if (associatedControl)
 				{
 					associatedControl->OnRenderTargetChanged(renderTarget);
@@ -597,7 +602,58 @@ GuiGraphicsSite
 Helper Functions
 ***********************************************************************/
 
-			void SafeDeleteControl(controls::GuiControl* value)
+			void NotifyFinalizeInstance(controls::GuiControl* value)
+			{
+				if (value)
+				{
+					NotifyFinalizeInstance(value->GetBoundsComposition());
+				}
+			}
+
+			void NotifyFinalizeInstance(GuiGraphicsComposition* value)
+			{
+				if (value)
+				{
+					bool finalized = false;
+					if (auto root = dynamic_cast<GuiInstanceRootObject*>(value))
+					{
+						if (root->IsFinalized())
+						{
+							finalized = true;
+						}
+						else
+						{
+							root->FinalizeInstance();
+						}
+					}
+
+					if (auto control = value->GetAssociatedControl())
+					{
+						if (auto root = dynamic_cast<GuiInstanceRootObject*>(control))
+						{
+							if (root->IsFinalized())
+							{
+								finalized = true;
+							}
+							else
+							{
+								root->FinalizeInstance();
+							}
+						}
+					}
+
+					if (!finalized)
+					{
+						vint count = value->Children().Count();
+						for (vint i = 0; i < count; i++)
+						{
+							NotifyFinalizeInstance(value->Children()[i]);
+						}
+					}
+				}
+			}
+
+			void SafeDeleteControlInternal(controls::GuiControl* value)
 			{
 				if(value)
 				{
@@ -613,33 +669,40 @@ Helper Functions
 				}
 			}
 
-			void SafeDeleteComposition(GuiGraphicsComposition* value)
+			void SafeDeleteCompositionInternal(GuiGraphicsComposition* value)
 			{
-				if(value)
+				if (value)
 				{
-					if(value->GetParent())
+					if (value->GetParent())
 					{
 						value->GetParent()->RemoveChild(value);
 					}
 
-					if(value->GetAssociatedControl())
+					if (value->GetAssociatedControl())
 					{
-						SafeDeleteControl(value->GetAssociatedControl());
+						SafeDeleteControlInternal(value->GetAssociatedControl());
 					}
 					else
 					{
-						if (auto root = dynamic_cast<GuiInstanceRootObject*>(value))
+						for (vint i = value->Children().Count() - 1; i >= 0; i--)
 						{
-							root->ClearSubscriptions();
-							root->ClearComponents();
-						}
-						for(vint i=value->Children().Count()-1;i>=0;i--)
-						{
-							SafeDeleteComposition(value->Children().Get(i));
+							SafeDeleteCompositionInternal(value->Children().Get(i));
 						}
 						delete value;
 					}
 				}
+			}
+
+			void SafeDeleteControl(controls::GuiControl* value)
+			{
+				NotifyFinalizeInstance(value);
+				SafeDeleteControlInternal(value);
+			}
+
+			void SafeDeleteComposition(GuiGraphicsComposition* value)
+			{
+				NotifyFinalizeInstance(value);
+				SafeDeleteCompositionInternal(value);
 			}
 		}
 	}

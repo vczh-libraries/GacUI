@@ -341,12 +341,13 @@ Rich Content Document (model)
 			
 			bool							CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
 			Ptr<DocumentModel>				CopyDocument(TextPos begin, TextPos end, bool deepCopy);
+			Ptr<DocumentModel>				CopyDocument();
 			bool							CutParagraph(TextPos position);
 			bool							CutEditRange(TextPos begin, TextPos end);
 			bool							EditContainer(TextPos begin, TextPos end, const Func<void(DocumentParagraphRun*, RunRangeMap&, vint, vint)>& editor);
 			
-			vint							EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model);
-			vint							EditRun(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs);
+			vint							EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> replaceToModel, bool copy);
+			vint							EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs);
 			vint							EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
 			bool							EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
 			Ptr<DocumentImageRun>			EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
@@ -358,6 +359,7 @@ Rich Content Document (model)
 			bool							RenameStyle(const WString& oldStyleName, const WString& newStyleName);
 			bool							ClearStyle(TextPos begin, TextPos end);
 			Ptr<DocumentStyleProperties>	SummarizeStyle(TextPos begin, TextPos end);
+			Nullable<Alignment>				SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 			/// <summary>Load a document model from an xml.</summary>
 			/// <returns>The loaded document model.</returns>

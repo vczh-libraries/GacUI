@@ -263,6 +263,14 @@ Basic Construction
 Helper Functions
 ***********************************************************************/
 
+			/// <summary>Call [M:vl.presentation.controls.GuiInstanceRootObject.FinalizeInstance] in all child root objects.</summary>
+			/// <param name="value">The container control to notify.</param>
+			extern void								NotifyFinalizeInstance(controls::GuiControl* value);
+
+			/// <summary>Call [M:vl.presentation.controls.GuiInstanceRootObject.FinalizeInstance] in all child root objects.</summary>
+			/// <param name="value">The container composition to notify.</param>
+			extern void								NotifyFinalizeInstance(GuiGraphicsComposition* value);
+
 			/// <summary>Safely remove and delete a control.</summary>
 			/// <param name="value">The control to delete.</param>
 			extern void								SafeDeleteControl(controls::GuiControl* value);

@@ -226,6 +226,7 @@
   <ItemGroup>
     <Xml Include="Resources\FullControlTest\DataGridComponents.xml" />
     <Xml Include="Resources\FullControlTest\DataGridTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\DocumentTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Images\ImageLoader.xml" />
     <Xml Include="Resources\FullControlTest\Images\LargeImages.xml" />
     <Xml Include="Resources\FullControlTest\Images\MiscImages.xml" />
@@ -233,6 +234,7 @@
     <Xml Include="Resources\FullControlTest\ListViewTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Resource.xml" />
     <Xml Include="Resources\FullControlTest\TextListTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\ToolbarImages\Images.xml" />
     <Xml Include="Resources\FullControlTest\TreeViewTabPage.xml" />
     <Xml Include="Resources\UI10_MultipleWindows.xml" />
     <Xml Include="Resources\UI1_StyleTemplate.xml" />

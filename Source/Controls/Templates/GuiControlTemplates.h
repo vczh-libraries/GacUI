@@ -114,11 +114,21 @@ namespace vl
 				Ptr<GuiResourcePathResolver>					resourceResolver;
 				SubscriptionList								subscriptions;
 				collections::SortedList<GuiComponent*>			components;
+				bool											finalized = false;
 
-				void											FinalizeInstance();
 			public:
 				GuiInstanceRootObject();
 				~GuiInstanceRootObject();
+
+				/// <summary>Clear all subscriptions and components.</summary>
+				void											FinalizeInstance();
+
+				/// <summary>Test has the object been finalized.</summary>
+				/// <returns>Returns true if this object has been finalized.</returns>
+				bool											IsFinalized();
+
+				void											FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject);
+				void											FinalizeInstanceRecursively(GuiControl* thisObject);
 
 				/// <summary>Set the resource resolver to connect the current root object to the resource creating it.</summary>
 				/// <param name="resolver">The resource resolver</param>
@@ -134,16 +144,8 @@ namespace vl
 				/// <returns>Returns null if this operation failed.</returns>
 				/// <param name="subscription">The subscription to test.</param>
 				Ptr<description::IValueSubscription>			AddSubscription(Ptr<description::IValueSubscription> subscription);
-				/// <summary>Remove a subscription.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="subscription">The subscription to test.</param>
-				bool											RemoveSubscription(Ptr<description::IValueSubscription> subscription);
-				/// <summary>Test does the window contain the subscription.</summary>
-				/// <returns>Returns true if the window contains the subscription.</returns>
-				/// <param name="subscription">The subscription to test.</param>
-				bool											ContainsSubscription(Ptr<description::IValueSubscription> subscription);
 				/// <summary>Clear all subscriptions.</summary>
-				void											ClearSubscriptions();
+				void											UpdateSubscriptions();
 
 				/// <summary>Add a component. When this control host is disposing, all attached components will be deleted.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
@@ -154,16 +156,6 @@ namespace vl
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="controlHost">The controlHost to add.</param>
 				bool											AddControlHostComponent(GuiControlHost* controlHost);
-				/// <summary>Remove a component.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="component">The component to remove.</param>
-				bool											RemoveComponent(GuiComponent* component);
-				/// <summary>Test does the window contain the component.</summary>
-				/// <returns>Returns true if the window contains the component.</returns>
-				/// <param name="component">The component to test.</param>
-				bool											ContainsComponent(GuiComponent* component);
-				/// <summary>Clear all components.</summary>
-				void											ClearComponents();
 			};
 
 			class GuiButton;

@@ -38,6 +38,7 @@
                 </att.Pages>
               </Tab>
             </TabPage>
+            <demo:DocumentTabPage Alt="D"/>
           </att.Pages>
         </Tab>
       </Window>
@@ -48,11 +49,13 @@
   <Instance name="ListViewTabPageResource" content="File">ListViewTabPage.xml</Instance>
   <Instance name="TreeViewTabPageResource" content="File">TreeViewTabPage.xml</Instance>
   <Instance name="DataGridTabPageResource" content="File">DataGridTabPage.xml</Instance>
+  <Instance name="DocumentTabPageResource" content="File">DocumentTabPage.xml</Instance>
   <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
   <Folder name="LargeImages" content="Link">Images/LargeImages.xml</Folder>
   <Folder name="SmallImages" content="Link">Images/SmallImages.xml</Folder>
   <Folder name="MiscImages" content="Link">Images/MiscImages.xml</Folder>
   <Script name="ImageLoaderResource" content="File">Images/ImageLoader.xml</Script>
+  <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
 
   <Script name="ViewModelResource">
     <Workflow>

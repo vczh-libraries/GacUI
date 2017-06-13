@@ -43,6 +43,16 @@ GuiDocumentItem
 /***********************************************************************
 GuiDocumentCommonInterface
 ***********************************************************************/
+			
+			void GuiDocumentCommonInterface::InvokeUndoRedoChanged()
+			{
+				UndoRedoChanged.Execute(documentControl->GetNotifyEventArguments());
+			}
+
+			void GuiDocumentCommonInterface::InvokeModifiedChanged()
+			{
+				ModifiedChanged.Execute(documentControl->GetNotifyEventArguments());
+			}
 
 			void GuiDocumentCommonInterface::UpdateCaretPoint()
 			{
@@ -223,6 +233,11 @@ GuiDocumentCommonInterface
 				ActiveHyperlinkChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
 				ActiveHyperlinkExecuted.SetAssociatedComposition(_sender->GetBoundsComposition());
 				SelectionChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+				UndoRedoChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+				ModifiedChanged.SetAssociatedComposition(_sender->GetBoundsComposition());
+
+				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiDocumentCommonInterface::InvokeUndoRedoChanged);
+				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
 			}
 
 			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun> hyperlink, vint paragraphIndex)
@@ -680,11 +695,11 @@ GuiDocumentCommonInterface
 				documentElement->NotifyParagraphUpdated(index, oldCount, newCount, updatedText);
 			}
 
-			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model)
+			void GuiDocumentCommonInterface::EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> model, bool copy)
 			{
 				EditTextInternal(begin, end, [=](TextPos begin, TextPos end, vint& paragraphCount, vint& lastParagraphLength)
 				{
-					documentElement->EditRun(begin, end, model);
+					documentElement->EditRun(begin, end, model, copy);
 					paragraphCount=model->paragraphs.Count();
 					lastParagraphLength=paragraphCount==0?0:model->paragraphs[paragraphCount-1]->GetText(false).Length();
 				});
@@ -771,6 +786,12 @@ GuiDocumentCommonInterface
 
 			Ptr<DocumentStyleProperties> GuiDocumentCommonInterface::SummarizeStyle(TextPos begin, TextPos end)
 			{
+				if (begin>end)
+				{
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
 				return documentElement->SummarizeStyle(begin, end);
 			}
 
@@ -801,6 +822,17 @@ GuiDocumentCommonInterface
 					documentElement->SetParagraphAlignment(begin, end, alignments);
 					undoRedoProcessor->OnSetAlignment(arguments);
 				}
+			}
+
+			Nullable<Alignment> GuiDocumentCommonInterface::SummarizeParagraphAlignment(TextPos begin, TextPos end)
+			{
+				if (begin>end)
+				{
+					TextPos temp = begin;
+					begin = end;
+					end = temp;
+				}
+				return documentElement->SummarizeParagraphAlignment(begin, end);
 			}
 
 			//================ editing control
@@ -937,7 +969,7 @@ GuiDocumentCommonInterface
 					end=temp;
 				}
 
-				EditRun(begin, end, value);
+				EditRun(begin, end, value, true);
 			}
 
 			//================ clipboard operations
