@@ -2163,6 +2163,10 @@ DocumentModel::ClearStyle
 						break;
 					}
 				}
+				else
+				{
+					left = true;
+				}
 			}
 
 			if (left && !center && !right) return Alignment::Left;

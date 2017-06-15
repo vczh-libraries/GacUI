@@ -231,7 +231,7 @@ GuiDocumentUndoRedoProcessor::SetAlignmentStep
 				GuiDocumentCommonInterface* ci=dynamic_cast<GuiDocumentCommonInterface*>(processor->ownerComposition->GetRelatedControl());
 				if(ci)
 				{
-					ci->SetParagraphAlignment(TextPos(arguments->start, 0), TextPos(arguments->end, 0), arguments->originalAlignments);
+					ci->SetParagraphAlignments(TextPos(arguments->start, 0), TextPos(arguments->end, 0), arguments->originalAlignments);
 				}
 			}
 
@@ -240,7 +240,7 @@ GuiDocumentUndoRedoProcessor::SetAlignmentStep
 				GuiDocumentCommonInterface* ci=dynamic_cast<GuiDocumentCommonInterface*>(processor->ownerComposition->GetRelatedControl());
 				if(ci)
 				{
-					ci->SetParagraphAlignment(TextPos(arguments->start, 0), TextPos(arguments->end, 0), arguments->inputAlignments);
+					ci->SetParagraphAlignments(TextPos(arguments->start, 0), TextPos(arguments->end, 0), arguments->inputAlignments);
 				}
 			}
 

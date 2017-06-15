@@ -795,33 +795,43 @@ GuiDocumentCommonInterface
 				return documentElement->SummarizeStyle(begin, end);
 			}
 
-			void GuiDocumentCommonInterface::SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
+			void GuiDocumentCommonInterface::SetParagraphAlignments(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
 			{
-				vint first=begin.row;
-				vint last=end.row;
-				if(first>last)
+				vint first = begin.row;
+				vint last = end.row;
+				if (first > last)
 				{
-					vint temp=first;
-					first=last;
-					last=temp;
+					vint temp = first;
+					first = last;
+					last = temp;
 				}
 
-				Ptr<DocumentModel> document=documentElement->GetDocument();
-				if(0<=first && first<document->paragraphs.Count() && 0<=last && last<document->paragraphs.Count() && last-first+1==alignments.Count())
+				Ptr<DocumentModel> document = documentElement->GetDocument();
+				if (0 <= first && first < document->paragraphs.Count() && 0 <= last && last < document->paragraphs.Count() && last - first + 1 == alignments.Count())
 				{
-					Ptr<GuiDocumentUndoRedoProcessor::SetAlignmentStruct> arguments=new GuiDocumentUndoRedoProcessor::SetAlignmentStruct;
-					arguments->start=first;
-					arguments->end=last;
+					Ptr<GuiDocumentUndoRedoProcessor::SetAlignmentStruct> arguments = new GuiDocumentUndoRedoProcessor::SetAlignmentStruct;
+					arguments->start = first;
+					arguments->end = last;
 					arguments->originalAlignments.Resize(alignments.Count());
 					arguments->inputAlignments.Resize(alignments.Count());
-					for(vint i=first;i<=last;i++)
+					for (vint i = first; i <= last; i++)
 					{
-						arguments->originalAlignments[i-first]=document->paragraphs[i]->alignment;
-						arguments->inputAlignments[i-first]=alignments[i-first];
+						arguments->originalAlignments[i - first] = document->paragraphs[i]->alignment;
+						arguments->inputAlignments[i - first] = alignments[i - first];
 					}
 					documentElement->SetParagraphAlignment(begin, end, alignments);
 					undoRedoProcessor->OnSetAlignment(arguments);
 				}
+			}
+
+			void GuiDocumentCommonInterface::SetParagraphAlignment(TextPos begin, TextPos end, Nullable<Alignment> alignment)
+			{
+				Array<Nullable<Alignment>> alignments(abs(begin.row - end.row) + 1);
+				for (vint i = 0; i < alignments.Count(); i++)
+				{
+					alignments[i] = alignment;
+				}
+				SetParagraphAlignments(begin, end, alignments);
 			}
 
 			Nullable<Alignment> GuiDocumentCommonInterface::SummarizeParagraphAlignment(TextPos begin, TextPos end)

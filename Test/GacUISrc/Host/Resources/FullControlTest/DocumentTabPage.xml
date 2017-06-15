@@ -25,19 +25,14 @@
           alignment == Alignment::Left ? commandAlignLeft :
           alignment == Alignment::Center ? commandAlignCenter :
           alignment == Alignment::Right ? commandAlignRight :
-          null;
+          commandAlignDefault;
       }
       
       @cpp:Private
-      func SelectAlignmentImage() : GuiImageData^
+      func SetAlignment(alignment : Alignment?) : void
       {
-        var command = SelectAlignmentCommand();
-        return command is null ? (cast (GuiImageData^) self.ResolveResource("res", "ToolbarImages/TextAlign", true)) : command.Image;
-      }
-      
-      @cpp:Private
-      func SetAlignment(alignment : Alignment) : void
-      {
+        document.SetParagraphAlignment(document.CaretBegin, document.CaretEnd, alignment);
+        self.UpdateSubscriptions();
       }
     ]]>
   </ref.Members>
@@ -83,6 +78,7 @@
               </MenuItemButton>
               <MenuItemButton Text="Paragram Alignment" Alt="P">
                 <att.SubMenu-set>
+                  <MenuItemButton Command-ref="commandAlignDefault" Alt="D"/>
                   <MenuItemButton Command-ref="commandAlignLeft" Alt="L"/>
                   <MenuItemButton Command-ref="commandAlignCenter" Alt="C"/>
                   <MenuItemButton Command-ref="commandAlignRight" Alt="R"/>
@@ -111,8 +107,9 @@
             </att.SubMenu-set>
           </ToolstripDropdownButton>
           <ToolstripDropdownButton ref.Name="buttonAlignment" Alt="P">
-            <att.Image-bind>document.observe as _(self.SelectAlignmentImage() on _.SelectionChanged)</att.Image-bind>
+            <att.Image-bind>document.observe as _(self.SelectAlignmentCommand().Image on _.SelectionChanged)</att.Image-bind>
             <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandAlignDefault" Alt="D"/>
               <MenuItemButton Command-ref="commandAlignLeft" Alt="L"/>
               <MenuItemButton Command-ref="commandAlignCenter" Alt="C"/>
               <MenuItemButton Command-ref="commandAlignRight" Alt="R"/>
@@ -388,8 +385,15 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
+    <ToolstripCommand ref.Name="commandAlignDefault" Text="Set Alignment to Default (Left)" Image-uri="res://ToolbarImages/TextAlign">
+      <att.Enabled-bind>document.EditMode == DocumentCommonInterface::EditMode::Editable</att.Enabled-bind>
+      <ev.Executed-eval>
+        <![CDATA[self.SetAlignment(null);]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
     <ToolstripCommand ref.Name="commandAlignLeft" Text="Set Alignment to Left" Image-uri="res://ToolbarImages/TextAlignLeft">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>document.EditMode == DocumentCommonInterface::EditMode::Editable</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignLeft on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Left);]]>
@@ -397,7 +401,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandAlignCenter" Text="Set Alignment to Center" Image-uri="res://ToolbarImages/TextAlignCenter">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>document.EditMode == DocumentCommonInterface::EditMode::Editable</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignCenter on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Center);]]>
@@ -405,7 +409,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandAlignRight" Text="Set Alignment to Right" Image-uri="res://ToolbarImages/TextAlignRight">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>document.EditMode == DocumentCommonInterface::EditMode::Editable</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignRight on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Right);]]>
