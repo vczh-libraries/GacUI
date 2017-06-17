@@ -494,16 +494,7 @@ Win8TextBoxBackground
 					boundsComposition->AddChild(backgroundComposition);
 					backgroundComposition->SetAlignmentToParent(Margin(1, 1, 1, 1));
 					backgroundComposition->SetOwnedElement(background);
-				}
-				{
-					GuiSolidBackgroundElement* background=GuiSolidBackgroundElement::Create();
-					background->SetColor(Color(255, 255, 255));
-
-					GuiBoundsComposition* backgroundComposition=new GuiBoundsComposition;
-					boundsComposition->AddChild(backgroundComposition);
-					backgroundComposition->SetAlignmentToParent(Margin(2, 2, 2, 2));
-					backgroundComposition->SetOwnedElement(background);
-					backgroundElement=background;
+					backgroundElement = background;
 				}
 				{
 					GuiSolidBorderElement* border=GuiSolidBorderElement::Create();

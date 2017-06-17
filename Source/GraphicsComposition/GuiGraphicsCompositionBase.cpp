@@ -73,12 +73,18 @@ GuiGraphicsComposition
 			{
 				relatedHostRecord = record;
 				auto renderTarget = GetRenderTarget();
+
 				if (ownedElement)
 				{
 					if (auto renderer = ownedElement->GetRenderer())
 					{
 						renderer->SetRenderTarget(renderTarget);
 					}
+				}
+
+				for (vint i = 0; i < children.Count(); i++)
+				{
+					children[i]->UpdateRelatedHostRecord(record);
 				}
 
 				if (HasEventReceiver())
@@ -90,10 +96,6 @@ GuiGraphicsComposition
 					associatedControl->OnRenderTargetChanged(renderTarget);
 				}
 
-				for (vint i = 0; i < children.Count(); i++)
-				{
-					children[i]->UpdateRelatedHostRecord(record);
-				}
 				OnRenderContextChanged();
 			}
 

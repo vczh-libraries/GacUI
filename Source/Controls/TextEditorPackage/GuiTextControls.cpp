@@ -269,7 +269,7 @@ GuiSinglelineTextBox::StyleController
 
 			void GuiSinglelineTextBox::StyleController::RearrangeTextElement()
 			{
-				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(textElement->GetLines().GetRowHeight()+2*TextMargin));
+				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(textElement->GetLines().GetRowHeight() + 2 * TextMargin));
 			}
 
 			compositions::GuiBoundsComposition* GuiSinglelineTextBox::StyleController::GetBoundsComposition()
@@ -316,7 +316,6 @@ GuiSinglelineTextBox::StyleController
 			{
 				textElement->SetFont(value);
 				styleProvider->SetFont(value);
-				textComposition->SetPreferredMinSize(Size(0, textElement->GetLines().GetRowHeight()));
 			}
 
 			void GuiSinglelineTextBox::StyleController::SetVisuallyEnabled(bool value)
@@ -416,8 +415,8 @@ GuiSinglelineTextBox
 
 			void GuiSinglelineTextBox::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
-				styleController->RearrangeTextElement();
 				GuiControl::OnRenderTargetChanged(renderTarget);
+				styleController->RearrangeTextElement();
 			}
 
 			void GuiSinglelineTextBox::OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
