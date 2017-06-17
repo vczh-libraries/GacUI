@@ -209,7 +209,12 @@
     <ToolstripCommand ref.Name="commandEditHyperlink" Text="Edit Hyperlink ..." Image-uri="res://ToolbarImages/Link">
       <ev.Executed-eval>
         <![CDATA[
-          {
+          $Async{
+            var mainWindow = self.RelatedControlHost as controls::GuiWindow*;
+            var window = new HyperlinkWindow*();
+            window.MoveToScreenCenter(mainWindow.RelatedScreen);
+            $Await window.ShowModalAsync(mainWindow);
+            delete window;
           }
         ]]>
       </ev.Executed-eval>

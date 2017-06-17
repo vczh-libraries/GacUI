@@ -51,6 +51,7 @@
   <Instance name="DataGridTabPageResource" content="File">DataGridTabPage.xml</Instance>
   <Instance name="DocumentTabPageResource" content="File">DocumentTabPage.xml</Instance>
   <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
+  <Folder name="DocumentComponents" content="Link">DocumentComponents.xml</Folder>
   <Folder name="LargeImages" content="Link">Images/LargeImages.xml</Folder>
   <Folder name="SmallImages" content="Link">Images/SmallImages.xml</Folder>
   <Folder name="MiscImages" content="Link">Images/MiscImages.xml</Folder>

@@ -803,20 +803,24 @@ GuiWindow
 
 			void GuiWindow::MoveToScreenCenter()
 			{
-				INativeScreen* screen=GetRelatedScreen();
-				if(screen)
+				MoveToScreenCenter(GetRelatedScreen());
+			}
+
+			void GuiWindow::MoveToScreenCenter(INativeScreen* screen)
+			{
+				if (screen)
 				{
-					Rect screenBounds=screen->GetClientBounds();
-					Rect windowBounds=GetBounds();
+					Rect screenBounds = screen->GetClientBounds();
+					Rect windowBounds = GetBounds();
 					SetBounds(
 						Rect(
 							Point(
-								screenBounds.Left()+(screenBounds.Width()-windowBounds.Width())/2,
-								screenBounds.Top()+(screenBounds.Height()-windowBounds.Height())/2
-								),
+								screenBounds.Left() + (screenBounds.Width() - windowBounds.Width()) / 2,
+								screenBounds.Top() + (screenBounds.Height() - windowBounds.Height()) / 2
+							),
 							windowBounds.GetSize()
-							)
-						);
+						)
+					);
 				}
 			}
 

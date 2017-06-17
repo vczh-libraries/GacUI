@@ -394,6 +394,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Bounds)
 				CLASS_MEMBER_PROPERTY_FAST(ShortcutKeyManager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(AnimationManager)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedScreen)
 
 				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFocused, NO_PARAMETER)
@@ -423,7 +424,8 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(IconVisible)
 				CLASS_MEMBER_PROPERTY_FAST(TitleBar)
 
-				CLASS_MEMBER_METHOD(MoveToScreenCenter, NO_PARAMETER)
+				CLASS_MEMBER_METHOD_OVERLOAD(MoveToScreenCenter, NO_PARAMETER, void(GuiWindow::*)())
+				CLASS_MEMBER_METHOD_OVERLOAD(MoveToScreenCenter, { L"screen" }, void(GuiWindow::*)(INativeScreen*))
 				CLASS_MEMBER_METHOD(ShowModal, { L"owner" _ L"callback" })
 				CLASS_MEMBER_METHOD(ShowModalAndDelete, { L"owner" _ L"callback" })
 				CLASS_MEMBER_METHOD(ShowModalAsync, { L"owner" })
