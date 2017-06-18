@@ -11,6 +11,7 @@ namespace vl
 
 /***********************************************************************
 document_operation_visitors::GetRunRangeVisitor
+	Calculate range informations for each run object
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -94,6 +95,7 @@ document_operation_visitors::GetRunRangeVisitor
 
 /***********************************************************************
 document_operation_visitors::LocateStyleVisitor
+	Get all container runs that contain the specified position from top to bottom
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -193,6 +195,7 @@ document_operation_visitors::LocateStyleVisitor
 
 /***********************************************************************
 document_operation_visitors::LocateHyperlinkVisitor
+	Get the hyperlink run that contains the specified position
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -275,6 +278,8 @@ document_operation_visitors::LocateHyperlinkVisitor
 
 /***********************************************************************
 document_operation_visitors::CloneRunVisitor
+	Clone the current run without its children
+	If clonedRun field is assigned then it will be added to the cloned container run
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -401,6 +406,7 @@ document_operation_visitors::CloneRunVisitor
 
 /***********************************************************************
 document_operation_visitors::CloneRunRecursivelyVisitor
+	Clone the current run with its children
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -545,6 +551,7 @@ document_operation_visitors::CloneRunRecursivelyVisitor
 
 /***********************************************************************
 document_operation_visitors::CollectStyleNameVisitor
+	Search all used style names
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -622,6 +629,7 @@ document_operation_visitors::CollectStyleNameVisitor
 
 /***********************************************************************
 document_operation_visitors::ReplaceStyleNameVisitor
+	Replace a style name with another one
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -693,6 +701,8 @@ document_operation_visitors::ReplaceStyleNameVisitor
 
 /***********************************************************************
 document_operation_visitors::RemoveRunVisitor
+	Remove runs that are inside the specified range
+	If a run decides that itself should be removed, then replacedRuns contains all runs to replace itself
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -812,6 +822,8 @@ document_operation_visitors::RemoveRunVisitor
 
 /***********************************************************************
 document_operation_visitors::CutRunVisitor
+	Cut all runs into pieces so that a run either completely outside or inside the specified range
+	If a run decides that itself should be cut, then leftRun and rightRun contains new run that will be inserted before and after it
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -932,6 +944,7 @@ document_operation_visitors::CutRunVisitor
 
 /***********************************************************************
 document_operation_visitors::ClearRunVisitor
+	Clear all runs that have an empty length
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -1010,6 +1023,10 @@ document_operation_visitors::ClearRunVisitor
 
 /***********************************************************************
 document_operation_visitors::AddContainerVisitor
+	Insert container runs on top of all text ranges that intersect with the specified range
+	AddStyleVisitor		: Apply a style on the specified range
+	AddHyperlinkVisitor	: Apply a hyperlink on the specified range
+	AddStyleNameVisitor	: Apply a style name on the specified range
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -1176,6 +1193,11 @@ document_operation_visitors::AddContainerVisitor
 
 /***********************************************************************
 document_operation_visitors::RemoveContainerVisitor
+	Remove some containers that intersect with the specified range
+	If a run decides that itself should be removed, then replacedRuns contains all runs to replace itself
+	RemoveHyperlinkVisitor	: Remove all hyperlinks that intersect with the specified range
+	RemoveStyleNameVisitor	: Remove all style names that intersect with the specified range
+	ClearStyleVisitor		: Remove all styles that intersect with the specified range
 ***********************************************************************/
 
 		namespace document_operation_visitors
@@ -1335,6 +1357,7 @@ document_operation_visitors::RemoveContainerVisitor
 
 /***********************************************************************
 document_operation_visitors::SummerizeStyleVisitor
+	Calculate if all text in the specified range has some common styles
 ***********************************************************************/
 
 		namespace document_operation_visitors
