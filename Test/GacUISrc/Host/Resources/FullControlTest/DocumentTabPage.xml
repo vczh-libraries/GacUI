@@ -39,7 +39,21 @@
       prop HasEditableSelection : bool = false {}
       
       @cpp:Private
-      prop HasEditableCursor : bool = false {}
+      prop HasEditableSelectionInSingleParagraph : bool = false {}
+      
+      @cpp:Private
+      func HasEditableCursor() : bool
+      {
+        return document.EditMode == DocumentCommonInterface::EditMode::Editable;
+      }
+      
+      @cpp:Private
+      func HasEditableHyperlink(forEdit : bool) : bool
+      {
+        var a = document.CaretBegin;
+        var b = document.CaretEnd;
+        return a.row == b.row and a.column != b.column;
+      }
     ]]>
   </ref.Members>
   <ref.Ctor>
@@ -51,7 +65,8 @@
   </ref.Ctor>
   <TabPage ref.Name="self" Text="Document Editor">
     <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
-    <att.HasEditableCursor-bind>document.EditMode == DocumentCommonInterface::EditMode::Editable</att.HasEditableCursor-bind>
+    <MessageDialog ref.Name="dialog" Title="You Clicked a Hyperlink!"/>
+    
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
       <att.Rows>
         <_>composeType:MinSize</_>
@@ -153,6 +168,14 @@
       <Cell Site="row:2 column:0">
         <DocumentViewer ref.Name="document" EditMode="Editable">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ev.ActiveHyperlinkExecuted-eval>
+            <![CDATA[
+              {
+                dialog.Text = document.ActiveHyperlinkReference;
+                dialog.ShowDialog();
+              }
+            ]]>
+          </ev.ActiveHyperlinkExecuted-eval>
         </DocumentViewer>
       </Cell>
     </Table>
@@ -206,7 +229,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image" Image-uri="res://ToolbarImages/Image">
-      <att.Enabled-bind>self.HasEditableCursor</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
@@ -216,14 +239,23 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandEditHyperlink" Text="Edit Hyperlink ..." Image-uri="res://ToolbarImages/Link">
-      <att.Enabled-bind>self.HasEditableCursor</att.Enabled-bind>
+      <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(true) on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           $Async{
             var mainWindow = self.RelatedControlHost as controls::GuiWindow*;
+            
             var window = new HyperlinkWindow*();
             window.MoveToScreenCenter(mainWindow.RelatedScreen);
             $Await window.ShowModalAsync(mainWindow);
+            
+            if (window.Url is not null)
+            {
+              var row = document.CaretBegin.row;
+              var begin = document.CaretBegin.column;
+              var end = document.CaretEnd.column;
+              document.EditHyperlink(row, begin, end, cast string window.Url, "#NormalLink", "#ActiveLink");
+            }
             delete window;
           }
         ]]>
@@ -231,10 +263,14 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandRemoveHyperlink" Text="Remove Hyperlink" Image-uri="res://ToolbarImages/RemoveLink">
-      <att.Enabled-bind>self.HasEditableCursor</att.Enabled-bind>
+      <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(false) on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            var row = document.CaretBegin.row;
+            var begin = document.CaretBegin.column;
+            var end = document.CaretEnd.column;
+            document.RemoveHyperlink(row, begin, end);
           }
         ]]>
       </ev.Executed-eval>
@@ -402,14 +438,14 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandAlignDefault" Text="Set Alignment to Default (Left)" Image-uri="res://ToolbarImages/TextAlign">
-      <att.Enabled-bind>self.HasEditableCursor</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(null);]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandAlignLeft" Text="Set Alignment to Left" Image-uri="res://ToolbarImages/TextAlignLeft">
-      <att.Enabled-bind>self.HasEditableCursor</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignLeft on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Left);]]>
@@ -417,7 +453,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandAlignCenter" Text="Set Alignment to Center" Image-uri="res://ToolbarImages/TextAlignCenter">
-      <att.Enabled-bind>self.HasEditableCursor</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignCenter on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Center);]]>
@@ -425,7 +461,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandAlignRight" Text="Set Alignment to Right" Image-uri="res://ToolbarImages/TextAlignRight">
-      <att.Enabled-bind>self.HasEditableCursor</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignRight on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Right);]]>
