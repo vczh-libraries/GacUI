@@ -701,7 +701,7 @@ document_operation_visitors::ReplaceStyleNameVisitor
 
 /***********************************************************************
 document_operation_visitors::RemoveRunVisitor
-	Remove runs that are inside the specified range
+	Remove text run contents with the specified range, or other content runs that intersect with the range
 	If a run decides that itself should be removed, then replacedRuns contains all runs to replace itself
 ***********************************************************************/
 
