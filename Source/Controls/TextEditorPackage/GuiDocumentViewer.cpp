@@ -440,7 +440,7 @@ GuiDocumentCommonInterface
 							{
 								if(activeHyperlinks)
 								{
-									if (CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
+									if (package && CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
 									{
 										ActivateActiveHyperlink(true);
 										handCursor = true;
@@ -519,7 +519,7 @@ GuiDocumentCommonInterface
 							auto package = documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y });
 							if(activeHyperlinks)
 							{
-								if (CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
+								if (package && CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
 								{
 									ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
 								}

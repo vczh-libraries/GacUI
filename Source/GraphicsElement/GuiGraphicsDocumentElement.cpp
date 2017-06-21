@@ -494,6 +494,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 									cache->graphicsParagraph = 0;
 								}
 								paragraphCaches[i] = cache;
+								paragraphHeights[i] = oldHeights[i];
 							}
 						}
 						else
