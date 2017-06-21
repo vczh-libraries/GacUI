@@ -454,7 +454,7 @@ GuiDocumentCommonInterface
 							else
 							{
 								SetActiveHyperlink(package);
-								handCursor = true;
+								handCursor = activeHyperlinks;
 							}
 
 							if(handCursor)

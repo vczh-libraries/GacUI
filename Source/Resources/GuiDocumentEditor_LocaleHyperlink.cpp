@@ -104,7 +104,7 @@ Get the hyperlink run that contains the specified position
 					}
 				}
 
-				while (true)
+				while (startRun)
 				{
 					vint pos = runRanges[startRun.Obj()].start;
 					if (pos == 0) break;
@@ -118,12 +118,13 @@ Get the hyperlink run that contains the specified position
 					if (startRun->reference != newRun->reference) break;
 
 					auto range = runRanges[newRun.Obj()];
+					package->hyperlinks.Add(newRun);
 					package->start = range.start;
 					startRun = newRun;
 				}
 
 				vint length = runRanges[run].end;
-				while (true)
+				while (endRun)
 				{
 					vint pos = runRanges[endRun.Obj()].end;
 					if (pos == length) break;
@@ -137,6 +138,7 @@ Get the hyperlink run that contains the specified position
 					if (endRun->reference != newRun->reference) break;
 
 					auto range = runRanges[newRun.Obj()];
+					package->hyperlinks.Add(newRun);
 					package->end = range.end;
 					endRun = newRun;
 				}

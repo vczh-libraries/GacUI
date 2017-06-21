@@ -468,10 +468,11 @@ DocumentModel::EditHyperlink
 		bool DocumentModel::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 		{
 			RunRangeMap runRanges;
-			if (!CheckEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), runRanges)) return false;
+			if (!CheckEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), runRanges)) return 0;
 
-			Ptr<DocumentParagraphRun> paragraph = paragraphs[paragraphIndex];
-			document_editor::RemoveHyperlink(paragraph.Obj(), runRanges, begin, end);
+			auto paragraph = paragraphs[paragraphIndex];
+			auto package = LocateHyperlink(paragraph.Obj(), runRanges, paragraphIndex, begin, end);
+			document_editor::RemoveHyperlink(paragraph.Obj(), runRanges, package->start, package->end);
 			ClearUnnecessaryRun(paragraph.Obj(), this);
 			return true;
 		}
@@ -481,7 +482,7 @@ DocumentModel::EditHyperlink
 			RunRangeMap runRanges;
 			if (!CheckEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), runRanges)) return 0;
 
-			Ptr<DocumentParagraphRun> paragraph = paragraphs[paragraphIndex];
+			auto paragraph = paragraphs[paragraphIndex];
 			return LocateHyperlink(paragraph.Obj(), runRanges, paragraphIndex, begin, end);
 		}
 
