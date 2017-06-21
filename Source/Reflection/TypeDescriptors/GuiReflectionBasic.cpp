@@ -450,6 +450,13 @@ Type Declaration
 				CLASS_MEMBER_FIELD(styleName)
 			END_CLASS_MEMBER(DocumentStyleApplicationRun)
 
+			BEGIN_CLASS_MEMBER(DocumentHyperlinkRun::Package)
+				CLASS_MEMBER_FIELD(hyperlinks)
+				CLASS_MEMBER_FIELD(row)
+				CLASS_MEMBER_FIELD(start)
+				CLASS_MEMBER_FIELD(end)
+			END_CLASS_MEMBER(DocumentHyperlinkRun::Package)
+
 			BEGIN_CLASS_MEMBER(DocumentHyperlinkRun)
 				CLASS_MEMBER_BASE(DocumentStyleApplicationRun)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<DocumentHyperlinkRun>(), NO_PARAMETER)

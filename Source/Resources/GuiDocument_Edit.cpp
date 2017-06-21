@@ -438,21 +438,24 @@ DocumentModel::EditHyperlink
 
 		bool DocumentModel::EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName)
 		{
-			Ptr<DocumentHyperlinkRun> run=GetHyperlink(paragraphIndex, begin, end);
-			if(run)
+			auto package = GetHyperlink(paragraphIndex, begin, end);
+			if (package->hyperlinks.Count() > 0)
 			{
-				run->reference=reference;
-				run->normalStyleName=normalStyleName;
-				run->activeStyleName=activeStyleName;
-				run->styleName=normalStyleName;
+				FOREACH(Ptr<DocumentHyperlinkRun>, run, package->hyperlinks)
+				{
+					run->reference = reference;
+					run->normalStyleName = normalStyleName;
+					run->activeStyleName = activeStyleName;
+					run->styleName = normalStyleName;
+				}
 				return true;
 			}
-			else if(RemoveHyperlink(paragraphIndex, begin, end))
+			else if (RemoveHyperlink(paragraphIndex, begin, end))
 			{
 				CutEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end));
 
 				RunRangeMap runRanges;
-				Ptr<DocumentParagraphRun> paragraph=paragraphs[paragraphIndex];
+				Ptr<DocumentParagraphRun> paragraph = paragraphs[paragraphIndex];
 				GetRunRange(paragraph.Obj(), runRanges);
 				AddHyperlink(paragraph.Obj(), runRanges, begin, end, reference, normalStyleName, activeStyleName);
 
@@ -465,21 +468,21 @@ DocumentModel::EditHyperlink
 		bool DocumentModel::RemoveHyperlink(vint paragraphIndex, vint begin, vint end)
 		{
 			RunRangeMap runRanges;
-			if(!CheckEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), runRanges)) return false;
+			if (!CheckEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), runRanges)) return false;
 
-			Ptr<DocumentParagraphRun> paragraph=paragraphs[paragraphIndex];
+			Ptr<DocumentParagraphRun> paragraph = paragraphs[paragraphIndex];
 			document_editor::RemoveHyperlink(paragraph.Obj(), runRanges, begin, end);
 			ClearUnnecessaryRun(paragraph.Obj(), this);
 			return true;
 		}
 
-		Ptr<DocumentHyperlinkRun> DocumentModel::GetHyperlink(vint paragraphIndex, vint begin, vint end)
+		Ptr<DocumentHyperlinkRun::Package> DocumentModel::GetHyperlink(vint paragraphIndex, vint begin, vint end)
 		{
 			RunRangeMap runRanges;
-			if(!CheckEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), runRanges)) return 0;
+			if (!CheckEditRange(TextPos(paragraphIndex, begin), TextPos(paragraphIndex, end), runRanges)) return 0;
 
-			Ptr<DocumentParagraphRun> paragraph=paragraphs[paragraphIndex];
-			return LocateHyperlink(paragraph.Obj(), runRanges, begin, end);
+			Ptr<DocumentParagraphRun> paragraph = paragraphs[paragraphIndex];
+			return LocateHyperlink(paragraph.Obj(), runRanges, paragraphIndex, begin, end);
 		}
 
 /***********************************************************************

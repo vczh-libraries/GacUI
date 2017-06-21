@@ -71,8 +71,7 @@ GuiDocumentCommonInterface
 				GuiControl*									documentControl;
 				elements::GuiDocumentElement*				documentElement;
 				compositions::GuiBoundsComposition*			documentComposition;
-				Ptr<DocumentHyperlinkRun>					activeHyperlink;
-				vint										activeHyperlinkParagraph;
+				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
 				bool										dragging;
 				EditMode									editMode;
 
@@ -86,7 +85,7 @@ GuiDocumentCommonInterface
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
 				void										InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container);
-				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun> hyperlink, vint paragraphIndex=-1);
+				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
 				void										ActivateActiveHyperlink(bool activate);
 				void										AddShortcutCommand(vint key, const Func<void()>& eventHandler);
 				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor);

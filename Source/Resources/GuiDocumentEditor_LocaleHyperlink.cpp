@@ -15,13 +15,14 @@ Get the hyperlink run that contains the specified position
 			class LocateHyperlinkVisitor : public Object, public DocumentRun::IVisitor
 			{
 			public:
-				Ptr<DocumentHyperlinkRun>		hyperlink;
-				RunRangeMap&					runRanges;
-				vint							start;
-				vint							end;
+				Ptr<DocumentHyperlinkRun::Package>	package;
+				RunRangeMap&						runRanges;
+				vint								start;
+				vint								end;
 
-				LocateHyperlinkVisitor(RunRangeMap& _runRanges, vint _start, vint _end)
+				LocateHyperlinkVisitor(RunRangeMap& _runRanges, Ptr<DocumentHyperlinkRun::Package> _package, vint _start, vint _end)
 					:runRanges(_runRanges)
+					, package(_package)
 					, start(_start)
 					, end(_end)
 				{
@@ -35,14 +36,9 @@ Get the hyperlink run that contains the specified position
 						RunRange range = runRanges[subRun.Obj()];
 						if (range.start <= start && end <= range.end)
 						{
-							selectedRun = subRun;
+							subRun->Accept(this);
 							break;
 						}
-					}
-
-					if (selectedRun)
-					{
-						selectedRun->Accept(this);
 					}
 				}
 
@@ -62,7 +58,7 @@ Get the hyperlink run that contains the specified position
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
-					hyperlink = run;
+					package->hyperlinks.Add(run);
 				}
 
 				void Visit(DocumentImageRun* run)override
@@ -83,11 +79,69 @@ Get the hyperlink run that contains the specified position
 
 		namespace document_editor
 		{
-			Ptr<DocumentHyperlinkRun> LocateHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end)
+			Ptr<DocumentHyperlinkRun::Package> LocateHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint row, vint start, vint end)
 			{
-				LocateHyperlinkVisitor visitor(runRanges, start, end);
-				run->Accept(&visitor);
-				return visitor.hyperlink;
+				auto package = MakePtr<DocumentHyperlinkRun::Package>();
+				package->row = row;
+				{
+					LocateHyperlinkVisitor visitor(runRanges, package, start, end);
+					run->Accept(&visitor);
+				}
+
+				Ptr<DocumentHyperlinkRun> startRun, endRun;
+				FOREACH(Ptr<DocumentHyperlinkRun>, run, package->hyperlinks)
+				{
+					auto range = runRanges[run.Obj()];
+					if (package->start == -1 || range.start < package->start)
+					{
+						package->start = range.start;
+						startRun = run;
+					}
+					if (package->end == -1 || range.end > package->end)
+					{
+						package->end = range.end;
+						endRun = run;
+					}
+				}
+
+				while (true)
+				{
+					vint pos = runRanges[startRun.Obj()].start;
+					if (pos == 0) break;
+
+					auto newPackage = MakePtr<DocumentHyperlinkRun::Package>();
+					LocateHyperlinkVisitor visitor(runRanges, newPackage, pos - 1, pos);
+					run->Accept(&visitor);
+					if (newPackage->hyperlinks.Count() == 0) break;
+
+					auto newRun = newPackage->hyperlinks[0];
+					if (startRun->reference != newRun->reference) break;
+
+					auto range = runRanges[newRun.Obj()];
+					package->start = range.start;
+					startRun = newRun;
+				}
+
+				vint length = runRanges[run].end;
+				while (true)
+				{
+					vint pos = runRanges[endRun.Obj()].end;
+					if (pos == length) break;
+
+					auto newPackage = MakePtr<DocumentHyperlinkRun::Package>();
+					LocateHyperlinkVisitor visitor(runRanges, newPackage, pos, pos + 1);
+					run->Accept(&visitor);
+					if (newPackage->hyperlinks.Count() == 0) break;
+
+					auto newRun = newPackage->hyperlinks[0];
+					if (endRun->reference != newRun->reference) break;
+
+					auto range = runRanges[newRun.Obj()];
+					package->end = range.end;
+					endRun = newRun;
+				}
+
+				return package;
 			}
 		}
 	}

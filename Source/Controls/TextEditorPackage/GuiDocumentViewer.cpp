@@ -240,24 +240,26 @@ GuiDocumentCommonInterface
 				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
 			}
 
-			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun> hyperlink, vint paragraphIndex)
+			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package)
 			{
-				if(activeHyperlink!=hyperlink)
-				{
-					ActivateActiveHyperlink(false);
-					activeHyperlink=hyperlink;
-					activeHyperlinkParagraph=paragraphIndex;
-					ActivateActiveHyperlink(true);
-					ActiveHyperlinkChanged.Execute(documentControl->GetNotifyEventArguments());
-				}
+				ActivateActiveHyperlink(false);
+				activeHyperlinks =
+					!package ? nullptr :
+					package->hyperlinks.Count() == 0 ? nullptr :
+					package;
+				ActivateActiveHyperlink(true);
+				ActiveHyperlinkChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
 			void GuiDocumentCommonInterface::ActivateActiveHyperlink(bool activate)
 			{
-				if(activeHyperlink)
+				if (activeHyperlinks)
 				{
-					activeHyperlink->styleName=activate?activeHyperlink->activeStyleName:activeHyperlink->normalStyleName;
-					documentElement->NotifyParagraphUpdated(activeHyperlinkParagraph, 1, 1, false);
+					FOREACH(Ptr<DocumentHyperlinkRun>, run, activeHyperlinks->hyperlinks)
+					{
+						run->styleName = activate ? run->activeStyleName : run->normalStyleName;
+					}
+					documentElement->NotifyParagraphUpdated(activeHyperlinks->row, 1, 1, false);
 				}
 			}
 
@@ -431,30 +433,38 @@ GuiDocumentCommonInterface
 					{
 					case ViewOnly:
 						{
-							Point point(arguments.x, arguments.y);
-							Ptr<DocumentHyperlinkRun> hyperlink=documentElement->GetHyperlinkFromPoint(point);
-							vint hyperlinkParagraph=hyperlink?documentElement->CalculateCaretFromPoint(point).row:-1;
+							auto package = documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y });
+							bool handCursor = false;
 
 							if(dragging)
 							{
-								if(activeHyperlink)
+								if(activeHyperlinks)
 								{
-									ActivateActiveHyperlink(activeHyperlink==hyperlink);
+									if (CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
+									{
+										ActivateActiveHyperlink(true);
+										handCursor = true;
+									}
+									else
+									{
+										ActivateActiveHyperlink(false);
+									}
 								}
 							}
 							else
 							{
-								SetActiveHyperlink(hyperlink, hyperlinkParagraph);
+								SetActiveHyperlink(package);
+								handCursor = true;
 							}
 
-							if(activeHyperlink && activeHyperlink==hyperlink)
+							if(handCursor)
 							{
-								INativeCursor* cursor=GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand);
+								auto cursor = GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand);
 								documentComposition->SetAssociatedCursor(cursor);
 							}
 							else
 							{
-								documentComposition->SetAssociatedCursor(0);
+								documentComposition->SetAssociatedCursor(nullptr);
 							}
 						}
 						break;
@@ -479,12 +489,7 @@ GuiDocumentCommonInterface
 					switch(editMode)
 					{
 					case ViewOnly:
-						{
-							Point point(arguments.x, arguments.y);
-							Ptr<DocumentHyperlinkRun> hyperlink=documentElement->GetHyperlinkFromPoint(point);
-							vint hyperlinkParagraph=hyperlink?documentElement->CalculateCaretFromPoint(point).row:-1;
-							SetActiveHyperlink(hyperlink, hyperlinkParagraph);
-						}
+						SetActiveHyperlink(documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y }));
 						break;
 					case Selectable:
 					case Editable:
@@ -511,15 +516,17 @@ GuiDocumentCommonInterface
 					{
 					case ViewOnly:
 						{
-							Point point(arguments.x, arguments.y);
-							Ptr<DocumentHyperlinkRun> hyperlink=documentElement->GetHyperlinkFromPoint(point);
-							if(activeHyperlink!=hyperlink)
+							auto package = documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y });
+							if(activeHyperlinks)
 							{
-								SetActiveHyperlink(0);
-							}
-							if(activeHyperlink)
-							{
-								ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
+								if (CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
+								{
+									ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
+								}
+								else
+								{
+									SetActiveHyperlink(nullptr);
+								}
 							}
 						}
 						break;
@@ -584,7 +591,6 @@ GuiDocumentCommonInterface
 				,caretColor(_caretColor)
 				,documentElement(0)
 				,documentComposition(0)
-				,activeHyperlinkParagraph(-1)
 				,dragging(false)
 				,editMode(ViewOnly)
 				,documentControl(0)
@@ -849,7 +855,7 @@ GuiDocumentCommonInterface
 
 			WString GuiDocumentCommonInterface::GetActiveHyperlinkReference()
 			{
-				return activeHyperlink?activeHyperlink->reference:L"";
+				return activeHyperlinks ? activeHyperlinks->hyperlinks[0]->reference : L"";
 			}
 
 			GuiDocumentCommonInterface::EditMode GuiDocumentCommonInterface::GetEditMode()
@@ -859,11 +865,9 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetEditMode(EditMode value)
 			{
-				if(activeHyperlink)
+				if(activeHyperlinks)
 				{
-					SetActiveHyperlink(0);
-					activeHyperlink=0;
-					activeHyperlinkParagraph=-1;
+					SetActiveHyperlink(nullptr);
 				}
 
 				editMode=value;

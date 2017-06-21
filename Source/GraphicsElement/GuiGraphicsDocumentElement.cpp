@@ -528,7 +528,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				}
 			}
 
-			Ptr<DocumentHyperlinkRun> GuiDocumentElement::GuiDocumentElementRenderer::GetHyperlinkFromPoint(Point point)
+			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElement::GuiDocumentElementRenderer::GetHyperlinkFromPoint(Point point)
 			{
 				vint top=0;
 				vint index=-1;
@@ -1166,7 +1166,7 @@ GuiDocumentElement
 				return {};
 			}
 
-			Ptr<DocumentHyperlinkRun> GuiDocumentElement::GetHyperlinkFromPoint(Point point)
+			Ptr<DocumentHyperlinkRun::Package> GuiDocumentElement::GetHyperlinkFromPoint(Point point)
 			{
 				auto elementRenderer=renderer.Cast<GuiDocumentElementRenderer>();
 				if(elementRenderer)
