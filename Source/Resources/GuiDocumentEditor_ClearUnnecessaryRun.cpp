@@ -130,24 +130,26 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 				{
 				}
 
+				bool OnlyImageOrObject(DocumentContainerRun* run)
+				{
+					bool onlyImageOrObject = true;
+					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					{
+						if (!subRun.Cast<DocumentImageRun>() && !subRun.Cast<DocumentEmbeddedObjectRun>())
+						{
+							onlyImageOrObject = false;
+							break;
+						}
+					}
+					return onlyImageOrObject;
+				}
+
 				void Visit(DocumentStylePropertiesRun* run)override
 				{
+					if (OnlyImageOrObject(run))
 					{
-						bool onlyImageOrObject = true;
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
-						{
-							if (!subRun.Cast<DocumentImageRun>() && !subRun.Cast<DocumentEmbeddedObjectRun>())
-							{
-								onlyImageOrObject = false;
-								break;
-							}
-						}
-
-						if (onlyImageOrObject)
-						{
-							CopyFrom(replacedRuns, run->runs);
-							return;
-						}
+						CopyFrom(replacedRuns, run->runs);
+						return;
 					}
 
 					const DocumentModel::ResolvedStyle& currentResolvedStyle = GetCurrentResolvedStyle();
@@ -204,6 +206,12 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 
 				void Visit(DocumentStyleApplicationRun* run)override
 				{
+					if (OnlyImageOrObject(run))
+					{
+						CopyFrom(replacedRuns, run->runs);
+						return;
+					}
+
 					const DocumentModel::ResolvedStyle& currentResolvedStyle = GetCurrentResolvedStyle();
 					DocumentModel::ResolvedStyle resolvedStyle = model->GetStyle(run->styleName, currentResolvedStyle);
 					resolvedStyles.Add(resolvedStyle);
