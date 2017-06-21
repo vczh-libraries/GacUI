@@ -236,6 +236,153 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 		}
 		using namespace document_operation_visitors;
 
+/***********************************************************************
+Merge sibling runs if they are exactly the same
+***********************************************************************/
+
+		namespace document_operation_visitors
+		{
+			class MergeSiblingRunVisitor : public Object, public DocumentRun::IVisitor
+			{
+			public:
+				Ptr<DocumentRun>						nextRun;
+				Ptr<DocumentRun>						replacedRun;
+
+				void Visit(DocumentTextRun* run)override
+				{
+					if (auto sibilingRun = nextRun.Cast<DocumentTextRun>())
+					{
+						run->text += sibilingRun->text;
+						replacedRun = run;
+					}
+				}
+
+				void Visit(DocumentStylePropertiesRun* run)override
+				{
+					if (auto sibilingRun = nextRun.Cast<DocumentStylePropertiesRun>())
+					{
+						if (run->style->face !=					sibilingRun->style->face)				return;
+						if (run->style->size !=					sibilingRun->style->size)				return;
+						if (run->style->color !=				sibilingRun->style->color)				return;
+						if (run->style->backgroundColor !=		sibilingRun->style->backgroundColor)	return;
+						if (run->style->bold !=					sibilingRun->style->bold)				return;
+						if (run->style->italic !=				sibilingRun->style->italic)				return;
+						if (run->style->underline !=			sibilingRun->style->underline)			return;
+						if (run->style->strikeline !=			sibilingRun->style->strikeline)			return;
+						if (run->style->antialias !=			sibilingRun->style->antialias)			return;
+						if (run->style->verticalAntialias !=	sibilingRun->style->verticalAntialias)	return;
+
+						CopyFrom(run->runs, sibilingRun->runs, true);
+						replacedRun = run;
+					}
+				}
+
+				void Visit(DocumentStyleApplicationRun* run)override
+				{
+					if (auto sibilingRun = nextRun.Cast<DocumentStyleApplicationRun>())
+					{
+						if (run->styleName == sibilingRun->styleName)
+						{
+							CopyFrom(run->runs, sibilingRun->runs, true);
+							replacedRun = run;
+						}
+					}
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					if (auto sibilingRun = nextRun.Cast<DocumentHyperlinkRun>())
+					{
+						if (run->styleName == sibilingRun->styleName &&
+							run->normalStyleName == sibilingRun->normalStyleName &&
+							run->activeStyleName == sibilingRun->activeStyleName &&
+							run->reference == sibilingRun->reference)
+						{
+							CopyFrom(run->runs, sibilingRun->runs, true);
+							replacedRun = run;
+						}
+					}
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
+				void Visit(DocumentParagraphRun* run)override
+				{
+				}
+			};
+
+			class MergeSiblingRunRecursivelyVisitor : public Object, public DocumentRun::IVisitor
+			{
+			public:
+				Ptr<DocumentRun>						replacedRun;
+				Ptr<DocumentRun>						nextRun;
+
+				void VisitContainer(DocumentContainerRun* run)
+				{
+					for (vint i = 0; i < run->runs.Count() - 1; i++)
+					{
+						auto currentRun = run->runs[i];
+						auto nextRun = run->runs[i + 1];
+
+						MergeSiblingRunVisitor visitor;
+						visitor.nextRun = nextRun;
+						currentRun->Accept(&visitor);
+
+						if (visitor.replacedRun)
+						{
+							run->runs.RemoveAt(i + 1);
+							run->runs[i] = visitor.replacedRun;
+							i--;
+						}
+					}
+
+					for (vint i = 0; i < run->runs.Count() - 1; i++)
+					{
+						run->runs[i]->Accept(this);
+					}
+				}
+
+				void Visit(DocumentTextRun* run)override
+				{
+				}
+
+				void Visit(DocumentStylePropertiesRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentStyleApplicationRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentHyperlinkRun* run)override
+				{
+					VisitContainer(run);
+				}
+
+				void Visit(DocumentImageRun* run)override
+				{
+				}
+
+				void Visit(DocumentEmbeddedObjectRun* run)override
+				{
+				}
+
+				void Visit(DocumentParagraphRun* run)override
+				{
+					VisitContainer(run);
+				}
+			};
+		}
+		using namespace document_operation_visitors;
+
 		namespace document_editor
 		{
 			void ClearUnnecessaryRun(DocumentParagraphRun* run, DocumentModel* model)
@@ -246,6 +393,10 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 				}
 				{
 					CompressStyleRunVisitor visitor(model);
+					run->Accept(&visitor);
+				}
+				{
+					MergeSiblingRunRecursivelyVisitor visitor;
 					run->Accept(&visitor);
 				}
 			}
