@@ -203,7 +203,7 @@ DocumentModel::EditRangeOperations
 			// clear paragraphs
 			for(vint i=begin.row;i<=end.row;i++)
 			{
-				ClearUnnecessaryRun(paragraphs[i].Obj());
+				ClearUnnecessaryRun(paragraphs[i].Obj(), this);
 			}
 
 			return true;
@@ -343,7 +343,7 @@ DocumentModel::EditRun
 			vint rows=runs.Count()==0?1:runs.Count();
 			for(vint i=0;i<rows;i++)
 			{
-				ClearUnnecessaryRun(paragraphs[begin.row+i].Obj());
+				ClearUnnecessaryRun(paragraphs[begin.row+i].Obj(), this);
 			}
 			return rows;
 		}
@@ -456,7 +456,7 @@ DocumentModel::EditHyperlink
 				GetRunRange(paragraph.Obj(), runRanges);
 				AddHyperlink(paragraph.Obj(), runRanges, begin, end, reference, normalStyleName, activeStyleName);
 
-				ClearUnnecessaryRun(paragraph.Obj());
+				ClearUnnecessaryRun(paragraph.Obj(), this);
 				return true;
 			}
 			return false;
@@ -469,7 +469,7 @@ DocumentModel::EditHyperlink
 
 			Ptr<DocumentParagraphRun> paragraph=paragraphs[paragraphIndex];
 			document_editor::RemoveHyperlink(paragraph.Obj(), runRanges, begin, end);
-			ClearUnnecessaryRun(paragraph.Obj());
+			ClearUnnecessaryRun(paragraph.Obj(), this);
 			return true;
 		}
 

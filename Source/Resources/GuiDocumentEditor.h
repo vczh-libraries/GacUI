@@ -31,7 +31,7 @@ namespace vl
 			extern void								ReplaceStyleName(DocumentParagraphRun* run, const WString& oldStyleName, const WString& newStyleName);
 			extern void								RemoveRun(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
 			extern void								CutRun(DocumentParagraphRun* run, RunRangeMap& runRanges, vint position, Ptr<DocumentRun>& leftRun, Ptr<DocumentRun>& rightRun);
-			extern void								ClearUnnecessaryRun(DocumentParagraphRun* run);
+			extern void								ClearUnnecessaryRun(DocumentParagraphRun* run, DocumentModel* model);
 			extern void								AddStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end, Ptr<DocumentStyleProperties> style);
 			extern void								AddHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName);
 			extern void								AddStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end, const WString& styleName);
