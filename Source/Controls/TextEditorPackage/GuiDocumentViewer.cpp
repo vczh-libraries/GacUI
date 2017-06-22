@@ -305,6 +305,8 @@ GuiDocumentCommonInterface
 					}
 					documentElement->SetCaret(caret, caret, true);
 					documentControl->TextChanged.Execute(documentControl->GetNotifyEventArguments());
+					UpdateCaretPoint();
+					SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 
 					// save run after editing
 					Ptr<DocumentModel> inputModel=documentElement->GetDocument()->CopyDocument(begin, caret, true);
@@ -682,6 +684,8 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetCaret(TextPos begin, TextPos end)
 			{
 				documentElement->SetCaret(begin, end, end>=begin);
+				UpdateCaretPoint();
+				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
 			TextPos GuiDocumentCommonInterface::CalculateCaretFromPoint(Point point)

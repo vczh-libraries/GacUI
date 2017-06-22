@@ -339,7 +339,7 @@ Type Declaration
 			END_ENUM_ITEM(INativeDialogService::FileDialogOptions)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeController)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::reflection::description::GetCurrentController)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::presentation::GetCurrentController)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ExecutablePath)
 

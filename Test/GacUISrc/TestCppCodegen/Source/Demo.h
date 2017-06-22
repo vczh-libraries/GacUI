@@ -485,7 +485,8 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentTabPage* self = static_cast<::demo::DocumentTabPage*>(nullptr);
-		::vl::presentation::controls::GuiMessageDialog* dialog = static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr);
+		::vl::presentation::controls::GuiMessageDialog* dialogMessage = static_cast<::vl::presentation::controls::GuiMessageDialog*>(nullptr);
+		::vl::presentation::controls::GuiOpenFileDialog* dialogOpen = static_cast<::vl::presentation::controls::GuiOpenFileDialog*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* buttonView = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiToolstripButton* buttonAlignment = static_cast<::vl::presentation::controls::GuiToolstripButton*>(nullptr);
 		::vl::presentation::controls::GuiDocumentViewer* document = static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr);

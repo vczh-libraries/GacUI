@@ -1285,8 +1285,8 @@ Closures
 
 	void __vwsnf31_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->dialog)->SetText(::vl::__vwsn::This(__vwsnthis_0->document)->GetActiveHyperlinkReference());
-		::vl::__vwsn::This(__vwsnthis_0->dialog)->ShowDialog();
+		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->SetText(::vl::__vwsn::This(__vwsnthis_0->document)->GetActiveHyperlinkReference());
+		::vl::__vwsn::This(__vwsnthis_0->dialogMessage)->ShowDialog();
 	}
 
 	//-------------------------------------------------------------------
@@ -1508,6 +1508,13 @@ Closures
 
 	void __vwsnf46_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
+		if (::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->ShowDialog())
+		{
+			auto imageService = ::vl::__vwsn::This(::vl::presentation::GetCurrentController())->ImageService();
+			auto image = ::vl::__vwsn::This(imageService)->CreateImageFromFile(::vl::__vwsn::This(__vwsnthis_0->dialogOpen)->GetFileName());
+			auto imageData = ::vl::Ptr<::vl::presentation::GuiImageData>(new ::vl::presentation::GuiImageData(image, static_cast<::vl::vint32_t>(0)));
+			::vl::__vwsn::This(__vwsnthis_0->document)->EditImage(::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretBegin(), ::vl::__vwsn::This(__vwsnthis_0->document)->GetCaretEnd(), imageData);
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -5844,12 +5851,28 @@ Class (::demo::DocumentTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::WString(L"Document Editor", false));
 		}
-		(this->dialog = new ::vl::presentation::controls::GuiMessageDialog());
+		(this->dialogMessage = new ::vl::presentation::controls::GuiMessageDialog());
 		{
-			::vl::__vwsn::This(this->dialog)->SetTitle(::vl::WString(L"You Clicked a Hyperlink!", false));
+			::vl::__vwsn::This(this->dialogMessage)->SetTitle(::vl::WString(L"You Clicked a Hyperlink!", false));
 		}
 		{
-			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialog));
+			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogMessage));
+		}
+		(this->dialogOpen = new ::vl::presentation::controls::GuiOpenFileDialog());
+		{
+			::vl::__vwsn::This(this->dialogOpen)->SetOptions((::vl::presentation::INativeDialogService::FileDialogOptions::FileDialogFileMustExist | ::vl::presentation::INativeDialogService::FileDialogOptions::FileDialogDereferenceLinks));
+		}
+		{
+			::vl::__vwsn::This(this->dialogOpen)->SetEnabledPreview(::vl::__vwsn::Parse<bool>(::vl::WString(L"true", false)));
+		}
+		{
+			::vl::__vwsn::This(this->dialogOpen)->SetTitle(::vl::WString(L"Select an Image", false));
+		}
+		{
+			::vl::__vwsn::This(this->dialogOpen)->SetFilter(::vl::WString(L"Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp", false));
+		}
+		{
+			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->dialogOpen));
 		}
 		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
@@ -6529,7 +6552,7 @@ Class (::demo::DocumentTabPageConstructor)
 		}
 		(this->commandInsertImage = new ::vl::presentation::controls::GuiToolstripCommand());
 		{
-			::vl::__vwsn::This(this->commandInsertImage)->SetText(::vl::WString(L"Insert Image", false));
+			::vl::__vwsn::This(this->commandInsertImage)->SetText(::vl::WString(L"Insert Image ...", false));
 		}
 		{
 			::vl::__vwsn::This(this->self)->AddComponent(static_cast<::vl::presentation::controls::GuiComponent*>(this->commandInsertImage));
@@ -9619,9 +9642,10 @@ namespace vl
 				CLASS_MEMBER_FIELD(commandUnderline)
 				CLASS_MEMBER_FIELD(commandUndo)
 				CLASS_MEMBER_FIELD(commandViewOnly)
-				CLASS_MEMBER_FIELD(dialog)
 				CLASS_MEMBER_FIELD(dialogColor)
 				CLASS_MEMBER_FIELD(dialogFont)
+				CLASS_MEMBER_FIELD(dialogMessage)
+				CLASS_MEMBER_FIELD(dialogOpen)
 				CLASS_MEMBER_FIELD(document)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::demo::DocumentTabPageConstructor)

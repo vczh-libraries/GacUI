@@ -65,7 +65,8 @@
   </ref.Ctor>
   <TabPage ref.Name="self" Text="Document Editor">
     <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
-    <MessageDialog ref.Name="dialog" Title="You Clicked a Hyperlink!"/>
+    <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!"/>
+    <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
     
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
       <att.Rows>
@@ -171,8 +172,8 @@
           <ev.ActiveHyperlinkExecuted-eval>
             <![CDATA[
               {
-                dialog.Text = document.ActiveHyperlinkReference;
-                dialog.ShowDialog();
+                dialogMessage.Text = document.ActiveHyperlinkReference;
+                dialogMessage.ShowDialog();
               }
             ]]>
           </ev.ActiveHyperlinkExecuted-eval>
@@ -228,11 +229,18 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image" Image-uri="res://ToolbarImages/Image">
+    <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image ..." Image-uri="res://ToolbarImages/Image">
       <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            if (dialogOpen.ShowDialog())
+            {
+              var imageService = INativeController::GetCurrentController().ImageService();
+              var image = imageService.CreateImageFromFile(dialogOpen.FileName);
+              var imageData = new ImageData^(image, 0);
+              document.EditImage(document.CaretBegin, document.CaretEnd, imageData);
+            }
           }
         ]]>
       </ev.Executed-eval>
