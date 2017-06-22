@@ -346,6 +346,8 @@ Window
 
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
 				void									MoveToScreenCenter();
+				/// <summary>Move the window to the center of the specified screen.</summary>
+				void									MoveToScreenCenter(INativeScreen* screen);
 				
 				/// <summary>
 				/// Test is the maximize box visible.

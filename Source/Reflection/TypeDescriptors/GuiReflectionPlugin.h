@@ -78,6 +78,7 @@ Type List (Basic)
 			F(presentation::DocumentEmbeddedObjectRun)\
 			F(presentation::DocumentStylePropertiesRun)\
 			F(presentation::DocumentStyleApplicationRun)\
+			F(presentation::DocumentHyperlinkRun::Package)\
 			F(presentation::DocumentHyperlinkRun)\
 			F(presentation::DocumentParagraphRun)\
 			F(presentation::DocumentStyle)\

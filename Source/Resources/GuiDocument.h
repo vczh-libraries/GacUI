@@ -233,6 +233,15 @@ Rich Content Document (run)
 		class DocumentHyperlinkRun : public DocumentStyleApplicationRun, public Description<DocumentHyperlinkRun>
 		{
 		public:
+			class Package : public Object, public Description<Package>
+			{
+			public:
+				collections::List<Ptr<DocumentHyperlinkRun>>		hyperlinks;
+				vint												row = -1;
+				vint												start = -1;
+				vint												end = -1;
+			};
+
 			/// <summary>Style name for normal state.</summary>
 			WString							normalStyleName;
 			/// <summary>Style name for active state.</summary>
@@ -322,44 +331,44 @@ Rich Content Document (model)
 			typedef collections::Dictionary<WString, Ptr<DocumentStyle>>				StyleMap;
 		public:
 			/// <summary>All paragraphs.</summary>
-			ParagraphList					paragraphs;
+			ParagraphList							paragraphs;
 			/// <summary>All available styles. These will not be persistant.</summary>
-			StyleMap						styles;
+			StyleMap								styles;
 			
 			DocumentModel();
 
-			static void						MergeStyle(Ptr<DocumentStyleProperties> style, Ptr<DocumentStyleProperties> parent);
-			void							MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName);
-			void							MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName);
-			void							MergeBaselineStyles(Ptr<DocumentModel> baselineDocument);
-			void							MergeDefaultFont(const FontProperties& defaultFont);
-			ResolvedStyle					GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context);
-			ResolvedStyle					GetStyle(const WString& styleName, const ResolvedStyle& context);
+			static void								MergeStyle(Ptr<DocumentStyleProperties> style, Ptr<DocumentStyleProperties> parent);
+			void									MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName);
+			void									MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName);
+			void									MergeBaselineStyles(Ptr<DocumentModel> baselineDocument);
+			void									MergeDefaultFont(const FontProperties& defaultFont);
+			ResolvedStyle							GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context);
+			ResolvedStyle							GetStyle(const WString& styleName, const ResolvedStyle& context);
 
-			WString							GetText(bool skipNonTextContent);
-			void							GetText(stream::TextWriter& writer, bool skipNonTextContent);
+			WString									GetText(bool skipNonTextContent);
+			void									GetText(stream::TextWriter& writer, bool skipNonTextContent);
 			
-			bool							CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
-			Ptr<DocumentModel>				CopyDocument(TextPos begin, TextPos end, bool deepCopy);
-			Ptr<DocumentModel>				CopyDocument();
-			bool							CutParagraph(TextPos position);
-			bool							CutEditRange(TextPos begin, TextPos end);
-			bool							EditContainer(TextPos begin, TextPos end, const Func<void(DocumentParagraphRun*, RunRangeMap&, vint, vint)>& editor);
+			bool									CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
+			Ptr<DocumentModel>						CopyDocument(TextPos begin, TextPos end, bool deepCopy);
+			Ptr<DocumentModel>						CopyDocument();
+			bool									CutParagraph(TextPos position);
+			bool									CutEditRange(TextPos begin, TextPos end);
+			bool									EditContainer(TextPos begin, TextPos end, const Func<void(DocumentParagraphRun*, RunRangeMap&, vint, vint)>& editor);
 			
-			vint							EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> replaceToModel, bool copy);
-			vint							EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs);
-			vint							EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
-			bool							EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
-			Ptr<DocumentImageRun>			EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
-			bool							EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName=NormalLinkStyleName, const WString& activeStyleName=ActiveLinkStyleName);
-			bool							RemoveHyperlink(vint paragraphIndex, vint begin, vint end);
-			Ptr<DocumentHyperlinkRun>		GetHyperlink(vint paragraphIndex, vint begin, vint end);
-			bool							EditStyleName(TextPos begin, TextPos end, const WString& styleName);
-			bool							RemoveStyleName(TextPos begin, TextPos end);
-			bool							RenameStyle(const WString& oldStyleName, const WString& newStyleName);
-			bool							ClearStyle(TextPos begin, TextPos end);
-			Ptr<DocumentStyleProperties>	SummarizeStyle(TextPos begin, TextPos end);
-			Nullable<Alignment>				SummarizeParagraphAlignment(TextPos begin, TextPos end);
+			vint									EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> replaceToModel, bool copy);
+			vint									EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs);
+			vint									EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
+			bool									EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
+			Ptr<DocumentImageRun>					EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
+			bool									EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName=NormalLinkStyleName, const WString& activeStyleName=ActiveLinkStyleName);
+			bool									RemoveHyperlink(vint paragraphIndex, vint begin, vint end);
+			Ptr<DocumentHyperlinkRun::Package>		GetHyperlink(vint paragraphIndex, vint begin, vint end);
+			bool									EditStyleName(TextPos begin, TextPos end, const WString& styleName);
+			bool									RemoveStyleName(TextPos begin, TextPos end);
+			bool									RenameStyle(const WString& oldStyleName, const WString& newStyleName);
+			bool									ClearStyle(TextPos begin, TextPos end);
+			Ptr<DocumentStyleProperties>			SummarizeStyle(TextPos begin, TextPos end);
+			Nullable<Alignment>						SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 			/// <summary>Load a document model from an xml.</summary>
 			/// <returns>The loaded document model.</returns>

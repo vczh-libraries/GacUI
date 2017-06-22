@@ -97,6 +97,9 @@
     <Filter Include="GacUI\Compiler\WorkflowCodegen">
       <UniqueIdentifier>{9ffc101d-a378-4c70-853b-3b9a05cace80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GacUI\Resources\DocumentEditor">
+      <UniqueIdentifier>{3ac523cb-7f16-46f2-9eaf-001ca1c8ec48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Import\VlppWorkflow.cpp">
@@ -498,6 +501,42 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_GetRunRange.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_LocaleStyle.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_LocaleHyperlink.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_CloneRun.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_CollectStyle.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_ReplaceStyleName.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_RemoveRun.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_CutRun.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_ClearUnnecessaryRun.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_AddContainer.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_RemoveContainer.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -838,6 +877,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h">
       <Filter>GacUI\Reflection\TypeDescriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Resources\GuiDocumentEditor.h">
+      <Filter>GacUI\Resources\DocumentEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

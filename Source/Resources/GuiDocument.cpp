@@ -193,7 +193,7 @@ DocumentModel
 			}
 			{
 				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
-				sp->color=Color(0, 0, 255);
+				sp->color=Color(255, 128, 0);
 				sp->underline=true;
 
 				Ptr<DocumentStyle> style=new DocumentStyle;

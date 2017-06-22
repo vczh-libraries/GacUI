@@ -90,6 +90,9 @@
     <Xml Include="Resources\FullControlTest\ToolbarImages\Images.xml">
       <Filter>Resource Files\FullControlTest\ToolbarImages</Filter>
     </Xml>
+    <Xml Include="Resources\FullControlTest\DocumentComponents.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">

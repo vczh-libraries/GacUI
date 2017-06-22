@@ -467,6 +467,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_AddContainer.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_ClearUnnecessaryRun.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_CloneRun.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_CollectStyle.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_CutRun.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_GetRunRange.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_LocaleHyperlink.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_LocaleStyle.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_RemoveContainer.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_RemoveRun.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_ReplaceStyleName.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Edit.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Load.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\GuiDocument_Save.cpp" />
@@ -620,6 +632,7 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiDocument.h" />
+    <ClInclude Include="..\..\..\Source\Resources\GuiDocumentEditor.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiParserManager.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiResource.h" />
     <ClInclude Include="..\..\..\Source\Resources\GuiResourceManager.h" />

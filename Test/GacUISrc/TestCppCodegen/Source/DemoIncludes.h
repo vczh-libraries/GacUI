@@ -48,6 +48,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::GenderItemTemplateConstructor)
 			DECL_TYPE_INFO(::demo::GenderVisualizer)
 			DECL_TYPE_INFO(::demo::GenderVisualizerConstructor)
+			DECL_TYPE_INFO(::demo::HyperlinkWindow)
+			DECL_TYPE_INFO(::demo::HyperlinkWindowConstructor)
 			DECL_TYPE_INFO(::demo::IViewModel)
 			DECL_TYPE_INFO(::demo::ListViewTabPage)
 			DECL_TYPE_INFO(::demo::ListViewTabPageConstructor)

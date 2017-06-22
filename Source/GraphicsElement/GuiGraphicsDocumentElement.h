@@ -118,7 +118,7 @@ Rich Content Document (element)
 					void									Render(Rect bounds)override;
 					void									OnElementStateChanged()override;
 					void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
-					Ptr<DocumentHyperlinkRun>				GetHyperlinkFromPoint(Point point);
+					Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point);
 
 					void									OpenCaret(TextPos caret, Color color, bool frontSide);
 					void									CloseCaret(TextPos caret);
@@ -290,7 +290,7 @@ Rich Content Document (element)
 				/// <summary>Get hyperlink from point.</summary>
 				/// <returns>Corressponding hyperlink id. Returns -1 indicates that the point is not in a hyperlink.</returns>
 				/// <param name="point">The point to get the hyperlink id.</param>
-				Ptr<DocumentHyperlinkRun>					GetHyperlinkFromPoint(Point point);
+				Ptr<DocumentHyperlinkRun::Package>			GetHyperlinkFromPoint(Point point);
 			};
 		}
 	}

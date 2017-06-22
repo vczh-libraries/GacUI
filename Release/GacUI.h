@@ -4231,6 +4231,15 @@ Rich Content Document (run)
 		class DocumentHyperlinkRun : public DocumentStyleApplicationRun, public Description<DocumentHyperlinkRun>
 		{
 		public:
+			class Package : public Object, public Description<Package>
+			{
+			public:
+				collections::List<Ptr<DocumentHyperlinkRun>>		hyperlinks;
+				vint												row = -1;
+				vint												start = -1;
+				vint												end = -1;
+			};
+
 			/// <summary>Style name for normal state.</summary>
 			WString							normalStyleName;
 			/// <summary>Style name for active state.</summary>
@@ -4320,44 +4329,44 @@ Rich Content Document (model)
 			typedef collections::Dictionary<WString, Ptr<DocumentStyle>>				StyleMap;
 		public:
 			/// <summary>All paragraphs.</summary>
-			ParagraphList					paragraphs;
+			ParagraphList							paragraphs;
 			/// <summary>All available styles. These will not be persistant.</summary>
-			StyleMap						styles;
+			StyleMap								styles;
 			
 			DocumentModel();
 
-			static void						MergeStyle(Ptr<DocumentStyleProperties> style, Ptr<DocumentStyleProperties> parent);
-			void							MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName);
-			void							MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName);
-			void							MergeBaselineStyles(Ptr<DocumentModel> baselineDocument);
-			void							MergeDefaultFont(const FontProperties& defaultFont);
-			ResolvedStyle					GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context);
-			ResolvedStyle					GetStyle(const WString& styleName, const ResolvedStyle& context);
+			static void								MergeStyle(Ptr<DocumentStyleProperties> style, Ptr<DocumentStyleProperties> parent);
+			void									MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName);
+			void									MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName);
+			void									MergeBaselineStyles(Ptr<DocumentModel> baselineDocument);
+			void									MergeDefaultFont(const FontProperties& defaultFont);
+			ResolvedStyle							GetStyle(Ptr<DocumentStyleProperties> sp, const ResolvedStyle& context);
+			ResolvedStyle							GetStyle(const WString& styleName, const ResolvedStyle& context);
 
-			WString							GetText(bool skipNonTextContent);
-			void							GetText(stream::TextWriter& writer, bool skipNonTextContent);
+			WString									GetText(bool skipNonTextContent);
+			void									GetText(stream::TextWriter& writer, bool skipNonTextContent);
 			
-			bool							CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
-			Ptr<DocumentModel>				CopyDocument(TextPos begin, TextPos end, bool deepCopy);
-			Ptr<DocumentModel>				CopyDocument();
-			bool							CutParagraph(TextPos position);
-			bool							CutEditRange(TextPos begin, TextPos end);
-			bool							EditContainer(TextPos begin, TextPos end, const Func<void(DocumentParagraphRun*, RunRangeMap&, vint, vint)>& editor);
+			bool									CheckEditRange(TextPos begin, TextPos end, RunRangeMap& relatedRanges);
+			Ptr<DocumentModel>						CopyDocument(TextPos begin, TextPos end, bool deepCopy);
+			Ptr<DocumentModel>						CopyDocument();
+			bool									CutParagraph(TextPos position);
+			bool									CutEditRange(TextPos begin, TextPos end);
+			bool									EditContainer(TextPos begin, TextPos end, const Func<void(DocumentParagraphRun*, RunRangeMap&, vint, vint)>& editor);
 			
-			vint							EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> replaceToModel, bool copy);
-			vint							EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs);
-			vint							EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
-			bool							EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
-			Ptr<DocumentImageRun>			EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
-			bool							EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName=NormalLinkStyleName, const WString& activeStyleName=ActiveLinkStyleName);
-			bool							RemoveHyperlink(vint paragraphIndex, vint begin, vint end);
-			Ptr<DocumentHyperlinkRun>		GetHyperlink(vint paragraphIndex, vint begin, vint end);
-			bool							EditStyleName(TextPos begin, TextPos end, const WString& styleName);
-			bool							RemoveStyleName(TextPos begin, TextPos end);
-			bool							RenameStyle(const WString& oldStyleName, const WString& newStyleName);
-			bool							ClearStyle(TextPos begin, TextPos end);
-			Ptr<DocumentStyleProperties>	SummarizeStyle(TextPos begin, TextPos end);
-			Nullable<Alignment>				SummarizeParagraphAlignment(TextPos begin, TextPos end);
+			vint									EditRun(TextPos begin, TextPos end, Ptr<DocumentModel> replaceToModel, bool copy);
+			vint									EditRunNoCopy(TextPos begin, TextPos end, const collections::Array<Ptr<DocumentParagraphRun>>& runs);
+			vint									EditText(TextPos begin, TextPos end, bool frontSide, const collections::Array<WString>& text);
+			bool									EditStyle(TextPos begin, TextPos end, Ptr<DocumentStyleProperties> style);
+			Ptr<DocumentImageRun>					EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image);
+			bool									EditHyperlink(vint paragraphIndex, vint begin, vint end, const WString& reference, const WString& normalStyleName=NormalLinkStyleName, const WString& activeStyleName=ActiveLinkStyleName);
+			bool									RemoveHyperlink(vint paragraphIndex, vint begin, vint end);
+			Ptr<DocumentHyperlinkRun::Package>		GetHyperlink(vint paragraphIndex, vint begin, vint end);
+			bool									EditStyleName(TextPos begin, TextPos end, const WString& styleName);
+			bool									RemoveStyleName(TextPos begin, TextPos end);
+			bool									RenameStyle(const WString& oldStyleName, const WString& newStyleName);
+			bool									ClearStyle(TextPos begin, TextPos end);
+			Ptr<DocumentStyleProperties>			SummarizeStyle(TextPos begin, TextPos end);
+			Nullable<Alignment>						SummarizeParagraphAlignment(TextPos begin, TextPos end);
 
 			/// <summary>Load a document model from an xml.</summary>
 			/// <returns>The loaded document model.</returns>
@@ -5704,7 +5713,7 @@ Rich Content Document (element)
 					void									Render(Rect bounds)override;
 					void									OnElementStateChanged()override;
 					void									NotifyParagraphUpdated(vint index, vint oldCount, vint newCount, bool updatedText);
-					Ptr<DocumentHyperlinkRun>				GetHyperlinkFromPoint(Point point);
+					Ptr<DocumentHyperlinkRun::Package>		GetHyperlinkFromPoint(Point point);
 
 					void									OpenCaret(TextPos caret, Color color, bool frontSide);
 					void									CloseCaret(TextPos caret);
@@ -5876,7 +5885,7 @@ Rich Content Document (element)
 				/// <summary>Get hyperlink from point.</summary>
 				/// <returns>Corressponding hyperlink id. Returns -1 indicates that the point is not in a hyperlink.</returns>
 				/// <param name="point">The point to get the hyperlink id.</param>
-				Ptr<DocumentHyperlinkRun>					GetHyperlinkFromPoint(Point point);
+				Ptr<DocumentHyperlinkRun::Package>			GetHyperlinkFromPoint(Point point);
 			};
 		}
 	}
@@ -9815,6 +9824,8 @@ Window
 
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
 				void									MoveToScreenCenter();
+				/// <summary>Move the window to the center of the specified screen.</summary>
+				void									MoveToScreenCenter(INativeScreen* screen);
 				
 				/// <summary>
 				/// Test is the maximize box visible.
@@ -14883,8 +14894,7 @@ GuiDocumentCommonInterface
 				GuiControl*									documentControl;
 				elements::GuiDocumentElement*				documentElement;
 				compositions::GuiBoundsComposition*			documentComposition;
-				Ptr<DocumentHyperlinkRun>					activeHyperlink;
-				vint										activeHyperlinkParagraph;
+				Ptr<DocumentHyperlinkRun::Package>			activeHyperlinks;
 				bool										dragging;
 				EditMode									editMode;
 
@@ -14898,7 +14908,7 @@ GuiDocumentCommonInterface
 				void										Move(TextPos caret, bool shift, bool frontSide);
 				bool										ProcessKey(vint code, bool shift, bool ctrl);
 				void										InstallDocumentViewer(GuiControl* _sender, compositions::GuiGraphicsComposition* _container);
-				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun> hyperlink, vint paragraphIndex=-1);
+				void										SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package);
 				void										ActivateActiveHyperlink(bool activate);
 				void										AddShortcutCommand(vint key, const Func<void()>& eventHandler);
 				void										EditTextInternal(TextPos begin, TextPos end, const Func<void(TextPos, TextPos, vint&, vint&)>& editor);
@@ -15060,7 +15070,12 @@ GuiDocumentCommonInterface
 				/// <param name="begin">The begin position of the range.</param>
 				/// <param name="end">The end position of the range.</param>
 				/// <param name="alignments">The alignment for each paragraph.</param>
-				void										SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
+				void										SetParagraphAlignments(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments);
+				/// <summary>Set the alignment of paragraphs in a specified range.</summary>
+				/// <param name="begin">The begin position of the range.</param>
+				/// <param name="end">The end position of the range.</param>
+				/// <param name="alignment">The alignment for each paragraph.</param>
+				void										SetParagraphAlignment(TextPos begin, TextPos end, Nullable<Alignment> alignment);
 				/// <summary>Summarize the text alignment in a specified range.</summary>
 				/// <returns>The text alignment summary.</returns>
 				/// <param name="begin">The begin position of the range.</param>
@@ -21806,6 +21821,56 @@ GuiGrammarColorizer
 				/// <returns>The parsing executor.</returns>
 				Ptr<RepeatingParsingExecutor>								GetParsingExecutor();
 			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+RESOURCES\GUIDOCUMENTEDITOR.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Resource
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_RESOURCES_GUIDOCUMENTEDITOR
+#define VCZH_PRESENTATION_RESOURCES_GUIDOCUMENTEDITOR
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		typedef DocumentModel::RunRange			RunRange;
+		typedef DocumentModel::RunRangeMap		RunRangeMap;
+
+		namespace document_editor
+		{
+			extern void									GetRunRange(DocumentParagraphRun* run, RunRangeMap& runRanges);
+			extern void									LocateStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint position, bool frontSide, collections::List<DocumentContainerRun*>& locatedRuns);
+			extern Ptr<DocumentHyperlinkRun::Package>	LocateHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint row, vint start, vint end);
+			extern Ptr<DocumentStyleProperties>			CopyStyle(Ptr<DocumentStyleProperties> style);
+			extern Ptr<DocumentRun>						CopyRun(DocumentRun* run);
+			extern Ptr<DocumentRun>						CopyStyledText(collections::List<DocumentContainerRun*>& styleRuns, const WString& text);
+			extern Ptr<DocumentRun>						CopyRunRecursively(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end, bool deepCopy);
+			extern void									CollectStyleName(DocumentParagraphRun* run, collections::List<WString>& styleNames);
+			extern void									ReplaceStyleName(DocumentParagraphRun* run, const WString& oldStyleName, const WString& newStyleName);
+			extern void									RemoveRun(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
+			extern void									CutRun(DocumentParagraphRun* run, RunRangeMap& runRanges, vint position, Ptr<DocumentRun>& leftRun, Ptr<DocumentRun>& rightRun);
+			extern void									ClearUnnecessaryRun(DocumentParagraphRun* run, DocumentModel* model);
+			extern void									AddStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end, Ptr<DocumentStyleProperties> style);
+			extern void									AddHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end, const WString& reference, const WString& normalStyleName, const WString& activeStyleName);
+			extern void									AddStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end, const WString& styleName);
+			extern void									RemoveHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
+			extern void									RemoveStyleName(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
+			extern void									ClearStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, vint start, vint end);
+			extern Ptr<DocumentStyleProperties>			SummerizeStyle(DocumentParagraphRun* run, RunRangeMap& runRanges, DocumentModel* model, vint start, vint end);
+			extern void									AggregateStyle(Ptr<DocumentStyleProperties>& dst, Ptr<DocumentStyleProperties> src);
 		}
 	}
 }

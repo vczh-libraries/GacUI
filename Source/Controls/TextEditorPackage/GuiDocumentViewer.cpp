@@ -240,24 +240,26 @@ GuiDocumentCommonInterface
 				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
 			}
 
-			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun> hyperlink, vint paragraphIndex)
+			void GuiDocumentCommonInterface::SetActiveHyperlink(Ptr<DocumentHyperlinkRun::Package> package)
 			{
-				if(activeHyperlink!=hyperlink)
-				{
-					ActivateActiveHyperlink(false);
-					activeHyperlink=hyperlink;
-					activeHyperlinkParagraph=paragraphIndex;
-					ActivateActiveHyperlink(true);
-					ActiveHyperlinkChanged.Execute(documentControl->GetNotifyEventArguments());
-				}
+				ActivateActiveHyperlink(false);
+				activeHyperlinks =
+					!package ? nullptr :
+					package->hyperlinks.Count() == 0 ? nullptr :
+					package;
+				ActivateActiveHyperlink(true);
+				ActiveHyperlinkChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
 			void GuiDocumentCommonInterface::ActivateActiveHyperlink(bool activate)
 			{
-				if(activeHyperlink)
+				if (activeHyperlinks)
 				{
-					activeHyperlink->styleName=activate?activeHyperlink->activeStyleName:activeHyperlink->normalStyleName;
-					documentElement->NotifyParagraphUpdated(activeHyperlinkParagraph, 1, 1, false);
+					FOREACH(Ptr<DocumentHyperlinkRun>, run, activeHyperlinks->hyperlinks)
+					{
+						run->styleName = activate ? run->activeStyleName : run->normalStyleName;
+					}
+					documentElement->NotifyParagraphUpdated(activeHyperlinks->row, 1, 1, false);
 				}
 			}
 
@@ -303,6 +305,8 @@ GuiDocumentCommonInterface
 					}
 					documentElement->SetCaret(caret, caret, true);
 					documentControl->TextChanged.Execute(documentControl->GetNotifyEventArguments());
+					UpdateCaretPoint();
+					SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 
 					// save run after editing
 					Ptr<DocumentModel> inputModel=documentElement->GetDocument()->CopyDocument(begin, caret, true);
@@ -431,30 +435,38 @@ GuiDocumentCommonInterface
 					{
 					case ViewOnly:
 						{
-							Point point(arguments.x, arguments.y);
-							Ptr<DocumentHyperlinkRun> hyperlink=documentElement->GetHyperlinkFromPoint(point);
-							vint hyperlinkParagraph=hyperlink?documentElement->CalculateCaretFromPoint(point).row:-1;
+							auto package = documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y });
+							bool handCursor = false;
 
 							if(dragging)
 							{
-								if(activeHyperlink)
+								if(activeHyperlinks)
 								{
-									ActivateActiveHyperlink(activeHyperlink==hyperlink);
+									if (package && CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
+									{
+										ActivateActiveHyperlink(true);
+										handCursor = true;
+									}
+									else
+									{
+										ActivateActiveHyperlink(false);
+									}
 								}
 							}
 							else
 							{
-								SetActiveHyperlink(hyperlink, hyperlinkParagraph);
+								SetActiveHyperlink(package);
+								handCursor = activeHyperlinks;
 							}
 
-							if(activeHyperlink && activeHyperlink==hyperlink)
+							if(handCursor)
 							{
-								INativeCursor* cursor=GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand);
+								auto cursor = GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::Hand);
 								documentComposition->SetAssociatedCursor(cursor);
 							}
 							else
 							{
-								documentComposition->SetAssociatedCursor(0);
+								documentComposition->SetAssociatedCursor(nullptr);
 							}
 						}
 						break;
@@ -479,12 +491,7 @@ GuiDocumentCommonInterface
 					switch(editMode)
 					{
 					case ViewOnly:
-						{
-							Point point(arguments.x, arguments.y);
-							Ptr<DocumentHyperlinkRun> hyperlink=documentElement->GetHyperlinkFromPoint(point);
-							vint hyperlinkParagraph=hyperlink?documentElement->CalculateCaretFromPoint(point).row:-1;
-							SetActiveHyperlink(hyperlink, hyperlinkParagraph);
-						}
+						SetActiveHyperlink(documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y }));
 						break;
 					case Selectable:
 					case Editable:
@@ -511,15 +518,17 @@ GuiDocumentCommonInterface
 					{
 					case ViewOnly:
 						{
-							Point point(arguments.x, arguments.y);
-							Ptr<DocumentHyperlinkRun> hyperlink=documentElement->GetHyperlinkFromPoint(point);
-							if(activeHyperlink!=hyperlink)
+							auto package = documentElement->GetHyperlinkFromPoint({ arguments.x, arguments.y });
+							if(activeHyperlinks)
 							{
-								SetActiveHyperlink(0);
-							}
-							if(activeHyperlink)
-							{
-								ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
+								if (package && CompareEnumerable(activeHyperlinks->hyperlinks, package->hyperlinks) == 0)
+								{
+									ActiveHyperlinkExecuted.Execute(documentControl->GetNotifyEventArguments());
+								}
+								else
+								{
+									SetActiveHyperlink(nullptr);
+								}
 							}
 						}
 						break;
@@ -584,7 +593,6 @@ GuiDocumentCommonInterface
 				,caretColor(_caretColor)
 				,documentElement(0)
 				,documentComposition(0)
-				,activeHyperlinkParagraph(-1)
 				,dragging(false)
 				,editMode(ViewOnly)
 				,documentControl(0)
@@ -676,6 +684,8 @@ GuiDocumentCommonInterface
 			void GuiDocumentCommonInterface::SetCaret(TextPos begin, TextPos end)
 			{
 				documentElement->SetCaret(begin, end, end>=begin);
+				UpdateCaretPoint();
+				SelectionChanged.Execute(documentControl->GetNotifyEventArguments());
 			}
 
 			TextPos GuiDocumentCommonInterface::CalculateCaretFromPoint(Point point)
@@ -795,33 +805,43 @@ GuiDocumentCommonInterface
 				return documentElement->SummarizeStyle(begin, end);
 			}
 
-			void GuiDocumentCommonInterface::SetParagraphAlignment(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
+			void GuiDocumentCommonInterface::SetParagraphAlignments(TextPos begin, TextPos end, const collections::Array<Nullable<Alignment>>& alignments)
 			{
-				vint first=begin.row;
-				vint last=end.row;
-				if(first>last)
+				vint first = begin.row;
+				vint last = end.row;
+				if (first > last)
 				{
-					vint temp=first;
-					first=last;
-					last=temp;
+					vint temp = first;
+					first = last;
+					last = temp;
 				}
 
-				Ptr<DocumentModel> document=documentElement->GetDocument();
-				if(0<=first && first<document->paragraphs.Count() && 0<=last && last<document->paragraphs.Count() && last-first+1==alignments.Count())
+				Ptr<DocumentModel> document = documentElement->GetDocument();
+				if (0 <= first && first < document->paragraphs.Count() && 0 <= last && last < document->paragraphs.Count() && last - first + 1 == alignments.Count())
 				{
-					Ptr<GuiDocumentUndoRedoProcessor::SetAlignmentStruct> arguments=new GuiDocumentUndoRedoProcessor::SetAlignmentStruct;
-					arguments->start=first;
-					arguments->end=last;
+					Ptr<GuiDocumentUndoRedoProcessor::SetAlignmentStruct> arguments = new GuiDocumentUndoRedoProcessor::SetAlignmentStruct;
+					arguments->start = first;
+					arguments->end = last;
 					arguments->originalAlignments.Resize(alignments.Count());
 					arguments->inputAlignments.Resize(alignments.Count());
-					for(vint i=first;i<=last;i++)
+					for (vint i = first; i <= last; i++)
 					{
-						arguments->originalAlignments[i-first]=document->paragraphs[i]->alignment;
-						arguments->inputAlignments[i-first]=alignments[i-first];
+						arguments->originalAlignments[i - first] = document->paragraphs[i]->alignment;
+						arguments->inputAlignments[i - first] = alignments[i - first];
 					}
 					documentElement->SetParagraphAlignment(begin, end, alignments);
 					undoRedoProcessor->OnSetAlignment(arguments);
 				}
+			}
+
+			void GuiDocumentCommonInterface::SetParagraphAlignment(TextPos begin, TextPos end, Nullable<Alignment> alignment)
+			{
+				Array<Nullable<Alignment>> alignments(abs(begin.row - end.row) + 1);
+				for (vint i = 0; i < alignments.Count(); i++)
+				{
+					alignments[i] = alignment;
+				}
+				SetParagraphAlignments(begin, end, alignments);
 			}
 
 			Nullable<Alignment> GuiDocumentCommonInterface::SummarizeParagraphAlignment(TextPos begin, TextPos end)
@@ -839,7 +859,7 @@ GuiDocumentCommonInterface
 
 			WString GuiDocumentCommonInterface::GetActiveHyperlinkReference()
 			{
-				return activeHyperlink?activeHyperlink->reference:L"";
+				return activeHyperlinks ? activeHyperlinks->hyperlinks[0]->reference : L"";
 			}
 
 			GuiDocumentCommonInterface::EditMode GuiDocumentCommonInterface::GetEditMode()
@@ -849,11 +869,9 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetEditMode(EditMode value)
 			{
-				if(activeHyperlink)
+				if(activeHyperlinks)
 				{
-					SetActiveHyperlink(0);
-					activeHyperlink=0;
-					activeHyperlinkParagraph=-1;
+					SetActiveHyperlink(nullptr);
 				}
 
 				editMode=value;

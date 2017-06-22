@@ -25,19 +25,34 @@
           alignment == Alignment::Left ? commandAlignLeft :
           alignment == Alignment::Center ? commandAlignCenter :
           alignment == Alignment::Right ? commandAlignRight :
-          null;
+          commandAlignDefault;
       }
       
       @cpp:Private
-      func SelectAlignmentImage() : GuiImageData^
+      func SetAlignment(alignment : Alignment?) : void
       {
-        var command = SelectAlignmentCommand();
-        return command is null ? (cast (GuiImageData^) self.ResolveResource("res", "ToolbarImages/TextAlign", true)) : command.Image;
+        document.SetParagraphAlignment(document.CaretBegin, document.CaretEnd, alignment);
+        self.UpdateSubscriptions();
       }
       
       @cpp:Private
-      func SetAlignment(alignment : Alignment) : void
+      prop HasEditableSelection : bool = false {}
+      
+      @cpp:Private
+      prop HasEditableSelectionInSingleParagraph : bool = false {}
+      
+      @cpp:Private
+      func HasEditableCursor() : bool
       {
+        return document.EditMode == DocumentCommonInterface::EditMode::Editable;
+      }
+      
+      @cpp:Private
+      func HasEditableHyperlink(forEdit : bool) : bool
+      {
+        var a = document.CaretBegin;
+        var b = document.CaretEnd;
+        return a.row == b.row and a.column != b.column;
       }
     ]]>
   </ref.Members>
@@ -49,6 +64,10 @@
     ]]>
   </ref.Ctor>
   <TabPage ref.Name="self" Text="Document Editor">
+    <att.HasEditableSelection-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.HasEditableSelection-bind>
+    <MessageDialog ref.Name="dialogMessage" Title="You Clicked a Hyperlink!"/>
+    <OpenFileDialog ref.Name="dialogOpen" Title="Select an Image" Filter="Image Files (*.jpg;*.png;*.bmp)|*.jpg;*.png;*.bmp" EnabledPreview="true" Options="FileDialogFileMustExist|FileDialogDereferenceLinks"/>
+    
     <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
       <att.Rows>
         <_>composeType:MinSize</_>
@@ -83,6 +102,7 @@
               </MenuItemButton>
               <MenuItemButton Text="Paragram Alignment" Alt="P">
                 <att.SubMenu-set>
+                  <MenuItemButton Command-ref="commandAlignDefault" Alt="D"/>
                   <MenuItemButton Command-ref="commandAlignLeft" Alt="L"/>
                   <MenuItemButton Command-ref="commandAlignCenter" Alt="C"/>
                   <MenuItemButton Command-ref="commandAlignRight" Alt="R"/>
@@ -111,8 +131,9 @@
             </att.SubMenu-set>
           </ToolstripDropdownButton>
           <ToolstripDropdownButton ref.Name="buttonAlignment" Alt="P">
-            <att.Image-bind>document.observe as _(self.SelectAlignmentImage() on _.SelectionChanged)</att.Image-bind>
+            <att.Image-bind>document.observe as _(self.SelectAlignmentCommand().Image on _.SelectionChanged)</att.Image-bind>
             <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandAlignDefault" Alt="D"/>
               <MenuItemButton Command-ref="commandAlignLeft" Alt="L"/>
               <MenuItemButton Command-ref="commandAlignCenter" Alt="C"/>
               <MenuItemButton Command-ref="commandAlignRight" Alt="R"/>
@@ -128,10 +149,13 @@
           <ToolstripSplitter/>
           <ToolstripButton Command-ref="commandDelete" Alt="D"/>
           <ToolstripSplitter/>
-          <ToolstripButton Command-ref="commandInsertImage" Alt="I"/>
-          <ToolstripButton Command-ref="commandEditHyperlink" Alt="L"/>
-          <ToolstripButton Command-ref="commandRemoveHyperlink" Alt="R"/>
-          <ToolstripSplitter/>
+          <ToolstripSplitButton Command-ref="commandInsertImage" Alt="I">
+            <att.SubMenu-set>
+              <MenuItemButton Command-ref="commandInsertImage" Alt="I"/>
+              <MenuItemButton Command-ref="commandEditHyperlink" Alt="L"/>
+              <MenuItemButton Command-ref="commandRemoveHyperlink" Alt="R"/>
+            </att.SubMenu-set>
+          </ToolstripSplitButton>
           <ToolstripButton Command-ref="commandBold" Alt="B"/>
           <ToolstripButton Command-ref="commandItalic" Alt="I"/>
           <ToolstripButton Command-ref="commandUnderline" Alt="U"/>
@@ -145,6 +169,14 @@
       <Cell Site="row:2 column:0">
         <DocumentViewer ref.Name="document" EditMode="Editable">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ev.ActiveHyperlinkExecuted-eval>
+            <![CDATA[
+              {
+                dialogMessage.Text = document.ActiveHyperlinkReference;
+                dialogMessage.ShowDialog();
+              }
+            ]]>
+          </ev.ActiveHyperlinkExecuted-eval>
         </DocumentViewer>
       </Cell>
     </Table>
@@ -171,7 +203,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://ToolbarImages/Cut" ShortcutBuilder="Ctrl+X">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[document.Cut();]]>
       </ev.Executed-eval>
@@ -185,7 +217,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://ToolbarImages/Delete">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[document.SetSelectionText("");]]>
       </ev.Executed-eval>
@@ -197,35 +229,63 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
-    <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image" Image-uri="res://ToolbarImages/Image">
+    <ToolstripCommand ref.Name="commandInsertImage" Text="Insert Image ..." Image-uri="res://ToolbarImages/Image">
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            if (dialogOpen.ShowDialog())
+            {
+              var imageService = INativeController::GetCurrentController().ImageService();
+              var image = imageService.CreateImageFromFile(dialogOpen.FileName);
+              var imageData = new ImageData^(image, 0);
+              document.EditImage(document.CaretBegin, document.CaretEnd, imageData);
+            }
           }
         ]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandEditHyperlink" Text="Edit Hyperlink ..." Image-uri="res://ToolbarImages/Link">
+      <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(true) on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
-          {
+          $Async{
+            var mainWindow = self.RelatedControlHost as controls::GuiWindow*;
+            
+            var window = new HyperlinkWindow*();
+            window.MoveToScreenCenter(mainWindow.RelatedScreen);
+            $Await window.ShowModalAsync(mainWindow);
+            
+            if (window.Url is not null)
+            {
+              var row = document.CaretBegin.row;
+              var begin = document.CaretBegin.column;
+              var end = document.CaretEnd.column;
+              document.EditHyperlink(row, begin, end, cast string window.Url, "#NormalLink", "#ActiveLink");
+            }
+            delete window;
           }
         ]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandRemoveHyperlink" Text="Remove Hyperlink" Image-uri="res://ToolbarImages/RemoveLink">
+      <att.Enabled-bind>document.observe as _(self.HasEditableHyperlink(false) on _.SelectionChanged)</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
+            var row = document.CaretBegin.row;
+            var begin = document.CaretBegin.column;
+            var end = document.CaretEnd.column;
+            document.RemoveHyperlink(row, begin, end);
           }
         ]]>
       </ev.Executed-eval>
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandBold" Text="Bold" Image-uri="res://ToolbarImages/Bold">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).bold == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[
@@ -239,7 +299,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandItalic" Text="Italic" Image-uri="res://ToolbarImages/Italic">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).italic == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[
@@ -253,7 +313,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandUnderline" Text="Underline" Image-uri="res://ToolbarImages/Underline">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).underline == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[
@@ -267,7 +327,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandStrike" Text="Strike" Image-uri="res://ToolbarImages/Strike">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(_.SummarizeStyle(_.CaretBegin, _.CaretEnd).strikeline == true on _.SelectionChanged, _.ModifiedChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[
@@ -284,7 +344,7 @@
     <FontDialog ref.Name="dialogFont" ShowEffect="false" ShowSelection="true" ForceFontExist="true"/>
 
     <ToolstripCommand ref.Name="commandFont" Text="Set Font ..." Image-uri="res://ToolbarImages/Font">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
@@ -314,7 +374,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandColor" Text="Text Color ..." Image-uri="res://ToolbarImages/Color">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
@@ -341,7 +401,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandBackColor" Text="Background Color ..." Image-uri="res://ToolbarImages/BackColor">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableSelection</att.Enabled-bind>
       <ev.Executed-eval>
         <![CDATA[
           {
@@ -385,8 +445,15 @@
       </ev.Executed-eval>
     </ToolstripCommand>
 
+    <ToolstripCommand ref.Name="commandAlignDefault" Text="Set Alignment to Default (Left)" Image-uri="res://ToolbarImages/TextAlign">
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
+      <ev.Executed-eval>
+        <![CDATA[self.SetAlignment(null);]]>
+      </ev.Executed-eval>
+    </ToolstripCommand>
+
     <ToolstripCommand ref.Name="commandAlignLeft" Text="Set Alignment to Left" Image-uri="res://ToolbarImages/TextAlignLeft">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignLeft on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Left);]]>
@@ -394,7 +461,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandAlignCenter" Text="Set Alignment to Center" Image-uri="res://ToolbarImages/TextAlignCenter">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignCenter on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Center);]]>
@@ -402,7 +469,7 @@
     </ToolstripCommand>
 
     <ToolstripCommand ref.Name="commandAlignRight" Text="Set Alignment to Right" Image-uri="res://ToolbarImages/TextAlignRight">
-      <att.Enabled-bind>document.observe as _(_.CanCut() on _.SelectionChanged)</att.Enabled-bind>
+      <att.Enabled-bind>self.HasEditableCursor()</att.Enabled-bind>
       <att.Selected-bind>document.observe as _(self.SelectAlignmentCommand() == commandAlignRight on _.SelectionChanged)</att.Selected-bind>
       <ev.Executed-eval>
         <![CDATA[self.SetAlignment(Right);]]>

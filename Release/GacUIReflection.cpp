@@ -505,7 +505,7 @@ Type Declaration
 			END_ENUM_ITEM(INativeDialogService::FileDialogOptions)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeController)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::reflection::description::GetCurrentController)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::presentation::GetCurrentController)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ExecutablePath)
 
@@ -615,6 +615,13 @@ Type Declaration
 				
 				CLASS_MEMBER_FIELD(styleName)
 			END_CLASS_MEMBER(DocumentStyleApplicationRun)
+
+			BEGIN_CLASS_MEMBER(DocumentHyperlinkRun::Package)
+				CLASS_MEMBER_FIELD(hyperlinks)
+				CLASS_MEMBER_FIELD(row)
+				CLASS_MEMBER_FIELD(start)
+				CLASS_MEMBER_FIELD(end)
+			END_CLASS_MEMBER(DocumentHyperlinkRun::Package)
 
 			BEGIN_CLASS_MEMBER(DocumentHyperlinkRun)
 				CLASS_MEMBER_BASE(DocumentStyleApplicationRun)
@@ -1629,6 +1636,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Bounds)
 				CLASS_MEMBER_PROPERTY_FAST(ShortcutKeyManager)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(AnimationManager)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RelatedScreen)
 
 				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetFocused, NO_PARAMETER)
@@ -1658,7 +1666,8 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(IconVisible)
 				CLASS_MEMBER_PROPERTY_FAST(TitleBar)
 
-				CLASS_MEMBER_METHOD(MoveToScreenCenter, NO_PARAMETER)
+				CLASS_MEMBER_METHOD_OVERLOAD(MoveToScreenCenter, NO_PARAMETER, void(GuiWindow::*)())
+				CLASS_MEMBER_METHOD_OVERLOAD(MoveToScreenCenter, { L"screen" }, void(GuiWindow::*)(INativeScreen*))
 				CLASS_MEMBER_METHOD(ShowModal, { L"owner" _ L"callback" })
 				CLASS_MEMBER_METHOD(ShowModalAndDelete, { L"owner" _ L"callback" })
 				CLASS_MEMBER_METHOD(ShowModalAsync, { L"owner" })
@@ -2297,14 +2306,15 @@ Type Declaration
 				CLASS_MEMBER_METHOD(EditText, {L"begin" _ L"end" _ L"frontSide" _ L"text"})
 				CLASS_MEMBER_METHOD(EditStyle, {L"begin" _ L"end" _ L"style"})
 				CLASS_MEMBER_METHOD(EditImage, {L"begin" _ L"end" _ L"image"})
-				CLASS_MEMBER_METHOD(EditImage, {L"paragraphIndex" _ L"begin" _ L"end" _ L"reference" _ L"normalStyleName" _ L"activeStyleName"})
+				CLASS_MEMBER_METHOD(EditHyperlink, {L"paragraphIndex" _ L"begin" _ L"end" _ L"reference" _ L"normalStyleName" _ L"activeStyleName"})
 				CLASS_MEMBER_METHOD(RemoveHyperlink, {L"paragraphIndex" _ L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(EditStyleName, {L"begin" _ L"end" _ L"styleName"})
 				CLASS_MEMBER_METHOD(RemoveStyleName, {L"begin" _ L"end" _ L"image"})
 				CLASS_MEMBER_METHOD(RenameStyle, {L"oldStyleName" _ L"newStyleName"})
 				CLASS_MEMBER_METHOD(ClearStyle, {L"begin" _ L"end"})
 				CLASS_MEMBER_METHOD(SummarizeStyle, {L"begin" _ L"end"})
-				CLASS_MEMBER_METHOD(SetParagraphAlignment, {L"begin" _ L"end" _ L"alignments"})
+				CLASS_MEMBER_METHOD(SetParagraphAlignments, { L"begin" _ L"end" _ L"alignments" })
+				CLASS_MEMBER_METHOD(SetParagraphAlignment, { L"begin" _ L"end" _ L"alignment" })
 				CLASS_MEMBER_METHOD(SummarizeParagraphAlignment, { L"begin" _ L"end" })
 				CLASS_MEMBER_METHOD(SelectAll, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CanCut, NO_PARAMETER)
