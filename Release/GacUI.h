@@ -9165,246 +9165,6 @@ Basic Construction
 				{
 				}
 			};
-			
-			namespace list
-			{
-/***********************************************************************
-List interface common implementation
-***********************************************************************/
-
-				template<typename T, typename K=typename KeyType<T>::Type>
-				class ItemsBase : public Object, public virtual collections::IEnumerable<T>
-				{
-				protected:
-					collections::List<T, K>					items;
-
-					virtual void NotifyUpdateInternal(vint start, vint count, vint newCount)
-					{
-					}
-
-					virtual bool QueryInsert(vint index, const T& value)
-					{
-						return true;
-					}
-
-					virtual void BeforeInsert(vint index, const T& value)
-					{
-					}
-
-					virtual void AfterInsert(vint index, const T& value)
-					{
-					}
-
-					virtual bool QueryRemove(vint index, const T& value)
-					{
-						return true;
-					}
-
-					virtual void BeforeRemove(vint index, const T& value)
-					{
-					}
-
-					virtual void AfterRemove(vint index, vint count)
-					{
-					}
-					
-				public:
-					ItemsBase()
-					{
-					}
-
-					~ItemsBase()
-					{
-					}
-
-					collections::IEnumerator<T>* CreateEnumerator()const
-					{
-						return items.CreateEnumerator();
-					}
-
-					bool NotifyUpdate(vint start, vint count=1)
-					{
-						if(start<0 || start>=items.Count() || count<=0 || start+count>items.Count())
-						{
-							return false;
-						}
-						else
-						{
-							NotifyUpdateInternal(start, count, count);
-							return true;
-						}
-					}
-
-					bool Contains(const K& item)const
-					{
-						return items.Contains(item);
-					}
-
-					vint Count()const
-					{
-						return items.Count();
-					}
-
-					vint Count()
-					{
-						return items.Count();
-					}
-
-					const T& Get(vint index)const
-					{
-						return items.Get(index);
-					}
-
-					const T& operator[](vint index)const
-					{
-						return items.Get(index);
-					}
-
-					vint IndexOf(const K& item)const
-					{
-						return items.IndexOf(item);
-					}
-
-					vint Add(const T& item)
-					{
-						return Insert(items.Count(), item);
-					}
-
-					bool Remove(const K& item)
-					{
-						vint index=items.IndexOf(item);
-						if(index==-1) return false;
-						return RemoveAt(index);
-					}
-
-					bool RemoveAt(vint index)
-					{
-						if (0 <= index && index < items.Count() && QueryRemove(index, items[index]))
-						{
-							BeforeRemove(index, items[index]);
-							T item = items[index];
-							items.RemoveAt(index);
-							AfterRemove(index, 1);
-							NotifyUpdateInternal(index, 1, 0);
-							return true;
-						}
-						return false;
-					}
-
-					bool RemoveRange(vint index, vint count)
-					{
-						if(count<=0) return false;
-						if (0 <= index && index<items.Count() && index + count <= items.Count())
-						{
-							for (vint i = 0; i < count; i++)
-							{
-								if (!QueryRemove(index + 1, items[index + i])) return false;
-							}
-							for (vint i = 0; i < count; i++)
-							{
-								BeforeRemove(index + i, items[index + i]);
-							}
-							items.RemoveRange(index, count);
-							AfterRemove(index, count);
-							NotifyUpdateInternal(index, count, 0);
-							return true;
-						}
-						return false;
-					}
-
-					bool Clear()
-					{
-						vint count = items.Count();
-						for (vint i = 0; i < count; i++)
-						{
-							if (!QueryRemove(i, items[i])) return false;
-						}
-						for (vint i = 0; i < count; i++)
-						{
-							BeforeRemove(i, items[i]);
-						}
-						items.Clear();
-						AfterRemove(0, count);
-						NotifyUpdateInternal(0, count, 0);
-						return true;
-					}
-
-					vint Insert(vint index, const T& item)
-					{
-						if (0 <= index && index <= items.Count() && QueryInsert(index, item))
-						{
-							BeforeInsert(index, item);
-							items.Insert(index, item);
-							AfterInsert(index, item);
-							NotifyUpdateInternal(index, 0, 1);
-							return index;
-						}
-						else
-						{
-							return -1;
-						}
-					}
-
-					bool Set(vint index, const T& item)
-					{
-						if (0 <= index && index < items.Count())
-						{
-							if (QueryRemove(index, items[index]) && QueryInsert(index, item))
-							{
-								BeforeRemove(index, items[index]);
-								items.RemoveAt(index);
-								AfterRemove(index, 1);
-
-								BeforeInsert(index, item);
-								items.Insert(index, item);
-								AfterInsert(index, item);
-
-								NotifyUpdateInternal(index, 1, 1);
-								return true;
-							}
-						}
-						return false;
-					}
-				};
-
-				template<typename T>
-				class ObservableList : public ItemsBase<T>
-				{
-				protected:
-					Ptr<description::IValueObservableList>		observableList;
-
-					void NotifyUpdateInternal(vint start, vint count, vint newCount)override
-					{
-						if (observableList)
-						{
-							observableList->ItemChanged(start, count, newCount);
-						}
-					}
-				public:
-
-					Ptr<description::IValueObservableList> GetWrapper()
-					{
-						if (!observableList)
-						{
-							observableList = new description::ValueObservableListWrapper<ObservableList<T>*>(this);
-						}
-						return observableList;
-					}
-				};
-			}
-		}
-	}
-
-	namespace collections
-	{
-		namespace randomaccess_internal
-		{
-			template<typename T>
-			struct RandomAccessable<presentation::controls::list::ItemsBase<T>>
-			{
-				static const bool							CanRead = true;
-				static const bool							CanResize = false;
-			};
 		}
 	}
 }
@@ -10534,7 +10294,7 @@ Tab Control
 				~GuiTabPage();
 			};
 
-			class GuiTabPageList : public list::ItemsBase<GuiTabPage*>
+			class GuiTabPageList : public collections::ObservableListBase<GuiTabPage*>
 			{
 			protected:
 				GuiTab*											tab;
@@ -11295,7 +11055,7 @@ Predefined ItemProvider
 				};
 
 				template<typename T>
-				class ListProvider : public ItemProviderBase, public ItemsBase<T>
+				class ListProvider : public ItemProviderBase, public collections::ObservableListBase<T>
 				{
 				protected:
 					void NotifyUpdateInternal(vint start, vint count, vint newCount)override
@@ -12218,7 +11978,7 @@ ListViewItemProvider
 			{
 				class ListViewItem;
 
-				class ListViewSubItems : public ItemsBase<WString>
+				class ListViewSubItems : public collections::ObservableListBase<WString>
 				{
 					friend class ListViewItem;
 				protected:
@@ -12346,7 +12106,7 @@ ListViewItemProvider
 				};
 
 				/// <summary>List view data column container.</summary>
-				class ListViewDataColumns : public ItemsBase<vint>
+				class ListViewDataColumns : public collections::ObservableListBase<vint>
 				{
 				protected:
 					IListViewItemProvider*							itemProvider;
@@ -12360,7 +12120,7 @@ ListViewItemProvider
 				};
 				
 				/// <summary>List view column container.</summary>
-				class ListViewColumns : public ItemsBase<Ptr<ListViewColumn>>
+				class ListViewColumns : public collections::ObservableListBase<Ptr<ListViewColumn>>
 				{
 					friend class ListViewColumn;
 				protected:
@@ -12722,7 +12482,7 @@ MemoryNodeProvider
 					typedef collections::IEnumerator<Ptr<MemoryNodeProvider>> ChildListEnumerator;
 
 				public:
-					class NodeCollection : public list::ItemsBase<Ptr<MemoryNodeProvider>>
+					class NodeCollection : public collections::ObservableListBase<Ptr<MemoryNodeProvider>>
 					{
 						friend class MemoryNodeProvider;
 					protected:
@@ -16395,7 +16155,7 @@ DataColumn
 					void												SetValueProperty(const WritableItemProperty<description::Value>& value);
 				};
 
-				class DataColumns : public ItemsBase<Ptr<DataColumn>>
+				class DataColumns : public collections::ObservableListBase<Ptr<DataColumn>>
 				{
 					friend class DataColumn;
 				protected:
@@ -16726,7 +16486,7 @@ Toolstrip Item Collection
 ***********************************************************************/
 
 			/// <summary>Toolstrip item collection.</summary>
-			class GuiToolstripCollection : public list::ItemsBase<GuiControl*>
+			class GuiToolstripCollection : public collections::ObservableListBase<GuiControl*>
 			{
 			public:
 				class IContentCallback : public Interface
