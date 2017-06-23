@@ -31,12 +31,6 @@ Class (::demo::MainWindow)
 
 namespace demo
 {
-	USERIMPL(/* ::demo::MainWindow */)
-	::vl::Ptr<::demo::IViewModel> MainWindow::CreateViewModel()
-	{
-		return demo::CreateViewModel();
-	}
-
 	MainWindow::MainWindow()
 		: ::vl::presentation::controls::GuiWindow(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateWindowStyle())
 	{
@@ -64,3 +58,9 @@ namespace demo
 #elif defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+// UNUSED_USER_CONTENT:
+//	USERIMPL(/* ::demo::MainWindow */)
+//	::vl::Ptr<::demo::IViewModel> MainWindow::CreateViewModel()
+//	{
+//		return demo::CreateViewModel();
+//	}

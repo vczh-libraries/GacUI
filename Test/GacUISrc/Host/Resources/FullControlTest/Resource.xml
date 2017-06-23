@@ -1,27 +1,6 @@
 <Resource>
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <ref.Members>
-        <![CDATA[
-          var viewModel : demo::IViewModel^ = CreateViewModel();
-          
-          @cpp:UserImpl
-          static func CreateViewModel() : IViewModel^
-          {
-            return new IViewModel^
-            {
-              override func AddTextItem(item : MyTextItem^) : void { raise "NotImplemented!"; }
-              override func RemoveTextItem(index : int) : void { raise "NotImplemented!"; }
-              override func ClearTextItems() : void { raise "NotImplemented!"; }
-                
-              override func GetTextItems() : ObservableList^
-              {
-                return null;
-              }
-            };
-          }
-        ]]>
-      </ref.Members>
       <Window ref.Name="self" Text="GacUI 完整控件测试" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
         <Tab>
@@ -31,7 +10,7 @@
               <Tab>
                 <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
                 <att.Pages>
-                  <demo:TextListTabPage Alt="T" ViewModel-eval="self.viewModel"/>
+                  <demo:TextListTabPage Alt="T"/>
                   <demo:ListViewTabPage Alt="L"/>
                   <demo:TreeViewTabPage Alt="R"/>
                   <demo:DataGridTabPage Alt="D"/>
@@ -111,15 +90,6 @@
               Birthday = birthday;
               Website = website;
             }
-          }
-        
-          interface IViewModel
-          {
-            prop TextItems : ObservableList^ {const, not observe}
-            
-            func AddTextItem(item : MyTextItem^) : void;
-            func RemoveTextItem(index : int) : void;
-            func ClearTextItems() : void;
           }
           
           func ToString(value : MyCategory) : string

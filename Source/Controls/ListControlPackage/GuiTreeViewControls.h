@@ -211,7 +211,7 @@ MemoryNodeProvider
 					typedef collections::IEnumerator<Ptr<MemoryNodeProvider>> ChildListEnumerator;
 
 				public:
-					class NodeCollection : public list::ItemsBase<Ptr<MemoryNodeProvider>>
+					class NodeCollection : public collections::ObservableListBase<Ptr<MemoryNodeProvider>>
 					{
 						friend class MemoryNodeProvider;
 					protected:

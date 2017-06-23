@@ -248,7 +248,7 @@ ListViewItemProvider
 			{
 				class ListViewItem;
 
-				class ListViewSubItems : public ItemsBase<WString>
+				class ListViewSubItems : public collections::ObservableListBase<WString>
 				{
 					friend class ListViewItem;
 				protected:
@@ -376,7 +376,7 @@ ListViewItemProvider
 				};
 
 				/// <summary>List view data column container.</summary>
-				class ListViewDataColumns : public ItemsBase<vint>
+				class ListViewDataColumns : public collections::ObservableListBase<vint>
 				{
 				protected:
 					IListViewItemProvider*							itemProvider;
@@ -390,7 +390,7 @@ ListViewItemProvider
 				};
 				
 				/// <summary>List view column container.</summary>
-				class ListViewColumns : public ItemsBase<Ptr<ListViewColumn>>
+				class ListViewColumns : public collections::ObservableListBase<Ptr<ListViewColumn>>
 				{
 					friend class ListViewColumn;
 				protected:

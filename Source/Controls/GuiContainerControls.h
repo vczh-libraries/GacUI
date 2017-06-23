@@ -42,7 +42,7 @@ Tab Control
 				~GuiTabPage();
 			};
 
-			class GuiTabPageList : public list::ItemsBase<GuiTabPage*>
+			class GuiTabPageList : public collections::ObservableListBase<GuiTabPage*>
 			{
 			protected:
 				GuiTab*											tab;

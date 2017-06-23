@@ -536,14 +536,14 @@ ListViewColumns
 
 				void ListViewColumns::AfterInsert(vint index, const Ptr<ListViewColumn>& value)
 				{
-					ItemsBase<Ptr<ListViewColumn>>::AfterInsert(index, value);
+					collections::ObservableListBase<Ptr<ListViewColumn>>::AfterInsert(index, value);
 					value->owner = this;
 				}
 
 				void ListViewColumns::BeforeRemove(vint index, const Ptr<ListViewColumn>& value)
 				{
 					value->owner = 0;
-					ItemsBase<Ptr<ListViewColumn>>::BeforeRemove(index, value);
+					collections::ObservableListBase<Ptr<ListViewColumn>>::BeforeRemove(index, value);
 				}
 
 				void ListViewColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)

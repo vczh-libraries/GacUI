@@ -462,7 +462,7 @@ Predefined ItemProvider
 				};
 
 				template<typename T>
-				class ListProvider : public ItemProviderBase, public ItemsBase<T>
+				class ListProvider : public ItemProviderBase, public collections::ObservableListBase<T>
 				{
 				protected:
 					void NotifyUpdateInternal(vint start, vint count, vint newCount)override
