@@ -3519,6 +3519,18 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::CreateObservableList:
+				{
+					auto list = IValueObservableList::Create();
+					Value operand;
+					for (vint i = 0; i < ins.countParameter; i++)
+					{
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						list->Add(operand);
+					}
+					CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
+					return WfRuntimeExecutionAction::ExecuteInstruction;
+				}
 				case WfInsCode::CreateMap:
 					{
 						auto map = IValueDictionary::Create();

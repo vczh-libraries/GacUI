@@ -18126,15 +18126,12 @@ IValueList
 
 			Ptr<IValueList> IValueList::Create()
 			{
-				Ptr<List<Value>> list = new List<Value>;
-				return new ValueListWrapper<Ptr<List<Value>>>(list);
+				return Create(LazyList<Value>());
 			}
 
 			Ptr<IValueList> IValueList::Create(Ptr<IValueReadonlyList> values)
 			{
-				Ptr<List<Value>> list = new List<Value>;
-				CopyFrom(*list.Obj(), GetLazyList<Value>(values));
-				return new ValueListWrapper<Ptr<List<Value>>>(list);
+				return Create(GetLazyList<Value>(values));
 			}
 
 			Ptr<IValueList> IValueList::Create(collections::LazyList<Value> values)
@@ -18142,6 +18139,44 @@ IValueList
 				Ptr<List<Value>> list = new List<Value>;
 				CopyFrom(*list.Obj(), values);
 				return new ValueListWrapper<Ptr<List<Value>>>(list);
+			}
+
+/***********************************************************************
+IObservableList
+***********************************************************************/
+
+			class ReversedObservableList : public ObservableListBase<Value>
+			{
+			protected:
+
+				void NotifyUpdateInternal(vint start, vint count, vint newCount)override
+				{
+					if (observableList)
+					{
+						observableList->ItemChanged(start, count, newCount);
+					}
+				}
+			public:
+				IValueObservableList*		observableList = nullptr;
+			};
+
+			Ptr<IValueObservableList> IValueObservableList::Create()
+			{
+				return Create(LazyList<Value>());
+			}
+
+			Ptr<IValueObservableList> IValueObservableList::Create(Ptr<IValueReadonlyList> values)
+			{
+				return Create(GetLazyList<Value>(values));
+			}
+
+			Ptr<IValueObservableList> IValueObservableList::Create(collections::LazyList<Value> values)
+			{
+				auto list = MakePtr<ReversedObservableList>();
+				CopyFrom(*list.Obj(), values);
+				auto wrapper = MakePtr<ValueObservableListWrapper<Ptr<ReversedObservableList>>>(list);
+				list->observableList = wrapper.Obj();
+				return wrapper;
 			}
 
 /***********************************************************************
@@ -19507,7 +19542,9 @@ LoadPredefinedTypes
 			END_INTERFACE_MEMBER(IValueList)
 
 			BEGIN_INTERFACE_MEMBER(IValueObservableList)
-				CLASS_MEMBER_BASE(IValueReadonlyList)
+				CLASS_MEMBER_BASE(IValueList)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<IValueObservableList>(), NO_PARAMETER, vl::reflection::description::IValueObservableList::Create)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<IValueObservableList>(Ptr<IValueReadonlyList>), { L"values" }, vl::reflection::description::IValueObservableList::Create)
 
 				CLASS_MEMBER_EVENT(ItemChanged)
 			END_INTERFACE_MEMBER(IValueObservableList)

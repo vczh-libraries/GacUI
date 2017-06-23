@@ -8947,6 +8947,7 @@ ITypeDescriptor (type)
 				Array,
 				List,
 				SortedList,
+				ObservableList,
 				Dictionary,
 				NativeCollectionReference,
 			};
@@ -10970,11 +10971,15 @@ Collections
 				static Ptr<IValueList>			Create(collections::LazyList<Value> values);
 			};
 
-			class IValueObservableList : public virtual IValueReadonlyList, public Description<IValueObservableList>
+			class IValueObservableList : public virtual IValueList, public Description<IValueObservableList>
 			{
 				typedef void ItemChangedProc(vint index, vint oldCount, vint newCount);
 			public:
 				Event<ItemChangedProc>			ItemChanged;
+
+				static Ptr<IValueObservableList>	Create();
+				static Ptr<IValueObservableList>	Create(Ptr<IValueReadonlyList> values);
+				static Ptr<IValueObservableList>	Create(collections::LazyList<Value> values);
 			};
 
 			class IValueReadonlyDictionary : public virtual IDescriptable, public Description<IValueReadonlyDictionary>
@@ -11318,6 +11323,12 @@ Interfaces:
 
 namespace vl
 {
+	namespace collections
+	{
+		template<typename T>
+		class ObservableList;
+	}
+
 	namespace reflection
 	{
 		namespace description
@@ -11769,8 +11780,9 @@ TypeFlagTester
 				EnumerableType			=1<<1,
 				ReadonlyListType		=1<<2,
 				ListType				=1<<3,
-				ReadonlyDictionaryType	=1<<4,
-				DictionaryType			=1<<5,
+				ObservableListType		=1<<4,
+				ReadonlyDictionaryType	=1<<5,
+				DictionaryType			=1<<6,
 			};
 
 			template<typename T>
@@ -11836,6 +11848,17 @@ TypeFlagTester
 			};
 
 			template<typename TDerived>
+			struct TypeFlagTester<TDerived, TypeFlags::ObservableListType>
+			{
+				template<typename T>
+				static void* Inherit(collections::ObservableList<T>* source) {}
+				static char Inherit(void* source) {}
+				static char Inherit(const void* source) {}
+
+				static const TypeFlags									Result = sizeof(Inherit(((ValueRetriver<TDerived>*)0)->pointer)) == sizeof(void*) ? TypeFlags::ObservableListType : TypeFlags::NonGenericType;
+			};
+
+			template<typename TDerived>
 			struct TypeFlagTester<TDerived, TypeFlags::ReadonlyDictionaryType>
 			{
 				template<typename K, typename V>
@@ -11892,6 +11915,12 @@ TypeFlagSelector
 			};
 
 			template<typename T>
+			struct TypeFlagSelectorCase<T, (TypeFlags)((vint)TypeFlags::ObservableListType|(vint)TypeFlags::ListType|(vint)TypeFlags::ReadonlyListType)>
+			{
+				static const  TypeFlags									Result = TypeFlags::ObservableListType;
+			};
+
+			template<typename T>
 			struct TypeFlagSelectorCase<T, (TypeFlags)((vint)TypeFlags::ReadonlyListType)>
 			{
 				static const  TypeFlags									Result=TypeFlags::ReadonlyListType;
@@ -11920,6 +11949,7 @@ TypeFlagSelector
 					| (vint)TypeFlagTester<T, TypeFlags::EnumerableType>::Result
 					| (vint)TypeFlagTester<T, TypeFlags::ReadonlyListType>::Result
 					| (vint)TypeFlagTester<T, TypeFlags::ListType>::Result
+					| (vint)TypeFlagTester<T, TypeFlags::ObservableListType>::Result
 					| (vint)TypeFlagTester<T, TypeFlags::ReadonlyDictionaryType>::Result
 					| (vint)TypeFlagTester<T, TypeFlags::DictionaryType>::Result
 					)
@@ -11997,6 +12027,12 @@ TypeHintTester
 			struct TypeHintTester<collections::SortedList<T>>
 			{
 				static const TypeInfoHint								Result = TypeInfoHint::SortedList;
+			};
+
+			template<typename T>
+			struct TypeHintTester<collections::ObservableList<T>>
+			{
+				static const TypeInfoHint								Result = TypeInfoHint::ObservableList;
 			};
 
 			template<typename K, typename V>
@@ -12697,16 +12733,6 @@ Collection Wrappers
 			};
 
 			template<typename T>
-			class ValueObservableListWrapper : public ValueReadonlyListWrapper<T>, public virtual IValueObservableList
-			{
-			public:
-				ValueObservableListWrapper(const T& _wrapperPointer)
-					:ValueReadonlyListWrapper<T>(_wrapperPointer)
-				{
-				}
-			};
-
-			template<typename T>
 			class ValueListWrapper : public ValueReadonlyListWrapper<T>, public virtual IValueList
 			{
 			protected:
@@ -12752,6 +12778,16 @@ Collection Wrappers
 				void Clear()override
 				{
 					WRAPPER_POINTER->Clear();
+				}
+			};
+
+			template<typename T>
+			class ValueObservableListWrapper : public ValueListWrapper<T>, public virtual IValueObservableList
+			{
+			public:
+				ValueObservableListWrapper(const T& _wrapperPointer)
+					:ValueListWrapper<T>(_wrapperPointer)
+				{
 				}
 			};
 
@@ -12935,6 +12971,34 @@ DetailTypeInfoRetriver<TContainer>
 			};
 
 			template<typename T>
+			struct DetailTypeInfoRetriver<T, TypeFlags::ObservableListType>
+			{
+				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
+
+				static const ITypeInfo::Decorator								Decorator = UpLevelRetriver::Decorator;
+				typedef IValueObservableList									Type;
+				typedef typename UpLevelRetriver::TempValueType					TempValueType;
+				typedef typename UpLevelRetriver::ResultReferenceType			ResultReferenceType;
+				typedef typename UpLevelRetriver::ResultNonReferenceType		ResultNonReferenceType;
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
+				{
+					typedef typename DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>::Type		ContainerType;
+					typedef typename ContainerType::ElementType										ElementType;
+
+					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(Description<IValueObservableList>::GetAssociatedTypeDescriptor(), hint);
+
+					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
+					genericType->AddGenericArgument(TypeInfoRetriver<ElementType>::CreateTypeInfo());
+
+					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					return type;
+				}
+#endif
+			};
+
+			template<typename T>
 			struct DetailTypeInfoRetriver<T, TypeFlags::ReadonlyDictionaryType>
 			{
 				typedef DetailTypeInfoRetriver<T, TypeFlags::NonGenericType>	UpLevelRetriver;
@@ -13077,6 +13141,19 @@ ParameterAccessor<TContainer>
 			};
 
 			template<typename T>
+			struct ParameterAccessor<collections::ObservableList<T>, TypeFlags::ObservableListType>
+			{
+				static Value BoxParameter(collections::ObservableList<T>& object, ITypeDescriptor* typeDescriptor)
+				{
+					ITypeDescriptor* td = nullptr;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+					td = Description<IValueObservableList>::GetAssociatedTypeDescriptor();
+#endif
+					return BoxValue<Ptr<IValueObservableList>>(object.GetWrapper(), td);
+				}
+			};
+
+			template<typename T>
 			struct ParameterAccessor<T, TypeFlags::ReadonlyDictionaryType>
 			{
 				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
@@ -13128,6 +13205,246 @@ ParameterAccessor<TContainer>
 					collections::LazyList<collections::Pair<KeyType, ValueType>> lazyList=GetLazyList<KeyType, ValueType>(dictionaryProxy);
 					collections::CopyFrom(result, lazyList);
 				}
+			};
+		}
+	}
+
+	namespace collections
+	{
+		template<typename T, typename K = typename KeyType<T>::Type>
+		class ObservableListBase : public Object, public virtual collections::IEnumerable<T>
+		{
+		protected:
+			collections::List<T, K>					items;
+
+			virtual void NotifyUpdateInternal(vint start, vint count, vint newCount)
+			{
+			}
+
+			virtual bool QueryInsert(vint index, const T& value)
+			{
+				return true;
+			}
+
+			virtual void BeforeInsert(vint index, const T& value)
+			{
+			}
+
+			virtual void AfterInsert(vint index, const T& value)
+			{
+			}
+
+			virtual bool QueryRemove(vint index, const T& value)
+			{
+				return true;
+			}
+
+			virtual void BeforeRemove(vint index, const T& value)
+			{
+			}
+
+			virtual void AfterRemove(vint index, vint count)
+			{
+			}
+
+		public:
+			ObservableListBase()
+			{
+			}
+
+			~ObservableListBase()
+			{
+			}
+
+			collections::IEnumerator<T>* CreateEnumerator()const
+			{
+				return items.CreateEnumerator();
+			}
+
+			bool NotifyUpdate(vint start, vint count = 1)
+			{
+				if (start<0 || start >= items.Count() || count <= 0 || start + count>items.Count())
+				{
+					return false;
+				}
+				else
+				{
+					NotifyUpdateInternal(start, count, count);
+					return true;
+				}
+			}
+
+			bool Contains(const K& item)const
+			{
+				return items.Contains(item);
+			}
+
+			vint Count()const
+			{
+				return items.Count();
+			}
+
+			vint Count()
+			{
+				return items.Count();
+			}
+
+			const T& Get(vint index)const
+			{
+				return items.Get(index);
+			}
+
+			const T& operator[](vint index)const
+			{
+				return items.Get(index);
+			}
+
+			vint IndexOf(const K& item)const
+			{
+				return items.IndexOf(item);
+			}
+
+			vint Add(const T& item)
+			{
+				return Insert(items.Count(), item);
+			}
+
+			bool Remove(const K& item)
+			{
+				vint index = items.IndexOf(item);
+				if (index == -1) return false;
+				return RemoveAt(index);
+			}
+
+			bool RemoveAt(vint index)
+			{
+				if (0 <= index && index < items.Count() && QueryRemove(index, items[index]))
+				{
+					BeforeRemove(index, items[index]);
+					T item = items[index];
+					items.RemoveAt(index);
+					AfterRemove(index, 1);
+					NotifyUpdateInternal(index, 1, 0);
+					return true;
+				}
+				return false;
+			}
+
+			bool RemoveRange(vint index, vint count)
+			{
+				if (count <= 0) return false;
+				if (0 <= index && index<items.Count() && index + count <= items.Count())
+				{
+					for (vint i = 0; i < count; i++)
+					{
+						if (!QueryRemove(index + 1, items[index + i])) return false;
+					}
+					for (vint i = 0; i < count; i++)
+					{
+						BeforeRemove(index + i, items[index + i]);
+					}
+					items.RemoveRange(index, count);
+					AfterRemove(index, count);
+					NotifyUpdateInternal(index, count, 0);
+					return true;
+				}
+				return false;
+			}
+
+			bool Clear()
+			{
+				vint count = items.Count();
+				for (vint i = 0; i < count; i++)
+				{
+					if (!QueryRemove(i, items[i])) return false;
+				}
+				for (vint i = 0; i < count; i++)
+				{
+					BeforeRemove(i, items[i]);
+				}
+				items.Clear();
+				AfterRemove(0, count);
+				NotifyUpdateInternal(0, count, 0);
+				return true;
+			}
+
+			vint Insert(vint index, const T& item)
+			{
+				if (0 <= index && index <= items.Count() && QueryInsert(index, item))
+				{
+					BeforeInsert(index, item);
+					items.Insert(index, item);
+					AfterInsert(index, item);
+					NotifyUpdateInternal(index, 0, 1);
+					return index;
+				}
+				else
+				{
+					return -1;
+				}
+			}
+
+			bool Set(vint index, const T& item)
+			{
+				if (0 <= index && index < items.Count())
+				{
+					if (QueryRemove(index, items[index]) && QueryInsert(index, item))
+					{
+						BeforeRemove(index, items[index]);
+						items.RemoveAt(index);
+						AfterRemove(index, 1);
+
+						BeforeInsert(index, item);
+						items.Insert(index, item);
+						AfterInsert(index, item);
+
+						NotifyUpdateInternal(index, 1, 1);
+						return true;
+					}
+				}
+				return false;
+			}
+		};
+
+		template<typename T>
+		class ObservableList : public ObservableListBase<T>
+		{
+		protected:
+			Ptr<reflection::description::IValueObservableList>		observableList;
+
+			void NotifyUpdateInternal(vint start, vint count, vint newCount)override
+			{
+				if (observableList)
+				{
+					observableList->ItemChanged(start, count, newCount);
+				}
+			}
+		public:
+
+			Ptr<reflection::description::IValueObservableList> GetWrapper()
+			{
+				if (!observableList)
+				{
+					observableList = new reflection::description::ValueObservableListWrapper<ObservableList<T>*>(this);
+				}
+				return observableList;
+			}
+		};
+
+		namespace randomaccess_internal
+		{
+			template<typename T>
+			struct RandomAccessable<ObservableListBase<T>>
+			{
+				static const bool							CanRead = true;
+				static const bool							CanResize = false;
+			};
+
+			template<typename T>
+			struct RandomAccessable<ObservableList<T>>
+			{
+				static const bool							CanRead = true;
+				static const bool							CanResize = false;
 			};
 		}
 	}
@@ -13392,6 +13709,30 @@ namespace vl
 
 			template<typename T>
 			CreateList Add(const T& value)
+			{
+				list->Add(Box(value));
+				return{ list };
+			}
+		};
+
+		struct CreateObservableList
+		{
+			using IValueObservableList = reflection::description::IValueObservableList;
+
+			Ptr<IValueObservableList>			list;
+
+			CreateObservableList()
+				:list(IValueObservableList::Create())
+			{
+			}
+
+			CreateObservableList(Ptr<IValueObservableList> _list)
+				:list(_list)
+			{
+			}
+
+			template<typename T>
+			CreateObservableList Add(const T& value)
 			{
 				list->Add(Box(value));
 				return{ list };
@@ -15208,7 +15549,7 @@ Interface Implementation Proxy (Implement)
 				}
 			END_INTERFACE_PROXY(IValueList)
 
-			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueObservableList, IValueReadonlyList)
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(IValueObservableList, IValueList)
 			END_INTERFACE_PROXY(IValueObservableList)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(IValueReadonlyDictionary)
