@@ -2273,7 +2273,7 @@ namespace vl
 			}
 		}
 
-		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, GuiResourceError::List& errors, bool keepMetadata)
+		void Workflow_GenerateAssembly(GuiResourcePrecompileContext& context, const WString& path, GuiResourceError::List& errors, bool keepMetadata, IWfCompilerCallback* compilerCallback)
 		{
 			auto compiled = Workflow_GetModule(context, path);
 			if (!compiled)
@@ -2310,12 +2310,12 @@ namespace vl
 
 				if (manager->errors.Count() == 0)
 				{
-					manager->Rebuild(true);
+					manager->Rebuild(true, compilerCallback);
 				}
 
 				if (manager->errors.Count() == 0)
 				{
-					compiled->assembly = GenerateAssembly(manager);
+					compiled->assembly = GenerateAssembly(manager, compilerCallback);
 					compiled->Initialize(true);
 				}
 				else
@@ -2431,7 +2431,7 @@ Shared Script Type Resolver (Script)
 				switch (context.passIndex)
 				{
 				case Workflow_Compile:
-					Workflow_GenerateAssembly(context, Path_Shared, errors, false);
+					Workflow_GenerateAssembly(context, Path_Shared, errors, false, context.compilerCallback);
 					break;
 				}
 			}
@@ -2577,7 +2577,7 @@ Instance Type Resolver (Instance)
 							types::ResolvingResult resolvingResult;
 							resolvingResult.resource = resource;
 							resolvingResult.context = obj;
-							if (auto module = Workflow_GenerateInstanceClass(context, resolvingResult, errors, context.passIndex))
+							if (auto module = Workflow_GenerateInstanceClass(context, L"<instance>" + obj->className, resolvingResult, errors, context.passIndex))
 							{
 								Workflow_AddModule(context, Path_TemporaryClass, module, GuiInstanceCompiledWorkflow::TemporaryClass, obj->tagPosition);
 							}
@@ -2609,9 +2609,9 @@ Instance Type Resolver (Instance)
 
 							if (errors.Count() == previousErrorCount)
 							{
-								if (auto ctorModule = Workflow_PrecompileInstanceContext(context, resolvingResult, errors))
+								if (auto ctorModule = Workflow_PrecompileInstanceContext(context, L"<constructor>" + obj->className, resolvingResult, errors))
 								{
-									if (auto instanceModule = Workflow_GenerateInstanceClass(context, resolvingResult, errors, context.passIndex))
+									if (auto instanceModule = Workflow_GenerateInstanceClass(context, L"<instance>" + obj->className, resolvingResult, errors, context.passIndex))
 									{
 										Workflow_AddModule(context, Path_InstanceClass, ctorModule, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
 										Workflow_AddModule(context, Path_InstanceClass, instanceModule, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
@@ -2663,14 +2663,14 @@ Instance Type Resolver (Instance)
 				switch (context.passIndex)
 				{
 				case Instance_CompileInstanceTypes:
-					Workflow_GenerateAssembly(context, path, errors, false);
+					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);
 					compiled->modules.Clear();
 					break;
 				case Instance_CompileEventHandlers:
-					Workflow_GenerateAssembly(context, path, errors, false);
+					Workflow_GenerateAssembly(context, path, errors, false, context.compilerCallback);
 					break;
 				case Instance_CompileInstanceClass:
-					Workflow_GenerateAssembly(context, path, errors, true);
+					Workflow_GenerateAssembly(context, path, errors, true, context.compilerCallback);
 					break;
 				default:;
 				}
@@ -6639,9 +6639,9 @@ FindInstanceLoadingSource
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
+		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
-			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context);
+			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context, moduleName);
 			{
 				auto block = Workflow_InstallCtorClass(resolvingResult, module);
 				Workflow_GenerateCreating(precompileContext, resolvingResult, block, errors);
@@ -6922,7 +6922,7 @@ Workflow_GenerateInstanceClass
 			}
 		};
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
 		{
 			bool beforePrecompile = false;
 			bool needEventHandler = false;
@@ -6961,7 +6961,7 @@ Workflow_GenerateInstanceClass
 			// Instance Class
 			///////////////////////////////////////////////////////////////
 
-			auto module = Workflow_CreateModuleWithUsings(context);
+			auto module = Workflow_CreateModuleWithUsings(context, moduleName);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
 				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
@@ -9302,10 +9302,10 @@ namespace vl
 Workflow_CreateModuleWithUsings
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context)
+		Ptr<workflow::WfModule> Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context, const WString& moduleName)
 		{
 			auto module = MakePtr<WfModule>();
-			module->name.value = L"<auto-generated>";
+			module->name.value = moduleName;
 
 			vint index = context->namespaces.Keys().IndexOf(GlobalStringKey());
 			if (index != -1)

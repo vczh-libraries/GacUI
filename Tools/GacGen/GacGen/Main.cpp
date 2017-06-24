@@ -39,10 +39,45 @@ void SaveErrors(FilePath errorFilePath, List<GuiResourceError>& errors)
 		PrintErrorMessage(L"gacgen> Unable to write : " + errorFilePath.GetFullPath());
 	}
 }
-class Callback : public Object, public IGuiResourcePrecompileCallback
+class Callback : public Object, public IGuiResourcePrecompileCallback, public IWfCompilerCallback
 {
 public:
 	vint lastPass = -1;
+
+	void OnLoadEnvironment()override
+	{
+		PrintInformationMessage(L"    Workflow: Loading metadata from registered types ...");
+	}
+
+	void OnInitialize(analyzer::WfLexicalScopeManager* manager)override
+	{
+		PrintInformationMessage(L"    Workflow: Creating metadata from declarations ...");
+	}
+
+	void OnValidateModule(Ptr<WfModule> module)override
+	{
+		PrintInformationMessage(L"    Workflow: Validating module " + module->name.value + L" ...");
+	}
+
+	void OnGenerateMetadata()override
+	{
+		PrintInformationMessage(L"    Workflow: Generating metadata ...");
+	}
+
+	void OnGenerateCode(Ptr<WfModule> module)override
+	{
+		PrintInformationMessage(L"    Workflow: Generating code for module " + module->name.value + L" ...");
+	}
+
+	void OnGenerateDebugInfo()override
+	{
+		PrintInformationMessage(L"    Workflow: Generating debug information ...");
+	}
+
+	IWfCompilerCallback* GetCompilerCallback()override
+	{
+		return this;
+	}
 
 	void PrintPass(vint passIndex)
 	{

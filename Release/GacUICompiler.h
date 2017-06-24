@@ -799,7 +799,7 @@ WorkflowCompiler (Installation)
 WorkflowCompiler (Compile)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfModule>							Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context);
+		extern Ptr<workflow::WfModule>							Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context, const WString& moduleName);
 		extern Ptr<workflow::WfClassDeclaration>				Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(types::ResolvingResult& resolvingResult, Ptr<workflow::WfModule> module);
 
@@ -844,8 +844,8 @@ WorkflowCompiler (Compile)
 
 		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName);
 		extern InstanceLoadingSource							FindInstanceLoadingSource(Ptr<GuiInstanceContext> context, GuiConstructorRepr* ctor);
-		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
-		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex);
+		extern Ptr<workflow::WfModule>							Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
+		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex);
 
 #define WORKFLOW_ENVIRONMENT_VARIABLE_ADD\
 		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
