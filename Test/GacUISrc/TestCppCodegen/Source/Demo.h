@@ -64,6 +64,11 @@ namespace vl_workflow_global
 	struct __vwsnf12_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf130_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
 	struct __vwsnf131_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__;
+	struct __vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+	struct __vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf14_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
 	struct __vwsnf16_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__;
@@ -209,6 +214,7 @@ namespace vl_workflow_global
 	class __vwsnc52_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc53_Demo_demo_GenderEditorConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc54_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+	class __vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter;
 	class __vwsnc6_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
 	class __vwsnc7_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
@@ -273,6 +279,8 @@ namespace demo
 	class GenderVisualizer;
 	class HyperlinkWindowConstructor;
 	class HyperlinkWindow;
+	class TextBoxTabPageConstructor;
+	class TextBoxTabPage;
 	class MyTextItem;
 	class MyDataItem;
 
@@ -780,7 +788,8 @@ namespace demo
 		::demo::TreeViewTabPage* __vwsn_precompile_7 = static_cast<::demo::TreeViewTabPage*>(nullptr);
 		::demo::DataGridTabPage* __vwsn_precompile_8 = static_cast<::demo::DataGridTabPage*>(nullptr);
 		::demo::DocumentTabPage* __vwsn_precompile_9 = static_cast<::demo::DocumentTabPage*>(nullptr);
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_10 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::demo::TextBoxTabPage* __vwsn_precompile_10 = static_cast<::demo::TextBoxTabPage*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
 		void __vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_);
 	public:
 		MainWindowConstructor();
@@ -1383,6 +1392,75 @@ namespace demo
 		~HyperlinkWindow();
 	};
 
+	class TextBoxTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<TextBoxTabPageConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPageConstructor>;
+#endif
+	protected:
+		::demo::TextBoxTabPage* self = static_cast<::demo::TextBoxTabPage*>(nullptr);
+		::vl::presentation::controls::GuiSinglelineTextBox* textBoxS = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		::vl::presentation::controls::GuiMultilineTextBox* textBoxM = static_cast<::vl::presentation::controls::GuiMultilineTextBox*>(nullptr);
+		::vl::presentation::controls::GuiDocumentLabel* documentTextBox = static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr);
+		::vl::presentation::controls::GuiDocumentViewer* documentViewer = static_cast<::vl::presentation::controls::GuiDocumentViewer*>(nullptr);
+		::vl::presentation::controls::GuiDocumentLabel* documentLabel = static_cast<::vl::presentation::controls::GuiDocumentLabel*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiTab* __vwsn_precompile_2 = static_cast<::vl::presentation::controls::GuiTab*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_4 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_5 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_9 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_10 = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_11 = static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_14 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_15 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_16 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_18 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_19 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_20 = static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr);
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_21 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
+		void __vwsn_initialize_instance_(::demo::TextBoxTabPage* __vwsn_this_);
+	public:
+		TextBoxTabPageConstructor();
+	};
+
+	class TextBoxTabPage : public ::vl::presentation::controls::GuiTabPage, public ::demo::TextBoxTabPageConstructor, public ::vl::reflection::Description<TextBoxTabPage>
+	{
+		friend class ::demo::TextBoxTabPageConstructor;
+		friend class ::vl_workflow_global::__vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+		friend struct ::vl_workflow_global::__vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TextBoxTabPage>;
+#endif
+	protected:
+		bool flag = false;
+	public:
+		::vl::Event<void()> OnMakeFontLarger;
+		::vl::Event<void()> OnMakeFontSmaller;
+	protected:
+		void UpdateFont(::vl::presentation::FontProperties newFont);
+	public:
+		TextBoxTabPage();
+		~TextBoxTabPage();
+	};
+
 	class MyTextItem : public ::vl::Object, public ::vl::reflection::Description<MyTextItem>
 	{
 #ifndef VCZH_DEBUG_NO_REFLECTION
@@ -1445,6 +1523,7 @@ namespace vl_workflow_global
 		::vl::presentation::Color ToColor(::demo::MyCategory value);
 		::vl::WString ToString(::demo::MyGender value);
 		::vl::WString ToString(::vl::DateTime value);
+		::vl::presentation::FontProperties ChangeFontSize(::vl::presentation::FontProperties oldFont, ::vl::vint32_t deltaSize);
 
 		static Demo& Instance();
 	};
@@ -1766,6 +1845,51 @@ Closures
 		__vwsnf131_Demo_demo_HyperlinkWindowConstructor___vwsn_initialize_instance__(::demo::HyperlinkWindowConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__
+	{
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		void operator()() const;
 	};
 
 	struct __vwsnf13_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance__
@@ -3470,6 +3594,24 @@ Closures
 		__vwsnc54_Demo_demo_GenderVisualizerConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::GenderVisualizerConstructor* __vwsnctorthis_0);
 
 		::demo::GenderVisualizer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::TextBoxTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiSinglelineTextBox* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;

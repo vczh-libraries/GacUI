@@ -18,6 +18,7 @@
               </Tab>
             </TabPage>
             <demo:DocumentTabPage Alt="D"/>
+            <demo:TextBoxTabPage Alt="D"/>
           </att.Pages>
         </Tab>
       </Window>
@@ -29,6 +30,7 @@
   <Instance name="TreeViewTabPageResource" content="File">TreeViewTabPage.xml</Instance>
   <Instance name="DataGridTabPageResource" content="File">DataGridTabPage.xml</Instance>
   <Instance name="DocumentTabPageResource" content="File">DocumentTabPage.xml</Instance>
+  <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>
   <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
   <Folder name="DocumentComponents" content="Link">DocumentComponents.xml</Folder>
   <Folder name="LargeImages" content="Link">Images/LargeImages.xml</Folder>

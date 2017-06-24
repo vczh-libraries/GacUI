@@ -408,6 +408,11 @@ Global Functions
 		return (((((::vl::WString(L"", false) + ::vl::__vwsn::ToString(value.month)) + ::vl::WString(L"/", false)) + ::vl::__vwsn::ToString(value.day)) + ::vl::WString(L"/", false)) + ::vl::__vwsn::ToString(value.year));
 	}
 
+	::vl::presentation::FontProperties Demo::ChangeFontSize(::vl::presentation::FontProperties oldFont, ::vl::vint32_t deltaSize)
+	{
+		return [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = oldFont.fontFamily; __vwsn_temp__.size = (oldFont.size + deltaSize); __vwsn_temp__.antialias = true; return __vwsn_temp__; }();
+	}
+
 	Demo& Demo::Instance()
 	{
 		return Getvl_workflow_global_Demo().instance;
@@ -985,6 +990,72 @@ Closures
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetUrl(::vl::Nullable<::vl::WString>());
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::__vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontLarger)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::__vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_21)->SetEnabled(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::__vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->OnMakeFontSmaller)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::__vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->textBoxS)->GetFont(), static_cast<::vl::vint32_t>(5)));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::__vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateFont(GLOBAL_NAME ChangeFontSize(::vl::__vwsn::This(__vwsnthis_0->textBoxS)->GetFont(), (- static_cast<::vl::vint32_t>(5))));
 	}
 
 	//-------------------------------------------------------------------
@@ -5217,6 +5288,63 @@ Closures
 
 	//-------------------------------------------------------------------
 
+	__vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::TextBoxTabPageConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetFont().size > static_cast<::vl::vint32_t>(5));
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = __vwsnthis_0->textBoxS);
+			(__vwsn_bind_handler_0_0 = ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)));
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->FontChanged, __vwsn_bind_handler_0_0);
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
 	__vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter::__vwsnc5_Demo_demo_DataGridTabPageConstructor___vwsn_initialize_instance___vl_presentation_controls_list_IDataSorter(::demo::DataGridTabPageConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -7496,9 +7624,9 @@ Class (::demo::MainWindowConstructor)
 	void MainWindowConstructor::__vwsn_initialize_instance_(::demo::MainWindow* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
-		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
+		(this->__vwsn_precompile_11 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(640); __vwsn_temp__.y = static_cast<::vl::vint32_t>(480); return __vwsn_temp__; }());
@@ -7574,6 +7702,14 @@ Class (::demo::MainWindowConstructor)
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetPages());
 			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_9));
+		}
+		(this->__vwsn_precompile_10 = new ::demo::TextBoxTabPage());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlt(::vl::WString(L"D", false));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_10));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
 		{
@@ -9177,6 +9313,310 @@ Class (::demo::HyperlinkWindow)
 	}
 
 /***********************************************************************
+Class (::demo::TextBoxTabPageConstructor)
+***********************************************************************/
+
+	void TextBoxTabPageConstructor::__vwsn_initialize_instance_(::demo::TextBoxTabPage* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(this->self)->SetText(::vl::WString(L"TextBox", false));
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(4));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(3), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(4));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTabStyle();
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiTab(__vwsn_controlStyle_));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle();
+			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetText(::vl::WString(L"TextBox", false));
+		}
+		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetRowsAndColumns(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1));
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetRowOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetRowOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetColumnOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextBoxStyle();
+			(this->textBoxS = new ::vl::presentation::controls::GuiSinglelineTextBox(__vwsn_controlStyle_));
+		}
+		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->textBoxS)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->textBoxS)->SetText(::vl::WString(L"Archer", false));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBoxS)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
+		}
+		(this->__vwsn_precompile_8 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMultilineTextBoxStyle();
+			(this->textBoxM = new ::vl::presentation::controls::GuiMultilineTextBox(__vwsn_controlStyle_));
+		}
+		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->textBoxM)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBoxM)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_8));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_4));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle();
+			(this->__vwsn_precompile_10 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetText(::vl::WString(L"Document", false));
+		}
+		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetCellPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetRowsAndColumns(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(2));
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetRowOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetRowOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetColumnOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(0.5); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetColumnOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(0.5); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(2));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentTextBoxStyle();
+			(this->documentTextBox = new ::vl::presentation::controls::GuiDocumentLabel(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->documentTextBox)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		}
+		(this->__vwsn_precompile_13 = ::vl::__vwsn::This(this->documentTextBox)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->documentTextBox)->SetText(::vl::WString(L"Archer", false));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->documentTextBox)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_12));
+		}
+		(this->__vwsn_precompile_14 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentViewerStyle();
+			(this->documentViewer = new ::vl::presentation::controls::GuiDocumentViewer(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->documentViewer)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		}
+		(this->__vwsn_precompile_15 = ::vl::__vwsn::This(this->documentViewer)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->documentViewer)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_14));
+		}
+		(this->__vwsn_precompile_16 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateDocumentLabelStyle();
+			(this->documentLabel = new ::vl::presentation::controls::GuiDocumentLabel(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->documentLabel)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		}
+		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->documentLabel)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->documentLabel)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_16));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_10)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
+		}
+		{
+			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetPages());
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_10));
+		}
+		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_18 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
+			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString(L"Make Font Larger", false));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_18));
+		}
+		(this->__vwsn_precompile_20 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
+			(this->__vwsn_precompile_21 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetText(::vl::WString(L"Make Font Smaller", false));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_21)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_20));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			::vl::__vwsn::This(this->textBoxM)->SetText(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiTextData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"TextBoxComponents/Text", false), true).Obj())).Obj())->GetText());
+		}
+		{
+			::vl::__vwsn::This(this->documentViewer)->SetDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"TextBoxComponents/DocFixed", false), true).Obj())));
+		}
+		{
+			::vl::__vwsn::This(this->documentLabel)->SetDocument(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::DocumentModel>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString(L"res", false), ::vl::WString(L"TextBoxComponents/DocRelative", false), true).Obj())));
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf132_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc55_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, LAMBDA(::vl_workflow_global::__vwsnf133_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf134_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_21)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf135_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->OnMakeFontLarger, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf136_Demo_demo_TextBoxTabPageConstructor___vwsn_initialize_instance__(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->OnMakeFontSmaller, __vwsn_event_handler_);
+		}
+	}
+
+	TextBoxTabPageConstructor::TextBoxTabPageConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::demo::TextBoxTabPage)
+***********************************************************************/
+
+	void TextBoxTabPage::UpdateFont(::vl::presentation::FontProperties newFont)
+	{
+		::vl::__vwsn::This(this->textBoxS)->SetFont(newFont);
+		::vl::__vwsn::This(this->textBoxM)->SetFont(newFont);
+		::vl::__vwsn::This(this->documentTextBox)->SetFont(newFont);
+		::vl::__vwsn::This(this->documentViewer)->SetFont(newFont);
+		::vl::__vwsn::This(this->documentLabel)->SetFont(newFont);
+	}
+
+	TextBoxTabPage::TextBoxTabPage()
+		: ::vl::presentation::controls::GuiTabPage(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"demo::TextBoxTabPage", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
+	}
+
+	TextBoxTabPage::~TextBoxTabPage()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControl*>(this));
+	}
+
+/***********************************************************************
 Class (::demo::MyTextItem)
 ***********************************************************************/
 
@@ -9333,6 +9773,8 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(demo::MyDataItem)
 			IMPL_CPP_TYPE_INFO(demo::MyGender)
 			IMPL_CPP_TYPE_INFO(demo::MyTextItem)
+			IMPL_CPP_TYPE_INFO(demo::TextBoxTabPage)
+			IMPL_CPP_TYPE_INFO(demo::TextBoxTabPageConstructor)
 			IMPL_CPP_TYPE_INFO(demo::TextEditor)
 			IMPL_CPP_TYPE_INFO(demo::TextEditorConstructor)
 			IMPL_CPP_TYPE_INFO(demo::TextListTabPage)
@@ -9737,6 +10179,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_11)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
@@ -9805,6 +10248,47 @@ namespace vl
 				CLASS_MEMBER_PROPERTY(Checked, GetChecked, SetChecked)
 				CLASS_MEMBER_PROPERTY(Name, GetName, SetName)
 			END_CLASS_MEMBER(::demo::MyTextItem)
+
+			BEGIN_CLASS_MEMBER(::demo::TextBoxTabPage)
+				CLASS_MEMBER_CONSTRUCTOR(::demo::TextBoxTabPage*(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(UpdateFont, { L"newFont" })
+				CLASS_MEMBER_EVENT(OnMakeFontLarger)
+				CLASS_MEMBER_EVENT(OnMakeFontSmaller)
+				CLASS_MEMBER_FIELD(flag)
+			END_CLASS_MEMBER(::demo::TextBoxTabPage)
+
+			BEGIN_CLASS_MEMBER(::demo::TextBoxTabPageConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::demo::TextBoxTabPageConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_10)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_11)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_12)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_13)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_14)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_15)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_16)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_17)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_18)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_19)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_20)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_21)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
+				CLASS_MEMBER_FIELD(documentLabel)
+				CLASS_MEMBER_FIELD(documentTextBox)
+				CLASS_MEMBER_FIELD(documentViewer)
+				CLASS_MEMBER_FIELD(self)
+				CLASS_MEMBER_FIELD(textBoxM)
+				CLASS_MEMBER_FIELD(textBoxS)
+			END_CLASS_MEMBER(::demo::TextBoxTabPageConstructor)
 
 			BEGIN_CLASS_MEMBER(::demo::TextEditor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::TextEditor*(), NO_PARAMETER)
@@ -9962,6 +10446,8 @@ namespace vl
 					ADD_TYPE_INFO(::demo::MyDataItem)
 					ADD_TYPE_INFO(::demo::MyGender)
 					ADD_TYPE_INFO(::demo::MyTextItem)
+					ADD_TYPE_INFO(::demo::TextBoxTabPage)
+					ADD_TYPE_INFO(::demo::TextBoxTabPageConstructor)
 					ADD_TYPE_INFO(::demo::TextEditor)
 					ADD_TYPE_INFO(::demo::TextEditorConstructor)
 					ADD_TYPE_INFO(::demo::TextListTabPage)
