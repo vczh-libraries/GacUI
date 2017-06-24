@@ -94,10 +94,57 @@ void EnumerateFontFamilies(const Func<void(const WString&)>& callback)
 #define BINARY_FOLDER L"../TestCppCodegen/"
 #define SOURCE_FOLDER L"../TestCppCodegen/Source/"
 
-class DebugCallback : public Object, public IGuiResourcePrecompileCallback
+class DebugCallback : public Object, public IGuiResourcePrecompileCallback, public IWfCompilerCallback
 {
 public:
 	vint lastPassIndex = -1;
+
+	void OnLoadEnvironment()override
+	{
+#if defined VCZH_MSVC && defined _DEBUG
+		OutputDebugString(L"    Workflow: Loading metadata from registered types ...\r\n");
+#endif
+	}
+
+	void OnInitialize(analyzer::WfLexicalScopeManager* manager)override
+	{
+#if defined VCZH_MSVC && defined _DEBUG
+		OutputDebugString(L"    Workflow: Creating metadata from declarations ...\r\n");
+#endif
+	}
+
+	void OnValidateModule(Ptr<WfModule> module)override
+	{
+#if defined VCZH_MSVC && defined _DEBUG
+		OutputDebugString((L"    Workflow: Validating module " + module->name.value + L" ...\r\n").Buffer());
+#endif
+	}
+
+	void OnGenerateMetadata()override
+	{
+#if defined VCZH_MSVC && defined _DEBUG
+		OutputDebugString(L"    Workflow: Generating metadata ...\r\n");
+#endif
+	}
+
+	void OnGenerateCode(Ptr<WfModule> module)override
+	{
+#if defined VCZH_MSVC && defined _DEBUG
+		OutputDebugString((L"    Workflow: Generating code for module " + module->name.value + L" ...\r\n").Buffer());
+#endif
+	}
+
+	void OnGenerateDebugInfo()override
+	{
+#if defined VCZH_MSVC && defined _DEBUG
+		OutputDebugString(L"    Workflow: Generating debug information ...\r\n");
+#endif
+	}
+
+	IWfCompilerCallback* GetCompilerCallback()override
+	{
+		return this;
+	}
 
 	void PrintPassName(vint passIndex)
 	{

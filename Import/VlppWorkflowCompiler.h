@@ -3296,11 +3296,29 @@ namespace vl
 	{
 		namespace analyzer
 		{
-
 			class WfLexicalSymbol;
 			class WfLexicalScope;
 			class WfLexicalScopeManager;
+		}
 
+/***********************************************************************
+Callback
+***********************************************************************/
+
+		class IWfCompilerCallback : public Interface
+		{
+		public:
+			virtual void								OnLoadEnvironment() = 0;
+			virtual void								OnInitialize(analyzer::WfLexicalScopeManager* manager) = 0;
+			virtual void								OnValidateModule(Ptr<WfModule> module) = 0;
+
+			virtual void								OnGenerateMetadata() = 0;
+			virtual void								OnGenerateCode(Ptr<WfModule> module) = 0;
+			virtual void								OnGenerateDebugInfo() = 0;
+		};
+
+		namespace analyzer
+		{
 /***********************************************************************
 Scope
 ***********************************************************************/
@@ -3492,7 +3510,7 @@ Scope Manager
 				void										Clear(bool keepTypeDescriptorNames, bool deleteModules);
 				/// <summary>Compile.</summary>
 				/// <param name="keepTypeDescriptorNames">Set to false to delete all cache of reflectable C++ types before compiling.</param>
-				void										Rebuild(bool keepTypeDescriptorNames);
+				void										Rebuild(bool keepTypeDescriptorNames, IWfCompilerCallback* callback = nullptr);
 
 				bool										ResolveMember(ITypeDescriptor* typeDescriptor, const WString& name, bool preferStatic, collections::SortedList<ITypeDescriptor*>& searchedTypes, collections::List<ResolveExpressionResult>& results);
 				bool										ResolveName(WfLexicalScope* scope, const WString& name, collections::List<ResolveExpressionResult>& results);
@@ -3955,7 +3973,7 @@ Code Generation
 			/// <summary>Generate an assembly from a compiler. [M:vl.workflow.analyzer.WfLexicalScopeManager.Rebuild] should be called before using this function.</summary>
 			/// <returns>The generated assembly.</returns>
 			/// <param name="manager">The Workflow compiler.</param>
-			extern Ptr<runtime::WfAssembly>					GenerateAssembly(analyzer::WfLexicalScopeManager* manager);
+			extern Ptr<runtime::WfAssembly>					GenerateAssembly(analyzer::WfLexicalScopeManager* manager, IWfCompilerCallback* callback = nullptr);
 
 			/// <summary>Compile a Workflow program.</summary>
 			/// <returns>The generated assembly.</returns>

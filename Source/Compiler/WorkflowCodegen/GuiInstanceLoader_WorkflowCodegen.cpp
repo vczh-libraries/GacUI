@@ -46,9 +46,9 @@ FindInstanceLoadingSource
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
+		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
-			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context);
+			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context, moduleName);
 			{
 				auto block = Workflow_InstallCtorClass(resolvingResult, module);
 				Workflow_GenerateCreating(precompileContext, resolvingResult, block, errors);
@@ -329,7 +329,7 @@ Workflow_GenerateInstanceClass
 			}
 		};
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
 		{
 			bool beforePrecompile = false;
 			bool needEventHandler = false;
@@ -368,7 +368,7 @@ Workflow_GenerateInstanceClass
 			// Instance Class
 			///////////////////////////////////////////////////////////////
 
-			auto module = Workflow_CreateModuleWithUsings(context);
+			auto module = Workflow_CreateModuleWithUsings(context, moduleName);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
 				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);

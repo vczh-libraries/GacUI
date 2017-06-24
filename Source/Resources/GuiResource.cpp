@@ -1240,6 +1240,7 @@ GuiResource
 			}
 
 			GuiResourcePrecompileContext context;
+			context.compilerCallback = callback ? callback->GetCompilerCallback() : nullptr;
 			context.rootResource = this;
 			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
 			context.targetFolder = new GuiResourceFolder;
