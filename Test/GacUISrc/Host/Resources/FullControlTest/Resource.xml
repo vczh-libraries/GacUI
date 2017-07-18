@@ -38,6 +38,7 @@
   <Folder name="MiscImages" content="Link">Images/MiscImages.xml</Folder>
   <Script name="ImageLoaderResource" content="File">Images/ImageLoader.xml</Script>
   <Folder name="ToolbarImages" content="Link">ToolbarImages/Images.xml</Folder>
+  <Folder name="DarkSkin" content="Link">DarkSkin.xml</Folder>
 
   <Script name="ViewModelResource">
     <Workflow>

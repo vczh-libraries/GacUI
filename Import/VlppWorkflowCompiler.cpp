@@ -4381,9 +4381,15 @@ CreateBindContext
 
 				void Visit(WfConstructorExpression* node)override
 				{
+					auto result = manager->expressionResolvings[node];
+					bool isStruct = (result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct);
+
 					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
 					{
-						DirectDepend(node, argument->key.Obj());
+						if (!isStruct)
+						{
+							DirectDepend(node, argument->key.Obj());
+						}
 						DirectDepend(node, argument->value.Obj());
 					}
 				}
