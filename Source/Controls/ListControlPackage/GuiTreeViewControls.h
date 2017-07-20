@@ -460,9 +460,6 @@ GuiVirtualTreeView
 				class IStyleProvider : public virtual GuiVirtualTreeListControl::IStyleProvider, public Description<IStyleProvider>
 				{
 				public:
-					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of a node.</summary>
-					/// <returns>The created style controller for an item background.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemBackground()=0;
 					/// <summary>Create a style controller for an item expanding decorator. The selection state is used to render the expanding state of a node</summary>
 					/// <returns>The created style controller for an item expanding decorator.</returns>
 					virtual GuiSelectableButton::IStyleController*		CreateItemExpandingDecorator()=0;

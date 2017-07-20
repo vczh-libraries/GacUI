@@ -1008,7 +1008,16 @@ DefaultTreeItemTemplate
 						cell->SetSite(0, 1, 3, 1);
 						cell->SetPreferredMinSize(Size(16, 16));
 
-						expandingButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateTreeItemExpanderStyle());
+						GuiSelectableButton::IStyleController* expandingStyle = nullptr;
+						if (auto treeView = dynamic_cast<GuiVirtualTreeView*>(listControl))
+						{
+							expandingStyle = treeView->GetTreeViewStyleProvider()->CreateItemExpandingDecorator();
+							if (!expandingStyle)
+							{
+								expandingStyle = theme::GetCurrentTheme()->CreateTreeItemExpanderStyle();
+							}
+						}
+						expandingButton = new GuiSelectableButton(expandingStyle);
 						expandingButton->SetAutoSelection(false);
 						expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						expandingButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);

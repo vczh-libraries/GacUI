@@ -341,6 +341,8 @@ GuiListControl
 				:GuiScrollView(_styleProvider)
 				, itemProvider(_itemProvider)
 			{
+				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
+
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
 
@@ -383,6 +385,11 @@ GuiListControl
 				callback->ClearCache();
 				itemStyleProperty = {};
 				itemArranger = nullptr;
+			}
+
+			GuiListControl::IStyleProvider*	 GuiListControl::GetListControlStyleProvider()
+			{
+				return styleProvider;
 			}
 
 			GuiListControl::IItemProvider* GuiListControl::GetItemProvider()

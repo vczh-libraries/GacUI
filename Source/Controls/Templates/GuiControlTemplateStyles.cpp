@@ -598,6 +598,21 @@ GuiTextListTemplate_StyleProvider
 			{
 				return controlTemplate->GetTextColor();
 			}
+			
+			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateItemBackground()
+			{
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, BackgroundTemplate);
+			}
+
+			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateCheckBulletStyle()
+			{
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, CheckBulletTemplate);
+			}
+
+			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateRadioBulletStyle()
+			{
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, RadioBulletTemplate);
+			}
 
 /***********************************************************************
 GuiListViewTemplate_StyleProvider
@@ -618,7 +633,7 @@ GuiListViewTemplate_StyleProvider
 				
 			controls::GuiSelectableButton::IStyleController* GuiListViewTemplate_StyleProvider::CreateItemBackground()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, BackgroundTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, BackgroundTemplate);
 			}
 
 			controls::GuiListViewColumnHeader::IStyleController* GuiListViewTemplate_StyleProvider::CreateColumnStyle()
@@ -660,12 +675,12 @@ GuiTreeViewTemplate_StyleProvider
 				
 			controls::GuiSelectableButton::IStyleController* GuiTreeViewTemplate_StyleProvider::CreateItemBackground()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, BackgroundTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, BackgroundTemplate);
 			}
 
 			controls::GuiSelectableButton::IStyleController* GuiTreeViewTemplate_StyleProvider::CreateItemExpandingDecorator()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, ExpandingDecoratorTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, ExpandingDecoratorTemplate);
 			}
 
 			Color GuiTreeViewTemplate_StyleProvider::GetTextColor()

@@ -203,6 +203,9 @@ List
 				~Win7TextListProvider();
 
 				virtual Color												GetTextColor()override;
+				controls::GuiSelectableButton::IStyleController*			CreateItemBackground()override;
+				controls::GuiSelectableButton::IStyleController*			CreateCheckBulletStyle()override;
+				controls::GuiSelectableButton::IStyleController*			CreateRadioBulletStyle()override;
 			};
 
 			/// <summary>List view style (Windows 7).</summary>

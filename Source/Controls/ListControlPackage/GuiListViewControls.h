@@ -59,9 +59,6 @@ namespace vl
 				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
 				{
 				public:
-					/// <summary>Create a style controller for an item background.</summary>
-					/// <returns>The created style controller for an item background.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemBackground()=0;
 					/// <summary>Create a style controller for a column header.</summary>
 					/// <returns>The created style controller for a column header.</returns>
 					virtual GuiListViewColumnHeader::IStyleController*	CreateColumnStyle()=0;

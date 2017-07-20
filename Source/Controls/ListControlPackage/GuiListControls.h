@@ -37,6 +37,15 @@ List Control
 				using ItemStyle = templates::GuiListItemTemplate;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
+				/// <summary>Style provider interface for <see cref="GuiListControl"/>.</summary>
+				class IStyleProvider : public virtual GuiScrollView::IStyleProvider, public Description<IStyleProvider>
+				{
+				public:
+					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of an item.</summary>
+					/// <returns>The created style controller for an item background.</returns>
+					virtual GuiSelectableButton::IStyleController*		CreateItemBackground() = 0;
+				};
+
 				//-----------------------------------------------------------
 				// Callback Interfaces
 				//-----------------------------------------------------------
@@ -226,6 +235,7 @@ List Control
 				// State management
 				//-----------------------------------------------------------
 
+				IStyleProvider*									styleProvider;
 				Ptr<ItemCallback>								callback;
 				Ptr<IItemProvider>								itemProvider;
 				ItemStyleProperty								itemStyleProperty;
@@ -318,6 +328,9 @@ List Control
 				/// <summary>Item mouse leave event.</summary>
 				compositions::GuiItemNotifyEvent				ItemMouseLeave;
 
+				/// <summary>Get the style provider for this control.</summary>
+				/// <returns>The style provider for this control.</returns>
+				IStyleProvider*											GetListControlStyleProvider();
 				/// <summary>Get the item provider.</summary>
 				/// <returns>The item provider.</returns>
 				virtual IItemProvider*							GetItemProvider();

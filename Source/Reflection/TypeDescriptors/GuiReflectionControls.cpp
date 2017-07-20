@@ -213,7 +213,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD_OVERLOAD(QueryService, {L"identifier"}, IDescriptable*(GuiControl::*)(const WString&))
 			END_CLASS_MEMBER(GuiControl)
 
-			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleController)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiControl::IStyleController)
 				CLASS_MEMBER_METHOD(GetBoundsComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetContainerComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
@@ -222,7 +222,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
 			END_INTERFACE_MEMBER(GuiControl::IStyleController)
 
-			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiControl::IStyleProvider)
 				CLASS_MEMBER_METHOD(AssociateStyleController, {L"controller"})
 				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
 				CLASS_MEMBER_METHOD(SetText, {L"value"})
@@ -485,6 +485,7 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(ItemMouseEnter)
 				CLASS_MEMBER_GUIEVENT(ItemMouseLeave)
 
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListControlStyleProvider)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Arranger)
@@ -494,6 +495,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})
 			END_CLASS_MEMBER(GuiListControl)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiScrollView::IStyleProvider)
+
+				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
+			END_INTERFACE_MEMBER(GuiListControl::IStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -622,6 +629,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
+				CLASS_MEMBER_METHOD(CreateCheckBulletStyle, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreateRadioBulletStyle, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiVirtualTextList::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTextList)
@@ -661,7 +670,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SecondaryTextColor)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemSeparatorColor)
 
-				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateColumnStyle, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiListViewBase::IStyleProvider)
 
@@ -938,7 +946,6 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
 
-				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateItemExpandingDecorator, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiVirtualTreeView::IStyleProvider)
 

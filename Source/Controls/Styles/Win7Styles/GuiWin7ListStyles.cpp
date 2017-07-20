@@ -666,6 +666,21 @@ Win7TextListProvider
 				return Win7GetSystemTextColor(true);
 			}
 
+			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateItemBackground()
+			{
+				return nullptr;
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateCheckBulletStyle()
+			{
+				return nullptr;
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateRadioBulletStyle()
+			{
+				return nullptr;
+			}
+
 /***********************************************************************
 Win7ListViewProvider
 ***********************************************************************/
@@ -680,7 +695,7 @@ Win7ListViewProvider
 
 			controls::GuiSelectableButton::IStyleController* Win7ListViewProvider::CreateItemBackground()
 			{
-				return new Win7SelectableItemStyle;
+				return nullptr;
 			}
 
 			controls::GuiListViewColumnHeader::IStyleController* Win7ListViewProvider::CreateColumnStyle()
@@ -717,12 +732,12 @@ Win7TreeViewProvider
 
 			controls::GuiSelectableButton::IStyleController* Win7TreeViewProvider::CreateItemBackground()
 			{
-				return new Win7SelectableItemStyle;
+				return nullptr;
 			}
 
 			controls::GuiSelectableButton::IStyleController* Win7TreeViewProvider::CreateItemExpandingDecorator()
 			{
-				return new Win7TreeViewExpandingButtonStyle;
+				return nullptr;
 			}
 
 			Color Win7TreeViewProvider::GetTextColor()

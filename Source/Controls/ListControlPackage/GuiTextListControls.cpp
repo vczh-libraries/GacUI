@@ -135,6 +135,11 @@ DefaultCheckTextListItemTemplate
 
 				DefaultTextListItemTemplate::BulletStyle* DefaultCheckTextListItemTemplate::CreateBulletStyle()
 				{
+					if (auto textList = dynamic_cast<GuiTextList*>(listControl))
+					{
+						auto style = textList->GetTextListStyleProvider()->CreateCheckBulletStyle();
+						if (style) return style;
+					}
 					return theme::GetCurrentTheme()->CreateCheckTextListItemStyle();
 				}
 
@@ -144,6 +149,11 @@ DefaultRadioTextListItemTemplate
 
 				DefaultTextListItemTemplate::BulletStyle* DefaultRadioTextListItemTemplate::CreateBulletStyle()
 				{
+					if (auto textList = dynamic_cast<GuiTextList*>(listControl))
+					{
+						auto style = textList->GetTextListStyleProvider()->CreateRadioBulletStyle();
+						if (style) return style;
+					}
 					return theme::GetCurrentTheme()->CreateRadioTextListItemStyle();
 				}
 
