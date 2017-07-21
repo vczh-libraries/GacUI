@@ -12,181 +12,237 @@ using namespace vl::presentation::controls;
 using namespace vl::presentation::elements;
 using namespace vl::presentation::templates;
 using namespace demo;
-using namespace darkskin;
+
+#define SP(NAME, CLASS)\
+	new NAME##_StyleProvider([](auto _)\
+	{\
+		return new darkskin::CLASS;\
+	})\
+
+#define SC(NAME, CLASS)\
+	new NAME##_StyleController([](auto _)\
+	{\
+		return new darkskin::CLASS;\
+	})\
+
+#define NOTIMPL throw "NOT-USED-IN-THIS-TUTORIAL"
 
 class DarkSkin : public Object, public virtual theme::ITheme
 {
 public:
 	GuiWindow::IStyleController* CreateWindowStyle()override
 	{
+		return SP(GuiWindowTemplate, WindowTemplate);
 	}
 
 	GuiCustomControl::IStyleController* CreateCustomControlStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiTooltip::IStyleController* CreateTooltipStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiLabel::IStyleController* CreateLabelStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiLabel::IStyleController* CreateShortcutKeyStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiScrollContainer::IStyleProvider* CreateScrollContainerStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiControl::IStyleController* CreateGroupBoxStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiTab::IStyleController* CreateTabStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiComboBoxListControl::IStyleController* CreateComboBoxStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiScrollView::IStyleProvider* CreateMultilineTextBoxStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiSinglelineTextBox::IStyleProvider* CreateTextBoxStyle()override
 	{
+		NOTIMPL;
 	}
 
 	text::ColorEntry GetDefaultTextBoxColorEntry()override
 	{
+		NOTIMPL;
 	}
 
 	GuiDocumentViewer::IStyleProvider* CreateDocumentViewerStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiDocumentLabel::IStyleController* CreateDocumentLabelStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiDocumentLabel::IStyleController* CreateDocumentTextBoxStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiListView::IStyleProvider* CreateListViewStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiTreeView::IStyleProvider* CreateTreeViewStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiSelectableButton::IStyleController* CreateListItemBackgroundStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiSelectableButton::IStyleController* CreateTreeItemExpanderStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiToolstripMenu::IStyleController* CreateMenuStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiToolstripMenuBar::IStyleController* CreateMenuBarStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiControl::IStyleController* CreateMenuSplitterStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiToolstripButton::IStyleController* CreateMenuBarButtonStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiToolstripButton::IStyleController* CreateMenuItemButtonStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiToolstripToolBar::IStyleController* CreateToolBarStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiToolstripButton::IStyleController* CreateToolBarButtonStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiToolstripButton::IStyleController* CreateToolBarDropdownButtonStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiToolstripButton::IStyleController* CreateToolBarSplitButtonStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiControl::IStyleController* CreateToolBarSplitterStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiButton::IStyleController* CreateButtonStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiSelectableButton::IStyleController* CreateCheckBoxStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiSelectableButton::IStyleController* CreateRadioButtonStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiDatePicker::IStyleProvider* CreateDatePickerStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiScroll::IStyleController* CreateHScrollStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiScroll::IStyleController* CreateVScrollStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiScroll::IStyleController* CreateHTrackerStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiScroll::IStyleController* CreateVTrackerStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiScroll::IStyleController* CreateProgressBarStyle()override
 	{
+		NOTIMPL;
 	}
 
 	vint GetScrollDefaultSize()override
 	{
+		NOTIMPL;
 	}
 
 	vint GetTrackerDefaultSize()override
 	{
+		NOTIMPL;
 	}
 
 	GuiVirtualTextList::IStyleProvider* CreateTextListStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiSelectableButton::IStyleController* CreateCheckTextListItemStyle()override
 	{
+		NOTIMPL;
 	}
 
 	GuiSelectableButton::IStyleController* CreateRadioTextListItemStyle()override
 	{
+		NOTIMPL;
 	}
 
 };
