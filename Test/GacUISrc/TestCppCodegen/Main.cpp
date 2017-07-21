@@ -19,12 +19,6 @@ using namespace demo;
 		return new darkskin::CLASS;\
 	})\
 
-#define SC(NAME, CLASS)\
-	new NAME##_StyleController([](auto _)\
-	{\
-		return new darkskin::CLASS;\
-	})\
-
 #define NOTIMPL throw "NOT-USED-IN-THIS-TUTORIAL"
 
 class DarkSkin : public Object, public virtual theme::ITheme
@@ -62,12 +56,12 @@ public:
 
 	GuiControl::IStyleController* CreateGroupBoxStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiControlTemplate, GroupBoxTemplate);
 	}
 
 	GuiTab::IStyleController* CreateTabStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiTabTemplate, TabTemplate);
 	}
 
 	GuiComboBoxListControl::IStyleController* CreateComboBoxStyle()override
@@ -127,17 +121,17 @@ public:
 
 	GuiToolstripMenu::IStyleController* CreateMenuStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiWindowTemplate, ToolstripMenuTemplate);
 	}
 
 	GuiToolstripMenuBar::IStyleController* CreateMenuBarStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiControlTemplate, ToolstripTemplate);
 	}
 
 	GuiControl::IStyleController* CreateMenuSplitterStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiControlTemplate, MenuSplitterTemplate);
 	}
 
 	GuiToolstripButton::IStyleController* CreateMenuBarButtonStyle()override
@@ -152,7 +146,7 @@ public:
 
 	GuiToolstripToolBar::IStyleController* CreateToolBarStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiControlTemplate, ToolstripTemplate);
 	}
 
 	GuiToolstripButton::IStyleController* CreateToolBarButtonStyle()override
@@ -172,22 +166,22 @@ public:
 
 	GuiControl::IStyleController* CreateToolBarSplitterStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiControlTemplate, ToolstripSplitterTemplate);
 	}
 
 	GuiButton::IStyleController* CreateButtonStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiButtonTemplate, ButtonTemplate);
 	}
 
 	GuiSelectableButton::IStyleController* CreateCheckBoxStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiSelectableButtonTemplate, CheckBoxTemplate);
 	}
 
 	GuiSelectableButton::IStyleController* CreateRadioButtonStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiSelectableButtonTemplate, RadioButtonTemplate);
 	}
 
 	GuiDatePicker::IStyleProvider* CreateDatePickerStyle()override
