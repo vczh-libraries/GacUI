@@ -19918,6 +19918,9 @@ Class (::darkskin::DocumentLabelTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+		}
+		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
@@ -19953,6 +19956,9 @@ Class (::darkskin::DocumentTextBoxTemplateConstructor)
 	void DocumentTextBoxTemplateConstructor::__vwsn_initialize_instance_(::darkskin::DocumentTextBoxTemplate* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
+		{
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
@@ -21515,10 +21521,10 @@ Class (::darkskin::MultilineTextBoxTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetHScrollTemplate(LAMBDA(::vl_workflow_global::__vwsnf200_Demo_darkskin_MultilineTextBoxTemplateConstructor___vwsn_initialize_instance__(this)));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#00000000", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#00000000", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
@@ -22084,10 +22090,10 @@ Class (::darkskin::SinglelineTextBoxTemplateConstructor)
 	{
 		(this->self = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
+			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#00000000", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetTextColor([&](){ ::vl::presentation::elements::text::ColorEntry __vwsn_temp__; __vwsn_temp__.normal = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#00000000", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedFocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); __vwsn_temp__.selectedUnfocused = [&](){ ::vl::presentation::elements::text::ColorItem __vwsn_temp__; __vwsn_temp__.text = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)); __vwsn_temp__.background = ::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#007ACC", false)); return __vwsn_temp__; }(); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->self)->SetCaretColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString(L"#FFFFFF", false)));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);

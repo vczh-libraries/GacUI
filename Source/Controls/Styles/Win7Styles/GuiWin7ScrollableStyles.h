@@ -227,6 +227,7 @@ TextBox
 				~Win7DocumentLabelStyle();
 
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 
 			/// <summary>Document label style (Windows 7).</summary>
@@ -249,6 +250,7 @@ TextBox
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 #pragma warning(pop)
 		}

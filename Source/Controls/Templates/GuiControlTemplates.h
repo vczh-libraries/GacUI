@@ -256,7 +256,7 @@ Control Template
 
 #define GuiDocumentLabelTemplate_PROPERTIES(F)\
 				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument)\
-				F(GuiSinglelineTextBoxTemplate, Color, CaretColor)\
+				F(GuiDocumentLabelTemplate, Color, CaretColor)\
 
 				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};

@@ -651,6 +651,11 @@ Win8DocumentlabelStyle
 				return nullptr;
 			}
 
+			Color Win8DocumentLabelStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
+			}
+
 /***********************************************************************
 Win8DocumentTextBoxStyle
 ***********************************************************************/
@@ -698,6 +703,11 @@ Win8DocumentTextBoxStyle
 			Ptr<DocumentModel> Win8DocumentTextBoxStyle::GetBaselineDocument()
 			{
 				return nullptr;
+			}
+
+			Color Win8DocumentTextBoxStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
 			}
 		}
 	}

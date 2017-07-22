@@ -94,6 +94,7 @@ Control Template
 				~GuiDocumentLabelTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
+				Color															GetCaretColor()override;
 			};
 
 			class GuiMenuTemplate_StyleProvider

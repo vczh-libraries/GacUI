@@ -158,6 +158,11 @@ GuiDocumentLabelTemplate_StyleProvider
 			{
 				return controlTemplate->GetBaselineDocument();
 			}
+			
+			Color GuiDocumentLabelTemplate_StyleProvider::GetCaretColor()
+			{
+				return controlTemplate->GetCaretColor();
+			}
 
 /***********************************************************************
 GuiMenuTemplate_StyleProvider
