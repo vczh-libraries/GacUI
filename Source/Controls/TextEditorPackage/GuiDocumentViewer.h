@@ -380,6 +380,9 @@ GuiDocumentViewer
 					/// <summary>Get a baseline document for customize default styles.</summary>
 					/// <returns>The baseline document.</returns>
 					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
+					/// <summary>Get the caret color.</summary>
+					/// <returns>The caret color.</returns>
+					virtual Color							GetCaretColor() = 0;
 				};
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
