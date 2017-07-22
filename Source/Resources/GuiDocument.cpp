@@ -246,7 +246,7 @@ DocumentModel
 
 		void DocumentModel::MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName)
 		{
-			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName);
+			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName + L"-Override");
 			if (indexSrc == -1)
 			{
 				return;

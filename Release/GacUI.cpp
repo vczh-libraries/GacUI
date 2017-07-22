@@ -7780,7 +7780,12 @@ RangedItemArrangerBase
 					GuiSelectableButton* backgroundButton = nullptr;
 					if (listControl->GetDisplayItemBackground())
 					{
-						backgroundButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateListItemBackgroundStyle());
+						auto style = listControl->GetListControlStyleProvider()->CreateItemBackground();
+						if (!style)
+						{
+							style = theme::GetCurrentTheme()->CreateListItemBackgroundStyle();
+						}
+						backgroundButton = new GuiSelectableButton(style);
 						backgroundButton->SetAutoSelection(false);
 					}
 
@@ -8979,6 +8984,8 @@ GuiListControl
 				:GuiScrollView(_styleProvider)
 				, itemProvider(_itemProvider)
 			{
+				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
+
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
 
@@ -9021,6 +9028,11 @@ GuiListControl
 				callback->ClearCache();
 				itemStyleProperty = {};
 				itemArranger = nullptr;
+			}
+
+			GuiListControl::IStyleProvider*	 GuiListControl::GetListControlStyleProvider()
+			{
+				return styleProvider;
 			}
 
 			GuiListControl::IItemProvider* GuiListControl::GetItemProvider()
@@ -11221,6 +11233,11 @@ DefaultCheckTextListItemTemplate
 
 				DefaultTextListItemTemplate::BulletStyle* DefaultCheckTextListItemTemplate::CreateBulletStyle()
 				{
+					if (auto textList = dynamic_cast<GuiTextList*>(listControl))
+					{
+						auto style = textList->GetTextListStyleProvider()->CreateCheckBulletStyle();
+						if (style) return style;
+					}
 					return theme::GetCurrentTheme()->CreateCheckTextListItemStyle();
 				}
 
@@ -11230,6 +11247,11 @@ DefaultRadioTextListItemTemplate
 
 				DefaultTextListItemTemplate::BulletStyle* DefaultRadioTextListItemTemplate::CreateBulletStyle()
 				{
+					if (auto textList = dynamic_cast<GuiTextList*>(listControl))
+					{
+						auto style = textList->GetTextListStyleProvider()->CreateRadioBulletStyle();
+						if (style) return style;
+					}
 					return theme::GetCurrentTheme()->CreateRadioTextListItemStyle();
 				}
 
@@ -12475,7 +12497,16 @@ DefaultTreeItemTemplate
 						cell->SetSite(0, 1, 3, 1);
 						cell->SetPreferredMinSize(Size(16, 16));
 
-						expandingButton = new GuiSelectableButton(theme::GetCurrentTheme()->CreateTreeItemExpanderStyle());
+						GuiSelectableButton::IStyleController* expandingStyle = nullptr;
+						if (auto treeView = dynamic_cast<GuiVirtualTreeView*>(listControl))
+						{
+							expandingStyle = treeView->GetTreeViewStyleProvider()->CreateItemExpandingDecorator();
+							if (!expandingStyle)
+							{
+								expandingStyle = theme::GetCurrentTheme()->CreateTreeItemExpanderStyle();
+							}
+						}
+						expandingButton = new GuiSelectableButton(expandingStyle);
 						expandingButton->SetAutoSelection(false);
 						expandingButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						expandingButton->GetEventReceiver()->leftButtonDoubleClick.AttachMethod(this, &DefaultTreeItemTemplate::OnExpandingButtonDoubleClick);
@@ -13351,6 +13382,11 @@ namespace vl
 				controls::GuiDocumentLabel* NewDocumentLabel()
 				{
 					return new controls::GuiDocumentLabel(GetCurrentTheme()->CreateDocumentLabelStyle());
+				}
+
+				controls::GuiDocumentLabel* NewDocumentTextBox()
+				{
+					return new controls::GuiDocumentLabel(GetCurrentTheme()->CreateDocumentTextBoxStyle());
 				}
 
 				controls::GuiListView* NewListView()
@@ -15356,6 +15392,21 @@ Win7TextListProvider
 				return Win7GetSystemTextColor(true);
 			}
 
+			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateItemBackground()
+			{
+				return nullptr;
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateCheckBulletStyle()
+			{
+				return nullptr;
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win7TextListProvider::CreateRadioBulletStyle()
+			{
+				return nullptr;
+			}
+
 /***********************************************************************
 Win7ListViewProvider
 ***********************************************************************/
@@ -15370,7 +15421,7 @@ Win7ListViewProvider
 
 			controls::GuiSelectableButton::IStyleController* Win7ListViewProvider::CreateItemBackground()
 			{
-				return new Win7SelectableItemStyle;
+				return nullptr;
 			}
 
 			controls::GuiListViewColumnHeader::IStyleController* Win7ListViewProvider::CreateColumnStyle()
@@ -15407,12 +15458,12 @@ Win7TreeViewProvider
 
 			controls::GuiSelectableButton::IStyleController* Win7TreeViewProvider::CreateItemBackground()
 			{
-				return new Win7SelectableItemStyle;
+				return nullptr;
 			}
 
 			controls::GuiSelectableButton::IStyleController* Win7TreeViewProvider::CreateItemExpandingDecorator()
 			{
-				return new Win7TreeViewExpandingButtonStyle;
+				return nullptr;
 			}
 
 			Color Win7TreeViewProvider::GetTextColor()
@@ -16628,6 +16679,11 @@ Win7DocumentlabelStyle
 				return nullptr;
 			}
 
+			Color Win7DocumentLabelStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
+			}
+
 /***********************************************************************
 Win7DocumentTextBoxStyle
 ***********************************************************************/
@@ -16675,6 +16731,11 @@ Win7DocumentTextBoxStyle
 			Ptr<DocumentModel> Win7DocumentTextBoxStyle::GetBaselineDocument()
 			{
 				return nullptr;
+			}
+
+			Color Win7DocumentTextBoxStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
 			}
 		}
 	}
@@ -19450,6 +19511,21 @@ Win8TextListProvider
 			{
 				return Win8GetSystemTextColor(true);
 			}
+			
+			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateItemBackground()
+			{
+				return nullptr;
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateCheckBulletStyle()
+			{
+				return nullptr;
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateRadioBulletStyle()
+			{
+				return nullptr;
+			}
 
 /***********************************************************************
 Win8ListViewProvider
@@ -19465,7 +19541,7 @@ Win8ListViewProvider
 
 			controls::GuiSelectableButton::IStyleController* Win8ListViewProvider::CreateItemBackground()
 			{
-				return new Win8SelectableItemStyle;
+				return nullptr;
 			}
 
 			controls::GuiListViewColumnHeader::IStyleController* Win8ListViewProvider::CreateColumnStyle()
@@ -19502,12 +19578,12 @@ Win8TreeViewProvider
 
 			controls::GuiSelectableButton::IStyleController* Win8TreeViewProvider::CreateItemBackground()
 			{
-				return new Win8SelectableItemStyle;
+				return nullptr;
 			}
 
 			controls::GuiSelectableButton::IStyleController* Win8TreeViewProvider::CreateItemExpandingDecorator()
 			{
-				return new win7::Win7TreeViewExpandingButtonStyle;
+				return nullptr;
 			}
 
 			Color Win8TreeViewProvider::GetTextColor()
@@ -20662,6 +20738,11 @@ Win8DocumentlabelStyle
 				return nullptr;
 			}
 
+			Color Win8DocumentLabelStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
+			}
+
 /***********************************************************************
 Win8DocumentTextBoxStyle
 ***********************************************************************/
@@ -20709,6 +20790,11 @@ Win8DocumentTextBoxStyle
 			Ptr<DocumentModel> Win8DocumentTextBoxStyle::GetBaselineDocument()
 			{
 				return nullptr;
+			}
+
+			Color Win8DocumentTextBoxStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
 			}
 		}
 	}
@@ -23047,6 +23133,11 @@ GuiDocumentLabelTemplate_StyleProvider
 			{
 				return controlTemplate->GetBaselineDocument();
 			}
+			
+			Color GuiDocumentLabelTemplate_StyleProvider::GetCaretColor()
+			{
+				return controlTemplate->GetCaretColor();
+			}
 
 /***********************************************************************
 GuiMenuTemplate_StyleProvider
@@ -23487,6 +23578,21 @@ GuiTextListTemplate_StyleProvider
 			{
 				return controlTemplate->GetTextColor();
 			}
+			
+			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateItemBackground()
+			{
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, BackgroundTemplate);
+			}
+
+			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateCheckBulletStyle()
+			{
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, CheckBulletTemplate);
+			}
+
+			controls::GuiSelectableButton::IStyleController* GuiTextListTemplate_StyleProvider::CreateRadioBulletStyle()
+			{
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, RadioBulletTemplate);
+			}
 
 /***********************************************************************
 GuiListViewTemplate_StyleProvider
@@ -23507,7 +23613,7 @@ GuiListViewTemplate_StyleProvider
 				
 			controls::GuiSelectableButton::IStyleController* GuiListViewTemplate_StyleProvider::CreateItemBackground()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, BackgroundTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, BackgroundTemplate);
 			}
 
 			controls::GuiListViewColumnHeader::IStyleController* GuiListViewTemplate_StyleProvider::CreateColumnStyle()
@@ -23549,12 +23655,12 @@ GuiTreeViewTemplate_StyleProvider
 				
 			controls::GuiSelectableButton::IStyleController* GuiTreeViewTemplate_StyleProvider::CreateItemBackground()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, BackgroundTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, BackgroundTemplate);
 			}
 
 			controls::GuiSelectableButton::IStyleController* GuiTreeViewTemplate_StyleProvider::CreateItemExpandingDecorator()
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, ExpandingDecoratorTemplate);
+				GET_FACTORY_FROM_TEMPLATE_OPT(GuiSelectableButtonTemplate, ExpandingDecoratorTemplate);
 			}
 
 			Color GuiTreeViewTemplate_StyleProvider::GetTextColor()
@@ -25077,7 +25183,7 @@ GuiDocumentLabel
 
 			GuiDocumentLabel::GuiDocumentLabel(GuiDocumentLabel::IStyleController* styleController)
 				:GuiControl(styleController)
-				, GuiDocumentCommonInterface(styleController->GetBaselineDocument())
+				, GuiDocumentCommonInterface(styleController->GetBaselineDocument(), styleController->GetCaretColor())
 			{
 				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				SetFocusableComposition(GetBoundsComposition());
@@ -38501,7 +38607,7 @@ DocumentModel
 
 		void DocumentModel::MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName)
 		{
-			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName);
+			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName + L"-Override");
 			if (indexSrc == -1)
 			{
 				return;

@@ -1120,10 +1120,10 @@ Developer: Zihan Chen(vczh)
 GacUI::Native Window
 
 Interfaces:
-  INativeWindow							：窗口适配器
-  INativeWindowListener					：窗口事件监听器
-  INativeController						：全局控制器
-  INativeControllerListener				：全局事件监听器
+  INativeWindow							£º´°¿ÚÊÊÅäÆ÷
+  INativeWindowListener					£º´°¿ÚÊÂ¼þ¼àÌýÆ÷
+  INativeController						£ºÈ«¾Ö¿ØÖÆÆ÷
+  INativeControllerListener				£ºÈ«¾ÖÊÂ¼þ¼àÌýÆ÷
 
 Renderers:
   GUI_GRAPHICS_RENDERER_GDI
@@ -8505,6 +8505,7 @@ Control Template
 
 #define GuiDocumentLabelTemplate_PROPERTIES(F)\
 				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument)\
+				F(GuiDocumentLabelTemplate, Color, CaretColor)\
 
 				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -8679,6 +8680,9 @@ Control Template
 
 #define GuiTextListTemplate_PROPERTIES(F)\
 				F(GuiTextListTemplate, Color, TextColor)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, CheckBulletTemplate)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, RadioBulletTemplate)\
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -10638,6 +10642,15 @@ List Control
 				using ItemStyle = templates::GuiListItemTemplate;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
+				/// <summary>Style provider interface for <see cref="GuiListControl"/>.</summary>
+				class IStyleProvider : public virtual GuiScrollView::IStyleProvider, public Description<IStyleProvider>
+				{
+				public:
+					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of an item.</summary>
+					/// <returns>The created style controller for an item background.</returns>
+					virtual GuiSelectableButton::IStyleController*		CreateItemBackground() = 0;
+				};
+
 				//-----------------------------------------------------------
 				// Callback Interfaces
 				//-----------------------------------------------------------
@@ -10827,6 +10840,7 @@ List Control
 				// State management
 				//-----------------------------------------------------------
 
+				IStyleProvider*									styleProvider;
 				Ptr<ItemCallback>								callback;
 				Ptr<IItemProvider>								itemProvider;
 				ItemStyleProperty								itemStyleProperty;
@@ -10919,6 +10933,9 @@ List Control
 				/// <summary>Item mouse leave event.</summary>
 				compositions::GuiItemNotifyEvent				ItemMouseLeave;
 
+				/// <summary>Get the style provider for this control.</summary>
+				/// <returns>The style provider for this control.</returns>
+				IStyleProvider*											GetListControlStyleProvider();
 				/// <summary>Get the item provider.</summary>
 				/// <returns>The item provider.</returns>
 				virtual IItemProvider*							GetItemProvider();
@@ -11257,6 +11274,12 @@ GuiVirtualTextList
 					/// <summary>Get the text color.</summary>
 					/// <returns>The text color.</returns>
 					virtual Color										GetTextColor()=0;
+					/// <summary>Create a style controller for displaying a check box in front of a text item.</summary>
+					/// <returns>The created style controller for displaying a check box in front of a text item.</returns>
+					virtual GuiSelectableButton::IStyleController*		CreateCheckBulletStyle() = 0;
+					/// <summary>Create a style controller for displaying a radio button in front of a text item.</summary>
+					/// <returns>The created style controller for displaying a radio button in front of a text item.</returns>
+					virtual GuiSelectableButton::IStyleController*		CreateRadioBulletStyle() = 0;
 				};
 			protected:
 				IStyleProvider*											styleProvider;
@@ -11797,9 +11820,6 @@ namespace vl
 				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
 				{
 				public:
-					/// <summary>Create a style controller for an item background.</summary>
-					/// <returns>The created style controller for an item background.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemBackground()=0;
 					/// <summary>Create a style controller for a column header.</summary>
 					/// <returns>The created style controller for a column header.</returns>
 					virtual GuiListViewColumnHeader::IStyleController*	CreateColumnStyle()=0;
@@ -12739,9 +12759,6 @@ GuiVirtualTreeView
 				class IStyleProvider : public virtual GuiVirtualTreeListControl::IStyleProvider, public Description<IStyleProvider>
 				{
 				public:
-					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of a node.</summary>
-					/// <returns>The created style controller for an item background.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemBackground()=0;
 					/// <summary>Create a style controller for an item expanding decorator. The selection state is used to render the expanding state of a node</summary>
 					/// <returns>The created style controller for an item expanding decorator.</returns>
 					virtual GuiSelectableButton::IStyleController*		CreateItemExpandingDecorator()=0;
@@ -14971,6 +14988,9 @@ GuiDocumentViewer
 					/// <summary>Get a baseline document for customize default styles.</summary>
 					/// <returns>The baseline document.</returns>
 					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
+					/// <summary>Get the caret color.</summary>
+					/// <returns>The caret color.</returns>
+					virtual Color							GetCaretColor() = 0;
 				};
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
@@ -16939,6 +16959,9 @@ namespace vl
 				/// <summary>Create a document label.</summary>
 				/// <returns>The created control.</returns>
 				extern controls::GuiDocumentLabel*				NewDocumentLabel();
+				/// <summary>Create a document label.</summary>
+				/// <returns>The created control.</returns>
+				extern controls::GuiDocumentLabel*				NewDocumentTextBox();
 				/// <summary>Create a list view.</summary>
 				/// <returns>The created control.</returns>
 				extern controls::GuiListView*					NewListView();
@@ -17462,6 +17485,7 @@ Control Template
 				~GuiDocumentLabelTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
+				Color															GetCaretColor()override;
 			};
 
 			class GuiMenuTemplate_StyleProvider
@@ -17667,6 +17691,9 @@ Control Template
 				~GuiTextListTemplate_StyleProvider();
 				
 				Color															GetTextColor()override;
+				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
+				controls::GuiSelectableButton::IStyleController*				CreateCheckBulletStyle()override;
+				controls::GuiSelectableButton::IStyleController*				CreateRadioBulletStyle()override;
 			};
 
 			class GuiListViewTemplate_StyleProvider
@@ -18974,6 +19001,7 @@ TextBox
 				~Win7DocumentLabelStyle();
 
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 
 			/// <summary>Document label style (Windows 7).</summary>
@@ -18996,6 +19024,7 @@ TextBox
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 #pragma warning(pop)
 		}
@@ -19884,6 +19913,7 @@ TextBox
 				~Win8DocumentLabelStyle();
 
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 
 			/// <summary>Document label style (Windows 8).</summary>
@@ -19906,6 +19936,7 @@ TextBox
 				void										SetFont(const FontProperties& value)override;
 				void										SetVisuallyEnabled(bool value)override;
 				Ptr<DocumentModel>							GetBaselineDocument()override;
+				Color										GetCaretColor()override;
 			};
 #pragma warning(pop)
 		}
@@ -20985,6 +21016,9 @@ List
 				~Win7TextListProvider();
 
 				virtual Color												GetTextColor()override;
+				controls::GuiSelectableButton::IStyleController*			CreateItemBackground()override;
+				controls::GuiSelectableButton::IStyleController*			CreateCheckBulletStyle()override;
+				controls::GuiSelectableButton::IStyleController*			CreateRadioBulletStyle()override;
 			};
 
 			/// <summary>List view style (Windows 7).</summary>
@@ -21319,6 +21353,9 @@ List
 				~Win8TextListProvider();
 
 				virtual Color												GetTextColor()override;
+				controls::GuiSelectableButton::IStyleController*			CreateItemBackground()override;
+				controls::GuiSelectableButton::IStyleController*			CreateCheckBulletStyle()override;
+				controls::GuiSelectableButton::IStyleController*			CreateRadioBulletStyle()override;
 			};
 
 			/// <summary>List view style (Windows 8).</summary>
