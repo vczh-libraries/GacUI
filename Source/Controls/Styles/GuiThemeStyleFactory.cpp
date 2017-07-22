@@ -80,6 +80,11 @@ namespace vl
 					return new controls::GuiDocumentLabel(GetCurrentTheme()->CreateDocumentLabelStyle());
 				}
 
+				controls::GuiDocumentLabel* NewDocumentTextBox()
+				{
+					return new controls::GuiDocumentLabel(GetCurrentTheme()->CreateDocumentTextBoxStyle());
+				}
+
 				controls::GuiListView* NewListView()
 				{
 					controls::GuiListView* listview=new controls::GuiListView(GetCurrentTheme()->CreateListViewStyle());

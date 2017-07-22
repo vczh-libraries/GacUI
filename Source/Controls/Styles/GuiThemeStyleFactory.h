@@ -224,6 +224,9 @@ namespace vl
 				/// <summary>Create a document label.</summary>
 				/// <returns>The created control.</returns>
 				extern controls::GuiDocumentLabel*				NewDocumentLabel();
+				/// <summary>Create a document label.</summary>
+				/// <returns>The created control.</returns>
+				extern controls::GuiDocumentLabel*				NewDocumentTextBox();
 				/// <summary>Create a list view.</summary>
 				/// <returns>The created control.</returns>
 				extern controls::GuiListView*					NewListView();

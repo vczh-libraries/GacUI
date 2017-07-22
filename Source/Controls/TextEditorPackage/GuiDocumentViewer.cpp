@@ -1156,7 +1156,7 @@ GuiDocumentLabel
 
 			GuiDocumentLabel::GuiDocumentLabel(GuiDocumentLabel::IStyleController* styleController)
 				:GuiControl(styleController)
-				, GuiDocumentCommonInterface(styleController->GetBaselineDocument())
+				, GuiDocumentCommonInterface(styleController->GetBaselineDocument(), styleController->GetCaretColor())
 			{
 				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				SetFocusableComposition(GetBoundsComposition());
