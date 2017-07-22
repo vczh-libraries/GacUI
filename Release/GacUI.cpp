@@ -11233,7 +11233,7 @@ DefaultCheckTextListItemTemplate
 
 				DefaultTextListItemTemplate::BulletStyle* DefaultCheckTextListItemTemplate::CreateBulletStyle()
 				{
-					if (auto textList = dynamic_cast<GuiTextList*>(listControl))
+					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
 						auto style = textList->GetTextListStyleProvider()->CreateCheckBulletStyle();
 						if (style) return style;
@@ -11247,7 +11247,7 @@ DefaultRadioTextListItemTemplate
 
 				DefaultTextListItemTemplate::BulletStyle* DefaultRadioTextListItemTemplate::CreateBulletStyle()
 				{
-					if (auto textList = dynamic_cast<GuiTextList*>(listControl))
+					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
 						auto style = textList->GetTextListStyleProvider()->CreateRadioBulletStyle();
 						if (style) return style;
