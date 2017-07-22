@@ -31,7 +31,7 @@ public:
 
 	GuiCustomControl::IStyleController* CreateCustomControlStyle()override
 	{
-		NOTIMPL;
+		return new GuiControl::EmptyStyleController;
 	}
 
 	GuiTooltip::IStyleController* CreateTooltipStyle()override
@@ -46,7 +46,7 @@ public:
 
 	GuiLabel::IStyleController* CreateShortcutKeyStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiLabelTemplate, ShortcutKeyTemplate);
 	}
 
 	GuiScrollContainer::IStyleProvider* CreateScrollContainerStyle()override
@@ -96,7 +96,7 @@ public:
 
 	GuiDocumentLabel::IStyleController* CreateDocumentTextBoxStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiDocumentLabelTemplate, DocumentTextBoxTemplate);
 	}
 
 	GuiListView::IStyleProvider* CreateListViewStyle()override
