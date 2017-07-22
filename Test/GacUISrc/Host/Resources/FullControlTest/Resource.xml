@@ -1,4 +1,12 @@
 <Resource>
+  <Folder name="GacGenConfig">
+    <Folder name="Cpp">
+      <Text name="SourceFolder">Source</Text>
+      <Text name="Resource">..\..\..\UIRes\BlackSkin.bin</Text>
+      <Text name="NormalInclude">GacUI.h</Text>
+      <Text name="Name">Demo</Text>
+    </Folder>
+  </Folder>
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
       <Window ref.Name="self" Text="GacUI 完整控件测试" ClientSize="x:640 y:480">

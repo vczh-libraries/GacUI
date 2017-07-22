@@ -238,7 +238,6 @@ public:
 	{
 		NOTIMPL;
 	}
-
 };
 
 void GuiMain()
