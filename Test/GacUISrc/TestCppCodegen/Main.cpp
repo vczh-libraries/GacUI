@@ -36,12 +36,12 @@ public:
 
 	GuiTooltip::IStyleController* CreateTooltipStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiWindowTemplate, TooltipTemplate);
 	}
 
 	GuiLabel::IStyleController* CreateLabelStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiLabelTemplate, LabelTemplate);
 	}
 
 	GuiLabel::IStyleController* CreateShortcutKeyStyle()override
@@ -51,7 +51,7 @@ public:
 
 	GuiScrollContainer::IStyleProvider* CreateScrollContainerStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiScrollViewTemplate, ScrollViewTemplate);
 	}
 
 	GuiControl::IStyleController* CreateGroupBoxStyle()override
@@ -66,17 +66,17 @@ public:
 
 	GuiComboBoxListControl::IStyleController* CreateComboBoxStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiComboBoxTemplate, ComboBoxTemplate);
 	}
 
 	GuiScrollView::IStyleProvider* CreateMultilineTextBoxStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiMultilineTextBoxTemplate, MultilineTextBoxTemplate);
 	}
 
 	GuiSinglelineTextBox::IStyleProvider* CreateTextBoxStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiSinglelineTextBoxTemplate, SinglelineTextBoxTemplate);
 	}
 
 	text::ColorEntry GetDefaultTextBoxColorEntry()override
@@ -86,12 +86,12 @@ public:
 
 	GuiDocumentViewer::IStyleProvider* CreateDocumentViewerStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiDocumentViewerTemplate, DocumentViewerTemplate);
 	}
 
 	GuiDocumentLabel::IStyleController* CreateDocumentLabelStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiDocumentLabelTemplate, DocumentLabelTemplate);
 	}
 
 	GuiDocumentLabel::IStyleController* CreateDocumentTextBoxStyle()override
@@ -101,12 +101,12 @@ public:
 
 	GuiListView::IStyleProvider* CreateListViewStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiListViewTemplate, ListViewTemplate);
 	}
 
 	GuiTreeView::IStyleProvider* CreateTreeViewStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiTreeViewTemplate, TreeViewTemplate);
 	}
 
 	GuiSelectableButton::IStyleController* CreateListItemBackgroundStyle()override
@@ -121,7 +121,7 @@ public:
 
 	GuiToolstripMenu::IStyleController* CreateMenuStyle()override
 	{
-		return SP(GuiWindowTemplate, ToolstripMenuTemplate);
+		return SP(GuiMenuTemplate, ToolstripMenuTemplate);
 	}
 
 	GuiToolstripMenuBar::IStyleController* CreateMenuBarStyle()override
@@ -136,12 +136,12 @@ public:
 
 	GuiToolstripButton::IStyleController* CreateMenuBarButtonStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiToolstripButtonTemplate, MenuBarButtonTemplate);
 	}
 
 	GuiToolstripButton::IStyleController* CreateMenuItemButtonStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiToolstripButtonTemplate, MenuItemButtonTemplate);
 	}
 
 	GuiToolstripToolBar::IStyleController* CreateToolBarStyle()override
@@ -151,17 +151,17 @@ public:
 
 	GuiToolstripButton::IStyleController* CreateToolBarButtonStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiToolstripButtonTemplate, ToolstripButtonTemplate);
 	}
 
 	GuiToolstripButton::IStyleController* CreateToolBarDropdownButtonStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiToolstripButtonTemplate, ToolstripDropdownButtonTemplate);
 	}
 
 	GuiToolstripButton::IStyleController* CreateToolBarSplitButtonStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiToolstripButtonTemplate, ToolstripSplitButtonTemplate);
 	}
 
 	GuiControl::IStyleController* CreateToolBarSplitterStyle()override
@@ -186,32 +186,32 @@ public:
 
 	GuiDatePicker::IStyleProvider* CreateDatePickerStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiDatePickerTemplate, DatePickerTemplate);
 	}
 
 	GuiScroll::IStyleController* CreateHScrollStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiScrollTemplate, HScrollTemplate);
 	}
 
 	GuiScroll::IStyleController* CreateVScrollStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiScrollTemplate, VScrollTemplate);
 	}
 
 	GuiScroll::IStyleController* CreateHTrackerStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiScrollTemplate, HTrackerTemplate);
 	}
 
 	GuiScroll::IStyleController* CreateVTrackerStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiScrollTemplate, VTrackerTemplate);
 	}
 
 	GuiScroll::IStyleController* CreateProgressBarStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiScrollTemplate, ProgressBarTemplate);
 	}
 
 	vint GetScrollDefaultSize()override
@@ -226,7 +226,7 @@ public:
 
 	GuiVirtualTextList::IStyleProvider* CreateTextListStyle()override
 	{
-		NOTIMPL;
+		return SP(GuiTextListTemplate, TextListTemplate);
 	}
 
 	GuiSelectableButton::IStyleController* CreateCheckTextListItemStyle()override
