@@ -19866,6 +19866,9 @@ Class (::darkskin::CustomControlTemplateConstructor)
 	void CustomControlTemplateConstructor::__vwsn_initialize_instance_(::darkskin::CustomControlTemplate* __vwsn_this_)
 	{
 		(this->__vwsn_precompile_0 = __vwsn_this_);
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
 	}
 
 	CustomControlTemplateConstructor::CustomControlTemplateConstructor()
