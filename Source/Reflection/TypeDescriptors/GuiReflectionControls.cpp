@@ -106,6 +106,7 @@ Type Declaration
 			END_INTERFACE_MEMBER(ITheme)
 
 			BEGIN_CLASS_MEMBER(ThemeTemplates)
+				CLASS_MEMBER_BASE(GuiInstanceRootObject)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<ThemeTemplates>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(window)

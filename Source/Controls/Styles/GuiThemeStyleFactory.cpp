@@ -290,6 +290,11 @@ namespace vl
 #undef SP
 			};
 
+			ThemeTemplates::~ThemeTemplates()
+			{
+				FinalizeAggregation();
+			}
+
 			Theme* currentTheme = nullptr;
 
 			ITheme* GetCurrentTheme()

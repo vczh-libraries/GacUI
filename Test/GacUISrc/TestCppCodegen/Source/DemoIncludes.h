@@ -93,6 +93,8 @@ namespace vl
 			DECL_TYPE_INFO(::darkskin::TabTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::TextListTemplate)
 			DECL_TYPE_INFO(::darkskin::TextListTemplateConstructor)
+			DECL_TYPE_INFO(::darkskin::Theme)
+			DECL_TYPE_INFO(::darkskin::ThemeConstructor)
 			DECL_TYPE_INFO(::darkskin::ToolstripButtonTemplate)
 			DECL_TYPE_INFO(::darkskin::ToolstripButtonTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::ToolstripDropdownButtonTemplate)

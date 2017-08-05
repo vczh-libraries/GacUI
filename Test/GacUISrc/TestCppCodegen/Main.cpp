@@ -19,50 +19,6 @@ using namespace demo;
 		return new darkskin::CLASS;\
 	};\
 
-Ptr<theme::ThemeTemplates> CreateDarkSkin()
-{
-	auto darkSkin = MakePtr<theme::ThemeTemplates>();
-
-	SP(window, WindowTemplate);
-	SP(customControl, CustomControlTemplate);
-	SP(tooltip, TooltipTemplate);
-	SP(label, LabelTemplate);
-	SP(shortcutKey, ShortcutKeyTemplate);
-	SP(scrollView, ScrollViewTemplate);
-	SP(groupBox, GroupBoxTemplate);
-	SP(tab, TabTemplate);
-	SP(comboBox, ComboBoxTemplate);
-	SP(multilineTextBox, MultilineTextBoxTemplate);
-	SP(singlelineTextBox, SinglelineTextBoxTemplate);
-	SP(documentViewer, DocumentViewerTemplate);
-	SP(documentLabel, DocumentLabelTemplate);
-	SP(documentTextBox, DocumentTextBoxTemplate);
-	SP(listView, ListViewTemplate);
-	SP(treeView, TreeViewTemplate);
-	SP(textList, TextListTemplate);
-	SP(menu, ToolstripMenuTemplate);
-	SP(menuBar, ToolstripTemplate);
-	SP(menuSplitter, MenuSplitterTemplate);
-	SP(menuBarButton, MenuBarButtonTemplate);
-	SP(menuItemButton, MenuItemButtonTemplate);
-	SP(toolBar, ToolstripTemplate);
-	SP(toolBarButton, ToolstripButtonTemplate);
-	SP(toolBarDropdownButton, ToolstripDropdownButtonTemplate);
-	SP(toolBarSplitButton, ToolstripSplitButtonTemplate);
-	SP(toolBarSplitter, ToolstripSplitterTemplate);
-	SP(button, ButtonTemplate);
-	SP(checkBox, CheckBoxTemplate);
-	SP(radioButton, RadioButtonTemplate);
-	SP(datePicker, DatePickerTemplate);
-	SP(hScroll, HScrollTemplate);
-	SP(vScroll, VScrollTemplate);
-	SP(hTracker, HTrackerTemplate);
-	SP(vTracker, VTrackerTemplate);
-	SP(progressBar, ProgressBarTemplate);
-
-	return darkSkin;
-}
-
 void GuiMain()
 {
 	{
@@ -73,7 +29,7 @@ void GuiMain()
 
 	LoadDemoTypes();
 
-	theme::RegisterTheme(L"DarkSkin", CreateDarkSkin());
+	theme::RegisterTheme(L"DarkSkin", MakePtr<darkskin::Theme>());
 	{
 		demo::MainWindow window;
 		window.ForceCalculateSizeImmediately();

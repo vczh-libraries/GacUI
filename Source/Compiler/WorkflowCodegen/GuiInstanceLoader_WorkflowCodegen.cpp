@@ -14,6 +14,7 @@ namespace vl
 
 		using namespace controls;
 		using namespace compositions;
+		using namespace templates;
 
 /***********************************************************************
 FindInstanceLoadingSource
@@ -813,11 +814,36 @@ Workflow_GenerateInstanceClass
 
 			{
 				auto ref = MakePtr<WfReferenceExpression>();
-				ref->name.value = L"FinalizeInstanceRecursively";
+				ref->name.value = L"FinalizeGeneralInstance";
+
+				Ptr<WfExpression> thisExpr = MakePtr<WfThisExpression>();
+				ITypeDescriptor* types[] =
+				{
+					description::GetTypeDescriptor<GuiTemplate>(),
+					description::GetTypeDescriptor<GuiCustomControl>(),
+					description::GetTypeDescriptor<GuiControlHost>(),
+				};
+
+				for (auto td : types)
+				{
+					if (baseType->GetTypeDescriptor()->CanConvertTo(td))
+					{
+						ref->name.value = L"FinalizeInstanceRecursively";
+
+						Ptr<ITypeInfo> typeInfo = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+						typeInfo = MakePtr<RawPtrTypeInfo>(typeInfo);
+
+						auto inferExpr = MakePtr<WfInferExpression>();
+						inferExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
+						inferExpr->expression = thisExpr;
+						thisExpr = inferExpr;
+						break;
+					}
+				}
 
 				auto call = MakePtr<WfCallExpression>();
 				call->function = ref;
-				call->arguments.Add(MakePtr<WfThisExpression>());
+				call->arguments.Add(thisExpr);
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = call;

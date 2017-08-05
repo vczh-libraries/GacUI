@@ -24,9 +24,16 @@ namespace vl
 		template<typename T>
 		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
 
+		namespace templates
+		{
+			class GuiTemplate;
+		}
+
 		namespace controls
 		{
 			class GuiListControl;
+			class GuiControlHost;
+			class GuiCustomControl;
 
 			/// <summary>The visual state for button.</summary>
 			enum class ButtonState
@@ -127,8 +134,10 @@ namespace vl
 				/// <returns>Returns true if this object has been finalized.</returns>
 				bool											IsFinalized();
 
-				void											FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject);
-				void											FinalizeInstanceRecursively(GuiControl* thisObject);
+				void											FinalizeInstanceRecursively(templates::GuiTemplate* thisObject);
+				void											FinalizeInstanceRecursively(GuiCustomControl* thisObject);
+				void											FinalizeInstanceRecursively(GuiControlHost* thisObject);
+				void											FinalizeGeneralInstance(GuiInstanceRootObject* thisObject);
 
 				/// <summary>Set the resource resolver to connect the current root object to the resource creating it.</summary>
 				/// <param name="resolver">The resource resolver</param>

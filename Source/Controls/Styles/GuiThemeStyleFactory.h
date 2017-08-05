@@ -172,7 +172,7 @@ namespace vl
 			class Theme;
 
 			/// <summary>Partial control template collections. [F:vl.presentation.theme.GetCurrentTheme] will returns an object, which walks through multiple registered [T:vl.presentation.theme.ThemeTemplates] to create a correct template object for a control.</summary>
-			class ThemeTemplates : public Object, public Description<ThemeTemplates>
+			class ThemeTemplates : public controls::GuiInstanceRootObject, public AggregatableDescription<ThemeTemplates>
 			{
 				friend class Theme;
 			protected:
@@ -180,6 +180,8 @@ namespace vl
 				ThemeTemplates*														next = nullptr;
 
 			public:
+				~ThemeTemplates();
+
 				TemplateProperty<templates::GuiWindowTemplate>						window;
 				TemplateProperty<templates::GuiControlTemplate>						customControl;
 				TemplateProperty<templates::GuiWindowTemplate>						tooltip;
