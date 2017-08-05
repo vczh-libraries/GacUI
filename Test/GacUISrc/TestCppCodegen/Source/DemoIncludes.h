@@ -35,6 +35,8 @@ namespace vl
 			DECL_TYPE_INFO(::darkskin::CheckItemBackgroundTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::ComboBoxTemplate)
 			DECL_TYPE_INFO(::darkskin::ComboBoxTemplateConstructor)
+			DECL_TYPE_INFO(::darkskin::CustomControlTemplate)
+			DECL_TYPE_INFO(::darkskin::CustomControlTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::DatePickerTemplate)
 			DECL_TYPE_INFO(::darkskin::DatePickerTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::DocumentLabelTemplate)

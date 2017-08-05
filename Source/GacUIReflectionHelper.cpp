@@ -156,20 +156,6 @@ External Functions (Compositions)
 					CopyFrom(actions, group.GetByIndex(i), true);
 				}
 			}
-
-/***********************************************************************
-External Functions (Controls)
-***********************************************************************/
-
-			Ptr<ITheme> CreateWin7Theme()
-			{
-				return new win7::Win7Theme();
-			}
-
-			Ptr<ITheme> CreateWin8Theme()
-			{
-				return new win8::Win8Theme();
-			}
 		}
 	}
 }

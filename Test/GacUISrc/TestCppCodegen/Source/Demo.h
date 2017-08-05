@@ -570,6 +570,8 @@ namespace darkskin
 	class CheckItemBackgroundTemplate;
 	class ComboBoxTemplateConstructor;
 	class ComboBoxTemplate;
+	class CustomControlTemplateConstructor;
+	class CustomControlTemplate;
 	class DatePickerTemplateConstructor;
 	class DatePickerTemplate;
 	class DocumentLabelTemplateConstructor;
@@ -1590,6 +1592,29 @@ namespace darkskin
 	public:
 		ComboBoxTemplate();
 		~ComboBoxTemplate();
+	};
+
+	class CustomControlTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<CustomControlTemplateConstructor>
+	{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplateConstructor>;
+#endif
+	protected:
+		::darkskin::CustomControlTemplate* __vwsn_precompile_0 = static_cast<::darkskin::CustomControlTemplate*>(nullptr);
+		void __vwsn_initialize_instance_(::darkskin::CustomControlTemplate* __vwsn_this_);
+	public:
+		CustomControlTemplateConstructor();
+	};
+
+	class CustomControlTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::darkskin::CustomControlTemplateConstructor, public ::vl::reflection::Description<CustomControlTemplate>
+	{
+		friend class ::darkskin::CustomControlTemplateConstructor;
+#ifndef VCZH_DEBUG_NO_REFLECTION
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<CustomControlTemplate>;
+#endif
+	public:
+		CustomControlTemplate();
+		~CustomControlTemplate();
 	};
 
 	class DatePickerTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<DatePickerTemplateConstructor>

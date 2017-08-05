@@ -19860,6 +19860,36 @@ Class (::darkskin::ComboBoxTemplate)
 	}
 
 /***********************************************************************
+Class (::darkskin::CustomControlTemplateConstructor)
+***********************************************************************/
+
+	void CustomControlTemplateConstructor::__vwsn_initialize_instance_(::darkskin::CustomControlTemplate* __vwsn_this_)
+	{
+		(this->__vwsn_precompile_0 = __vwsn_this_);
+	}
+
+	CustomControlTemplateConstructor::CustomControlTemplateConstructor()
+	{
+	}
+
+/***********************************************************************
+Class (::darkskin::CustomControlTemplate)
+***********************************************************************/
+
+	CustomControlTemplate::CustomControlTemplate()
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString(L"darkskin::CustomControlTemplate", false));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_initialize_instance_(this);
+	}
+
+	CustomControlTemplate::~CustomControlTemplate()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this));
+	}
+
+/***********************************************************************
 Class (::darkskin::DatePickerTemplateConstructor)
 ***********************************************************************/
 
@@ -25598,6 +25628,8 @@ namespace vl
 			IMPL_CPP_TYPE_INFO(darkskin::CheckItemBackgroundTemplateConstructor)
 			IMPL_CPP_TYPE_INFO(darkskin::ComboBoxTemplate)
 			IMPL_CPP_TYPE_INFO(darkskin::ComboBoxTemplateConstructor)
+			IMPL_CPP_TYPE_INFO(darkskin::CustomControlTemplate)
+			IMPL_CPP_TYPE_INFO(darkskin::CustomControlTemplateConstructor)
 			IMPL_CPP_TYPE_INFO(darkskin::DatePickerTemplate)
 			IMPL_CPP_TYPE_INFO(darkskin::DatePickerTemplateConstructor)
 			IMPL_CPP_TYPE_INFO(darkskin::DocumentLabelTemplate)
@@ -25811,6 +25843,16 @@ namespace vl
 				CLASS_MEMBER_FIELD(container)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::ComboBoxTemplateConstructor)
+
+			BEGIN_CLASS_MEMBER(::darkskin::CustomControlTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(::darkskin::CustomControlTemplate*(), NO_PARAMETER)
+			END_CLASS_MEMBER(::darkskin::CustomControlTemplate)
+
+			BEGIN_CLASS_MEMBER(::darkskin::CustomControlTemplateConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::darkskin::CustomControlTemplateConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+			END_CLASS_MEMBER(::darkskin::CustomControlTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::DatePickerTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::DatePickerTemplate*(), NO_PARAMETER)
@@ -27113,6 +27155,8 @@ namespace vl
 					ADD_TYPE_INFO(::darkskin::CheckItemBackgroundTemplateConstructor)
 					ADD_TYPE_INFO(::darkskin::ComboBoxTemplate)
 					ADD_TYPE_INFO(::darkskin::ComboBoxTemplateConstructor)
+					ADD_TYPE_INFO(::darkskin::CustomControlTemplate)
+					ADD_TYPE_INFO(::darkskin::CustomControlTemplateConstructor)
 					ADD_TYPE_INFO(::darkskin::DatePickerTemplate)
 					ADD_TYPE_INFO(::darkskin::DatePickerTemplateConstructor)
 					ADD_TYPE_INFO(::darkskin::DocumentLabelTemplate)

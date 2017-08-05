@@ -76,9 +76,6 @@ namespace vl
 				/// <summary>Create a style for singleline text box.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiSinglelineTextBox::IStyleProvider*						CreateTextBoxStyle()=0;
-				/// <summary>Get the default color configuration for text box characters.</summary>
-				/// <returns>The default color configuration.</returns>
-				virtual elements::text::ColorEntry											GetDefaultTextBoxColorEntry()=0;
 				/// <summary>Create a style for document viewer.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiDocumentViewer::IStyleProvider*						CreateDocumentViewerStyle()=0;
@@ -160,12 +157,6 @@ namespace vl
 				/// <summary>Create a style for progress bar.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiScroll::IStyleController*								CreateProgressBarStyle()=0;
-				/// <summary>Get the default size for scrolls.</summary>
-				/// <returns>The default size for scrolls.</returns>
-				virtual vint																GetScrollDefaultSize()=0;
-				/// <summary>Get the default size for trackers.</summary>
-				/// <returns>The default size for trackers.</returns>
-				virtual vint																GetTrackerDefaultSize()=0;
 				
 				/// <summary>Create a style for text list.</summary>
 				/// <returns>The created style.</returns>
@@ -178,12 +169,72 @@ namespace vl
 				virtual controls::GuiSelectableButton::IStyleController*					CreateRadioTextListItemStyle()=0;
 			};
 
+			class Theme;
+
+			/// <summary>Partial control template collections. [F:vl.presentation.theme.GetCurrentTheme] will returns an object, which walks through multiple registered [T:vl.presentation.theme.ThemeTemplates] to create a correct template object for a control.</summary>
+			class ThemeTemplates : public Object, public Description<ThemeTemplates>
+			{
+				friend class Theme;
+			protected:
+				ThemeTemplates*														previous = nullptr;
+				ThemeTemplates*														next = nullptr;
+
+			public:
+				TemplateProperty<templates::GuiWindowTemplate>						window;
+				TemplateProperty<templates::GuiControlTemplate>						customControl;
+				TemplateProperty<templates::GuiWindowTemplate>						tooltip;
+				TemplateProperty<templates::GuiLabelTemplate>						label;
+				TemplateProperty<templates::GuiLabelTemplate>						shortcutKey;
+				TemplateProperty<templates::GuiScrollViewTemplate>					scrollView;
+				TemplateProperty<templates::GuiControlTemplate>						groupBox;
+				TemplateProperty<templates::GuiTabTemplate>							tab;
+				TemplateProperty<templates::GuiComboBoxTemplate>					comboBox;
+				TemplateProperty<templates::GuiMultilineTextBoxTemplate>			multilineTextBox;
+				TemplateProperty<templates::GuiSinglelineTextBoxTemplate>			singlelineTextBox;
+				TemplateProperty<templates::GuiDocumentViewerTemplate>				documentViewer;
+				TemplateProperty<templates::GuiDocumentLabelTemplate>				documentLabel;
+				TemplateProperty<templates::GuiDocumentLabelTemplate>				documentTextBox;
+				TemplateProperty<templates::GuiListViewTemplate>					listView;
+				TemplateProperty<templates::GuiTreeViewTemplate>					treeView;
+				TemplateProperty<templates::GuiTextListTemplate>					textList;
+				TemplateProperty<templates::GuiSelectableButtonTemplate>			listItemBackground;
+				TemplateProperty<templates::GuiSelectableButtonTemplate>			treeItemExpander;
+				TemplateProperty<templates::GuiSelectableButtonTemplate>			checkTextListItem;
+				TemplateProperty<templates::GuiSelectableButtonTemplate>			radioTextListItem;
+				TemplateProperty<templates::GuiMenuTemplate>						menu;
+				TemplateProperty<templates::GuiControlTemplate>						menuBar;
+				TemplateProperty<templates::GuiControlTemplate>						menuSplitter;
+				TemplateProperty<templates::GuiToolstripButtonTemplate>				menuBarButton;
+				TemplateProperty<templates::GuiToolstripButtonTemplate>				menuItemButton;
+				TemplateProperty<templates::GuiControlTemplate>						toolBar;
+				TemplateProperty<templates::GuiToolstripButtonTemplate>				toolBarButton;
+				TemplateProperty<templates::GuiToolstripButtonTemplate>				toolBarDropdownButton;
+				TemplateProperty<templates::GuiToolstripButtonTemplate>				toolBarSplitButton;
+				TemplateProperty<templates::GuiControlTemplate>						toolBarSplitter;
+				TemplateProperty<templates::GuiButtonTemplate>						button;
+				TemplateProperty<templates::GuiSelectableButtonTemplate>			checkBox;
+				TemplateProperty<templates::GuiSelectableButtonTemplate>			radioButton;
+				TemplateProperty<templates::GuiDatePickerTemplate>					datePicker;
+				TemplateProperty<templates::GuiScrollTemplate>						hScroll;
+				TemplateProperty<templates::GuiScrollTemplate>						vScroll;
+				TemplateProperty<templates::GuiScrollTemplate>						hTracker;
+				TemplateProperty<templates::GuiScrollTemplate>						vTracker;
+				TemplateProperty<templates::GuiScrollTemplate>						progressBar;
+			};
+
 			/// <summary>Get the current theme style factory object. The default theme is [T:vl.presentation.win7.Win7Theme]. Call [M:vl.presentation.theme.SetCurrentTheme] to change the default theme.</summary>
 			/// <returns>The current theme style factory object.</returns>
 			extern ITheme*						GetCurrentTheme();
-			/// <summary>Set the current theme style factory object.</summary>
-			/// <param name="theme">The current theme style factory object.</param>
-			extern void							SetCurrentTheme(ITheme* theme);
+			extern void							InitializeTheme();
+			extern void							FinalizeTheme();
+			/// <summary>Register a control template collection object.</summary>
+			/// <param name="name">The name of the theme.</param>
+			/// <param name="theme">The control template collection object.</param>
+			extern bool							RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme);
+			/// <summary>Unregister a control template collection object.</summary>
+			/// <returns>The registered object. Returns null if it does not exist.</returns>
+			/// <param name="name">The name of the theme.</param>
+			extern Ptr<ThemeTemplates>			UnregisterTheme(const WString& name);
 
 			namespace g
 			{

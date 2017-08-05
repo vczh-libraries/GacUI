@@ -1,6 +1,5 @@
 #include "GuiApplication.h"
-#include "Styles/GuiWin7Styles.h"
-#include "Styles/GuiWin8Styles.h"
+#include "Styles/GuiThemeStyleFactory.h"
 
 extern void GuiMain();
 
@@ -436,17 +435,13 @@ GuiApplicationMain
 
 			void GuiApplicationInitialize()
 			{
-				// There will be a GacUI theme in the future
-				// win7::Win7Theme
-				// win8::Win8Theme
-				auto theme = MakePtr<win8::Win8Theme>();
 				GetCurrentController()->InputService()->StartTimer();
+				theme::InitializeTheme();
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				GetGlobalTypeManager()->Load();
 #endif
 				GetPluginManager()->Load();
-				theme::SetCurrentTheme(theme.Obj());
 
 				{
 					GuiApplication app;
@@ -459,8 +454,8 @@ GuiApplicationMain
 					application = nullptr;
 				}
 
-				theme::SetCurrentTheme(0);
 				DestroyPluginManager();
+				theme::FinalizeTheme();
 				ThreadLocalStorage::DisposeStorages();
 				FinalizeGlobalStorage();
 #ifndef VCZH_DEBUG_NO_REFLECTION
