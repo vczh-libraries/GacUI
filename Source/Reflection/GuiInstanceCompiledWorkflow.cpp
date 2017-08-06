@@ -134,7 +134,7 @@ Plugin
 		{
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_Compiled_RuntimeTypeResolvers)
+			GUI_PLUGIN_NAME(GacUI_Compiler_RuntimeTypeResolvers)
 			{
 				GUI_PLUGIN_DEPEND(GacUI_ResourceResolver);
 			}

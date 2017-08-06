@@ -754,7 +754,7 @@ GuiPredefinedInstanceDeserializersPlugin
 		{
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_Xml_PredefinedInstanceDeserializers)
+			GUI_PLUGIN_NAME(GacUI_Compiler_Deserializers)
 			{
 				GUI_PLUGIN_DEPEND(GacUI_Xml_InstanceLoader);
 			}
