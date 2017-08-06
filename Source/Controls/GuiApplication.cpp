@@ -343,25 +343,18 @@ GuiPluginManager
 					FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
 					{
 						auto name = plugin->GetName();
-						if (name == L"")
+						pluginsToLoad.Add(name, plugin);
+						List<WString> dependencies;
+						plugin->GetDependencies(dependencies);
+						FOREACH(WString, dependency, dependencies)
 						{
-							plugin->Load();
-						}
-						else
-						{
-							pluginsToLoad.Add(name, plugin);
-							List<WString> dependencies;
-							plugin->GetDependencies(dependencies);
-							FOREACH(WString, dependency, dependencies)
-							{
-								loading.Add(name, dependency);
-							}
+							loading.Add(name, dependency);
 						}
 					}
 
-					while (loading.Count() > 0)
+					while (pluginsToLoad.Count() > 0)
 					{
-						vint count = loading.Count();
+						vint count = pluginsToLoad.Count();
 						{
 							FOREACH_INDEXER(WString, name, index, pluginsToLoad.Keys())
 							{
@@ -374,12 +367,13 @@ GuiPluginManager
 									loaded.Add(name);
 
 									auto plugin = pluginsToLoad.Values()[index];
+									pluginsToLoad.Remove(name);
 									plugin->Load();
 									break;
 								}
 							}
 						}
-						if (count == loading.Count())
+						if (count == pluginsToLoad.Count())
 						{
 							WString message;
 							FOREACH(Ptr<IGuiPlugin>, plugin, pluginsToLoad.Values())

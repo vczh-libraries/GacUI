@@ -806,6 +806,7 @@ GuiInstanceLoaderManager
 
 			void Load()override
 			{
+				instanceLoaderManager = this;
 				IGuiParserManager* manager = GetParserManager();
 				manager->SetParser(L"INSTANCE-ELEMENT-NAME", new GuiInstanceContextElementNameParser);
 			}

@@ -149,7 +149,7 @@ Plugin
 			{
 			public:
 				/// <summary>Get the name of this plugin.</summary>
-				/// <returns>Returns the name of the plugin. Returns an empty string if the loading order does not matter.</returns>
+				/// <returns>Returns the name of the plugin.</returns>
 				virtual WString									GetName() = 0;
 				/// <summary>Get all dependencies of this plugin.</summary>
 				/// <param name="dependencies">To receive all dependencies.</param>
