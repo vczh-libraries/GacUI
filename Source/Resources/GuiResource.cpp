@@ -1487,11 +1487,8 @@ IGuiResourceResolverManager
 			ResolverGroup				perPassResolvers;
 
 		public:
-			GuiResourceResolverManager()
-			{
-			}
-
-			~GuiResourceResolverManager()
+			
+			GUI_PLUGIN_NAME(GacUI_ResourceResolver)
 			{
 			}
 
@@ -1503,10 +1500,6 @@ IGuiResourceResolverManager
 				resourceResolverManager = this;
 				SetPathResolverFactory(new GuiResourcePathFileResolver::Factory);
 				SetPathResolverFactory(new GuiResourcePathResResolver::Factory);
-			}
-
-			void AfterLoad()override
-			{
 			}
 
 			void Unload()override

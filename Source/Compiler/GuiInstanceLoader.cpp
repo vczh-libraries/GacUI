@@ -799,12 +799,12 @@ GuiInstanceLoaderManager
 				rootLoader = new GuiDefaultInstanceLoader;
 			}
 
-			void Load()override
+			GUI_PLUGIN_NAME(GacUI_Xml_InstanceLoader)
 			{
-				instanceLoaderManager = this;
+				GUI_PLUGIN_DEPEND(GacUI_Parser);
 			}
 
-			void AfterLoad()override
+			void Load()override
 			{
 				IGuiParserManager* manager = GetParserManager();
 				manager->SetParser(L"INSTANCE-ELEMENT-NAME", new GuiInstanceContextElementNameParser);

@@ -32,11 +32,8 @@ IGuiParserManager
 
 			Dictionary<WString, Ptr<IGuiGeneralParser>>	parsers;
 		public:
-			GuiParserManager()
-			{
-			}
-
-			~GuiParserManager()
+			
+			GUI_PLUGIN_NAME(GacUI_Parser)
 			{
 			}
 
@@ -47,10 +44,6 @@ IGuiParserManager
 				SetParsingTable(L"JSON", &JsonLoadTable);
 				SetTableParser(L"XML", L"XML", &XmlParseDocument);
 				SetTableParser(L"JSON", L"JSON", &JsonParse);
-			}
-
-			void AfterLoad()override
-			{
 			}
 
 			void Unload()override

@@ -290,15 +290,13 @@ GuiToolstripCommandPlugin
 			class GuiToolstripCommandPlugin : public Object, public IGuiPlugin
 			{
 			public:
-				GuiToolstripCommandPlugin()
-				{
-				}
 
-				void Load()override
+				GUI_PLUGIN_NAME(GacUI_Compiler_ToolstripCommand)
 				{
+					GUI_PLUGIN_DEPEND(GacUI_Parser);
 				}
 				
-				void AfterLoad()override
+				void Load()override
 				{
 					IGuiParserManager* manager=GetParserManager();
 					manager->SetParser(L"SHORTCUT", new GuiToolstripCommandShortcutParser);

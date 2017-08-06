@@ -238,11 +238,14 @@ GuiPredefinedInstanceLoadersPlugin
 			class GuiPredefinedInstanceLoadersPlugin : public Object, public IGuiPlugin
 			{
 			public:
-				void Load()override
+
+				GUI_PLUGIN_NAME(GacUI_Compiler_PredefinedInstanceLoader)
 				{
+					GUI_PLUGIN_DEPEND(GacUI_Reflection);
+					GUI_PLUGIN_DEPEND(GacUI_Xml_InstanceLoader);
 				}
 
-				void AfterLoad()override
+				void Load()override
 				{
 	#ifndef VCZH_DEBUG_NO_REFLECTION
 					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();

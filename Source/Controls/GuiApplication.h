@@ -148,10 +148,14 @@ Plugin
 			class IGuiPlugin : public IDescriptable, public Description<IGuiPlugin>
 			{
 			public:
+				/// <summary>Get the name of this plugin.</summary>
+				/// <returns>Returns the name of the plugin. Returns an empty string if the loading order does not matter.</returns>
+				virtual WString									GetName() = 0;
+				/// <summary>Get all dependencies of this plugin.</summary>
+				/// <param name="dependencies">To receive all dependencies.</param>
+				virtual void									GetDependencies(collections::List<WString>& dependencies) = 0;
 				/// <summary>Called when the plugin manager want to load this plugin.</summary>
 				virtual void									Load()=0;
-				/// <summary>Called after the plugin manager loaded all plugins.</summary>
-				virtual void									AfterLoad()=0;
 				/// <summary>Called when the plugin manager want to unload this plugin.</summary>
 				virtual void									Unload()=0;
 			};
@@ -160,14 +164,13 @@ Plugin
 			class IGuiPluginManager : public IDescriptable, public Description<IGuiPluginManager>
 			{
 			public:
-				/// <summary>Add a plugin.</summary>
+				/// <summary>Add a plugin before [F:vl.presentation.controls.IGuiPluginManager.Load] is called.</summary>
 				/// <param name="plugin">The plugin.</param>
 				virtual void									AddPlugin(Ptr<IGuiPlugin> plugin)=0;
-				/// <summary>Load all plugins.</summary>
+				/// <summary>Load all plugins, and check if dependencies of all plugins are ready.</summary>
 				virtual void									Load()=0;
 				/// <summary>Unload all plugins.</summary>
 				virtual void									Unload()=0;
-				/// <summary>Test if all plugins are loaded or not.</summary>
 				/// <returns>Returns true if all plugins are loaded.</returns>
 				virtual bool									IsLoaded()=0;
 			};
@@ -204,5 +207,11 @@ extern void GuiApplicationMain();
 			vl::presentation::controls::GetPluginManager()->AddPlugin(new TYPE);\
 		}\
 	} instance_GuiRegisterPluginClass_##TYPE;\
+
+#define GUI_PLUGIN_NAME(NAME)\
+	vl::WString GetName()override { return L ## #NAME; }\
+	void GetDependencies(vl::collections::List<WString>& dependencies)override\
+
+#define GUI_PLUGIN_DEPEND(NAME) dependencies.Add(L ## #NAME)
 
 #endif

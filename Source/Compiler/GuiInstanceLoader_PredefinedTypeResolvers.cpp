@@ -612,15 +612,13 @@ Plugin
 		class GuiCompilerTypeResolversPlugin : public Object, public IGuiPlugin
 		{
 		public:
-			GuiCompilerTypeResolversPlugin()
+
+			GUI_PLUGIN_NAME(GacUI_Xml_PredefinedTypeResolvers)
 			{
+				GUI_PLUGIN_DEPEND(GacUI_ResourceResolver);
 			}
 
 			void Load()override
-			{
-			}
-
-			void AfterLoad()override
 			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
 				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);

@@ -870,15 +870,12 @@ GuiWorkflowSharedManagerPlugin
 			Ptr<WfLexicalScopeManager>		workflowManager;
 
 		public:
-			GuiWorkflowSharedManagerPlugin()
+
+			GUI_PLUGIN_NAME(GacUI_Compiler_WorkflowSharedManager)
 			{
 			}
 
 			void Load()override
-			{
-			}
-
-			void AfterLoad()override
 			{
 				sharedManagerPlugin = this;
 			}
