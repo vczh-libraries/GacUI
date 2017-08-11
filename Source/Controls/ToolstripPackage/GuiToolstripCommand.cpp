@@ -291,7 +291,7 @@ GuiToolstripCommandPlugin
 			{
 			public:
 
-				GUI_PLUGIN_NAME(GacUI_Compiler_ToolstripCommand)
+				GUI_PLUGIN_NAME(GacUI_Compiler_ShortcutParser)
 				{
 					GUI_PLUGIN_DEPEND(GacUI_Parser);
 				}

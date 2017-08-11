@@ -79,9 +79,9 @@ IGuiInstanceResourceManager
 
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_Resource)
+			GUI_PLUGIN_NAME(GacUI_Res_Resource)
 			{
-				GUI_PLUGIN_DEPEND(GacUI_ResourceResolver);
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
 			void Load()override

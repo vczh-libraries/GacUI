@@ -30,7 +30,7 @@ namespace vl
 			{
 			public:
 
-				GUI_PLUGIN_NAME(GacUI_Reflection)
+				GUI_PLUGIN_NAME(GacUI_Instance_Reflection)
 				{
 				}
 

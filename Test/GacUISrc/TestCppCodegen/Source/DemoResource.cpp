@@ -112,11 +112,11 @@ namespace vl
 
 				GUI_PLUGIN_NAME(GacGen_DemoResourceLoader)
 				{
-					GUI_PLUGIN_DEPEND(GacUI_Resource);
-					GUI_PLUGIN_DEPEND(GacUI_ResourceTypeResolvers);
+					GUI_PLUGIN_DEPEND(GacUI_Res_Resource);
+					GUI_PLUGIN_DEPEND(GacUI_Res_TypeResolvers);
 #ifdef VCZH_DEBUG_NO_REFLECTION
-					GUI_PLUGIN_DEPEND(GacUI_Reflection);
-					GUI_PLUGIN_DEPEND(GacUI_Compiler_RuntimeTypeResolvers);
+					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
+					GUI_PLUGIN_DEPEND(GacUI_Compiler_WorkflowTypeResolvers);
 #endif
 				}
 

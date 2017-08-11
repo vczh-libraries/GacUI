@@ -67,9 +67,9 @@ GuiHelperTypesLoaderPlugin
 		{
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_Reflection_Helper)
+			GUI_PLUGIN_NAME(GacUI_Instance_ReflectionHelper)
 			{
-				GUI_PLUGIN_DEPEND(GacUI_Reflection);
+				GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
 			}
 
 			void Load()override

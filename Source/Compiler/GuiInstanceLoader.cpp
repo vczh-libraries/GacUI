@@ -799,7 +799,7 @@ GuiInstanceLoaderManager
 				rootLoader = new GuiDefaultInstanceLoader;
 			}
 
-			GUI_PLUGIN_NAME(GacUI_Xml_InstanceLoader)
+			GUI_PLUGIN_NAME(GacUI_Instance)
 			{
 				GUI_PLUGIN_DEPEND(GacUI_Parser);
 			}

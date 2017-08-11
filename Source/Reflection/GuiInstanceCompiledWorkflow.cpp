@@ -134,9 +134,9 @@ Plugin
 		{
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_Compiler_RuntimeTypeResolvers)
+			GUI_PLUGIN_NAME(GacUI_Compiler_WorkflowTypeResolvers)
 			{
-				GUI_PLUGIN_DEPEND(GacUI_ResourceResolver);
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
 			void Load()override

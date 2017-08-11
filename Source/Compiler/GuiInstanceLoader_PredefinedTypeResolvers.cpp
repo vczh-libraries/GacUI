@@ -613,9 +613,9 @@ Plugin
 		{
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_Xml_PredefinedTypeResolvers)
+			GUI_PLUGIN_NAME(GacUI_Compiler_InstanceTypeResolvers)
 			{
-				GUI_PLUGIN_DEPEND(GacUI_ResourceResolver);
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
 			void Load()override

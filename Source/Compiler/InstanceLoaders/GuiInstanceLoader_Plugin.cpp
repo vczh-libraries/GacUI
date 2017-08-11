@@ -239,10 +239,11 @@ GuiPredefinedInstanceLoadersPlugin
 			{
 			public:
 
-				GUI_PLUGIN_NAME(GacUI_Compiler_PredefinedInstanceLoader)
+				GUI_PLUGIN_NAME(GacUI_Instance_TypeLoaders)
 				{
-					GUI_PLUGIN_DEPEND(GacUI_Reflection);
-					GUI_PLUGIN_DEPEND(GacUI_Xml_InstanceLoader);
+					GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
+					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
+					GUI_PLUGIN_DEPEND(GacUI_Instance);
 				}
 
 				void Load()override

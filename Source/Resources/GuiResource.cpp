@@ -1492,7 +1492,7 @@ IGuiResourceResolverManager
 
 		public:
 			
-			GUI_PLUGIN_NAME(GacUI_ResourceResolver)
+			GUI_PLUGIN_NAME(GacUI_Res_ResourceResolver)
 			{
 			}
 

@@ -272,10 +272,10 @@ GuiPredefinedInstanceBindersPlugin
 		{
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_Xml_PredefinedInstanceBinders)
+			GUI_PLUGIN_NAME(GacUI_Compiler_Parsers)
 			{
-				GUI_PLUGIN_DEPEND(GacUI_ResourceResolver);
-				GUI_PLUGIN_DEPEND(GacUI_Xml_InstanceLoader);
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
+				GUI_PLUGIN_DEPEND(GacUI_Instance);
 			}
 
 			void Load()override

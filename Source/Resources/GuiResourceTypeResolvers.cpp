@@ -367,9 +367,9 @@ Type Resolver Plugin
 		{
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_ResourceTypeResolvers)
+			GUI_PLUGIN_NAME(GacUI_Res_TypeResolvers)
 			{
-				GUI_PLUGIN_DEPEND(GacUI_ResourceResolver);
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
 			void Load()override
