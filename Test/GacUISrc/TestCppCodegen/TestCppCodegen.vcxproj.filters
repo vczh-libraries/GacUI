@@ -24,6 +24,9 @@
     <ClCompile Include="Source\Demo.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DemoResource.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DemoIncludes.h">

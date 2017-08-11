@@ -239,16 +239,7 @@
     <Xml Include="Resources\FullControlTest\TextListTabPage.xml" />
     <Xml Include="Resources\FullControlTest\ToolbarImages\Images.xml" />
     <Xml Include="Resources\FullControlTest\TreeViewTabPage.xml" />
-    <Xml Include="Resources\UI10_MultipleWindows.xml" />
     <Xml Include="Resources\UI1_StyleTemplate.xml" />
-    <Xml Include="Resources\UI2_Properties.xml" />
-    <Xml Include="Resources\UI3_DataGrid.xml" />
-    <Xml Include="Resources\UI4_UserControl.xml" />
-    <Xml Include="Resources\UI5_DocumentTextBox.xml" />
-    <Xml Include="Resources\UI6_FontList.xml" />
-    <Xml Include="Resources\UI7_ColorComboBox.xml" />
-    <Xml Include="Resources\UI8_TableSplitter.xml" />
-    <Xml Include="Resources\UI9_ListView.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png" />

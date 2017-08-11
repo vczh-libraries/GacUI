@@ -21,12 +21,6 @@ using namespace demo;
 
 void GuiMain()
 {
-	{
-		FileStream fileStream(L"UI.bin", FileStream::ReadOnly);
-		auto resource = GuiResource::LoadPrecompiledBinary(fileStream);
-		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::DataOnly);
-	}
-
 	LoadDemoTypes();
 
 	theme::RegisterTheme(L"DarkSkin", MakePtr<darkskin::Theme>());

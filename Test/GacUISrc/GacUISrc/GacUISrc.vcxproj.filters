@@ -477,6 +477,9 @@
     <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp">
       <Filter>GacUI\Resources\DocumentEditor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiCppGen.cpp">
+      <Filter>GacUI\Compiler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -766,6 +769,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Resources\GuiDocumentEditor.h">
       <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\GuiCppGen.h">
+      <Filter>GacUI\Compiler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
