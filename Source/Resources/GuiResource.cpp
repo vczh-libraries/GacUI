@@ -1609,5 +1609,96 @@ IGuiResourceResolverManager
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiResourceResolverManager)
+
+/***********************************************************************
+Helpers
+***********************************************************************/
+
+		vint CopyStream(stream::IStream& inputStream, stream::IStream& outputStream)
+		{
+			vint totalSize = 0;
+			while (true)
+			{
+				char buffer[1024];
+				vint copied = inputStream.Read(buffer, (vint)sizeof(buffer));
+				if (copied == 0)
+				{
+					break;
+				}
+				totalSize += outputStream.Write(buffer, copied);
+			}
+			return totalSize;
+		}
+
+		const vint CompressionFragmentSize = 1048576;
+
+		void CompressStream(stream::IStream& inputStream, stream::IStream& outputStream)
+		{
+			Array<char> buffer(CompressionFragmentSize);
+			while (true)
+			{
+				vint size = inputStream.Read(&buffer[0], buffer.Count());
+				if (size == 0) break;
+
+				MemoryStream compressedStream;
+				{
+					LzwEncoder encoder;
+					EncoderStream encoderStream(compressedStream, encoder);
+					encoderStream.Write(&buffer[0], size);
+				}
+
+				compressedStream.SeekFromBegin(0);
+				{
+					{
+						vint32_t bufferSize = (vint32_t)size;
+						outputStream.Write(&bufferSize, (vint)sizeof(bufferSize));
+					}
+					{
+						vint32_t compressedSize = (vint32_t)compressedStream.Size();
+						outputStream.Write(&compressedSize, (vint)sizeof(compressedSize));
+					}
+					CopyStream(compressedStream, outputStream);
+				}
+			}
+		}
+
+		void DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream)
+		{
+			vint totalSize = 0;
+			vint totalWritten = 0;
+			while (true)
+			{
+				vint32_t bufferSize = 0;
+				if (inputStream.Read(&bufferSize, (vint)sizeof(bufferSize)) != sizeof(bufferSize))
+				{
+					break;
+				}
+
+				vint32_t compressedSize = 0;
+				CHECK_ERROR(inputStream.Read(&compressedSize, (vint)sizeof(compressedSize)) == sizeof(compressedSize), L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
+
+				Array<char> buffer(compressedSize);
+				CHECK_ERROR(inputStream.Read(&buffer[0], compressedSize) == compressedSize, L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
+
+				MemoryWrapperStream compressedStream(&buffer[0], compressedSize);
+				LzwDecoder decoder;
+				DecoderStream decoderStream(compressedStream, decoder);
+				totalWritten += CopyStream(decoderStream, outputStream);
+				totalSize += bufferSize;
+			}
+			CHECK_ERROR(outputStream.Size() == totalSize, L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
+		}
+
+		void DecompressStream(const char** buffer, vint rows, vint block, vint remain, stream::IStream& outputStream)
+		{
+			MemoryStream compressedStream;
+			for (vint i = 0; i < rows; i++)
+			{
+				vint size = i == rows - 1 ? remain : block;
+				compressedStream.Write((void*)buffer[i], size);
+			}
+			compressedStream.SeekFromBegin(0);
+			DecompressStream(compressedStream, outputStream);
+		}
 	}
 }

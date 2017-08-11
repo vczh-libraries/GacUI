@@ -150,26 +150,12 @@ namespace vl
 
 		void WriteEmbeddedBinaryClass(MemoryStream& binaryStream, const WString& className, const WString& prefix, StreamWriter& writer)
 		{
-			binaryStream.SeekFromBegin(0);
-			vint lengthBeforeCompressing = (vint)binaryStream.Size();
-
 			MemoryStream compressedStream;
-			{
-				LzwEncoder encoder;
-				EncoderStream encoderStream(compressedStream, encoder);
-				while (true)
-				{
-					char buffer[1024];
-					vint copied = binaryStream.Read(buffer, (vint)sizeof(buffer));
-					if (copied == 0)
-					{
-						break;
-					}
-					encoderStream.Write(buffer, copied);
-				}
-			}
-
+			binaryStream.SeekFromBegin(0);
+			CompressStream(binaryStream, compressedStream);
 			compressedStream.SeekFromBegin(0);
+
+			vint lengthBeforeCompressing = (vint)binaryStream.Size();
 			vint length = (vint)compressedStream.Size();
 			const vint block = 1024;
 			vint remain = length % block;
@@ -190,23 +176,7 @@ namespace vl
 
 			PREFIX writer.WriteLine(L"\tstatic void ReadToStream(vl::stream::MemoryStream& stream)");
 			PREFIX writer.WriteLine(L"\t{");
-			PREFIX writer.WriteLine(L"\t\tvl::stream::MemoryStream compressedStream;");
-			PREFIX writer.WriteLine(L"\t\tfor (vint i = 0; i < parserBufferRows; i++)");
-			PREFIX writer.WriteLine(L"\t\t{");
-			PREFIX writer.WriteLine(L"\t\t\tvint size = i == parserBufferRows - 1 ? parserBufferRemain : parserBufferBlock;");
-			PREFIX writer.WriteLine(L"\t\t\tcompressedStream.Write((void*)parserBuffer[i], size);");
-			PREFIX writer.WriteLine(L"\t\t}");
-			PREFIX writer.WriteLine(L"\t\tcompressedStream.SeekFromBegin(0);");
-			PREFIX writer.WriteLine(L"\t\tvl::stream::LzwDecoder decoder;");
-			PREFIX writer.WriteLine(L"\t\tvl::stream::DecoderStream decoderStream(compressedStream, decoder);");
-			PREFIX writer.WriteLine(L"\t\tvl::collections::Array<vl::vuint8_t> buffer(65536);");
-			PREFIX writer.WriteLine(L"\t\twhile (true)");
-			PREFIX writer.WriteLine(L"\t\t{");
-			PREFIX writer.WriteLine(L"\t\t\tvl::vint size = decoderStream.Read(&buffer[0], 65536);");
-			PREFIX writer.WriteLine(L"\t\t\tif (size == 0) break;");
-			PREFIX writer.WriteLine(L"\t\t\tstream.Write(&buffer[0], size);");
-			PREFIX writer.WriteLine(L"\t\t}");
-			PREFIX writer.WriteLine(L"\t\tstream.SeekFromBegin(0);");
+			PREFIX writer.WriteLine(L"\t\tDecompressStream(parserBuffer, parserBufferRows, parserBufferBlock, parserBufferRemain, stream);");
 			PREFIX writer.WriteLine(L"\t}");
 
 			PREFIX writer.WriteLine(L"};");
@@ -286,6 +256,7 @@ namespace vl
 					writer.WriteLine(L"\t\t\t\t\tList<GuiResourceError> errors;");
 					writer.WriteLine(L"\t\t\t\t\tMemoryStream resourceStream;");
 					writer.WriteLine(L"\t\t\t\t\t" + cppInput->assemblyName + L"ResourceReader::ReadToStream(resourceStream);");
+					writer.WriteLine(L"\t\t\t\t\tresourceStream.SeekFromBegin(0);");
 					writer.WriteLine(L"\t\t\t\t\tauto resource = GuiResource::LoadPrecompiledBinary(resourceStream, errors);");
 					writer.WriteLine(L"\t\t\t\t\tGetResourceManager()->SetResource(L\"" + cppInput->assemblyName + L"\", resource, GuiResourceUsage::InstanceClass);");
 					writer.WriteLine(L"\t\t\t\t}");

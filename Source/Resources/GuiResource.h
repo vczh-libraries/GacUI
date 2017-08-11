@@ -754,6 +754,10 @@ Resource Resolver Manager
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();
+		extern vint												CopyStream(stream::IStream& inputStream, stream::IStream& outputStream);
+		extern void												CompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+		extern void												DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+		extern void												DecompressStream(const char** buffer, vint rows, vint block, vint remain, stream::IStream& outputStream);
 	}
 }
 
