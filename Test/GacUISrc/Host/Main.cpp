@@ -64,6 +64,7 @@ void GuiMain_GrammarIntellisense()
 	GetApplication()->Run(&window);
 }
 
+#ifndef VCZH_DEBUG_NO_REFLECTION
 class DebugCallback : public Object, public IGuiResourcePrecompileCallback, public IWfCompilerCallback
 {
 public:
@@ -154,11 +155,12 @@ public:
 		OutputDebugString((L"    " + resource->GetResourcePath() + L"\r\n").Buffer());
 	}
 };
+#endif
 
 #define BINARY_FOLDER L"../TestCppCodegen/"
 #define SOURCE_FOLDER L"../TestCppCodegen/Source/"
 
-void GuiMain_Resource()
+void CompileResources()
 {
 #ifndef VCZH_DEBUG_NO_REFLECTION
 	{
@@ -199,17 +201,29 @@ void GuiMain_Resource()
 		}
 		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::InstanceClass);
 	}
+#endif
+}
 
-	auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
-	window->ForceCalculateSizeImmediately();
-	window->MoveToScreenCenter();
-	GetApplication()->Run(window);
-	delete window;
+void OpenMainWindow()
+{
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	{
+		auto theme = UnboxValue<Ptr<ThemeTemplates>>(Value::Create(L"darkskin::Theme"));
+		RegisterTheme(L"DarkSkin", theme);
+	}
+	{
+		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::MainWindow"));
+		window->ForceCalculateSizeImmediately();
+		window->MoveToScreenCenter();
+		GetApplication()->Run(window);
+		delete window;
+	}
 #endif
 }
 
 void GuiMain()
 {
 	UnitTestInGuiMain();
-	GuiMain_Resource();
+	CompileResources();
+	OpenMainWindow();
 }

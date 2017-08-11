@@ -13,12 +13,6 @@ using namespace vl::presentation::elements;
 using namespace vl::presentation::templates;
 using namespace demo;
 
-#define SP(NAME, CLASS)\
-	darkSkin->NAME = [](const Value&)\
-	{\
-		return new darkskin::CLASS;\
-	};\
-
 void GuiMain()
 {
 	LoadDemoTypes();
