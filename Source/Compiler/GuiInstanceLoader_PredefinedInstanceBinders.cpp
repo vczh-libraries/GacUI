@@ -272,9 +272,9 @@ GuiPredefinedInstanceBindersPlugin
 		{
 		public:
 
-			GUI_PLUGIN_NAME(GacUI_Compiler_Parsers)
+			GUI_PLUGIN_NAME(GacUI_Compiler_ParsersAndBinders)
 			{
-				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
+				GUI_PLUGIN_DEPEND(GacUI_Parser);
 				GUI_PLUGIN_DEPEND(GacUI_Instance);
 			}
 
