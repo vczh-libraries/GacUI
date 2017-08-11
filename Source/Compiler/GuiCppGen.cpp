@@ -268,17 +268,17 @@ namespace vl
 					writer.WriteLine(L"");
 				}
 				{
-					writer.WriteLine(L"\t\t\tclass L" + cppInput->assemblyName + L"ResourceLoaderPlugin : public Object, public IGuiPlugin");
+					writer.WriteLine(L"\t\t\tclass " + cppInput->assemblyName + L"ResourceLoaderPlugin : public Object, public IGuiPlugin");
 					writer.WriteLine(L"\t\t\t{");
 					writer.WriteLine(L"\t\t\tpublic:");
 					writer.WriteLine(L"");
-					writer.WriteLine(L"\t\t\t\tGUI_PLUGIN_NAME(GacUI_ResourceTypeResolvers)");
+					writer.WriteLine(L"\t\t\t\tGUI_PLUGIN_NAME(GacGen_" + cppInput->assemblyName + L"ResourceLoader)");
 					writer.WriteLine(L"\t\t\t\t{");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Resource);");
 					writer.WriteLine(L"#ifdef VCZH_DEBUG_NO_REFLECTION");
-					writer.WriteLine(L"#endif");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Reflection);");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Compiler_RuntimeTypeResolvers);");
+					writer.WriteLine(L"#endif");
 					writer.WriteLine(L"\t\t\t\t}");
 					writer.WriteLine(L"");
 					writer.WriteLine(L"\t\t\t\tvoid Load()override");
@@ -294,7 +294,7 @@ namespace vl
 					writer.WriteLine(L"\t\t\t\t{");
 					writer.WriteLine(L"\t\t\t\t}");
 					writer.WriteLine(L"\t\t\t};");
-					writer.WriteLine(L"\t\t\tGUI_REGISTER_PLUGIN(L" + cppInput->assemblyName + L"ResourceLoaderPlugin)");
+					writer.WriteLine(L"\t\t\tGUI_REGISTER_PLUGIN(" + cppInput->assemblyName + L"ResourceLoaderPlugin)");
 				}
 
 				writer.WriteLine(L"\t\t}");
