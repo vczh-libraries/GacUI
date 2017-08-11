@@ -118,10 +118,11 @@ namespace vl
 			bool workflow,
 			const filesystem::FilePath& filePath)
 		{
-			auto folder = resource->GetFolder(L"Precompiled")->GetFolder(L"Workflow");
+			auto precompiled = resource->GetFolder(L"Precompiled");
+			auto folder = precompiled->GetFolder(L"Workflow");
 			if (!workflow)
 			{
-				resource->GetFolder(L"Precompiled")->RemoveFolder(L"Workflow");
+				precompiled->RemoveFolder(L"Workflow");
 			}
 
 			FileStream fileStream(filePath.GetFullPath(), FileStream::WriteOnly);
@@ -142,7 +143,7 @@ namespace vl
 
 			if (folder && !workflow)
 			{
-				resource->GetFolder(L"Precompiled")->AddFolder(L"Workflow", folder);
+				precompiled->AddFolder(L"Workflow", folder);
 			}
 
 			return fileStream.IsAvailable();
@@ -230,9 +231,11 @@ namespace vl
 				{
 					MemoryStream resourceStream;
 					{
-						auto folder = resource->GetFolder(L"Precompiled")->GetFolder(L"Workflow");
+						auto precompiled = resource->GetFolder(L"Precompiled");
+						auto folder = precompiled->GetFolder(L"Workflow");
+						precompiled->RemoveFolder(L"Workflow");
 						resource->SavePrecompiledBinary(resourceStream);
-						resource->GetFolder(L"Precompiled")->AddFolder(L"Workflow", folder);
+						precompiled->AddFolder(L"Workflow", folder);
 					}
 					WriteEmbeddedBinaryClass(resourceStream, cppInput->assemblyName + L"ResourceReader", L"\t\t\t", writer);
 					writer.WriteLine(L"");
