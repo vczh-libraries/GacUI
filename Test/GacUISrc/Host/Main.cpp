@@ -189,7 +189,7 @@ void GuiMain_Resource()
 		input->normalIncludes.Add(L"../Helpers.h");
 		input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
 		auto output = WriteCppCodesToFile(compiled, input, cppFolder);
-		WriteEmbeddedResource(resource, input, output, cppFolder / L"DemoResource.cpp");
+		WriteEmbeddedResource(resource, input, output, true, cppFolder / L"DemoResource.cpp");
 
 		WriteBinaryResource(resource, false, true, binaryPath);
 		{

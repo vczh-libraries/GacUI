@@ -21,7 +21,7 @@ namespace vl
 
 				static void ReadToStream(vl::stream::MemoryStream& stream)
 				{
-					DecompressStream(parserBuffer, parserBufferRows, parserBufferBlock, parserBufferRemain, stream);
+					DecompressStream(parserBuffer, true, parserBufferRows, parserBufferBlock, parserBufferRemain, stream);
 				}
 			};
 
@@ -113,6 +113,7 @@ namespace vl
 				GUI_PLUGIN_NAME(GacGen_DemoResourceLoader)
 				{
 					GUI_PLUGIN_DEPEND(GacUI_Resource);
+					GUI_PLUGIN_DEPEND(GacUI_ResourceTypeResolvers);
 #ifdef VCZH_DEBUG_NO_REFLECTION
 					GUI_PLUGIN_DEPEND(GacUI_Reflection);
 					GUI_PLUGIN_DEPEND(GacUI_Compiler_RuntimeTypeResolvers);

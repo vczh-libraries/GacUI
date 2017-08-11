@@ -41,6 +41,7 @@ namespace vl
 		extern bool										WriteEmbeddedResource(Ptr<GuiResource> resource,
 															Ptr<workflow::cppcodegen::WfCppInput> cppInput,
 															Ptr<workflow::cppcodegen::WfCppOutput> cppOutput,
+															bool compress,
 															const filesystem::FilePath& filePath);
 	}
 }

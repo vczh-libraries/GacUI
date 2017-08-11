@@ -1689,16 +1689,27 @@ Helpers
 			CHECK_ERROR(outputStream.Size() == totalSize, L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
 		}
 
-		void DecompressStream(const char** buffer, vint rows, vint block, vint remain, stream::IStream& outputStream)
+		void DecompressStream(const char** buffer, bool decompress, vint rows, vint block, vint remain, stream::IStream& outputStream)
 		{
-			MemoryStream compressedStream;
-			for (vint i = 0; i < rows; i++)
+			if (decompress)
 			{
-				vint size = i == rows - 1 ? remain : block;
-				compressedStream.Write((void*)buffer[i], size);
+				MemoryStream compressedStream;
+				for (vint i = 0; i < rows; i++)
+				{
+					vint size = i == rows - 1 ? remain : block;
+					compressedStream.Write((void*)buffer[i], size);
+				}
+				compressedStream.SeekFromBegin(0);
+				DecompressStream(compressedStream, outputStream);
 			}
-			compressedStream.SeekFromBegin(0);
-			DecompressStream(compressedStream, outputStream);
+			else
+			{
+				for (vint i = 0; i < rows; i++)
+				{
+					vint size = i == rows - 1 ? remain : block;
+					outputStream.Write((void*)buffer[i], size);
+				}
+			}
 		}
 	}
 }

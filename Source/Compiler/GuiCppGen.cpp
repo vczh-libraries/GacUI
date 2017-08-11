@@ -149,11 +149,18 @@ namespace vl
 			return fileStream.IsAvailable();
 		}
 
-		void WriteEmbeddedBinaryClass(MemoryStream& binaryStream, const WString& className, const WString& prefix, StreamWriter& writer)
+		void WriteEmbeddedBinaryClass(MemoryStream& binaryStream, bool compress, const WString& className, const WString& prefix, StreamWriter& writer)
 		{
 			MemoryStream compressedStream;
 			binaryStream.SeekFromBegin(0);
-			CompressStream(binaryStream, compressedStream);
+			if (compress)
+			{
+				CompressStream(binaryStream, compressedStream);
+			}
+			else
+			{
+				CopyStream(binaryStream, compressedStream);
+			}
 			compressedStream.SeekFromBegin(0);
 
 			vint lengthBeforeCompressing = (vint)binaryStream.Size();
@@ -177,7 +184,7 @@ namespace vl
 
 			PREFIX writer.WriteLine(L"\tstatic void ReadToStream(vl::stream::MemoryStream& stream)");
 			PREFIX writer.WriteLine(L"\t{");
-			PREFIX writer.WriteLine(L"\t\tDecompressStream(parserBuffer, parserBufferRows, parserBufferBlock, parserBufferRemain, stream);");
+			PREFIX writer.WriteLine(L"\t\tDecompressStream(parserBuffer, " + WString(compress ? L"true" : L"false") + L", parserBufferRows, parserBufferBlock, parserBufferRemain, stream);");
 			PREFIX writer.WriteLine(L"\t}");
 
 			PREFIX writer.WriteLine(L"};");
@@ -208,6 +215,7 @@ namespace vl
 		bool WriteEmbeddedResource(Ptr<GuiResource> resource,
 			Ptr<workflow::cppcodegen::WfCppInput> cppInput,
 			Ptr<workflow::cppcodegen::WfCppOutput> cppOutput,
+			bool compress,
 			const filesystem::FilePath& filePath)
 		{
 			WString code;
@@ -237,7 +245,7 @@ namespace vl
 						resource->SavePrecompiledBinary(resourceStream);
 						precompiled->AddFolder(L"Workflow", folder);
 					}
-					WriteEmbeddedBinaryClass(resourceStream, cppInput->assemblyName + L"ResourceReader", L"\t\t\t", writer);
+					WriteEmbeddedBinaryClass(resourceStream, compress, cppInput->assemblyName + L"ResourceReader", L"\t\t\t", writer);
 					writer.WriteLine(L"");
 				}
 				{
@@ -248,6 +256,7 @@ namespace vl
 					writer.WriteLine(L"\t\t\t\tGUI_PLUGIN_NAME(GacGen_" + cppInput->assemblyName + L"ResourceLoader)");
 					writer.WriteLine(L"\t\t\t\t{");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Resource);");
+					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_ResourceTypeResolvers);");
 					writer.WriteLine(L"#ifdef VCZH_DEBUG_NO_REFLECTION");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Reflection);");
 					writer.WriteLine(L"\t\t\t\t\tGUI_PLUGIN_DEPEND(GacUI_Compiler_RuntimeTypeResolvers);");
