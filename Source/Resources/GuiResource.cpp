@@ -967,18 +967,20 @@ GuiResourceFolder
 
 		bool GuiResourceFolder::AddItem(const WString& name, Ptr<GuiResourceItem> item)
 		{
-			if(item->GetParent()!=0 || items.Keys().Contains(name)) return false;
+			if (item->GetParent() != 0 || items.Keys().Contains(name)) return false;
 			items.Add(name, item);
-			item->parent=this;
-			item->name=name;
+			item->parent = this;
+			item->name = name;
 			return true;
 		}
 
 		Ptr<GuiResourceItem> GuiResourceFolder::RemoveItem(const WString& name)
 		{
-			Ptr<GuiResourceItem> item=GetItem(name);
-			if(!item) return 0;
+			Ptr<GuiResourceItem> item = GetItem(name);
+			if (!item) return 0;
 			items.Remove(name);
+			item->parent = nullptr;
+			item->name = L"";
 			return item;
 		}
 
@@ -1000,18 +1002,20 @@ GuiResourceFolder
 
 		bool GuiResourceFolder::AddFolder(const WString& name, Ptr<GuiResourceFolder> folder)
 		{
-			if(folder->GetParent()!=0 || folders.Keys().Contains(name)) return false;
+			if (folder->GetParent() != 0 || folders.Keys().Contains(name)) return false;
 			folders.Add(name, folder);
-			folder->parent=this;
-			folder->name=name;
+			folder->parent = this;
+			folder->name = name;
 			return true;
 		}
 
 		Ptr<GuiResourceFolder> GuiResourceFolder::RemoveFolder(const WString& name)
 		{
-			Ptr<GuiResourceFolder> folder=GetFolder(name);
-			if(!folder) return 0;
+			Ptr<GuiResourceFolder> folder = GetFolder(name);
+			if (!folder) return 0;
 			folders.Remove(name);
+			folder->parent = nullptr;
+			folder->name = L"";
 			return folder;
 		}
 
