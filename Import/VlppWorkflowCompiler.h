@@ -4152,6 +4152,8 @@ namespace vl
 				void					WriteCpp(stream::StreamWriter& writer, bool multiFile);
 				void					WriteSubHeader(stream::StreamWriter& writer, const WString& fileName);
 				void					WriteSubCpp(stream::StreamWriter& writer, const WString& fileName);
+				void					WriteReflectionHeader(stream::StreamWriter& writer, bool multiFile);
+				void					WriteReflectionCpp(stream::StreamWriter& writer, bool multiFile);
 			};
 
 /***********************************************************************
@@ -4182,7 +4184,7 @@ WfCppConfig::Write
 GenerateCppFiles
 ***********************************************************************/
 
-			enum class WfCppMultiFile
+			enum class WfCppFileSwitch
 			{
 				Enabled,
 				Disabled,
@@ -4192,12 +4194,14 @@ GenerateCppFiles
 			class WfCppInput : public Object
 			{
 			public:
-				WfCppMultiFile									multiFile = WfCppMultiFile::Enabled;
+				WfCppFileSwitch									multiFile = WfCppFileSwitch::Enabled;
+				WfCppFileSwitch									reflection = WfCppFileSwitch::Enabled;
 				WString											comment;
 				WString											headerGuardPrefix;
 				WString											assemblyName;
 				WString											assemblyNamespace;
 				WString											includeFileName;
+				WString											reflectionFileName;
 				WString											defaultFileName;
 				collections::List<WString>						normalIncludes;
 				collections::List<WString>						reflectionIncludes;
@@ -4211,6 +4215,7 @@ GenerateCppFiles
 				collections::Dictionary<WString, WString>		cppFiles;
 				bool											containsReflectionInfo = false;
 				bool											multiFile = false;
+				bool											reflection = false;
 				WString											entryFileName;
 			};
 

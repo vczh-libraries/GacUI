@@ -186,6 +186,8 @@ void CompileResources()
 		CHECK_ERROR(errors.Count() == 0, L"Error");
 
 		auto input = MakePtr<WfCppInput>(L"Demo");
+		input->multiFile = WfCppFileSwitch::Enabled;
+		input->reflection = WfCppFileSwitch::Enabled;
 		input->comment = L"Source: Host.sln";
 		input->normalIncludes.Add(L"../../../../Source/GacUI.h");
 		input->normalIncludes.Add(L"../Helpers.h");

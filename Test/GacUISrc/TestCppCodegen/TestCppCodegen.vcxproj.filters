@@ -27,6 +27,9 @@
     <ClCompile Include="Source\DemoResource.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DemoReflection.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DemoIncludes.h">
@@ -40,6 +43,9 @@
     </ClInclude>
     <ClInclude Include="Helpers.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DemoReflection.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

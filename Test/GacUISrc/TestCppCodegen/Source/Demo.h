@@ -12,9 +12,6 @@ https://github.com/vczh-libraries
 
 #include "../../../../Source/GacUI.h"
 #include "../Helpers.h"
-#ifndef VCZH_DEBUG_NO_REFLECTION
-#include "../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
-#endif
 
 #if defined( _MSC_VER)
 #pragma warning(push)
