@@ -6718,7 +6718,7 @@ namespace vl
 		///	5) Capturing: (DFA incompatible)
 		///		(regex): No capturing, just change the operators' association
 		///		(?regex): Capture matched fragment
-		///		(?<name>regex): Capture matched fragment in a named group called "name"
+		///		(<name>regex): Capture matched fragment in a named group called "name"
 		///		(<$i>): Match the i-th captured fragment, begins from 0
 		///		(<$name;i>): Match the i-th captured fragment in the named group called "name", begins from 0
 		///		(<$name>): Match any captured fragment in the named group called "name"
@@ -17910,12 +17910,12 @@ namespace vl
 			~FilePath();
 
 			static vint					Compare(const FilePath& a, const FilePath& b);
-			bool						operator==(const FilePath& filePath){ return Compare(*this, filePath) == 0; }
-			bool						operator!=(const FilePath& filePath){ return Compare(*this, filePath) != 0; }
-			bool						operator< (const FilePath& filePath){ return Compare(*this, filePath) <  0; }
-			bool						operator<=(const FilePath& filePath){ return Compare(*this, filePath) <= 0; }
-			bool						operator> (const FilePath& filePath){ return Compare(*this, filePath) >  0; }
-			bool						operator>=(const FilePath& filePath){ return Compare(*this, filePath) >= 0; }
+			bool						operator==(const FilePath& filePath)const{ return Compare(*this, filePath) == 0; }
+			bool						operator!=(const FilePath& filePath)const{ return Compare(*this, filePath) != 0; }
+			bool						operator< (const FilePath& filePath)const{ return Compare(*this, filePath) <  0; }
+			bool						operator<=(const FilePath& filePath)const{ return Compare(*this, filePath) <= 0; }
+			bool						operator> (const FilePath& filePath)const{ return Compare(*this, filePath) >  0; }
+			bool						operator>=(const FilePath& filePath)const{ return Compare(*this, filePath) >= 0; }
 
 			/// <summary>Concat an absolute path and a relative path.</summary>
 			/// <returns>The result absolute path.</returns>
