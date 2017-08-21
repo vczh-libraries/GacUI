@@ -15,7 +15,9 @@ using namespace demo;
 
 void GuiMain()
 {
+#ifndef VCZH_DEBUG_NO_REFLECTION
 	LoadDemoTypes();
+#endif
 
 	theme::RegisterTheme(L"DarkSkin", MakePtr<darkskin::Theme>());
 	{

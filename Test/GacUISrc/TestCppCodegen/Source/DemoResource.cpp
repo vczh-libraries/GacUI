@@ -114,7 +114,7 @@ namespace vl
 				{
 					GUI_PLUGIN_DEPEND(GacUI_Res_Resource);
 					GUI_PLUGIN_DEPEND(GacUI_Res_TypeResolvers);
-#ifdef VCZH_DEBUG_NO_REFLECTION
+#ifndef VCZH_DEBUG_NO_REFLECTION
 					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
 					GUI_PLUGIN_DEPEND(GacUI_Compiler_WorkflowTypeResolvers);
 #endif

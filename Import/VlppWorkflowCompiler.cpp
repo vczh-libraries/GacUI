@@ -29039,7 +29039,22 @@ GenerateCppFiles
 					multiFile = config.topLevelClassDeclsForFiles.Count() > 1;
 				}
 
+				bool reflection = false;
+				switch (input->reflection)
+				{
+				case WfCppFileSwitch::Enabled:
+					reflection = true;
+					break;
+				case WfCppFileSwitch::Disabled:
+					reflection = false;
+					break;
+				default:
+					reflection = config.manager->declarationTypes.Count() > 0;
+				}
+
 				output->multiFile = multiFile;
+				output->reflection = reflection;
+
 				if (multiFile)
 				{
 					output->entryFileName = input->includeFileName;
@@ -29066,29 +29081,40 @@ GenerateCppFiles
 					writer.WriteLine(L"#endif");
 				}));
 
+				auto extraInclude = [&](StreamWriter& writer)
+				{
+					if (reflection || input->reflectionIncludes.Count() > 0)
+					{
+						writer.WriteLine(L"/* CodePack:BeginIgnore() */");
+						writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
+						if (reflection)
+						{
+							writer.WriteLine(L"/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, " + input->reflectionFileName + L".h) */");
+							writer.WriteLine(L"#include \"" + input->reflectionFileName + L".h\"");
+						}
+						else
+						{
+							FOREACH(WString, include, input->reflectionIncludes)
+							{
+								writer.WriteLine(L"/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, " + include + L") */");
+								writer.WriteLine(L"#include \"" + include + L"\"");
+							}
+						}
+						writer.WriteLine(L"#endif");
+						writer.WriteLine(L"/* CodePack:EndIgnore() */");
+					}
+				};
+
 				output->cppFiles.Add(input->defaultFileName + L".cpp", GenerateToStream([&](StreamWriter& writer)
 				{
 					GenerateCppComment(writer, input->comment);
 					writer.WriteLine(L"");
 					writer.WriteLine(L"#include \"" + output->entryFileName + L".h\"");
+					extraInclude(writer);
 					writer.WriteLine(L"");
 					config.WriteCpp(writer, multiFile);
 				}));
 
-				bool reflection = false;
-				switch (input->reflection)
-				{
-				case WfCppFileSwitch::Enabled:
-					reflection = true;
-					break;
-				case WfCppFileSwitch::Disabled:
-					reflection = false;
-					break;
-				default:
-					reflection = config.manager->declarationTypes.Count() > 0;
-				}
-
-				output->reflection = reflection;
 				if (reflection)
 				{
 					output->cppFiles.Add(input->reflectionFileName + L".h", GenerateToStream([&](StreamWriter& writer)
@@ -29223,6 +29249,7 @@ GenerateCppFiles
 								GenerateCppComment(writer, input->comment);
 								writer.WriteLine(L"");
 								writer.WriteLine(L"#include \"" + input->includeFileName + L".h\"");
+								extraInclude(writer);
 								writer.WriteLine(L"");
 								config.WriteSubCpp(writer, fileName);
 							}));

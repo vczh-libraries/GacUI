@@ -252,6 +252,8 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\DemoResource.cpp" />
     <ClCompile Include="Source\MainWindow.cpp" />
@@ -260,7 +262,10 @@
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Source\Demo.h" />
     <ClInclude Include="Source\DemoIncludes.h" />
-    <ClInclude Include="Source\DemoReflection.h" />
+    <ClInclude Include="Source\DemoReflection.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Source\MainWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
