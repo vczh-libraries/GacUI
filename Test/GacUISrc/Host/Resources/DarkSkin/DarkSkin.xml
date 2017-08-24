@@ -1,0 +1,1711 @@
+<Folder>
+  <Instance name="DarkSkinThemeResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::Theme" xmlns:x="darkskin::*">
+      <ThemeTemplates>
+        <att.window>x:WindowTemplate</att.window>
+        <att.customControl>x:CustomControlTemplate</att.customControl>
+        <att.tooltip>x:TooltipTemplate</att.tooltip>
+        <att.label>x:LabelTemplate</att.label>
+        <att.shortcutKey>x:ShortcutKeyTemplate</att.shortcutKey>
+        <att.scrollView>x:ScrollViewTemplate</att.scrollView>
+        <att.groupBox>x:GroupBoxTemplate</att.groupBox>
+        <att.tab>x:TabTemplate</att.tab>
+        <att.comboBox>x:ComboBoxTemplate</att.comboBox>
+        <att.multilineTextBox>x:MultilineTextBoxTemplate</att.multilineTextBox>
+        <att.singlelineTextBox>x:SinglelineTextBoxTemplate</att.singlelineTextBox>
+        <att.documentViewer>x:DocumentViewerTemplate</att.documentViewer>
+        <att.documentLabel>x:DocumentLabelTemplate</att.documentLabel>
+        <att.documentTextBox>x:DocumentTextBoxTemplate</att.documentTextBox>
+        <att.listView>x:ListViewTemplate</att.listView>
+        <att.treeView>x:TreeViewTemplate</att.treeView>
+        <att.textList>x:TextListTemplate</att.textList>
+        <att.menu>x:ToolstripMenuTemplate</att.menu>
+        <att.menuBar>x:ToolstripTemplate</att.menuBar>
+        <att.menuSplitter>x:MenuSplitterTemplate</att.menuSplitter>
+        <att.menuBarButton>x:MenuBarButtonTemplate</att.menuBarButton>
+        <att.menuItemButton>x:MenuItemButtonTemplate</att.menuItemButton>
+        <att.toolBar>x:ToolstripTemplate</att.toolBar>
+        <att.toolBarButton>x:ToolstripButtonTemplate</att.toolBarButton>
+        <att.toolBarDropdownButton>x:ToolstripDropdownButtonTemplate</att.toolBarDropdownButton>
+        <att.toolBarSplitButton>x:ToolstripSplitButtonTemplate</att.toolBarSplitButton>
+        <att.toolBarSplitter>x:ToolstripSplitterTemplate</att.toolBarSplitter>
+        <att.button>x:ButtonTemplate</att.button>
+        <att.checkBox>x:CheckBoxTemplate</att.checkBox>
+        <att.radioButton>x:RadioButtonTemplate</att.radioButton>
+        <att.datePicker>x:DatePickerTemplate</att.datePicker>
+        <att.hScroll>x:HScrollTemplate</att.hScroll>
+        <att.vScroll>x:VScrollTemplate</att.vScroll>
+        <att.hTracker>x:HTrackerTemplate</att.hTracker>
+        <att.vTracker>x:VTrackerTemplate</att.vTracker>
+        <att.progressBar>x:ProgressBarTemplate</att.progressBar>
+      </ThemeTemplates>
+    </Instance>
+  </Instance>
+  
+  <InstanceStyle name="Style">
+    <Styles>
+      <Style ref.Path="(//Bounds + //Table)" MinSizeLimitation="LimitToElementAndChildren"/>
+      <Style ref.Path="(//SideAligned + //PartialView)/*">
+        <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </Style>
+      <Style ref.Path="//*.buttonBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#252526" :
+              state == ButtonState::Active ? "#54545C" :
+              state == ButtonState::Pressed ? "#007ACC" :
+              "#3F3F46"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.buttonBorder">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#434346" :
+              state == ButtonState::Active ? "#6A6A75" :
+              state == ButtonState::Pressed ? "#1C97EA" :
+              "#54545C"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.buttonText">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#6D6D6D" :
+              state == ButtonState::Active ? "#F1F1F1" :
+              state == ButtonState::Pressed ? "#FFFFFF" :
+              "#F1F1F1"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.tabHeaderBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              self.Selected ? "#007ACC" :
+              state == ButtonState::Active ? "#1C97EA" :
+              state == ButtonState::Pressed ? "#1C97EA" :
+              "#434346"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.tabDropdownBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              state == ButtonState::Active ? "#1C97EA" :
+              state == ButtonState::Pressed ? "#1C97EA" :
+              "#434346"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.labelText">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color (
+              not self.VisuallyEnabled ? "#6D6D6D" :
+              "#F1F1F1"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.scrollArrow">
+        <att.BorderColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#555558" :
+              state == ButtonState::Active ? "#1997EA" :
+              state == ButtonState::Pressed ? "#007ACC" :
+              "#999999"
+            )
+          ]]>
+        </att.BorderColor-bind>
+        <att.BackgroundColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#555558" :
+              state == ButtonState::Active ? "#1997EA" :
+              state == ButtonState::Pressed ? "#007ACC" :
+              "#999999"
+            )
+          ]]>
+        </att.BackgroundColor-bind>
+      </Style>
+      <Style ref.Path="//*.scrollHandle">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#3D3D42" :
+              state == ButtonState::Active ? "#9E9E9E" :
+              state == ButtonState::Pressed ? "#EFEBEF" :
+              "#686868"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.itemBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#00000000" :
+              self.Selected or state == ButtonState::Pressed ? "#3399FF" :
+              state == ButtonState::Active ? "#3F3F46" :
+              "#00000000"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.toolstripBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#00000000" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
+              state == ButtonState::Active ? "#54545C" :
+              "#00000000"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.toolstripBorder">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.Selected ? "#00000000" :
+              "#007ACC"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.toolstripArrow">
+        <att.BorderColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#555558" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
+              state == ButtonState::Active ? "#1997EA" :
+              "#999999"
+            )
+          ]]>
+        </att.BorderColor-bind>
+        <att.BackgroundColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#555558" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
+              state == ButtonState::Active ? "#1997EA" :
+              "#999999"
+            )
+          ]]>
+        </att.BackgroundColor-bind>
+      </Style>
+      <Style ref.Path="//*.toolstripSplitBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#00000000" :
+              state == ButtonState::Pressed ? "#54545C" :
+              state == ButtonState::Active ? "#54545C" :
+              "#00000000"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.toolstripSplitArrowBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#00000000" :
+              state == ButtonState::Pressed or self.Selected ? "#007ACC" :
+              state == ButtonState::Active ? "#54545C" :
+              "#00000000"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.toolstripSplitArrow">
+        <att.BorderColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#555558" :
+              state == ButtonState::Pressed or self.Selected ? "#FFFFFF" :
+              state == ButtonState::Active ? "#1997EA" :
+              "#999999"
+            )
+          ]]>
+        </att.BorderColor-bind>
+        <att.BackgroundColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#555558" :
+              state == ButtonState::Pressed or self.Selected ? "#FFFFFF" :
+              state == ButtonState::Active ? "#1997EA" :
+              "#999999"
+            )
+          ]]>
+        </att.BackgroundColor-bind>
+      </Style>
+      <Style ref.Path="//*.menuBarItemBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#00000000" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#1B1B1C" :
+              state == ButtonState::Active ? "#3D3D40" :
+              "#00000000"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.menuItemBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#00000000" :
+              state == ButtonState::Pressed ? "#3D3D40" :
+              state == ButtonState::Active or self.SubMenuOpening ? "#3D3D40" :
+              "#00000000"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.menuItemText">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#6D6D6D" :
+              "#FFFFFF"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.menuItemArrow">
+        <att.BorderColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#555558" :
+              state == ButtonState::Active or self.SubMenuOpening ? "#1997EA" :
+              state == ButtonState::Pressed ? "#007ACC" :
+              "#999999"
+            )
+          ]]>
+        </att.BorderColor-bind>
+        <att.BackgroundColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#555558" :
+              state == ButtonState::Active or self.SubMenuOpening ? "#1997EA" :
+              state == ButtonState::Pressed ? "#007ACC" :
+              "#999999"
+            )
+          ]]>
+        </att.BackgroundColor-bind>
+      </Style>
+      <Style ref.Path="//*.comboBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#2D2D30" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#3F3F46" :
+              state == ButtonState::Active ? "#3F3F46" :
+              "#333337"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.comboBorder">
+        <att.Color>#434346</att.Color>
+      </Style>
+      <Style ref.Path="//*.comboText">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#65655C" :
+              "#F1F1F1"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.comboArrowBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#00000000" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
+              state == ButtonState::Active ? "#1F1F20" :
+              "#00000000"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.comboArrow">
+        <att.BorderColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#999999" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#FFFFFF" :
+              state == ButtonState::Active ? "#007ACC" :
+              "#999999"
+            )
+          ]]>
+        </att.BorderColor-bind>
+        <att.BackgroundColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#2D2D30" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#3F3F46" :
+              state == ButtonState::Active ? "#3F3F46" :
+              "#434346"
+            )
+          ]]>
+        </att.BackgroundColor-bind>
+      </Style>
+      <Style ref.Path="//*.columnHeaderBackground">
+        <att.Color-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#3E3E40" :
+              state == ButtonState::Pressed or self.SubMenuOpening ? "#007ACC" :
+              state == ButtonState::Active ? "#3E3E40" :
+              "#252527"
+            )
+          ]]>
+        </att.Color-bind>
+      </Style>
+      <Style ref.Path="//*.expandableArrow">
+        <att.BorderColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.VisuallyEnabled ? "#6D6D6D" :
+              state == ButtonState::Pressed ? "#0A75B9" :
+              state == ButtonState::Active ? "#0A75B9" :
+              "#F1F1F1"
+            )
+          ]]>
+        </att.BorderColor-bind>
+        <att.BackgroundColor-bind>
+          <![CDATA[
+            cast Color let state = self.State in (
+              not self.Selected ? "#00000000" :
+              not self.VisuallyEnabled ? "#6D6D6D" :
+              state == ButtonState::Pressed ? "#0A75B9" :
+              state == ButtonState::Active ? "#0A75B9" :
+              "#F1F1F1"
+            )
+          ]]>
+        </att.BackgroundColor-bind>
+      </Style>
+    </Styles>
+  </InstanceStyle>
+
+  <Doc name="BaselineDocument">
+    <Doc>
+      <Content/>
+      <Styles>
+        <Style name="#Default-Override">
+          <color>#FFFFFF</color>
+        </Style>
+        <Style name="#Selection-Override">
+          <color>#FFFFFF</color>
+          <bkcolor>#007ACC</bkcolor>
+        </Style>
+      </Styles>
+    </Doc>
+  </Doc>
+
+  <Instance name="CustomControlTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::CustomControlTemplate" ref.Styles="res://DarkSkin/Style">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren"/>
+    </Instance>
+  </Instance>
+
+  <Instance name="TooltipTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TooltipTemplate" ref.Styles="res://DarkSkin/Style">
+      <WindowTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#017ACC"/>
+          <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+        </Bounds>
+      </WindowTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="WindowTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::WindowTemplate" ref.Styles="res://DarkSkin/Style">
+      <WindowTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.MaximizedBoxOption>AlwaysTrue</att.MaximizedBoxOption>
+        <att.MinimizedBoxOption>AlwaysTrue</att.MinimizedBoxOption>
+        <att.BorderOption>AlwaysTrue</att.BorderOption>
+        <att.SizeBoxOption>AlwaysTrue</att.SizeBoxOption>
+        <att.IconVisibleOption>AlwaysTrue</att.IconVisibleOption>
+        <att.TitleBarOption>AlwaysTrue</att.TitleBarOption>
+        <att.CustomizedBorder>true</att.CustomizedBorder>
+        <att.TooltipTemplate>darkskin::TooltipTemplate</att.TooltipTemplate>
+        
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#017ACC"/>
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <att.Rows>
+              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+              <CellOption>composeType:Absolute absolute:8</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Absolute absolute:8</CellOption>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:MinSize</CellOption>
+              <CellOption>composeType:Absolute absolute:8</CellOption>
+            </att.Columns>
+            
+            <Cell Site="row:0 column:0" AssociatedHitTestResult="BorderLeftTop"/>
+            <Cell Site="row:0 column:5" AssociatedHitTestResult="BorderRightTop"/>
+            <Cell Site="row:3 column:0" AssociatedHitTestResult="BorderLeftBottom"/>
+            <Cell Site="row:3 column:5" AssociatedHitTestResult="BorderRightBottom"/>
+            
+            <Cell Site="row:1 column:0 rowSpan:2 columnSpan:1" AssociatedHitTestResult="BorderLeft"/>
+            <Cell Site="row:1 column:5 rowSpan:2 columnSpan:1" AssociatedHitTestResult="BorderRight"/>
+            <Cell Site="row:0 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="BorderTop"/>
+            <Cell Site="row:3 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="BorderBottom"/>
+            
+            <Cell Site="row:1 column:2" AssociatedHitTestResult="ButtonMinimum">
+              <Button Text=" 0 " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+              </Button>
+            </Cell>
+            <Cell Site="row:1 column:3" AssociatedHitTestResult="ButtonMaximum">
+              <Button Text-bind="self.Maximized ? ' 1 ' : ' 2 '" Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+              </Button>
+            </Cell>
+            <Cell Site="row:1 column:4" AssociatedHitTestResult="ButtonClose">
+              <Button Text=" r " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+                <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+              </Button>
+            </Cell>
+          
+            <Cell Site="row:1 column:1" AssociatedHitTestResult="Title">
+              <Bounds AlignmentToParent="left:5 top:5 right:5 bottom:5">
+                <SolidLabel Color="#999999" Text-bind="self.Text" Font="fontFamily:'Segoe WP SemiLight' size:14 antialias:true"/>
+              </Bounds>
+            </Cell>
+            <Cell Site="row:2 column:1 rowSpan:1 columnSpan:4" AssociatedHitTestResult="Client">
+              <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Cell>
+          </Table>
+        </Bounds>
+      </WindowTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TabHeaderTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="tabHeaderBackground"/>
+        <Bounds AlignmentToParent="left:6 top:3 right:6 bottom:3">
+          <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Bounds>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TabDropdownTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabDropdownTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="tabDropdownBackground"/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon Size="x:9 y:5" BorderColor="#FFFFFF" BackgroundColor="#FFFFFF">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:4 y:4</Point>
+                <Point>x:8 y:0</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TabTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabTemplate" ref.Styles="res://DarkSkin/Style">
+      <TabTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.HeaderTemplate>darkskin::TabHeaderTemplate</att.HeaderTemplate>
+        <att.DropdownTemplate>darkskin::TabDropdownTemplate</att.DropdownTemplate>
+        <att.MenuTemplate>darkskin::ToolstripMenuTemplate</att.MenuTemplate>
+        <att.MenuItemTemplate>darkskin::MenuItemButtonTemplate</att.MenuItemTemplate>
+        <att.HeaderComposition-ref>header</att.HeaderComposition-ref>
+        <att.HeaderPadding>2</att.HeaderPadding>
+
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBackground Color="#2D2D30"/>
+          <att.Rows>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:2</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <Bounds ref.Name="header" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </Cell>
+          <Cell Site="row:1 column:0">
+            <SolidBackground Color="#007ACC"/>
+          </Cell>
+          <Cell Site="row:2 column:0">
+            <SolidBorder Color="#434346"/>
+            <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+          </Cell>
+        </Table>
+      </TabTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="GroupBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::GroupBoxTemplate" ref.Styles="res://DarkSkin/Style">
+      <ControlTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds AlignmentToParent-bind="{left:0 top:(titleBounds.Bounds.y2/2) right:0 bottom:0}">
+          <SolidBorder Color="#3F3F46"/>
+          <Bounds ref.Name="container" AlignmentToParent="left:1 top:5 right:1 bottom:1"/>
+        </Bounds>
+        <Bounds ref.Name="titleBounds" AlignmentToParent="left:5 top:0 right:-1 bottom:-1">
+          <SolidBackground Color="#2D2D30"/>
+          <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+            <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color="#C7C7C7" VerticalAlignment="Center"/>
+          </Bounds>
+        </Bounds>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripTemplate" ref.Styles="res://DarkSkin/Style">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren" InternalMargin="left:2 top:2 right:2 bottom:2">
+        <SolidBackground Color="#2D2D30"/>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripMenuTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripMenuTemplate" ref.Styles="res://DarkSkin/Style">
+      <MenuTemplate ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#1B1B1C"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:3 top:3 right:3 bottom:3">
+          <SolidBorder Color="#333337"/>
+        </Bounds>
+      </MenuTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripSplitterTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitterTemplate" ref.Styles="res://DarkSkin/Style">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
+          <Gui3DSplitterElement Direction="Vertical" Color1="#222224" Color2="#464648"/>
+        </Bounds>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MenuSplitterTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuSplitterTemplate" ref.Styles="res://DarkSkin/Style">
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#1B1B1C"/>
+        <Bounds AlignmentToParent="left:0 top:1 right:0 bottom:1" PreferredMinSize="x:0 y:1">
+          <SolidBackground Color="#333337"/>
+        </Bounds>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="buttonBackground"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="buttonBorder"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
+          <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="CheckBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::CheckBoxTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:Absolute absolute:17</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Absolute absolute:17</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:0">
+            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+              <SolidBackground ref.Style="buttonBackground"/>
+            </Bounds>
+            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+              <SolidBorder ref.Style="buttonBorder"/>
+            </Bounds>
+            <Bounds Visible-bind="self.Selected" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <SolidLabel ref.Style="buttonText" Text="a" Font="fontFamily:'Webdings' size:16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Bounds>
+          </Cell>
+
+          <Cell Site="row:0 column:1 rowSpan:3 columnSpan:1">
+            <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
+              <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Bounds>
+          </Cell>
+        </Table>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="RadioButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::RadioButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:Absolute absolute:17</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Absolute absolute:17</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:0">
+            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+              <SolidBackground ref.Style="buttonBackground" Shape="Ellipse"/>
+            </Bounds>
+            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+              <SolidBorder ref.Style="buttonBorder" Shape="Ellipse"/>
+            </Bounds>
+            <Bounds Visible-bind="self.Selected" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+              <SolidBackground ref.Style="buttonText" Shape="Ellipse"/>
+            </Bounds>
+          </Cell>
+
+          <Cell Site="row:0 column:1 rowSpan:3 columnSpan:1">
+            <Bounds AlignmentToParent="left:3 top:1 right:3 bottom:1">
+              <SolidLabel ref.Style="labelText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Bounds>
+          </Cell>
+        </Table>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="DocumentLabelTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentLabelTemplate" ref.Styles="res://DarkSkin/Style">
+      <DocumentLabelTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/BaselineDocument">
+        <att.CaretColor>#FFFFFF</att.CaretColor>
+      </DocumentLabelTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="DocumentTextBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentTextBoxTemplate" ref.Styles="res://DarkSkin/Style">
+      <DocumentLabelTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/BaselineDocument">
+        <att.CaretColor>#FFFFFF</att.CaretColor>
+        <SolidBackground Color="#252526"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+        </Bounds>
+      </DocumentLabelTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="LabelTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::LabelTemplate" ref.Styles="res://DarkSkin/Style">
+      <LabelTemplate ref.Name="self" DefaultTextColor="#F1F1F1" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidLabel Text-bind="self.Text" Font-bind="self.Font">
+          <att.Color-bind>
+            <![CDATA[
+              cast Color (
+                not self.VisuallyEnabled ? "#6D6D6D" :
+                self.TextColor
+              )
+            ]]>
+          </att.Color-bind>
+        </SolidLabel>
+      </LabelTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ShortcutKeyTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ShortcutKeyTemplate" ref.Styles="res://DarkSkin/Style">
+      <LabelTemplate ref.Name="self" DefaultTextColor="#F1F1F1" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBorder Color="#3F3F46"/>
+        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+          <SolidBackground Color="#252526"/>
+          <Bounds AlignmentToParent="left:0 top:0 right:1 bottom:0">
+            <SolidLabel Text-bind="self.Text" Font-bind="self.Font" Color-bind="self.TextColor"/>
+          </Bounds>
+        </Bounds>
+      </LabelTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="SinglelineTextBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::SinglelineTextBoxTemplate" ref.Styles="res://DarkSkin/Style">
+      <SinglelineTextBoxTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.TextColor>normal:{text:(cast Color "#FFFFFF") background:(cast Color "#00000000")} selectedFocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")} selectedUnfocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")}</att.TextColor>
+        <att.CaretColor>#FFFFFF</att.CaretColor>
+        <SolidBackground Color="#252526"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+        </Bounds>
+      </SinglelineTextBoxTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MultilineTextBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::MultilineTextBoxTemplate" ref.Styles="res://DarkSkin/Style">
+      <MultilineTextBoxTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+        <att.TextColor>normal:{text:(cast Color "#FFFFFF") background:(cast Color "#00000000")} selectedFocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")} selectedUnfocused:{text:(cast Color "#FFFFFF") background:(cast Color "#007ACC")}</att.TextColor>
+        <att.CaretColor>#FFFFFF</att.CaretColor>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+        </Bounds>
+      </MultilineTextBoxTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="LeftScrollButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::LeftScrollButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="scrollArrow" Size="x:5 y:9">
+              <att.Points>
+                <Point>x:4 y:0</Point>
+                <Point>x:0 y:4</Point>
+                <Point>x:4 y:8</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="RightScrollButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::RightScrollButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="scrollArrow" Size="x:5 y:9">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:4 y:4</Point>
+                <Point>x:0 y:8</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TopScrollButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TopScrollButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="scrollArrow" Size="x:9 y:5">
+              <att.Points>
+                <Point>x:0 y:4</Point>
+                <Point>x:4 y:0</Point>
+                <Point>x:8 y:4</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="BottomScrollButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::BottomScrollButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="scrollArrow" Size="x:9 y:5">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:4 y:4</Point>
+                <Point>x:8 y:0</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="HScrollHandleTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::HScrollHandleTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds AlignmentToParent="left:0 top:4 right:0 bottom:4">
+          <SolidBackground ref.Style="scrollHandle"/>
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="VScrollHandleTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::VScrollHandleTemplate" ref.Styles="res://DarkSkin/Style">
+      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Bounds AlignmentToParent="left:4 top:0 right:4 bottom:0">
+          <SolidBackground ref.Style="scrollHandle"/>
+        </Bounds>
+      </ButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Script name="ScrollTemplateScript">
+    <Workflow>
+      <![CDATA[
+        module ScrollTemplateScript;
+        
+        using system::*;
+        using presentation::templates::*;
+        
+        class ScrollTemplateScript
+        {
+          static func SetScroll(totalPixels : int, newOffset : int, scrollTemplate : GuiScrollTemplate*) : void
+          {
+            var totalSize = scrollTemplate.TotalSize;
+            var ratio = (cast double newOffset) / totalPixels;
+            var newPosition = cast int Math::RoundI(ratio * totalSize);
+
+			      var offset1 = cast int Math::RoundI(((cast double newPosition) / totalSize) * totalPixels);
+			      var offset2 = cast int Math::RoundI((cast double (newPosition + 1)) / totalSize * totalPixels);
+			      var delta1 = offset1 - newOffset;
+			      var delta2 = offset2 - newOffset;
+            
+            if (delta1 < 0) { delta1 = -delta1; }
+            if (delta2 < 0) { delta2 = -delta2; }
+
+			      if(delta1 < delta2)
+			      {
+				      scrollTemplate.Commands.SetPosition(newPosition);
+			      }
+			      else
+			      {
+				      scrollTemplate.Commands.SetPosition(newPosition + 1);
+			      }
+          }
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="HScrollTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::HScrollTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Protected
+          var draggingHandle : bool = false;
+          
+          @cpp:Protected
+          var draggingStartLocation : Point = {x:0 y:0};
+        ]]>
+      </ref.Members>
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#3D3D42"/>
+        <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Left">
+          <Button ControlTemplate="darkskin::LeftScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
+        </SideAligned>
+        <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Right">
+          <Button ControlTemplate="darkskin::RightScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallIncrease();"/>
+        </SideAligned>
+        <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0">
+          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigDecrease();}">
+            <att.AlignmentToParent-bind>{left:0 top:0 right:(handleContainer.Bounds.x2 - handleContainer.Bounds.x1 - handle.Bounds.x1) bottom:0}</att.AlignmentToParent-bind>
+          </Bounds>
+          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigIncrease();}">
+            <att.AlignmentToParent-bind>{left:(handle.Bounds.x2) top:0 right:0 bottom:0}</att.AlignmentToParent-bind>
+          </Bounds>
+          <PartialView ref.Name="handle">
+            <att.WidthPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.WidthPageSize-bind>
+            <att.WidthRatio-bind>(cast double self.Position) / self.TotalSize</att.WidthRatio-bind>
+            <ev.leftButtonDown-eval>
+              <![CDATA[
+                if (self.VisuallyEnabled)
+                {
+                  self.draggingHandle = true;
+                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
+                }
+              ]]>
+            </ev.leftButtonDown-eval>
+            <ev.leftButtonUp-eval>
+              <![CDATA[
+                self.draggingHandle = false;
+              ]]>
+            </ev.leftButtonUp-eval>
+            <ev.mouseMove-eval>
+              <![CDATA[
+                if (self.draggingHandle)
+                {
+                  var bounds = handle.Parent.Bounds;
+                  var totalPixels = bounds.x2 - bounds.x1;
+                  var currentOffset = handle.Bounds.x1;
+                  var newOffset = currentOffset + (arguments.x - self.draggingStartLocation.x);
+                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
+                }
+              ]]>
+            </ev.mouseMove-eval>
+            <Button ControlTemplate="darkskin::HScrollHandleTemplate"/>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="VScrollTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::VScrollTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Protected
+          var draggingHandle : bool = false;
+          
+          @cpp:Protected
+          var draggingStartLocation : Point = {x:0 y:0};
+        ]]>
+      </ref.Members>
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#3D3D42"/>
+        <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Top">
+          <Button ControlTemplate="darkskin::TopScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallDecrease();"/>
+        </SideAligned>
+        <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Bottom">
+          <Button ControlTemplate="darkskin::BottomScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallIncrease();"/>
+        </SideAligned>
+        <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20">
+          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigDecrease();}">
+            <att.AlignmentToParent-bind>{left:0 top:0 right:0 bottom:(handleContainer.Bounds.y2 - handleContainer.Bounds.y1 - handle.Bounds.y1)}</att.AlignmentToParent-bind>
+          </Bounds>
+          <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigIncrease();}">
+            <att.AlignmentToParent-bind>{left:0 top:(handle.Bounds.y2) right:0 bottom:0}</att.AlignmentToParent-bind>
+          </Bounds>
+          <PartialView ref.Name="handle">
+            <att.HeightPageSize-bind>(cast double self.PageSize) / self.TotalSize</att.HeightPageSize-bind>
+            <att.HeightRatio-bind>(cast double self.Position) / self.TotalSize</att.HeightRatio-bind>
+            <ev.leftButtonDown-eval>
+              <![CDATA[
+                if (self.VisuallyEnabled)
+                {
+                  self.draggingHandle = true;
+                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
+                }
+              ]]>
+            </ev.leftButtonDown-eval>
+            <ev.leftButtonUp-eval>
+              <![CDATA[
+                self.draggingHandle = false;
+              ]]>
+            </ev.leftButtonUp-eval>
+            <ev.mouseMove-eval>
+              <![CDATA[
+                if (self.draggingHandle)
+                {
+                  var bounds = handle.Parent.Bounds;
+                  var totalPixels = bounds.y2 - bounds.y1;
+                  var currentOffset = handle.Bounds.y1;
+                  var newOffset = currentOffset + (arguments.y - self.draggingStartLocation.y);
+                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
+                }
+              ]]>
+            </ev.mouseMove-eval>
+            <Button ControlTemplate="darkskin::VScrollHandleTemplate"/>
+          </PartialView>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="HTrackerTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::HTrackerTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Protected
+          var draggingHandle : bool = false;
+          
+          @cpp:Protected
+          var draggingStartLocation : Point = {x:0 y:0};
+        ]]>
+      </ref.Members>
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#3F3F47"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#55545A"/>
+          
+          <Table AlignmentToParent="left:6 top:0 right:6 bottom:0">
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:4</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:1 column:0">
+              <SolidBorder Color="#55545A"/>
+            </Cell>
+          </Table>
+
+          <Bounds ref.Name="handle" PreferredMinSize="x:12 y:0">
+            <att.AlignmentToParent-bind>
+              <![CDATA[
+                {
+                  left:(
+                    let
+                      width = (self.Bounds.x2 - self.Bounds.x1) - (handle.Bounds.x2 - handle.Bounds.x1),
+                      max = self.TotalSize - self.PageSize
+                      in (max == 0 ? 0 : width * self.Position / max)
+                    )
+                  top:0
+                  right:-1
+                  bottom:0
+                }
+              ]]>
+            </att.AlignmentToParent-bind>
+            <ev.leftButtonDown-eval>
+              <![CDATA[
+                if (self.VisuallyEnabled)
+                {
+                  self.draggingHandle = true;
+                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
+                }
+              ]]>
+            </ev.leftButtonDown-eval>
+            <ev.leftButtonUp-eval>
+              <![CDATA[
+                self.draggingHandle = false;
+              ]]>
+            </ev.leftButtonUp-eval>
+            <ev.mouseMove-eval>
+              <![CDATA[
+                if (self.draggingHandle)
+                {
+                  var bounds = handle.Parent.Bounds;
+                  var totalPixels = bounds.x2 - bounds.x1;
+                  var currentOffset = handle.Bounds.x1;
+                  var newOffset = currentOffset + (arguments.x - self.draggingStartLocation.x);
+                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
+                }
+              ]]>
+            </ev.mouseMove-eval>
+            <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
+              <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
+          </Bounds>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="VTrackerTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::VTrackerTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Members>
+        <![CDATA[
+          @cpp:Protected
+          var draggingHandle : bool = false;
+          
+          @cpp:Protected
+          var draggingStartLocation : Point = {x:0 y:0};
+        ]]>
+      </ref.Members>
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="self" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#3F3F47"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#55545A"/>
+
+          <Table AlignmentToParent="left:0 top:6 right:0 bottom:6">
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:4</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:0 column:1">
+              <SolidBorder Color="#55545A"/>
+            </Cell>
+          </Table>
+
+          <Bounds ref.Name="handle" PreferredMinSize="x:0 y:12">
+            <att.AlignmentToParent-bind>
+              <![CDATA[
+                {
+                  left:0
+                  top:(
+                    let
+                      height = (self.Bounds.y2 - self.Bounds.y1) - (handle.Bounds.y2 - handle.Bounds.y1),
+                      max = self.TotalSize - self.PageSize
+                      in (max == 0 ? 0 : height * self.Position / max)
+                    )
+                  right:0
+                  bottom:-1
+                }
+              ]]>
+            </att.AlignmentToParent-bind>
+            <ev.leftButtonDown-eval>
+              <![CDATA[
+                if (self.VisuallyEnabled)
+                {
+                  self.draggingHandle = true;
+                  self.draggingStartLocation = {x:arguments.x y:arguments.y};
+                }
+              ]]>
+            </ev.leftButtonDown-eval>
+            <ev.leftButtonUp-eval>
+              <![CDATA[
+                self.draggingHandle = false;
+              ]]>
+            </ev.leftButtonUp-eval>
+            <ev.mouseMove-eval>
+              <![CDATA[
+                if (self.draggingHandle)
+                {
+                  var bounds = handle.Parent.Bounds;
+                  var totalPixels = bounds.y2 - bounds.y1;
+                  var currentOffset = handle.Bounds.y1;
+                  var newOffset = currentOffset + (arguments.y - self.draggingStartLocation.y);
+                  ScrollTemplateScript::SetScroll(totalPixels, newOffset, self);
+                }
+              ]]>
+            </ev.mouseMove-eval>
+            <Button ControlTemplate="darkskin::ButtonTemplate" Font="size:1">
+              <att.BoundsComposition-set  AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Button>
+          </Bounds>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ProgressBarTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ProgressBarTemplate" ref.Styles="res://DarkSkin/Style">
+      <ScrollTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#3F3F47"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder Color="#55545A"/>
+          <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <Bounds>
+              <att.AlignmentToParent-bind>
+                <![CDATA[
+                  {
+                    left:0
+                    top:0
+                    right:(
+                      let
+                        width = container.Bounds.x2 - container.Bounds.x1,
+                        max = self.TotalSize - self.PageSize
+                        in (max == 0 ? 0 : width - width * self.Position / max)
+                      )
+                    bottom:0
+                  }
+                ]]>
+              </att.AlignmentToParent-bind>
+              <SolidBackground Color="#07B023"/>
+            </Bounds>
+          </Bounds>
+        </Bounds>
+      </ScrollTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ScrollViewTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ScrollViewTemplate" ref.Styles="res://DarkSkin/Style">
+      <ScrollViewTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+        </Bounds>
+      </ScrollViewTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="DocumentViewerTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::DocumentViewerTemplate" ref.Styles="res://DarkSkin/Style">
+      <DocumentViewerTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren" BaselineDocument-uri="res://DarkSkin/BaselineDocument">
+        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+        <att.CaretColor>#FFFFFF</att.CaretColor>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+        </Bounds>
+      </DocumentViewerTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ItemBackgroundTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ItemBackgroundTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="itemBackground"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:3 right:0 bottom:3"/>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="CheckItemBackgroundTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::CheckItemBackgroundTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground ref.Style="itemBackground"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:2 right:0 bottom:1"/>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TextListTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TextListTemplate" ref.Styles="res://DarkSkin/Style">
+      <TextListTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+        <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.CheckBulletTemplate>darkskin::CheckBoxTemplate</att.CheckBulletTemplate>
+        <att.RadioBulletTemplate>darkskin::RadioButtonTemplate</att.RadioBulletTemplate>
+        <att.TextColor>#F1F1F1</att.TextColor>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+        </Bounds>
+      </TextListTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="toolstripBorder"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+          <SolidBackground ref.Style="toolstripBackground"/>
+          <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+          </Bounds>
+        </Bounds>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripDropdownButtonResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripDropdownButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="toolstripBorder"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+          <SolidBackground ref.Style="toolstripBackground"/>
+          <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+          </Bounds>
+        </Bounds>
+        <Table AlignmentToParent="left:-1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
+          <SolidBackground ref.Style="toolstripBackground"/>
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:3</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="toolstripArrow" Size="x:5 y:3">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:2 y:2</Point>
+                <Point>x:4 y:0</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ToolstripArrowButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitArrowTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
+          <SolidBackground ref.Style="toolstripSplitArrowBackground"/>
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:3</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:5</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Polygon ref.Style="toolstripSplitArrow" Size="x:5 y:3">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:2 y:2</Point>
+                <Point>x:4 y:0</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+  
+  <Instance name="ToolstripSplitButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ToolstripSplitButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" ContainerComposition-ref="container" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="toolstripBorder"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+          <SolidBackground ref.Style="toolstripBackground"/>
+          <Bounds ref.Name ="container" AlignmentToParent="left:3 top:3 right:3 bottom:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+          </Bounds>
+        </Bounds>
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
+          <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+            <SolidBackground ref.Style="toolstripSplitBackground"/>
+          </Bounds>
+          <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </CheckBox>
+        </Bounds>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MenuBarButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuBarButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="menuBarItemBackground"/>
+        <Bounds AlignmentToParent="left:10 top:3 right:10 bottom:3">
+          <SolidLabel ref.Style="menuItemText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Bounds>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="MenuItemButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::MenuItemButtonTemplate" ref.Styles="res://DarkSkin/Style">
+      <ToolstripButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="menuItemBackground"/>
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Absolute absolute:4</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:4</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Absolute absolute:2</CellOption>
+            <CellOption>composeType:Absolute absolute:24</CellOption>
+            <CellOption>composeType:Absolute absolute:8</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:24</CellOption>
+            <CellOption>composeType:Percentage percentage:1.0</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:4</CellOption>
+            <CellOption>composeType:MinSize</CellOption>
+            <CellOption>composeType:Absolute absolute:8</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1 rowSpan:3">
+            <ImageFrame Image-bind="self.Image.Image ?? null" FrameIndex-bind="self.Image.FrameIndex ?? 0" Enabled-bind="self.VisuallyEnabled"/>
+          </Cell>
+          <Cell Site="row:1 column:3 rowSpan:3">
+            <SharedSizeItem Group="MenuItem-Text" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <SolidLabel ref.Style="menuItemText" Text-bind="self.Text" Font-bind="self.Font" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </SharedSizeItem>
+          </Cell>
+          <Cell Site="row:1 column:6 rowSpan:3">
+            <SharedSizeItem Group="MenuItem-Shortcut" SharedWidth="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+              <SolidLabel ref.Style="menuItemText" Text-bind="self.ShortcutText" Font-bind="self.Font" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            </SharedSizeItem>
+          </Cell>
+          <Cell Site="row:2 column:8" Visible-bind="self.SubMenuExisting">
+            <Polygon ref.Style="menuItemArrow" Size="x:4 y:7">
+              <att.Points>
+                <Point>x:0 y:0</Point>
+                <Point>x:3 y:3</Point>
+                <Point>x:0 y:6</Point>
+              </att.Points>
+            </Polygon>
+          </Cell>
+        </Table>
+      </ToolstripButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="DatePickerTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::DatePickerTemplate" ref.Styles="res://DarkSkin/Style">
+      <DatePickerTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.DateButtonTemplate>darkskin::ItemBackgroundTemplate</att.DateButtonTemplate>
+        <att.DateTextListTemplate>darkskin::TextListTemplate</att.DateTextListTemplate>
+        <att.DateComboBoxTemplate>darkskin::ComboBoxTemplate</att.DateComboBoxTemplate>
+        <att.BackgroundColor>#2D2D30</att.BackgroundColor>
+        <att.PrimaryTextColor>#FFFFFF</att.PrimaryTextColor>
+        <att.SecondaryTextColor>#999999</att.SecondaryTextColor>
+      </DatePickerTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ComboBoxTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ComboBoxTemplate" ref.Styles="res://DarkSkin/Style">
+      <DateComboBoxTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <att.DatePickerTemplate>darkskin::DatePickerTemplate</att.DatePickerTemplate>
+        <SolidBackground ref.Style="comboBackground"/>
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <SolidBorder ref.Style="comboBorder"/>
+          <Bounds ref.Name="container" AlignmentToParent="left:1 top:1 right:11 bottom:1">
+            <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+              <SolidLabel ref.Style="comboText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Bounds>
+          </Bounds>
+          
+          <Table AlignmentToParent="left:-1 top:1 right:1 bottom:1" PreferredMinSize="x:9 y:0">
+            <SolidBackground ref.Style="comboArrowBackground"/>
+            <att.Rows>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:3</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Rows>
+            <att.Columns>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+              <CellOption>composeType:Absolute absolute:5</CellOption>
+              <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            </att.Columns>
+
+            <Cell Site="row:1 column:1">
+              <Polygon ref.Style="comboArrow" Size="x:5 y:3">
+                <att.Points>
+                  <Point>x:0 y:0</Point>
+                  <Point>x:2 y:2</Point>
+                  <Point>x:4 y:0</Point>
+                </att.Points>
+              </Polygon>
+            </Cell>
+          </Table>
+        </Bounds>
+      </DateComboBoxTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ListViewColumnHeaderTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewColumnHeaderTemplate" ref.Styles="res://DarkSkin/Style">
+      <ListViewColumnHeaderTemplate ref.Name="self" SubMenuHost-ref="buttonArrow" MinSizeLimitation="LimitToElementAndChildren">
+        <att.SubMenuTemplate>darkskin::ToolstripMenuTemplate</att.SubMenuTemplate>
+        <SolidBackground ref.Style="columnHeaderBackground"/>
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0" PreferredMinSize="x:1 y:0">
+          <SolidBorder Color="#404042"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:0 top:-1 right:0 bottom:0" PreferredMinSize="x:0 y:1">
+          <SolidBorder Color="#404042"/>
+        </Bounds>
+        <Bounds AlignmentToParent="left:1 top:1 right:11 bottom:1">
+          <Bounds AlignmentToParent="left:8 top:5 right:5 bottom:5">
+            <SolidLabel ref.Style="buttonText" Text-bind="self.Text" Font-bind="self.Font" Ellipse="true" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+          </Bounds>
+        </Bounds>
+        <Bounds AlignmentToParent="left:-1 top:0 right:0 bottom:0">
+          <CheckBox ref.Name="buttonArrow" ControlTemplate="darkskin::ToolstripSplitArrowTemplate" Selected-bind="self.SubMenuOpening" Visible-bind="self.SubMenuExisting">
+            <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          </CheckBox>
+        </Bounds>
+      </ListViewColumnHeaderTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ListViewTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ListViewTemplate" ref.Styles="res://DarkSkin/Style">
+      <ListViewTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+        <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.ColumnHeaderTemplate>darkskin::ListViewColumnHeaderTemplate</att.ColumnHeaderTemplate>
+        <att.PrimaryTextColor>#F1F1F1</att.PrimaryTextColor>
+        <att.SecondaryTextColor>#F1F1F1</att.SecondaryTextColor>
+        <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+        </Bounds>
+      </ListViewTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="ExpandingDecoratorTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::ExpandingDecoratorTemplate" ref.Styles="res://DarkSkin/Style">
+      <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:9</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Rows>
+          <att.Columns>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+            <CellOption>composeType:Absolute absolute:7</CellOption>
+            <CellOption>composeType:Percentage percentage:0.5</CellOption>
+          </att.Columns>
+
+          <Cell Site="row:1 column:1">
+            <Bounds Visible-bind="not self.Selected">
+              <Polygon ref.Style="expandableArrow" Size="x:7 y:9">
+                <att.Points>
+                  <Point>x:1 y:0</Point>
+                  <Point>x:5 y:4</Point>
+                  <Point>x:1 y:8</Point>
+                </att.Points>
+              </Polygon>
+            </Bounds>
+            <Bounds Visible-bind="self.Selected">
+              <Polygon ref.Style="expandableArrow" Size="x:7 y:9">
+                <att.Points>
+                  <Point>x:5 y:2</Point>
+                  <Point>x:5 y:7</Point>
+                  <Point>x:0 y:7</Point>
+                </att.Points>
+              </Polygon>
+            </Bounds>
+          </Cell>
+        </Table>
+      </SelectableButtonTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="TreeViewTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TreeViewTemplate" ref.Styles="res://DarkSkin/Style">
+      <TreeViewTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
+        <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
+        <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
+        <att.DefaultScrollSize>20</att.DefaultScrollSize>
+        <att.BackgroundTemplate>darkskin::ItemBackgroundTemplate</att.BackgroundTemplate>
+        <att.ExpandingDecoratorTemplate>darkskin::ExpandingDecoratorTemplate</att.ExpandingDecoratorTemplate>
+        <att.TextColor>#F1F1F1</att.TextColor>
+
+        <SolidBackground Color="#252526"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+          <SolidBorder Color="#3F3F46"/>
+        </Bounds>
+      </TreeViewTemplate>
+    </Instance>
+  </Instance>
+</Folder>

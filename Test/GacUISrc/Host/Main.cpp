@@ -160,24 +160,18 @@ public:
 #define BINARY_FOLDER L"../TestCppCodegen/"
 #define SOURCE_FOLDER L"../TestCppCodegen/Source/"
 
-void CompileResources()
-{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+
+void CompileResources(const WString& name, const WString& resourcePath, const WString& outputPath, bool compressResource)
+{
 	{
-		FileStream fileStream(L"Reflection.txt", FileStream::WriteOnly);
-		BomEncoder encoder(BomEncoder::Utf16);
-		EncoderStream encoderStream(fileStream, encoder);
-		StreamWriter writer(encoderStream);
-		LogTypeManager(writer);
-	}
-	{
-		FilePath errorPath = BINARY_FOLDER L"UI.error.txt";
-		FilePath workflowPath = BINARY_FOLDER L"UI.txt";
-		FilePath binaryPath = BINARY_FOLDER L"UI.bin";
-		FilePath cppFolder = L"../TestCppCodegen/Source/";
+		FilePath errorPath =	BINARY_FOLDER + name + L".UI.error.txt";
+		FilePath workflowPath =	BINARY_FOLDER + name + L".UI.txt";
+		FilePath binaryPath =	BINARY_FOLDER + name + L".UI.bin";
+		FilePath cppFolder =	outputPath;
 
 		List<GuiResourceError> errors;
-		auto resource = GuiResource::LoadFromXml(LR"(Resources/FullControlTest/Resource.xml)", errors);
+		auto resource = GuiResource::LoadFromXml(resourcePath, errors);
 		DebugCallback debugCallback;
 		File(errorPath).Delete();
 
@@ -185,7 +179,7 @@ void CompileResources()
 		auto compiled = WriteWorkflowScript(precompiledFolder, workflowPath);
 		CHECK_ERROR(errors.Count() == 0, L"Error");
 
-		auto input = MakePtr<WfCppInput>(L"Demo");
+		auto input = MakePtr<WfCppInput>(name);
 		input->multiFile = WfCppFileSwitch::Enabled;
 		input->reflection = WfCppFileSwitch::Enabled;
 		input->comment = L"Source: Host.sln";
@@ -193,7 +187,7 @@ void CompileResources()
 		input->normalIncludes.Add(L"../Helpers.h");
 		input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
 		auto output = WriteCppCodesToFile(compiled, input, cppFolder);
-		WriteEmbeddedResource(resource, input, output, true, cppFolder / L"DemoResource.cpp");
+		WriteEmbeddedResource(resource, input, output, compressResource, cppFolder / (name + L"Resource.cpp"));
 
 		WriteBinaryResource(resource, false, true, binaryPath);
 		{
@@ -201,14 +195,12 @@ void CompileResources()
 			resource = GuiResource::LoadPrecompiledBinary(fileStream, errors);
 			CHECK_ERROR(errors.Count() == 0, L"Error");
 		}
-		GetResourceManager()->SetResource(L"Resource", resource, GuiResourceUsage::InstanceClass);
+		GetResourceManager()->SetResource(name, resource, GuiResourceUsage::InstanceClass);
 	}
-#endif
 }
 
 void OpenMainWindow()
 {
-#ifndef VCZH_DEBUG_NO_REFLECTION
 	{
 		auto theme = UnboxValue<Ptr<ThemeTemplates>>(Value::Create(L"darkskin::Theme"));
 		RegisterTheme(L"DarkSkin", theme);
@@ -220,12 +212,24 @@ void OpenMainWindow()
 		GetApplication()->Run(window);
 		delete window;
 	}
-#endif
 }
+
+#endif
 
 void GuiMain()
 {
 	UnitTestInGuiMain();
-	CompileResources();
+#ifndef VCZH_DEBUG_NO_REFLECTION
+	{
+		FileStream fileStream(L"Reflection.txt", FileStream::WriteOnly);
+		BomEncoder encoder(BomEncoder::Utf16);
+		EncoderStream encoderStream(fileStream, encoder);
+		StreamWriter writer(encoderStream);
+		LogTypeManager(writer);
+	}
+
+	CompileResources(L"DarkSkin",	LR"(Resources/DarkSkin/Resource.xml)",			L"../TestCppCodegen/Source/", true);
+	CompileResources(L"Demo",		LR"(Resources/FullControlTest/Resource.xml)",	L"../TestCppCodegen/Source/", false);
 	OpenMainWindow();
+#endif
 }

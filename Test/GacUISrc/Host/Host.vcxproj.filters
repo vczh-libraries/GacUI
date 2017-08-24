@@ -22,6 +22,9 @@
     <Filter Include="Resource Files\FullControlTest\ToolbarImages">
       <UniqueIdentifier>{95fce359-8933-46d9-91ff-4599b1f26903}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\DarkSkin">
+      <UniqueIdentifier>{d95ee71f-2114-41d5-aa6b-6b684865c2a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Resources\UI1_StyleTemplate.xml">
@@ -69,8 +72,11 @@
     <Xml Include="Resources\FullControlTest\TextBoxTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
-    <Xml Include="Resources\FullControlTest\DarkSkin.xml">
-      <Filter>Resource Files\FullControlTest</Filter>
+    <Xml Include="Resources\DarkSkin\Resource.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\DarkSkin.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>
