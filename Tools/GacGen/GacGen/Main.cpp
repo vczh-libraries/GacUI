@@ -130,18 +130,40 @@ void GuiMain()
 {
 	Console::WriteLine(L"Vczh GacUI Resource Code Generator for C++");
 
-	if (arguments->Count() != 1)
+	bool partialMode = false;
+	FilePath inputPath;
+	switch(arguments->Count())
 	{
-		PrintErrorMessage(L"GacGen.exe only accept 1 input file.");
+	case 1:
+		inputPath = arguments->Get(0);
+		break;
+	case 2:
+		if (arguments->Get(0) == L"/P")
+		{
+			partialMode = true;
+			inputPath = arguments->Get(1);
+			break;
+		}
+	default:
+		PrintErrorMessage(L"Usage: GacGen32.exe [/P] <input-resource-xml-file>");
+		PrintErrorMessage(L"Usage: GacGen64.exe [/P] <input-resource-xml-file>");
 		return;
 	}
-	FilePath inputPath = arguments->Get(0);
-	FilePath workingDir = inputPath.GetFolder();
-	
+
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath.GetFullPath());
 	FilePath logFolderPath = inputPath.GetFullPath() + L".log";
+	if (partialMode)
+	{
+#if defined VCZH_64
+		logFolderPath = logFolderPath / L"x64";
+#else
+		logFolderPath = logFolderPath / L"x32";
+#endif
+		PrintInformationMessage(L"gacgen> Partial mode activated, all output files will be put under " + logFolderPath.GetFullPath());
+	}
 	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
 	FilePath errorFilePath = logFolderPath / L"Errors.txt";
+	FilePath workingDir = inputPath.GetFolder();
 	{
 		Folder logFolder(logFolderPath);
 		if (logFolder.Exists())
@@ -166,7 +188,7 @@ void GuiMain()
 	{
 		PrintSuccessMessage(L"gacgen> Making : " + inputPath.GetFullPath());
 		List<GuiResourceError> errors;
-		resource = GuiResource::LoadFromXml(arguments->Get(0), errors);
+		resource = GuiResource::LoadFromXml(inputPath.GetFullPath(), errors);
 		if (errors.Count() > 0)
 		{
 			PrintErrorMessage(L"error> Failed to load resource.");
@@ -204,7 +226,20 @@ void GuiMain()
 				CopyFrom(input->normalIncludes, config->cppOutput->normalIncludes);
 				CopyFrom(input->reflectionIncludes, config->cppOutput->reflectionIncludes);
 
-				FilePath cppFolder = workingDir / config->cppOutput->sourceFolder;
+				FilePath cppFolder;
+				if (partialMode)
+				{
+					cppFolder = logFolderPath / L"Source";
+					if (!Folder(cppFolder).Create(true))
+					{
+						PrintSuccessMessage(L"gacgen> Unable to create source folder : " + cppFolder.GetFullPath());
+					}
+				}
+				else
+				{
+					cppFolder = workingDir / config->cppOutput->sourceFolder;
+				}
+
 				auto output = WriteCppCodesToFile(compiled, input, cppFolder);
 				if (config->cppOutput->cppResource != L"")
 				{
@@ -218,12 +253,12 @@ void GuiMain()
 				if (config->cppOutput->resource != L"")
 				{
 					PrintSuccessMessage(L"Generating binary resource file (no script): " + config->cppOutput->resource);
-					WriteBinaryResource(resource, false, false, workingDir / config->cppOutput->resource);
+					WriteBinaryResource(resource, false, false, (partialMode ? logFolderPath / L"Resource.bin" : workingDir / config->cppOutput->resource));
 				}
 				if (config->cppOutput->compressed != L"")
 				{
 					PrintSuccessMessage(L"Generating compressed resource file (no script): " + config->cppOutput->compressed);
-					WriteBinaryResource(resource, true, false, workingDir / config->cppOutput->compressed);
+					WriteBinaryResource(resource, true, false, (partialMode ? logFolderPath / L"Compressed.bin" : workingDir / config->cppOutput->compressed));
 				}
 			}
 
@@ -232,12 +267,12 @@ void GuiMain()
 				if (config->resOutput->resource != L"")
 				{
 					PrintSuccessMessage(L"Generating binary resource files : " + config->resOutput->resource);
-					WriteBinaryResource(resource, false, true, workingDir / config->resOutput->resource);
+					WriteBinaryResource(resource, false, true, (partialMode ? logFolderPath / L"ScriptedResource.bin" : workingDir / config->resOutput->resource));
 				}
 				if (config->resOutput->compressed != L"")
 				{
 					PrintSuccessMessage(L"Generating compressed resource files : " + config->resOutput->compressed);
-					WriteBinaryResource(resource, true, true, workingDir / config->resOutput->compressed);
+					WriteBinaryResource(resource, true, true, (partialMode ? logFolderPath / L"ScriptedCompressed.bin" : workingDir / config->resOutput->compressed));
 				}
 			}
 		}

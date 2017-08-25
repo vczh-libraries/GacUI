@@ -7899,7 +7899,7 @@ WinPen
 			LOGBRUSH Brush;
 			Brush.lbColor=RGB(0, 0, 0);
 			Brush.lbStyle=BS_DIBPATTERNPT;
-			Brush.lbHatch=(LONG)FDIBMemory;
+			Brush.lbHatch=(ULONG_PTR)FDIBMemory;
 			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, 0, 0);
 		}
 

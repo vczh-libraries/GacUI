@@ -4834,7 +4834,7 @@ DocumentModel
 				FontProperties font=GetCurrentController()->ResourceService()->GetDefaultFont();
 				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
 				sp->face=font.fontFamily;
-				sp->size=DocumentFontSize(font.size, false);
+				sp->size=DocumentFontSize((double)font.size, false);
 				sp->color=Color();
 				sp->backgroundColor=Color(0, 0, 0, 0);
 				sp->bold=font.bold;
@@ -4953,7 +4953,7 @@ DocumentModel
 			Ptr<DocumentStyleProperties> style = new DocumentStyleProperties;
 
 			style->face					=defaultFont.fontFamily;
-			style->size					=DocumentFontSize(defaultFont.size, false);
+			style->size					=DocumentFontSize((double)defaultFont.size, false);
 			style->bold					=defaultFont.bold;
 			style->italic				=defaultFont.italic;
 			style->underline			=defaultFont.underline;
@@ -35474,7 +35474,7 @@ Calculate if all text in the specified range has some common styles
 				void OverrideStyleItem(Nullable<DocumentFontSize> DocumentStyleProperties::* dstField, vint FontProperties::* srcField)
 				{
 					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
-					style.Obj()->*dstField = DocumentFontSize(src.style.*srcField, false);
+					style.Obj()->*dstField = DocumentFontSize((double)(src.style.*srcField), false);
 				}
 
 				// ---------------------------------------------------------
