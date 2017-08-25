@@ -59,6 +59,17 @@ bool CodegenConfig::LoadConfigString(Ptr<GuiResourceFolder> folder, const WStrin
 	}
 }
 
+bool CodegenConfig::LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, List<WString>& value, bool optional)
+{
+	WString text;
+	if (LoadConfigString(folder, path, text, optional))
+	{
+		SplitBySemicolon(text, value);
+		return true;
+	}
+	return false;
+}
+
 Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 {
 	Ptr<CodegenConfig> config = new CodegenConfig;
@@ -69,10 +80,12 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource)
 		auto out = MakePtr<CodegenConfig::CppOutput>();
 		LoadConfigString(folder, L"Resource", out->resource);
 		LoadConfigString(folder, L"Compressed", out->compressed);
-		LoadConfigString(folder, L"SourceFolder", out->sourceFolder);
-		LoadConfigString(folder, L"NormalInclude", out->normalInclude);
-		LoadConfigString(folder, L"ReflectionInclude", out->reflectionInclude);
+		LoadConfigString(folder, L"SourceFolder", out->sourceFolder, false);
+		LoadConfigString(folder, L"NormalInclude", out->normalIncludes, false);
+		LoadConfigString(folder, L"ReflectionInclude", out->reflectionIncludes);
 		LoadConfigString(folder, L"Name", out->name);
+		LoadConfigString(folder, L"CppResource", out->cppResource);
+		LoadConfigString(folder, L"CppCompressed", out->cppCompressed);
 
 		NormalizeFolder(out->sourceFolder);
 		if (out->name == L"")

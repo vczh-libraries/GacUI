@@ -135,10 +135,11 @@ void GuiMain()
 		PrintErrorMessage(L"GacGen.exe only accept 1 input file.");
 		return;
 	}
-	WString inputPath = arguments->Get(0);
+	FilePath inputPath = arguments->Get(0);
+	FilePath workingDir = inputPath.GetFolder();
 	
-	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath);
-	FilePath logFolderPath = inputPath + L".log";
+	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath.GetFullPath());
+	FilePath logFolderPath = inputPath.GetFullPath() + L".log";
 	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
 	FilePath errorFilePath = logFolderPath / L"Errors.txt";
 	{
@@ -163,7 +164,7 @@ void GuiMain()
 
 	Ptr<GuiResource> resource;
 	{
-		PrintSuccessMessage(L"gacgen> Making : " + inputPath);
+		PrintSuccessMessage(L"gacgen> Making : " + inputPath.GetFullPath());
 		List<GuiResourceError> errors;
 		resource = GuiResource::LoadFromXml(arguments->Get(0), errors);
 		if (errors.Count() > 0)
@@ -187,116 +188,58 @@ void GuiMain()
 	PrintSuccessMessage(L"gacgen> Compiling...");
 	List<GuiResourceError> errors;
 	Callback callback;
-	resource->Precompile(&callback, errors);
-	if (errors.Count() > 0)
+	if (auto precompiledFolder = PrecompileAndWriteErrors(resource, &callback, errors, errorFilePath))
 	{
-		SaveErrors(errorFilePath, errors);
-		return;
-	}
-
-	if(config->cppOutput)
-	{
-		auto item = resource->GetValueByPath(L"Precompiled/Workflow/InstanceClass");
-		auto compiled = item.Cast<GuiInstanceCompiledWorkflow>();
+		if (auto compiled = WriteWorkflowScript(precompiledFolder, scriptFilePath))
 		{
-			WString text;
-			auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
-			FOREACH_INDEXER(WString, code, codeIndex, compiled->assembly->insAfterCodegen->moduleCodes)
+			if (config->cppOutput)
 			{
-				text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
-				text += code + L"\r\n";
-			}
-			File(scriptFilePath).WriteAllText(text);
-		}
-		{
-			auto input = MakePtr<WfCppInput>(config->cppOutput->name);
-			input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
-			input->defaultFileName = config->cppOutput->name + L"PartialClasses";
-			input->includeFileName = config->cppOutput->name;
-			if (config->cppOutput->normalInclude != L"")
-			{
-				input->normalIncludes.Add(config->cppOutput->normalInclude);
-			}
-			if (config->cppOutput->reflectionInclude != L"")
-			{
-				input->reflectionIncludes.Add(config->cppOutput->reflectionInclude);
-			}
+				PrintSuccessMessage(L"gacgen> Generating C++ source code ...");
+				auto input = MakePtr<WfCppInput>(config->cppOutput->name);
+				input->multiFile = WfCppFileSwitch::Enabled;
+				input->reflection = WfCppFileSwitch::Enabled;
+				input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
+				input->defaultFileName = config->cppOutput->name + L"PartialClasses";
+				input->includeFileName = config->cppOutput->name;
+				CopyFrom(input->normalIncludes, config->cppOutput->normalIncludes);
+				CopyFrom(input->reflectionIncludes, config->cppOutput->reflectionIncludes);
 
-			FilePath sourceFolder = resource->GetWorkingDirectory() + config->cppOutput->sourceFolder;
-			Folder(sourceFolder).Create(true);
-			auto output = GenerateCppFiles(input, compiled->metadata.Obj());
-			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
-			{
-				PrintSuccessMessage(L"gacgen> Generating " + fileName);
-				WString code = output->cppFiles.Values()[index];
-				File file(sourceFolder / fileName);
-
-				if (file.Exists())
+				FilePath cppFolder = workingDir / config->cppOutput->sourceFolder;
+				auto output = WriteCppCodesToFile(compiled, input, cppFolder);
+				if (config->cppOutput->cppResource != L"")
 				{
-					WString inputText;
-					BomEncoder::Encoding inputEncoding;
-					bool inputBom;
-					file.ReadAllTextWithEncodingTesting(inputText, inputEncoding, inputBom);
-					code = MergeCppFileContent(inputText, code);
+					WriteEmbeddedResource(resource, input, output, false, cppFolder / config->cppOutput->cppResource);
+				}
+				if (config->cppOutput->cppCompressed != L"")
+				{
+					WriteEmbeddedResource(resource, input, output, false, cppFolder / config->cppOutput->cppCompressed);
 				}
 
-				if (file.Exists())
+				if (config->cppOutput->resource != L"")
 				{
-					WString inputText;
-					BomEncoder::Encoding inputEncoding;
-					bool inputBom;
-					file.ReadAllTextWithEncodingTesting(inputText, inputEncoding, inputBom);
-					if (inputText == code)
-					{
-						continue;
-					}
+					PrintSuccessMessage(L"Generating binary resource file (no script): " + config->cppOutput->resource);
+					WriteBinaryResource(resource, false, false, workingDir / config->cppOutput->resource);
 				}
-				file.WriteAllText(code, true, BomEncoder::Utf8);
+				if (config->cppOutput->compressed != L"")
+				{
+					PrintSuccessMessage(L"Generating compressed resource file (no script): " + config->cppOutput->compressed);
+					WriteBinaryResource(resource, true, false, workingDir / config->cppOutput->compressed);
+				}
 			}
-		}
-	}
 
-#define OPEN_BINARY_FILE(NAME, FILENAME) \
-			WString fileName = config->resource->GetWorkingDirectory() + FILENAME; \
-			Folder(FilePath(fileName).GetFolder()).Create(true); \
-			FileStream fileStream(fileName, FileStream::WriteOnly); \
-			if (!fileStream.IsAvailable()) \
-			{ \
-				PrintErrorMessage(L"error> Failed to generate " + fileName); \
-				return; \
-			} \
-			PrintSuccessMessage(L"gacgen> Generating " + fileName);
-
-	if (config->resOutput)
-	{
-		if (config->resOutput->resource != L"")
-		{
-			OPEN_BINARY_FILE(L"Precompiled Binary Resource", config->resOutput->resource);
-			resource->SavePrecompiledBinary(fileStream);
-		}
-		if (config->resOutput->compressed != L"")
-		{
-			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource", config->resOutput->compressed);
-			LzwEncoder encoder;
-			EncoderStream encoderStream(fileStream, encoder);
-			resource->SavePrecompiledBinary(encoderStream);
-		}
-	}
-
-	if (config->cppOutput)
-	{
-		resource->GetFolder(L"Precompiled")->RemoveFolder(L"Workflow");
-		if (config->cppOutput->resource != L"")
-		{
-			OPEN_BINARY_FILE(L"Precompiled Binary Resource", config->cppOutput->resource);
-			resource->SavePrecompiledBinary(fileStream);
-		}
-		if (config->cppOutput->compressed != L"")
-		{
-			OPEN_BINARY_FILE(L"Precompiled Compressed Binary Resource", config->cppOutput->compressed);
-			LzwEncoder encoder;
-			EncoderStream encoderStream(fileStream, encoder);
-			resource->SavePrecompiledBinary(encoderStream);
+			if (config->resOutput)
+			{
+				if (config->resOutput->resource != L"")
+				{
+					PrintSuccessMessage(L"Generating binary resource files : " + config->resOutput->resource);
+					WriteBinaryResource(resource, false, true, workingDir / config->resOutput->resource);
+				}
+				if (config->resOutput->compressed != L"")
+				{
+					PrintSuccessMessage(L"Generating compressed resource files : " + config->resOutput->compressed);
+					WriteBinaryResource(resource, true, true, workingDir / config->resOutput->compressed);
+				}
+			}
 		}
 	}
 }
