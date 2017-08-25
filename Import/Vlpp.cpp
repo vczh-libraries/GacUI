@@ -12057,11 +12057,6 @@ LoadPredefinedTypes
 				CLASS_MEMBER_STATIC_METHOD(Floor, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(Round, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(Trunc, { L"value" })
-
-				CLASS_MEMBER_STATIC_METHOD(CeilI, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(FloorI, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(RoundI, { L"value" })
-				CLASS_MEMBER_STATIC_METHOD(TruncI, { L"value" })
 			END_CLASS_MEMBER(Math)
 
 #undef PT

@@ -9961,10 +9961,6 @@ Libraries
 				static double		Floor(double value)				{ return floor(value); }
 				static double		Round(double value)				{ return round(value); }
 				static double		Trunc(double value)				{ return trunc(value); }
-				static vint64_t		CeilI(double value)				{ return (vint64_t)ceil(value); }
-				static vint64_t		FloorI(double value)			{ return (vint64_t)floor(value); }
-				static vint64_t		RoundI(double value)			{ return (vint64_t)round(value); }
-				static vint64_t		TruncI(double value)			{ return (vint64_t)trunc(value); }
 			};
 		}
 	}
