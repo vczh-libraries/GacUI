@@ -226,18 +226,16 @@ void GuiMain()
 				CopyFrom(input->normalIncludes, config->cppOutput->normalIncludes);
 				CopyFrom(input->reflectionIncludes, config->cppOutput->reflectionIncludes);
 
-				FilePath cppFolder;
+				FilePath cppFolder = workingDir / config->cppOutput->sourceFolder;
 				if (partialMode)
 				{
+					File(logFolderPath / L"CppOutput.txt").WriteAllText(cppFolder.GetFullPath(), false, BomEncoder::Mbcs);
+
 					cppFolder = logFolderPath / L"Source";
 					if (!Folder(cppFolder).Create(true))
 					{
 						PrintSuccessMessage(L"gacgen> Unable to create source folder : " + cppFolder.GetFullPath());
 					}
-				}
-				else
-				{
-					cppFolder = workingDir / config->cppOutput->sourceFolder;
 				}
 
 				auto output = WriteCppCodesToFile(compiled, input, cppFolder);
