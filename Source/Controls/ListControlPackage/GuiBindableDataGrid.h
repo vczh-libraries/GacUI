@@ -333,7 +333,7 @@ DataProvider
 				{
 					friend class DataColumn;
 					friend class DataColumns;
-					friend class GuiBindableDataGrid;
+					friend class controls::GuiBindableDataGrid;
 				protected:
 					ListViewDataColumns										dataColumns;
 					DataColumns												columns;

@@ -836,7 +836,13 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::SetParagraphAlignment(TextPos begin, TextPos end, Nullable<Alignment> alignment)
 			{
+#if defined VCZH_GCC && defined VCZH_64
+#define abs labs
+#endif
 				Array<Nullable<Alignment>> alignments(abs(begin.row - end.row) + 1);
+#if defined VCZH_GCC && defined VCZH_64
+#undef abs
+#endif
 				for (vint i = 0; i < alignments.Count(); i++)
 				{
 					alignments[i] = alignment;

@@ -161,6 +161,9 @@ GuiDocumentInstanceLoaderBase
 			template<typename TBaseType>
 			class GuiDocumentInstanceLoaderBase : public TBaseType
 			{
+			private:
+				using TypeInfo = typename TBaseType::TypeInfo;
+
 			public:
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;

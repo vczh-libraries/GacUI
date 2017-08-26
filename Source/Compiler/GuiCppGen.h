@@ -46,4 +46,4 @@ namespace vl
 	}
 }
 
-#endif#pragma once
+#endif

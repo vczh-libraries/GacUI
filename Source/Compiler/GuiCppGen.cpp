@@ -23,7 +23,7 @@ namespace vl
 				GuiResourceError::SortAndLog(errors, output);
 				if (!File(errorPath).WriteAllLines(output, true, BomEncoder::Utf8))
 				{
-					return false;
+					return nullptr;
 				}
 			}
 			return precompiledFolder;
