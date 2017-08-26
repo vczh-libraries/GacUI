@@ -14,12 +14,17 @@
       <except pattern="\WindowsGDI\" />
       <except pattern="\Reflection\" />
       <except pattern="\Compiler\" />
+      <except pattern="\Skins\" />
     </category>
     <category name="windows" pattern="\Source\GraphicsElement\WindowsDirect2D\" />
     <category name="windows" pattern="\Source\GraphicsElement\WindowsGDI\" />
     <category name="windows" pattern="\Source\NativeWindow\Windows\" />
     <category name="reflection" pattern="\Source\Reflection\" />
     <category name="compiler" pattern="\Source\Compiler\" />
+    <category name="darkskin" pattern="\Skins\DarkSkin\Source\">
+      <except pattern="Reflection"/>
+    </category>
+    <category name="darkskin_r" pattern="\Skins\DarkSkin\Source\DarkSkinReflection"/>
   </categories>
   <output path=".">
     <codepair category="vlpp" filename="Vlpp" generate="false"/>
@@ -29,5 +34,7 @@
     <codepair category="windows" filename="GacUIWindows" generate="true"/>
     <codepair category="reflection" filename="GacUIReflection" generate="true"/>
     <codepair category="compiler" filename="GacUICompiler" generate="true"/>
+    <codepair category="darkskin" filename="DarkSkin" generate="true"/>
+    <codepair category="darkskin_r" filename="DarkSkinReflection" generate="true"/>
   </output>
 </codegen>

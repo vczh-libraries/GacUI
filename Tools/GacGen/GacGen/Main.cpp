@@ -128,7 +128,7 @@ public:
 
 void GuiMain()
 {
-	Console::WriteLine(L"Vczh GacUI Resource Code Generator for C++");
+	Console::SetTitle(L"Vczh GacUI Resource Code Generator for C++");
 
 	bool partialMode = false;
 	FilePath inputPath;
