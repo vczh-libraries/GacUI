@@ -212,65 +212,102 @@ void GuiMain()
 	Callback callback;
 	if (auto precompiledFolder = PrecompileAndWriteErrors(resource, &callback, errors, errorFilePath))
 	{
-		if (auto compiled = WriteWorkflowScript(precompiledFolder, scriptFilePath))
+		if (errors.Count() == 0)
 		{
-			if (config->cppOutput)
+			if (auto compiled = WriteWorkflowScript(precompiledFolder, scriptFilePath))
 			{
-				PrintSuccessMessage(L"gacgen> Generating C++ source code ...");
-				auto input = MakePtr<WfCppInput>(config->cppOutput->name);
-				input->multiFile = WfCppFileSwitch::Enabled;
-				input->reflection = WfCppFileSwitch::Enabled;
-				input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
-				input->defaultFileName = config->cppOutput->name + L"PartialClasses";
-				input->includeFileName = config->cppOutput->name;
-				CopyFrom(input->normalIncludes, config->cppOutput->normalIncludes);
-				CopyFrom(input->reflectionIncludes, config->cppOutput->reflectionIncludes);
-
-				FilePath cppFolder = workingDir / config->cppOutput->sourceFolder;
-				if (partialMode)
+				if (config->cppOutput)
 				{
-					File(logFolderPath / L"CppOutput.txt").WriteAllText(cppFolder.GetFullPath(), false, BomEncoder::Mbcs);
+					PrintSuccessMessage(L"gacgen> Generating C++ source code ...");
+					auto input = MakePtr<WfCppInput>(config->cppOutput->name);
+					input->multiFile = WfCppFileSwitch::Enabled;
+					input->reflection = WfCppFileSwitch::Enabled;
+					input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
+					input->defaultFileName = config->cppOutput->name + L"PartialClasses";
+					input->includeFileName = config->cppOutput->name;
+					CopyFrom(input->normalIncludes, config->cppOutput->normalIncludes);
+					CopyFrom(input->reflectionIncludes, config->cppOutput->reflectionIncludes);
 
-					cppFolder = logFolderPath / L"Source";
-					if (!Folder(cppFolder).Create(true))
+					FilePath cppFolder = workingDir / config->cppOutput->sourceFolder;
+					if (partialMode)
 					{
-						PrintSuccessMessage(L"gacgen> Unable to create source folder : " + cppFolder.GetFullPath());
+						File(logFolderPath / L"CppOutput.txt").WriteAllText(cppFolder.GetFullPath(), false, BomEncoder::Mbcs);
+
+						cppFolder = logFolderPath / L"Source";
+						if (!Folder(cppFolder).Create(true))
+						{
+							PrintSuccessMessage(L"gacgen> Unable to create source folder : " + cppFolder.GetFullPath());
+						}
+					}
+
+					auto output = WriteCppCodesToFile(compiled, input, cppFolder);
+					if (config->cppOutput->cppResource != L"")
+					{
+						WriteEmbeddedResource(resource, input, output, false, cppFolder / config->cppOutput->cppResource);
+					}
+					if (config->cppOutput->cppCompressed != L"")
+					{
+						WriteEmbeddedResource(resource, input, output, true, cppFolder / config->cppOutput->cppCompressed);
+					}
+
+					if (config->cppOutput->resource != L"")
+					{
+						PrintSuccessMessage(L"Generating binary resource file (no script): " + config->cppOutput->resource);
+						WriteBinaryResource(resource, false, false, (partialMode ? logFolderPath / L"Resource.bin" : workingDir / config->cppOutput->resource));
+					}
+					if (config->cppOutput->compressed != L"")
+					{
+						PrintSuccessMessage(L"Generating compressed resource file (no script): " + config->cppOutput->compressed);
+						WriteBinaryResource(resource, true, false, (partialMode ? logFolderPath / L"Compressed.bin" : workingDir / config->cppOutput->compressed));
 					}
 				}
 
-				auto output = WriteCppCodesToFile(compiled, input, cppFolder);
-				if (config->cppOutput->cppResource != L"")
+				if (config->resOutput)
 				{
-					WriteEmbeddedResource(resource, input, output, false, cppFolder / config->cppOutput->cppResource);
-				}
-				if (config->cppOutput->cppCompressed != L"")
-				{
-					WriteEmbeddedResource(resource, input, output, false, cppFolder / config->cppOutput->cppCompressed);
+					if (config->resOutput->resource != L"")
+					{
+						PrintSuccessMessage(L"Generating binary resource files : " + config->resOutput->resource);
+						WriteBinaryResource(resource, false, true, (partialMode ? logFolderPath / L"ScriptedResource.bin" : workingDir / config->resOutput->resource));
+					}
+					if (config->resOutput->compressed != L"")
+					{
+						PrintSuccessMessage(L"Generating compressed resource files : " + config->resOutput->compressed);
+						WriteBinaryResource(resource, true, true, (partialMode ? logFolderPath / L"ScriptedCompressed.bin" : workingDir / config->resOutput->compressed));
+					}
 				}
 
-				if (config->cppOutput->resource != L"")
+				if (partialMode)
 				{
-					PrintSuccessMessage(L"Generating binary resource file (no script): " + config->cppOutput->resource);
-					WriteBinaryResource(resource, false, false, (partialMode ? logFolderPath / L"Resource.bin" : workingDir / config->cppOutput->resource));
-				}
-				if (config->cppOutput->compressed != L"")
-				{
-					PrintSuccessMessage(L"Generating compressed resource file (no script): " + config->cppOutput->compressed);
-					WriteBinaryResource(resource, true, false, (partialMode ? logFolderPath / L"Compressed.bin" : workingDir / config->cppOutput->compressed));
-				}
-			}
+					List<WString> lines;
 
-			if (config->resOutput)
-			{
-				if (config->resOutput->resource != L"")
-				{
-					PrintSuccessMessage(L"Generating binary resource files : " + config->resOutput->resource);
-					WriteBinaryResource(resource, false, true, (partialMode ? logFolderPath / L"ScriptedResource.bin" : workingDir / config->resOutput->resource));
-				}
-				if (config->resOutput->compressed != L"")
-				{
-					PrintSuccessMessage(L"Generating compressed resource files : " + config->resOutput->compressed);
-					WriteBinaryResource(resource, true, true, (partialMode ? logFolderPath / L"ScriptedCompressed.bin" : workingDir / config->resOutput->compressed));
+					if (config->cppOutput)
+					{
+						if (config->cppOutput->resource != L"")
+						{
+							lines.Add(L"copy " + (logFolderPath / L"Resource.bin").GetFullPath() + L" " + (workingDir / config->cppOutput->resource).GetFullPath());
+						}
+						if (config->cppOutput->compressed != L"")
+						{
+							lines.Add(L"copy " + (logFolderPath / L"Compressed.bin").GetFullPath() + L" " + (workingDir / config->cppOutput->compressed).GetFullPath());
+						}
+					}
+
+					if (config->resOutput)
+					{
+						if (config->resOutput->resource != L"")
+						{
+							lines.Add(L"copy " + (logFolderPath / L"ScriptedResource.bin").GetFullPath() + L" " + (workingDir / config->resOutput->resource).GetFullPath());
+						}
+						if (config->resOutput->compressed != L"")
+						{
+							lines.Add(L"copy " + (logFolderPath / L"ScriptedCompressed.bin").GetFullPath() + L" " + (workingDir / config->resOutput->compressed).GetFullPath());
+						}
+					}
+
+					if (lines.Count() > 0)
+					{
+						File(logFolderPath / L"Deploy.bat").WriteAllLines(lines, false, BomEncoder::Mbcs);
+					}
 				}
 			}
 		}
