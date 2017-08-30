@@ -20,6 +20,20 @@ namespace vl
 {
 	namespace presentation
 	{
+		template<typename T>
+		using ItemProperty = Func<T(const reflection::description::Value&)>;
+
+		template<typename T>
+		using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
+
+		template<typename T>
+		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
+
+		namespace templates
+		{
+			class GuiTemplate;
+		}
+
 		namespace compositions
 		{
 			class GuiSharedSizeItemComposition;
@@ -72,6 +86,67 @@ namespace vl
 				~GuiSharedSizeRootComposition();
 
 				void												ForceCalculateSizeImmediately()override;
+			};
+
+			/// <summary>A base class for all bindable repeat compositions.</summary>
+			class GuiRepeatCompositionBase : public Object, public Description<GuiRepeatCompositionBase>
+			{
+				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
+				using ItemSourceType = Ptr<reflection::description::IValueObservableList>;
+			protected:
+				ItemStyleProperty									itemTemplate;
+				ItemSourceType										itemSource;
+				Ptr<EventHandler>									itemChangedHandler;
+				
+				virtual vint										GetRepeatCompositionCount() = 0;
+				virtual GuiGraphicsComposition*						GetRepeatComposition(vint index) = 0;
+				virtual GuiGraphicsComposition*						InsertRepeatComposition(vint index) = 0;
+				virtual GuiGraphicsComposition*						RemoveRepeatComposition(vint index) = 0;
+
+				void												OnItemChanged(vint index, vint oldCount, vint newCount);
+				void												RemoveItem(vint index);
+				void												InstallItem(vint index);
+				void												ClearItems();
+				void												InstallItems();
+			public:
+				GuiRepeatCompositionBase();
+				~GuiRepeatCompositionBase();
+
+				/// <summary>Get the item style provider.</summary>
+				/// <returns>The item style provider.</returns>
+				ItemStyleProperty									GetItemTemplate();
+				/// <summary>Set the item style provider</summary>
+				/// <param name="value">The new item style provider</param>
+				void												SetItemTemplate(ItemStyleProperty value);
+
+				/// <summary>Get the item source.</summary>
+				/// <returns>The item source.</returns>
+				ItemSourceType										GetItemSource();
+				/// <summary>Set the item source.</summary>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				void												SetItemSource(ItemSourceType value);
+			};
+
+			/// <summary>Bindable stack composition.</summary>
+			class GuiRepeatStackComposition : public GuiStackComposition, public GuiRepeatCompositionBase, public Description<GuiRepeatStackComposition>
+			{
+			protected:
+				vint												GetRepeatCompositionCount()override;
+				GuiGraphicsComposition*								GetRepeatComposition(vint index)override;
+				GuiGraphicsComposition*								InsertRepeatComposition(vint index)override;
+				GuiGraphicsComposition*								RemoveRepeatComposition(vint index)override;
+			public:
+			};
+
+			/// <summary>Bindable flow composition.</summary>
+			class GuiRepeatFlowComposition : public GuiFlowComposition, public GuiRepeatCompositionBase, public Description<GuiRepeatFlowComposition>
+			{
+			protected:
+				vint												GetRepeatCompositionCount()override;
+				GuiGraphicsComposition*								GetRepeatComposition(vint index)override;
+				GuiGraphicsComposition*								InsertRepeatComposition(vint index)override;
+				GuiGraphicsComposition*								RemoveRepeatComposition(vint index)override;
+			public:
 			};
 		}
 	}

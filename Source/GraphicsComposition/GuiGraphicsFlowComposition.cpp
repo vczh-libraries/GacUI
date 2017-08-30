@@ -183,6 +183,21 @@ GuiFlowComposition
 				return flowItems;
 			}
 
+			bool GuiFlowComposition::InsertFlowItem(vint index, GuiFlowItemComposition* item)
+			{
+				index = flowItems.Insert(index, item);
+				if (!AddChild(item))
+				{
+					flowItems.RemoveAt(index);
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+
+
 			Margin GuiFlowComposition::GetExtraMargin()
 			{
 				return extraMargin;

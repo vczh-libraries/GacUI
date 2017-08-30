@@ -155,6 +155,9 @@ Type List (Compositions)
 			F(presentation::compositions::GuiPartialViewComposition)\
 			F(presentation::compositions::GuiSharedSizeItemComposition)\
 			F(presentation::compositions::GuiSharedSizeRootComposition)\
+			F(presentation::compositions::GuiRepeatCompositionBase)\
+			F(presentation::compositions::GuiRepeatStackComposition)\
+			F(presentation::compositions::GuiRepeatFlowComposition)\
 			F(presentation::compositions::IGuiGraphicsAnimation)\
 			F(presentation::compositions::GuiGraphicsAnimationManager)\
 			F(presentation::compositions::IGuiShortcutKeyItem)\
