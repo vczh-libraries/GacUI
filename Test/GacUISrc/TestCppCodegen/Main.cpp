@@ -29,8 +29,8 @@ void GuiMain()
 	}
 }
 
-#define GUI_GRAPHICS_RENDERER_GDI
-//#define GUI_GRAPHICS_RENDERER_DIRECT2D
+//#define GUI_GRAPHICS_RENDERER_GDI
+#define GUI_GRAPHICS_RENDERER_DIRECT2D
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
