@@ -71,6 +71,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::MyDataItem)
 			DECL_TYPE_INFO(::demo::MyGender)
 			DECL_TYPE_INFO(::demo::MyTextItem)
+			DECL_TYPE_INFO(::demo::RepeatItemTemplate)
+			DECL_TYPE_INFO(::demo::RepeatItemTemplateConstructor)
 			DECL_TYPE_INFO(::demo::RepeatTabPage)
 			DECL_TYPE_INFO(::demo::RepeatTabPageConstructor)
 			DECL_TYPE_INFO(::demo::TextBoxTabPage)

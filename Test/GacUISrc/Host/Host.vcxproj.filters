@@ -81,6 +81,9 @@
     <Xml Include="Resources\FullControlTest\RepeatTabPage.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
+    <Xml Include="Resources\FullControlTest\RepeatComponents.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">

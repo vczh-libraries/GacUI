@@ -42,6 +42,7 @@
   <Instance name="DocumentTabPageResource" content="File">DocumentTabPage.xml</Instance>
   <Folder name="TextBoxComponents" content="Link">TextBoxTabPage.xml</Folder>
   <Folder name="DataGridComponents" content="Link">DataGridComponents.xml</Folder>
+  <Folder name="RepeatComponents" content="Link">RepeatComponents.xml</Folder>
   <Folder name="DocumentComponents" content="Link">DocumentComponents.xml</Folder>
   <Folder name="LargeImages" content="Link">Images/LargeImages.xml</Folder>
   <Folder name="SmallImages" content="Link">Images/SmallImages.xml</Folder>
