@@ -337,11 +337,13 @@ Type Declaration
 			END_CLASS_MEMBER(GuiRepeatCompositionBase)
 
 			BEGIN_CLASS_MEMBER(GuiRepeatStackComposition)
+				CLASS_MEMBER_BASE(GuiStackComposition)
 				CLASS_MEMBER_BASE(GuiRepeatCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatStackComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiRepeatStackComposition)
 
 			BEGIN_CLASS_MEMBER(GuiRepeatFlowComposition)
+				CLASS_MEMBER_BASE(GuiFlowComposition)
 				CLASS_MEMBER_BASE(GuiRepeatCompositionBase)
 				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFlowComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiRepeatFlowComposition)

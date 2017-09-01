@@ -182,14 +182,17 @@ GuiRepeatCompositionBase
 
 			void GuiRepeatCompositionBase::OnItemChanged(vint index, vint oldCount, vint newCount)
 			{
-				for (vint i = oldCount - 1; i >= 0; i--)
+				if (itemTemplate && itemSource)
 				{
-					RemoveItem(index + i);
-				}
+					for (vint i = oldCount - 1; i >= 0; i--)
+					{
+						RemoveItem(index + i);
+					}
 
-				for (vint i = 0; i < newCount; i++)
-				{
-					InstallItem(index + i);
+					for (vint i = 0; i < newCount; i++)
+					{
+						InstallItem(index + i);
+					}
 				}
 			}
 
@@ -247,7 +250,10 @@ GuiRepeatCompositionBase
 			{
 				ClearItems();
 				itemTemplate = value;
-				InstallItems();
+				if (itemTemplate && itemSource)
+				{
+					InstallItems();
+				}
 			}
 
 			GuiRepeatCompositionBase::ItemSourceType GuiRepeatCompositionBase::GetItemSource()
@@ -265,7 +271,10 @@ GuiRepeatCompositionBase
 					}
 					ClearItems();
 					itemSource = value;
-					InstallItems();
+					if (itemTemplate && itemSource)
+					{
+						InstallItems();
+					}
 					if (itemSource)
 					{
 						itemChangedHandler = itemSource->ItemChanged.Add(this, &GuiRepeatCompositionBase::OnItemChanged);

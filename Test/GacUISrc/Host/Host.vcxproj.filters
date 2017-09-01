@@ -78,6 +78,9 @@
     <Xml Include="Resources\DarkSkin\DarkSkin.xml">
       <Filter>Resource Files\DarkSkin</Filter>
     </Xml>
+    <Xml Include="Resources\FullControlTest\RepeatTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png">

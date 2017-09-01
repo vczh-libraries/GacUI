@@ -1,0 +1,114 @@
+<Instance ref.CodeBehind="false" ref.Class="demo::RepeatTabPage">
+  <ref.Members>
+    <![CDATA[
+      var counter : int = 0;
+      var itemsToBind : observe MyTextItem^[] = {};
+    ]]>
+  </ref.Members>
+  <TabPage ref.Name="self" Text="TextList">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+      <att.Rows>
+        <_>composeType:Percentage percentage:1.0</_>
+      </att.Rows>
+      <att.Columns>
+        <_>composeType:Percentage percentage:0.5</_>
+        <_>composeType:MinSize</_>
+      </att.Columns>
+
+      <Cell Site="row:0 column:0">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
+          <att.Pages>
+            <TabPage Text="RepeatStack">
+              <ScrollContainer VerticalAlwaysVisible="false">
+                <RepeatStack ref.Name="repeatStack" AlignmentToParent="left:0 top:-1 right:0 bottom:-1">
+                  <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
+                </RepeatStack>
+              </ScrollContainer>
+            </TabPage>
+            <TabPage Text="RepeatFlow">
+              <ScrollContainer VerticalAlwaysVisible="false">
+                <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:-1 right:0 bottom:-1">
+                  <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
+                </RepeatFlow>
+              </ScrollContainer>
+            </TabPage>
+          </att.Pages>
+        </Tab>
+        <TextList ref.Name="textList" Alt="L" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </TextList>
+      </Cell>
+
+      <Cell Site="row:0 column:1">
+        <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <StackItem>
+            <Button Alt="A" Text="Add 10 items">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    for (i in range [0, 9])
+                    {
+                      var textItem = new demo::MyTextItem^();
+                      textItem.Name = cast string (self.counter + i);
+                      self.itemsToBind.Add(textItem);
+                    }
+                    
+                    self.counter = self.counter + 10;
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Alt="O" Text="Remove odd items">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    var i = 0;
+                    while (i < self.itemsToBind.Count)
+                    {
+                      self.itemsToBind.RemoveAt(i);
+                      i = i + 1;
+                    }
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Alt="E" Text="Remove even items">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    var i = 1;
+                    while (i < self.itemsToBind.Count)
+                    {
+                      self.itemsToBind.RemoveAt(i);
+                      i = i + 1;
+                    }
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+          <StackItem>
+            <Button Alt="C" Text="Clear">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                  {
+                    self.itemsToBind.Clear();
+                  }
+                ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </StackItem>
+        </Stack>
+      </Cell>
+    </Table>
+  </TabPage>
+</Instance>
