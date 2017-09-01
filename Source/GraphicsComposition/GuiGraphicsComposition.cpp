@@ -208,7 +208,7 @@ GuiRepeatCompositionBase
 				auto templateItem = itemTemplate(source);
 				auto item = InsertRepeatComposition(index);
 
-				templateItem->SetMargin(Margin(0, 0, 0, 0));
+				templateItem->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				item->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				item->AddChild(templateItem);
 			}

@@ -193,6 +193,7 @@ GuiFlowComposition
 				}
 				else
 				{
+					needUpdate = true;
 					return true;
 				}
 			}
