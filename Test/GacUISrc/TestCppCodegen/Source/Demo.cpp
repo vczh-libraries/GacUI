@@ -472,18 +472,18 @@ Closures
 	void __vwsnf102_Demo_demo_TextListTabPageConstructor___vwsn_initialize_instance__::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		{
-			auto __vwsn_switch_2 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
-			if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(0)))
+			auto __vwsn_switch_5 = ::vl::__vwsn::This(__vwsnthis_0->comboView)->GetSelectedIndex();
+			if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(0)))
 			{
 				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Text);
 				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Text);
 			}
-			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(1)))
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(1)))
 			{
 				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Check);
 				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Check);
 			}
-			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(2)))
+			else if ((__vwsn_switch_5 == static_cast<::vl::vint32_t>(2)))
 			{
 				::vl::__vwsn::This(__vwsnthis_0->textList)->SetView(::vl::presentation::controls::TextListView::Radio);
 				::vl::__vwsn::This(__vwsnthis_0->bindableTextList)->SetView(::vl::presentation::controls::TextListView::Radio);
@@ -2678,7 +2678,7 @@ Closures
 			{
 				{
 					auto textItem = ::vl::Ptr<::demo::MyTextItem>(new ::demo::MyTextItem());
-					::vl::__vwsn::This(textItem.Obj())->SetName(::vl::__vwsn::ToString((::vl::__vwsn::This(__vwsnthis_0->self)->counter + i)));
+					::vl::__vwsn::This(textItem.Obj())->SetName(::vl::__vwsn::This(__vwsnthis_0->self)->NumberToText((::vl::__vwsn::This(__vwsnthis_0->self)->counter + i)));
 					::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->itemsToBind.Obj())->Add(::vl::__vwsn::Box(textItem));
 				}
 				(i = (i + static_cast<::vl::vint32_t>(1)));
@@ -7947,17 +7947,6 @@ Class (::demo::RepeatTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetText(::vl::WString(L"RepeatStack", false));
 		}
-		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateScrollContainerStyle();
-			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiScrollContainer(__vwsn_controlStyle_));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetHorizontalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
-		}
-		(this->__vwsn_precompile_6 = ::vl::__vwsn::This(this->__vwsn_precompile_5)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
 		(this->repeatStack = new ::vl::presentation::compositions::GuiRepeatStackComposition());
 		{
 			::vl::__vwsn::This(this->repeatStack)->SetItemTemplate(LAMBDA(::vl_workflow_global::__vwsnf94_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__(this)));
@@ -7972,16 +7961,10 @@ Class (::demo::RepeatTabPageConstructor)
 			::vl::__vwsn::This(this->repeatStack)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
 		}
 		{
-			::vl::__vwsn::This(this->repeatStack)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->repeatStack)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->repeatStack)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_5)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->repeatStack));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_5));
+			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->repeatStack));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetPages());
@@ -7989,21 +7972,10 @@ Class (::demo::RepeatTabPageConstructor)
 		}
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle();
-			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetText(::vl::WString(L"RepeatFlow", false));
-		}
-		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateScrollContainerStyle();
-			(this->__vwsn_precompile_8 = new ::vl::presentation::controls::GuiScrollContainer(__vwsn_controlStyle_));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetHorizontalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
-		}
-		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->__vwsn_precompile_8)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetText(::vl::WString(L"RepeatFlow", false));
 		}
 		(this->repeatFlow = new ::vl::presentation::compositions::GuiRepeatFlowComposition());
 		{
@@ -8019,20 +7991,14 @@ Class (::demo::RepeatTabPageConstructor)
 			::vl::__vwsn::This(this->repeatFlow)->SetExtraMargin([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(5); __vwsn_temp__.top = static_cast<::vl::vint32_t>(5); __vwsn_temp__.right = static_cast<::vl::vint32_t>(5); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(5); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->repeatFlow)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = (- static_cast<::vl::vint32_t>(1)); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = (- static_cast<::vl::vint32_t>(1)); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->repeatFlow)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->repeatFlow)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_8)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->repeatFlow));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->__vwsn_precompile_8));
+			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_5)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->repeatFlow));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetPages());
-			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_7));
+			::vl::__vwsn::This(__vwsn_collection_.Obj())->Add(::vl::__vwsn::Box(this->__vwsn_precompile_5));
 		}
 		(this->__vwsn_precompile_3 = ::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition());
 		{
@@ -8044,112 +8010,112 @@ Class (::demo::RepeatTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
 		}
-		(this->__vwsn_precompile_10 = new ::vl::presentation::compositions::GuiCellComposition());
+		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiCellComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
 		}
-		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiStackComposition());
+		(this->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiStackComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetPadding(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::WString(L"5", false)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Vertical);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
-		(this->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_8 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
-			(this->__vwsn_precompile_13 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_9 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetAlt(::vl::WString(L"A", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlt(::vl::WString(L"A", false));
 		}
-		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->__vwsn_precompile_13)->GetBoundsComposition());
+		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->__vwsn_precompile_9)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetText(::vl::WString(L"Add 10 items", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_13)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetText(::vl::WString(L"Add 10 items", false));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_12));
-		}
-		(this->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiStackItemComposition());
-		{
-			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
-			(this->__vwsn_precompile_16 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_9)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetAlt(::vl::WString(L"O", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_8));
 		}
-		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetText(::vl::WString(L"Remove odd items", false));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_16)->GetBoundsComposition()));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_15));
-		}
-		(this->__vwsn_precompile_18 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
-			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_12 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetAlt(::vl::WString(L"E", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAlt(::vl::WString(L"O", false));
 		}
-		(this->__vwsn_precompile_20 = ::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition());
+		(this->__vwsn_precompile_13 = ::vl::__vwsn::This(this->__vwsn_precompile_12)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString(L"Remove even items", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_18)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_19)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetText(::vl::WString(L"Remove odd items", false));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_18));
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_12)->GetBoundsComposition()));
 		}
-		(this->__vwsn_precompile_21 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
+		}
+		(this->__vwsn_precompile_14 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
-			(this->__vwsn_precompile_22 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+			(this->__vwsn_precompile_15 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_22)->SetAlt(::vl::WString(L"C", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlt(::vl::WString(L"E", false));
 		}
-		(this->__vwsn_precompile_23 = ::vl::__vwsn::This(this->__vwsn_precompile_22)->GetBoundsComposition());
+		(this->__vwsn_precompile_16 = ::vl::__vwsn::This(this->__vwsn_precompile_15)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_23)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_22)->SetText(::vl::WString(L"Clear", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_21)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_22)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetText(::vl::WString(L"Remove even items", false));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_21));
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_15)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_14));
+		}
+		(this->__vwsn_precompile_17 = new ::vl::presentation::compositions::GuiStackItemComposition());
+		{
+			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
+			(this->__vwsn_precompile_18 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_10));
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlt(::vl::WString(L"C", false));
+		}
+		(this->__vwsn_precompile_19 = ::vl::__vwsn::This(this->__vwsn_precompile_18)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetText(::vl::WString(L"Clear", false));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_18)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_17));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_7));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
@@ -8162,19 +8128,19 @@ Class (::demo::RepeatTabPageConstructor)
 		}
 		{
 			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf96_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_13)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_9)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf97_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_16)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_12)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf98_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_19)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_event_handler_ = LAMBDA(::vl_workflow_global::__vwsnf99_Demo_demo_RepeatTabPageConstructor___vwsn_initialize_instance__(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_22)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_18)->Clicked, __vwsn_event_handler_);
 		}
 	}
 
@@ -8185,6 +8151,164 @@ Class (::demo::RepeatTabPageConstructor)
 /***********************************************************************
 Class (::demo::RepeatTabPage)
 ***********************************************************************/
+
+	::vl::WString RepeatTabPage::ToText_1to9(::vl::vint32_t i)
+	{
+		{
+			auto __vwsn_switch_2 = i;
+			if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(1)))
+			{
+				return ::vl::WString(L"one", false);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(2)))
+			{
+				return ::vl::WString(L"two", false);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(3)))
+			{
+				return ::vl::WString(L"three", false);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(4)))
+			{
+				return ::vl::WString(L"four", false);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(5)))
+			{
+				return ::vl::WString(L"five", false);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(6)))
+			{
+				return ::vl::WString(L"six", false);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(7)))
+			{
+				return ::vl::WString(L"seven", false);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(8)))
+			{
+				return ::vl::WString(L"eight", false);
+			}
+			else if ((__vwsn_switch_2 == static_cast<::vl::vint32_t>(9)))
+			{
+				return ::vl::WString(L"nine", false);
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"ToText_1to9: Number out of range.", false));
+	}
+
+	::vl::WString RepeatTabPage::ToText_11to19(::vl::vint32_t i)
+	{
+		{
+			auto __vwsn_switch_3 = i;
+			if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(1)))
+			{
+				return ::vl::WString(L"eleven", false);
+			}
+			else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(2)))
+			{
+				return ::vl::WString(L"twelve", false);
+			}
+			else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(3)))
+			{
+				return ::vl::WString(L"thirteen", false);
+			}
+			else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(4)))
+			{
+				return ::vl::WString(L"fourteen", false);
+			}
+			else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(5)))
+			{
+				return ::vl::WString(L"fifteen", false);
+			}
+			else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(6)))
+			{
+				return ::vl::WString(L"sixteen", false);
+			}
+			else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(7)))
+			{
+				return ::vl::WString(L"seventeen", false);
+			}
+			else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(8)))
+			{
+				return ::vl::WString(L"eightteen", false);
+			}
+			else if ((__vwsn_switch_3 == static_cast<::vl::vint32_t>(9)))
+			{
+				return ::vl::WString(L"nineteen", false);
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"ToText_11to19: Number out of range.", false));
+	}
+
+	::vl::WString RepeatTabPage::NumberToText_1To99(::vl::vint32_t i)
+	{
+		{
+			auto __vwsn_switch_4 = (i / static_cast<::vl::vint32_t>(10));
+			if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(0)))
+			{
+				return this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(1)))
+			{
+				return ((i == static_cast<::vl::vint32_t>(10)) ? ::vl::WString(L"ten", false) : this->ToText_11to19((i % static_cast<::vl::vint32_t>(10))));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(2)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"twenty", false) : (::vl::WString(L"twenty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(3)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"thirty", false) : (::vl::WString(L"thirty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(4)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"fourty", false) : (::vl::WString(L"fourty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(5)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"fifty", false) : (::vl::WString(L"fifty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(6)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"sixty", false) : (::vl::WString(L"sixty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(7)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"seventy", false) : (::vl::WString(L"seventy-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(8)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"eighty", false) : (::vl::WString(L"eighty-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+			else if ((__vwsn_switch_4 == static_cast<::vl::vint32_t>(9)))
+			{
+				return (((i % static_cast<::vl::vint32_t>(10)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"ninety", false) : (::vl::WString(L"ninety-", false) + this->ToText_1to9((i % static_cast<::vl::vint32_t>(10)))));
+			}
+		}
+		throw ::vl::Exception(::vl::WString(L"NumberToText_1To99: Number out of range.", false));
+	}
+
+	::vl::WString RepeatTabPage::NumberToText_0to999(::vl::vint32_t i)
+	{
+		if ((i < static_cast<::vl::vint32_t>(100)))
+		{
+			return this->NumberToText_1To99(i);
+		}
+		return ((this->ToText_1to9((i / static_cast<::vl::vint32_t>(100))) + ::vl::WString(L" hundred", false)) + (((i % static_cast<::vl::vint32_t>(100)) == static_cast<::vl::vint32_t>(0)) ? ::vl::WString(L"", false) : (::vl::WString(L" and ", false) + this->NumberToText_1To99((i % static_cast<::vl::vint32_t>(100))))));
+	}
+
+	::vl::WString RepeatTabPage::NumberToText(::vl::vint32_t i)
+	{
+		if ((i == static_cast<::vl::vint32_t>(0)))
+		{
+			return ::vl::WString(L"zero", false);
+		}
+		if ((i < static_cast<::vl::vint32_t>(1000)))
+		{
+			return this->NumberToText_0to999(i);
+		}
+		return (::vl::WString(L"Number too large: ", false) + ::vl::__vwsn::ToString(i));
+	}
 
 	RepeatTabPage::RepeatTabPage()
 		: ::vl::presentation::controls::GuiTabPage(::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle())
