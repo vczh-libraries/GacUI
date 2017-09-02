@@ -356,7 +356,6 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.cpp" />
-    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiCommonStyles.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp" />
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplateStyles.cpp" />
@@ -548,7 +547,6 @@
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiListViewItemTemplates.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTextListControls.h" />
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.h" />
-    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiCommonStyles.h" />
     <ClInclude Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.h" />
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.h" />
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplateStyles.h" />
