@@ -689,6 +689,11 @@ Win7DocumentlabelStyle
 				return nullptr;
 			}
 
+			Color Win7DocumentLabelStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
+			}
+
 /***********************************************************************
 Win7DocumentTextBoxStyle
 ***********************************************************************/
@@ -736,6 +741,11 @@ Win7DocumentTextBoxStyle
 			Ptr<DocumentModel> Win7DocumentTextBoxStyle::GetBaselineDocument()
 			{
 				return nullptr;
+			}
+
+			Color Win7DocumentTextBoxStyle::GetCaretColor()
+			{
+				return Color(0, 0, 0);
 			}
 		}
 	}

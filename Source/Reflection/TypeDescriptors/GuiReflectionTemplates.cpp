@@ -65,8 +65,10 @@ Type Declaration
 			END_CLASS_MEMBER(GuiComponent)
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
-				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiGraphicsComposition*))
-				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiControl*))
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiTemplate*))
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiCustomControl*))
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiControlHost*))
+				CLASS_MEMBER_METHOD(FinalizeGeneralInstance, {L"thisObject"})
 				CLASS_MEMBER_METHOD(SetResourceResolver, {L"resolver"})
 				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path" _ L"ensureExist"})
 

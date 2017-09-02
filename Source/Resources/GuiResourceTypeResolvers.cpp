@@ -363,14 +363,16 @@ Doc Type Resolver (Doc)
 Type Resolver Plugin
 ***********************************************************************/
 
-		class GuiResourceTypeResolverPlugin : public Object, public IGuiPlugin
+		class GuiResourceTypeResolversPlugin : public Object, public IGuiPlugin
 		{
 		public:
-			void Load()override
+
+			GUI_PLUGIN_NAME(GacUI_Res_TypeResolvers)
 			{
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
-			void AfterLoad()override
+			void Load()override
 			{
 				IGuiResourceResolverManager* manager=GetResourceResolverManager();
 				manager->SetTypeResolver(new GuiResourceImageTypeResolver);
@@ -383,6 +385,6 @@ Type Resolver Plugin
 			{
 			}
 		};
-		GUI_REGISTER_PLUGIN(GuiResourceTypeResolverPlugin)
+		GUI_REGISTER_PLUGIN(GuiResourceTypeResolversPlugin)
 	}
 }

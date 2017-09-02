@@ -59,9 +59,6 @@ namespace vl
 				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
 				{
 				public:
-					/// <summary>Create a style controller for an item background.</summary>
-					/// <returns>The created style controller for an item background.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemBackground()=0;
 					/// <summary>Create a style controller for a column header.</summary>
 					/// <returns>The created style controller for a column header.</returns>
 					virtual GuiListViewColumnHeader::IStyleController*	CreateColumnStyle()=0;
@@ -248,7 +245,7 @@ ListViewItemProvider
 			{
 				class ListViewItem;
 
-				class ListViewSubItems : public ItemsBase<WString>
+				class ListViewSubItems : public collections::ObservableListBase<WString>
 				{
 					friend class ListViewItem;
 				protected:
@@ -376,7 +373,7 @@ ListViewItemProvider
 				};
 
 				/// <summary>List view data column container.</summary>
-				class ListViewDataColumns : public ItemsBase<vint>
+				class ListViewDataColumns : public collections::ObservableListBase<vint>
 				{
 				protected:
 					IListViewItemProvider*							itemProvider;
@@ -390,7 +387,7 @@ ListViewItemProvider
 				};
 				
 				/// <summary>List view column container.</summary>
-				class ListViewColumns : public ItemsBase<Ptr<ListViewColumn>>
+				class ListViewColumns : public collections::ObservableListBase<Ptr<ListViewColumn>>
 				{
 					friend class ListViewColumn;
 				protected:

@@ -488,6 +488,7 @@ GuiTableComposition
 			void GuiTableComposition::SetRowOption(vint _row, GuiCellOption option)
 			{
 				rowOptions[_row] = option;
+				UpdateCellBounds();
 				InvokeOnCompositionStateChanged();
 				ConfigChanged.Execute(GuiEventArgs(this));
 			}
@@ -500,6 +501,7 @@ GuiTableComposition
 			void GuiTableComposition::SetColumnOption(vint _column, GuiCellOption option)
 			{
 				columnOptions[_column] = option;
+				UpdateCellBounds();
 				InvokeOnCompositionStateChanged();
 				ConfigChanged.Execute(GuiEventArgs(this));
 			}
@@ -513,6 +515,7 @@ GuiTableComposition
 			{
 				if (value < 0) value = 0;
 				cellPadding = value;
+				UpdateCellBounds();
 				InvokeOnCompositionStateChanged();
 			}
 

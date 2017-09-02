@@ -15,18 +15,11 @@ namespace vl
 {
 	namespace presentation
 	{
-		template<typename T>
-		using ItemProperty = Func<T(const reflection::description::Value&)>;
-
-		template<typename T>
-		using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
-
-		template<typename T>
-		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
-
 		namespace controls
 		{
 			class GuiListControl;
+			class GuiControlHost;
+			class GuiCustomControl;
 
 			/// <summary>The visual state for button.</summary>
 			enum class ButtonState
@@ -127,8 +120,10 @@ namespace vl
 				/// <returns>Returns true if this object has been finalized.</returns>
 				bool											IsFinalized();
 
-				void											FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject);
-				void											FinalizeInstanceRecursively(GuiControl* thisObject);
+				void											FinalizeInstanceRecursively(templates::GuiTemplate* thisObject);
+				void											FinalizeInstanceRecursively(GuiCustomControl* thisObject);
+				void											FinalizeInstanceRecursively(GuiControlHost* thisObject);
+				void											FinalizeGeneralInstance(GuiInstanceRootObject* thisObject);
 
 				/// <summary>Set the resource resolver to connect the current root object to the resource creating it.</summary>
 				/// <param name="resolver">The resource resolver</param>
@@ -256,6 +251,7 @@ Control Template
 
 #define GuiDocumentLabelTemplate_PROPERTIES(F)\
 				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument)\
+				F(GuiDocumentLabelTemplate, Color, CaretColor)\
 
 				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -430,6 +426,9 @@ Control Template
 
 #define GuiTextListTemplate_PROPERTIES(F)\
 				F(GuiTextListTemplate, Color, TextColor)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, CheckBulletTemplate)\
+				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, RadioBulletTemplate)\
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};

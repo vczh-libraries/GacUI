@@ -133,15 +133,13 @@ Plugin
 		class GuiRuntimeTypeResolversPlugin : public Object, public IGuiPlugin
 		{
 		public:
-			GuiRuntimeTypeResolversPlugin()
+
+			GUI_PLUGIN_NAME(GacUI_Compiler_WorkflowTypeResolvers)
 			{
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
 			void Load()override
-			{
-			}
-
-			void AfterLoad()override
 			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
 				manager->SetTypeResolver(new GuiResourceCompiledWorkflowTypeResolver);

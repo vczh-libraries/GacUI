@@ -62,7 +62,7 @@ Class Name Record (ClassNameRecord)
 IGuiInstanceResourceManager
 ***********************************************************************/
 
-		IGuiResourceManager* resourceManager = 0;
+		IGuiResourceManager* resourceManager = nullptr;
 
 		IGuiResourceManager* GetResourceManager()
 		{
@@ -78,17 +78,15 @@ IGuiInstanceResourceManager
 			ResourceMap								instanceResources;
 
 		public:
-			GuiResourceManager()
+
+			GUI_PLUGIN_NAME(GacUI_Res_Resource)
 			{
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
 			void Load()override
 			{
 				resourceManager = this;
-			}
-
-			void AfterLoad()override
-			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
 				manager->SetTypeResolver(new GuiResourceClassNameRecordTypeResolver);
 			}

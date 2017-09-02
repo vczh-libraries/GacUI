@@ -70,6 +70,11 @@ Flow Compositions
 				/// <summary>Get all flow items inside the flow composition.</summary>
 				/// <returns>All flow items inside the flow composition.</returns>
 				const ItemCompositionList&			GetFlowItems();
+				/// <summary>Insert a flow item at a specified position.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="index">The position.</param>
+				/// <param name="item">The flow item to insert.</param>
+				bool								InsertFlowItem(vint index, GuiFlowItemComposition* item);
 				
 				/// <summary>Get the extra margin inside the flow composition.</summary>
 				/// <returns>The extra margin inside the flow composition.</returns>

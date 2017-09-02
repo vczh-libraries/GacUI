@@ -29,7 +29,7 @@ Toolstrip Item Collection
 ***********************************************************************/
 
 			/// <summary>Toolstrip item collection.</summary>
-			class GuiToolstripCollection : public list::ItemsBase<GuiControl*>
+			class GuiToolstripCollection : public collections::ObservableListBase<GuiControl*>
 			{
 			public:
 				class IContentCallback : public Interface

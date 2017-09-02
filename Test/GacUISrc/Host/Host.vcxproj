@@ -224,6 +224,8 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Xml Include="Resources\DarkSkin\DarkSkin.xml" />
+    <Xml Include="Resources\DarkSkin\Resource.xml" />
     <Xml Include="Resources\FullControlTest\DataGridComponents.xml" />
     <Xml Include="Resources\FullControlTest\DataGridTabPage.xml" />
     <Xml Include="Resources\FullControlTest\DocumentComponents.xml" />
@@ -233,20 +235,14 @@
     <Xml Include="Resources\FullControlTest\Images\MiscImages.xml" />
     <Xml Include="Resources\FullControlTest\Images\SmallImages.xml" />
     <Xml Include="Resources\FullControlTest\ListViewTabPage.xml" />
+    <Xml Include="Resources\FullControlTest\RepeatComponents.xml" />
+    <Xml Include="Resources\FullControlTest\RepeatTabPage.xml" />
     <Xml Include="Resources\FullControlTest\Resource.xml" />
+    <Xml Include="Resources\FullControlTest\TextBoxTabPage.xml" />
     <Xml Include="Resources\FullControlTest\TextListTabPage.xml" />
     <Xml Include="Resources\FullControlTest\ToolbarImages\Images.xml" />
     <Xml Include="Resources\FullControlTest\TreeViewTabPage.xml" />
-    <Xml Include="Resources\UI10_MultipleWindows.xml" />
     <Xml Include="Resources\UI1_StyleTemplate.xml" />
-    <Xml Include="Resources\UI2_Properties.xml" />
-    <Xml Include="Resources\UI3_DataGrid.xml" />
-    <Xml Include="Resources\UI4_UserControl.xml" />
-    <Xml Include="Resources\UI5_DocumentTextBox.xml" />
-    <Xml Include="Resources\UI6_FontList.xml" />
-    <Xml Include="Resources\UI7_ColorComboBox.xml" />
-    <Xml Include="Resources\UI8_TableSplitter.xml" />
-    <Xml Include="Resources\UI9_ListView.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Gaclib.png" />

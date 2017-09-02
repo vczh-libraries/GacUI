@@ -753,15 +753,13 @@ GuiPredefinedInstanceDeserializersPlugin
 		class GuiPredefinedInstanceDeserializersPlugin : public Object, public IGuiPlugin
 		{
 		public:
-			GuiPredefinedInstanceDeserializersPlugin()
+
+			GUI_PLUGIN_NAME(GacUI_Instance_Deserializers)
 			{
+				GUI_PLUGIN_DEPEND(GacUI_Instance);
 			}
 
 			void Load()override
-			{
-			}
-
-			void AfterLoad()override
 			{
 				IGuiInstanceLoaderManager* manager = GetInstanceLoaderManager();
 				manager->AddInstanceDeserializer(new GuiTemplatePropertyDeserializer);

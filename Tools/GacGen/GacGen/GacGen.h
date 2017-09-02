@@ -17,6 +17,7 @@ using namespace vl::workflow::analyzer;
 using namespace vl::workflow::runtime;
 using namespace vl::workflow::cppcodegen;
 using namespace vl::presentation;
+using namespace vl::presentation::templates;
 
 /***********************************************************************
 Console
@@ -44,9 +45,11 @@ public:
 	{
 	public:
 		WString									sourceFolder;
-		WString									normalInclude;
-		WString									reflectionInclude;
+		List<WString>							normalIncludes;
+		List<WString>							reflectionIncludes;
 		WString									name;
+		WString									cppResource;
+		WString									cppCompressed;
 	};
 
 	Ptr<GuiResource>							resource;
@@ -58,6 +61,7 @@ public:
 
 	static WString								NormalizeFolder(const WString& folder);
 	static bool									LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, WString& value, bool optional = true);
+	static bool									LoadConfigString(Ptr<GuiResourceFolder> folder, const WString& path, List<WString>& value, bool optional = true);
 	static Ptr<CodegenConfig>					LoadConfig(Ptr<GuiResource> resource);
 };
 

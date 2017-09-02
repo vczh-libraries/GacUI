@@ -229,14 +229,30 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Main.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='DebugNoReflection|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="Source\DarkSkin.cpp" />
+    <ClCompile Include="Source\DarkSkinReflection.cpp" />
+    <ClCompile Include="Source\DarkSkinResource.cpp" />
     <ClCompile Include="Source\Demo.cpp" />
+    <ClCompile Include="Source\DemoReflection.cpp" />
+    <ClCompile Include="Source\DemoResource.cpp" />
     <ClCompile Include="Source\MainWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="Source\DarkSkin.h" />
+    <ClInclude Include="Source\DarkSkinIncludes.h" />
+    <ClInclude Include="Source\DarkSkinReflection.h" />
     <ClInclude Include="Source\Demo.h" />
     <ClInclude Include="Source\DemoIncludes.h" />
+    <ClInclude Include="Source\DemoReflection.h" />
     <ClInclude Include="Source\MainWindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

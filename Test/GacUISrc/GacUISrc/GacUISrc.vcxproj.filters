@@ -28,12 +28,6 @@
     <Filter Include="GacUI\Controls\Styles">
       <UniqueIdentifier>{219d871a-eea3-4532-83e3-7f8202920db0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GacUI\Controls\Styles\Win7Styles">
-      <UniqueIdentifier>{fa2b83de-9366-4559-8d3e-32b2f7976647}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GacUI\Controls\Styles\Win8Styles">
-      <UniqueIdentifier>{31bb5265-d3df-4c11-a7d0-eeabf9ed44fe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GacUI\Controls\Templates">
       <UniqueIdentifier>{eb48375e-e953-4bc4-87b7-7f47c70becd7}</UniqueIdentifier>
     </Filter>
@@ -149,60 +143,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.cpp">
       <Filter>GacUI\Controls\Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiWin7Styles.cpp">
-      <Filter>GacUI\Controls\Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiWin8Styles.cpp">
-      <Filter>GacUI\Controls\Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ButtonStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ControlStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ListStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7MenuStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ScrollableStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7StylesCommon.cpp">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7TabStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ToolstripStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ButtonStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ControlStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ListStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8MenuStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ScrollableStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8StylesCommon.cpp">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8TabStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ToolstripStyles.cpp">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp">
       <Filter>GacUI\Controls\Templates</Filter>
@@ -537,6 +477,9 @@
     <ClCompile Include="..\..\..\Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp">
       <Filter>GacUI\Resources\DocumentEditor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Compiler\GuiCppGen.cpp">
+      <Filter>GacUI\Compiler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\VlppWorkflow.h">
@@ -595,60 +538,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.h">
       <Filter>GacUI\Controls\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiWin7Styles.h">
-      <Filter>GacUI\Controls\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiWin8Styles.h">
-      <Filter>GacUI\Controls\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ButtonStyles.h">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ControlStyles.h">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ListStyles.h">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7MenuStyles.h">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ScrollableStyles.h">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7StylesCommon.h">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7TabStyles.h">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win7Styles\GuiWin7ToolstripStyles.h">
-      <Filter>GacUI\Controls\Styles\Win7Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ButtonStyles.h">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ControlStyles.h">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ListStyles.h">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8MenuStyles.h">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ScrollableStyles.h">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8StylesCommon.h">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8TabStyles.h">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\Win8Styles\GuiWin8ToolstripStyles.h">
-      <Filter>GacUI\Controls\Styles\Win8Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.h">
       <Filter>GacUI\Controls\Templates</Filter>
@@ -880,6 +769,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Resources\GuiDocumentEditor.h">
       <Filter>GacUI\Resources\DocumentEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Source\Compiler\GuiCppGen.h">
+      <Filter>GacUI\Compiler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

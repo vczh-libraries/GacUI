@@ -271,18 +271,19 @@ GuiPredefinedInstanceBindersPlugin
 		class GuiPredefinedInstanceBindersPlugin : public Object, public IGuiPlugin
 		{
 		public:
-			GuiPredefinedInstanceBindersPlugin()
+
+			GUI_PLUGIN_NAME(GacUI_Compiler_ParsersAndBinders)
 			{
+				GUI_PLUGIN_DEPEND(GacUI_Parser);
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
+				GUI_PLUGIN_DEPEND(GacUI_Instance);
+				GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
 			}
 
 			void Load()override
 			{
 				WfLoadTypes();
 				GuiIqLoadTypes();
-			}
-
-			void AfterLoad()override
-			{
 				{
 					IGuiParserManager* manager = GetParserManager();
 					manager->SetParsingTable(L"WORKFLOW", &WfLoadTable);

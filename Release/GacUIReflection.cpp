@@ -5,7 +5,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "GacUIReflection.h"
 
 /***********************************************************************
-GUIINSTANCECOMPILEDWORKFLOW.CPP
+.\GUIINSTANCECOMPILEDWORKFLOW.CPP
 ***********************************************************************/
 
 namespace vl
@@ -140,15 +140,13 @@ Plugin
 		class GuiRuntimeTypeResolversPlugin : public Object, public IGuiPlugin
 		{
 		public:
-			GuiRuntimeTypeResolversPlugin()
+
+			GUI_PLUGIN_NAME(GacUI_Compiler_WorkflowTypeResolvers)
 			{
+				GUI_PLUGIN_DEPEND(GacUI_Res_ResourceResolver);
 			}
 
 			void Load()override
-			{
-			}
-
-			void AfterLoad()override
 			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
 				manager->SetTypeResolver(new GuiResourceCompiledWorkflowTypeResolver);
@@ -163,7 +161,7 @@ Plugin
 }
 
 /***********************************************************************
-TYPEDESCRIPTORS\GUIREFLECTIONBASIC.CPP
+.\TYPEDESCRIPTORS\GUIREFLECTIONBASIC.CPP
 ***********************************************************************/
 
 namespace vl
@@ -804,7 +802,7 @@ Type Loader
 }
 
 /***********************************************************************
-TYPEDESCRIPTORS\GUIREFLECTIONCOMPOSITIONS.CPP
+.\TYPEDESCRIPTORS\GUIREFLECTIONCOMPOSITIONS.CPP
 ***********************************************************************/
 
 namespace vl
@@ -1241,7 +1239,7 @@ Type Loader
 }
 
 /***********************************************************************
-TYPEDESCRIPTORS\GUIREFLECTIONCONTROLS.CPP
+.\TYPEDESCRIPTORS\GUIREFLECTIONCONTROLS.CPP
 ***********************************************************************/
 
 namespace vl
@@ -1300,9 +1298,8 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITheme)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentTheme, NO_PARAMETER, ITheme*(*)(), vl::presentation::theme::GetCurrentTheme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(SetCurrentTheme, {L"theme"}, void(*)(ITheme*), vl::presentation::theme::SetCurrentTheme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin7Theme, NO_PARAMETER, Ptr<ITheme>(*)(), vl::reflection::description::CreateWin7Theme)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(CreateWin8Theme, NO_PARAMETER, Ptr<ITheme>(*)(), vl::reflection::description::CreateWin8Theme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RegisterTheme, {L"name" _ L"theme"}, bool(*)(const WString&, Ptr<ThemeTemplates>), vl::presentation::theme::RegisterTheme)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(UnrgisterTheme, {L"name"}, Ptr<ThemeTemplates>(*)(const WString&), vl::presentation::theme::UnregisterTheme)
 
 				CLASS_MEMBER_METHOD(CreateWindowStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateCustomControlStyle, NO_PARAMETER)
@@ -1315,7 +1312,6 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateComboBoxStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateMultilineTextBoxStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateTextBoxStyle, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetDefaultTextBoxColorEntry, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateDocumentViewerStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateDocumentLabelStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateDocumentTextBoxStyle, NO_PARAMETER)
@@ -1345,13 +1341,57 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CreateHTrackerStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateVTrackerStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateProgressBarStyle, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetScrollDefaultSize, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetTrackerDefaultSize, NO_PARAMETER)
 
 				CLASS_MEMBER_METHOD(CreateTextListStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateCheckTextListItemStyle, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateRadioTextListItemStyle, NO_PARAMETER)
 			END_INTERFACE_MEMBER(ITheme)
+
+			BEGIN_CLASS_MEMBER(ThemeTemplates)
+				CLASS_MEMBER_BASE(GuiInstanceRootObject)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<ThemeTemplates>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(window)
+				CLASS_MEMBER_FIELD(customControl)
+				CLASS_MEMBER_FIELD(tooltip)
+				CLASS_MEMBER_FIELD(label)
+				CLASS_MEMBER_FIELD(shortcutKey)
+				CLASS_MEMBER_FIELD(scrollView)
+				CLASS_MEMBER_FIELD(groupBox)
+				CLASS_MEMBER_FIELD(tab)
+				CLASS_MEMBER_FIELD(comboBox)
+				CLASS_MEMBER_FIELD(multilineTextBox)
+				CLASS_MEMBER_FIELD(singlelineTextBox)
+				CLASS_MEMBER_FIELD(documentViewer)
+				CLASS_MEMBER_FIELD(documentLabel)
+				CLASS_MEMBER_FIELD(documentTextBox)
+				CLASS_MEMBER_FIELD(listView)
+				CLASS_MEMBER_FIELD(treeView)
+				CLASS_MEMBER_FIELD(textList)
+				CLASS_MEMBER_FIELD(listItemBackground)
+				CLASS_MEMBER_FIELD(treeItemExpander)
+				CLASS_MEMBER_FIELD(checkTextListItem)
+				CLASS_MEMBER_FIELD(radioTextListItem)
+				CLASS_MEMBER_FIELD(menu)
+				CLASS_MEMBER_FIELD(menuBar)
+				CLASS_MEMBER_FIELD(menuSplitter)
+				CLASS_MEMBER_FIELD(menuBarButton)
+				CLASS_MEMBER_FIELD(menuItemButton)
+				CLASS_MEMBER_FIELD(toolBar)
+				CLASS_MEMBER_FIELD(toolBarButton)
+				CLASS_MEMBER_FIELD(toolBarDropdownButton)
+				CLASS_MEMBER_FIELD(toolBarSplitButton)
+				CLASS_MEMBER_FIELD(toolBarSplitter)
+				CLASS_MEMBER_FIELD(button)
+				CLASS_MEMBER_FIELD(checkBox)
+				CLASS_MEMBER_FIELD(radioButton)
+				CLASS_MEMBER_FIELD(datePicker)
+				CLASS_MEMBER_FIELD(hScroll)
+				CLASS_MEMBER_FIELD(vScroll)
+				CLASS_MEMBER_FIELD(hTracker)
+				CLASS_MEMBER_FIELD(vTracker)
+				CLASS_MEMBER_FIELD(progressBar)
+			END_CLASS_MEMBER(ThemeTemplates)
 
 			BEGIN_CLASS_MEMBER(GuiDialogBase)
 				CLASS_MEMBER_BASE(GuiComponent)
@@ -1455,7 +1495,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD_OVERLOAD(QueryService, {L"identifier"}, IDescriptable*(GuiControl::*)(const WString&))
 			END_CLASS_MEMBER(GuiControl)
 
-			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleController)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiControl::IStyleController)
 				CLASS_MEMBER_METHOD(GetBoundsComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetContainerComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
@@ -1464,7 +1504,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
 			END_INTERFACE_MEMBER(GuiControl::IStyleController)
 
-			BEGIN_INTERFACE_MEMBER(GuiControl::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiControl::IStyleProvider)
 				CLASS_MEMBER_METHOD(AssociateStyleController, {L"controller"})
 				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
 				CLASS_MEMBER_METHOD(SetText, {L"value"})
@@ -1727,6 +1767,7 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(ItemMouseEnter)
 				CLASS_MEMBER_GUIEVENT(ItemMouseLeave)
 
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListControlStyleProvider)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Arranger)
@@ -1736,6 +1777,12 @@ Type Declaration
 				CLASS_MEMBER_METHOD(EnsureItemVisible, {L"itemIndex"})
 				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})
 			END_CLASS_MEMBER(GuiListControl)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiScrollView::IStyleProvider)
+
+				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
+			END_INTERFACE_MEMBER(GuiListControl::IStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -1864,6 +1911,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleProvider)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
+				CLASS_MEMBER_METHOD(CreateCheckBulletStyle, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(CreateRadioBulletStyle, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiVirtualTextList::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTextList)
@@ -1903,7 +1952,6 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(SecondaryTextColor)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemSeparatorColor)
 
-				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateColumnStyle, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiListViewBase::IStyleProvider)
 
@@ -2180,7 +2228,6 @@ Type Declaration
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
 
-				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(CreateItemExpandingDecorator, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiVirtualTreeView::IStyleProvider)
 
@@ -2745,8 +2792,9 @@ Type Loader
 	}
 }
 
+
 /***********************************************************************
-TYPEDESCRIPTORS\GUIREFLECTIONELEMENTS.CPP
+.\TYPEDESCRIPTORS\GUIREFLECTIONELEMENTS.CPP
 ***********************************************************************/
 
 namespace vl
@@ -3028,7 +3076,7 @@ Type Loader
 }
 
 /***********************************************************************
-TYPEDESCRIPTORS\GUIREFLECTIONEVENTS.CPP
+.\TYPEDESCRIPTORS\GUIREFLECTIONEVENTS.CPP
 ***********************************************************************/
 
 namespace vl
@@ -3170,7 +3218,7 @@ Type Loader
 }
 
 /***********************************************************************
-TYPEDESCRIPTORS\GUIREFLECTIONPLUGIN.CPP
+.\TYPEDESCRIPTORS\GUIREFLECTIONPLUGIN.CPP
 ***********************************************************************/
 
 /***********************************************************************
@@ -3202,6 +3250,11 @@ namespace vl
 			class GuiReflectionPlugin : public Object, public IGuiPlugin
 			{
 			public:
+
+				GUI_PLUGIN_NAME(GacUI_Instance_Reflection)
+				{
+				}
+
 				void Load()override
 				{
 					LoadPredefinedTypes();
@@ -3215,10 +3268,6 @@ namespace vl
 					LoadGuiTemplateTypes();
 					LoadGuiControlTypes();
 				}
-				
-				void AfterLoad()override
-				{
-				}
 
 				void Unload()override
 				{
@@ -3230,7 +3279,7 @@ namespace vl
 }
 
 /***********************************************************************
-TYPEDESCRIPTORS\GUIREFLECTIONTEMPLATES.CPP
+.\TYPEDESCRIPTORS\GUIREFLECTIONTEMPLATES.CPP
 ***********************************************************************/
 
 namespace vl
@@ -3298,8 +3347,10 @@ Type Declaration
 			END_CLASS_MEMBER(GuiComponent)
 
 			BEGIN_CLASS_MEMBER(GuiInstanceRootObject)
-				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiGraphicsComposition*))
-				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiControl*))
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiTemplate*))
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiCustomControl*))
+				CLASS_MEMBER_METHOD_OVERLOAD(FinalizeInstanceRecursively, {L"thisObject"}, void(GuiInstanceRootObject::*)(GuiControlHost*))
+				CLASS_MEMBER_METHOD(FinalizeGeneralInstance, {L"thisObject"})
 				CLASS_MEMBER_METHOD(SetResourceResolver, {L"resolver"})
 				CLASS_MEMBER_METHOD(ResolveResource, {L"protocol" _ L"path" _ L"ensureExist"})
 

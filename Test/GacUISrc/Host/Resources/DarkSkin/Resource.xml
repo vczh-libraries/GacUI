@@ -1,0 +1,12 @@
+<Resource>
+  <Folder name="GacGenConfig">
+    <Folder name="Cpp">
+      <Text name="SourceFolder">Source</Text>
+      <Text name="NormalInclude">../../../GacUI.h</Text>
+      <Text name="ReflectionInclude">../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h</Text>
+      <Text name="Name">DarkSkin</Text>
+      <Text name="CppCompressed">DarkSkinResource.cpp</Text>
+    </Folder>
+  </Folder>
+  <Folder name="DarkSkin" content="Link">DarkSkin.xml</Folder>
+</Resource>

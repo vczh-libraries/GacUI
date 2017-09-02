@@ -64,6 +64,9 @@ GuiToolstripInstanceLoaderBase
 			template<typename TBaseType>
 			class GuiToolstripInstanceLoaderBase : public TBaseType
 			{
+			private:
+				using TypeInfo = typename TBaseType::TypeInfo;
+
 			public:
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;

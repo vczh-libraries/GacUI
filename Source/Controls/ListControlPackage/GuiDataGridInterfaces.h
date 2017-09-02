@@ -71,19 +71,6 @@ Datagrid Interfaces
 					/// <summary>Set the selected state.</summary>
 					/// <param name="value">Set to true to make this data visualizer looks selected.</param>
 					virtual void										SetSelected(bool value) = 0;
-
-					template<typename T>
-					T* GetVisualizer()
-					{
-						IDataVisualizer* visualizer = this;
-						while (visualizer)
-						{
-							T* result = dynamic_cast<T*>(visualizer);
-							if (result) return result;
-							visualizer = visualizer->GetDecoratedDataVisualizer();
-						}
-						return 0;
-					};
 				};
 
 				/// <summary>The editor factory.</summary>

@@ -29,6 +29,11 @@ namespace vl
 			class GuiReflectionPlugin : public Object, public IGuiPlugin
 			{
 			public:
+
+				GUI_PLUGIN_NAME(GacUI_Instance_Reflection)
+				{
+				}
+
 				void Load()override
 				{
 					LoadPredefinedTypes();
@@ -41,10 +46,6 @@ namespace vl
 					LoadGuiEventTypes();
 					LoadGuiTemplateTypes();
 					LoadGuiControlTypes();
-				}
-				
-				void AfterLoad()override
-				{
 				}
 
 				void Unload()override

@@ -14,6 +14,7 @@ namespace vl
 
 		using namespace controls;
 		using namespace compositions;
+		using namespace templates;
 
 /***********************************************************************
 FindInstanceLoadingSource
@@ -46,9 +47,9 @@ FindInstanceLoadingSource
 Workflow_PrecompileInstanceContext
 ***********************************************************************/
 
-		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
+		Ptr<workflow::WfModule> Workflow_PrecompileInstanceContext(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
-			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context);
+			auto module = Workflow_CreateModuleWithUsings(resolvingResult.context, moduleName);
 			{
 				auto block = Workflow_InstallCtorClass(resolvingResult, module);
 				Workflow_GenerateCreating(precompileContext, resolvingResult, block, errors);
@@ -329,7 +330,7 @@ Workflow_GenerateInstanceClass
 			}
 		};
 
-		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
+		Ptr<workflow::WfModule> Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex)
 		{
 			bool beforePrecompile = false;
 			bool needEventHandler = false;
@@ -368,7 +369,7 @@ Workflow_GenerateInstanceClass
 			// Instance Class
 			///////////////////////////////////////////////////////////////
 
-			auto module = Workflow_CreateModuleWithUsings(context);
+			auto module = Workflow_CreateModuleWithUsings(context, moduleName);
 			auto instanceClass = Workflow_InstallClass(context->className, module);
 			{
 				auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
@@ -813,11 +814,36 @@ Workflow_GenerateInstanceClass
 
 			{
 				auto ref = MakePtr<WfReferenceExpression>();
-				ref->name.value = L"FinalizeInstanceRecursively";
+				ref->name.value = L"FinalizeGeneralInstance";
+
+				Ptr<WfExpression> thisExpr = MakePtr<WfThisExpression>();
+				ITypeDescriptor* types[] =
+				{
+					description::GetTypeDescriptor<GuiTemplate>(),
+					description::GetTypeDescriptor<GuiCustomControl>(),
+					description::GetTypeDescriptor<GuiControlHost>(),
+				};
+
+				for (auto td : types)
+				{
+					if (baseType->GetTypeDescriptor()->CanConvertTo(td))
+					{
+						ref->name.value = L"FinalizeInstanceRecursively";
+
+						Ptr<ITypeInfo> typeInfo = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+						typeInfo = MakePtr<RawPtrTypeInfo>(typeInfo);
+
+						auto inferExpr = MakePtr<WfInferExpression>();
+						inferExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
+						inferExpr->expression = thisExpr;
+						thisExpr = inferExpr;
+						break;
+					}
+				}
 
 				auto call = MakePtr<WfCallExpression>();
 				call->function = ref;
-				call->arguments.Add(MakePtr<WfThisExpression>());
+				call->arguments.Add(thisExpr);
 
 				auto stat = MakePtr<WfExpressionStatement>();
 				stat->expression = call;
@@ -844,15 +870,12 @@ GuiWorkflowSharedManagerPlugin
 			Ptr<WfLexicalScopeManager>		workflowManager;
 
 		public:
-			GuiWorkflowSharedManagerPlugin()
+
+			GUI_PLUGIN_NAME(GacUI_Compiler_WorkflowSharedManager)
 			{
 			}
 
 			void Load()override
-			{
-			}
-
-			void AfterLoad()override
 			{
 				sharedManagerPlugin = this;
 			}

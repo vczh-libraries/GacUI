@@ -1498,31 +1498,6 @@ WindowsController
 					return &dialogService;
 				}
 
-				bool IsWindowsVersionEqualOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
-				{
-					OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
-					DWORDLONG const dwlConditionMask = 
-						VerSetConditionMask(
-							VerSetConditionMask(
-								VerSetConditionMask(
-									0,
-									VER_MAJORVERSION,
-									VER_GREATER_EQUAL
-									),
-								VER_MINORVERSION,
-								VER_GREATER_EQUAL
-								),
-							VER_SERVICEPACKMAJOR,
-							VER_GREATER_EQUAL
-							);
-
-					osvi.dwMajorVersion = wMajorVersion;
-					osvi.dwMinorVersion = wMinorVersion;
-					osvi.wServicePackMajor = wServicePackMajor;
-
-					return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
-				}
-
 				WString GetExecutablePath()
 				{
 					Array<wchar_t> buffer(65536);

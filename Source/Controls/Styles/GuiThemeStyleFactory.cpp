@@ -1,4 +1,5 @@
 #include "GuiThemeStyleFactory.h"
+#include "../Templates/GuiControlTemplateStyles.h"
 
 namespace vl
 {
@@ -6,16 +7,324 @@ namespace vl
 	{
 		namespace theme
 		{
-			ITheme* currentTheme=0;
+			using namespace collections;
+			using namespace controls;
+			using namespace templates;
+
+			class Theme : public Object, public virtual theme::ITheme
+			{
+			public:
+				Dictionary<WString, Ptr<ThemeTemplates>>	templates;
+				ThemeTemplates*								first = nullptr;
+				ThemeTemplates*								last = nullptr;
+
+				bool RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme)
+				{
+					CHECK_ERROR(theme->previous == nullptr, L"vl::presentation::theme::RegisterTheme(const WString&, Ptr<ThemeTemplates>)#Theme object has been registered");
+					CHECK_ERROR(theme->next == nullptr, L"vl::presentation::theme::RegisterTheme(const WString&, Ptr<ThemeTemplates>)#Theme object has been registered");
+
+					if (templates.Keys().Contains(name))
+					{
+						return false;
+					}
+					templates.Add(name, theme);
+
+					if (last)
+					{
+						last->next = theme.Obj();
+					}
+					theme->previous = last;
+					last = theme.Obj();
+
+					return true;
+				}
+
+				Ptr<ThemeTemplates> UnregisterTheme(const WString& name)
+				{
+					vint index = templates.Keys().IndexOf(name);
+					if (index == -1)
+					{
+						return nullptr;
+					}
+
+					auto themeTemplates = templates.Values().Get(index);
+
+					if (themeTemplates->previous)
+					{
+						themeTemplates->previous->next = themeTemplates->next;
+					}
+					else
+					{
+						first = themeTemplates->next;
+					}
+
+					if (themeTemplates->next)
+					{
+						themeTemplates->next->previous = themeTemplates->previous;
+
+					}
+					else
+					{
+						last = themeTemplates->previous;
+					}
+
+					templates.Remove(name);
+					return themeTemplates;
+				}
+
+#define SP(TYPE, NAME)\
+	auto current = last;\
+	while (current) \
+	{\
+		if (current->NAME)\
+		{\
+			return new TYPE##_StyleProvider([=](auto _)\
+			{\
+				return current->NAME(description::Value());\
+			});\
+		}\
+		current = current->previous;\
+	}\
+	throw Exception(L"Control template for \"" L ## #NAME L"\" is not defined.");\
+
+				GuiWindow::IStyleController* CreateWindowStyle()override
+				{
+					SP(GuiWindowTemplate, window);
+				}
+
+				GuiCustomControl::IStyleController* CreateCustomControlStyle()override
+				{
+					SP(GuiControlTemplate, customControl);
+				}
+
+				GuiTooltip::IStyleController* CreateTooltipStyle()override
+				{
+					SP(GuiWindowTemplate, tooltip);
+				}
+
+				GuiLabel::IStyleController* CreateLabelStyle()override
+				{
+					SP(GuiLabelTemplate, label);
+				}
+
+				GuiLabel::IStyleController* CreateShortcutKeyStyle()override
+				{
+					SP(GuiLabelTemplate, shortcutKey);
+				}
+
+				GuiScrollContainer::IStyleProvider* CreateScrollContainerStyle()override
+				{
+					SP(GuiScrollViewTemplate, scrollView);
+				}
+
+				GuiControl::IStyleController* CreateGroupBoxStyle()override
+				{
+					SP(GuiControlTemplate, groupBox);
+				}
+
+				GuiTab::IStyleController* CreateTabStyle()override
+				{
+					SP(GuiTabTemplate, tab);
+				}
+
+				GuiComboBoxListControl::IStyleController* CreateComboBoxStyle()override
+				{
+					SP(GuiComboBoxTemplate, comboBox);
+				}
+
+				GuiScrollView::IStyleProvider* CreateMultilineTextBoxStyle()override
+				{
+					SP(GuiMultilineTextBoxTemplate, multilineTextBox);
+				}
+
+				GuiSinglelineTextBox::IStyleProvider* CreateTextBoxStyle()override
+				{
+					SP(GuiSinglelineTextBoxTemplate, singlelineTextBox);
+				}
+
+				GuiDocumentViewer::IStyleProvider* CreateDocumentViewerStyle()override
+				{
+					SP(GuiDocumentViewerTemplate, documentViewer);
+				}
+
+				GuiDocumentLabel::IStyleController* CreateDocumentLabelStyle()override
+				{
+					SP(GuiDocumentLabelTemplate, documentLabel);
+				}
+
+				GuiDocumentLabel::IStyleController* CreateDocumentTextBoxStyle()override
+				{
+					SP(GuiDocumentLabelTemplate, documentTextBox);
+				}
+
+				GuiListView::IStyleProvider* CreateListViewStyle()override
+				{
+					SP(GuiListViewTemplate, listView);
+				}
+
+				GuiTreeView::IStyleProvider* CreateTreeViewStyle()override
+				{
+					SP(GuiTreeViewTemplate, treeView);
+				}
+
+				GuiSelectableButton::IStyleController* CreateListItemBackgroundStyle()override
+				{
+					SP(GuiSelectableButtonTemplate, listItemBackground);
+				}
+
+				GuiSelectableButton::IStyleController* CreateTreeItemExpanderStyle()override
+				{
+					SP(GuiSelectableButtonTemplate, treeItemExpander);
+				}
+
+				GuiToolstripMenu::IStyleController* CreateMenuStyle()override
+				{
+					SP(GuiMenuTemplate, menu);
+				}
+
+				GuiToolstripMenuBar::IStyleController* CreateMenuBarStyle()override
+				{
+					SP(GuiControlTemplate, menuBar);
+				}
+
+				GuiControl::IStyleController* CreateMenuSplitterStyle()override
+				{
+					SP(GuiControlTemplate, menuSplitter);
+				}
+
+				GuiToolstripButton::IStyleController* CreateMenuBarButtonStyle()override
+				{
+					SP(GuiToolstripButtonTemplate, menuBarButton);
+				}
+
+				GuiToolstripButton::IStyleController* CreateMenuItemButtonStyle()override
+				{
+					SP(GuiToolstripButtonTemplate, menuItemButton);
+				}
+
+				GuiToolstripToolBar::IStyleController* CreateToolBarStyle()override
+				{
+					SP(GuiControlTemplate, toolBar);
+				}
+
+				GuiToolstripButton::IStyleController* CreateToolBarButtonStyle()override
+				{
+					SP(GuiToolstripButtonTemplate, toolBarButton);
+				}
+
+				GuiToolstripButton::IStyleController* CreateToolBarDropdownButtonStyle()override
+				{
+					SP(GuiToolstripButtonTemplate, toolBarDropdownButton);
+				}
+
+				GuiToolstripButton::IStyleController* CreateToolBarSplitButtonStyle()override
+				{
+					SP(GuiToolstripButtonTemplate, toolBarSplitButton);
+				}
+
+				GuiControl::IStyleController* CreateToolBarSplitterStyle()override
+				{
+					SP(GuiControlTemplate, toolBarSplitter);
+				}
+
+				GuiButton::IStyleController* CreateButtonStyle()override
+				{
+					SP(GuiButtonTemplate, button);
+				}
+
+				GuiSelectableButton::IStyleController* CreateCheckBoxStyle()override
+				{
+					SP(GuiSelectableButtonTemplate, checkBox);
+				}
+
+				GuiSelectableButton::IStyleController* CreateRadioButtonStyle()override
+				{
+					SP(GuiSelectableButtonTemplate, radioButton);
+				}
+
+				GuiDatePicker::IStyleProvider* CreateDatePickerStyle()override
+				{
+					SP(GuiDatePickerTemplate, datePicker);
+				}
+
+				GuiScroll::IStyleController* CreateHScrollStyle()override
+				{
+					SP(GuiScrollTemplate, hScroll);
+				}
+
+				GuiScroll::IStyleController* CreateVScrollStyle()override
+				{
+					SP(GuiScrollTemplate, vScroll);
+				}
+
+				GuiScroll::IStyleController* CreateHTrackerStyle()override
+				{
+					SP(GuiScrollTemplate, hTracker);
+				}
+
+				GuiScroll::IStyleController* CreateVTrackerStyle()override
+				{
+					SP(GuiScrollTemplate, vTracker);
+				}
+
+				GuiScroll::IStyleController* CreateProgressBarStyle()override
+				{
+					SP(GuiScrollTemplate, progressBar);
+				}
+
+				GuiVirtualTextList::IStyleProvider* CreateTextListStyle()override
+				{
+					SP(GuiTextListTemplate, textList);
+				}
+
+				GuiSelectableButton::IStyleController* CreateCheckTextListItemStyle()override
+				{
+					SP(GuiSelectableButtonTemplate, listItemBackground);
+				}
+
+				GuiSelectableButton::IStyleController* CreateRadioTextListItemStyle()override
+				{
+					SP(GuiSelectableButtonTemplate, treeItemExpander);
+				}
+
+#undef SP
+			};
+
+			ThemeTemplates::~ThemeTemplates()
+			{
+				FinalizeAggregation();
+			}
+
+			Theme* currentTheme = nullptr;
 
 			ITheme* GetCurrentTheme()
 			{
 				return currentTheme;
 			}
 
-			void SetCurrentTheme(ITheme* theme)
+			void InitializeTheme()
 			{
-				currentTheme=theme;
+				CHECK_ERROR(currentTheme == nullptr, L"vl::presentation::theme::InitializeTheme()#Theme has already been initialized");
+				currentTheme = new Theme;
+			}
+
+			void FinalizeTheme()
+			{
+				CHECK_ERROR(currentTheme != nullptr, L"vl::presentation::theme::FinalizeTheme()#Theme has not been initialized");
+				delete currentTheme;
+				currentTheme = nullptr;
+			}
+
+			bool RegisterTheme(const WString& name, Ptr<ThemeTemplates> theme)
+			{
+				CHECK_ERROR(currentTheme != nullptr, L"vl::presentation::theme::RegisterTheme(const WString&, Ptr<ThemeTemplates>)#Theme has already been initialized");
+				return currentTheme->RegisterTheme(name, theme);
+			}
+
+			Ptr<ThemeTemplates> UnregisterTheme(const WString& name)
+			{
+				CHECK_ERROR(currentTheme != nullptr, L"vl::presentation::theme::UnregisterTheme(const WString&)#Theme has already been initialized");
+				return currentTheme->UnregisterTheme(name);
 			}
 
 			namespace g
@@ -78,6 +387,11 @@ namespace vl
 				controls::GuiDocumentLabel* NewDocumentLabel()
 				{
 					return new controls::GuiDocumentLabel(GetCurrentTheme()->CreateDocumentLabelStyle());
+				}
+
+				controls::GuiDocumentLabel* NewDocumentTextBox()
+				{
+					return new controls::GuiDocumentLabel(GetCurrentTheme()->CreateDocumentTextBoxStyle());
 				}
 
 				controls::GuiListView* NewListView()

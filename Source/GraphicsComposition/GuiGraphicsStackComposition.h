@@ -71,7 +71,7 @@ Stack Compositions
 				/// <summary>Get all stack items inside the stack composition.</summary>
 				/// <returns>All stack items inside the stack composition.</returns>
 				const ItemCompositionList&			GetStackItems();
-				/// <summary>Insert an stack item at a specified position.</summary>
+				/// <summary>Insert a stack item at a specified position.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="index">The position.</param>
 				/// <param name="item">The statck item to insert.</param>

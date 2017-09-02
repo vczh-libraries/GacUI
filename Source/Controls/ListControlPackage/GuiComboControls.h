@@ -125,7 +125,6 @@ ComboBox with GuiListControl
 				/// <returns>The item style provider.</returns>
 				virtual ItemStyleProperty					GetItemTemplate();
 				/// <summary>Set the item style provider</summary>
-				/// <returns>The old item style provider</returns>
 				/// <param name="value">The new item style provider</param>
 				virtual void								SetItemTemplate(ItemStyleProperty value);
 				

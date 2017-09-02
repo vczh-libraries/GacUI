@@ -5,7 +5,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppWorkflow.h"
 
 /***********************************************************************
-.CPP
+.\WFRUNTIME.CPP
 ***********************************************************************/
 
 namespace vl
@@ -559,7 +559,7 @@ WfRuntimeThreadContext
 }
 
 /***********************************************************************
-ASSEMBLY.CPP
+.\WFRUNTIMEASSEMBLY.CPP
 ***********************************************************************/
 
 namespace vl
@@ -2228,8 +2228,9 @@ WfAssembly
 	}
 }
 
+
 /***********************************************************************
-CONSTRUCTIONS.CPP
+.\WFRUNTIMECONSTRUCTIONS.CPP
 ***********************************************************************/
 
 namespace vl
@@ -2313,7 +2314,7 @@ WfRuntimeInterfaceInstance
 }
 
 /***********************************************************************
-DEBUGGER.CPP
+.\WFRUNTIMEDEBUGGER.CPP
 ***********************************************************************/
 #include <math.h>
 
@@ -3073,7 +3074,7 @@ Helper Functions
 }
 
 /***********************************************************************
-EXECUTION.CPP
+.\WFRUNTIMEEXECUTION.CPP
 ***********************************************************************/
 
 namespace vl
@@ -3519,6 +3520,18 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::CreateObservableList:
+				{
+					auto list = IValueObservableList::Create();
+					Value operand;
+					for (vint i = 0; i < ins.countParameter; i++)
+					{
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						list->Add(operand);
+					}
+					CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
+					return WfRuntimeExecutionAction::ExecuteInstruction;
+				}
 				case WfInsCode::CreateMap:
 					{
 						auto map = IValueDictionary::Create();
@@ -4307,7 +4320,7 @@ WfRuntimeThreadContext
 }
 
 /***********************************************************************
-INSTRUCTION.CPP
+.\WFRUNTIMEINSTRUCTION.CPP
 ***********************************************************************/
 
 namespace vl
@@ -4498,8 +4511,9 @@ WfInstruction
 	}
 }
 
+
 /***********************************************************************
-TYPEDESCRIPTOR.CPP
+.\WFRUNTIMETYPEDESCRIPTOR.CPP
 ***********************************************************************/
 
 namespace vl

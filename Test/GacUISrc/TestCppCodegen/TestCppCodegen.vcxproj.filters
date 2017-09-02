@@ -18,25 +18,52 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\MainWindow.cpp">
+    <ClCompile Include="Source\DarkSkinReflection.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DarkSkinResource.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Demo.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DemoReflection.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DemoResource.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MainWindow.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DarkSkin.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\DemoIncludes.h">
+    <ClInclude Include="Helpers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DarkSkinIncludes.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\MainWindow.h">
+    <ClInclude Include="Source\DarkSkinReflection.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Demo.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Source\DemoIncludes.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DemoReflection.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MainWindow.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DarkSkin.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

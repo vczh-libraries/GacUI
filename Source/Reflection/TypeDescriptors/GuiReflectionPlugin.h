@@ -155,6 +155,9 @@ Type List (Compositions)
 			F(presentation::compositions::GuiPartialViewComposition)\
 			F(presentation::compositions::GuiSharedSizeItemComposition)\
 			F(presentation::compositions::GuiSharedSizeRootComposition)\
+			F(presentation::compositions::GuiRepeatCompositionBase)\
+			F(presentation::compositions::GuiRepeatStackComposition)\
+			F(presentation::compositions::GuiRepeatFlowComposition)\
 			F(presentation::compositions::IGuiGraphicsAnimation)\
 			F(presentation::compositions::GuiGraphicsAnimationManager)\
 			F(presentation::compositions::IGuiShortcutKeyItem)\
@@ -249,6 +252,7 @@ Type List (Controls)
 #define GUIREFLECTIONCONTROLS_TYPELIST(F)\
 			F(presentation::controls::GuiApplication)\
 			F(presentation::theme::ITheme)\
+			F(presentation::theme::ThemeTemplates)\
 			F(presentation::controls::GuiDialogBase)\
 			F(presentation::controls::GuiMessageDialog)\
 			F(presentation::controls::GuiColorDialog)\
@@ -282,6 +286,7 @@ Type List (Controls)
 			F(presentation::controls::GuiPopup)\
 			F(presentation::controls::GuiTooltip)\
 			F(presentation::controls::GuiListControl)\
+			F(presentation::controls::GuiListControl::IStyleProvider)\
 			F(presentation::controls::GuiListControl::IItemProviderCallback)\
 			F(presentation::controls::GuiListControl::IItemArrangerCallback)\
 			F(presentation::controls::GuiListControl::IItemProvider)\
@@ -648,65 +653,6 @@ Interface Proxy (Compositions)
 /***********************************************************************
 Interface Proxy (Controls)
 ***********************************************************************/
-
-			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::GuiControl::IStyleController)
-				presentation::compositions::GuiBoundsComposition* GetBoundsComposition()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetBoundsComposition);
-				}
-
-				presentation::compositions::GuiGraphicsComposition* GetContainerComposition()override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetContainerComposition);
-				}
-
-				void SetFocusableComposition(presentation::compositions::GuiGraphicsComposition* value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetFocusableComposition, value);
-				}
-
-				void SetText(const WString& value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetText, value);
-				}
-
-				void SetFont(const presentation::FontProperties& value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetFont, value);
-				}
-
-				void SetVisuallyEnabled(bool value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetVisuallyEnabled, value);
-				}
-			END_INTERFACE_PROXY(presentation::controls::GuiControl::IStyleController)
-				
-			BEGIN_INTERFACE_PROXY_NOPARENT_RAWPTR(presentation::controls::GuiControl::IStyleProvider)
-				void AssociateStyleController(presentation::controls::GuiControl::IStyleController* controller)override
-				{
-					INVOKE_INTERFACE_PROXY(AssociateStyleController, controller);
-				}
-
-				void SetFocusableComposition(presentation::compositions::GuiGraphicsComposition* value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetFocusableComposition, value);
-				}
-
-				void SetText(const WString& value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetText, value);
-				}
-
-				void SetFont(const presentation::FontProperties& value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetFont, value);
-				}
-
-				void SetVisuallyEnabled(bool value)override
-				{
-					INVOKE_INTERFACE_PROXY(SetVisuallyEnabled, value);
-				}
-			END_INTERFACE_PROXY(presentation::controls::GuiControl::IStyleProvider)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(presentation::controls::GuiListControl::IItemProviderCallback)
 

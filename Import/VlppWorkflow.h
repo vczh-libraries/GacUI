@@ -5,7 +5,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "Vlpp.h"
 
 /***********************************************************************
-INSTRUCTION.H
+.\WFRUNTIMEINSTRUCTION.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -50,6 +50,7 @@ Instruction
 				Pop,					//						: Value -> ()														;
 				Return,					//						: Value -> Value													; (exit function)
 				CreateArray,			// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
+				CreateObservableList,	// count				: Value-count, ..., Value-1 -> <observable-list>					; {1 2 3} -> <3 2 1>
 				CreateMap,				// count				: Value-count, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
 				CreateClosureContext,	// count				: Value-1, ..., Value-count -> <closure-context>					;
 				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
@@ -122,6 +123,7 @@ Instruction
 			APPLY(Pop)\
 			APPLY(Return)\
 			APPLY_COUNT(CreateArray)\
+			APPLY_COUNT(CreateObservableList)\
 			APPLY_COUNT(CreateMap)\
 			APPLY_COUNT(CreateClosureContext)\
 			APPLY(CreateClosure)\
@@ -265,8 +267,9 @@ Instruction
 
 #endif
 
+
 /***********************************************************************
-TYPEDESCRIPTOR.H
+.\WFRUNTIMETYPEDESCRIPTOR.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -798,8 +801,9 @@ Plugin
 
 #endif
 
+
 /***********************************************************************
-ASSEMBLY.H
+.\WFRUNTIMEASSEMBLY.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -893,8 +897,9 @@ Assembly
 
 #endif
 
+
 /***********************************************************************
-CONSTRUCTIONS.H
+.\WFRUNTIMECONSTRUCTIONS.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1011,8 +1016,9 @@ InterfaceInstance
 
 #endif
 
+
 /***********************************************************************
-DEBUGGER.H
+.\WFRUNTIMEDEBUGGER.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1371,8 +1377,9 @@ Debugger
 
 #endif
 
+
 /***********************************************************************
-.H
+.\WFRUNTIME.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -1662,3 +1669,4 @@ Helper Functions
 }
 
 #endif
+

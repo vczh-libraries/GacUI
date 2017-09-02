@@ -92,7 +92,7 @@ Calculate if all text in the specified range has some common styles
 				void OverrideStyleItem(Nullable<DocumentFontSize> DocumentStyleProperties::* dstField, vint FontProperties::* srcField)
 				{
 					const DocumentModel::ResolvedStyle& src = GetCurrentResolvedStyle();
-					style.Obj()->*dstField = DocumentFontSize(src.style.*srcField, false);
+					style.Obj()->*dstField = DocumentFontSize((double)(src.style.*srcField), false);
 				}
 
 				// ---------------------------------------------------------

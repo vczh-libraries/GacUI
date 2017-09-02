@@ -13,6 +13,11 @@ Interfaces:
 
 namespace vl
 {
+	namespace workflow
+	{
+		class IWfCompilerCallback;
+	}
+
 	namespace presentation
 	{
 		using namespace reflection;
@@ -539,12 +544,14 @@ Resource Type Resolver
 		{
 			typedef collections::Dictionary<Ptr<DescriptableObject>, Ptr<DescriptableObject>>	PropertyMap;
 
+			/// <summary>Progress callback.</summary>
+			workflow::IWfCompilerCallback*						compilerCallback = nullptr;
 			/// <summary>The folder to contain compiled objects.</summary>
 			Ptr<GuiResourceFolder>								targetFolder;
 			/// <summary>The root resource object.</summary>
-			GuiResource*										rootResource;
+			GuiResource*										rootResource = nullptr;
 			/// <summary>Indicate the pass index of this precompiling pass.</summary>
-			vint												passIndex;
+			vint												passIndex = -1;
 			/// <summary>The path resolver. This is only for delay load resource.</summary>
 			Ptr<GuiResourcePathResolver>						resolver;
 			/// <summary>Additional properties for resource item contents</summary>
@@ -614,6 +621,7 @@ Resource Type Resolver
 		class IGuiResourcePrecompileCallback : public virtual IDescriptable, public Description<IGuiResourcePrecompileCallback>
 		{
 		public:
+			virtual workflow::IWfCompilerCallback*				GetCompilerCallback() = 0;
 			virtual void										OnPerPass(vint passIndex) = 0;
 			virtual void										OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource) = 0;
 		};
@@ -746,6 +754,10 @@ Resource Resolver Manager
 		};
 		
 		extern IGuiResourceResolverManager*						GetResourceResolverManager();
+		extern vint												CopyStream(stream::IStream& inputStream, stream::IStream& outputStream);
+		extern void												CompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+		extern void												DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream);
+		extern void												DecompressStream(const char** buffer, bool compress, vint rows, vint block, vint remain, stream::IStream& outputStream);
 	}
 }
 

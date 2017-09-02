@@ -301,7 +301,7 @@ DataColumn
 					void												SetValueProperty(const WritableItemProperty<description::Value>& value);
 				};
 
-				class DataColumns : public ItemsBase<Ptr<DataColumn>>
+				class DataColumns : public collections::ObservableListBase<Ptr<DataColumn>>
 				{
 					friend class DataColumn;
 				protected:
@@ -333,7 +333,7 @@ DataProvider
 				{
 					friend class DataColumn;
 					friend class DataColumns;
-					friend class GuiBindableDataGrid;
+					friend class controls::GuiBindableDataGrid;
 				protected:
 					ListViewDataColumns										dataColumns;
 					DataColumns												columns;

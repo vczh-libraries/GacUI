@@ -211,6 +211,21 @@ Win8TextListProvider
 			{
 				return Win8GetSystemTextColor(true);
 			}
+			
+			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateItemBackground()
+			{
+				return nullptr;
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateCheckBulletStyle()
+			{
+				return nullptr;
+			}
+
+			controls::GuiSelectableButton::IStyleController* Win8TextListProvider::CreateRadioBulletStyle()
+			{
+				return nullptr;
+			}
 
 /***********************************************************************
 Win8ListViewProvider
@@ -226,7 +241,7 @@ Win8ListViewProvider
 
 			controls::GuiSelectableButton::IStyleController* Win8ListViewProvider::CreateItemBackground()
 			{
-				return new Win8SelectableItemStyle;
+				return nullptr;
 			}
 
 			controls::GuiListViewColumnHeader::IStyleController* Win8ListViewProvider::CreateColumnStyle()
@@ -263,12 +278,12 @@ Win8TreeViewProvider
 
 			controls::GuiSelectableButton::IStyleController* Win8TreeViewProvider::CreateItemBackground()
 			{
-				return new Win8SelectableItemStyle;
+				return nullptr;
 			}
 
 			controls::GuiSelectableButton::IStyleController* Win8TreeViewProvider::CreateItemExpandingDecorator()
 			{
-				return new win7::Win7TreeViewExpandingButtonStyle;
+				return nullptr;
 			}
 
 			Color Win8TreeViewProvider::GetTextColor()

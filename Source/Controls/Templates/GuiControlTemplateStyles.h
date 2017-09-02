@@ -94,6 +94,7 @@ Control Template
 				~GuiDocumentLabelTemplate_StyleProvider();
 				
 				Ptr<DocumentModel>												GetBaselineDocument()override;
+				Color															GetCaretColor()override;
 			};
 
 			class GuiMenuTemplate_StyleProvider
@@ -299,6 +300,9 @@ Control Template
 				~GuiTextListTemplate_StyleProvider();
 				
 				Color															GetTextColor()override;
+				controls::GuiSelectableButton::IStyleController*				CreateItemBackground()override;
+				controls::GuiSelectableButton::IStyleController*				CreateCheckBulletStyle()override;
+				controls::GuiSelectableButton::IStyleController*				CreateRadioBulletStyle()override;
 			};
 
 			class GuiListViewTemplate_StyleProvider

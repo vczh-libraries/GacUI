@@ -71,7 +71,7 @@ GuiInstanceRootObject
 				return finalized;
 			}
 
-			void GuiInstanceRootObject::FinalizeInstanceRecursively(compositions::GuiGraphicsComposition* thisObject)
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(templates::GuiTemplate* thisObject)
 			{
 				if (!finalized)
 				{
@@ -79,12 +79,24 @@ GuiInstanceRootObject
 				}
 			}
 
-			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiControl* thisObject)
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiCustomControl* thisObject)
 			{
 				if (!finalized)
 				{
 					NotifyFinalizeInstance(thisObject);
 				}
+			}
+
+			void GuiInstanceRootObject::FinalizeInstanceRecursively(GuiControlHost* thisObject)
+			{
+				if (!finalized)
+				{
+					NotifyFinalizeInstance(thisObject);
+				}
+			}
+
+			void GuiInstanceRootObject::FinalizeGeneralInstance(GuiInstanceRootObject* thisObject)
+			{
 			}
 
 			void GuiInstanceRootObject::SetResourceResolver(Ptr<GuiResourcePathResolver> resolver)

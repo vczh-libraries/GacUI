@@ -7,12 +7,11 @@
           listView.Items.Add(item);
         });
         
-        var itemsToBind : ListViewItem^[] = {};
+        var itemsToBind : observe ListViewItem^[] = {};
         LoadListView(this, func(item : ListViewItem^):void
         {
           itemsToBind.Add(item);
         });
-        /* itemsToBind is not ObservableList so the ItemSource property should be assigned after the data is prepared. */
         bindableListView.ItemSource = itemsToBind;
       }
     ]]>

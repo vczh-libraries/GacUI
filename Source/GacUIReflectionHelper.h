@@ -9,8 +9,6 @@ GacUI Reflection Helper
 #define VCZH_PRESENTATION_GACUIREFLECTIONHELPER
 
 #include "Controls/GuiApplication.h"
-#include "Controls/Styles/GuiWin7Styles.h"
-#include "Controls/Styles/GuiWin8Styles.h"
 #include "Controls/Templates/GuiControlTemplateStyles.h"
 #include "Resources/GuiResourceManager.h"
 
@@ -72,8 +70,6 @@ External Functions
 			extern void														GuiTableComposition_SetColumns(presentation::compositions::GuiTableComposition* thisObject, vint value);
 			extern void														IGuiAltActionHost_CollectAltActions(presentation::compositions::IGuiAltActionHost* host, collections::List<presentation::compositions::IGuiAltAction*>& actions);
 
-			extern Ptr<presentation::theme::ITheme>							CreateWin7Theme();
-			extern Ptr<presentation::theme::ITheme>							CreateWin8Theme();
 			template<typename T>
 			WString Interface_GetIdentifier()
 			{

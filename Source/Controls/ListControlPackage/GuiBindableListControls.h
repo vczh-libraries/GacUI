@@ -25,7 +25,7 @@ namespace vl
 			{
 				static T Get()
 				{
-					return TypedValueSerializerProvider<T>::GetDefaultValue();
+					return reflection::description::TypedValueSerializerProvider<T>::GetDefaultValue();
 				}
 			};
 

@@ -66,6 +66,12 @@ GuiHelperTypesLoaderPlugin
 		class GuiHelperTypesLoaderPlugin : public Object, public IGuiPlugin
 		{
 		public:
+
+			GUI_PLUGIN_NAME(GacUI_Instance_ReflectionHelper)
+			{
+				GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
+			}
+
 			void Load()override
 			{
 				ITypeManager* manager=GetGlobalTypeManager();
@@ -74,10 +80,6 @@ GuiHelperTypesLoaderPlugin
 					Ptr<ITypeLoader> loader=new GuiHelperTypesLoader;
 					manager->AddTypeLoader(loader);
 				}
-			}
-
-			void AfterLoad()override
-			{
 			}
 
 			void Unload()override

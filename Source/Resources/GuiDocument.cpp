@@ -151,7 +151,7 @@ DocumentModel
 				FontProperties font=GetCurrentController()->ResourceService()->GetDefaultFont();
 				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
 				sp->face=font.fontFamily;
-				sp->size=DocumentFontSize(font.size, false);
+				sp->size=DocumentFontSize((double)font.size, false);
 				sp->color=Color();
 				sp->backgroundColor=Color(0, 0, 0, 0);
 				sp->bold=font.bold;
@@ -246,7 +246,7 @@ DocumentModel
 
 		void DocumentModel::MergeBaselineStyle(Ptr<DocumentModel> baselineDocument, const WString& styleName)
 		{
-			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName);
+			auto indexSrc = baselineDocument->styles.Keys().IndexOf(styleName + L"-Override");
 			if (indexSrc == -1)
 			{
 				return;
@@ -270,7 +270,7 @@ DocumentModel
 			Ptr<DocumentStyleProperties> style = new DocumentStyleProperties;
 
 			style->face					=defaultFont.fontFamily;
-			style->size					=DocumentFontSize(defaultFont.size, false);
+			style->size					=DocumentFontSize((double)defaultFont.size, false);
 			style->bold					=defaultFont.bold;
 			style->italic				=defaultFont.italic;
 			style->underline			=defaultFont.underline;

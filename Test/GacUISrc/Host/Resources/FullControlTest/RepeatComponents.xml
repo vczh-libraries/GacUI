@@ -1,0 +1,12 @@
+<Folder>
+  <Instance name="RepeatItemTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RepeatItemTemplate">
+      <ref.Parameter Name="ViewModel" Class="demo::MyTextItem"/>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <Button Text-bind="ViewModel.Name">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+        </Button>
+      </ControlTemplate>
+    </Instance>
+  </Instance>
+</Folder>

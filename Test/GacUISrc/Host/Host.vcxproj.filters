@@ -22,36 +22,12 @@
     <Filter Include="Resource Files\FullControlTest\ToolbarImages">
       <UniqueIdentifier>{95fce359-8933-46d9-91ff-4599b1f26903}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\DarkSkin">
+      <UniqueIdentifier>{d95ee71f-2114-41d5-aa6b-6b684865c2a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="Resources\UI2_Properties.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\UI3_DataGrid.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\UI4_UserControl.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\UI5_DocumentTextBox.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\UI6_FontList.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\UI7_ColorComboBox.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\UI8_TableSplitter.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\UI9_ListView.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
     <Xml Include="Resources\UI1_StyleTemplate.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="Resources\UI10_MultipleWindows.xml">
       <Filter>Resource Files</Filter>
     </Xml>
     <Xml Include="Resources\FullControlTest\Resource.xml">
@@ -91,6 +67,21 @@
       <Filter>Resource Files\FullControlTest\ToolbarImages</Filter>
     </Xml>
     <Xml Include="Resources\FullControlTest\DocumentComponents.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\TextBoxTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\Resource.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\DarkSkin\DarkSkin.xml">
+      <Filter>Resource Files\DarkSkin</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\RepeatTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
+    <Xml Include="Resources\FullControlTest\RepeatComponents.xml">
       <Filter>Resource Files\FullControlTest</Filter>
     </Xml>
   </ItemGroup>

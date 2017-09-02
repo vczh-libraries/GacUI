@@ -1,6 +1,5 @@
 #include "GuiApplication.h"
-#include "Styles/GuiWin7Styles.h"
-#include "Styles/GuiWin8Styles.h"
+#include "Styles/GuiThemeStyleFactory.h"
 
 extern void GuiMain();
 
@@ -321,38 +320,89 @@ GuiPluginManager
 
 				void AddPlugin(Ptr<IGuiPlugin> plugin)override
 				{
-					plugins.Add(plugin);
-					if(loaded)
+					CHECK_ERROR(!loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has already been executed.");
+					auto name = plugin->GetName();
+					if (name != L"")
 					{
-						plugin->Load();
+						FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+						{
+							CHECK_ERROR(plugin->GetName() != name, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Duplicated plugin name.");
+						}
 					}
+					plugins.Add(plugin);
 				}
 
 				void Load()override
 				{
-					if(!loaded)
+					CHECK_ERROR(!loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has already been executed.");
+					loaded=true;
+
+					SortedList<WString> loaded;
+					Group<WString, WString> loading;
+					Dictionary<WString, Ptr<IGuiPlugin>> pluginsToLoad;
+					FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
 					{
-						loaded=true;
-						FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+						auto name = plugin->GetName();
+						pluginsToLoad.Add(name, plugin);
+						List<WString> dependencies;
+						plugin->GetDependencies(dependencies);
+						FOREACH(WString, dependency, dependencies)
 						{
-							plugin->Load();
+							loading.Add(name, dependency);
 						}
-						FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+					}
+
+					while (pluginsToLoad.Count() > 0)
+					{
+						vint count = pluginsToLoad.Count();
 						{
-							plugin->AfterLoad();
+							FOREACH_INDEXER(WString, name, index, pluginsToLoad.Keys())
+							{
+								if (!loading.Keys().Contains(name))
+								{
+									for (vint i = loading.Count() - 1; i >= 0; i--)
+									{
+										loading.Remove(loading.Keys()[i], name);
+									}
+									loaded.Add(name);
+
+									auto plugin = pluginsToLoad.Values()[index];
+									pluginsToLoad.Remove(name);
+									plugin->Load();
+									break;
+								}
+							}
+						}
+						if (count == pluginsToLoad.Count())
+						{
+							WString message;
+							FOREACH(Ptr<IGuiPlugin>, plugin, pluginsToLoad.Values())
+							{
+								message += L"Cannot load plugin \"" + plugin->GetName() + L"\" because part of its dependencies are not ready:";
+								List<WString> dependencies;
+								plugin->GetDependencies(dependencies);
+								bool first = true;
+								FOREACH(WString, dependency, dependencies)
+								{
+									if (!loaded.Contains(dependency))
+									{
+										message += L" \"" + dependency + L"\";";
+									}
+								}
+								message += L"\r\n";
+							}
+							throw Exception(message);
 						}
 					}
 				}
 
 				void Unload()override
 				{
-					if(loaded)
+					CHECK_ERROR(loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has not been executed.");
+					loaded=false;
+					FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
 					{
-						loaded=false;
-						FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
-						{
-							plugin->Unload();
-						}
+						plugin->Unload();
 					}
 				}
 
@@ -436,17 +486,13 @@ GuiApplicationMain
 
 			void GuiApplicationInitialize()
 			{
-				// There will be a GacUI theme in the future
-				// win7::Win7Theme
-				// win8::Win8Theme
-				auto theme = MakePtr<win8::Win8Theme>();
 				GetCurrentController()->InputService()->StartTimer();
+				theme::InitializeTheme();
 
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				GetGlobalTypeManager()->Load();
 #endif
 				GetPluginManager()->Load();
-				theme::SetCurrentTheme(theme.Obj());
 
 				{
 					GuiApplication app;
@@ -459,8 +505,8 @@ GuiApplicationMain
 					application = nullptr;
 				}
 
-				theme::SetCurrentTheme(0);
 				DestroyPluginManager();
+				theme::FinalizeTheme();
 				ThreadLocalStorage::DisposeStorages();
 				FinalizeGlobalStorage();
 #ifndef VCZH_DEBUG_NO_REFLECTION

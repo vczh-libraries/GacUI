@@ -2,7 +2,7 @@
   <ref.Ctor>
     <![CDATA[
       {
-        var tempData : MyDataItem^[] = 
+        var tempData : observe MyDataItem^[] = 
         {
           new MyDataItem^("涼宮 春日",     Female, Lime,  (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")
           new MyDataItem^("キョン",        Male,   Black, (cast DateTime "1988-08-08 00:00:00.000"),  "http://www.haruhi.tv/")

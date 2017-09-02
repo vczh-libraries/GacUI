@@ -967,18 +967,20 @@ GuiResourceFolder
 
 		bool GuiResourceFolder::AddItem(const WString& name, Ptr<GuiResourceItem> item)
 		{
-			if(item->GetParent()!=0 || items.Keys().Contains(name)) return false;
+			if (item->GetParent() != 0 || items.Keys().Contains(name)) return false;
 			items.Add(name, item);
-			item->parent=this;
-			item->name=name;
+			item->parent = this;
+			item->name = name;
 			return true;
 		}
 
 		Ptr<GuiResourceItem> GuiResourceFolder::RemoveItem(const WString& name)
 		{
-			Ptr<GuiResourceItem> item=GetItem(name);
-			if(!item) return 0;
+			Ptr<GuiResourceItem> item = GetItem(name);
+			if (!item) return 0;
 			items.Remove(name);
+			item->parent = nullptr;
+			item->name = L"";
 			return item;
 		}
 
@@ -1000,18 +1002,20 @@ GuiResourceFolder
 
 		bool GuiResourceFolder::AddFolder(const WString& name, Ptr<GuiResourceFolder> folder)
 		{
-			if(folder->GetParent()!=0 || folders.Keys().Contains(name)) return false;
+			if (folder->GetParent() != 0 || folders.Keys().Contains(name)) return false;
 			folders.Add(name, folder);
-			folder->parent=this;
-			folder->name=name;
+			folder->parent = this;
+			folder->name = name;
 			return true;
 		}
 
 		Ptr<GuiResourceFolder> GuiResourceFolder::RemoveFolder(const WString& name)
 		{
-			Ptr<GuiResourceFolder> folder=GetFolder(name);
-			if(!folder) return 0;
+			Ptr<GuiResourceFolder> folder = GetFolder(name);
+			if (!folder) return 0;
 			folders.Remove(name);
+			folder->parent = nullptr;
+			folder->name = L"";
 			return folder;
 		}
 
@@ -1240,6 +1244,7 @@ GuiResource
 			}
 
 			GuiResourcePrecompileContext context;
+			context.compilerCallback = callback ? callback->GetCompilerCallback() : nullptr;
 			context.rootResource = this;
 			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
 			context.targetFolder = new GuiResourceFolder;
@@ -1486,11 +1491,8 @@ IGuiResourceResolverManager
 			ResolverGroup				perPassResolvers;
 
 		public:
-			GuiResourceResolverManager()
-			{
-			}
-
-			~GuiResourceResolverManager()
+			
+			GUI_PLUGIN_NAME(GacUI_Res_ResourceResolver)
 			{
 			}
 
@@ -1502,10 +1504,6 @@ IGuiResourceResolverManager
 				resourceResolverManager = this;
 				SetPathResolverFactory(new GuiResourcePathFileResolver::Factory);
 				SetPathResolverFactory(new GuiResourcePathResResolver::Factory);
-			}
-
-			void AfterLoad()override
-			{
 			}
 
 			void Unload()override
@@ -1615,5 +1613,107 @@ IGuiResourceResolverManager
 			}
 		};
 		GUI_REGISTER_PLUGIN(GuiResourceResolverManager)
+
+/***********************************************************************
+Helpers
+***********************************************************************/
+
+		vint CopyStream(stream::IStream& inputStream, stream::IStream& outputStream)
+		{
+			vint totalSize = 0;
+			while (true)
+			{
+				char buffer[1024];
+				vint copied = inputStream.Read(buffer, (vint)sizeof(buffer));
+				if (copied == 0)
+				{
+					break;
+				}
+				totalSize += outputStream.Write(buffer, copied);
+			}
+			return totalSize;
+		}
+
+		const vint CompressionFragmentSize = 1048576;
+
+		void CompressStream(stream::IStream& inputStream, stream::IStream& outputStream)
+		{
+			Array<char> buffer(CompressionFragmentSize);
+			while (true)
+			{
+				vint size = inputStream.Read(&buffer[0], buffer.Count());
+				if (size == 0) break;
+
+				MemoryStream compressedStream;
+				{
+					LzwEncoder encoder;
+					EncoderStream encoderStream(compressedStream, encoder);
+					encoderStream.Write(&buffer[0], size);
+				}
+
+				compressedStream.SeekFromBegin(0);
+				{
+					{
+						vint32_t bufferSize = (vint32_t)size;
+						outputStream.Write(&bufferSize, (vint)sizeof(bufferSize));
+					}
+					{
+						vint32_t compressedSize = (vint32_t)compressedStream.Size();
+						outputStream.Write(&compressedSize, (vint)sizeof(compressedSize));
+					}
+					CopyStream(compressedStream, outputStream);
+				}
+			}
+		}
+
+		void DecompressStream(stream::IStream& inputStream, stream::IStream& outputStream)
+		{
+			vint totalSize = 0;
+			vint totalWritten = 0;
+			while (true)
+			{
+				vint32_t bufferSize = 0;
+				if (inputStream.Read(&bufferSize, (vint)sizeof(bufferSize)) != sizeof(bufferSize))
+				{
+					break;
+				}
+
+				vint32_t compressedSize = 0;
+				CHECK_ERROR(inputStream.Read(&compressedSize, (vint)sizeof(compressedSize)) == sizeof(compressedSize), L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
+
+				Array<char> buffer(compressedSize);
+				CHECK_ERROR(inputStream.Read(&buffer[0], compressedSize) == compressedSize, L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
+
+				MemoryWrapperStream compressedStream(&buffer[0], compressedSize);
+				LzwDecoder decoder;
+				DecoderStream decoderStream(compressedStream, decoder);
+				totalWritten += CopyStream(decoderStream, outputStream);
+				totalSize += bufferSize;
+			}
+			CHECK_ERROR(outputStream.Size() == totalSize, L"vl::presentation::DecompressStream(MemoryStream&, MemoryStream&)#Incomplete input");
+		}
+
+		void DecompressStream(const char** buffer, bool decompress, vint rows, vint block, vint remain, stream::IStream& outputStream)
+		{
+			if (decompress)
+			{
+				MemoryStream compressedStream;
+				for (vint i = 0; i < rows; i++)
+				{
+					vint size = i == rows - 1 ? remain : block;
+					compressedStream.Write((void*)buffer[i], size);
+				}
+				compressedStream.SeekFromBegin(0);
+				DecompressStream(compressedStream, outputStream);
+			}
+			else
+			{
+				for (vint i = 0; i < rows; i++)
+				{
+					vint size = i == rows - 1 ? remain : block;
+					outputStream.Write((void*)buffer[i], size);
+				}
+			}
+		}
 	}
 }
