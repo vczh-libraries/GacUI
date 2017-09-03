@@ -3063,24 +3063,6 @@ Closures
 
 		__vwsnc17_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentTabPage* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc18_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::DocumentTabPageConstructor* __vwsnthis_0;
-
-		__vwsnc18_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
-
 		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
@@ -3094,12 +3076,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc19_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc18_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::DocumentTabPageConstructor* __vwsnthis_0;
 
-		__vwsnc19_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
+		__vwsnc18_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
 		::demo::DocumentTabPage* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -3107,6 +3089,26 @@ Closures
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc19_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::DocumentTabPageConstructor* __vwsnthis_0;
+
+		__vwsnc19_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3130,14 +3132,12 @@ Closures
 
 		__vwsnc20_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentTabPage* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3150,12 +3150,14 @@ Closures
 
 		__vwsnc21_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3168,14 +3170,12 @@ Closures
 
 		__vwsnc22_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentTabPage* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3188,12 +3188,14 @@ Closures
 
 		__vwsnc23_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentTabPage* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3206,14 +3208,12 @@ Closures
 
 		__vwsnc24_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentTabPage* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3295,9 +3295,12 @@ Closures
 
 		__vwsnc29_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3321,12 +3324,9 @@ Closures
 
 		__vwsnc30_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3339,9 +3339,12 @@ Closures
 
 		__vwsnc31_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3354,12 +3357,9 @@ Closures
 
 		__vwsnc32_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3372,9 +3372,12 @@ Closures
 
 		__vwsnc33_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -3387,12 +3390,9 @@ Closures
 
 		__vwsnc34_Demo_demo_DocumentTabPageConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::demo::DocumentTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
