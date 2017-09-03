@@ -31,7 +31,7 @@ namespace vl
 				GuiResourceError::SortAndLog(errors, output);
 				if (!File(errorPath).WriteAllLines(output, true, BomEncoder::Utf8))
 				{
-					return false;
+					return nullptr;
 				}
 			}
 			return precompiledFolder;
@@ -314,6 +314,7 @@ namespace vl
 		}
 	}
 }
+
 
 /***********************************************************************
 .\GUIINSTANCEHELPERTYPES.CPP
@@ -1555,6 +1556,13 @@ GuiDefaultInstanceLoader
 				{
 					auto genericType = propType->GetElementType();
 					if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+					{
+						readableList = true;
+						writableList = true;
+						collectionType = true;
+						return genericType->GetGenericArgument(0);
+					}
+					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 					{
 						readableList = true;
 						writableList = true;
@@ -5496,44 +5504,40 @@ Workflow_GenerateInstanceClass
 			// ref.Parameter (Variable, Getter, CtorArgument)
 			///////////////////////////////////////////////////////////////
 
-			FOREACH(Ptr<GuiInstanceParameter>, param, context->parameters)
+			FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
 			{
-				bool isReferenceType = true;
-				auto paramTd = GetTypeDescriptor(param->className.ToString());
-				if (paramTd)
+				WString classNameTail;
+				Ptr<ITypeInfo> parameterTypeInfo;
+				if (auto paramTd = GetTypeDescriptor(parameter->className.ToString()))
 				{
-					isReferenceType = (paramTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined;
+					parameterTypeInfo = Workflow_GetSuggestedParameterType(paramTd);
+					switch (parameterTypeInfo->GetDecorator())
+					{
+					case ITypeInfo::RawPtr: classNameTail = L"*"; break;
+					case ITypeInfo::SharedPtr: classNameTail = L"^"; break;
+					default:;
+					}
 				}
 
-				if (auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, param->className.ToString() + (isReferenceType ? L"^" : L""), param->classPosition, errors))
+				if (auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameter->className.ToString() + classNameTail, parameter->classPosition, errors))
 				{
 					if (!beforePrecompile)
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
 						addDecl(decl);
 
-						decl->name.value = L"<parameter>" + param->name.ToString();
+						decl->name.value = L"<parameter>" + parameter->name.ToString();
 						decl->type = CopyType(type);
+						decl->expression = CreateDefaultValue(parameterTypeInfo.Obj());
 
-						if (isReferenceType)
-						{
-							auto nullExpr = MakePtr<WfLiteralExpression>();
-							nullExpr->value = WfLiteralValue::Null;
-							decl->expression = nullExpr;
-						}
-						else
-						{
-							decl->expression = CreateDefaultValue(MakePtr<TypeDescriptorTypeInfo>(paramTd, TypeInfoHint::Normal).Obj());
-						}
-
-						Workflow_RecordScriptPosition(precompileContext, param->tagPosition, (Ptr<WfDeclaration>)decl);
+						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
 					{
 						auto decl = MakePtr<WfFunctionDeclaration>();
 						addDecl(decl);
 
 						decl->anonymity = WfFunctionAnonymity::Named;
-						decl->name.value = L"Get" + param->name.ToString();
+						decl->name.value = L"Get" + parameter->name.ToString();
 						decl->returnType = CopyType(type);
 						if (!beforePrecompile)
 						{
@@ -5541,7 +5545,7 @@ Workflow_GenerateInstanceClass
 							decl->statement = block;
 
 							auto ref = MakePtr<WfReferenceExpression>();
-							ref->name.value = L"<parameter>" + param->name.ToString();
+							ref->name.value = L"<parameter>" + parameter->name.ToString();
 
 							auto returnStat = MakePtr<WfReturnStatement>();
 							returnStat->expression = ref;
@@ -5552,31 +5556,31 @@ Workflow_GenerateInstanceClass
 							decl->statement = notImplemented();
 						}
 
-						Workflow_RecordScriptPosition(precompileContext, param->tagPosition, (Ptr<WfDeclaration>)decl);
+						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
 					{
 						auto decl = MakePtr<WfPropertyDeclaration>();
 						addDecl(decl);
 
-						decl->name.value = param->name.ToString();
+						decl->name.value = parameter->name.ToString();
 						decl->type = type;
-						decl->getter.value = L"Get" + param->name.ToString();
+						decl->getter.value = L"Get" + parameter->name.ToString();
 
-						Workflow_RecordScriptPosition(precompileContext, param->tagPosition, (Ptr<WfDeclaration>)decl);
+						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
 					{
 						auto argument = MakePtr<WfFunctionArgument>();
-						argument->name.value = L"<ctor-parameter>" + param->name.ToString();
+						argument->name.value = L"<ctor-parameter>" + parameter->name.ToString();
 						argument->type = CopyType(type);
 						ctor->arguments.Add(argument);
 					}
 					if (!beforePrecompile)
 					{
 						auto refLeft = MakePtr<WfReferenceExpression>();
-						refLeft->name.value = L"<parameter>" + param->name.ToString();
+						refLeft->name.value = L"<parameter>" + parameter->name.ToString();
 
 						auto refRight = MakePtr<WfReferenceExpression>();
-						refRight->name.value = L"<ctor-parameter>" + param->name.ToString();
+						refRight->name.value = L"<ctor-parameter>" + parameter->name.ToString();
 
 						auto assignExpr = MakePtr<WfBinaryExpression>();
 						assignExpr->op = WfBinaryOperator::Assign;
@@ -5588,7 +5592,7 @@ Workflow_GenerateInstanceClass
 
 						ctorBlock->statements.Add(exprStat);
 
-						Workflow_RecordScriptPosition(precompileContext, param->tagPosition, (Ptr<WfStatement>)exprStat);
+						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfStatement>)exprStat);
 					}
 				}
 			}
@@ -6507,6 +6511,46 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
+		Ptr<reflection::description::ITypeInfo> Workflow_GetSuggestedParameterType(reflection::description::ITypeDescriptor* typeDescriptor)
+		{
+			auto elementType = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+			if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+			{
+				bool isShared = false;
+				bool isRaw = false;
+				if (auto ctorGroup = typeDescriptor->GetConstructorGroup())
+				{
+					vint count = ctorGroup->GetMethodCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto returnType = ctorGroup->GetMethod(i)->GetReturn();
+						switch (returnType->GetDecorator())
+						{
+						case ITypeInfo::RawPtr: isRaw = true; break;
+						case ITypeInfo::SharedPtr: isShared = true; break;
+						default:;
+						}
+					}
+				}
+				if (!isShared && !isRaw)
+				{
+					return MakePtr<SharedPtrTypeInfo>(elementType);
+				}
+				else if (isShared)
+				{
+					return MakePtr<SharedPtrTypeInfo>(elementType);
+				}
+				else
+				{
+					return MakePtr<RawPtrTypeInfo>(elementType);
+				}
+			}
+			else
+			{
+				return elementType;
+			}
+		}
+
 		IGuiInstanceLoader::TypeInfo Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
 			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
@@ -6528,18 +6572,7 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					Ptr<ITypeInfo> referenceType;
-					{
-						auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
-						if ((type->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
-						{
-							referenceType = MakePtr<SharedPtrTypeInfo>(elementType);
-						}
-						else
-						{
-							referenceType = elementType;
-						}
-					}
+					auto referenceType = Workflow_GetSuggestedParameterType(type);
 					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
 				}
 			}
@@ -8858,6 +8891,9 @@ GuiDocumentInstanceLoaderBase
 			template<typename TBaseType>
 			class GuiDocumentInstanceLoaderBase : public TBaseType
 			{
+			private:
+				using TypeInfo = typename TBaseType::TypeInfo;
+
 			public:
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
@@ -9940,6 +9976,9 @@ GuiToolstripInstanceLoaderBase
 			template<typename TBaseType>
 			class GuiToolstripInstanceLoaderBase : public TBaseType
 			{
+			private:
+				using TypeInfo = typename TBaseType::TypeInfo;
+
 			public:
 				using ArgumentMap = IGuiInstanceLoader::ArgumentMap;
 				using PropertyInfo = IGuiInstanceLoader::PropertyInfo;

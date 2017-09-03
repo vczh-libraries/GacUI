@@ -167,7 +167,7 @@
       </Cell>
 
       <Cell Site="row:2 column:0">
-        <DocumentViewer ref.Name="document" EditMode="Editable">
+        <DocumentViewer ref.Name="document" EditMode="Editable" Alt="D">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <ev.ActiveHyperlinkExecuted-eval>
             <![CDATA[

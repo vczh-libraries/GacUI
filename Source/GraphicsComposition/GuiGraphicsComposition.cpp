@@ -198,6 +198,10 @@ GuiRepeatCompositionBase
 
 			void GuiRepeatCompositionBase::RemoveItem(vint index)
 			{
+				GuiItemEventArgs arguments(dynamic_cast<GuiGraphicsComposition*>(this));
+				arguments.itemIndex = index;
+				ItemRemoved.Execute(arguments);
+
 				auto item = RemoveRepeatComposition(index);
 				SafeDeleteComposition(item);
 			}
@@ -211,6 +215,10 @@ GuiRepeatCompositionBase
 				templateItem->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				item->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				item->AddChild(templateItem);
+
+				GuiItemEventArgs arguments(dynamic_cast<GuiGraphicsComposition*>(this));
+				arguments.itemIndex = index;
+				ItemInserted.Execute(arguments);
 			}
 
 			void GuiRepeatCompositionBase::ClearItems()

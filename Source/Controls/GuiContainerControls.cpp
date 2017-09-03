@@ -1,5 +1,12 @@
 #include "GuiContainerControls.h"
 
+/* CodePack:BeginIgnore() */
+#ifndef VCZH_DEBUG_NO_REFLECTION
+/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, ../Reflection/TypeDescriptors/GuiReflectionPlugin.h) */
+#include "../Reflection/TypeDescriptors/GuiReflectionPlugin.h"
+#endif
+/* CodePack:EndIgnore() */
+
 namespace vl
 {
 	namespace presentation
@@ -18,32 +25,19 @@ GuiTabPage
 				return false;
 			}
 
-			void GuiTabPage::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				if (tab)
-				{
-					tab->styleController->SetTabText(tab->tabPages.IndexOf(this), GetText());
-				}
-			}
-
-			void GuiTabPage::OnAltChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				if (tab)
-				{
-					tab->styleController->SetTabAlt(tab->tabPages.IndexOf(this), GetAlt());
-				}
-			}
-
 			GuiTabPage::GuiTabPage(IStyleController* _styleController)
 				:GuiCustomControl(_styleController)
 			{
-				TextChanged.AttachMethod(this, &GuiTabPage::OnTextChanged);
-				AltChanged.AttachMethod(this, &GuiTabPage::OnAltChanged);
 			}
 
 			GuiTabPage::~GuiTabPage()
 			{
 				FinalizeAggregation();
+			}
+
+			GuiTab* GuiTabPage::GetOwnerTab()
+			{
+				return tab;
 			}
 
 /***********************************************************************
@@ -57,10 +51,6 @@ GuiTabPageList
 
 			void GuiTabPageList::AfterInsert(vint index, GuiTabPage* const& value)
 			{
-				tab->styleController->InsertTab(index);
-				tab->styleController->SetTabText(index, value->GetText());
-				tab->styleController->SetTabAlt(index, value->GetAlt());
-
 				value->tab = tab;
 				value->SetVisible(false);
 				value->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
@@ -74,7 +64,6 @@ GuiTabPageList
 
 			void GuiTabPageList::BeforeRemove(vint index, GuiTabPage* const& value)
 			{
-				tab->styleController->RemoveTab(index);
 				tab->GetContainerComposition()->RemoveChild(value->GetBoundsComposition());
 				value->tab = nullptr;
 
@@ -122,13 +111,14 @@ GuiTab
 			{
 				commandExecutor = new CommandExecutor(this);
 				styleController->SetCommandExecutor(commandExecutor.Obj());
+				styleController->SetTabPages(tabPages.GetWrapper());
 			}
 
 			GuiTab::~GuiTab()
 			{
 			}
 
-			GuiTabPageList& GuiTab::GetPages()
+			collections::ObservableList<GuiTabPage*>& GuiTab::GetPages()
 			{
 				return tabPages;
 			}
@@ -149,21 +139,19 @@ GuiTab
 				}
 				else if (value->tab == this)
 				{
-					if (selectedPage != value)
+					if (selectedPage == value)
 					{
-						selectedPage = value;
-						for (vint i = 0; i < tabPages.Count(); i++)
-						{
-							bool selected = tabPages[i] == value;
-							tabPages[i]->SetVisible(selected);
-							if (selected)
-							{
-								styleController->SetSelectedTab(i);
-							}
-						}
-						SelectedPageChanged.Execute(GetNotifyEventArguments());
+						return true;
+					}
+
+					selectedPage = value;
+					FOREACH(GuiTabPage*, tabPage, tabPages)
+					{
+						tabPage->SetVisible(tabPage == selectedPage);
 					}
 				}
+				styleController->SetSelectedTabPage(selectedPage);
+				SelectedPageChanged.Execute(GetNotifyEventArguments());
 				return selectedPage == value;
 			}
 

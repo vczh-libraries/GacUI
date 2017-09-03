@@ -20,6 +20,7 @@ namespace vl
 			class GuiListControl;
 			class GuiControlHost;
 			class GuiCustomControl;
+			class GuiTabPage;
 
 			/// <summary>The visual state for button.</summary>
 			enum class ButtonState
@@ -470,12 +471,9 @@ Control Template
 				~GuiTabTemplate();
 
 #define GuiTabTemplate_PROPERTIES(F)\
-				F(GuiTabTemplate, TemplateProperty<GuiSelectableButtonTemplate>, HeaderTemplate)\
-				F(GuiTabTemplate, TemplateProperty<GuiButtonTemplate>, DropdownTemplate)\
-				F(GuiTabTemplate, TemplateProperty<GuiMenuTemplate>, MenuTemplate)\
-				F(GuiTabTemplate, TemplateProperty<GuiToolstripButtonTemplate>, MenuItemTemplate)\
-				F(GuiTabTemplate, vint, HeaderPadding)\
-				F(GuiTabTemplate, compositions::GuiGraphicsComposition*, HeaderComposition)\
+				F(GuiTabTemplate, controls::ITabCommandExecutor*, Commands)\
+				F(GuiTabTemplate, Ptr<reflection::description::IValueObservableList>, TabPages)\
+				F(GuiTabTemplate, controls::GuiTabPage*, SelectedTabPage)\
 
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};

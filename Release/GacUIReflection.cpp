@@ -1136,6 +1136,25 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiSharedSizeRootComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSubComponentMeasurerSource)
 
+			BEGIN_CLASS_MEMBER(GuiRepeatCompositionBase)
+				CLASS_MEMBER_GUIEVENT(ItemInserted)
+				CLASS_MEMBER_GUIEVENT(ItemRemoved)
+				CLASS_MEMBER_PROPERTY_FAST(ItemTemplate)
+				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
+			END_CLASS_MEMBER(GuiRepeatCompositionBase)
+
+			BEGIN_CLASS_MEMBER(GuiRepeatStackComposition)
+				CLASS_MEMBER_BASE(GuiStackComposition)
+				CLASS_MEMBER_BASE(GuiRepeatCompositionBase)
+				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatStackComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiRepeatStackComposition)
+
+			BEGIN_CLASS_MEMBER(GuiRepeatFlowComposition)
+				CLASS_MEMBER_BASE(GuiFlowComposition)
+				CLASS_MEMBER_BASE(GuiRepeatCompositionBase)
+				CLASS_MEMBER_CONSTRUCTOR(GuiRepeatFlowComposition*(), NO_PARAMETER)
+			END_CLASS_MEMBER(GuiRepeatFlowComposition)
+
 			BEGIN_INTERFACE_MEMBER(IGuiGraphicsAnimation)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TotalLength)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(CurrentPosition)
@@ -1601,6 +1620,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiCustomControl)
 				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTabPage)
 				CONTROL_CONSTRUCTOR_DEFAULT(GuiTabPage, vl::presentation::theme::g::NewTabPage)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerTab)
 			END_CLASS_MEMBER(GuiTabPage)
 
 			BEGIN_CLASS_MEMBER(GuiTab)
@@ -1617,12 +1638,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
 
 				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
-				CLASS_MEMBER_METHOD(InsertTab, {L"index"})
-				CLASS_MEMBER_METHOD(SetTabText, {L"index" _ L"value"})
-				CLASS_MEMBER_METHOD(RemoveTab, {L"index"})
-				CLASS_MEMBER_METHOD(SetSelectedTab, {L"index"})
-				CLASS_MEMBER_METHOD(SetTabAlt, {L"index" _ L"value"})
-				CLASS_MEMBER_METHOD(GetTabAltAction, {L"index"})
+				CLASS_MEMBER_METHOD(SetTabPages, { L"value" })
+				CLASS_MEMBER_METHOD(SetSelectedTabPage, { L"value" })
 			END_INTERFACE_MEMBER(GuiTab::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiScrollView)

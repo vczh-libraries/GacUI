@@ -20,7 +20,7 @@
                 <att.Pages>
                   <demo:TextListTabPage Alt="T"/>
                   <demo:ListViewTabPage Alt="L"/>
-                  <demo:TreeViewTabPage Alt="R"/>
+                  <demo:TreeViewTabPage Alt="T"/>
                   <demo:DataGridTabPage Alt="D"/>
                 </att.Pages>
               </Tab>

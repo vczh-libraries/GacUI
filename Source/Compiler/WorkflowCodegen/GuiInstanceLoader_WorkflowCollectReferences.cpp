@@ -602,6 +602,46 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
+		Ptr<reflection::description::ITypeInfo> Workflow_GetSuggestedParameterType(reflection::description::ITypeDescriptor* typeDescriptor)
+		{
+			auto elementType = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+			if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+			{
+				bool isShared = false;
+				bool isRaw = false;
+				if (auto ctorGroup = typeDescriptor->GetConstructorGroup())
+				{
+					vint count = ctorGroup->GetMethodCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto returnType = ctorGroup->GetMethod(i)->GetReturn();
+						switch (returnType->GetDecorator())
+						{
+						case ITypeInfo::RawPtr: isRaw = true; break;
+						case ITypeInfo::SharedPtr: isShared = true; break;
+						default:;
+						}
+					}
+				}
+				if (!isShared && !isRaw)
+				{
+					return MakePtr<SharedPtrTypeInfo>(elementType);
+				}
+				else if (isShared)
+				{
+					return MakePtr<SharedPtrTypeInfo>(elementType);
+				}
+				else
+				{
+					return MakePtr<RawPtrTypeInfo>(elementType);
+				}
+			}
+			else
+			{
+				return elementType;
+			}
+		}
+
 		IGuiInstanceLoader::TypeInfo Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
 			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
@@ -623,18 +663,7 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					Ptr<ITypeInfo> referenceType;
-					{
-						auto elementType = MakePtr<TypeDescriptorTypeInfo>(type, TypeInfoHint::Normal);
-						if ((type->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
-						{
-							referenceType = MakePtr<SharedPtrTypeInfo>(elementType);
-						}
-						else
-						{
-							referenceType = elementType;
-						}
-					}
+					auto referenceType = Workflow_GetSuggestedParameterType(type);
 					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
 				}
 			}

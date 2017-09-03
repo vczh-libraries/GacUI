@@ -359,6 +359,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiCustomControl)
 				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTabPage)
 				CONTROL_CONSTRUCTOR_DEFAULT(GuiTabPage, vl::presentation::theme::g::NewTabPage)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerTab)
 			END_CLASS_MEMBER(GuiTabPage)
 
 			BEGIN_CLASS_MEMBER(GuiTab)
@@ -375,12 +377,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
 
 				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
-				CLASS_MEMBER_METHOD(InsertTab, {L"index"})
-				CLASS_MEMBER_METHOD(SetTabText, {L"index" _ L"value"})
-				CLASS_MEMBER_METHOD(RemoveTab, {L"index"})
-				CLASS_MEMBER_METHOD(SetSelectedTab, {L"index"})
-				CLASS_MEMBER_METHOD(SetTabAlt, {L"index" _ L"value"})
-				CLASS_MEMBER_METHOD(GetTabAltAction, {L"index"})
+				CLASS_MEMBER_METHOD(SetTabPages, { L"value" })
+				CLASS_MEMBER_METHOD(SetSelectedTabPage, { L"value" })
 			END_INTERFACE_MEMBER(GuiTab::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiScrollView)

@@ -296,6 +296,13 @@ GuiDefaultInstanceLoader
 						collectionType = true;
 						return genericType->GetGenericArgument(0);
 					}
+					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
+					{
+						readableList = true;
+						writableList = true;
+						collectionType = true;
+						return genericType->GetGenericArgument(0);
+					}
 					else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerator>())
 					{
 						collectionType = true;

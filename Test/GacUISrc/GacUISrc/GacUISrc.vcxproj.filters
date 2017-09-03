@@ -138,9 +138,6 @@
     <ClCompile Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.cpp">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Styles\GuiCommonStyles.cpp">
-      <Filter>GacUI\Controls\Styles</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.cpp">
       <Filter>GacUI\Controls\Styles</Filter>
     </ClCompile>
@@ -532,9 +529,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.h">
       <Filter>GacUI\Controls\ListControlPackage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Styles\GuiCommonStyles.h">
-      <Filter>GacUI\Controls\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\Styles\GuiThemeStyleFactory.h">
       <Filter>GacUI\Controls\Styles</Filter>
