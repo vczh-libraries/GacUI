@@ -176,8 +176,9 @@ void CompileResources(const WString& name, const WString& resourcePath, const WS
 		File(errorPath).Delete();
 
 		auto precompiledFolder = PrecompileAndWriteErrors(resource, &debugCallback, errors, errorPath);
-		auto compiled = WriteWorkflowScript(precompiledFolder, workflowPath);
 		CHECK_ERROR(errors.Count() == 0, L"Error");
+
+		auto compiled = WriteWorkflowScript(precompiledFolder, workflowPath);
 
 		auto input = MakePtr<WfCppInput>(name);
 		input->multiFile = WfCppFileSwitch::Enabled;

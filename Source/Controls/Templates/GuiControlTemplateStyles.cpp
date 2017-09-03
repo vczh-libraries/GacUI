@@ -697,160 +697,6 @@ GuiTreeViewTemplate_StyleProvider
 GuiTabTemplate_StyleProvider
 ***********************************************************************/
 
-			controls::GuiSelectableButton::IStyleController* GuiTabTemplate_StyleProvider::CreateHeaderTemplate()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, HeaderTemplate);
-			}
-
-			controls::GuiButton::IStyleController* GuiTabTemplate_StyleProvider::CreateDropdownTemplate()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiButtonTemplate, DropdownTemplate);
-			}
-
-			controls::GuiMenu::IStyleController* GuiTabTemplate_StyleProvider::CreateMenuTemplate()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiMenuTemplate, MenuTemplate);
-			}
-
-			controls::GuiToolstripButton::IStyleController* GuiTabTemplate_StyleProvider::CreateMenuItemTemplate()
-			{
-				GET_FACTORY_FROM_TEMPLATE(GuiToolstripButtonTemplate, MenuItemTemplate);
-			}
-
-			void GuiTabTemplate_StyleProvider::OnHeaderButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				if(commandExecutor)
-				{
-					vint index=headerButtons.IndexOf(dynamic_cast<GuiSelectableButton*>(sender->GetAssociatedControl()));
-					if(index!=-1)
-					{
-						commandExecutor->ShowTab(index);
-					}
-				}
-			}
-
-			void GuiTabTemplate_StyleProvider::OnTabHeaderBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				vint height=headerOverflowButton->GetBoundsComposition()->GetBounds().Height();
-				headerOverflowButton->GetBoundsComposition()->SetBounds(Rect(Point(0, 0), Size(height, 0)));
-
-				UpdateHeaderLayout();
-			}
-
-			void GuiTabTemplate_StyleProvider::OnHeaderOverflowButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				headerOverflowMenu->SetClientSize(Size(0, 0));
-				headerOverflowMenu->ShowPopup(headerOverflowButton, true);
-			}
-
-			void GuiTabTemplate_StyleProvider::OnHeaderOverflowMenuButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				vint index=headerOverflowMenu->GetToolstripItems().IndexOf(sender->GetRelatedControl());
-				commandExecutor->ShowTab(index);
-			}
-
-			void GuiTabTemplate_StyleProvider::UpdateHeaderOverflowButtonVisibility()
-			{
-				if(tabHeaderComposition->IsStackItemClipped())
-				{
-					tabBoundsComposition->SetColumnOption(1, GuiCellOption::MinSizeOption());
-				}
-				else
-				{
-					tabBoundsComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(0));
-				}
-				tabBoundsComposition->ForceCalculateSizeImmediately();
-			}
-
-			void GuiTabTemplate_StyleProvider::UpdateHeaderZOrder()
-			{
-				vint itemCount=tabHeaderComposition->GetStackItems().Count();
-				vint childCount=tabHeaderComposition->Children().Count();
-				for(vint i=0;i<itemCount;i++)
-				{
-					GuiStackItemComposition* item=tabHeaderComposition->GetStackItems().Get(i);
-					if(headerButtons[i]->GetSelected())
-					{
-						tabHeaderComposition->MoveChild(item, childCount-1);
-						vint padding = controlTemplate->GetHeaderPadding();
-						item->SetExtraMargin(Margin(padding, padding, padding, 0));
-					}
-					else
-					{
-						item->SetExtraMargin(Margin(0, 0, 0, 0));
-					}
-				}
-				if(childCount>1)
-				{
-					tabHeaderComposition->MoveChild(tabContentTopLineComposition, childCount-2);
-				}
-			}
-
-			void GuiTabTemplate_StyleProvider::UpdateHeaderVisibilityIndex()
-			{
-				vint itemCount=tabHeaderComposition->GetStackItems().Count();
-				vint selectedItem=-1;
-				for(vint i=0;i<itemCount;i++)
-				{
-					if(headerButtons[i]->GetSelected())
-					{
-						selectedItem=i;
-					}
-				}
-
-				if(selectedItem!=-1)
-				{
-					tabHeaderComposition->EnsureVisible(selectedItem);
-				}
-			}
-
-			void GuiTabTemplate_StyleProvider::UpdateHeaderLayout()
-			{
-				UpdateHeaderZOrder();
-				UpdateHeaderVisibilityIndex();
-				UpdateHeaderOverflowButtonVisibility();
-			}
-
-			void GuiTabTemplate_StyleProvider::Initialize()
-			{
-				tabBoundsComposition=new GuiTableComposition;
-				tabBoundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-				tabBoundsComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				tabBoundsComposition->SetRowsAndColumns(1, 2);
-				tabBoundsComposition->SetRowOption(0, GuiCellOption::MinSizeOption());
-				tabBoundsComposition->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-				tabBoundsComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(0));
-				controlTemplate->GetHeaderComposition()->AddChild(tabBoundsComposition);
-				
-				vint padding = controlTemplate->GetHeaderPadding();
-				{
-					GuiCellComposition* cell=new GuiCellComposition;
-					tabBoundsComposition->AddChild(cell);
-					cell->SetSite(0, 0, 1, 1);
-					
-					vint padding = controlTemplate->GetHeaderPadding();
-					tabHeaderComposition=new GuiStackComposition;
-					tabHeaderComposition->SetExtraMargin(Margin(padding, padding, padding, 0));
-					tabHeaderComposition->SetAlignmentToParent(Margin(0, 0, 1, 0));
-					tabHeaderComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					tabHeaderComposition->BoundsChanged.AttachMethod(this, &GuiTabTemplate_StyleProvider::OnTabHeaderBoundsChanged);
-					cell->AddChild(tabHeaderComposition);
-				}
-				{
-					GuiCellComposition* cell=new GuiCellComposition;
-					tabBoundsComposition->AddChild(cell);
-					cell->SetSite(0, 1, 1, 1);
-
-					headerOverflowButton=new GuiButton(CreateDropdownTemplate());
-					headerOverflowButton->GetBoundsComposition()->SetAlignmentToParent(Margin(-1, padding, 0, 0));
-					headerOverflowButton->Clicked.AttachMethod(this, &GuiTabTemplate_StyleProvider::OnHeaderOverflowButtonClicked);
-					cell->AddChild(headerOverflowButton->GetBoundsComposition());
-				}
-
-				headerOverflowMenu=new GuiToolstripMenu(CreateMenuTemplate(), 0);
-				headerController=new GuiSelectableButton::MutexGroupController;
-			}
-
 			GuiTabTemplate_StyleProvider::GuiTabTemplate_StyleProvider(TemplateProperty<GuiTabTemplate> factory)
 				:GuiControlTemplate_StyleProvider(factory)
 			{
@@ -858,79 +704,25 @@ GuiTabTemplate_StyleProvider
 				{
 					CHECK_FAIL(L"GuiTabTemplate_StyleProvider::GuiTabTemplate_StyleProvider()#An instance of GuiTabTemplate is expected.");
 				}
-				Initialize();
 			}
 
 			GuiTabTemplate_StyleProvider::~GuiTabTemplate_StyleProvider()
 			{
-				delete headerOverflowMenu;
 			}
 
 			void GuiTabTemplate_StyleProvider::SetCommandExecutor(controls::ITabCommandExecutor* value)
 			{
-				commandExecutor=value;
+				controlTemplate->SetCommands(value);
 			}
 
-			void GuiTabTemplate_StyleProvider::InsertTab(vint index)
+			void GuiTabTemplate_StyleProvider::SetTabPages(Ptr<reflection::description::IValueObservableList> value)
 			{
-				GuiSelectableButton* button=new GuiSelectableButton(CreateHeaderTemplate());
-				button->SetAutoSelection(false);
-				button->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				button->SetGroupController(headerController.Obj());
-				button->Clicked.AttachMethod(this, &GuiTabTemplate_StyleProvider::OnHeaderButtonClicked);
-
-				GuiStackItemComposition* item=new GuiStackItemComposition;
-				item->AddChild(button->GetBoundsComposition());
-				tabHeaderComposition->InsertStackItem(index, item);
-				headerButtons.Insert(index, button);
-
-				GuiToolstripButton* menuItem=new GuiToolstripButton(CreateMenuItemTemplate());
-				menuItem->Clicked.AttachMethod(this, &GuiTabTemplate_StyleProvider::OnHeaderOverflowMenuButtonClicked);
-				headerOverflowMenu->GetToolstripItems().Insert(index, menuItem);
-
-				UpdateHeaderLayout();
+				controlTemplate->SetTabPages(value);
 			}
 
-			void GuiTabTemplate_StyleProvider::SetTabText(vint index, const WString& value)
+			void GuiTabTemplate_StyleProvider::SetSelectedTabPage(controls::GuiTabPage* value)
 			{
-				headerButtons[index]->SetText(value);
-				headerOverflowMenu->GetToolstripItems().Get(index)->SetText(value);
-				
-				UpdateHeaderLayout();
-			}
-
-			void GuiTabTemplate_StyleProvider::RemoveTab(vint index)
-			{
-				GuiStackItemComposition* item=tabHeaderComposition->GetStackItems().Get(index);
-				GuiSelectableButton* button=headerButtons[index];
-
-				tabHeaderComposition->RemoveChild(item);
-				item->RemoveChild(button->GetBoundsComposition());
-				headerButtons.RemoveAt(index);
-
-				headerOverflowMenu->GetToolstripItems().RemoveAt(index);
-				delete item;
-				delete button;
-				
-				UpdateHeaderLayout();
-			}
-
-			void GuiTabTemplate_StyleProvider::SetSelectedTab(vint index)
-			{
-				headerButtons[index]->SetSelected(true);
-				
-				UpdateHeaderLayout();
-			}
-
-			void GuiTabTemplate_StyleProvider::SetTabAlt(vint index, const WString& value)
-			{
-				auto button = headerButtons[index];
-				button->SetAlt(value);
-			}
-
-			compositions::IGuiAltAction* GuiTabTemplate_StyleProvider::GetTabAltAction(vint index)
-			{
-				return headerButtons[index]->QueryTypedService<IGuiAltAction>();
+				controlTemplate->SetSelectedTabPage(value);
 			}
 
 /***********************************************************************

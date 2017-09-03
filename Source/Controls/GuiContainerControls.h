@@ -33,8 +33,6 @@ Tab Control
 				GuiTab*											tab = nullptr;
 
 				bool											IsAltAvailable()override;
-				void											OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void											OnAltChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a tab page control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
@@ -42,7 +40,7 @@ Tab Control
 				~GuiTabPage();
 			};
 
-			class GuiTabPageList : public collections::ObservableListBase<GuiTabPage*>
+			class GuiTabPageList : public collections::ObservableList<GuiTabPage*>
 			{
 			protected:
 				GuiTab*											tab;
@@ -68,28 +66,13 @@ Tab Control
 				public:
 					/// <summary>Called when the command executor is changed.</summary>
 					/// <param name="value">The command executor.</param>
-					virtual void								SetCommandExecutor(ITabCommandExecutor* value)=0;
-					/// <summary>Insert a tab header at the specified position.</summary>
-					/// <param name="index">The specified position.</param>
-					virtual void								InsertTab(vint index)=0;
-					/// <summary>Set the text of a tab header at the specified position.</summary>
-					/// <param name="index">The specified position.</param>
-					/// <param name="value">The text.</param>
-					virtual void								SetTabText(vint index, const WString& value)=0;
-					/// <summary>Remove the tab header at the specified position.</summary>
-					/// <param name="index">The specified position.</param>
-					virtual void								RemoveTab(vint index)=0;
+					virtual void								SetCommandExecutor(ITabCommandExecutor* value) = 0;
+					/// <summary>Called when the tab page list is changed.</summary>
+					/// <param name="value">The tab page list.</param>
+					virtual void								SetTabPages(Ptr<reflection::description::IValueObservableList> value) = 0;
 					/// <summary>Render a tab header at the specified position as selected.</summary>
 					/// <param name="index">The specified position.</param>
-					virtual void								SetSelectedTab(vint index)=0;
-					/// <summary>Set the Alt-combined shortcut key of a tab header at the specified position.</summary>
-					/// <param name="index">The specified position.</param>
-					/// <param name="value">The Alt-combined shortcut key.</param>
-					virtual void								SetTabAlt(vint index, const WString& value)=0;
-					/// <summary>Get the associated <see cref="compositions::IGuiAltAction"/> object of a tab header at the specified position.</summary>
-					/// <returns>The associated <see cref="compositions::IGuiAltAction"/> object.</returns>
-					/// <param name="index">The specified position.</param>
-					virtual compositions::IGuiAltAction*		GetTabAltAction(vint index) = 0;
+					virtual void								SetSelectedTabPage(GuiTabPage* value) = 0;
 				};
 			protected:
 				class CommandExecutor : public Object, public ITabCommandExecutor
@@ -118,7 +101,7 @@ Tab Control
 
 				/// <summary>Get all pages.</summary>
 				/// <returns>All pages.</returns>
-				GuiTabPageList&									GetPages();
+				collections::ObservableList<GuiTabPage*>&		GetPages();
 
 				/// <summary>Get the selected page.</summary>
 				/// <returns>The selected page.</returns>

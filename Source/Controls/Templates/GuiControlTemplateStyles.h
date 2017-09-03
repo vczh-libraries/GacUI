@@ -348,44 +348,14 @@ Control Template
 			{
 			protected:
 				GuiTabTemplate*													controlTemplate;
-				
-				compositions::GuiTableComposition*								tabBoundsComposition;
-				compositions::GuiStackComposition*								tabHeaderComposition;
-				compositions::GuiBoundsComposition*								tabContentTopLineComposition;
-				controls::ITabCommandExecutor*									commandExecutor;
 
-				Ptr<controls::GuiSelectableButton::MutexGroupController>		headerController;
-				collections::List<controls::GuiSelectableButton*>				headerButtons;
-				controls::GuiButton*											headerOverflowButton;
-				controls::GuiToolstripMenu*										headerOverflowMenu;
-				
-				controls::GuiSelectableButton::IStyleController*				CreateHeaderTemplate();
-				controls::GuiButton::IStyleController*							CreateDropdownTemplate();
-				controls::GuiMenu::IStyleController*							CreateMenuTemplate();
-				controls::GuiToolstripButton::IStyleController*					CreateMenuItemTemplate();
-
-				void															OnHeaderButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void															OnTabHeaderBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void															OnHeaderOverflowButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void															OnHeaderOverflowMenuButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-
-				void															UpdateHeaderOverflowButtonVisibility();
-				void															UpdateHeaderZOrder();
-				void															UpdateHeaderVisibilityIndex();
-				void															UpdateHeaderLayout();
-
-				void															Initialize();
 			public:
 				GuiTabTemplate_StyleProvider(TemplateProperty<GuiTabTemplate> factory);
 				~GuiTabTemplate_StyleProvider();
 
 				void															SetCommandExecutor(controls::ITabCommandExecutor* value)override;
-				void															InsertTab(vint index)override;
-				void															SetTabText(vint index, const WString& value)override;
-				void															RemoveTab(vint index)override;
-				void															SetSelectedTab(vint index)override;
-				void															SetTabAlt(vint index, const WString& value)override;
-				compositions::IGuiAltAction*									GetTabAltAction(vint index)override;
+				void															SetTabPages(Ptr<reflection::description::IValueObservableList> value)override;
+				void															SetSelectedTabPage(controls::GuiTabPage* value)override;
 			};
 
 			class GuiDatePickerTemplate_StyleProvider

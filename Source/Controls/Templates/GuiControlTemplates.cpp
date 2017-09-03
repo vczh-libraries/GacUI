@@ -506,8 +506,7 @@ GuiTabTemplate
 			GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiTabTemplate::GuiTabTemplate()
-				:HeaderPadding_(0)
-				, HeaderComposition_(0)
+				:SelectedTabPage_(nullptr)
 			{
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
