@@ -135,9 +135,9 @@ Instance Namespace
 		{
 		public:
 			GlobalStringKey							name;
-			GlobalStringKey							typeName;
+			GlobalStringKey							className;
 			GuiResourceTextPos						tagPosition;
-			GuiResourceTextPos						typePosition;
+			GuiResourceTextPos						classPosition;
 		};
 
 /***********************************************************************

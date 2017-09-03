@@ -1852,7 +1852,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderTemplateConstructor>;
 #endif
 	protected:
-		::vl::Ptr<::vl::presentation::controls::GuiTabPage> CurrentTabPage = ::vl::Ptr<::vl::presentation::controls::GuiTabPage>();
+		::vl::presentation::controls::GuiTabPage* CurrentTabPage = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
 		::darkskin::TabHeaderTemplate* __vwsn_precompile_0 = static_cast<::darkskin::TabHeaderTemplate*>(nullptr);
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_1 = static_cast<::vl::presentation::controls::GuiButton*>(nullptr);
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2 = static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr);
@@ -1873,9 +1873,9 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<TabHeaderTemplate>;
 #endif
 	public:
-		::vl::Ptr<::vl::presentation::controls::GuiTabPage> __vwsn_parameter_CurrentTabPage = ::vl::Ptr<::vl::presentation::controls::GuiTabPage>();
-		::vl::Ptr<::vl::presentation::controls::GuiTabPage> GetCurrentTabPage();
-		TabHeaderTemplate(::vl::Ptr<::vl::presentation::controls::GuiTabPage> __vwsn_ctor_parameter_CurrentTabPage);
+		::vl::presentation::controls::GuiTabPage* __vwsn_parameter_CurrentTabPage = static_cast<::vl::presentation::controls::GuiTabPage*>(nullptr);
+		::vl::presentation::controls::GuiTabPage* GetCurrentTabPage();
+		TabHeaderTemplate(::vl::presentation::controls::GuiTabPage* __vwsn_ctor_parameter_CurrentTabPage);
 		~TabHeaderTemplate();
 	};
 
@@ -6711,7 +6711,7 @@ Closures
 
 		__vwsnc85_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::presentation::controls::GuiTabPage> __vwsn_bind_cache_0;
+		::vl::presentation::controls::GuiTabPage* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -6729,7 +6729,7 @@ Closures
 
 		__vwsnc86_DarkSkin_darkskin_TabHeaderTemplateConstructor___vwsn_initialize_instance___vl_reflection_description_IValueSubscription(::darkskin::TabHeaderTemplateConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::presentation::controls::GuiTabPage> __vwsn_bind_cache_0;
+		::vl::presentation::controls::GuiTabPage* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;

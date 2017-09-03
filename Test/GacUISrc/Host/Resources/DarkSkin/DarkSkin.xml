@@ -44,7 +44,7 @@
   
   <InstanceStyle name="Style">
     <Styles>
-      <Style ref.Path="(//Bounds + //Table)" MinSizeLimitation="LimitToElementAndChildren"/>
+      <Style ref.Path="(//Bounds + //Table + //RepeatStack + //RepeatFlow)" MinSizeLimitation="LimitToElementAndChildren"/>
       <Style ref.Path="(//SideAligned + //PartialView)/*">
         <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
       </Style>
@@ -525,11 +525,11 @@
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Parameter Name="CurrentTabPage" Class="presentation::controls::GuiTabPage"/>
       <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
-        <Button ControlTemplate="darkskin::TabHeaderButtonTemplate">
+        <SelectableButton ControlTemplate="darkskin::TabHeaderButtonTemplate" AutoSelection="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Text-bind>CurrentTabPage.Text</att.Text-bind>
           <att.Alt-bind>CurrentTabPage.Alt</att.Alt-bind>
-        </Button>
+        </SelectableButton>
       </ControlTemplate>
     </Instance>
   </Instance>

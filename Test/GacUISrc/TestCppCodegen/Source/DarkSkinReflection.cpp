@@ -602,7 +602,7 @@ namespace vl
 			END_CLASS_MEMBER(::darkskin::TabHeaderButtonTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabHeaderTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabHeaderTemplate*(::vl::Ptr<::vl::presentation::controls::GuiTabPage>), { L"__vwsn_ctor_parameter_CurrentTabPage" })
+				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabHeaderTemplate*(::vl::presentation::controls::GuiTabPage*), { L"__vwsn_ctor_parameter_CurrentTabPage" })
 				CLASS_MEMBER_METHOD(GetCurrentTabPage, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_CurrentTabPage)
 				CLASS_MEMBER_PROPERTY_READONLY(CurrentTabPage, GetCurrentTabPage)
