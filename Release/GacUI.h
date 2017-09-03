@@ -7037,6 +7037,11 @@ Flow Compositions
 				/// <summary>Get all flow items inside the flow composition.</summary>
 				/// <returns>All flow items inside the flow composition.</returns>
 				const ItemCompositionList&			GetFlowItems();
+				/// <summary>Insert a flow item at a specified position.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="index">The position.</param>
+				/// <param name="item">The flow item to insert.</param>
+				bool								InsertFlowItem(vint index, GuiFlowItemComposition* item);
 				
 				/// <summary>Get the extra margin inside the flow composition.</summary>
 				/// <returns>The extra margin inside the flow composition.</returns>
@@ -7344,7 +7349,7 @@ Stack Compositions
 				/// <summary>Get all stack items inside the stack composition.</summary>
 				/// <returns>All stack items inside the stack composition.</returns>
 				const ItemCompositionList&			GetStackItems();
-				/// <summary>Insert an stack item at a specified position.</summary>
+				/// <summary>Insert a stack item at a specified position.</summary>
 				/// <returns>Returns true if this operation succeeded.</returns>
 				/// <param name="index">The position.</param>
 				/// <param name="item">The statck item to insert.</param>
@@ -7802,6 +7807,20 @@ namespace vl
 {
 	namespace presentation
 	{
+		template<typename T>
+		using ItemProperty = Func<T(const reflection::description::Value&)>;
+
+		template<typename T>
+		using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
+
+		template<typename T>
+		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
+
+		namespace templates
+		{
+			class GuiTemplate;
+		}
+
 		namespace compositions
 		{
 			class GuiSharedSizeItemComposition;
@@ -7855,6 +7874,72 @@ namespace vl
 
 				void												ForceCalculateSizeImmediately()override;
 			};
+
+			/// <summary>A base class for all bindable repeat compositions.</summary>
+			class GuiRepeatCompositionBase : public Object, public Description<GuiRepeatCompositionBase>
+			{
+				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
+				using ItemSourceType = Ptr<reflection::description::IValueObservableList>;
+			protected:
+				ItemStyleProperty									itemTemplate;
+				ItemSourceType										itemSource;
+				Ptr<EventHandler>									itemChangedHandler;
+				
+				virtual vint										GetRepeatCompositionCount() = 0;
+				virtual GuiGraphicsComposition*						GetRepeatComposition(vint index) = 0;
+				virtual GuiGraphicsComposition*						InsertRepeatComposition(vint index) = 0;
+				virtual GuiGraphicsComposition*						RemoveRepeatComposition(vint index) = 0;
+
+				void												OnItemChanged(vint index, vint oldCount, vint newCount);
+				void												RemoveItem(vint index);
+				void												InstallItem(vint index);
+				void												ClearItems();
+				void												InstallItems();
+			public:
+				GuiRepeatCompositionBase();
+				~GuiRepeatCompositionBase();
+
+				/// <summary>An event called after a new item is inserted.</summary>
+				GuiItemNotifyEvent									ItemInserted;
+				/// <summary>An event called before a new item is removed.</summary>
+				GuiItemNotifyEvent									ItemRemoved;
+
+				/// <summary>Get the item style provider.</summary>
+				/// <returns>The item style provider.</returns>
+				ItemStyleProperty									GetItemTemplate();
+				/// <summary>Set the item style provider</summary>
+				/// <param name="value">The new item style provider</param>
+				void												SetItemTemplate(ItemStyleProperty value);
+
+				/// <summary>Get the item source.</summary>
+				/// <returns>The item source.</returns>
+				ItemSourceType										GetItemSource();
+				/// <summary>Set the item source.</summary>
+				/// <param name="_itemSource">The item source. Null is acceptable if you want to clear all data.</param>
+				void												SetItemSource(ItemSourceType value);
+			};
+
+			/// <summary>Bindable stack composition.</summary>
+			class GuiRepeatStackComposition : public GuiStackComposition, public GuiRepeatCompositionBase, public Description<GuiRepeatStackComposition>
+			{
+			protected:
+				vint												GetRepeatCompositionCount()override;
+				GuiGraphicsComposition*								GetRepeatComposition(vint index)override;
+				GuiGraphicsComposition*								InsertRepeatComposition(vint index)override;
+				GuiGraphicsComposition*								RemoveRepeatComposition(vint index)override;
+			public:
+			};
+
+			/// <summary>Bindable flow composition.</summary>
+			class GuiRepeatFlowComposition : public GuiFlowComposition, public GuiRepeatCompositionBase, public Description<GuiRepeatFlowComposition>
+			{
+			protected:
+				vint												GetRepeatCompositionCount()override;
+				GuiGraphicsComposition*								GetRepeatComposition(vint index)override;
+				GuiGraphicsComposition*								InsertRepeatComposition(vint index)override;
+				GuiGraphicsComposition*								RemoveRepeatComposition(vint index)override;
+			public:
+			};
 		}
 	}
 }
@@ -7880,25 +7965,12 @@ namespace vl
 {
 	namespace presentation
 	{
-		template<typename T>
-		using ItemProperty = Func<T(const reflection::description::Value&)>;
-
-		template<typename T>
-		using WritableItemProperty = Func<T(const reflection::description::Value&, T, bool)>;
-
-		template<typename T>
-		using TemplateProperty = Func<T*(const reflection::description::Value&)>;
-
-		namespace templates
-		{
-			class GuiTemplate;
-		}
-
 		namespace controls
 		{
 			class GuiListControl;
 			class GuiControlHost;
 			class GuiCustomControl;
+			class GuiTabPage;
 
 			/// <summary>The visual state for button.</summary>
 			enum class ButtonState
@@ -8349,12 +8421,9 @@ Control Template
 				~GuiTabTemplate();
 
 #define GuiTabTemplate_PROPERTIES(F)\
-				F(GuiTabTemplate, TemplateProperty<GuiSelectableButtonTemplate>, HeaderTemplate)\
-				F(GuiTabTemplate, TemplateProperty<GuiButtonTemplate>, DropdownTemplate)\
-				F(GuiTabTemplate, TemplateProperty<GuiMenuTemplate>, MenuTemplate)\
-				F(GuiTabTemplate, TemplateProperty<GuiToolstripButtonTemplate>, MenuItemTemplate)\
-				F(GuiTabTemplate, vint, HeaderPadding)\
-				F(GuiTabTemplate, compositions::GuiGraphicsComposition*, HeaderComposition)\
+				F(GuiTabTemplate, controls::ITabCommandExecutor*, Commands)\
+				F(GuiTabTemplate, Ptr<reflection::description::IValueObservableList>, TabPages)\
+				F(GuiTabTemplate, controls::GuiTabPage*, SelectedTabPage)\
 
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
@@ -9927,16 +9996,16 @@ Tab Control
 				GuiTab*											tab = nullptr;
 
 				bool											IsAltAvailable()override;
-				void											OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void											OnAltChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a tab page control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
 				GuiTabPage(IStyleController* _styleController);
 				~GuiTabPage();
+
+				GuiTab*											GetOwnerTab();
 			};
 
-			class GuiTabPageList : public collections::ObservableListBase<GuiTabPage*>
+			class GuiTabPageList : public collections::ObservableList<GuiTabPage*>
 			{
 			protected:
 				GuiTab*											tab;
@@ -9962,28 +10031,13 @@ Tab Control
 				public:
 					/// <summary>Called when the command executor is changed.</summary>
 					/// <param name="value">The command executor.</param>
-					virtual void								SetCommandExecutor(ITabCommandExecutor* value)=0;
-					/// <summary>Insert a tab header at the specified position.</summary>
-					/// <param name="index">The specified position.</param>
-					virtual void								InsertTab(vint index)=0;
-					/// <summary>Set the text of a tab header at the specified position.</summary>
-					/// <param name="index">The specified position.</param>
-					/// <param name="value">The text.</param>
-					virtual void								SetTabText(vint index, const WString& value)=0;
-					/// <summary>Remove the tab header at the specified position.</summary>
-					/// <param name="index">The specified position.</param>
-					virtual void								RemoveTab(vint index)=0;
+					virtual void								SetCommandExecutor(ITabCommandExecutor* value) = 0;
+					/// <summary>Called when the tab page list is changed.</summary>
+					/// <param name="value">The tab page list.</param>
+					virtual void								SetTabPages(Ptr<reflection::description::IValueObservableList> value) = 0;
 					/// <summary>Render a tab header at the specified position as selected.</summary>
 					/// <param name="index">The specified position.</param>
-					virtual void								SetSelectedTab(vint index)=0;
-					/// <summary>Set the Alt-combined shortcut key of a tab header at the specified position.</summary>
-					/// <param name="index">The specified position.</param>
-					/// <param name="value">The Alt-combined shortcut key.</param>
-					virtual void								SetTabAlt(vint index, const WString& value)=0;
-					/// <summary>Get the associated <see cref="compositions::IGuiAltAction"/> object of a tab header at the specified position.</summary>
-					/// <returns>The associated <see cref="compositions::IGuiAltAction"/> object.</returns>
-					/// <param name="index">The specified position.</param>
-					virtual compositions::IGuiAltAction*		GetTabAltAction(vint index) = 0;
+					virtual void								SetSelectedTabPage(GuiTabPage* value) = 0;
 				};
 			protected:
 				class CommandExecutor : public Object, public ITabCommandExecutor
@@ -10012,7 +10066,7 @@ Tab Control
 
 				/// <summary>Get all pages.</summary>
 				/// <returns>All pages.</returns>
-				GuiTabPageList&									GetPages();
+				collections::ObservableList<GuiTabPage*>&		GetPages();
 
 				/// <summary>Get the selected page.</summary>
 				/// <returns>The selected page.</returns>
@@ -11300,7 +11354,6 @@ List Control
 				/// <returns>The item style provider.</returns>
 				virtual ItemStyleProperty						GetItemTemplate();
 				/// <summary>Set the item style provider</summary>
-				/// <returns>The old item style provider</returns>
 				/// <param name="value">The new item style provider</param>
 				virtual void									SetItemTemplate(ItemStyleProperty value);
 				/// <summary>Get the item arranger.</summary>
@@ -15366,7 +15419,6 @@ ComboBox with GuiListControl
 				/// <returns>The item style provider.</returns>
 				virtual ItemStyleProperty					GetItemTemplate();
 				/// <summary>Set the item style provider</summary>
-				/// <returns>The old item style provider</returns>
 				/// <param name="value">The new item style provider</param>
 				virtual void								SetItemTemplate(ItemStyleProperty value);
 				
@@ -15671,19 +15723,6 @@ Datagrid Interfaces
 					/// <summary>Set the selected state.</summary>
 					/// <param name="value">Set to true to make this data visualizer looks selected.</param>
 					virtual void										SetSelected(bool value) = 0;
-
-					template<typename T>
-					T* GetVisualizer()
-					{
-						IDataVisualizer* visualizer = this;
-						while (visualizer)
-						{
-							T* result = dynamic_cast<T*>(visualizer);
-							if (result) return result;
-							visualizer = visualizer->GetDecoratedDataVisualizer();
-						}
-						return 0;
-					};
 				};
 
 				/// <summary>The editor factory.</summary>
@@ -15779,6 +15818,7 @@ Datagrid Interfaces
 }
 
 #endif
+
 
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUIDATAGRIDEXTENSIONS.H
@@ -16550,7 +16590,7 @@ DataProvider
 				{
 					friend class DataColumn;
 					friend class DataColumns;
-					friend class GuiBindableDataGrid;
+					friend class controls::GuiBindableDataGrid;
 				protected:
 					ListViewDataColumns										dataColumns;
 					DataColumns												columns;
@@ -16707,6 +16747,7 @@ GuiBindableDataGrid
 
 #endif
 
+
 /***********************************************************************
 .\CONTROLS\LISTCONTROLPACKAGE\GUIBINDABLELISTCONTROLS.H
 ***********************************************************************/
@@ -16733,7 +16774,7 @@ namespace vl
 			{
 				static T Get()
 				{
-					return TypedValueSerializerProvider<T>::GetDefaultValue();
+					return reflection::description::TypedValueSerializerProvider<T>::GetDefaultValue();
 				}
 			};
 
@@ -17131,6 +17172,7 @@ GuiBindableTreeView
 }
 
 #endif
+
 
 /***********************************************************************
 .\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPCOMMAND.H
@@ -17857,316 +17899,6 @@ namespace vl
 #endif
 
 /***********************************************************************
-.\CONTROLS\STYLES\GUICOMMONSTYLES.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control Styles::Common Style Helpers
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUICOMMONSTYLES
-#define VCZH_PRESENTATION_CONTROLS_GUICOMMONSTYLES
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace common_styles
-		{
-
-/***********************************************************************
-CommonScrollStyle
-***********************************************************************/
-
-			/// <summary>A general implementation for <see cref="controls::GuiScroll::IStyleController"/> to make a scroll control.</summary>
-			class CommonScrollStyle : public Object, public virtual controls::GuiScroll::IStyleController, public Description<CommonScrollStyle>
-			{
-			public:
-				/// <summary>Scroll direction.</summary>
-				enum Direction
-				{
-					/// <summary>Horizontal scroll.</summary>
-					Horizontal,
-					/// <summary>Vertical scroll.</summary>
-					Vertical,
-				};
-			protected:
-				Direction											direction;
-				controls::IScrollCommandExecutor*					commandExecutor;
-				controls::GuiButton*								decreaseButton;
-				controls::GuiButton*								increaseButton;
-				controls::GuiButton*								handleButton;
-				compositions::GuiPartialViewComposition*			handleComposition;
-				compositions::GuiBoundsComposition*					boundsComposition;
-				compositions::GuiBoundsComposition*					containerComposition;
-
-				vint												totalSize;
-				vint												pageSize;
-				vint												position;
-				Point												draggingStartLocation;
-				bool												draggingHandle;
-
-				void												UpdateHandle();
-				void												OnDecreaseButtonClicked(compositions::GuiGraphicsComposition* sender,compositions::GuiEventArgs& arguments);
-				void												OnIncreaseButtonClicked(compositions::GuiGraphicsComposition* sender,compositions::GuiEventArgs& arguments);
-				void												OnHandleMouseDown(compositions::GuiGraphicsComposition* sender,compositions::GuiMouseEventArgs& arguments);
-				void												OnHandleMouseMove(compositions::GuiGraphicsComposition* sender,compositions::GuiMouseEventArgs& arguments);
-				void												OnHandleMouseUp(compositions::GuiGraphicsComposition* sender,compositions::GuiMouseEventArgs& arguments);;
-				void												OnBigMoveMouseDown(compositions::GuiGraphicsComposition* sender,compositions::GuiMouseEventArgs& arguments);
-
-				/// <summary>Callback to create a style controller for the decrement button.</summary>
-				/// <returns>The created style controller.</returns>
-				/// <param name="direction">The direction of the scroll.</param>
-				virtual controls::GuiButton::IStyleController*		CreateDecreaseButtonStyle(Direction direction)=0;
-				/// <summary>Callback to create a style controller for the increment button.</summary>
-				/// <returns>The created style controller.</returns>
-				/// <param name="direction">The direction of the scroll.</param>
-				virtual controls::GuiButton::IStyleController*		CreateIncreaseButtonStyle(Direction direction)=0;
-				/// <summary>Callback to create a style controller for the handle button.</summary>
-				/// <returns>The created style controller.</returns>
-				/// <param name="direction">The direction of the scroll.</param>
-				virtual controls::GuiButton::IStyleController*		CreateHandleButtonStyle(Direction direction)=0;
-				/// <summary>Install necessary compositions and elements to the background.</summary>
-				/// <returns>The created container composition.</returns>
-				/// <param name="boundsComposition">The background composition.</param>
-				/// <param name="direction">The direction of the scroll.</param>
-				virtual compositions::GuiBoundsComposition*			InstallBackground(compositions::GuiBoundsComposition* boundsComposition, Direction direction)=0;
-				/// <summary>Build the style. This function is supposed to be called in the contructor of the sub class.</summary>
-				/// <param name="defaultSize">The size of the increment button and decrement button.</param>
-				/// <param name="arrowSize">The size of the arrows in the increment button and decrement button.</param>
-				void												BuildStyle(vint defaultSize, vint arrowSize);
-			public:
-				/// <summary>Create the style controller using a specified direction.</summary>
-				/// <param name="_direction">The specified direction</param>
-				CommonScrollStyle(Direction _direction);
-				~CommonScrollStyle();
-
-				compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-				compositions::GuiGraphicsComposition*				GetContainerComposition()override;
-				void												SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-				void												SetText(const WString& value)override;
-				void												SetFont(const FontProperties& value)override;
-				void												SetVisuallyEnabled(bool value)override;
-				void												SetCommandExecutor(controls::IScrollCommandExecutor* value)override;
-				void												SetTotalSize(vint value)override;
-				void												SetPageSize(vint value)override;
-				void												SetPosition(vint value)override;
-			};
-
-/***********************************************************************
-CommonTrackStyle
-***********************************************************************/
-			
-			/// <summary>A general implementation for <see cref="controls::GuiScroll::IStyleController"/> to make a tracker control (or a slide bar).</summary>
-			class CommonTrackStyle : public Object, public virtual controls::GuiScroll::IStyleController, public Description<CommonTrackStyle>
-			{
-			public:
-				/// <summary>Track direction.</summary>
-				enum Direction
-				{
-					/// <summary>Horizontal scroll.</summary>
-					Horizontal,
-					/// <summary>Vertical scroll.</summary>
-					Vertical,
-				};
-			protected:
-				Direction											direction;
-				controls::IScrollCommandExecutor*					commandExecutor;
-				compositions::GuiBoundsComposition*					boundsComposition;
-				controls::GuiButton*								handleButton;
-				compositions::GuiTableComposition*					handleComposition;
-
-				vint												totalSize;
-				vint												pageSize;
-				vint												position;
-				Point												draggingStartLocation;
-				bool												draggingHandle;
-
-				void												UpdateHandle();
-				void												OnHandleMouseDown(compositions::GuiGraphicsComposition* sender,compositions::GuiMouseEventArgs& arguments);
-				void												OnHandleMouseMove(compositions::GuiGraphicsComposition* sender,compositions::GuiMouseEventArgs& arguments);
-				void												OnHandleMouseUp(compositions::GuiGraphicsComposition* sender,compositions::GuiMouseEventArgs& arguments);
-				
-				/// <summary>Callback to create a style controller for the handle button.</summary>
-				/// <returns>The created style controller.</returns>
-				/// <param name="direction">The direction of the tracker.</param>
-				virtual controls::GuiButton::IStyleController*		CreateHandleButtonStyle(Direction direction)=0;
-				/// <summary>Install necessary compositions and elements to the background.</summary>
-				/// <param name="boundsComposition">The background composition.</param>
-				/// <param name="direction">The direction of the tracker.</param>
-				virtual void										InstallBackground(compositions::GuiGraphicsComposition* boundsComposition, Direction direction)=0;
-				/// <summary>Install necessary compositions and elements to the tracker groove.</summary>
-				/// <param name="trackComposition">The tracker groove composition.</param>
-				/// <param name="direction">The direction of the tracker.</param>
-				virtual void										InstallTrack(compositions::GuiGraphicsComposition* trackComposition, Direction direction)=0;
-				/// <summary>Build the style. This function is supposed to be called in the contructor of the sub class.</summary>
-				/// <param name="trackThickness">The thickness of the tracker troove.</param>
-				/// <param name="trackPadding">The padding between the tracker groove to the control.</param>
-				/// <param name="handleLong">The size of the long size of the handle button. Horizontal: height; Vertical: width.</param>
-				/// <param name="handleShort">The size of the short size of the handle button. Horizontal: width; Vertical: height.</param>
-				void												BuildStyle(vint trackThickness, vint trackPadding, vint handleLong, vint handleShort);
-			public:
-				/// <summary>Create the style controller using a specified direction.</summary>
-				/// <param name="_direction">The specified direction</param>
-				CommonTrackStyle(Direction _direction);
-				~CommonTrackStyle();
-
-				compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-				compositions::GuiGraphicsComposition*				GetContainerComposition()override;
-				void												SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-				void												SetText(const WString& value)override;
-				void												SetFont(const FontProperties& value)override;
-				void												SetVisuallyEnabled(bool value)override;
-				void												SetCommandExecutor(controls::IScrollCommandExecutor* value)override;
-				void												SetTotalSize(vint value)override;
-				void												SetPageSize(vint value)override;
-				void												SetPosition(vint value)override;
-			};
-
-/***********************************************************************
-CommonFragmentBuilder
-***********************************************************************/
-
-			class CommonFragmentBuilder
-			{
-			private:
-				static compositions::GuiBoundsComposition*			BuildDockedElementContainer(elements::IGuiGraphicsElement* element);
-			public:
-				static void											FillUpArrow(elements::GuiPolygonElement* element);
-				static void											FillDownArrow(elements::GuiPolygonElement* element);
-				static void											FillLeftArrow(elements::GuiPolygonElement* element);
-				static void											FillRightArrow(elements::GuiPolygonElement* element);
-
-				static elements::GuiPolygonElement*					BuildUpArrow();
-				static elements::GuiPolygonElement*					BuildDownArrow();
-				static elements::GuiPolygonElement*					BuildLeftArrow();
-				static elements::GuiPolygonElement*					BuildRightArrow();
-
-				static compositions::GuiBoundsComposition*			BuildUpArrow(elements::GuiPolygonElement*& elementOut);
-				static compositions::GuiBoundsComposition*			BuildDownArrow(elements::GuiPolygonElement*& elementOut);
-				static compositions::GuiBoundsComposition*			BuildLeftArrow(elements::GuiPolygonElement*& elementOut);
-				static compositions::GuiBoundsComposition*			BuildRightArrow(elements::GuiPolygonElement*& elementOut);
-			};
-		}
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-			
-		extern unsigned char							IntToColor(vint color);
-		extern Color									BlendColor(Color c1, Color c2, vint currentPosition, vint totalLength);
-
-/***********************************************************************
-Animation
-***********************************************************************/
-
-#define DEFINE_TRANSFERRING_ANIMATION(TSTATE, TSTYLECONTROLLER)\
-				class TransferringAnimation : public compositions::GuiTimeBasedAnimation\
-				{\
-				protected:\
-					TSTATE									colorBegin;\
-					TSTATE									colorEnd;\
-					TSTATE									colorCurrent;\
-					TSTYLECONTROLLER*						style;\
-					bool									stopped;\
-					bool									disabled;\
-					bool									enableAnimation;\
-					void									PlayInternal(vint currentPosition, vint totalLength);\
-				public:\
-					TransferringAnimation(TSTYLECONTROLLER* _style, const TSTATE& begin);\
-					void									Disable();\
-					void									Play(vint currentPosition, vint totalLength)override;\
-					void									Stop()override;\
-					bool									GetEnableAnimation();\
-					void									SetEnableAnimation(bool value);\
-					void									Transfer(const TSTATE& end);\
-				};\
-
-/***********************************************************************
-Animation Implementation
-***********************************************************************/
-
-#define DEFAULT_TRANSFERRING_ANIMATION_HOST_GETTER(STYLE) (STYLE->GetBoundsComposition()->GetRelatedGraphicsHost())
-
-#define IMPLEMENT_TRANSFERRING_ANIMATION_BASE(TSTATE, TSTYLECONTROLLER, HOST_GETTER)\
-			TSTYLECONTROLLER::TransferringAnimation::TransferringAnimation(TSTYLECONTROLLER* _style, const TSTATE& begin)\
-				:GuiTimeBasedAnimation(0)\
-				,colorBegin(begin)\
-				,colorEnd(begin)\
-				,colorCurrent(begin)\
-				,style(_style)\
-				,stopped(true)\
-				,disabled(false)\
-				,enableAnimation(true)\
-			{\
-			}\
-			void TSTYLECONTROLLER::TransferringAnimation::Disable()\
-			{\
-				disabled=true;\
-			}\
-			void TSTYLECONTROLLER::TransferringAnimation::Play(vint currentPosition, vint totalLength)\
-			{\
-				if(!disabled)\
-				{\
-					PlayInternal(currentPosition, totalLength);\
-				}\
-			}\
-			void TSTYLECONTROLLER::TransferringAnimation::Stop()\
-			{\
-				stopped=true;\
-			}\
-			bool TSTYLECONTROLLER::TransferringAnimation::GetEnableAnimation()\
-			{\
-				return enableAnimation;\
-			}\
-			void TSTYLECONTROLLER::TransferringAnimation::SetEnableAnimation(bool value)\
-			{\
-				enableAnimation=value;\
-			}\
-			void TSTYLECONTROLLER::TransferringAnimation::Transfer(const TSTATE& end)\
-			{\
-				if(colorEnd!=end)\
-				{\
-					GuiGraphicsHost* host=HOST_GETTER(style);\
-					if(enableAnimation && host)\
-					{\
-						Restart(120);\
-						if(stopped)\
-						{\
-							colorBegin=colorEnd;\
-							colorEnd=end;\
-							host->GetAnimationManager()->AddAnimation(style->transferringAnimation);\
-							stopped=false;\
-						}\
-						else\
-						{\
-							colorBegin=colorCurrent;\
-							colorEnd=end;\
-						}\
-					}\
-					else\
-					{\
-						colorBegin=end;\
-						colorEnd=end;\
-						colorCurrent=end;\
-						Play(1, 1);\
-					}\
-				}\
-			}\
-			void TSTYLECONTROLLER::TransferringAnimation::PlayInternal(vint currentPosition, vint totalLength)\
-
-#define IMPLEMENT_TRANSFERRING_ANIMATION(TSTATE, TSTYLECONTROLLER)\
-	IMPLEMENT_TRANSFERRING_ANIMATION_BASE(TSTATE, TSTYLECONTROLLER, DEFAULT_TRANSFERRING_ANIMATION_HOST_GETTER)
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\CONTROLS\TEMPLATES\GUICONTROLTEMPLATESTYLES.H
 ***********************************************************************/
 /***********************************************************************
@@ -18516,44 +18248,14 @@ Control Template
 			{
 			protected:
 				GuiTabTemplate*													controlTemplate;
-				
-				compositions::GuiTableComposition*								tabBoundsComposition;
-				compositions::GuiStackComposition*								tabHeaderComposition;
-				compositions::GuiBoundsComposition*								tabContentTopLineComposition;
-				controls::ITabCommandExecutor*									commandExecutor;
 
-				Ptr<controls::GuiSelectableButton::MutexGroupController>		headerController;
-				collections::List<controls::GuiSelectableButton*>				headerButtons;
-				controls::GuiButton*											headerOverflowButton;
-				controls::GuiToolstripMenu*										headerOverflowMenu;
-				
-				controls::GuiSelectableButton::IStyleController*				CreateHeaderTemplate();
-				controls::GuiButton::IStyleController*							CreateDropdownTemplate();
-				controls::GuiMenu::IStyleController*							CreateMenuTemplate();
-				controls::GuiToolstripButton::IStyleController*					CreateMenuItemTemplate();
-
-				void															OnHeaderButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void															OnTabHeaderBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void															OnHeaderOverflowButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void															OnHeaderOverflowMenuButtonClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-
-				void															UpdateHeaderOverflowButtonVisibility();
-				void															UpdateHeaderZOrder();
-				void															UpdateHeaderVisibilityIndex();
-				void															UpdateHeaderLayout();
-
-				void															Initialize();
 			public:
 				GuiTabTemplate_StyleProvider(TemplateProperty<GuiTabTemplate> factory);
 				~GuiTabTemplate_StyleProvider();
 
 				void															SetCommandExecutor(controls::ITabCommandExecutor* value)override;
-				void															InsertTab(vint index)override;
-				void															SetTabText(vint index, const WString& value)override;
-				void															RemoveTab(vint index)override;
-				void															SetSelectedTab(vint index)override;
-				void															SetTabAlt(vint index, const WString& value)override;
-				compositions::IGuiAltAction*									GetTabAltAction(vint index)override;
+				void															SetTabPages(Ptr<reflection::description::IValueObservableList> value)override;
+				void															SetSelectedTabPage(controls::GuiTabPage* value)override;
 			};
 
 			class GuiDatePickerTemplate_StyleProvider
