@@ -559,6 +559,7 @@
               if (item.CurrentTabPage == self.SelectedTabPage)
               {
                 flowItem.ExtraMargin = {left:2 top:2 right:2 bottom:0};
+                header.MoveChild(flowItem, header.Children.Count - 1);
               }
               else
               {
