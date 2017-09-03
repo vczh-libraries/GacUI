@@ -273,16 +273,7 @@ GuiFlowComposition
 				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					auto clientMargin = extraMargin;
-					if (clientMargin.left < 0) clientMargin.left = 0;
-					if (clientMargin.top < 0) clientMargin.top = 0;
-					if (clientMargin.right < 0) clientMargin.right = 0;
-					if (clientMargin.bottom < 0) clientMargin.bottom = 0;
-
 					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
-					clientSize.x += clientMargin.left + clientMargin.right;
-					clientSize.y += clientMargin.top + clientMargin.bottom;
-
 					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
 					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
 				}
