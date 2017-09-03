@@ -112,6 +112,11 @@ namespace vl
 				GuiRepeatCompositionBase();
 				~GuiRepeatCompositionBase();
 
+				/// <summary>An event called after a new item is inserted.</summary>
+				GuiItemNotifyEvent									ItemInserted;
+				/// <summary>An event called before a new item is removed.</summary>
+				GuiItemNotifyEvent									ItemRemoved;
+
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
 				ItemStyleProperty									GetItemTemplate();

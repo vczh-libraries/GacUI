@@ -332,6 +332,8 @@ Type Declaration
 			END_CLASS_MEMBER(GuiSubComponentMeasurerSource)
 
 			BEGIN_CLASS_MEMBER(GuiRepeatCompositionBase)
+				CLASS_MEMBER_GUIEVENT(ItemInserted)
+				CLASS_MEMBER_GUIEVENT(ItemRemoved)
 				CLASS_MEMBER_PROPERTY_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 			END_CLASS_MEMBER(GuiRepeatCompositionBase)

@@ -603,8 +603,13 @@ namespace vl
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabHeaderTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabHeaderTemplate*(::vl::presentation::controls::GuiTabPage*), { L"__vwsn_ctor_parameter_CurrentTabPage" })
+				CLASS_MEMBER_METHOD(GetCommands, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetCurrentTabPage, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetCommands, { L"__vwsn_value_" })
+				CLASS_MEMBER_EVENT(CommandsChanged)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_CurrentTabPage)
+				CLASS_MEMBER_FIELD(__vwsn_prop_Commands)
+				CLASS_MEMBER_PROPERTY_EVENT(Commands, GetCommands, SetCommands, CommandsChanged)
 				CLASS_MEMBER_PROPERTY_READONLY(CurrentTabPage, GetCurrentTabPage)
 			END_CLASS_MEMBER(::darkskin::TabHeaderTemplate)
 
@@ -613,12 +618,13 @@ namespace vl
 				CLASS_MEMBER_METHOD(__vwsn_initialize_instance_, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(CurrentTabPage)
+				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::darkskin::TabHeaderTemplateConstructor)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(::darkskin::TabTemplate*(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(UpdateTabHeader, NO_PARAMETER)
 			END_CLASS_MEMBER(::darkskin::TabTemplate)
 
 			BEGIN_CLASS_MEMBER(::darkskin::TabTemplateConstructor)

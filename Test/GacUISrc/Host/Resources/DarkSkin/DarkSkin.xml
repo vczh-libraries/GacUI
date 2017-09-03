@@ -524,12 +524,24 @@
   <Instance name="TabHeaderTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderTemplate" ref.Styles="res://DarkSkin/Style">
       <ref.Parameter Name="CurrentTabPage" Class="presentation::controls::GuiTabPage"/>
-      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+      <ref.Members>
+        <![CDATA[
+          prop Commands : ITabCommandExecutor* = null {}
+        ]]>
+      </ref.Members>
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <CheckBox ControlTemplate="darkskin::TabHeaderButtonTemplate" AutoSelection="false">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Text-bind>CurrentTabPage.Text</att.Text-bind>
           <att.Alt-bind>CurrentTabPage.Alt</att.Alt-bind>
           <att.Selected-bind>CurrentTabPage.OwnerTab.SelectedPage == CurrentTabPage</att.Selected-bind>
+          <ev.Clicked-eval>
+            <![CDATA[
+              {
+                self.Commands.ShowTab(CurrentTabPage.OwnerTab.Pages.IndexOf(CurrentTabPage));
+              }
+            ]]>
+          </ev.Clicked-eval>
         </CheckBox>
       </ControlTemplate>
     </Instance>
@@ -558,7 +570,11 @@
       </ref.Members>
       <TabTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <ev.SelectedTabPageChanged-eval>
-          <![CDATA[UpdateTabHeader();]]>
+          <![CDATA[
+            {
+              self.UpdateTabHeader();
+            }
+          ]]>
         </ev.SelectedTabPageChanged-eval>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBackground Color="#2D2D30"/>
@@ -575,6 +591,23 @@
             <RepeatFlow ref.Name="header" AlignmentToParent="left:0 top:0 right:0 bottom:0" ExtraMargin="left:2 top:2 right:2 bottom:0">
               <att.ItemTemplate>darkskin::TabHeaderTemplate</att.ItemTemplate>
               <att.ItemSource-bind>self.TabPages</att.ItemSource-bind>
+              <ev.ItemInserted-eval>
+                <![CDATA[
+                  {
+                    var flowItem = header.FlowItems[arguments.itemIndex];
+                    var item = cast (TabHeaderTemplate*) flowItem.Children[0];
+                    item.Commands = self.Commands;
+                    self.UpdateTabHeader();
+                  }
+                ]]>
+              </ev.ItemInserted-eval>
+              <ev.ItemRemoved-eval>
+                <![CDATA[
+                  {
+                    self.UpdateTabHeader();
+                  }
+                ]]>
+              </ev.ItemRemoved-eval>
             </RepeatFlow>
           </Cell>
           <Cell Site="row:1 column:0">
