@@ -6741,6 +6741,9 @@ Class (::demo::DocumentTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->document)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
 		}
+		{
+			::vl::__vwsn::This(this->document)->SetAlt(::vl::WString(L"D", false));
+		}
 		(this->__vwsn_precompile_67 = ::vl::__vwsn::This(this->document)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_67)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -7847,7 +7850,7 @@ Class (::demo::MainWindowConstructor)
 		}
 		(this->__vwsn_precompile_7 = new ::demo::TreeViewTabPage());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlt(::vl::WString(L"R", false));
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlt(::vl::WString(L"T", false));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->__vwsn_precompile_3)->GetPages());
@@ -7945,6 +7948,9 @@ Class (::demo::RepeatTabPageConstructor)
 			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlt(::vl::WString(L"S", false));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetText(::vl::WString(L"RepeatStack", false));
 		}
 		(this->repeatStack = new ::vl::presentation::compositions::GuiRepeatStackComposition());
@@ -7973,6 +7979,9 @@ Class (::demo::RepeatTabPageConstructor)
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle();
 			(this->__vwsn_precompile_5 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlt(::vl::WString(L"F", false));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetText(::vl::WString(L"RepeatFlow", false));
@@ -10010,6 +10019,9 @@ Class (::demo::TextBoxTabPageConstructor)
 			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlt(::vl::WString(L"T", false));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetText(::vl::WString(L"TextBox", false));
 		}
 		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiTableComposition());
@@ -10033,6 +10045,9 @@ Class (::demo::TextBoxTabPageConstructor)
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateTextBoxStyle();
 			(this->textBoxS = new ::vl::presentation::controls::GuiSinglelineTextBox(__vwsn_controlStyle_));
 		}
+		{
+			::vl::__vwsn::This(this->textBoxS)->SetAlt(::vl::WString(L"S", false));
+		}
 		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->textBoxS)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -10054,6 +10069,9 @@ Class (::demo::TextBoxTabPageConstructor)
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateMultilineTextBoxStyle();
 			(this->textBoxM = new ::vl::presentation::controls::GuiMultilineTextBox(__vwsn_controlStyle_));
 		}
+		{
+			::vl::__vwsn::This(this->textBoxM)->SetAlt(::vl::WString(L"M", false));
+		}
 		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->textBoxM)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -10074,6 +10092,9 @@ Class (::demo::TextBoxTabPageConstructor)
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateCustomControlStyle();
 			(this->__vwsn_precompile_10 = new ::vl::presentation::controls::GuiTabPage(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlt(::vl::WString(L"D", false));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetText(::vl::WString(L"Document", false));
@@ -10103,6 +10124,9 @@ Class (::demo::TextBoxTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->documentTextBox)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
 		}
+		{
+			::vl::__vwsn::This(this->documentTextBox)->SetAlt(::vl::WString(L"T", false));
+		}
 		(this->__vwsn_precompile_13 = ::vl::__vwsn::This(this->documentTextBox)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -10127,6 +10151,9 @@ Class (::demo::TextBoxTabPageConstructor)
 		{
 			::vl::__vwsn::This(this->documentViewer)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
 		}
+		{
+			::vl::__vwsn::This(this->documentViewer)->SetAlt(::vl::WString(L"V", false));
+		}
 		(this->__vwsn_precompile_15 = ::vl::__vwsn::This(this->documentViewer)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
@@ -10147,6 +10174,9 @@ Class (::demo::TextBoxTabPageConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->documentLabel)->SetEditMode(::vl::presentation::controls::GuiDocumentCommonInterface::EditMode::Editable);
+		}
+		{
+			::vl::__vwsn::This(this->documentLabel)->SetAlt(::vl::WString(L"L", false));
 		}
 		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->documentLabel)->GetBoundsComposition());
 		{
@@ -10184,6 +10214,9 @@ Class (::demo::TextBoxTabPageConstructor)
 			(this->__vwsn_precompile_19 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetAlt(::vl::WString(L"L", false));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetText(::vl::WString(L"Make Font Larger", false));
 		}
 		{
@@ -10199,6 +10232,9 @@ Class (::demo::TextBoxTabPageConstructor)
 		{
 			auto __vwsn_controlStyle_ = ::vl::__vwsn::This(::vl::presentation::theme::GetCurrentTheme())->CreateButtonStyle();
 			(this->__vwsn_precompile_21 = new ::vl::presentation::controls::GuiButton(__vwsn_controlStyle_));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetAlt(::vl::WString(L"S", false));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetText(::vl::WString(L"Make Font Smaller", false));

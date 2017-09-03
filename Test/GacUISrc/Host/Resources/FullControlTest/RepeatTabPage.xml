@@ -84,7 +84,7 @@
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Pages>
-            <TabPage Text="RepeatStack">
+            <TabPage Text="RepeatStack" Alt="S">
               <RepeatStack ref.Name="repeatStack" AlignmentToParent="left:0 top:0 right:0 bottom:0">
                 <att.Direction>Vertical</att.Direction>
                 <att.Padding>5</att.Padding>
@@ -93,7 +93,7 @@
                 <att.ItemSource-eval>self.itemsToBind</att.ItemSource-eval>
               </RepeatStack>
             </TabPage>
-            <TabPage Text="RepeatFlow">
+            <TabPage Text="RepeatFlow" Alt="F">
               <RepeatFlow ref.Name="repeatFlow" AlignmentToParent="left:0 top:0 right:0 bottom:0">
                 <att.RowPadding>5</att.RowPadding>
                 <att.ColumnPadding>5</att.ColumnPadding>
