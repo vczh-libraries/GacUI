@@ -38,6 +38,8 @@ Tab Control
 				/// <param name="_styleController">The style controller.</param>
 				GuiTabPage(IStyleController* _styleController);
 				~GuiTabPage();
+
+				GuiTab*											GetOwnerTab();
 			};
 
 			class GuiTabPageList : public collections::ObservableList<GuiTabPage*>

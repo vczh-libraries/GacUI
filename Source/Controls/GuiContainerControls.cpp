@@ -35,6 +35,11 @@ GuiTabPage
 				FinalizeAggregation();
 			}
 
+			GuiTab* GuiTabPage::GetOwnerTab()
+			{
+				return tab;
+			}
+
 /***********************************************************************
 GuiTabPageList
 ***********************************************************************/

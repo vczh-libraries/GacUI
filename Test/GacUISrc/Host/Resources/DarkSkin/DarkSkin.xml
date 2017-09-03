@@ -510,8 +510,8 @@
     </Instance>
   </Instance>
 
-  <Instance name="TabHeaderTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderTemplate" ref.Styles="res://DarkSkin/Style">
+  <Instance name="TabHeaderButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderButtonTemplate" ref.Styles="res://DarkSkin/Style">
       <SelectableButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground ref.Style="tabHeaderBackground"/>
         <Bounds AlignmentToParent="left:6 top:3 right:6 bottom:3">
@@ -521,46 +521,22 @@
     </Instance>
   </Instance>
 
-  <Instance name="TabDropdownTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabDropdownTemplate" ref.Styles="res://DarkSkin/Style">
-      <ButtonTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground ref.Style="tabDropdownBackground"/>
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
-          <att.Rows>
-            <CellOption>composeType:Percentage percentage:0.5</CellOption>
-            <CellOption>composeType:Absolute absolute:5</CellOption>
-            <CellOption>composeType:Percentage percentage:0.5</CellOption>
-          </att.Rows>
-          <att.Columns>
-            <CellOption>composeType:Percentage percentage:0.5</CellOption>
-            <CellOption>composeType:Absolute absolute:9</CellOption>
-            <CellOption>composeType:Percentage percentage:0.5</CellOption>
-          </att.Columns>
-
-          <Cell Site="row:1 column:1">
-            <Polygon Size="x:9 y:5" BorderColor="#FFFFFF" BackgroundColor="#FFFFFF">
-              <att.Points>
-                <Point>x:0 y:0</Point>
-                <Point>x:4 y:4</Point>
-                <Point>x:8 y:0</Point>
-              </att.Points>
-            </Polygon>
-          </Cell>
-        </Table>
-      </ButtonTemplate>
+  <Instance name="TabHeaderTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::TabHeaderTemplate" ref.Styles="res://DarkSkin/Style">
+      <ref.Parameter Name="CurrentTabPage" Class="presentation::controls::GuiTabPage"/>
+      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren">
+        <Button ControlTemplate="darkskin::TabHeaderButtonTemplate">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.Text-bind>CurrentTabPage.Text</att.Text-bind>
+          <att.Alt-bind>CurrentTabPage.Alt</att.Alt-bind>
+        </Button>
+      </ControlTemplate>
     </Instance>
   </Instance>
 
   <Instance name="TabTemplateResource">
     <Instance ref.CodeBehind="false" ref.Class="darkskin::TabTemplate" ref.Styles="res://DarkSkin/Style">
       <TabTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
-        <att.HeaderTemplate>darkskin::TabHeaderTemplate</att.HeaderTemplate>
-        <att.DropdownTemplate>darkskin::TabDropdownTemplate</att.DropdownTemplate>
-        <att.MenuTemplate>darkskin::ToolstripMenuTemplate</att.MenuTemplate>
-        <att.MenuItemTemplate>darkskin::MenuItemButtonTemplate</att.MenuItemTemplate>
-        <att.HeaderComposition-ref>header</att.HeaderComposition-ref>
-        <att.HeaderPadding>2</att.HeaderPadding>
-
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBackground Color="#2D2D30"/>
           <att.Rows>
@@ -573,7 +549,10 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Bounds ref.Name="header" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            <RepeatFlow AlignmentToParent="left:0 top:0 right:0 bottom:0" ExtraMargin="left:2 top:2 right:2 bottom:0">
+              <att.ItemTemplate>darkskin::TabHeaderTemplate</att.ItemTemplate>
+              <att.ItemSource-bind>self.TabPages</att.ItemSource-bind>
+            </RepeatFlow>
           </Cell>
           <Cell Site="row:1 column:0">
             <SolidBackground Color="#007ACC"/>

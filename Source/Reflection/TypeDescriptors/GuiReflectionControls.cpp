@@ -359,6 +359,8 @@ Type Declaration
 				CLASS_MEMBER_BASE(GuiCustomControl)
 				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTabPage)
 				CONTROL_CONSTRUCTOR_DEFAULT(GuiTabPage, vl::presentation::theme::g::NewTabPage)
+
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(OwnerTab)
 			END_CLASS_MEMBER(GuiTabPage)
 
 			BEGIN_CLASS_MEMBER(GuiTab)
