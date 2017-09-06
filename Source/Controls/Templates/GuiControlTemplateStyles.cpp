@@ -741,12 +741,11 @@ GuiDatePickerTemplate_StyleProvider
 
 			GuiDatePickerTemplate_StyleProvider::~GuiDatePickerTemplate_StyleProvider()
 			{
-				delete controlTemplate;
 			}
 			
 			void GuiDatePickerTemplate_StyleProvider::SetCommandExecutor(controls::IDatePickerCommandExecutor* value)
 			{
-				controlTemplate->SetComands(value);
+				controlTemplate->SetCommands(value);
 			}
 
 			void GuiDatePickerTemplate_StyleProvider::SetDateLocale(const Locale& value)
@@ -756,7 +755,7 @@ GuiDatePickerTemplate_StyleProvider
 
 			const DateTime& GuiDatePickerTemplate_StyleProvider::GetDate()
 			{
-				controlTemplate->GetDate();
+				return controlTemplate->GetDate();
 			}
 
 			void GuiDatePickerTemplate_StyleProvider::SetDate(const DateTime& value)
@@ -786,7 +785,7 @@ GuiDateComboBoxTemplate_StyleProvider
 				return new GuiDatePicker(CreateDatePickerStyle());
 			}
 
-			controls::GuiDatePicker::IStyleProvider* GuiDateComboBoxTemplate_StyleProvider::CreateDatePickerStyle()
+			controls::GuiDatePicker::IStyleController* GuiDateComboBoxTemplate_StyleProvider::CreateDatePickerStyle()
 			{
 				GET_FACTORY_FROM_TEMPLATE(GuiDatePickerTemplate, DatePickerTemplate);
 			}

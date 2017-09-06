@@ -242,7 +242,7 @@ namespace vl
 					SP(GuiSelectableButtonTemplate, radioButton);
 				}
 
-				GuiDatePicker::IStyleProvider* CreateDatePickerStyle()override
+				GuiDatePicker::IStyleController* CreateDatePickerStyle()override
 				{
 					SP(GuiDatePickerTemplate, datePicker);
 				}

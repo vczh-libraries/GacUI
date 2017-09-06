@@ -140,7 +140,7 @@ namespace vl
 				virtual controls::GuiSelectableButton::IStyleController*					CreateRadioButtonStyle()=0;
 				/// <summary>Create a style for date picker.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiDatePicker::IStyleProvider*							CreateDatePickerStyle()=0;
+				virtual controls::GuiDatePicker::IStyleController*							CreateDatePickerStyle()=0;
 				
 				/// <summary>Create a style for horizontal scroll.</summary>
 				/// <returns>The created style.</returns>

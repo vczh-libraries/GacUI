@@ -388,7 +388,7 @@ Control Template
 				~GuiDateComboBoxTemplate_StyleProvider();
 
 				controls::GuiDatePicker*										CreateArgument();
-				controls::GuiDatePicker::IStyleProvider*						CreateDatePickerStyle();
+				controls::GuiDatePicker::IStyleController*						CreateDatePickerStyle();
 			};
 
 /***********************************************************************
