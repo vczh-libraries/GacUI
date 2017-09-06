@@ -61,6 +61,13 @@ Type Declaration
 				CLASS_MEMBER_METHOD(ShowTab, { L"index" })
 			END_INTERFACE_MEMBER(ITabCommandExecutor)
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IDatePickerCommandExecutor)
+				CLASS_MEMBER_BASE(IDescriptable)
+				CLASS_MEMBER_METHOD(NotifyDateChanged, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(NotifyDateNavigated, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(NotifyDateSelected, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IDatePickerCommandExecutor)
+
 			BEGIN_CLASS_MEMBER(GuiComponent)
 			END_CLASS_MEMBER(GuiComponent)
 
@@ -91,6 +98,7 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiControlTemplate*(), NO_PARAMETER)
 
 				GuiControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+				CLASS_MEMBER_METHOD(Initialize, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiControlTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiLabelTemplate)
@@ -222,6 +230,8 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiDatePickerTemplate*(), NO_PARAMETER)
 
 				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(DateLocale)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Date)
 			END_CLASS_MEMBER(GuiDatePickerTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiDateComboBoxTemplate)

@@ -193,6 +193,7 @@ Type List (Templates)
 			F(presentation::controls::IComboBoxCommandExecutor)\
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
+			F(presentation::controls::IDatePickerCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
@@ -215,7 +216,6 @@ Type List (Templates)
 			F(presentation::templates::GuiListViewTemplate)\
 			F(presentation::templates::GuiTreeViewTemplate)\
 			F(presentation::templates::GuiTabTemplate)\
-			F(presentation::controls::GuiDatePicker::ControlTemplate)\
 			F(presentation::templates::GuiDatePickerTemplate)\
 			F(presentation::templates::GuiDateComboBoxTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\

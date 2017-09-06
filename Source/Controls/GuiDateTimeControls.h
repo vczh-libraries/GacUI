@@ -37,67 +37,6 @@ DatePicker
 					virtual void										SetDate(const DateTime& value) = 0;
 				};
 
-				/// <summary>Style controller for <see cref="GuiDatePicker"/>.</summary>
-				class ControlTemplate : public templates::GuiControlTemplate, public Description<ControlTemplate>
-				{
-				protected:
-					static const vint									DaysOfWeek=7;
-					static const vint									DayRows=6;
-					static const vint									DayRowStart=2;
-					static const vint									YearFirst=1900;
-					static const vint									YearLast=2099;
-
-					IDatePickerCommandExecutor*							commands = nullptr;
-					DateTime											currentDate;
-					Locale												dateLocale;
-					bool												preventComboEvent;
-					bool												preventButtonEvent;
-
-					GuiComboBoxListControl*								comboYear;
-					GuiTextList*										listYears;
-					GuiComboBoxListControl*								comboMonth;
-					GuiTextList*										listMonths;
-					collections::Array<elements::GuiSolidLabelElement*>	labelDaysOfWeek;
-					collections::Array<GuiSelectableButton*>			buttonDays;
-					collections::Array<elements::GuiSolidLabelElement*>	labelDays;
-					collections::Array<DateTime>						dateDays;
-					Ptr<GuiSelectableButton::GroupController>			dayMutexController;
-
-					void												SetDay(const DateTime& day, vint& index, bool currentMonth);
-					void												DisplayMonth(vint year, vint month);
-					void												SelectDay(vint day);
-
-					void												comboYearMonth_SelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												buttonDay_SelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												UpdateData(const DateTime& value, bool forceUpdate);
-
-				protected:
-
-					virtual GuiSelectableButton::IStyleController*		CreateDateButtonStyle() = 0;
-					virtual GuiTextList*								CreateTextList() = 0;
-					virtual GuiComboBoxListControl::IStyleController*	CreateComboBoxStyle() = 0;
-					virtual Color										GetBackgroundColor() = 0;
-					virtual Color										GetPrimaryTextColor() = 0;
-					virtual Color										GetSecondaryTextColor() = 0;
-				public:
-					ControlTemplate();
-					~ControlTemplate();
-
-					compositions::GuiNotifyEvent						DateLocaleChanged;
-					compositions::GuiNotifyEvent						DateChanged;
-					compositions::GuiNotifyEvent						CommandsChanged;
-
-					IDatePickerCommandExecutor*							GetCommands();
-					void												SetCommands(IDatePickerCommandExecutor* value);
-					const Locale&										GetDateLocale();
-					void												SetDateLocale(const Locale& value);
-					const DateTime&										GetDate();
-					void												SetDate(const DateTime& value);
-
-					void												Initialize()override;
-				};
-
 			protected:
 				IStyleController*										styleController;
 				WString													dateFormat;

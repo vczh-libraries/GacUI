@@ -360,7 +360,7 @@ Control Template
 
 			class GuiDatePickerTemplate_StyleProvider
 				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiDatePicker::IStyleProvider
+				, public virtual controls::GuiDatePicker::IStyleController
 				, public Description<GuiDatePickerTemplate_StyleProvider>
 			{
 			protected:
@@ -370,13 +370,10 @@ Control Template
 				GuiDatePickerTemplate_StyleProvider(TemplateProperty<GuiDatePickerTemplate> factory);
 				~GuiDatePickerTemplate_StyleProvider();
 
-				controls::GuiSelectableButton::IStyleController*				CreateDateButtonStyle()override;
-				GuiTextListTemplate_StyleProvider*								CreateTextListStyle();
-				controls::GuiTextList*											CreateTextList()override;
-				controls::GuiComboBoxListControl::IStyleController*				CreateComboBoxStyle()override;
-				Color															GetBackgroundColor()override;
-				Color															GetPrimaryTextColor()override;
-				Color															GetSecondaryTextColor()override;
+				void															SetCommandExecutor(controls::IDatePickerCommandExecutor* value)override;
+				void															SetDateLocale(const Locale& value)override;
+				const DateTime&													GetDate()override;
+				void															SetDate(const DateTime& value)override;
 			};
 
 			class GuiDateComboBoxTemplate_StyleProvider

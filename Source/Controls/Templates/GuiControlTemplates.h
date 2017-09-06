@@ -17,7 +17,10 @@ namespace vl
 	{
 		namespace controls
 		{
+			class GuiSelectableButton;
 			class GuiListControl;
+			class GuiComboBoxListControl;
+			class GuiTextList;
 			class GuiControlHost;
 			class GuiCustomControl;
 			class GuiTabPage;
@@ -492,13 +495,48 @@ Control Template
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
+/***********************************************************************
+Date Controls
+***********************************************************************/
+
 			class GuiDatePickerTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDatePickerTemplate>
 			{
+			protected:
+				static const vint									DaysOfWeek = 7;
+				static const vint									DayRows = 6;
+				static const vint									DayRowStart = 2;
+				static const vint									YearFirst = 1900;
+				static const vint									YearLast = 2099;
+
+				DateTime											currentDate;
+				Locale												dateLocale;
+				bool												preventComboEvent;
+				bool												preventButtonEvent;
+
+				controls::GuiComboBoxListControl*					comboYear;
+				controls::GuiTextList*								listYears;
+				controls::GuiComboBoxListControl*					comboMonth;
+				controls::GuiTextList*								listMonths;
+				collections::Array<elements::GuiSolidLabelElement*>	labelDaysOfWeek;
+				collections::Array<controls::GuiSelectableButton*>	buttonDays;
+				collections::Array<elements::GuiSolidLabelElement*>	labelDays;
+				collections::Array<DateTime>						dateDays;
+
+				void												SetDay(const DateTime& day, vint& index, bool currentMonth);
+				void												DisplayMonth(vint year, vint month);
+				void												SelectDay(vint day);
+
+				void												comboYearMonth_SelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												buttonDay_SelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												UpdateData(const DateTime& value, bool forceUpdate);
+
 			public:
 				GuiDatePickerTemplate();
 				~GuiDatePickerTemplate();
 
 #define GuiDatePickerTemplate_PROPERTIES(F)\
+				F(GuiDatePickerTemplate, controls::IDatePickerCommandExecutor*, Commands)\
 				F(GuiDatePickerTemplate, TemplateProperty<GuiSelectableButtonTemplate>, DateButtonTemplate)\
 				F(GuiDatePickerTemplate, TemplateProperty<GuiTextListTemplate>, DateTextListTemplate)\
 				F(GuiDatePickerTemplate, TemplateProperty<GuiComboBoxTemplate>, DateComboBoxTemplate)\
@@ -507,6 +545,16 @@ Control Template
 				F(GuiDatePickerTemplate, Color, SecondaryTextColor)\
 
 				GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+
+				compositions::GuiNotifyEvent						DateLocaleChanged;
+				compositions::GuiNotifyEvent						DateChanged;
+
+				const Locale&										GetDateLocale();
+				void												SetDateLocale(const Locale& value);
+				const DateTime&										GetDate();
+				void												SetDate(const DateTime& value);
+
+				void												Initialize()override;
 			};
 
 			class GuiDateComboBoxTemplate : public GuiComboBoxTemplate, public AggregatableDescription<GuiDateComboBoxTemplate>

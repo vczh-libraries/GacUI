@@ -743,41 +743,25 @@ GuiDatePickerTemplate_StyleProvider
 			{
 				delete controlTemplate;
 			}
-
-			controls::GuiSelectableButton::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateDateButtonStyle()
+			
+			void GuiDatePickerTemplate_StyleProvider::SetCommandExecutor(controls::IDatePickerCommandExecutor* value)
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiSelectableButtonTemplate, DateButtonTemplate);
+				controlTemplate->SetComands(value);
 			}
 
-			GuiTextListTemplate_StyleProvider* GuiDatePickerTemplate_StyleProvider::CreateTextListStyle()
+			void GuiDatePickerTemplate_StyleProvider::SetDateLocale(const Locale& value)
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiTextListTemplate, DateTextListTemplate);
+				controlTemplate->SetDateLocale(value);
 			}
 
-			controls::GuiTextList* GuiDatePickerTemplate_StyleProvider::CreateTextList()
+			const DateTime& GuiDatePickerTemplate_StyleProvider::GetDate()
 			{
-				auto style = CreateTextListStyle();
-				return new GuiTextList(style);
+				controlTemplate->GetDate();
 			}
 
-			controls::GuiComboBoxListControl::IStyleController* GuiDatePickerTemplate_StyleProvider::CreateComboBoxStyle()
+			void GuiDatePickerTemplate_StyleProvider::SetDate(const DateTime& value)
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiComboBoxTemplate, DateComboBoxTemplate);
-			}
-
-			Color GuiDatePickerTemplate_StyleProvider::GetBackgroundColor()
-			{
-				return controlTemplate->GetBackgroundColor();
-			}
-
-			Color GuiDatePickerTemplate_StyleProvider::GetPrimaryTextColor()
-			{
-				return controlTemplate->GetPrimaryTextColor();
-			}
-
-			Color GuiDatePickerTemplate_StyleProvider::GetSecondaryTextColor()
-			{
-				return controlTemplate->GetSecondaryTextColor();
+				controlTemplate->SetDate(value);
 			}
 
 /***********************************************************************
