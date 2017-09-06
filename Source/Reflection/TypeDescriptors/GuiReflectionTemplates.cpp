@@ -375,7 +375,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiDatePickerTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiDatePicker::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiDatePicker::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiDatePickerTemplate_StyleProvider*(TemplateProperty<GuiDatePickerTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiDatePickerTemplate_StyleProvider)
