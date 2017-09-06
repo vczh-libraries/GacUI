@@ -1346,17 +1346,14 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(DateNavigated);
 			END_CLASS_MEMBER(GuiDatePicker)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiDatePicker::IStyleProvider)
-				CLASS_MEMBER_BASE(GuiControl::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiDatePicker::IStyleController)
+				CLASS_MEMBER_BASE(GuiControl::IStyleController)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BackgroundColor)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(PrimaryTextColor)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SecondaryTextColor)
-
-				CLASS_MEMBER_METHOD(CreateDateButtonStyle, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(CreateTextList, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(CreateComboBoxStyle, NO_PARAMETER)
-			END_INTERFACE_MEMBER(GuiDatePicker::IStyleProvider)
+				CLASS_MEMBER_METHOD(SetCommandExecutor, { L"value" })
+				CLASS_MEMBER_METHOD(SetDateLocale, { L"value" })
+				CLASS_MEMBER_METHOD(GetDate, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetDate, { L"value" })
+			END_INTERFACE_MEMBER(GuiDatePicker::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiDateComboBox)
 				CLASS_MEMBER_BASE(GuiComboBoxBase)

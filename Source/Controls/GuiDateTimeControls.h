@@ -24,36 +24,21 @@ DatePicker
 ***********************************************************************/
 
 			/// <summary>Date picker control that display a calendar.</summary>
-			class GuiDatePicker : public GuiControl, public Description<GuiDatePicker>
+			class GuiDatePicker : public GuiControl, public IDatePickerCommandExecutor, public Description<GuiDatePicker>
 			{
 			public:
 				/// <summary>Style provider interface for <see cref="GuiDatePicker"/>.</summary>
-				class IStyleProvider : public virtual GuiControl::IStyleProvider, public Description<IStyleProvider>
+				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
 				{
 				public:
-					/// <summary>Create a style for date button for choosing "day".</summary>
-					/// <returns>The created style.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateDateButtonStyle()=0;
-					/// <summary>Create a text list for candidate "year" and "month".</summary>
-					/// <returns>The created control.</returns>
-					virtual GuiTextList*								CreateTextList()=0;
-					/// <summary>Create a combo box style for "year" and "month".</summary>
-					/// <returns>The created style.</returns>
-					virtual GuiComboBoxListControl::IStyleController*	CreateComboBoxStyle()=0;
-
-					/// <summary>Get the color for background.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetBackgroundColor()=0;
-					/// <summary>Get the color for "day" that in the current month.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetPrimaryTextColor()=0;
-					/// <summary>Get the color for "day" that not in the current month.</summary>
-					/// <returns>The color.</returns>
-					virtual Color										GetSecondaryTextColor()=0;
+					virtual void										SetCommandExecutor(IDatePickerCommandExecutor* value) = 0;
+					virtual void										SetDateLocale(const Locale& value) = 0;
+					virtual const DateTime&								GetDate() = 0;
+					virtual void										SetDate(const DateTime& value) = 0;
 				};
 
 				/// <summary>Style controller for <see cref="GuiDatePicker"/>.</summary>
-				class StyleController : public Object, public virtual GuiControl::IStyleController, public Description<StyleController>
+				class ControlTemplate : public templates::GuiControlTemplate, public Description<ControlTemplate>
 				{
 				protected:
 					static const vint									DaysOfWeek=7;
@@ -62,11 +47,9 @@ DatePicker
 					static const vint									YearFirst=1900;
 					static const vint									YearLast=2099;
 
-					IStyleProvider*										styleProvider;
-					GuiDatePicker*										datePicker;
+					IDatePickerCommandExecutor*							commands = nullptr;
 					DateTime											currentDate;
 					Locale												dateLocale;
-					compositions::GuiTableComposition*					boundsComposition;
 					bool												preventComboEvent;
 					bool												preventButtonEvent;
 
@@ -83,47 +66,51 @@ DatePicker
 					void												SetDay(const DateTime& day, vint& index, bool currentMonth);
 					void												DisplayMonth(vint year, vint month);
 					void												SelectDay(vint day);
+
 					void												comboYearMonth_SelectedIndexChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void												buttonDay_SelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				public:
-					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="_styleProvider">The style provider.</param>
-					StyleController(IStyleProvider* _styleProvider);
-					~StyleController();
+					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void												UpdateData(const DateTime& value, bool forceUpdate);
 
-					compositions::GuiBoundsComposition*					GetBoundsComposition()override;
-					compositions::GuiGraphicsComposition*				GetContainerComposition()override;
-					void												SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-					void												SetText(const WString& value)override;
-					void												SetFont(const FontProperties& value)override;
-					void												SetVisuallyEnabled(bool value)override;
-					
-					/// <summary>Set the data picker that owns this style controller.</summary>
-					/// <param name="_datePicker">The date picker.</param>
-					void												SetDatePicker(GuiDatePicker* _datePicker);
-					/// <summary>Set the locale to display texts.</summary>
-					/// <param name="_dateLocale">The locale.</param>
-					void												SetDateLocale(const Locale& _dateLocale);
-					/// <summary>Get the displayed date.</summary>
-					/// <returns>The date.</returns>
+				protected:
+
+					virtual GuiSelectableButton::IStyleController*		CreateDateButtonStyle() = 0;
+					virtual GuiTextList*								CreateTextList() = 0;
+					virtual GuiComboBoxListControl::IStyleController*	CreateComboBoxStyle() = 0;
+					virtual Color										GetBackgroundColor() = 0;
+					virtual Color										GetPrimaryTextColor() = 0;
+					virtual Color										GetSecondaryTextColor() = 0;
+				public:
+					ControlTemplate();
+					~ControlTemplate();
+
+					compositions::GuiNotifyEvent						DateLocaleChanged;
+					compositions::GuiNotifyEvent						DateChanged;
+					compositions::GuiNotifyEvent						CommandsChanged;
+
+					IDatePickerCommandExecutor*							GetCommands();
+					void												SetCommands(IDatePickerCommandExecutor* value);
+					const Locale&										GetDateLocale();
+					void												SetDateLocale(const Locale& value);
 					const DateTime&										GetDate();
-					/// <summary>Display a date.</summary>
-					/// <param name="value">The date.</param>
-					/// <param name="forceUpdate">Set to true to refill all data in the control whatever cached or not.</param>
-					void												SetDate(const DateTime& value, bool forceUpdate=false);
+					void												SetDate(const DateTime& value);
+
+					void												Initialize()override;
 				};
 
 			protected:
-				StyleController*										styleController;
+				IStyleController*										styleController;
 				WString													dateFormat;
 				Locale													dateLocale;
 
 				void													UpdateText();
-				void													NotifyDateChanged();
+				void													NotifyDateChanged()override;
+				void													NotifyDateNavigated()override;
+				void													NotifyDateSelected()override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="_styleProvider">The style provider.</param>
-				GuiDatePicker(IStyleProvider* _styleProvider);
+				GuiDatePicker(IStyleController* _styleController);
 				~GuiDatePicker();
 
 				/// <summary>Date changed event.</summary>

@@ -85,6 +85,18 @@ namespace vl
 				virtual void						ShowTab(vint index) = 0;
 			};
 
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IDatePickerCommandExecutor : public virtual IDescriptable, public Description<IDatePickerCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the date has been changed.</summary>
+				virtual void						NotifyDateChanged() = 0;
+				/// <summary>Called when navigated to a date.</summary>
+				virtual void						NotifyDateNavigated() = 0;
+				/// <summary>Called when selected a date.</summary>
+				virtual void						NotifyDateSelected() = 0;
+			};
+
 			class GuiInstanceRootObject;
 
 			/// <summary>
@@ -210,6 +222,8 @@ Control Template
 			public:
 				GuiControlTemplate();
 				~GuiControlTemplate();
+
+				virtual void				Initialize();
 				
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition)\

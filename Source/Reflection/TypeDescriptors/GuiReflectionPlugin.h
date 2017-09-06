@@ -215,6 +215,7 @@ Type List (Templates)
 			F(presentation::templates::GuiListViewTemplate)\
 			F(presentation::templates::GuiTreeViewTemplate)\
 			F(presentation::templates::GuiTabTemplate)\
+			F(presentation::controls::GuiDatePicker::ControlTemplate)\
 			F(presentation::templates::GuiDatePickerTemplate)\
 			F(presentation::templates::GuiDateComboBoxTemplate)\
 			F(presentation::templates::GuiListItemTemplate)\
@@ -372,7 +373,7 @@ Type List (Controls)
 			F(presentation::controls::list::HyperlinkVisualizerTemplate)\
 			F(presentation::controls::list::CellBorderVisualizerTemplate)\
 			F(presentation::controls::GuiDatePicker)\
-			F(presentation::controls::GuiDatePicker::IStyleProvider)\
+			F(presentation::controls::GuiDatePicker::IStyleController)\
 			F(presentation::controls::GuiDateComboBox)\
 			F(presentation::controls::GuiBindableTextList)\
 			F(presentation::controls::GuiBindableListView)\

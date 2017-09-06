@@ -203,6 +203,10 @@ GuiControlTemplate
 				FinalizeAggregation();
 			}
 
+			void GuiControlTemplate::Initialize()
+			{
+			}
+
 /***********************************************************************
 GuiLabelTemplate
 ***********************************************************************/

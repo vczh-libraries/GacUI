@@ -32,6 +32,7 @@ GuiControlTemplate_StyleProvider
 				, controlTemplate(factory(viewModel))
 			{
 				CHECK_ERROR(controlTemplate, L"GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider()#An instance of GuiControlTemplate is expected.");
+				controlTemplate->Initialize();
 			}
 
 			GuiControlTemplate_StyleProvider::~GuiControlTemplate_StyleProvider()
