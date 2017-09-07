@@ -130,6 +130,7 @@ SinglelineTextBox
 					void									UnsafeSetText(const WString& value)override;
 				};
 			protected:
+				Ptr<TextElementOperatorCallback>			callback;
 				Ptr<CommandExecutor>						commandExecutor;
 				IStyleController*							styleController;
 				

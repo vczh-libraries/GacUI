@@ -329,11 +329,13 @@ GuiSinglelineTextBox
 				:GuiControl(_styleController)
 				, styleController(_styleController)
 			{
+				callback = new TextElementOperatorCallback(this);
 				commandExecutor = new CommandExecutor(this);
+
 				styleController->SetCommandExecutor(commandExecutor.Obj());
 				SetFocusableComposition(boundsComposition);
 				Install(styleController->GetTextElement(), styleController->GetTextComposition(), this);
-				SetCallback(new TextElementOperatorCallback(this));
+				SetCallback(callback.Obj());
 
 				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
 				boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
