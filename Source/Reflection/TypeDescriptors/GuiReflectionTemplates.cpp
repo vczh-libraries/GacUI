@@ -40,11 +40,17 @@ Type Declaration
 				ENUM_CLASS_ITEM(Customizable)
 			END_ENUM_ITEM(BoolOption)
 
-			BEGIN_CLASS_MEMBER(IComboBoxCommandExecutor)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(ISinglelineTextBoxCommandExecutor)
+				CLASS_MEMBER_BASE(IDescriptable)
+
+				CLASS_MEMBER_METHOD(UnsafeSetText, { L"value" })
+			END_INTERFACE_MEMBER(ISinglelineTextBoxCommandExecutor)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IComboBoxCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_METHOD(SelectItem, NO_PARAMETER)
-			END_CLASS_MEMBER(IComboBoxCommandExecutor)
+			END_INTERFACE_MEMBER(IComboBoxCommandExecutor)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IScrollCommandExecutor)
 				CLASS_MEMBER_METHOD(SmallDecrease, NO_PARAMETER)
@@ -113,6 +119,10 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiSinglelineTextBoxTemplate*(), NO_PARAMETER)
 
 				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditingText)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextElement)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextComposition)
+				CLASS_MEMBER_METHOD(RearrangeTextElement, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiSinglelineTextBoxTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentLabelTemplate)

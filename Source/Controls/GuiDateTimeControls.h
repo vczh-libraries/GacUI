@@ -24,7 +24,7 @@ DatePicker
 ***********************************************************************/
 
 			/// <summary>Date picker control that display a calendar.</summary>
-			class GuiDatePicker : public GuiControl, public IDatePickerCommandExecutor, public Description<GuiDatePicker>
+			class GuiDatePicker : public GuiControl, public Description<GuiDatePicker>
 			{
 			public:
 				/// <summary>Style provider interface for <see cref="GuiDatePicker"/>.</summary>
@@ -38,14 +38,25 @@ DatePicker
 				};
 
 			protected:
+				class CommandExecutor : public Object, public IDatePickerCommandExecutor
+				{
+				protected:
+					GuiDatePicker*										datePicker;
+				public:
+					CommandExecutor(GuiDatePicker* _datePicker);
+					~CommandExecutor();
+
+					void												NotifyDateChanged()override;
+					void												NotifyDateNavigated()override;
+					void												NotifyDateSelected()override;
+				};
+
+				Ptr<CommandExecutor>									commandExecutor;
 				IStyleController*										styleController;
 				WString													dateFormat;
 				Locale													dateLocale;
 
 				void													UpdateText();
-				void													NotifyDateChanged()override;
-				void													NotifyDateNavigated()override;
-				void													NotifyDateSelected()override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="_styleProvider">The style provider.</param>

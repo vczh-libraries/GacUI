@@ -1216,15 +1216,14 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiSinglelineTextBox)
 				CLASS_MEMBER_BASE(GuiControl)
 				CLASS_MEMBER_BASE(GuiTextBoxCommonInterface)
-				CONTROL_CONSTRUCTOR_PROVIDER(GuiSinglelineTextBox)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiSinglelineTextBox)
 
 				CLASS_MEMBER_PROPERTY_FAST(PasswordChar)
 			END_CLASS_MEMBER(GuiSinglelineTextBox)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiSinglelineTextBox::IStyleProvider)
-				CLASS_MEMBER_BASE(GuiControl::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiSinglelineTextBox::IStyleController)
+				CLASS_MEMBER_BASE(GuiControl::IStyleController)
 
-				CLASS_MEMBER_METHOD(InstallBackground, {L"background"})
 			END_INTERFACE_MEMBER(GuiSinglelineTextBox::IStyleProvider)
 
 			BEGIN_INTERFACE_MEMBER(IDataGridContext)

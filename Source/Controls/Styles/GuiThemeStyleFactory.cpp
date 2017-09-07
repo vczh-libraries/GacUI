@@ -137,7 +137,7 @@ namespace vl
 					SP(GuiMultilineTextBoxTemplate, multilineTextBox);
 				}
 
-				GuiSinglelineTextBox::IStyleProvider* CreateTextBoxStyle()override
+				GuiSinglelineTextBox::IStyleController* CreateTextBoxStyle()override
 				{
 					SP(GuiSinglelineTextBoxTemplate, singlelineTextBox);
 				}

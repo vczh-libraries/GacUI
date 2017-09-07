@@ -48,6 +48,15 @@ namespace vl
 			};
 
 			/// <summary>A command executor for the combo box to change the control state.</summary>
+			class ISinglelineTextBoxCommandExecutor : public virtual IDescriptable, public Description<ISinglelineTextBoxCommandExecutor>
+			{
+			public:
+				/// <summary>Override the text content in the control.</summary>
+				/// <param name="value">The new text content.</param>
+				virtual void						UnsafeSetText(const WString& value) = 0;
+			};
+
+			/// <summary>A command executor for the combo box to change the control state.</summary>
 			class IComboBoxCommandExecutor : public virtual IDescriptable, public Description<IComboBoxCommandExecutor>
 			{
 			public:
@@ -235,6 +244,10 @@ Control Template
 				GuiControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
+/***********************************************************************
+Basic Controls
+***********************************************************************/
+
 			class GuiLabelTemplate :public GuiControlTemplate, public AggregatableDescription<GuiLabelTemplate>
 			{
 			public:
@@ -250,15 +263,32 @@ Control Template
 
 			class GuiSinglelineTextBoxTemplate : public GuiControlTemplate, public AggregatableDescription<GuiSinglelineTextBoxTemplate>
 			{
+			protected:
+				elements::GuiColorizedTextElement*			textElement = nullptr;
+				compositions::GuiTableComposition*			textCompositionTable = nullptr;
+				compositions::GuiCellComposition*			textComposition = nullptr;
+
+				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				GuiSinglelineTextBoxTemplate();
 				~GuiSinglelineTextBoxTemplate();
 
 #define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
+				F(GuiSinglelineTextBoxTemplate, controls::ISinglelineTextBoxCommandExecutor*, Commands)\
 				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor)\
 				F(GuiSinglelineTextBoxTemplate, Color, CaretColor)\
 
 				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+
+
+				WString										GetEditingText();
+				elements::GuiColorizedTextElement*			GetTextElement();
+				compositions::GuiGraphicsComposition*		GetTextComposition();
+
+				void										RearrangeTextElement();
+				void										Initialize()override;
 			};
 
 			class GuiDocumentLabelTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDocumentLabelTemplate>
@@ -274,6 +304,10 @@ Control Template
 				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
+/***********************************************************************
+Menu Controls
+***********************************************************************/
+
 			class GuiMenuTemplate : public GuiControlTemplate, public AggregatableDescription<GuiMenuTemplate>
 			{
 			public:
@@ -287,6 +321,10 @@ Control Template
 				AlwaysFalse,
 				Customizable,
 			};
+
+/***********************************************************************
+Window
+***********************************************************************/
 
 			class GuiWindowTemplate : public GuiControlTemplate, public AggregatableDescription<GuiWindowTemplate>
 			{
@@ -315,6 +353,10 @@ Control Template
 				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
+/***********************************************************************
+Button Controls
+***********************************************************************/
+
 			class GuiButtonTemplate : public GuiControlTemplate, public AggregatableDescription<GuiButtonTemplate>
 			{
 			public:
@@ -338,6 +380,10 @@ Control Template
 
 				GuiSelectableButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+
+/***********************************************************************
+Toolstrip Controls
+***********************************************************************/
 
 			class GuiToolstripButtonTemplate : public GuiSelectableButtonTemplate, public AggregatableDescription<GuiToolstripButtonTemplate>
 			{
@@ -381,6 +427,10 @@ Control Template
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
+/***********************************************************************
+Scroll Controls
+***********************************************************************/
+
 			class GuiScrollTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollTemplate>
 			{
 			public:
@@ -395,6 +445,10 @@ Control Template
 
 				GuiScrollTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+
+/***********************************************************************
+Scrollable Controls
+***********************************************************************/
 
 			class GuiScrollViewTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollViewTemplate>
 			{
@@ -435,6 +489,10 @@ Control Template
 
 				GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+
+/***********************************************************************
+List Controls
+***********************************************************************/
 
 			class GuiTextListTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiTextListTemplate>
 			{
@@ -480,6 +538,10 @@ Control Template
 
 				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
+
+/***********************************************************************
+Tab Controls
+***********************************************************************/
 
 			class GuiTabTemplate : public GuiControlTemplate, public AggregatableDescription<GuiTabTemplate>
 			{

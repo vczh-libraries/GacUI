@@ -121,21 +121,36 @@ GuiSinglelineTextBoxTemplate_StyleProvider
 			void GuiSinglelineTextBoxTemplate_StyleProvider::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
 			{
 				GuiControlTemplate_StyleProvider::SetFocusableComposition(value);
-				if (auto style = dynamic_cast<GuiSinglelineTextBox::StyleController*>(associatedStyleController))
-				{
-					auto element = style->GetTextElement();
-					Array<text::ColorEntry> colors(1);
-					colors[0] = controlTemplate->GetTextColor();
-					element->SetColors(colors);
-					element->SetCaretColor(controlTemplate->GetCaretColor());
-				}
+				auto element = controlTemplate->GetTextElement();
+				Array<text::ColorEntry> colors(1);
+				colors[0] = controlTemplate->GetTextColor();
+				element->SetColors(colors);
+				element->SetCaretColor(controlTemplate->GetCaretColor());
 			}
 
-			compositions::GuiGraphicsComposition* GuiSinglelineTextBoxTemplate_StyleProvider::InstallBackground(compositions::GuiBoundsComposition* boundsComposition)
+			void GuiSinglelineTextBoxTemplate_StyleProvider::SetCommandExecutor(ISinglelineTextBoxCommandExecutor* value)
 			{
-				controlTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				boundsComposition->AddChild(controlTemplate);
-				return controlTemplate->GetContainerComposition();
+				controlTemplate->SetCommands(value);
+			}
+
+			void GuiSinglelineTextBoxTemplate_StyleProvider::RearrangeTextElement()
+			{
+				controlTemplate->RearrangeTextElement();
+			}
+
+			WString GuiSinglelineTextBoxTemplate_StyleProvider::GetEditingText()
+			{
+				return controlTemplate->GetEditingText();
+			}
+
+			elements::GuiColorizedTextElement* GuiSinglelineTextBoxTemplate_StyleProvider::GetTextElement()
+			{
+				return controlTemplate->GetTextElement();
+			}
+
+			compositions::GuiGraphicsComposition* GuiSinglelineTextBoxTemplate_StyleProvider::GetTextComposition()
+			{
+				return controlTemplate->GetTextComposition();
 			}
 
 /***********************************************************************

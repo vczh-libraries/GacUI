@@ -227,16 +227,79 @@ GuiLabelTemplate
 GuiSinglelineTextBoxTemplate
 ***********************************************************************/
 
+			void GuiSinglelineTextBoxTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				Commands_->UnsafeSetText(GetText());
+				textElement->SetCaretBegin(TextPos(0, 0));
+				textElement->SetCaretEnd(TextPos(0, 0));
+			}
+
+			void GuiSinglelineTextBoxTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				textElement->SetFont(GetFont());
+			}
+
+			void GuiSinglelineTextBoxTemplate::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				textElement->SetVisuallyEnabled(GetVisuallyEnabled());
+			}
+
 			GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiSinglelineTextBoxTemplate::GuiSinglelineTextBoxTemplate()
 			{
+				TextChanged.AttachMethod(this, &GuiSinglelineTextBoxTemplate::OnTextChanged);
+				FontChanged.AttachMethod(this, &GuiSinglelineTextBoxTemplate::OnFontChanged);
+				VisuallyEnabledChanged.AttachMethod(this, &GuiSinglelineTextBoxTemplate::OnVisuallyEnabledChanged);
 				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
 
 			GuiSinglelineTextBoxTemplate::~GuiSinglelineTextBoxTemplate()
 			{
 				FinalizeAggregation();
+			}
+
+			WString GuiSinglelineTextBoxTemplate::GetEditingText()
+			{
+				return textElement->GetLines().GetText();
+			}
+
+			elements::GuiColorizedTextElement* GuiSinglelineTextBoxTemplate::GetTextElement()
+			{
+				return textElement;
+			}
+
+			compositions::GuiGraphicsComposition* GuiSinglelineTextBoxTemplate::GetTextComposition()
+			{
+				return textComposition;
+			}
+
+			void GuiSinglelineTextBoxTemplate::RearrangeTextElement()
+			{
+				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(textElement->GetLines().GetRowHeight() + 2 * GuiSinglelineTextBox::TextMargin));
+			}
+
+			void GuiSinglelineTextBoxTemplate::Initialize()
+			{
+				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				textElement = GuiColorizedTextElement::Create();
+				textElement->SetViewPosition(Point(-GuiSinglelineTextBox::TextMargin, -GuiSinglelineTextBox::TextMargin));
+
+				textCompositionTable = new GuiTableComposition;
+				textCompositionTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				textCompositionTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				textCompositionTable->SetRowsAndColumns(3, 1);
+				textCompositionTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(0));
+				textCompositionTable->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+				textCompositionTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+				AddChild(textCompositionTable);
+
+				textComposition = new GuiCellComposition;
+				textComposition->SetOwnedElement(textElement);
+				textCompositionTable->AddChild(textComposition);
+				textComposition->SetSite(1, 0, 1, 1);
 			}
 
 /***********************************************************************
@@ -702,6 +765,8 @@ GuiDatePickerTemplate
 				}
 			}
 
+			GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
+
 			GuiDatePickerTemplate::GuiDatePickerTemplate()
 				:Commands_(nullptr)
 				, preventComboEvent(false)
@@ -717,8 +782,6 @@ GuiDatePickerTemplate
 			{
 				FinalizeAggregation();
 			}
-
-			GuiDatePickerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			const Locale& GuiDatePickerTemplate::GetDateLocale()
 			{

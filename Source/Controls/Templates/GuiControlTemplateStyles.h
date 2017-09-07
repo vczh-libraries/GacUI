@@ -67,7 +67,7 @@ Control Template
 
 			class GuiSinglelineTextBoxTemplate_StyleProvider
 				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiSinglelineTextBox::IStyleProvider
+				, public virtual controls::GuiSinglelineTextBox::IStyleController
 				, public Description<GuiSinglelineTextBoxTemplate_StyleProvider>
 			{
 			protected:
@@ -78,7 +78,11 @@ Control Template
 				~GuiSinglelineTextBoxTemplate_StyleProvider();
 				
 				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-				compositions::GuiGraphicsComposition*							InstallBackground(compositions::GuiBoundsComposition* boundsComposition)override;
+				void															SetCommandExecutor(controls::ISinglelineTextBoxCommandExecutor* value)override;
+				void															RearrangeTextElement()override;
+				WString															GetEditingText()override;
+				elements::GuiColorizedTextElement*								GetTextElement()override;
+				compositions::GuiGraphicsComposition*							GetTextComposition()override;
 			};
 
 			class GuiDocumentLabelTemplate_StyleProvider

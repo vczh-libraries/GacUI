@@ -222,134 +222,14 @@ GuiMultilineTextBox
 			}
 
 /***********************************************************************
-GuiSinglelineTextBox::StyleController
-***********************************************************************/
-
-			GuiSinglelineTextBox::StyleController::StyleController(IStyleProvider* _styleProvider)
-				:styleProvider(_styleProvider)
-				,boundsComposition(0)
-				,containerComposition(0)
-				,textBox(0)
-				,textElement(0)
-				,textComposition(0)
-			{
-				boundsComposition=new GuiBoundsComposition;
-				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition=styleProvider->InstallBackground(boundsComposition);
-
-				textElement=GuiColorizedTextElement::Create();
-				textElement->SetViewPosition(Point(-TextMargin, -TextMargin));
-
-				textCompositionTable=new GuiTableComposition;
-				textCompositionTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				textCompositionTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				textCompositionTable->SetRowsAndColumns(3, 1);
-				textCompositionTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
-				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(0));
-				textCompositionTable->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
-				textCompositionTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-				containerComposition->AddChild(textCompositionTable);
-
-				textComposition=new GuiCellComposition;
-				textComposition->SetOwnedElement(textElement);
-				textCompositionTable->AddChild(textComposition);
-				textComposition->SetSite(1, 0, 1, 1);
-
-				styleProvider->AssociateStyleController(this);
-			}
-
-			GuiSinglelineTextBox::StyleController::~StyleController()
-			{
-			}
-
-			void GuiSinglelineTextBox::StyleController::SetTextBox(GuiSinglelineTextBox* control)
-			{
-				textBox=control;
-			}
-
-			void GuiSinglelineTextBox::StyleController::RearrangeTextElement()
-			{
-				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(textElement->GetLines().GetRowHeight() + 2 * TextMargin));
-			}
-
-			compositions::GuiBoundsComposition* GuiSinglelineTextBox::StyleController::GetBoundsComposition()
-			{
-				return boundsComposition;
-			}
-
-			compositions::GuiGraphicsComposition* GuiSinglelineTextBox::StyleController::GetContainerComposition()
-			{
-				return containerComposition;
-			}
-
-			void GuiSinglelineTextBox::StyleController::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
-			{
-				styleProvider->SetFocusableComposition(value);
-				textBox->Install(textElement, textComposition, textBox);
-				if(!textBox->GetCallback())
-				{
-					if(!defaultCallback)
-					{
-						defaultCallback=new TextElementOperatorCallback(textBox);
-					}
-					textBox->SetCallback(defaultCallback.Obj());
-				}
-			}
-
-			WString GuiSinglelineTextBox::StyleController::GetText()
-			{
-				return textElement->GetLines().GetText();
-			}
-
-			void GuiSinglelineTextBox::StyleController::SetText(const WString& value)
-			{
-				if(textBox)
-				{
-					textBox->UnsafeSetText(value);
-				}
-				textElement->SetCaretBegin(TextPos(0, 0));
-				textElement->SetCaretEnd(TextPos(0, 0));
-				styleProvider->SetText(value);
-			}
-
-			void GuiSinglelineTextBox::StyleController::SetFont(const FontProperties& value)
-			{
-				textElement->SetFont(value);
-				styleProvider->SetFont(value);
-			}
-
-			void GuiSinglelineTextBox::StyleController::SetVisuallyEnabled(bool value)
-			{
-				textElement->SetVisuallyEnabled(value);
-				styleProvider->SetVisuallyEnabled(value);
-			}
-
-			elements::GuiColorizedTextElement* GuiSinglelineTextBox::StyleController::GetTextElement()
-			{
-				return textElement;
-			}
-
-			compositions::GuiGraphicsComposition* GuiSinglelineTextBox::StyleController::GetTextComposition()
-			{
-				return textComposition;
-			}
-
-			void GuiSinglelineTextBox::StyleController::SetViewPosition(Point value)
-			{
-				textElement->SetViewPosition(value);
-			}
-
-/***********************************************************************
 GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 ***********************************************************************/
 
 			GuiSinglelineTextBox::TextElementOperatorCallback::TextElementOperatorCallback(GuiSinglelineTextBox* _textControl)
 				:GuiTextBoxCommonInterface::DefaultCallback(
-					dynamic_cast<StyleController*>(_textControl->GetStyleController())->GetTextElement(),
-					dynamic_cast<StyleController*>(_textControl->GetStyleController())->GetTextComposition()
+					dynamic_cast<IStyleController*>(_textControl->GetStyleController())->GetTextElement(),
+					dynamic_cast<IStyleController*>(_textControl->GetStyleController())->GetTextComposition()
 					)
-				,textControl(_textControl)
-				,textController(dynamic_cast<StyleController*>(_textControl->GetStyleController()))
 			{
 			}
 
@@ -410,6 +290,24 @@ GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 			}
 
 /***********************************************************************
+GuiSinglelineTextBox::CommandExecutor
+***********************************************************************/
+
+			GuiSinglelineTextBox::CommandExecutor::CommandExecutor(GuiSinglelineTextBox* _textBox)
+				:textBox(_textBox)
+			{
+			}
+
+			GuiSinglelineTextBox::CommandExecutor::~CommandExecutor()
+			{
+			}
+
+			void GuiSinglelineTextBox::CommandExecutor::UnsafeSetText(const WString& value)
+			{
+				textBox->UnsafeSetText(value);
+			}
+
+/***********************************************************************
 GuiSinglelineTextBox
 ***********************************************************************/
 
@@ -427,12 +325,15 @@ GuiSinglelineTextBox
 				}
 			}
 
-			GuiSinglelineTextBox::GuiSinglelineTextBox(GuiSinglelineTextBox::IStyleProvider* styleProvider)
-				:GuiControl(new StyleController(styleProvider))
+			GuiSinglelineTextBox::GuiSinglelineTextBox(GuiSinglelineTextBox::IStyleController* _styleController)
+				:GuiControl(_styleController)
+				, styleController(_styleController)
 			{
-				styleController=dynamic_cast<StyleController*>(GetStyleController());
-				styleController->SetTextBox(this);
+				commandExecutor = new CommandExecutor(this);
+				styleController->SetCommandExecutor(commandExecutor.Obj());
 				SetFocusableComposition(boundsComposition);
+				Install(styleController->GetTextElement(), styleController->GetTextComposition(), this);
+				SetCallback(new TextElementOperatorCallback(this));
 
 				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
 				boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
@@ -445,13 +346,8 @@ GuiSinglelineTextBox
 
 			const WString& GuiSinglelineTextBox::GetText()
 			{
-				text=styleController->GetText();
+				text = styleController->GetEditingText();
 				return text;
-			}
-
-			void GuiSinglelineTextBox::SetText(const WString& value)
-			{
-				GuiControl::SetText(value);
 			}
 
 			void GuiSinglelineTextBox::SetFont(const FontProperties& value)

@@ -190,6 +190,7 @@ Type List (Templates)
 			F(presentation::controls::ButtonState)\
 			F(presentation::controls::ColumnSortingState)\
 			F(presentation::templates::BoolOption)\
+			F(presentation::controls::ISinglelineTextBoxCommandExecutor)\
 			F(presentation::controls::IComboBoxCommandExecutor)\
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
@@ -356,7 +357,7 @@ Type List (Controls)
 			F(presentation::controls::GuiTextBoxCommonInterface)\
 			F(presentation::controls::GuiMultilineTextBox)\
 			F(presentation::controls::GuiSinglelineTextBox)\
-			F(presentation::controls::GuiSinglelineTextBox::IStyleProvider)\
+			F(presentation::controls::GuiSinglelineTextBox::IStyleController)\
 			F(presentation::controls::list::IDataGridContext)\
 			F(presentation::controls::list::IDataVisualizerFactory)\
 			F(presentation::controls::list::IDataVisualizer)\

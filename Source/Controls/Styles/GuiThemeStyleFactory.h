@@ -75,7 +75,7 @@ namespace vl
 				virtual controls::GuiScrollView::IStyleProvider*							CreateMultilineTextBoxStyle()=0;
 				/// <summary>Create a style for singleline text box.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiSinglelineTextBox::IStyleProvider*						CreateTextBoxStyle()=0;
+				virtual controls::GuiSinglelineTextBox::IStyleController*					CreateTextBoxStyle()=0;
 				/// <summary>Create a style for document viewer.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiDocumentViewer::IStyleProvider*						CreateDocumentViewerStyle()=0;

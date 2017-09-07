@@ -11,6 +11,35 @@ namespace vl
 			using namespace elements;
 
 /***********************************************************************
+GuiDatePicker::CommandExecutor
+***********************************************************************/
+
+			GuiDatePicker::CommandExecutor::CommandExecutor(GuiDatePicker* _datePicker)
+				:datePicker(_datePicker)
+			{
+			}
+
+			GuiDatePicker::CommandExecutor::~CommandExecutor()
+			{
+			}
+
+			void GuiDatePicker::CommandExecutor::NotifyDateChanged()
+			{
+				datePicker->UpdateText();
+				datePicker->DateChanged.Execute(datePicker->GetNotifyEventArguments());
+			}
+
+			void GuiDatePicker::CommandExecutor::NotifyDateNavigated()
+			{
+				datePicker->DateNavigated.Execute(datePicker->GetNotifyEventArguments());
+			}
+
+			void GuiDatePicker::CommandExecutor::NotifyDateSelected()
+			{
+				datePicker->DateSelected.Execute(datePicker->GetNotifyEventArguments());
+			}
+
+/***********************************************************************
 GuiDatePicker
 ***********************************************************************/
 
@@ -19,27 +48,12 @@ GuiDatePicker
 				GuiControl::SetText(dateLocale.FormatDate(dateFormat, styleController->GetDate()));
 			}
 
-			void GuiDatePicker::NotifyDateChanged()
-			{
-				UpdateText();
-				DateChanged.Execute(GetNotifyEventArguments());
-			}
-
-			void GuiDatePicker::NotifyDateNavigated()
-			{
-				DateNavigated.Execute(GetNotifyEventArguments());
-			}
-
-			void GuiDatePicker::NotifyDateSelected()
-			{
-				DateSelected.Execute(GetNotifyEventArguments());
-			}
-
 			GuiDatePicker::GuiDatePicker(IStyleController* _styleController)
 				:GuiControl(_styleController)
 				, styleController(_styleController)
 			{
-				styleController->SetCommandExecutor(this);
+				commandExecutor = new CommandExecutor(this);
+				styleController->SetCommandExecutor(commandExecutor.Obj());
 				SetDateLocale(Locale::UserDefault());
 				SetDate(DateTime::LocalTime());
 
@@ -49,7 +63,7 @@ GuiDatePicker
 				DateFormatChanged.SetAssociatedComposition(GetBoundsComposition());
 				DateLocaleChanged.SetAssociatedComposition(GetBoundsComposition());
 
-				NotifyDateChanged();
+				commandExecutor->NotifyDateChanged();
 			}
 
 			GuiDatePicker::~GuiDatePicker()
