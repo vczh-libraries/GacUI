@@ -1129,9 +1129,9 @@ GuiDocumentViewer
 				GetVerticalScroll()->SetPosition(viewBounds.y1+offset);
 			}
 
-			GuiDocumentViewer::GuiDocumentViewer(GuiDocumentViewer::IStyleProvider* styleProvider)
-				:GuiScrollContainer(styleProvider)
-				, GuiDocumentCommonInterface(styleProvider->GetBaselineDocument(), styleProvider->GetCaretColor())
+			GuiDocumentViewer::GuiDocumentViewer(GuiDocumentViewer::IStyleController* styleController)
+				:GuiScrollContainer(styleController)
+				, GuiDocumentCommonInterface(styleController->GetBaselineDocument(), styleProvider->GetCaretColor())
 			{
 				SetExtendToFullWidth(true);
 				SetHorizontalAlwaysVisible(false);

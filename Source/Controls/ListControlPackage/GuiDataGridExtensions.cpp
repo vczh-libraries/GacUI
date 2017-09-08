@@ -53,7 +53,7 @@ DataVisualizerBase
 						auto styleController = dataGridContext->GetListViewStyleController();
 						visualizerTemplate->SetPrimaryTextColor(styleController->GetPrimaryTextColor());
 						visualizerTemplate->SetSecondaryTextColor(styleController->GetSecondaryTextColor());
-						visualizerTemplate->SetItemSeparatorColor(stylePrstyleControllerovider->GetItemSeparatorColor());
+						visualizerTemplate->SetItemSeparatorColor(styleController->GetItemSeparatorColor());
 
 						visualizerTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
 						visualizerTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));

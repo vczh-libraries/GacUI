@@ -112,7 +112,7 @@ namespace vl
 					SP(GuiLabelTemplate, shortcutKey);
 				}
 
-				GuiScrollContainer::IStyleProvider* CreateScrollContainerStyle()override
+				GuiScrollContainer::IStyleController* CreateScrollContainerStyle()override
 				{
 					SP(GuiScrollViewTemplate, scrollView);
 				}
@@ -132,7 +132,7 @@ namespace vl
 					SP(GuiComboBoxTemplate, comboBox);
 				}
 
-				GuiScrollView::IStyleProvider* CreateMultilineTextBoxStyle()override
+				GuiMultilineTextBox::IStyleController* CreateMultilineTextBoxStyle()override
 				{
 					SP(GuiMultilineTextBoxTemplate, multilineTextBox);
 				}
@@ -142,7 +142,7 @@ namespace vl
 					SP(GuiSinglelineTextBoxTemplate, singlelineTextBox);
 				}
 
-				GuiDocumentViewer::IStyleProvider* CreateDocumentViewerStyle()override
+				GuiDocumentViewer::IStyleController* CreateDocumentViewerStyle()override
 				{
 					SP(GuiDocumentViewerTemplate, documentViewer);
 				}
@@ -157,12 +157,12 @@ namespace vl
 					SP(GuiDocumentLabelTemplate, documentTextBox);
 				}
 
-				GuiListView::IStyleProvider* CreateListViewStyle()override
+				GuiListView::IStyleController* CreateListViewStyle()override
 				{
 					SP(GuiListViewTemplate, listView);
 				}
 
-				GuiTreeView::IStyleProvider* CreateTreeViewStyle()override
+				GuiTreeView::IStyleController* CreateTreeViewStyle()override
 				{
 					SP(GuiTreeViewTemplate, treeView);
 				}
@@ -272,7 +272,7 @@ namespace vl
 					SP(GuiScrollTemplate, progressBar);
 				}
 
-				GuiVirtualTextList::IStyleProvider* CreateTextListStyle()override
+				GuiVirtualTextList::IStyleController* CreateTextListStyle()override
 				{
 					SP(GuiTextListTemplate, textList);
 				}

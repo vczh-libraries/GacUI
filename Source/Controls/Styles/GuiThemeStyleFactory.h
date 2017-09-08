@@ -72,7 +72,7 @@ namespace vl
 				virtual controls::GuiComboBoxListControl::IStyleController*					CreateComboBoxStyle()=0;
 				/// <summary>Create a style for multiline text box.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiScrollView::IStyleController*							CreateMultilineTextBoxStyle()=0;
+				virtual controls::GuiMultilineTextBox::IStyleController*					CreateMultilineTextBoxStyle()=0;
 				/// <summary>Create a style for singleline text box.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiSinglelineTextBox::IStyleController*					CreateTextBoxStyle()=0;

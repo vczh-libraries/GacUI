@@ -13,9 +13,9 @@ namespace vl
 GuiTextBoxAutoCompleteBase::TextListControlProvider
 ***********************************************************************/
 
-			GuiTextBoxAutoCompleteBase::TextListControlProvider::TextListControlProvider(GuiTextList::IStyleProvider* styleProvider)
+			GuiTextBoxAutoCompleteBase::TextListControlProvider::TextListControlProvider(GuiTextList::IStyleController* styleController)
 			{
-				autoCompleteList = new GuiTextList(styleProvider ? styleProvider : theme::GetCurrentTheme()->CreateTextListStyle());
+				autoCompleteList = new GuiTextList(styleController ? styleController : theme::GetCurrentTheme()->CreateTextListStyle());
 				autoCompleteList->SetHorizontalAlwaysVisible(false);
 				autoCompleteList->SetVerticalAlwaysVisible(false);
 			}
