@@ -115,11 +115,6 @@ GuiSinglelineTextBoxTemplate_StyleProvider
 			void GuiSinglelineTextBoxTemplate_StyleProvider::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
 			{
 				GuiControlTemplate_StyleProvider::SetFocusableComposition(value);
-				auto element = controlTemplate->GetTextElement();
-				Array<text::ColorEntry> colors(1);
-				colors[0] = controlTemplate->GetTextColor();
-				element->SetColors(colors);
-				element->SetCaretColor(controlTemplate->GetCaretColor());
 			}
 
 			void GuiSinglelineTextBoxTemplate_StyleProvider::SetCommandExecutor(ITextBoxCommandExecutor* value)
@@ -578,11 +573,6 @@ GuiSinglelineTextBoxTemplate_StyleProvider
 			void GuiMultilineTextBoxTemplate_StyleProvider::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
 			{
 				GuiScrollViewTemplate_StyleProvider::SetFocusableComposition(value);
-				auto element = controlTemplate->GetTextElement();
-				Array<text::ColorEntry> colors(1);
-				colors[0] = controlTemplate->GetTextColor();
-				element->SetColors(colors);
-				element->SetCaretColor(controlTemplate->GetCaretColor());
 			}
 
 			void GuiMultilineTextBoxTemplate_StyleProvider::SetCommandExecutor(ITextBoxCommandExecutor* value)

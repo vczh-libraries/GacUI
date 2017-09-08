@@ -9,6 +9,7 @@ namespace vl
 			using namespace elements;
 			using namespace elements::text;
 			using namespace compositions;
+			using namespace collections;
 
 /***********************************************************************
 GuiMultilineTextBox::DefaultTextElementOperatorCallback
@@ -128,6 +129,13 @@ GuiMultilineTextBox
 
 				styleController->SetCommandExecutor(commandExecutor.Obj());
 				SetFocusableComposition(boundsComposition);
+				{
+					auto element = styleController->GetTextElement();
+					Array<text::ColorEntry> colors(1);
+					colors[0] = styleController->GetTextColor();
+					element->SetColors(colors);
+					element->SetCaretColor(styleController->GetCaretColor());
+				}
 				Install(styleController->GetTextElement(), styleController->GetTextComposition(), this);
 				SetCallback(callback.Obj());
 
@@ -271,6 +279,13 @@ GuiSinglelineTextBox
 
 				styleController->SetCommandExecutor(commandExecutor.Obj());
 				SetFocusableComposition(boundsComposition);
+				{
+					auto element = styleController->GetTextElement();
+					Array<text::ColorEntry> colors(1);
+					colors[0] = styleController->GetTextColor();
+					element->SetColors(colors);
+					element->SetCaretColor(styleController->GetCaretColor());
+				}
 				Install(styleController->GetTextElement(), styleController->GetTextComposition(), this);
 				SetCallback(callback.Obj());
 
