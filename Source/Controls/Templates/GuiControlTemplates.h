@@ -313,15 +313,8 @@ Basic Controls
 			};
 
 /***********************************************************************
-Menu Controls
+Window
 ***********************************************************************/
-
-			class GuiMenuTemplate : public GuiControlTemplate, public AggregatableDescription<GuiMenuTemplate>
-			{
-			public:
-				GuiMenuTemplate();
-				~GuiMenuTemplate();
-			};
 
 			enum class BoolOption
 			{
@@ -329,10 +322,6 @@ Menu Controls
 				AlwaysFalse,
 				Customizable,
 			};
-
-/***********************************************************************
-Window
-***********************************************************************/
 
 			class GuiWindowTemplate : public GuiControlTemplate, public AggregatableDescription<GuiWindowTemplate>
 			{
@@ -356,9 +345,17 @@ Window
 				F(GuiWindowTemplate, bool, CustomizedBorder)\
 				F(GuiWindowTemplate, bool, Maximized)\
 				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate)\
-				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate)
+				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate)\
+				F(GuiWindowTemplate, bool, CustomFrameEnabled)
 
 				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiMenuTemplate : public GuiWindowTemplate, public AggregatableDescription<GuiMenuTemplate>
+			{
+			public:
+				GuiMenuTemplate();
+				~GuiMenuTemplate();
 			};
 
 /***********************************************************************

@@ -565,12 +565,24 @@ GuiWindow
 			void GuiWindow::Moved()
 			{
 				GuiControlHost::Moved();
-				controlTemplate->SetSizeState(GetNativeWindow()->GetSizeState());
+				controlTemplate->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 			}
 
 			void GuiWindow::OnNativeWindowChanged()
 			{
-				controlTemplate->InitializeNativeWindowProperties();
+				if (auto window = GetNativeWindow())
+				{
+					if (controlTemplate->GetCustomFrameEnabled())
+					{
+						window->EnableCustomFrameMode();
+						window->SetBorder(false);
+					}
+					else
+					{
+						window->DisableCustomFrameMode();
+						window->SetBorder(true);
+					}
+				}
 				GuiControlHost::OnNativeWindowChanged();
 			}
 
@@ -614,7 +626,6 @@ GuiWindow
 				,previousAltHost(0)
 			{
 				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
-				controlTemplate->AttachWindow(this);
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
 				ClipboardUpdated.SetAssociatedComposition(GetBoundsComposition());

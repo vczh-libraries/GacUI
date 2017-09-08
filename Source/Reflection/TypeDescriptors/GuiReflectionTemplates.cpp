@@ -155,7 +155,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiDocumentViewerTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiMenuTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
+				CLASS_MEMBER_BASE(GuiWindowTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiMenuTemplate*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiMenuTemplate)
 

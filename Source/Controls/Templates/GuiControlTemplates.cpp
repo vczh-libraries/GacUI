@@ -1,5 +1,5 @@
 #include "GuiControlTemplates.h"
-#include "GuiControlTemplateStyles.h"
+#include "../Styles/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -353,6 +353,7 @@ GuiWindowTemplate
 				, TitleBar_(true)
 				, CustomizedBorder_(false)
 				, Maximized_(false)
+				, CustomFrameEnabled_(true)
 			{
 				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
@@ -584,10 +585,10 @@ GuiScrollViewTemplate
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
-				horizontalScroll = new GuiScroll(new GuiScrollTemplate_StyleProvider(GetHScrollTemplate()));
+				horizontalScroll = new GuiScroll(GetHScrollTemplate()({}));
 				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				horizontalScroll->SetEnabled(false);
-				verticalScroll = new GuiScroll(new GuiScrollTemplate_StyleProvider(GetVScrollTemplate()));
+				verticalScroll = new GuiScroll(GetVScrollTemplate()({}));
 				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				verticalScroll->SetEnabled(false);
 
@@ -1012,20 +1013,20 @@ GuiDatePickerTemplate
 				GuiTableComposition* monthTable = 0;
 				GuiTableComposition* dayTable = 0;
 				{
-					listYears = new GuiTextList(new GuiTextListTemplate_StyleProvider(GetDateTextListTemplate()));
+					listYears = new GuiTextList(GetDateTextListTemplate()({}));
 					listYears->SetHorizontalAlwaysVisible(false);
 					for (vint i = YearFirst; i <= YearLast; i++)
 					{
 						listYears->GetItems().Add(new list::TextItem(itow(i)));
 					}
-					comboYear = new GuiComboBoxListControl(new GuiComboBoxTemplate_StyleProvider(GetDateComboBoxTemplate()), listYears);
+					comboYear = new GuiComboBoxListControl(GetDateComboBoxTemplate()({}), listYears);
 					comboYear->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 2, 0));
 					comboYear->SelectedIndexChanged.AttachMethod(this, &GuiDatePickerTemplate::comboYearMonth_SelectedIndexChanged);
 				}
 				{
-					listMonths = new GuiTextList(new GuiTextListTemplate_StyleProvider(GetDateTextListTemplate()));
+					listMonths = new GuiTextList(GetDateTextListTemplate()({}));
 					listMonths->SetHorizontalAlwaysVisible(false);
-					comboMonth = new GuiComboBoxListControl(new GuiComboBoxTemplate_StyleProvider(GetDateComboBoxTemplate()), listMonths);
+					comboMonth = new GuiComboBoxListControl(GetDateComboBoxTemplate()({}), listMonths);
 					comboMonth->GetBoundsComposition()->SetAlignmentToParent(Margin(2, 0, 0, 0));
 					comboMonth->SelectedIndexChanged.AttachMethod(this, &GuiDatePickerTemplate::comboYearMonth_SelectedIndexChanged);
 				}

@@ -21,6 +21,7 @@ namespace vl
 			///<summary>List view column header control for detailed view.</summary>
 			class GuiListViewColumnHeader : public GuiMenuButton, public Description<GuiListViewColumnHeader>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ListViewColumnHeaderTemplate)
 			protected:
 				ColumnSortingState								columnSortingState = ColumnSortingState::NotSorted;
 

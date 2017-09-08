@@ -41,7 +41,6 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::SelectItem()
 			{
-				controlTemplate->OnItemSelected();
 				ItemSelected.Execute(GetNotifyEventArguments());
 			}
 

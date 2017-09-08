@@ -59,7 +59,7 @@ GuiButton
 				if (controlState != newControlState)
 				{
 					controlState = newControlState;
-					controlTemplate->Transfer(controlState);
+					controlTemplate->SetState(controlState);
 				}
 			}
 
@@ -129,7 +129,7 @@ GuiButton
 				,controlState(ButtonState::Normal)
 			{
 				Clicked.SetAssociatedComposition(boundsComposition);
-				controlTemplate->Transfer(ButtonState::Normal);
+				controlTemplate->SetState(ButtonState::Normal);
 				SetFocusableComposition(boundsComposition);
 
 				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
