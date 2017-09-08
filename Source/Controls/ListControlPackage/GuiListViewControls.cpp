@@ -50,11 +50,10 @@ GuiListViewColumnHeader
 GuiListViewBase
 ***********************************************************************/
 
-			GuiListViewBase::GuiListViewBase(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider)
-				:GuiSelectableListControl(_styleProvider, _itemProvider)
-				,styleProvider(0)
+			GuiListViewBase::GuiListViewBase(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider)
+				:GuiSelectableListControl(_styleController, _itemProvider)
+				, styleController(_styleController)
 			{
-				styleProvider=dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
 				ColumnClicked.SetAssociatedComposition(boundsComposition);
 			}
 
@@ -62,9 +61,9 @@ GuiListViewBase
 			{
 			}
 
-			GuiListViewBase::IStyleProvider* GuiListViewBase::GetListViewStyleProvider()
+			GuiListViewBase::IStyleController* GuiListViewBase::GetListViewStyleController()
 			{
-				return styleProvider;
+				return styleController;
 			}
 
 			namespace list
@@ -241,7 +240,7 @@ ListViewColumnItemArranger
 							}
 							for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
 							{
-								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(styleProvider->CreateColumnStyle());
+								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(styleController->CreateColumnStyle());
 								button->SetText(listViewItemView->GetColumnText(i));
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));
@@ -295,7 +294,7 @@ ListViewColumnItemArranger
 					listView = dynamic_cast<GuiListViewBase*>(value);
 					if (listView)
 					{
-						styleProvider = listView->GetListViewStyleProvider();
+						styleController = listView->GetListViewStyleController();
 						listView->GetContainerComposition()->AddChild(columnHeaders);
 						listViewItemView = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier));
 						columnItemView = dynamic_cast<IColumnItemView*>(listView->GetItemProvider()->RequestView(IColumnItemView::Identifier));
@@ -318,7 +317,7 @@ ListViewColumnItemArranger
 						}
 						listViewItemView = nullptr;
 						listView->GetContainerComposition()->RemoveChild(columnHeaders);
-						styleProvider = nullptr;
+						styleController = nullptr;
 						listView = nullptr;
 					}
 					FixedHeightItemArranger::DetachListControl();
@@ -780,8 +779,8 @@ GuiListView
 				view = ListViewView::Unknown;
 			}
 
-			GuiVirtualListView::GuiVirtualListView(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider)
-				:GuiListViewBase(_styleProvider, _itemProvider)
+			GuiVirtualListView::GuiVirtualListView(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider)
+				:GuiListViewBase(_styleController, _itemProvider)
 			{
 				SetView(ListViewView::Detail);
 			}
@@ -844,8 +843,8 @@ GuiListView
 GuiListView
 ***********************************************************************/
 
-			GuiListView::GuiListView(IStyleProvider* _styleProvider)
-				:GuiVirtualListView(_styleProvider, new list::ListViewItemProvider)
+			GuiListView::GuiListView(IStyleController* _styleController)
+				:GuiVirtualListView(_styleController, new list::ListViewItemProvider)
 			{
 				items=dynamic_cast<list::ListViewItemProvider*>(itemProvider.Obj());
 			}

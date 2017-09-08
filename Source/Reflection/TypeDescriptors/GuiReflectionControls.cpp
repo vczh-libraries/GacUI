@@ -28,9 +28,6 @@ Type Declaration
 #define CONTROL_CONSTRUCTOR_DEFAULT(CONTROL, CONSTRUCTOR)\
 	CLASS_MEMBER_EXTERNALCTOR(CONTROL*(), NO_PARAMETER, CONSTRUCTOR)
 
-#define CONTROL_CONSTRUCTOR_PROVIDER(CONTROL)\
-	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(CONTROL::IStyleProvider*), {L"styleProvider"})
-
 #define INTERFACE_IDENTIFIER(INTERFACE)\
 	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<::INTERFACE>)
 
@@ -370,7 +367,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiScrollContainer)
 				CLASS_MEMBER_BASE(GuiScrollView)
-				CONTROL_CONSTRUCTOR_PROVIDER(GuiScrollContainer)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiScrollContainer)
 
 				CLASS_MEMBER_PROPERTY_FAST(ExtendToFullWidth)
 			END_CLASS_MEMBER(GuiScrollContainer)
@@ -458,7 +455,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiListControl)
 				CLASS_MEMBER_BASE(GuiScrollView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListControl*(GuiListControl::IStyleProvider* _ GuiListControl::IItemProvider* _ bool), {L"styleProvider" _ L"itemProvider" _ L"acceptFocus"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiListControl*(GuiListControl::IStyleController* _ GuiListControl::IItemProvider* _ bool), {L"styleController" _ L"itemProvider" _ L"acceptFocus"})
 
 				CLASS_MEMBER_GUIEVENT(AdoptedSizeInvalidated)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonDown)
@@ -474,7 +471,7 @@ Type Declaration
 				CLASS_MEMBER_GUIEVENT(ItemMouseEnter)
 				CLASS_MEMBER_GUIEVENT(ItemMouseLeave)
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListControlStyleProvider)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListControlStyleController)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Arranger)
@@ -541,7 +538,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSelectableListControl)
 				CLASS_MEMBER_BASE(GuiListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableListControl*(GuiSelectableListControl::IStyleProvider* _ GuiSelectableListControl::IItemProvider*), {L"styleProvider" _ L"itemProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableListControl*(GuiSelectableListControl::IStyleController* _ GuiSelectableListControl::IItemProvider*), {L"styleController" _ L"itemProvider"})
 
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
 
@@ -605,10 +602,10 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTextList)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiVirtualTextList::IStyleProvider* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"itemProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiVirtualTextList::IStyleController* _ GuiListControl::IItemProvider*), {L"styleController" _ L"itemProvider"})
 
 				CLASS_MEMBER_GUIEVENT(ItemChecked)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextListStyleProvider)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextListStyleController)
 				CLASS_MEMBER_PROPERTY_FAST(View)
 			END_CLASS_MEMBER(GuiVirtualTextList)
 
@@ -618,7 +615,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::IStyleProvider*), { L"styleProvider" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::IStyleController*), { L"styleController" })
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
@@ -637,11 +634,11 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiListViewBase)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListViewBase*(GuiListViewBase::IStyleProvider* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"itemProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiListViewBase*(GuiListViewBase::IStyleController* _ GuiListControl::IItemProvider*), {L"styleController" _ L"itemProvider"})
 
 				CLASS_MEMBER_GUIEVENT(ColumnClicked)
 
-				CLASS_MEMBER_METHOD(GetListViewStyleProvider, NO_PARAMETER)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListViewStyleController)
 			END_CLASS_MEMBER(GuiListViewBase)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListViewBase::IStyleController)
@@ -717,14 +714,14 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualListView)
 				CLASS_MEMBER_BASE(GuiListViewBase)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualListView*(GuiVirtualListView::IStyleProvider*, GuiListControl::IItemProvider*), { L"styleProvider" _ L"itemProvider" })
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualListView*(GuiVirtualListView::IStyleController*, GuiListControl::IItemProvider*), { L"styleController" _ L"itemProvider" })
 
 				CLASS_MEMBER_PROPERTY_FAST(View)
 			END_CLASS_MEMBER(GuiVirtualListView)
 
 			BEGIN_CLASS_MEMBER(GuiListView)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
-				CONTROL_CONSTRUCTOR_PROVIDER(GuiListView)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiListView)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)
@@ -857,7 +854,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTreeListControl)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTreeListControl*(GuiVirtualTreeListControl::IStyleProvider* _ Ptr<INodeRootProvider>), {L"styleProvider" _ L"rootNodeProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTreeListControl*(GuiVirtualTreeListControl::IStyleController* _ Ptr<INodeRootProvider>), {L"styleController" _ L"rootNodeProvider"})
 
 				CLASS_MEMBER_GUIEVENT(NodeLeftButtonDown)
 				CLASS_MEMBER_GUIEVENT(NodeLeftButtonUp)
@@ -904,9 +901,9 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTreeView*(GuiVirtualTreeView::IStyleProvider* _ Ptr<INodeRootProvider>), {L"styleProvider" _ L"rootNodeProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTreeView*(GuiVirtualTreeView::IStyleController* _ Ptr<INodeRootProvider>), {L"styleController" _ L"rootNodeProvider"})
 
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TreeViewStyleProvider)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TreeViewStyleController)
 			END_CLASS_MEMBER(GuiVirtualTreeView)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiVirtualTreeView::IStyleController)
@@ -915,7 +912,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView)
-				CONTROL_CONSTRUCTOR_PROVIDER(GuiTreeView)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiTreeView)
 
 				CLASS_MEMBER_METHOD_RENAME(GetNodes, Nodes, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Nodes, GetNodes)
@@ -1065,7 +1062,7 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiDocumentViewer)
 				CLASS_MEMBER_BASE(GuiScrollContainer)
 				CLASS_MEMBER_BASE(GuiDocumentCommonInterface)
-				CONTROL_CONSTRUCTOR_PROVIDER(GuiDocumentViewer)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiDocumentViewer)
 			END_CLASS_MEMBER(GuiDocumentViewer)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiDocumentViewer::IStyleController)
@@ -1126,8 +1123,12 @@ Type Declaration
 			BEGIN_CLASS_MEMBER(GuiMultilineTextBox)
 				CLASS_MEMBER_BASE(GuiScrollView)
 				CLASS_MEMBER_BASE(GuiTextBoxCommonInterface)
-				CONTROL_CONSTRUCTOR_PROVIDER(GuiMultilineTextBox)
+				CONTROL_CONSTRUCTOR_CONTROLLER(GuiMultilineTextBox)
 			END_CLASS_MEMBER(GuiMultilineTextBox)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiMultilineTextBox::IStyleController)
+				CLASS_MEMBER_BASE(GuiScrollView::IStyleController)
+			END_INTERFACE_MEMBER(GuiMultilineTextBox::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiSinglelineTextBox)
 				CLASS_MEMBER_BASE(GuiControl)
@@ -1145,7 +1146,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemProvider)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListViewStyleProvider)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListViewStyleController)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ViewModelContext)
 				CLASS_MEMBER_METHOD(RequestSaveData, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDataGridContext)
@@ -1201,7 +1202,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualDataGrid*(GuiVirtualListView::IStyleProvider* _ GuiListControl::IItemProvider*), {L"styleProvider" _ L"itemProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualDataGrid*(GuiVirtualListView::IStyleController* _ GuiListControl::IItemProvider*), {L"styleController" _ L"itemProvider"})
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedCell)
 
@@ -1274,7 +1275,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleProvider*), {L"styleProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::IStyleController*), {L"styleController"})
 
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
@@ -1284,7 +1285,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableListView)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableListView*(GuiBindableListView::IStyleProvider*), {L"styleProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableListView*(GuiBindableListView::IStyleController*), {L"styleController"})
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)
@@ -1296,7 +1297,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTreeView*(GuiBindableTreeView::IStyleProvider*), {L"styleProvider"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTreeView*(GuiBindableTreeView::IStyleController*), {L"styleController"})
 				
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
@@ -1402,7 +1403,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableDataGrid*(GuiBindableDataGrid::IStyleProvider*, const Value&), {L"styleProvider" _ L"viewModelContext"})
+				CLASS_MEMBER_CONSTRUCTOR(GuiBindableDataGrid*(GuiBindableDataGrid::IStyleController*, const Value&), {L"styleController" _ L"viewModelContext"})
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)

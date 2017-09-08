@@ -337,12 +337,11 @@ GuiListControl
 
 #undef DETACH_ITEM_EVENT
 
-			GuiListControl::GuiListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider, bool acceptFocus)
-				:GuiScrollView(_styleProvider)
+			GuiListControl::GuiListControl(IStyleController* _styleController, IItemProvider* _itemProvider, bool acceptFocus)
+				:GuiScrollView(_styleController)
+				, styleController(_styleController)
 				, itemProvider(_itemProvider)
 			{
-				styleProvider = dynamic_cast<IStyleProvider*>(styleController->GetStyleProvider());
-
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
 
@@ -387,9 +386,9 @@ GuiListControl
 				itemArranger = nullptr;
 			}
 
-			GuiListControl::IStyleProvider*	 GuiListControl::GetListControlStyleProvider()
+			GuiListControl::IStyleController*	 GuiListControl::GetListControlStyleController()
 			{
-				return styleProvider;
+				return styleController;
 			}
 
 			GuiListControl::IItemProvider* GuiListControl::GetItemProvider()
@@ -586,8 +585,8 @@ GuiSelectableListControl
 				}
 			}
 
-			GuiSelectableListControl::GuiSelectableListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider)
-				:GuiListControl(_styleProvider, _itemProvider, true)
+			GuiSelectableListControl::GuiSelectableListControl(IStyleController* _styleController, IItemProvider* _itemProvider)
+				:GuiListControl(_styleController, _itemProvider, true)
 				,multiSelect(false)
 				,selectedItemIndexStart(-1)
 				,selectedItemIndexEnd(-1)

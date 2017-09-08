@@ -60,7 +60,7 @@ namespace vl
 				virtual controls::GuiLabel::IStyleController*								CreateShortcutKeyStyle()=0;
 				/// <summary>Create a style for scrollable control containers.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiScrollContainer::IStyleProvider*						CreateScrollContainerStyle()=0;
+				virtual controls::GuiScrollContainer::IStyleController*						CreateScrollContainerStyle()=0;
 				/// <summary>Create a style for group box.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiControl::IStyleController*								CreateGroupBoxStyle()=0;
@@ -72,13 +72,13 @@ namespace vl
 				virtual controls::GuiComboBoxListControl::IStyleController*					CreateComboBoxStyle()=0;
 				/// <summary>Create a style for multiline text box.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiScrollView::IStyleProvider*							CreateMultilineTextBoxStyle()=0;
+				virtual controls::GuiScrollView::IStyleController*							CreateMultilineTextBoxStyle()=0;
 				/// <summary>Create a style for singleline text box.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiSinglelineTextBox::IStyleController*					CreateTextBoxStyle()=0;
 				/// <summary>Create a style for document viewer.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiDocumentViewer::IStyleProvider*						CreateDocumentViewerStyle()=0;
+				virtual controls::GuiDocumentViewer::IStyleController*						CreateDocumentViewerStyle()=0;
 				/// <summary>Create a style for document label.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiDocumentLabel::IStyleController*						CreateDocumentLabelStyle()=0;
@@ -87,10 +87,10 @@ namespace vl
 				virtual controls::GuiDocumentLabel::IStyleController*						CreateDocumentTextBoxStyle()=0;
 				/// <summary>Create a style for list view.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiListView::IStyleProvider*								CreateListViewStyle()=0;
+				virtual controls::GuiListView::IStyleController*							CreateListViewStyle()=0;
 				/// <summary>Create a style for tree view.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiTreeView::IStyleProvider*								CreateTreeViewStyle()=0;
+				virtual controls::GuiTreeView::IStyleController*							CreateTreeViewStyle()=0;
 				/// <summary>Create a style for selectable list control item background.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiSelectableButton::IStyleController*					CreateListItemBackgroundStyle()=0;
@@ -160,7 +160,7 @@ namespace vl
 				
 				/// <summary>Create a style for text list.</summary>
 				/// <returns>The created style.</returns>
-				virtual controls::GuiVirtualTextList::IStyleProvider*						CreateTextListStyle()=0;
+				virtual controls::GuiVirtualTextList::IStyleController*						CreateTextListStyle()=0;
 				/// <summary>Create a style for check text list item.</summary>
 				/// <returns>The created style.</returns>
 				virtual controls::GuiSelectableButton::IStyleController*					CreateCheckTextListItemStyle()=0;

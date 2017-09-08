@@ -94,15 +94,15 @@ GuiVirtualDataGrid
 
 			public:
 
-				GuiListViewBase::IStyleProvider*						GetListViewStyleProvider()override;
+				GuiListViewBase::IStyleController*						GetListViewStyleController()override;
 				description::Value										GetViewModelContext()override;
 				void													RequestSaveData()override;
 
 			public:
 				/// <summary>Create a data grid control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_styleController">The style controller for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualDataGrid(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualDataGrid(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualDataGrid();
 
 				/// <summary>Selected cell changed event.</summary>

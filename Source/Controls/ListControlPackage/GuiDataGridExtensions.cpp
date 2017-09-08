@@ -50,10 +50,10 @@ DataVisualizerBase
 				{
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
-						auto styleProvider = dataGridContext->GetListViewStyleProvider();
-						visualizerTemplate->SetPrimaryTextColor(styleProvider->GetPrimaryTextColor());
-						visualizerTemplate->SetSecondaryTextColor(styleProvider->GetSecondaryTextColor());
-						visualizerTemplate->SetItemSeparatorColor(styleProvider->GetItemSeparatorColor());
+						auto styleController = dataGridContext->GetListViewStyleController();
+						visualizerTemplate->SetPrimaryTextColor(styleController->GetPrimaryTextColor());
+						visualizerTemplate->SetSecondaryTextColor(styleController->GetSecondaryTextColor());
+						visualizerTemplate->SetItemSeparatorColor(stylePrstyleControllerovider->GetItemSeparatorColor());
 
 						visualizerTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
 						visualizerTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
@@ -167,10 +167,10 @@ DataEditorBase
 				{
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
-						auto styleProvider = dataGridContext->GetListViewStyleProvider();
-						editorTemplate->SetPrimaryTextColor(styleProvider->GetPrimaryTextColor());
-						editorTemplate->SetSecondaryTextColor(styleProvider->GetSecondaryTextColor());
-						editorTemplate->SetItemSeparatorColor(styleProvider->GetItemSeparatorColor());
+						auto styleController = dataGridContext->GetListViewStyleController();
+						editorTemplate->SetPrimaryTextColor(styleController->GetPrimaryTextColor());
+						editorTemplate->SetSecondaryTextColor(styleController->GetSecondaryTextColor());
+						editorTemplate->SetItemSeparatorColor(styleController->GetItemSeparatorColor());
 
 						editorTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
 						editorTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));

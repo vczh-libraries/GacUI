@@ -578,14 +578,31 @@ GuiSinglelineTextBoxTemplate_StyleProvider
 			void GuiMultilineTextBoxTemplate_StyleProvider::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
 			{
 				GuiScrollViewTemplate_StyleProvider::SetFocusableComposition(value);
-				if (auto style = dynamic_cast<GuiMultilineTextBox::StyleController*>(associatedStyleController))
-				{
-					auto element = style->GetTextElement();
-					Array<text::ColorEntry> colors(1);
-					colors[0] = controlTemplate->GetTextColor();
-					element->SetColors(colors);
-					element->SetCaretColor(controlTemplate->GetCaretColor());
-				}
+				auto element = controlTemplate->GetTextElement();
+				Array<text::ColorEntry> colors(1);
+				colors[0] = controlTemplate->GetTextColor();
+				element->SetColors(colors);
+				element->SetCaretColor(controlTemplate->GetCaretColor());
+			}
+
+			void GuiMultilineTextBoxTemplate_StyleProvider::SetCommandExecutor(ITextBoxCommandExecutor* value)
+			{
+				controlTemplate->SetCommands(value);
+			}
+
+			WString GuiMultilineTextBoxTemplate_StyleProvider::GetEditingText()
+			{
+				return controlTemplate->GetEditingText();
+			}
+
+			elements::GuiColorizedTextElement* GuiMultilineTextBoxTemplate_StyleProvider::GetTextElement()
+			{
+				return controlTemplate->GetTextElement();
+			}
+
+			compositions::GuiGraphicsComposition* GuiMultilineTextBoxTemplate_StyleProvider::GetTextComposition()
+			{
+				return controlTemplate->GetTextComposition();
 			}
 
 /***********************************************************************

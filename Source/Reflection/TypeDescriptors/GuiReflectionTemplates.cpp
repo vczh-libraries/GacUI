@@ -310,7 +310,6 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiControlTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-				CLASS_MEMBER_BASE(GuiControl::IStyleProvider)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiControlTemplate_StyleProvider*(TemplateProperty<GuiControlTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiControlTemplate_StyleProvider)
@@ -324,7 +323,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSinglelineTextBoxTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiSinglelineTextBox::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiSinglelineTextBox::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiSinglelineTextBoxTemplate_StyleProvider*(TemplateProperty<GuiSinglelineTextBoxTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiSinglelineTextBoxTemplate_StyleProvider)
@@ -344,7 +343,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiDocumentViewerTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiDocumentViewer::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiDocumentViewer::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiDocumentViewerTemplate_StyleProvider*(TemplateProperty<GuiDocumentViewerTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiDocumentViewerTemplate_StyleProvider)
@@ -421,28 +420,28 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiScrollViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiControlTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiScrollView::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiScrollView::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiScrollViewTemplate_StyleProvider*(TemplateProperty<GuiScrollViewTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiScrollViewTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTextListTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiVirtualTextList::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiVirtualTextList::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate_StyleProvider*(TemplateProperty<GuiTextListTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiTextListTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiListViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiListViewBase::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiListViewBase::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiListViewTemplate_StyleProvider*(TemplateProperty<GuiListViewTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiListViewTemplate_StyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiTreeViewTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
-				CLASS_MEMBER_BASE(GuiVirtualTreeView::IStyleProvider)
+				CLASS_MEMBER_BASE(GuiVirtualTreeView::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiTreeViewTemplate_StyleProvider*(TemplateProperty<GuiTreeViewTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiTreeViewTemplate_StyleProvider)

@@ -38,7 +38,7 @@ List Control
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
 				/// <summary>Style provider interface for <see cref="GuiListControl"/>.</summary>
-				class IStyleProvider : public virtual GuiScrollView::IStyleProvider, public Description<IStyleProvider>
+				class IStyleController : public virtual GuiScrollView::IStyleController, public Description<IStyleController>
 				{
 				public:
 					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of an item.</summary>
@@ -235,7 +235,7 @@ List Control
 				// State management
 				//-----------------------------------------------------------
 
-				IStyleProvider*									styleProvider;
+				IStyleController*								styleController;
 				Ptr<ItemCallback>								callback;
 				Ptr<IItemProvider>								itemProvider;
 				ItemStyleProperty								itemStyleProperty;
@@ -288,10 +288,10 @@ List Control
 				void											DetachItemEvents(ItemStyle* style);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleProvider">The style provider.</param>
+				/// <param name="styleController">The style controller.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
 				/// <param name="acceptFocus">Set to true if the list control is allowed to have a keyboard focus.</param>
-				GuiListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider, bool acceptFocus=false);
+				GuiListControl(IStyleController* _styleController, IItemProvider* _itemProvider, bool acceptFocus=false);
 				~GuiListControl();
 
 				/// <summary>Style provider changed event.</summary>
@@ -330,7 +330,7 @@ List Control
 
 				/// <summary>Get the style provider for this control.</summary>
 				/// <returns>The style provider for this control.</returns>
-				IStyleProvider*											GetListControlStyleProvider();
+				IStyleController*								GetListControlStyleController();
 				/// <summary>Get the item provider.</summary>
 				/// <returns>The item provider.</returns>
 				virtual IItemProvider*							GetItemProvider();
@@ -397,9 +397,9 @@ Selectable List Control
 				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleProvider">The style provider.</param>
+				/// <param name="styleController">The style controller.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
-				GuiSelectableListControl(IStyleProvider* _styleProvider, IItemProvider* _itemProvider);
+				GuiSelectableListControl(IStyleController* _styleController, IItemProvider* _itemProvider);
 				~GuiSelectableListControl();
 
 				/// <summary>Selection changed event.</summary>

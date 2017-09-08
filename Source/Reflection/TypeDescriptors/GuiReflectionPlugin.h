@@ -356,6 +356,7 @@ Type List (Controls)
 			F(presentation::controls::GuiDocumentLabel::IStyleController)\
 			F(presentation::controls::GuiTextBoxCommonInterface)\
 			F(presentation::controls::GuiMultilineTextBox)\
+			F(presentation::controls::GuiMultilineTextBox::IStyleController)\
 			F(presentation::controls::GuiSinglelineTextBox)\
 			F(presentation::controls::GuiSinglelineTextBox::IStyleController)\
 			F(presentation::controls::list::IDataGridContext)\
@@ -985,9 +986,9 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetItemProvider);
 				}
 
-				presentation::controls::GuiListViewBase::IStyleProvider* GetListViewStyleProvider()override
+				presentation::controls::GuiListViewBase::IStyleController* GetListViewStyleController()override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetListViewStyleProvider);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetListViewStyleController);
 				}
 
 				presentation::description::Value GetViewModelContext()override

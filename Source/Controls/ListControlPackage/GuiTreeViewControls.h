@@ -336,9 +336,9 @@ GuiVirtualTreeListControl
 				void								OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a tree list control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_styleController">The style controller for this control.</param>
 				/// <param name="_nodeRootProvider">The node root provider for this control.</param>
-				GuiVirtualTreeListControl(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider);
+				GuiVirtualTreeListControl(IStyleController* _styleController, Ptr<tree::INodeRootProvider> _nodeRootProvider);
 				~GuiVirtualTreeListControl();
 
 				/// <summary>Node left mouse button down event.</summary>
@@ -457,7 +457,7 @@ GuiVirtualTreeView
 			{
 			public:
 				/// <summary>Style provider interface for <see cref="GuiVirtualTreeView"/>.</summary>
-				class IStyleProvider : public virtual GuiVirtualTreeListControl::IStyleProvider, public Description<IStyleProvider>
+				class IStyleController : public virtual GuiVirtualTreeListControl::IStyleController, public Description<IStyleController>
 				{
 				public:
 					/// <summary>Create a style controller for an item expanding decorator. The selection state is used to render the expanding state of a node</summary>
@@ -468,7 +468,7 @@ GuiVirtualTreeView
 					virtual Color										GetTextColor()=0;
 				};
 			protected:
-				IStyleProvider*											styleProvider = nullptr;
+				IStyleController*										styleController = nullptr;
 				tree::ITreeViewItemView*								treeViewItemView = nullptr;
 
 				templates::GuiTreeItemTemplate*							GetStyleFromNode(tree::INodeProvider* node);
@@ -480,14 +480,14 @@ GuiVirtualTreeView
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 			public:
 				/// <summary>Create a tree view control in virtual mode. A [T:vl.presentation.controls.tree.TreeViewNodeItemStyleProvider] is created as a node item style provider by default.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_styleController">The style controller for this control.</param>
 				/// <param name="_nodeRootProvider">The node root provider for this control.</param>
-				GuiVirtualTreeView(IStyleProvider* _styleProvider, Ptr<tree::INodeRootProvider> _nodeRootProvider);
+				GuiVirtualTreeView(IStyleController* _styleController, Ptr<tree::INodeRootProvider> _nodeRootProvider);
 				~GuiVirtualTreeView();
 
 				/// <summary>Get the style provider for this control.</summary>
 				/// <returns>The style provider for this control.</returns>
-				IStyleProvider*											GetTreeViewStyleProvider();
+				IStyleController*										GetTreeViewStyleController();
 			};
 
 /***********************************************************************
@@ -501,8 +501,8 @@ GuiTreeView
 				Ptr<tree::TreeViewItemRootProvider>						nodes;
 			public:
 				/// <summary>Create a tree view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiTreeView(IStyleProvider* _styleProvider);
+				/// <param name="_styleController">The style controller for this control.</param>
+				GuiTreeView(IStyleController* _styleController);
 				~GuiTreeView();
 
 				/// <summary>Get the <see cref="tree::TreeViewItemRootProvider"/> as a node root providerl.</summary>

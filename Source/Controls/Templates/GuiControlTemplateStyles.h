@@ -265,6 +265,7 @@ Control Template
 
 			class GuiMultilineTextBoxTemplate_StyleProvider
 				: public GuiScrollViewTemplate_StyleProvider
+				, public virtual controls::GuiMultilineTextBox::IStyleController
 				, public Description<GuiMultilineTextBoxTemplate_StyleProvider>
 			{
 			protected:
@@ -275,11 +276,15 @@ Control Template
 				~GuiMultilineTextBoxTemplate_StyleProvider();
 				
 				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
+				void															SetCommandExecutor(controls::ITextBoxCommandExecutor* value)override;
+				WString															GetEditingText()override;
+				elements::GuiColorizedTextElement*								GetTextElement()override;
+				compositions::GuiGraphicsComposition*							GetTextComposition()override;
 			};
 
 			class GuiDocumentViewerTemplate_StyleProvider
 				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiDocumentViewer::IStyleProvider
+				, public virtual controls::GuiDocumentViewer::IStyleController
 				, public Description<GuiDocumentViewerTemplate_StyleProvider>
 			{
 			protected:
@@ -295,7 +300,7 @@ Control Template
 
 			class GuiTextListTemplate_StyleProvider
 				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiVirtualTextList::IStyleProvider
+				, public virtual controls::GuiVirtualTextList::IStyleController
 				, public Description<GuiTextListTemplate_StyleProvider>
 			{
 			protected:
@@ -313,7 +318,7 @@ Control Template
 
 			class GuiListViewTemplate_StyleProvider
 				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiListViewBase::IStyleProvider
+				, public virtual controls::GuiListViewBase::IStyleController
 				, public Description<GuiListViewTemplate_StyleProvider>
 			{
 			protected:
@@ -332,7 +337,7 @@ Control Template
 
 			class GuiTreeViewTemplate_StyleProvider
 				: public GuiScrollViewTemplate_StyleProvider
-				, public virtual controls::GuiVirtualTreeView::IStyleProvider
+				, public virtual controls::GuiVirtualTreeView::IStyleController
 				, public Description<GuiTreeViewTemplate_StyleProvider>
 			{
 			protected:

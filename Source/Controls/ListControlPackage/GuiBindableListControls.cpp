@@ -158,8 +158,8 @@ GuiBindableTextList::ItemSource
 GuiBindableTextList
 ***********************************************************************/
 
-			GuiBindableTextList::GuiBindableTextList(IStyleProvider* _styleProvider)
-				:GuiVirtualTextList(_styleProvider, new ItemSource)
+			GuiBindableTextList::GuiBindableTextList(IStyleController* _styleController)
+				:GuiVirtualTextList(_styleController, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -522,8 +522,8 @@ GuiBindableListView::ItemSource
 GuiBindableListView
 ***********************************************************************/
 
-			GuiBindableListView::GuiBindableListView(IStyleProvider* _styleProvider)
-				:GuiVirtualListView(_styleProvider, new ItemSource)
+			GuiBindableListView::GuiBindableListView(IStyleController* _styleController)
+				:GuiVirtualListView(_styleController, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -843,8 +843,8 @@ GuiBindableTreeView::ItemSource
 GuiBindableTreeView
 ***********************************************************************/
 
-			GuiBindableTreeView::GuiBindableTreeView(IStyleProvider* _styleProvider)
-				:GuiVirtualTreeView(_styleProvider, new ItemSource)
+			GuiBindableTreeView::GuiBindableTreeView(IStyleController* _styleController)
+				:GuiVirtualTreeView(_styleController, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
 

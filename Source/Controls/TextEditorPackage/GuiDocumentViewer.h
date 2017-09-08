@@ -341,7 +341,7 @@ GuiDocumentViewer
 			{
 			public:
 				/// <summary>Style provider interface for <see cref="GuiDocumentViewer"/>.</summary>
-				class IStyleProvider : public virtual GuiScrollContainer::IStyleProvider, public Description<IStyleProvider>
+				class IStyleController : public virtual GuiScrollContainer::IStyleController, public Description<IStyleController>
 				{
 				public:
 					/// <summary>Get a baseline document for customize default styles.</summary>
@@ -358,7 +358,7 @@ GuiDocumentViewer
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiDocumentViewer(GuiDocumentViewer::IStyleProvider* styleProvider);
+				GuiDocumentViewer(IStyleController* styleController);
 				~GuiDocumentViewer();
 
 				const WString&								GetText()override;

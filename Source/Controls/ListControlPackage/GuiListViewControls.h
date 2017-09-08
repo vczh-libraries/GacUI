@@ -56,7 +56,7 @@ namespace vl
 			{
 			public:
 				/// <summary>Style provider for <see cref="GuiListViewBase"/>.</summary>
-				class IStyleProvider : public virtual GuiSelectableListControl::IStyleProvider, public Description<IStyleProvider>
+				class IStyleController : public virtual GuiSelectableListControl::IStyleController, public Description<IStyleController>
 				{
 				public:
 					/// <summary>Create a style controller for a column header.</summary>
@@ -74,13 +74,13 @@ namespace vl
 				};
 
 			protected:
-				IStyleProvider*									styleProvider;
+				IStyleController*								styleController;
 
 			public:
 				/// <summary>Create a list view base control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_styleController">The style controller for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiListViewBase(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiListViewBase(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider);
 				~GuiListViewBase();
 
 				/// <summary>Column clicked event.</summary>
@@ -88,7 +88,7 @@ namespace vl
 				
 				/// <summary>Get the associated style provider.</summary>
 				/// <returns>The style provider.</returns>
-				IStyleProvider*									GetListViewStyleProvider();
+				IStyleController*								GetListViewStyleController();
 			};
 
 /***********************************************************************
@@ -206,7 +206,7 @@ ListViewColumnItemArranger
 					};
 
 					GuiListViewBase*							listView = nullptr;
-					GuiListViewBase::IStyleProvider*			styleProvider = nullptr;
+					GuiListViewBase::IStyleController*			styleController = nullptr;
 					IListViewItemView*							listViewItemView = nullptr;
 					IColumnItemView*							columnItemView = nullptr;
 					Ptr<ColumnItemViewCallback>					columnItemViewCallback;
@@ -486,9 +486,9 @@ GuiVirtualListView
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a list view control in virtual mode.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
+				/// <param name="_styleController">The style controller for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualListView(IStyleProvider* _styleProvider, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualListView(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualListView();
 
 				/// <summary>Get the current view.</summary>
@@ -510,8 +510,8 @@ GuiListView
 				list::ListViewItemProvider*								items;
 			public:
 				/// <summary>Create a list view control.</summary>
-				/// <param name="_styleProvider">The style provider for this control.</param>
-				GuiListView(IStyleProvider* _styleProvider);
+				/// <param name="_styleController">The style controller for this control.</param>
+				GuiListView(IStyleController* _styleController);
 				~GuiListView();
 				
 				/// <summary>Get all list view items.</summary>
