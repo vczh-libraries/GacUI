@@ -215,6 +215,7 @@ Scroll View
 			{
 			protected:
 				bool									extendToFullWidth = false;
+				compositions::GuiBoundsComposition*		containerComposition = nullptr;
 
 				void									OnControlContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				Size									QueryFullSize()override;

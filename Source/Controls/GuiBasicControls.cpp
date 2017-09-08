@@ -136,10 +136,7 @@ GuiControl
 				,eventReceiver(_styleController->GetBoundsComposition()->GetEventReceiver())
 			{
 				boundsComposition->SetAssociatedControl(this);
-				containerComposition = new GuiBoundsComposition();
-				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				styleController->GetContainerComposition()->AddChild(containerComposition);
+				containerComposition = styleController->GetContainerComposition();
 
 				RenderTargetChanged.SetAssociatedComposition(boundsComposition);
 				VisibleChanged.SetAssociatedComposition(boundsComposition);

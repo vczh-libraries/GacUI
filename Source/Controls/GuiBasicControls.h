@@ -63,7 +63,7 @@ Basic Construction
 			protected:
 				Ptr<IStyleController>							styleController;
 				compositions::GuiBoundsComposition*				boundsComposition;
-				compositions::GuiBoundsComposition*				containerComposition = nullptr;
+				compositions::GuiGraphicsComposition*			containerComposition = nullptr;
 				compositions::GuiGraphicsComposition*			focusableComposition = nullptr;
 				compositions::GuiGraphicsEventReceiver*			eventReceiver = nullptr;
 

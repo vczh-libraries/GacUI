@@ -677,8 +677,7 @@ GuiMultilineTextBoxTemplate
 
 			void GuiMultilineTextBoxTemplate::Initialize()
 			{
-				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-
+				GuiScrollViewTemplate::Initialize();
 				textElement = GuiColorizedTextElement::Create();
 
 				textComposition = new GuiBoundsComposition;

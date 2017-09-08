@@ -364,8 +364,13 @@ GuiScrollContainer
 			GuiScrollContainer::GuiScrollContainer(IStyleController* styleController)
 				:GuiScrollView(styleController)
 			{
-				containerComposition->SetAlignmentToParent(Margin(-1, -1, -1, -1));
+				containerComposition = new GuiBoundsComposition();
+				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->BoundsChanged.AttachMethod(this, &GuiScrollContainer::OnControlContainerBoundsChanged);
+
+				GuiControl::containerComposition->AddChild(containerComposition);
+				GuiControl::containerComposition = containerComposition;
+
 				UpdateView(Rect(0, 0, 0, 0));
 			}
 
