@@ -37,7 +37,7 @@ namespace vl
 GuiComboBoxInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboBoxListControl, GuiComboBoxTemplate_StyleProvider, GuiComboBoxTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboBoxListControl>
 			class GuiComboBoxInstanceLoader : public BASE_TYPE
 			{
 			protected:
@@ -90,7 +90,7 @@ GuiComboBoxInstanceLoader
 GuiTreeViewInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl, GuiTreeViewTemplate_StyleProvider, GuiTreeViewTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<TControl>
 			template<typename TControl>
 			class GuiTreeViewInstanceLoaderBase : public BASE_TYPE
 			{
@@ -390,7 +390,7 @@ GuiTreeNodeInstanceLoader
 GuiBindableDataGridInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid, GuiListViewTemplate_StyleProvider, GuiListViewTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiBindableDataGrid>
 			class GuiBindableDataGridInstanceLoader : public BASE_TYPE
 			{
 			protected:

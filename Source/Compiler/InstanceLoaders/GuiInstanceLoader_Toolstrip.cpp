@@ -113,7 +113,7 @@ GuiToolstripInstanceLoaderBase
 GuiToolstripMenuInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenu, GuiMenuTemplate_StyleProvider, GuiMenuTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenu>
 			class GuiToolstripMenuInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
@@ -135,7 +135,7 @@ GuiToolstripMenuInstanceLoader
 GuiToolstripMenuBarInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenuBar, GuiControlTemplate_StyleProvider, GuiControlTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripMenuBar>
 			class GuiToolstripMenuBarInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
@@ -150,7 +150,7 @@ GuiToolstripMenuBarInstanceLoader
 GuiToolstripToolBarInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripToolBar, GuiControlTemplate_StyleProvider, GuiControlTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripToolBar>
 			class GuiToolstripToolBarInstanceLoader : public GuiToolstripInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
@@ -165,7 +165,7 @@ GuiToolstripToolBarInstanceLoader
 GuiToolstripButtonInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripButton, GuiToolstripButtonTemplate_StyleProvider, GuiToolstripButtonTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiToolstripButton>
 			class GuiToolstripButtonInstanceLoader : public BASE_TYPE
 			{
 			protected:

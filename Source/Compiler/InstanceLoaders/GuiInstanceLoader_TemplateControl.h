@@ -31,13 +31,14 @@ namespace vl
 GuiVrtualTypeInstanceLoader
 ***********************************************************************/
 
-			template<typename TControl, typename TControlStyle, typename TTemplate>
+			template<typename TControl>
 			class GuiTemplateControlInstanceLoader : public Object, public IGuiInstanceLoader
 			{
-				typedef Ptr<WfExpression>				ArgumentRawFunctionType(ArgumentMap&);
-				typedef void							InitRawFunctionType(const WString&, Ptr<WfBlockStatement>);
-				typedef Func<ArgumentRawFunctionType>	ArgumentFunctionType;
-				typedef Func<InitRawFunctionType>		InitFunctionType;
+				typedef typename TControl::ControlTemplateType		TTemplate;
+				typedef Ptr<WfExpression>							ArgumentRawFunctionType(ArgumentMap&);
+				typedef void										InitRawFunctionType(const WString&, Ptr<WfBlockStatement>);
+				typedef Func<ArgumentRawFunctionType>				ArgumentFunctionType;
+				typedef Func<InitRawFunctionType>					InitFunctionType;
 
 			protected:
 				GlobalStringKey								typeName;
@@ -169,12 +170,7 @@ GuiVrtualTypeInstanceLoader
 					if (index != -1)
 					{
 						auto argument = arguments.GetByIndex(index)[0];
-
-						auto createStyle = MakePtr<WfNewClassExpression>();
-						createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<TControlStyle*>::CreateTypeInfo().Obj());
-						createStyle->arguments.Add(argument.expression);
-
-						return createStyle;
+						return argument.expression;
 					}
 					return CreateIThemeCall(styleMethod);
 				}

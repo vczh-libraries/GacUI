@@ -226,7 +226,7 @@ GuiDocumentInstanceLoaderBase
 GuiDocumentViewerInstanceLoader
 ***********************************************************************/
 
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer, GuiDocumentViewerTemplate_StyleProvider, GuiDocumentViewerTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentViewer>
 			class GuiDocumentViewerInstanceLoader : public GuiDocumentInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
@@ -241,7 +241,7 @@ GuiDocumentViewerInstanceLoader
 GuiDocumentLabelInstanceLoader
 ***********************************************************************/
 		
-#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentLabel, GuiDocumentLabelTemplate_StyleProvider, GuiDocumentLabelTemplate>
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiDocumentLabel>
 			class GuiDocumentLabelInstanceLoader : public GuiDocumentInstanceLoaderBase<BASE_TYPE>
 			{
 			public:
