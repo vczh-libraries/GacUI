@@ -27,24 +27,6 @@ Scrolls
 			/// <summary>A scroll control, which represents a one dimension sub range of a whole range.</summary>
 			class GuiScroll : public GuiControl, public Description<GuiScroll>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiScroll"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the command executor is changed.</summary>
-					/// <param name="value">The command executor.</param>
-					virtual void						SetCommandExecutor(IScrollCommandExecutor* value)=0;
-					/// <summary>Called when the total size is changed.</summary>
-					/// <param name="value">The total size.</param>
-					virtual void						SetTotalSize(vint value)=0;
-					/// <summary>Called when the page size is changed.</summary>
-					/// <param name="value">The page size.</param>
-					virtual void						SetPageSize(vint value)=0;
-					/// <summary>Called when the position is changed.</summary>
-					/// <param name="value">The position.</param>
-					virtual void						SetPosition(vint value)=0;
-				};
 			protected:
 				class CommandExecutor : public Object, public IScrollCommandExecutor
 				{

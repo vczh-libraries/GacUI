@@ -28,17 +28,6 @@ ComboBox Base
 			/// <summary>The base class of combo box control.</summary>
 			class GuiComboBoxBase : public GuiMenuButton, public Description<GuiComboBoxBase>
 			{
-			public:				
-				/// <summary>Style controller interface for <see cref="GuiComboBoxBase"/>.</summary>
-				class IStyleController : public virtual GuiMenuButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the command executor is changed.</summary>
-					/// <param name="value">The command executor.</param>
-					virtual void							SetCommandExecutor(IComboBoxCommandExecutor* value)=0;
-					/// <summary>Notify that an item is selected.</summary>
-					virtual void							OnItemSelected()=0;
-				};
 			protected:
 
 				class CommandExecutor : public Object, public virtual IComboBoxCommandExecutor
@@ -79,15 +68,6 @@ ComboBox with GuiListControl
 			{
 			public:
 				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
-
-				/// <summary>Style controller interface for <see cref="GuiComboBoxListControl"/>.</summary>
-				class IStyleController : public virtual GuiComboBoxBase::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Indicate that if the combo box need to display text.</summary>
-					/// <param name="value">Set to true to display text.</param>
-					virtual void							SetTextVisible(bool value) = 0;
-				};
 
 			protected:
 				IStyleController*							styleController = nullptr;

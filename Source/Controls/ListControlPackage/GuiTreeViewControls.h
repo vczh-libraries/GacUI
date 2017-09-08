@@ -455,18 +455,6 @@ GuiVirtualTreeView
 			/// <summary>Tree view control in virtual mode.</summary>
 			class GuiVirtualTreeView : public GuiVirtualTreeListControl, public Description<GuiVirtualTreeView>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiVirtualTreeView"/>.</summary>
-				class IStyleController : public virtual GuiVirtualTreeListControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Create a style controller for an item expanding decorator. The selection state is used to render the expanding state of a node</summary>
-					/// <returns>The created style controller for an item expanding decorator.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemExpandingDecorator()=0;
-					/// <summary>Get the text color.</summary>
-					/// <returns>The text color.</returns>
-					virtual Color										GetTextColor()=0;
-				};
 			protected:
 				IStyleController*										styleController = nullptr;
 				tree::ITreeViewItemView*								treeViewItemView = nullptr;

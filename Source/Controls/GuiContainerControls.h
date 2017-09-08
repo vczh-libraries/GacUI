@@ -60,22 +60,6 @@ Tab Control
 			{
 				friend class GuiTabPage;
 				friend class GuiTabPageList;
-			public:
-				
-				/// <summary>Style controller interface for <see cref="GuiTab"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the command executor is changed.</summary>
-					/// <param name="value">The command executor.</param>
-					virtual void								SetCommandExecutor(ITabCommandExecutor* value) = 0;
-					/// <summary>Called when the tab page list is changed.</summary>
-					/// <param name="value">The tab page list.</param>
-					virtual void								SetTabPages(Ptr<reflection::description::IValueObservableList> value) = 0;
-					/// <summary>Render a tab header at the specified position as selected.</summary>
-					/// <param name="index">The specified position.</param>
-					virtual void								SetSelectedTabPage(GuiTabPage* value) = 0;
-				};
 			protected:
 				class CommandExecutor : public Object, public ITabCommandExecutor
 				{
@@ -121,21 +105,6 @@ Scroll View
 			/// <summary>A control with a vertical scroll bar and a horizontal scroll bar to perform partial viewing.</summary>
 			class GuiScrollView : public GuiControl, public Description<GuiScrollView>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiScrollView"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					virtual void									SetCommandExecutor(IScrollViewCommandExecutor* value) = 0;
-					virtual void									AdjustView(Size fullSize) = 0;
-					virtual controls::GuiScroll*					GetHorizontalScroll() = 0;
-					virtual controls::GuiScroll*					GetVerticalScroll() = 0;
-					virtual compositions::GuiBoundsComposition*		GetInternalContainerComposition() = 0;
-					virtual bool									GetHorizontalAlwaysVisible() = 0;
-					virtual void									SetHorizontalAlwaysVisible(bool value) = 0;
-					virtual bool									GetVerticalAlwaysVisible() = 0;
-					virtual void									SetVerticalAlwaysVisible(bool value) = 0;
-				};
 			protected:
 				class CommandExecutor : public Object, public IScrollViewCommandExecutor
 				{

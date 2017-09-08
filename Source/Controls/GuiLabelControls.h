@@ -25,18 +25,6 @@ Label
 			/// <summary>A control to display a text.</summary>
 			class GuiLabel : public GuiControl, public Description<GuiLabel>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiLabel"/>.</summary>
-				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get the default text color.</summary>
-					/// <returns>The default text color.</returns>
-					virtual Color						GetDefaultTextColor() = 0;
-					/// <summary>Called when the text color changed.</summary>
-					/// <param name="value">The new text color.</param>
-					virtual void						SetTextColor(Color value) = 0;
-				};
 			protected:
 				Color									textColor;
 				IStyleController*						styleController;

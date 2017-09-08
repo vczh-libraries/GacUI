@@ -339,18 +339,6 @@ GuiDocumentViewer
 			/// <summary>Scrollable document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentViewer : public GuiScrollContainer, public GuiDocumentCommonInterface, public Description<GuiDocumentViewer>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiDocumentViewer"/>.</summary>
-				class IStyleController : public virtual GuiScrollContainer::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get a baseline document for customize default styles.</summary>
-					/// <returns>The baseline document.</returns>
-					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
-					/// <summary>Get the caret color.</summary>
-					/// <returns>The caret color.</returns>
-					virtual Color							GetCaretColor() = 0;
-				};
 			protected:
 
 				Point										GetDocumentViewPosition()override;
@@ -372,18 +360,6 @@ GuiDocumentViewer
 			/// <summary>Static document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentLabel : public GuiControl, public GuiDocumentCommonInterface, public Description<GuiDocumentLabel>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiDocumentLabel"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get a baseline document for customize default styles.</summary>
-					/// <returns>The baseline document.</returns>
-					virtual Ptr<DocumentModel>				GetBaselineDocument() = 0;
-					/// <summary>Get the caret color.</summary>
-					/// <returns>The caret color.</returns>
-					virtual Color							GetCaretColor() = 0;
-				};
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="styleController">The style controller.</param>

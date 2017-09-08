@@ -34,32 +34,6 @@ Basic Construction
 			{
 				friend class compositions::GuiGraphicsComposition;
 				typedef collections::List<GuiControl*>		ControlList;
-			public:
-				/// <summary>
-				/// Represents a style for a control. A style is something like a skin, but contains some default action handlers.
-				/// </summary>
-				class IStyleController : public virtual IDescriptable, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get the bounds composition. A bounds composition represents all visible contents of a control.</summary>
-					/// <returns>The bounds composition.</returns>
-					virtual compositions::GuiBoundsComposition*		GetBoundsComposition()=0;
-					/// <summary>Get the container composition. A container composition is where to place all bounds compositions for child controls.</summary>
-					/// <returns>The container composition.</returns>
-					virtual compositions::GuiGraphicsComposition*	GetContainerComposition()=0;
-					/// <summary>Set the focusable composition. A focusable composition is the composition to be focused when the control is focused.</summary>
-					/// <param name="value">The focusable composition.</param>
-					virtual void									SetFocusableComposition(compositions::GuiGraphicsComposition* value)=0;
-					/// <summary>Set the text to display on the control.</summary>
-					/// <param name="value">The text to display.</param>
-					virtual void									SetText(const WString& value)=0;
-					/// <summary>Set the font to render the text.</summary>
-					/// <param name="value">The font to render the text.</param>
-					virtual void									SetFont(const FontProperties& value)=0;
-					/// <summary>Set the enableing state to affect the rendering of the control.</summary>
-					/// <param name="value">The enableing state.</param>
-					virtual void									SetVisuallyEnabled(bool value)=0;
-				};
 			protected:
 				Ptr<IStyleController>							styleController;
 				compositions::GuiBoundsComposition*				boundsComposition;

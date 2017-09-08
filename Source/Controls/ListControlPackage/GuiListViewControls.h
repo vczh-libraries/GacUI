@@ -21,16 +21,6 @@ namespace vl
 			///<summary>List view column header control for detailed view.</summary>
 			class GuiListViewColumnHeader : public GuiMenuButton, public Description<GuiListViewColumnHeader>
 			{
-			public:
-				/// <summary>Style provider for <see cref="GuiListViewColumnHeader"/>.</summary>
-				class IStyleController : public virtual GuiMenuButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Notify that the column sorting state is changed.</summary>
-					/// <param name="value">The new column sorting state.</param>
-					virtual void								SetColumnSortingState(ColumnSortingState value)=0;
-				};
-
 			protected:
 				IStyleController*								styleController = nullptr;
 				ColumnSortingState								columnSortingState = ColumnSortingState::NotSorted;
@@ -54,25 +44,6 @@ namespace vl
 			/// <summary>List view base control. All list view controls inherit from this class. <see cref="list::ListViewItemStyleProviderBase"/> is suggested to be the base class of item style providers for list view control.</summary>
 			class GuiListViewBase : public GuiSelectableListControl, public Description<GuiListViewBase>
 			{
-			public:
-				/// <summary>Style provider for <see cref="GuiListViewBase"/>.</summary>
-				class IStyleController : public virtual GuiSelectableListControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Create a style controller for a column header.</summary>
-					/// <returns>The created style controller for a column header.</returns>
-					virtual GuiListViewColumnHeader::IStyleController*	CreateColumnStyle()=0;
-					/// <summary>Get the primary text color.</summary>
-					/// <returns>The primary text color.</returns>
-					virtual Color										GetPrimaryTextColor()=0;
-					/// <summary>Get the secondary text color.</summary>
-					/// <returns>The secondary text color.</returns>
-					virtual Color										GetSecondaryTextColor()=0;
-					/// <summary>Get the item peparator text color.</summary>
-					/// <returns>The item peparator text color.</returns>
-					virtual Color										GetItemSeparatorColor()=0;
-				};
-
 			protected:
 				IStyleController*								styleController;
 

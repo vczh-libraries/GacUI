@@ -37,15 +37,6 @@ List Control
 				using ItemStyle = templates::GuiListItemTemplate;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
-				/// <summary>Style provider interface for <see cref="GuiListControl"/>.</summary>
-				class IStyleController : public virtual GuiScrollView::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Create a style controller for an item background. The selection state is used to render the selection state of an item.</summary>
-					/// <returns>The created style controller for an item background.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateItemBackground() = 0;
-				};
-
 				//-----------------------------------------------------------
 				// Callback Interfaces
 				//-----------------------------------------------------------

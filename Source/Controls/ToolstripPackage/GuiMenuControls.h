@@ -129,30 +129,6 @@ MenuButton
 			/// <summary>Menu item.</summary>
 			class GuiMenuButton : public GuiSelectableButton, public Description<GuiMenuButton>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiMenuButton"/>.</summary>
-				class IStyleController : public virtual GuiSelectableButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Create a style controller for the sub menu.</summary>
-					/// <returns>The style controller for the sub menu.</returns>
-					virtual GuiMenu::IStyleController*	CreateSubMenuStyleController()=0;
-					/// <summary>Notify that the sub menu is created or destroyed.</summary>
-					/// <param name="value">Set to true if the sub menu is created.</param>
-					virtual void						SetSubMenuExisting(bool value)=0;
-					/// <summary>Notify that the sub menu is opened or closed.</summary>
-					/// <param name="value">Set to true if the sub menu is opened.</param>
-					virtual void						SetSubMenuOpening(bool value)=0;
-					/// <summary>Get the button control that is expected to be associated with a sub menu.</summary>
-					/// <returns>The button control that is expected to be associated with a sub menu. Returns null means that the sub menu will be directly associated to the menu button.</returns>
-					virtual GuiButton*					GetSubMenuHost()=0;
-					/// <summary>Notify that the image for the menu button is changed.</summary>
-					/// <param name="value">The image for the menu button.</param>
-					virtual void						SetImage(Ptr<GuiImageData> value)=0;
-					/// <summary>Notify that the shortcut key text for the menu button is changed.</summary>
-					/// <param name="value">The shortcut key text for the menu button.</param>
-					virtual void						SetShortcutText(const WString& value)=0;
-				};
 			protected:
 				IStyleController*						styleController;
 				Ptr<GuiImageData>						image;

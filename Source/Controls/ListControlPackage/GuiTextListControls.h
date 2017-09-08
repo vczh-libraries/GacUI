@@ -162,21 +162,6 @@ GuiVirtualTextList
 			/// <summary>Text list control in virtual mode.</summary>
 			class GuiVirtualTextList : public GuiSelectableListControl, public Description<GuiVirtualTextList>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiVirtualTreeView"/>.</summary>
-				class IStyleController : public virtual GuiSelectableListControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Get the text color.</summary>
-					/// <returns>The text color.</returns>
-					virtual Color										GetTextColor()=0;
-					/// <summary>Create a style controller for displaying a check box in front of a text item.</summary>
-					/// <returns>The created style controller for displaying a check box in front of a text item.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateCheckBulletStyle() = 0;
-					/// <summary>Create a style controller for displaying a radio button in front of a text item.</summary>
-					/// <returns>The created style controller for displaying a radio button in front of a text item.</returns>
-					virtual GuiSelectableButton::IStyleController*		CreateRadioBulletStyle() = 0;
-				};
 			protected:
 				IStyleController*										styleController;
 				TextListView											view = TextListView::Unknown;

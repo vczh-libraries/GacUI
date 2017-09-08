@@ -26,15 +26,6 @@ Buttons
 			/// <summary>A control with 3 phases state transffering when mouse click happens.</summary>
 			class GuiButton : public GuiControl, public Description<GuiButton>
 			{
-			public:
-				/// <summary>Style controller interface for <see cref="GuiButton"/>.</summary>
-				class IStyleController : virtual public GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the control state changed.</summary>
-					/// <param name="value">The new control state.</param>
-					virtual void						Transfer(ButtonState value) = 0;
-				};
 			protected:
 				IStyleController*						styleController;
 				bool									clickOnMouseUp;
@@ -70,15 +61,6 @@ Buttons
 			class GuiSelectableButton : public GuiButton, public Description<GuiSelectableButton>
 			{
 			public:
-				/// <summary>Style controller interface for <see cref="GuiSelectableButton"/>.</summary>
-				class IStyleController : public virtual GuiButton::IStyleController, public Description<IStyleController>
-				{
-				public:
-					/// <summary>Called when the selection state changed.</summary>
-					/// <param name="value">The new control state.</param>
-					virtual void						SetSelected(bool value) = 0;
-				};
-
 				/// <summary>Selection group controller. Control the selection state of all attached button.</summary>
 				class GroupController : public GuiComponent, public Description<GroupController>
 				{

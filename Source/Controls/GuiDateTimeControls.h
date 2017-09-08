@@ -26,17 +26,6 @@ DatePicker
 			/// <summary>Date picker control that display a calendar.</summary>
 			class GuiDatePicker : public GuiControl, public Description<GuiDatePicker>
 			{
-			public:
-				/// <summary>Style provider interface for <see cref="GuiDatePicker"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					virtual void										SetCommandExecutor(IDatePickerCommandExecutor* value) = 0;
-					virtual void										SetDateLocale(const Locale& value) = 0;
-					virtual const DateTime&								GetDate() = 0;
-					virtual void										SetDate(const DateTime& value) = 0;
-				};
-
 			protected:
 				class CommandExecutor : public Object, public IDatePickerCommandExecutor
 				{

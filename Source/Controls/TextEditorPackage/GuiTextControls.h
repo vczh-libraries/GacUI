@@ -28,16 +28,6 @@ MultilineTextBox
 			public:
 				static const vint							TextMargin=3;
 
-				/// <summary>Style controller interface for <see cref="GuiSinglelineTextBox"/>.</summary>
-				class IStyleController : public virtual GuiScrollView::IStyleController, public Description<IStyleController>
-				{
-				public:
-					virtual void									SetCommandExecutor(ITextBoxCommandExecutor* value) = 0;
-					virtual WString									GetEditingText() = 0;
-					virtual elements::GuiColorizedTextElement*		GetTextElement() = 0;
-					virtual compositions::GuiGraphicsComposition*	GetTextComposition() = 0;
-				};
-
 				class CommandExecutor : public Object, public ITextBoxCommandExecutor
 				{
 				protected:
@@ -94,17 +84,6 @@ SinglelineTextBox
 			{
 			public:
 				static const vint							TextMargin=3;
-				
-				/// <summary>Style controller interface for <see cref="GuiSinglelineTextBox"/>.</summary>
-				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
-				{
-				public:
-					virtual void									SetCommandExecutor(ITextBoxCommandExecutor* value) = 0;
-					virtual void									RearrangeTextElement() = 0;
-					virtual WString									GetEditingText() = 0;
-					virtual elements::GuiColorizedTextElement*		GetTextElement() = 0;
-					virtual compositions::GuiGraphicsComposition*	GetTextComposition() = 0;
-				};
 				
 			protected:
 				class TextElementOperatorCallback : public GuiTextBoxCommonInterface::DefaultCallback, public Description<TextElementOperatorCallback>
