@@ -195,6 +195,7 @@ Type List (Templates)
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\
 			F(presentation::controls::IDatePickerCommandExecutor)\
+			F(presentation::controls::IScrollViewCommandExecutor)\
 			F(presentation::controls::GuiComponent)\
 			F(presentation::controls::GuiInstanceRootObject)\
 			F(presentation::templates::GuiTemplate)\
@@ -264,7 +265,6 @@ Type List (Controls)
 			F(presentation::controls::GuiSaveFileDialog)\
 			F(presentation::controls::GuiControl)\
 			F(presentation::controls::GuiControl::IStyleController)\
-			F(presentation::controls::GuiControl::IStyleProvider)\
 			F(presentation::controls::GuiCustomControl)\
 			F(presentation::controls::GuiLabel)\
 			F(presentation::controls::GuiLabel::IStyleController)\
@@ -280,7 +280,7 @@ Type List (Controls)
 			F(presentation::controls::GuiTab)\
 			F(presentation::controls::GuiTab::IStyleController)\
 			F(presentation::controls::GuiScrollView)\
-			F(presentation::controls::GuiScrollView::IStyleProvider)\
+			F(presentation::controls::GuiScrollView::IStyleController)\
 			F(presentation::controls::GuiScrollContainer)\
 			F(presentation::controls::GuiControlHost)\
 			F(presentation::controls::GuiWindow)\
@@ -288,7 +288,7 @@ Type List (Controls)
 			F(presentation::controls::GuiPopup)\
 			F(presentation::controls::GuiTooltip)\
 			F(presentation::controls::GuiListControl)\
-			F(presentation::controls::GuiListControl::IStyleProvider)\
+			F(presentation::controls::GuiListControl::IStyleController)\
 			F(presentation::controls::GuiListControl::IItemProviderCallback)\
 			F(presentation::controls::GuiListControl::IItemArrangerCallback)\
 			F(presentation::controls::GuiListControl::IItemProvider)\
@@ -303,12 +303,12 @@ Type List (Controls)
 			F(presentation::controls::list::TextItem)\
 			F(presentation::controls::TextListView)\
 			F(presentation::controls::GuiVirtualTextList)\
-			F(presentation::controls::GuiVirtualTextList::IStyleProvider)\
+			F(presentation::controls::GuiVirtualTextList::IStyleController)\
 			F(presentation::controls::GuiTextList)\
 			F(presentation::controls::GuiListViewColumnHeader)\
 			F(presentation::controls::GuiListViewColumnHeader::IStyleController)\
 			F(presentation::controls::GuiListViewBase)\
-			F(presentation::controls::GuiListViewBase::IStyleProvider)\
+			F(presentation::controls::GuiListViewBase::IStyleController)\
 			F(presentation::controls::list::IListViewItemView)\
 			F(presentation::controls::list::ListViewColumnItemArranger)\
 			F(presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback)\
@@ -336,7 +336,7 @@ Type List (Controls)
 			F(presentation::controls::tree::TreeViewItem)\
 			F(presentation::controls::tree::TreeViewItemRootProvider)\
 			F(presentation::controls::GuiVirtualTreeView)\
-			F(presentation::controls::GuiVirtualTreeView::IStyleProvider)\
+			F(presentation::controls::GuiVirtualTreeView::IStyleController)\
 			F(presentation::controls::GuiTreeView)\
 			F(presentation::controls::GuiComboBoxBase)\
 			F(presentation::controls::GuiComboBoxBase::IStyleController)\
@@ -351,7 +351,7 @@ Type List (Controls)
 			F(presentation::controls::GuiDocumentCommonInterface)\
 			F(presentation::controls::GuiDocumentCommonInterface::EditMode)\
 			F(presentation::controls::GuiDocumentViewer)\
-			F(presentation::controls::GuiDocumentViewer::IStyleProvider)\
+			F(presentation::controls::GuiDocumentViewer::IStyleController)\
 			F(presentation::controls::GuiDocumentLabel)\
 			F(presentation::controls::GuiDocumentLabel::IStyleController)\
 			F(presentation::controls::GuiTextBoxCommonInterface)\

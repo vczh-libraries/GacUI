@@ -74,6 +74,11 @@ Type Declaration
 				CLASS_MEMBER_METHOD(NotifyDateSelected, NO_PARAMETER)
 			END_INTERFACE_MEMBER(IDatePickerCommandExecutor)
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IScrollViewCommandExecutor)
+				CLASS_MEMBER_BASE(IDescriptable)
+				CLASS_MEMBER_METHOD(CalculateView, NO_PARAMETER)
+			END_INTERFACE_MEMBER(IScrollViewCommandExecutor)
+
 			BEGIN_CLASS_MEMBER(GuiComponent)
 			END_CLASS_MEMBER(GuiComponent)
 
@@ -205,6 +210,13 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiScrollViewTemplate*(), NO_PARAMETER)
 
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+
+				CLASS_MEMBER_METHOD(AdjustView, {L"fullSize"})
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(HorizontalScroll)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(VerticalScroll)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(InternalContainerComposition)
+				CLASS_MEMBER_PROPERTY_FAST(HorizontalAlwaysVisible)
+				CLASS_MEMBER_PROPERTY_FAST(VerticalAlwaysVisible)
 			END_CLASS_MEMBER(GuiScrollViewTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiTextListTemplate)

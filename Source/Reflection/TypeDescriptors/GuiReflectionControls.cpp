@@ -254,21 +254,7 @@ Type Declaration
 			END_CLASS_MEMBER(GuiControl)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiControl::IStyleController)
-				CLASS_MEMBER_METHOD(GetBoundsComposition, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetContainerComposition, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
-				CLASS_MEMBER_METHOD(SetText, {L"value"})
-				CLASS_MEMBER_METHOD(SetFont, {L"value"})
-				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
 			END_INTERFACE_MEMBER(GuiControl::IStyleController)
-
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiControl::IStyleProvider)
-				CLASS_MEMBER_METHOD(AssociateStyleController, {L"controller"})
-				CLASS_MEMBER_METHOD(SetFocusableComposition, {L"value"})
-				CLASS_MEMBER_METHOD(SetText, {L"value"})
-				CLASS_MEMBER_METHOD(SetFont, {L"value"})
-				CLASS_MEMBER_METHOD(SetVisuallyEnabled, {L"value"})
-			END_INTERFACE_MEMBER(GuiControl::IStyleProvider)
 
 			BEGIN_CLASS_MEMBER(GuiCustomControl)
 				CLASS_MEMBER_BASE(GuiControl)
@@ -285,9 +271,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiLabel::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-
-				CLASS_MEMBER_METHOD(GetDefaultTextColor, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetTextColor, {L"value"})
 			END_INTERFACE_MEMBER(GuiLabel::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiButton)
@@ -301,8 +284,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiButton::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-
-				CLASS_MEMBER_METHOD(Transfer, {L"value"})
 			END_INTERFACE_MEMBER(GuiButton::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableButton)
@@ -316,8 +297,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiSelectableButton::IStyleController)
 				CLASS_MEMBER_BASE(GuiButton::IStyleController)
-
-				CLASS_MEMBER_METHOD(SetSelected, {L"value"})
 			END_INTERFACE_MEMBER(GuiSelectableButton::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiSelectableButton::GroupController)
@@ -348,11 +327,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiScroll::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-
-				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
-				CLASS_MEMBER_METHOD(SetTotalSize, {L"value"})
-				CLASS_MEMBER_METHOD(SetPageSize, {L"value"})
-				CLASS_MEMBER_METHOD(SetPosition, {L"value"})
 			END_INTERFACE_MEMBER(GuiScroll::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiTabPage)
@@ -375,10 +349,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiTab::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-
-				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
-				CLASS_MEMBER_METHOD(SetTabPages, { L"value" })
-				CLASS_MEMBER_METHOD(SetSelectedTabPage, { L"value" })
 			END_INTERFACE_MEMBER(GuiTab::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiScrollView)
@@ -394,14 +364,9 @@ Type Declaration
 				CLASS_MEMBER_METHOD(CalculateView, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiScrollView)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiScrollView::IStyleProvider)
-				CLASS_MEMBER_BASE(GuiControl::IStyleProvider)
-
-				CLASS_MEMBER_METHOD(CreateHorizontalScrollStyle, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(CreateVerticalScrollStyle, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(GetDefaultScrollSize, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(InstallBackground, {L"boundsComposition"})
-			END_INTERFACE_MEMBER(GuiScrollView::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiScrollView::IStyleController)
+				CLASS_MEMBER_BASE(GuiControl::IStyleController)
+			END_INTERFACE_MEMBER(GuiScrollView::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiScrollContainer)
 				CLASS_MEMBER_BASE(GuiScrollView)
@@ -471,20 +436,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiWindow::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-
-				CLASS_MEMBER_METHOD(AttachWindow, {L"window"})
-				CLASS_MEMBER_METHOD(InitializeNativeWindowProperties, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetSizeState, {L"value"})
-
-				CLASS_MEMBER_PROPERTY_FAST(MaximizedBox)
-				CLASS_MEMBER_PROPERTY_FAST(MinimizedBox)
-				CLASS_MEMBER_PROPERTY_FAST(Border)
-				CLASS_MEMBER_PROPERTY_FAST(SizeBox)
-				CLASS_MEMBER_PROPERTY_FAST(IconVisible)
-				CLASS_MEMBER_PROPERTY_FAST(TitleBar)
-
-				CLASS_MEMBER_METHOD(CreateTooltipStyle, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(CreateShortcutKeyStyle, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiWindow::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiPopup)
@@ -534,11 +485,9 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetAdoptedSize, {L"expectedSize"})
 			END_CLASS_MEMBER(GuiListControl)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IStyleProvider)
-				CLASS_MEMBER_BASE(GuiScrollView::IStyleProvider)
-
-				CLASS_MEMBER_METHOD(CreateItemBackground, NO_PARAMETER)
-			END_INTERFACE_MEMBER(GuiListControl::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IStyleController)
+				CLASS_MEMBER_BASE(GuiScrollView::IStyleController)
+			END_INTERFACE_MEMBER(GuiListControl::IStyleController)
 
 			BEGIN_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -663,13 +612,9 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(View)
 			END_CLASS_MEMBER(GuiVirtualTextList)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiVirtualTextList::IStyleProvider)
-				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleProvider)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
-				CLASS_MEMBER_METHOD(CreateCheckBulletStyle, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(CreateRadioBulletStyle, NO_PARAMETER)
-			END_INTERFACE_MEMBER(GuiVirtualTextList::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiVirtualTextList::IStyleController)
+				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleController)
+			END_INTERFACE_MEMBER(GuiVirtualTextList::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
@@ -688,8 +633,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListViewColumnHeader::IStyleController)
 				CLASS_MEMBER_BASE(GuiMenuButton::IStyleController)
-
-				CLASS_MEMBER_METHOD(SetColumnSortingState, {L"value"})
 			END_INTERFACE_MEMBER(GuiListViewColumnHeader::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiListViewBase)
@@ -701,15 +644,9 @@ Type Declaration
 				CLASS_MEMBER_METHOD(GetListViewStyleProvider, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiListViewBase)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListViewBase::IStyleProvider)
-				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleProvider)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(PrimaryTextColor)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(SecondaryTextColor)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemSeparatorColor)
-
-				CLASS_MEMBER_METHOD(CreateColumnStyle, NO_PARAMETER)
-			END_INTERFACE_MEMBER(GuiListViewBase::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListViewBase::IStyleController)
+				CLASS_MEMBER_BASE(GuiSelectableListControl::IStyleController)
+			END_INTERFACE_MEMBER(GuiListViewBase::IStyleController)
 
 			BEGIN_INTERFACE_MEMBER(IListViewItemView)
 				INTERFACE_IDENTIFIER(vl::presentation::controls::list::IListViewItemView)
@@ -846,13 +783,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiMenuButton::IStyleController)
 				CLASS_MEMBER_BASE(GuiSelectableButton::IStyleController)
-
-				CLASS_MEMBER_METHOD(CreateSubMenuStyleController, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetSubMenuExisting, {L"value"})
-				CLASS_MEMBER_METHOD(SetSubMenuOpening, {L"value"})
-				CLASS_MEMBER_METHOD(GetSubMenuHost, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetImage, {L"value"})
-				CLASS_MEMBER_METHOD(SetShortcutText, {L"value"})
 			END_INTERFACE_MEMBER(GuiMenuButton::IStyleController)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INodeProviderCallback)
@@ -979,13 +909,9 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TreeViewStyleProvider)
 			END_CLASS_MEMBER(GuiVirtualTreeView)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiVirtualTreeView::IStyleProvider)
-				CLASS_MEMBER_BASE(GuiVirtualTreeListControl::IStyleProvider)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextColor)
-
-				CLASS_MEMBER_METHOD(CreateItemExpandingDecorator, NO_PARAMETER)
-			END_INTERFACE_MEMBER(GuiVirtualTreeView::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiVirtualTreeView::IStyleController)
+				CLASS_MEMBER_BASE(GuiVirtualTreeListControl::IStyleController)
+			END_INTERFACE_MEMBER(GuiVirtualTreeView::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView)
@@ -1005,9 +931,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiComboBoxBase::IStyleController)
 				CLASS_MEMBER_BASE(GuiMenuButton::IStyleController)
-				
-				CLASS_MEMBER_METHOD(SetCommandExecutor, {L"value"})
-				CLASS_MEMBER_METHOD(OnItemSelected, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiComboBoxBase::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiComboBoxListControl)
@@ -1023,8 +946,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiComboBoxListControl::IStyleController)
 				CLASS_MEMBER_BASE(GuiComboBoxBase::IStyleController)
-				
-				CLASS_MEMBER_METHOD(SetTextVisible, {L"value"})
 			END_INTERFACE_MEMBER(GuiComboBoxListControl::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiToolstripCommand)
@@ -1147,12 +1068,9 @@ Type Declaration
 				CONTROL_CONSTRUCTOR_PROVIDER(GuiDocumentViewer)
 			END_CLASS_MEMBER(GuiDocumentViewer)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiDocumentViewer::IStyleProvider)
-				CLASS_MEMBER_BASE(GuiScrollContainer::IStyleProvider)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BaselineDocument)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(CaretColor)
-			END_INTERFACE_MEMBER(GuiDocumentViewer::IStyleProvider)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiDocumentViewer::IStyleController)
+				CLASS_MEMBER_BASE(GuiScrollContainer::IStyleController)
+			END_INTERFACE_MEMBER(GuiDocumentViewer::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentLabel)
 				CLASS_MEMBER_BASE(GuiControl)
@@ -1162,9 +1080,7 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiDocumentLabel::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(BaselineDocument)
-			END_INTERFACE_MEMBER(GuiDocumentLabel::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiDocumentLabel::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiTextBoxCommonInterface)
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
@@ -1223,8 +1139,7 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiSinglelineTextBox::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-
-			END_INTERFACE_MEMBER(GuiSinglelineTextBox::IStyleProvider)
+			END_INTERFACE_MEMBER(GuiSinglelineTextBox::IStyleController)
 
 			BEGIN_INTERFACE_MEMBER(IDataGridContext)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -1347,11 +1262,6 @@ Type Declaration
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiDatePicker::IStyleController)
 				CLASS_MEMBER_BASE(GuiControl::IStyleController)
-
-				CLASS_MEMBER_METHOD(SetCommandExecutor, { L"value" })
-				CLASS_MEMBER_METHOD(SetDateLocale, { L"value" })
-				CLASS_MEMBER_METHOD(GetDate, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetDate, { L"value" })
 			END_INTERFACE_MEMBER(GuiDatePicker::IStyleController)
 
 			BEGIN_CLASS_MEMBER(GuiDateComboBox)

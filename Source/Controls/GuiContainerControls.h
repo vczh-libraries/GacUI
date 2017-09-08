@@ -123,89 +123,34 @@ Scroll View
 			{
 			public:
 				/// <summary>Style provider interface for <see cref="GuiScrollView"/>.</summary>
-				class IStyleProvider : public virtual GuiControl::IStyleProvider, public Description<IStyleProvider>
+				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
 				{
 				public:
-					/// <summary>Create a control style for the horizontal scroll bar.</summary>
-					/// <returns>The created control style for the horizontal scroll bar.</returns>
-					virtual GuiScroll::IStyleController*			CreateHorizontalScrollStyle()=0;
-					/// <summary>Create a control style for the vertical scroll bar.</summary>
-					/// <returns>The created control style for the vertical scroll bar.</returns>
-					virtual GuiScroll::IStyleController*			CreateVerticalScrollStyle()=0;
-					/// <summary>Get the default scroll size for scroll bars, width for vertical, height for horizontal.</summary>
-					/// <returns>The default scroll size.</returns>
-					virtual vint									GetDefaultScrollSize()=0;
-					/// <summary>Called when the control begins to initialize. The control pass the bounds composition, and the style provider can put background compositions and elements on it, and return a container composition to contain content and scroll bars.</summary>
-					/// <returns>A container composition to contain content and scroll bars</returns>
-					/// <param name="boundsComposition">The bounds composition to install background.</param>
-					virtual compositions::GuiGraphicsComposition*	InstallBackground(compositions::GuiBoundsComposition* boundsComposition)=0;
-				};
-				
-				/// <summary>Style controller for <see cref="GuiScrollView"/>.</summary>
-				class StyleController : public Object, public GuiControl::IStyleController, public Description<StyleController>
-				{
-				protected:
-					Ptr<IStyleProvider>						styleProvider;
-					GuiScrollView*							scrollView;
-					GuiScroll*								horizontalScroll;
-					GuiScroll*								verticalScroll;
-					compositions::GuiBoundsComposition*		boundsComposition;
-					compositions::GuiTableComposition*		tableComposition;
-					compositions::GuiCellComposition*		containerCellComposition;
-					compositions::GuiBoundsComposition*		containerComposition;
-					bool									horizontalAlwaysVisible;
-					bool									verticalAlwaysVisible;
-
-					void									UpdateTable();
-				public:
-					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="_styleProvider">The style provider.</param>
-					StyleController(IStyleProvider* _styleProvider);
-					~StyleController();
-
-					/// <summary>Called when the style controller is attched to a <see cref="GuiScrollView"/>.</summary>
-					/// <param name="_scrollView">The scroll view control that attached to.</param>
-					void									SetScrollView(GuiScrollView* _scrollView);
-					/// <summary>Called when the view size of the scroll view changed. Scroll bars will be adjusted.</summary>
-					/// <param name="fullSize">The view size.</param>
-					void									AdjustView(Size fullSize);
-					/// <summary>Get the attached style provider.</summary>
-					/// <returns>The attached style provider.</returns>
-					IStyleProvider*							GetStyleProvider();
-
-					/// <summary>Get the horizontal scroll control.</summary>
-					/// <returns>The horizontal scroll control.</returns>
-					GuiScroll*								GetHorizontalScroll();
-					/// <summary>Get the vertical scroll control.</summary>
-					/// <returns>The vertical scroll control.</returns>
-					GuiScroll*								GetVerticalScroll();
-
-					compositions::GuiTableComposition*		GetInternalTableComposition();
-					compositions::GuiBoundsComposition*		GetInternalContainerComposition();
-
-					/// <summary>Test is the horizontal scroll bar always visible even the content doesn't exceed the view bounds.</summary>
-					/// <returns>Returns true if the horizontal scroll bar always visible even the content doesn't exceed the view bounds</returns>
-					bool									GetHorizontalAlwaysVisible();
-					/// <summary>Set is the horizontal scroll bar always visible even the content doesn't exceed the view bounds.</summary>
-					/// <param name="value">Set to true if the horizontal scroll bar always visible even the content doesn't exceed the view bounds</param>
-					void									SetHorizontalAlwaysVisible(bool value);
-					/// <summary>Test is the vertical scroll bar always visible even the content doesn't exceed the view bounds.</summary>
-					/// <returns>Returns true if the vertical scroll bar always visible even the content doesn't exceed the view bounds</returns>
-					bool									GetVerticalAlwaysVisible();
-					/// <summary>Set is the vertical scroll bar always visible even the content doesn't exceed the view bounds.</summary>
-					/// <param name="value">Set to true if the vertical scroll bar always visible even the content doesn't exceed the view bounds</param>
-					void									SetVerticalAlwaysVisible(bool value);
-
-					compositions::GuiBoundsComposition*		GetBoundsComposition()override;
-					compositions::GuiGraphicsComposition*	GetContainerComposition()override;
-					void									SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-					void									SetText(const WString& value)override;
-					void									SetFont(const FontProperties& value)override;
-					void									SetVisuallyEnabled(bool value)override;
+					virtual void									SetCommandExecutor(IScrollViewCommandExecutor* value) = 0;
+					virtual void									AdjustView(Size fullSize) = 0;
+					virtual controls::GuiScroll*					GetHorizontalScroll() = 0;
+					virtual controls::GuiScroll*					GetVerticalScroll() = 0;
+					virtual compositions::GuiBoundsComposition*		GetInternalContainerComposition() = 0;
+					virtual bool									GetHorizontalAlwaysVisible() = 0;
+					virtual void									SetHorizontalAlwaysVisible(bool value) = 0;
+					virtual bool									GetVerticalAlwaysVisible() = 0;
+					virtual void									SetVerticalAlwaysVisible(bool value) = 0;
 				};
 			protected:
+				class CommandExecutor : public Object, public IScrollViewCommandExecutor
+				{
+				protected:
+					GuiScrollView*						scrollView;
 
-				StyleController*						styleController;
+				public:
+					CommandExecutor(GuiScrollView* _scrollView);
+					~CommandExecutor();
+
+					void								CalculateView()override;
+				};
+
+				Ptr<CommandExecutor>					commandExecutor;
+				IStyleController*						styleController;
 				bool									supressScrolling;
 
 				void									OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -214,7 +159,6 @@ Scroll View
 				void									OnHorizontalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									OnVerticalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 				void									CallUpdateView();
-				void									Initialize();
 
 				/// <summary>Calculate the full size of the content.</summary>
 				/// <returns>The full size of the content.</returns>
@@ -229,13 +173,10 @@ Scroll View
 				/// <returns>The big move of the scroll bar.</returns>
 				virtual Size							GetBigMove();
 				
-				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
-				GuiScrollView(StyleController* _styleController);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleProvider">The style provider.</param>
-				GuiScrollView(IStyleProvider* styleProvider);
+				GuiScrollView(IStyleController* _styleController);
 				~GuiScrollView();
 
 				virtual void							SetFont(const FontProperties& value);

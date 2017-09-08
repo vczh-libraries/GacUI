@@ -13,46 +13,6 @@ namespace vl
 			using namespace reflection::description;
 
 /***********************************************************************
-GuiControl::EmptyStyleController
-***********************************************************************/
-
-			GuiControl::EmptyStyleController::EmptyStyleController()
-			{
-				boundsComposition = new GuiBoundsComposition;
-				boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-			}
-
-			GuiControl::EmptyStyleController::~EmptyStyleController()
-			{
-			}
-
-			compositions::GuiBoundsComposition* GuiControl::EmptyStyleController::GetBoundsComposition()
-			{
-				return boundsComposition;
-			}
-
-			compositions::GuiGraphicsComposition* GuiControl::EmptyStyleController::GetContainerComposition()
-			{
-				return boundsComposition;
-			}
-
-			void GuiControl::EmptyStyleController::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
-			{
-			}
-
-			void GuiControl::EmptyStyleController::SetText(const WString& value)
-			{
-			}
-
-			void GuiControl::EmptyStyleController::SetFont(const FontProperties& value)
-			{
-			}
-
-			void GuiControl::EmptyStyleController::SetVisuallyEnabled(bool value)
-			{
-			}
-
-/***********************************************************************
 GuiControl
 ***********************************************************************/
 

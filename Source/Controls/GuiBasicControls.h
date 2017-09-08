@@ -60,48 +60,6 @@ Basic Construction
 					/// <param name="value">The enableing state.</param>
 					virtual void									SetVisuallyEnabled(bool value)=0;
 				};
-
-				/// <summary>
-				/// An empty style for <see cref="GuiControl"/>.
-				/// </summary>
-				class EmptyStyleController : public Object, public virtual IStyleController, public Description<EmptyStyleController>
-				{
-				protected:
-					compositions::GuiBoundsComposition*				boundsComposition;
-				public:
-					EmptyStyleController();
-					~EmptyStyleController();
-
-					compositions::GuiBoundsComposition*				GetBoundsComposition()override;
-					compositions::GuiGraphicsComposition*			GetContainerComposition()override;
-					void											SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-					void											SetText(const WString& value)override;
-					void											SetFont(const FontProperties& value)override;
-					void											SetVisuallyEnabled(bool value)override;
-				};
-
-				/// <summary>
-				/// A style provider is a callback interface for some control that already provides a style controller, but the controller need callbacks to create sub compositions or handle actions.
-				/// </summary>
-				class IStyleProvider : public virtual IDescriptable, public Description<IStyleProvider>
-				{
-				public:
-					/// <summary>Called when a style provider is associated with a style controller.</summary>
-					/// <param name="controller">The style controller that is associated.</param>
-					virtual void								AssociateStyleController(IStyleController* controller)=0;
-					/// <summary>Set the focusable composition. A focusable composition is the composition to be focused when the control is focused.</summary>
-					/// <param name="value">The focusable composition.</param>
-					virtual void								SetFocusableComposition(compositions::GuiGraphicsComposition* value)=0;
-					/// <summary>Set the text to display on the control.</summary>
-					/// <param name="value">The text to display.</param>
-					virtual void								SetText(const WString& value)=0;
-					/// <summary>Set the font to render the text.</summary>
-					/// <param name="value">The font to render the text.</param>
-					virtual void								SetFont(const FontProperties& value)=0;
-					/// <summary>Set the enableing state to affect the rendering of the control.</summary>
-					/// <param name="value">The enableing state.</param>
-					virtual void								SetVisuallyEnabled(bool value)=0;
-				};
 			protected:
 				Ptr<IStyleController>							styleController;
 				compositions::GuiBoundsComposition*				boundsComposition;

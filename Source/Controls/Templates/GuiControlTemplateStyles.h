@@ -29,11 +29,9 @@ Control Template
 			class GuiControlTemplate_StyleProvider
 				: public Object
 				, public virtual controls::GuiControl::IStyleController
-				, public virtual controls::GuiControl::IStyleProvider
 				, public Description<GuiControlTemplate_StyleProvider>
 			{
 			protected:
-				controls::GuiControl::IStyleController*							associatedStyleController;
 				GuiControlTemplate*												controlTemplate;
 
 			public:
@@ -42,7 +40,6 @@ Control Template
 
 				compositions::GuiBoundsComposition*								GetBoundsComposition()override;
 				compositions::GuiGraphicsComposition*							GetContainerComposition()override;
-				void															AssociateStyleController(controls::GuiControl::IStyleController* controller)override;
 				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
 				void															SetText(const WString& value)override;
 				void															SetFont(const FontProperties& value)override;
@@ -245,7 +242,7 @@ Control Template
 
 			class GuiScrollViewTemplate_StyleProvider
 				: public GuiControlTemplate_StyleProvider
-				, public virtual controls::GuiScrollView::IStyleProvider
+				, public virtual controls::GuiScrollView::IStyleController
 				, public Description<GuiScrollViewTemplate_StyleProvider>
 			{
 			protected:
@@ -254,11 +251,16 @@ Control Template
 			public:
 				GuiScrollViewTemplate_StyleProvider(TemplateProperty<GuiScrollViewTemplate> factory);
 				~GuiScrollViewTemplate_StyleProvider();
-				
-				controls::GuiScroll::IStyleController*							CreateHorizontalScrollStyle()override;
-				controls::GuiScroll::IStyleController*							CreateVerticalScrollStyle()override;
-				vint															GetDefaultScrollSize()override;
-				compositions::GuiGraphicsComposition*							InstallBackground(compositions::GuiBoundsComposition* boundsComposition)override;
+
+				void									SetCommandExecutor(controls::IScrollViewCommandExecutor* value)override;
+				void									AdjustView(Size fullSize)override;
+				controls::GuiScroll*					GetHorizontalScroll()override;
+				controls::GuiScroll*					GetVerticalScroll()override;
+				compositions::GuiBoundsComposition*		GetInternalContainerComposition()override;
+				bool									GetHorizontalAlwaysVisible()override;
+				void									SetHorizontalAlwaysVisible(bool value)override;
+				bool									GetVerticalAlwaysVisible()override;
+				void									SetVerticalAlwaysVisible(bool value)override;
 			};
 
 			class GuiMultilineTextBoxTemplate_StyleProvider

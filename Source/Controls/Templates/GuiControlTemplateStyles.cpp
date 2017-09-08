@@ -28,8 +28,7 @@ GuiControlTemplate_StyleProvider
 ***********************************************************************/
 
 			GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider(TemplateProperty<GuiControlTemplate> factory, description::Value viewModel)
-				:associatedStyleController(0)
-				, controlTemplate(factory(viewModel))
+				:controlTemplate(factory(viewModel))
 			{
 				CHECK_ERROR(controlTemplate, L"GuiControlTemplate_StyleProvider::GuiControlTemplate_StyleProvider()#An instance of GuiControlTemplate is expected.");
 				controlTemplate->Initialize();
@@ -47,11 +46,6 @@ GuiControlTemplate_StyleProvider
 			compositions::GuiGraphicsComposition* GuiControlTemplate_StyleProvider::GetContainerComposition()
 			{
 				return controlTemplate->GetContainerComposition();
-			}
-
-			void GuiControlTemplate_StyleProvider::AssociateStyleController(controls::GuiControl::IStyleController* controller)
-			{
-				associatedStyleController = controller;
 			}
 
 			void GuiControlTemplate_StyleProvider::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
@@ -518,27 +512,50 @@ GuiScrollViewTemplate_StyleProvider
 			GuiScrollViewTemplate_StyleProvider::~GuiScrollViewTemplate_StyleProvider()
 			{
 			}
-				
-			controls::GuiScroll::IStyleController* GuiScrollViewTemplate_StyleProvider::CreateHorizontalScrollStyle()
+
+			void GuiScrollViewTemplate_StyleProvider::SetCommandExecutor(controls::IScrollViewCommandExecutor* value)
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiScrollTemplate, HScrollTemplate);
+				controlTemplate->SetCommands(value);
 			}
 
-			controls::GuiScroll::IStyleController* GuiScrollViewTemplate_StyleProvider::CreateVerticalScrollStyle()
+			void GuiScrollViewTemplate_StyleProvider::AdjustView(Size fullSize)
 			{
-				GET_FACTORY_FROM_TEMPLATE(GuiScrollTemplate, VScrollTemplate);
+				controlTemplate->AdjustView(fullSize);
 			}
 
-			vint GuiScrollViewTemplate_StyleProvider::GetDefaultScrollSize()
+			controls::GuiScroll* GuiScrollViewTemplate_StyleProvider::GetHorizontalScroll()
 			{
-				return controlTemplate->GetDefaultScrollSize();
+				return controlTemplate->GetHorizontalScroll();
 			}
 
-			compositions::GuiGraphicsComposition* GuiScrollViewTemplate_StyleProvider::InstallBackground(compositions::GuiBoundsComposition* boundsComposition)
+			controls::GuiScroll* GuiScrollViewTemplate_StyleProvider::GetVerticalScroll()
 			{
-				controlTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				boundsComposition->AddChild(controlTemplate);
-				return controlTemplate->GetContainerComposition();
+				return controlTemplate->GetVerticalScroll();
+			}
+
+			compositions::GuiBoundsComposition* GuiScrollViewTemplate_StyleProvider::GetInternalContainerComposition()
+			{
+				return controlTemplate->GetInternalContainerComposition();
+			}
+
+			bool GuiScrollViewTemplate_StyleProvider::GetHorizontalAlwaysVisible()
+			{
+				return controlTemplate->GetHorizontalAlwaysVisible();
+			}
+
+			void GuiScrollViewTemplate_StyleProvider::SetHorizontalAlwaysVisible(bool value)
+			{
+				controlTemplate->SetHorizontalAlwaysVisible(value);
+			}
+
+			bool GuiScrollViewTemplate_StyleProvider::GetVerticalAlwaysVisible()
+			{
+				return controlTemplate->GetVerticalAlwaysVisible();
+			}
+
+			void GuiScrollViewTemplate_StyleProvider::SetVerticalAlwaysVisible(bool value)
+			{
+				controlTemplate->SetVerticalAlwaysVisible(value);
 			}
 
 /***********************************************************************

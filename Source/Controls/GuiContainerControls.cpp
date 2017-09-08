@@ -156,197 +156,21 @@ GuiTab
 			}
 
 /***********************************************************************
-GuiScrollView::StyleController
+GuiScrollView::CommandExecutor
 ***********************************************************************/
 
-			void GuiScrollView::StyleController::UpdateTable()
-			{
-				if(horizontalScroll->GetEnabled() || horizontalAlwaysVisible)
-				{
-					tableComposition->SetRowOption(1, GuiCellOption::AbsoluteOption(styleProvider->GetDefaultScrollSize()));
-				}
-				else
-				{
-					tableComposition->SetRowOption(1, GuiCellOption::AbsoluteOption(0));
-				}
-				if(verticalScroll->GetEnabled() || verticalAlwaysVisible)
-				{
-					tableComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(styleProvider->GetDefaultScrollSize()));
-				}
-				else
-				{
-					tableComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(0));
-				}
-				tableComposition->UpdateCellBounds();
-			}
-
-			GuiScrollView::StyleController::StyleController(IStyleProvider* _styleProvider)
-				:styleProvider(_styleProvider)
-				,scrollView(0)
-				,horizontalAlwaysVisible(true)
-				,verticalAlwaysVisible(true)
-			{
-				horizontalScroll=new GuiScroll(styleProvider->CreateHorizontalScrollStyle());
-				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				horizontalScroll->SetEnabled(false);
-				verticalScroll=new GuiScroll(styleProvider->CreateVerticalScrollStyle());
-				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				verticalScroll->SetEnabled(false);
-
-				boundsComposition=new GuiBoundsComposition;
-				GuiGraphicsComposition* tableContainerComposition=styleProvider->InstallBackground(boundsComposition);
-
-				tableComposition=new GuiTableComposition;
-				tableContainerComposition->AddChild(tableComposition);
-				tableComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				tableComposition->SetRowsAndColumns(2, 2);
-				tableComposition->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
-				tableComposition->SetRowOption(1, GuiCellOption::MinSizeOption());
-				tableComposition->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
-				tableComposition->SetColumnOption(1, GuiCellOption::MinSizeOption());
-				UpdateTable();
-				{
-					GuiCellComposition* cell=new GuiCellComposition;
-					tableComposition->AddChild(cell);
-					cell->SetSite(1, 0, 1, 1);
-					cell->AddChild(horizontalScroll->GetBoundsComposition());
-				}
-				{
-					GuiCellComposition* cell=new GuiCellComposition;
-					tableComposition->AddChild(cell);
-					cell->SetSite(0, 1, 1, 1);
-					cell->AddChild(verticalScroll->GetBoundsComposition());
-				}
-				
-				containerCellComposition=new GuiCellComposition;
-				tableComposition->AddChild(containerCellComposition);
-				containerCellComposition->SetSite(0, 0, 1, 1);
-
-				containerComposition=new GuiBoundsComposition;
-				containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				containerCellComposition->AddChild(containerComposition);
-
-				styleProvider->AssociateStyleController(this);
-			}
-
-			GuiScrollView::StyleController::~StyleController()
+			GuiScrollView::CommandExecutor::CommandExecutor(GuiScrollView* _scrollView)
+				:scrollView(_scrollView)
 			{
 			}
 
-			void GuiScrollView::StyleController::SetScrollView(GuiScrollView* _scrollView)
+			GuiScrollView::CommandExecutor::~CommandExecutor()
 			{
-				scrollView=_scrollView;
 			}
 
-			void GuiScrollView::StyleController::AdjustView(Size fullSize)
+			void GuiScrollView::CommandExecutor::CalculateView()
 			{
-				Size viewSize=containerComposition->GetBounds().GetSize();
-				if(fullSize.x<=viewSize.x)
-				{
-					horizontalScroll->SetEnabled(false);
-					horizontalScroll->SetPosition(0);
-				}
-				else
-				{
-					horizontalScroll->SetEnabled(true);
-					horizontalScroll->SetTotalSize(fullSize.x);
-					horizontalScroll->SetPageSize(viewSize.x);
-				}
-				if(fullSize.y<=viewSize.y)
-				{
-					verticalScroll->SetEnabled(false);
-					verticalScroll->SetPosition(0);
-				}
-				else
-				{
-					verticalScroll->SetEnabled(true);
-					verticalScroll->SetTotalSize(fullSize.y);
-					verticalScroll->SetPageSize(viewSize.y);
-				}
-				UpdateTable();
-			}
-
-			GuiScrollView::IStyleProvider* GuiScrollView::StyleController::GetStyleProvider()
-			{
-				return styleProvider.Obj();
-			}
-
-			GuiScroll* GuiScrollView::StyleController::GetHorizontalScroll()
-			{
-				return horizontalScroll;
-			}
-
-			GuiScroll* GuiScrollView::StyleController::GetVerticalScroll()
-			{
-				return verticalScroll;
-			}
-
-			compositions::GuiTableComposition* GuiScrollView::StyleController::GetInternalTableComposition()
-			{
-				return tableComposition;
-			}
-
-			compositions::GuiBoundsComposition* GuiScrollView::StyleController::GetInternalContainerComposition()
-			{
-				return containerComposition;
-			}
-
-			bool GuiScrollView::StyleController::GetHorizontalAlwaysVisible()
-			{
-				return horizontalAlwaysVisible;
-			}
-
-			void GuiScrollView::StyleController::SetHorizontalAlwaysVisible(bool value)
-			{
-				if(horizontalAlwaysVisible!=value)
-				{
-					horizontalAlwaysVisible=value;
-					scrollView->CalculateView();
-				}
-			}
-
-			bool GuiScrollView::StyleController::GetVerticalAlwaysVisible()
-			{
-				return verticalAlwaysVisible;
-			}
-
-			void GuiScrollView::StyleController::SetVerticalAlwaysVisible(bool value)
-			{
-				if(verticalAlwaysVisible!=value)
-				{
-					verticalAlwaysVisible=value;
-					scrollView->CalculateView();
-				}
-			}
-
-			compositions::GuiBoundsComposition* GuiScrollView::StyleController::GetBoundsComposition()
-			{
-				return boundsComposition;
-			}
-
-			compositions::GuiGraphicsComposition* GuiScrollView::StyleController::GetContainerComposition()
-			{
-				return containerComposition;
-			}
-
-			void GuiScrollView::StyleController::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
-			{
-				styleProvider->SetFocusableComposition(value);
-			}
-
-			void GuiScrollView::StyleController::SetText(const WString& value)
-			{
-				styleProvider->SetText(value);
-			}
-
-			void GuiScrollView::StyleController::SetFont(const FontProperties& value)
-			{
-				styleProvider->SetFont(value);
-			}
-
-			void GuiScrollView::StyleController::SetVisuallyEnabled(bool value)
-			{
-				styleProvider->SetVisuallyEnabled(value);
+				scrollView->CalculateView();
 			}
 
 /***********************************************************************
@@ -404,30 +228,18 @@ GuiScrollView
 				UpdateView(viewBounds);
 			}
 
-			void GuiScrollView::Initialize()
+			GuiScrollView::GuiScrollView(IStyleController* _styleController)
+				:GuiControl(_styleController)
+				, styleController(_styleController)
+				, supressScrolling(false)
 			{
-				styleController=dynamic_cast<StyleController*>(GetStyleController());
-				styleController->SetScrollView(this);
-
+				commandExecutor = new CommandExecutor(this);
+				styleController->SetCommandExecutor(commandExecutor.Obj());
 				styleController->GetInternalContainerComposition()->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
 				styleController->GetHorizontalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnHorizontalScroll);
 				styleController->GetVerticalScroll()->PositionChanged.AttachMethod(this, &GuiScrollView::OnVerticalScroll);
 				styleController->GetBoundsComposition()->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
 				styleController->GetBoundsComposition()->GetEventReceiver()->verticalWheel.AttachMethod(this, &GuiScrollView::OnVerticalWheel);
-			}
-
-			GuiScrollView::GuiScrollView(StyleController* _styleController)
-				:GuiControl(_styleController)
-				,supressScrolling(false)
-			{
-				Initialize();
-			}
-
-			GuiScrollView::GuiScrollView(IStyleProvider* styleProvider)
-				:GuiControl(new StyleController(styleProvider))
-				,supressScrolling(false)
-			{
-				Initialize();
 			}
 
 			vint GuiScrollView::GetSmallMove()

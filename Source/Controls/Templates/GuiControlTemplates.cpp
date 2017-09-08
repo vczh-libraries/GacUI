@@ -247,6 +247,7 @@ GuiSinglelineTextBoxTemplate
 			GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiSinglelineTextBoxTemplate::GuiSinglelineTextBoxTemplate()
+				:Commands_(nullptr)
 			{
 				TextChanged.AttachMethod(this, &GuiSinglelineTextBoxTemplate::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiSinglelineTextBoxTemplate::OnFontChanged);
@@ -438,7 +439,7 @@ GuiComboBoxTemplate
 			GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiComboBoxTemplate::GuiComboBoxTemplate()
-				:Commands_(0)
+				:Commands_(nullptr)
 				, TextVisible_(true)
 			{
 				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
@@ -456,7 +457,7 @@ GuiScrollTemplate
 			GuiScrollTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiScrollTemplate::GuiScrollTemplate()
-				:Commands_(0)
+				:Commands_(nullptr)
 				, TotalSize_(100)
 				, PageSize_(10)
 				, Position_(0)
@@ -473,10 +474,32 @@ GuiScrollTemplate
 GuiScrollViewTemplate
 ***********************************************************************/
 
+			void GuiScrollViewTemplate::UpdateTable()
+			{
+				if (horizontalScroll->GetEnabled() || horizontalAlwaysVisible)
+				{
+					tableComposition->SetRowOption(1, GuiCellOption::AbsoluteOption(GetDefaultScrollSize()));
+				}
+				else
+				{
+					tableComposition->SetRowOption(1, GuiCellOption::AbsoluteOption(0));
+				}
+				if (verticalScroll->GetEnabled() || verticalAlwaysVisible)
+				{
+					tableComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(GetDefaultScrollSize()));
+				}
+				else
+				{
+					tableComposition->SetColumnOption(1, GuiCellOption::AbsoluteOption(0));
+				}
+				tableComposition->UpdateCellBounds();
+			}
+
 			GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiScrollViewTemplate::GuiScrollViewTemplate()
 				:DefaultScrollSize_(0)
+				, Commands_(nullptr)
 			{
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
@@ -484,6 +507,120 @@ GuiScrollViewTemplate
 			GuiScrollViewTemplate::~GuiScrollViewTemplate()
 			{
 				FinalizeAggregation();
+			}
+
+			void GuiScrollViewTemplate::AdjustView(Size fullSize)
+			{
+				Size viewSize = containerComposition->GetBounds().GetSize();
+				if (fullSize.x <= viewSize.x)
+				{
+					horizontalScroll->SetEnabled(false);
+					horizontalScroll->SetPosition(0);
+				}
+				else
+				{
+					horizontalScroll->SetEnabled(true);
+					horizontalScroll->SetTotalSize(fullSize.x);
+					horizontalScroll->SetPageSize(viewSize.x);
+				}
+				if (fullSize.y <= viewSize.y)
+				{
+					verticalScroll->SetEnabled(false);
+					verticalScroll->SetPosition(0);
+				}
+				else
+				{
+					verticalScroll->SetEnabled(true);
+					verticalScroll->SetTotalSize(fullSize.y);
+					verticalScroll->SetPageSize(viewSize.y);
+				}
+				UpdateTable();
+			}
+
+			GuiScroll* GuiScrollViewTemplate::GetHorizontalScroll()
+			{
+				return horizontalScroll;
+			}
+
+			GuiScroll* GuiScrollViewTemplate::GetVerticalScroll()
+			{
+				return verticalScroll;
+			}
+
+			compositions::GuiBoundsComposition* GuiScrollViewTemplate::GetInternalContainerComposition()
+			{
+				return containerComposition;
+			}
+
+			bool GuiScrollViewTemplate::GetHorizontalAlwaysVisible()
+			{
+				return horizontalAlwaysVisible;
+			}
+
+			void GuiScrollViewTemplate::SetHorizontalAlwaysVisible(bool value)
+			{
+				if (horizontalAlwaysVisible != value)
+				{
+					horizontalAlwaysVisible = value;
+					Commands_->CalculateView();
+				}
+			}
+
+			bool GuiScrollViewTemplate::GetVerticalAlwaysVisible()
+			{
+				return verticalAlwaysVisible;
+			}
+
+			void GuiScrollViewTemplate::SetVerticalAlwaysVisible(bool value)
+			{
+				if (verticalAlwaysVisible != value)
+				{
+					verticalAlwaysVisible = value;
+					Commands_->CalculateView();
+				}
+			}
+
+			void GuiScrollViewTemplate::Initialize()
+			{
+				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				horizontalScroll = new GuiScroll(new GuiScrollTemplate_StyleProvider(GetHScrollTemplate()));
+				horizontalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				horizontalScroll->SetEnabled(false);
+				verticalScroll = new GuiScroll(new GuiScrollTemplate_StyleProvider(GetVScrollTemplate()));
+				verticalScroll->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				verticalScroll->SetEnabled(false);
+
+				tableComposition = new GuiTableComposition;
+				AddChild(tableComposition);
+				tableComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				tableComposition->SetRowsAndColumns(2, 2);
+				tableComposition->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
+				tableComposition->SetRowOption(1, GuiCellOption::MinSizeOption());
+				tableComposition->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+				tableComposition->SetColumnOption(1, GuiCellOption::MinSizeOption());
+				UpdateTable();
+				{
+					GuiCellComposition* cell = new GuiCellComposition;
+					tableComposition->AddChild(cell);
+					cell->SetSite(1, 0, 1, 1);
+					cell->AddChild(horizontalScroll->GetBoundsComposition());
+				}
+				{
+					GuiCellComposition* cell = new GuiCellComposition;
+					tableComposition->AddChild(cell);
+					cell->SetSite(0, 1, 1, 1);
+					cell->AddChild(verticalScroll->GetBoundsComposition());
+				}
+
+				containerCellComposition = new GuiCellComposition;
+				tableComposition->AddChild(containerCellComposition);
+				containerCellComposition->SetSite(0, 0, 1, 1);
+
+				containerComposition = new GuiBoundsComposition;
+				containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				containerCellComposition->AddChild(containerComposition);
+				SetContainerComposition(containerComposition);
 			}
 
 /***********************************************************************
@@ -573,7 +710,8 @@ GuiTabTemplate
 			GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiTabTemplate::GuiTabTemplate()
-				:SelectedTabPage_(nullptr)
+				:Commands_(nullptr)
+				, SelectedTabPage_(nullptr)
 			{
 				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}

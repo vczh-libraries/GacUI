@@ -24,6 +24,7 @@ namespace vl
 			class GuiControlHost;
 			class GuiCustomControl;
 			class GuiTabPage;
+			class GuiScroll;
 
 			/// <summary>The visual state for button.</summary>
 			enum class ButtonState
@@ -107,6 +108,14 @@ namespace vl
 				virtual void						NotifyDateNavigated() = 0;
 				/// <summary>Called when selected a date.</summary>
 				virtual void						NotifyDateSelected() = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IScrollViewCommandExecutor : public virtual IDescriptable, public Description<IScrollViewCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the size of the content has been changed.</summary>
+				virtual void						CalculateView() = 0;
 			};
 
 			class GuiInstanceRootObject;
@@ -452,6 +461,16 @@ Scrollable Controls
 
 			class GuiScrollViewTemplate : public GuiControlTemplate, public AggregatableDescription<GuiScrollViewTemplate>
 			{
+			protected:
+				controls::GuiScroll*					horizontalScroll = nullptr;
+				controls::GuiScroll*					verticalScroll = nullptr;
+				compositions::GuiTableComposition*		tableComposition = nullptr;
+				compositions::GuiCellComposition*		containerCellComposition = nullptr;
+				compositions::GuiBoundsComposition*		containerComposition = nullptr;
+				bool									horizontalAlwaysVisible = true;
+				bool									verticalAlwaysVisible = true;
+
+				void									UpdateTable();
 			public:
 				GuiScrollViewTemplate();
 				~GuiScrollViewTemplate();
@@ -460,8 +479,22 @@ Scrollable Controls
 				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, HScrollTemplate)\
 				F(GuiScrollViewTemplate, TemplateProperty<GuiScrollTemplate>, VScrollTemplate)\
 				F(GuiScrollViewTemplate, vint, DefaultScrollSize)\
+				F(GuiScrollViewTemplate, controls::IScrollViewCommandExecutor*, Commands)\
 
 				GuiScrollViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+
+				void									AdjustView(Size fullSize);
+
+				controls::GuiScroll*					GetHorizontalScroll();
+				controls::GuiScroll*					GetVerticalScroll();
+				compositions::GuiBoundsComposition*		GetInternalContainerComposition();
+
+				bool									GetHorizontalAlwaysVisible();
+				void									SetHorizontalAlwaysVisible(bool value);
+				bool									GetVerticalAlwaysVisible();
+				void									SetVerticalAlwaysVisible(bool value);
+
+				void									Initialize()override;
 			};
 
 			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiMultilineTextBoxTemplate>
