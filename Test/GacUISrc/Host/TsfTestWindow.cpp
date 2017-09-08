@@ -10,12 +10,55 @@ using namespace vl::collections;
 using namespace vl::stream;
 using namespace vl::presentation;
 
+class EmptyStyleController : public Object, public virtual GuiControl::IStyleController, public Description<EmptyStyleController>
+{
+protected:
+	compositions::GuiBoundsComposition*				boundsComposition;
+public:
+	EmptyStyleController()
+	{
+		boundsComposition = new GuiBoundsComposition;
+		boundsComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+	}
+
+	~EmptyStyleController()
+	{
+	}
+
+	compositions::GuiBoundsComposition* GetBoundsComposition()
+	{
+		return boundsComposition;
+	}
+
+	compositions::GuiGraphicsComposition* GetContainerComposition()
+	{
+		return boundsComposition;
+	}
+
+	void SetFocusableComposition(compositions::GuiGraphicsComposition* value)
+	{
+	}
+
+	void SetText(const WString& value)
+	{
+	}
+
+	void SetFont(const FontProperties& value)
+	{
+	}
+
+	void SetVisuallyEnabled(bool value)
+	{
+	}
+
+};
+
 void UnitTestInGuiMain()
 {
 #define ASSERT(x) do{if(!(x))throw 0;}while(0)
 	{
 		GuiBoundsComposition* bounds = new GuiBoundsComposition;
-		GuiControl* control = new GuiControl(new GuiControl::EmptyStyleController);
+		GuiControl* control = new GuiControl(new EmptyStyleController);
 		bounds->AddChild(control->GetBoundsComposition());
 
 		volatile vint* rc1 = ReferenceCounterOperator<GuiBoundsComposition>::CreateCounter(bounds);

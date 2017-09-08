@@ -337,6 +337,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiMultilineTextBoxTemplate_StyleProvider)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate_StyleProvider)
+				CLASS_MEMBER_BASE(GuiMultilineTextBox::IStyleController)
 
 				CLASS_MEMBER_CONSTRUCTOR(GuiMultilineTextBoxTemplate_StyleProvider*(TemplateProperty<GuiMultilineTextBoxTemplate>), { L"factory" })
 			END_CLASS_MEMBER(GuiMultilineTextBoxTemplate_StyleProvider)
