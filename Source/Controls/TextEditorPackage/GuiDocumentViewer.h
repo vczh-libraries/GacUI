@@ -357,7 +357,7 @@ GuiDocumentViewer
 				void										EnsureRectVisible(Rect bounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="styleController">The style controller.</param>
 				GuiDocumentViewer(GuiDocumentViewer::IStyleProvider* styleProvider);
 				~GuiDocumentViewer();
 

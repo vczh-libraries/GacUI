@@ -76,7 +76,7 @@ MultilineTextBox
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="styleController">The style controller.</param>
 				GuiMultilineTextBox(GuiMultilineTextBox::IStyleProvider* styleProvider);
 				~GuiMultilineTextBox();
 
@@ -138,7 +138,7 @@ SinglelineTextBox
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="styleController">The style controller.</param>
 				GuiSinglelineTextBox(GuiSinglelineTextBox::IStyleController* _styleController);
 				~GuiSinglelineTextBox();
 

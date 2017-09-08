@@ -63,22 +63,23 @@ Basic Construction
 			protected:
 				Ptr<IStyleController>							styleController;
 				compositions::GuiBoundsComposition*				boundsComposition;
-				compositions::GuiGraphicsComposition*			focusableComposition;
-				compositions::GuiGraphicsEventReceiver*			eventReceiver;
+				compositions::GuiBoundsComposition*				containerComposition = nullptr;
+				compositions::GuiGraphicsComposition*			focusableComposition = nullptr;
+				compositions::GuiGraphicsEventReceiver*			eventReceiver = nullptr;
 
-				bool									isEnabled;
-				bool									isVisuallyEnabled;
-				bool									isVisible;
+				bool									isEnabled = true;
+				bool									isVisuallyEnabled = true;
+				bool									isVisible = true;
 				WString									alt;
 				WString									text;
 				FontProperties							font;
-				compositions::IGuiAltActionHost*		activatingAltHost;
+				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
 
-				GuiControl*								parent;
+				GuiControl*								parent = nullptr;
 				ControlList								children;
 				description::Value						tag;
-				GuiControl*								tooltipControl;
-				vint									tooltipWidth;
+				GuiControl*								tooltipControl = nullptr;
+				vint									tooltipWidth = 0;
 
 				virtual void							OnChildInserted(GuiControl* control);
 				virtual void							OnChildRemoved(GuiControl* control);

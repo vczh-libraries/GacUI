@@ -43,8 +43,7 @@ Datagrid Interfaces
 				public:
 					/// <summary>Create a data visualizer.</summary>
 					/// <returns>The created data visualizer.</returns>
-					/// <param name="font">The font for the list view control.</param>
-					/// <param name="styleProvider">The style provider for the list view control.</param>
+					/// <param name="IDataGridContext">Context information of the data grid.</param>
 					virtual Ptr<IDataVisualizer>						CreateVisualizer(IDataGridContext* dataGridContext) = 0;
 				};
 

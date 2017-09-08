@@ -175,7 +175,7 @@ Scroll View
 				
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
+				/// <param name="styleController">The style controller.</param>
 				GuiScrollView(IStyleController* _styleController);
 				~GuiScrollView();
 
@@ -213,42 +213,16 @@ Scroll View
 			/// <summary>A control container with a vertical scroll bar and a horizontal scroll bar to perform partial viewing. When controls are added, removed, moved or resized, the scroll bars will adjust automatically.</summary>
 			class GuiScrollContainer : public GuiScrollView, public Description<GuiScrollContainer>
 			{
-			public:
-				/// <summary>Style controller for <see cref="GuiScrollContainer"/>.</summary>
-				class StyleController : public GuiScrollView::StyleController, public Description<StyleController>
-				{
-				protected:
-					compositions::GuiBoundsComposition*		controlContainerComposition;
-					bool									extendToFullWidth;
-				public:
-					/// <summary>Create a style controller with a specified style provider.</summary>
-					/// <param name="styleProvider">The style provider.</param>
-					StyleController(GuiScrollView::IStyleProvider* styleProvider);
-					~StyleController();
-
-					compositions::GuiGraphicsComposition*	GetContainerComposition()override;
-					/// <summary>Update sub controls using a specified left-top position of the view bounds.</summary>
-					/// <param name="leftTop">The specified left-top position of the view bounds.</param>
-					void									MoveContainer(Point leftTop);
-
-					/// <summary>Test does the content container always extend its width to fill the scroll container.</summary>
-					/// <returns>Return true if the content container always extend its width to fill the scroll container.</returns>
-					bool									GetExtendToFullWidth();
-					/// <summary>Set does the content container always extend its width to fill the scroll container.</summary>
-					/// <param name="value">Set to true if the content container always extend its width to fill the scroll container.</param>
-					void									SetExtendToFullWidth(bool value);
-				};
-
 			protected:
-				StyleController*						styleController;
+				bool									extendToFullWidth = false;
 
 				void									OnControlContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				Size									QueryFullSize()override;
 				void									UpdateView(Rect viewBounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleProvider">The style provider.</param>
-				GuiScrollContainer(GuiScrollContainer::IStyleProvider* styleProvider);
+				/// <param name="styleController">The style controller.</param>
+				GuiScrollContainer(IStyleController* styleController);
 				~GuiScrollContainer();
 				
 				/// <summary>Test does the content container always extend its width to fill the scroll container.</summary>

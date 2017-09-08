@@ -133,17 +133,14 @@ GuiControl
 			GuiControl::GuiControl(IStyleController* _styleController)
 				:styleController(_styleController)
 				,boundsComposition(_styleController->GetBoundsComposition())
-				,focusableComposition(0)
 				,eventReceiver(_styleController->GetBoundsComposition()->GetEventReceiver())
-				,isEnabled(true)
-				,isVisuallyEnabled(true)
-				,isVisible(true)
-				,activatingAltHost(0)
-				,parent(0)
-				,tooltipControl(0)
-				,tooltipWidth(50)
 			{
 				boundsComposition->SetAssociatedControl(this);
+				containerComposition = new GuiBoundsComposition();
+				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				containerComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				styleController->GetContainerComposition()->AddChild(containerComposition);
+
 				RenderTargetChanged.SetAssociatedComposition(boundsComposition);
 				VisibleChanged.SetAssociatedComposition(boundsComposition);
 				EnabledChanged.SetAssociatedComposition(boundsComposition);
@@ -207,7 +204,7 @@ GuiControl
 
 			compositions::GuiGraphicsComposition* GuiControl::GetContainerComposition()
 			{
-				return styleController->GetContainerComposition();
+				return containerComposition;
 			}
 
 			compositions::GuiGraphicsComposition* GuiControl::GetFocusableComposition()
