@@ -50,10 +50,10 @@ DataVisualizerBase
 				{
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
-						auto styleController = dataGridContext->GetListViewStyleController();
-						visualizerTemplate->SetPrimaryTextColor(styleController->GetPrimaryTextColor());
-						visualizerTemplate->SetSecondaryTextColor(styleController->GetSecondaryTextColor());
-						visualizerTemplate->SetItemSeparatorColor(styleController->GetItemSeparatorColor());
+						auto style = dataGridContext->GetListViewControlTemplate();
+						visualizerTemplate->SetPrimaryTextColor(style->GetPrimaryTextColor());
+						visualizerTemplate->SetSecondaryTextColor(style->GetSecondaryTextColor());
+						visualizerTemplate->SetItemSeparatorColor(style->GetItemSeparatorColor());
 
 						visualizerTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
 						visualizerTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));
@@ -167,10 +167,10 @@ DataEditorBase
 				{
 					if (auto listViewItemView = dynamic_cast<IListViewItemView*>(dataGridContext->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
-						auto styleController = dataGridContext->GetListViewStyleController();
-						editorTemplate->SetPrimaryTextColor(styleController->GetPrimaryTextColor());
-						editorTemplate->SetSecondaryTextColor(styleController->GetSecondaryTextColor());
-						editorTemplate->SetItemSeparatorColor(styleController->GetItemSeparatorColor());
+						auto style = dataGridContext->GetListViewControlTemplate();
+						editorTemplate->SetPrimaryTextColor(style->GetPrimaryTextColor());
+						editorTemplate->SetSecondaryTextColor(style->GetSecondaryTextColor());
+						editorTemplate->SetItemSeparatorColor(style->GetItemSeparatorColor());
 
 						editorTemplate->SetLargeImage(listViewItemView->GetLargeImage(row));
 						editorTemplate->SetSmallImage(listViewItemView->GetSmallImage(row));

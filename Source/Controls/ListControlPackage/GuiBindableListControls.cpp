@@ -1,5 +1,4 @@
 #include "GuiBindableListControls.h"
-#include "../Templates/GuiControlTemplateStyles.h"
 
 namespace vl
 {
@@ -159,7 +158,7 @@ GuiBindableTextList
 ***********************************************************************/
 
 			GuiBindableTextList::GuiBindableTextList(ControlTemplateType* _controlTemplate)
-				:GuiVirtualTextList(_styleController, new ItemSource)
+				:GuiVirtualTextList(_controlTemplate, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -523,7 +522,7 @@ GuiBindableListView
 ***********************************************************************/
 
 			GuiBindableListView::GuiBindableListView(ControlTemplateType* _controlTemplate)
-				:GuiVirtualListView(_styleController, new ItemSource)
+				:GuiVirtualListView(_controlTemplate, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetItemProvider());
 
@@ -844,7 +843,7 @@ GuiBindableTreeView
 ***********************************************************************/
 
 			GuiBindableTreeView::GuiBindableTreeView(ControlTemplateType* _controlTemplate)
-				:GuiVirtualTreeView(_styleController, new ItemSource)
+				:GuiVirtualTreeView(_controlTemplate, new ItemSource)
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
 

@@ -41,7 +41,7 @@ GuiComboBoxBase
 
 			void GuiComboBoxBase::SelectItem()
 			{
-				styleController->OnItemSelected();
+				controlTemplate->OnItemSelected();
 				ItemSelected.Execute(GetNotifyEventArguments());
 			}
 
@@ -53,11 +53,10 @@ GuiComboBoxBase
 			}
 
 			GuiComboBoxBase::GuiComboBoxBase(ControlTemplateType* _controlTemplate)
-				:GuiMenuButton(_styleController)
+				:GuiMenuButton(_controlTemplate)
 			{
 				commandExecutor=new CommandExecutor(this);
-				styleController=dynamic_cast<IStyleController*>(GetStyleController());
-				styleController->SetCommandExecutor(commandExecutor.Obj());
+				controlTemplate->SetCommands(commandExecutor.Obj());
 
 				CreateSubMenu();
 				SetCascadeAction(false);
@@ -183,11 +182,10 @@ GuiComboBoxListControl
 			}
 
 			GuiComboBoxListControl::GuiComboBoxListControl(ControlTemplateType* _controlTemplate, GuiSelectableListControl* _containedListControl)
-				:GuiComboBoxBase(_styleController)
-				, controlTemplate(_controlTemplate)
+				:GuiComboBoxBase(_controlTemplate)
 				, containedListControl(_containedListControl)
 			{
-				styleController->SetTextVisible(true);
+				controlTemplate->SetTextVisible(true);
 				TextChanged.AttachMethod(this, &GuiComboBoxListControl::OnTextChanged);
 				FontChanged.AttachMethod(this, &GuiComboBoxListControl::OnFontChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiComboBoxListControl::OnVisuallyEnabledChanged);
@@ -223,7 +221,7 @@ GuiComboBoxListControl
 			{
 				RemoveStyleController();
 				itemStyleProperty = value;
-				styleController->SetTextVisible(!itemStyleProperty);
+				controlTemplate->SetTextVisible(!itemStyleProperty);
 				InstallStyleController(GetSelectedIndex());
 				ItemTemplateChanged.Execute(GetNotifyEventArguments());
 			}

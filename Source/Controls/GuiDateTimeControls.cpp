@@ -45,15 +45,15 @@ GuiDatePicker
 
 			void GuiDatePicker::UpdateText()
 			{
-				GuiControl::SetText(dateLocale.FormatDate(dateFormat, styleController->GetDate()));
+				GuiControl::SetText(dateLocale.FormatDate(dateFormat, controlTemplate->GetDate()));
 			}
 
 			GuiDatePicker::GuiDatePicker(ControlTemplateType* _controlTemplate)
-				:GuiControl(_styleController)
+				:GuiControl(_controlTemplate)
 				, controlTemplate(_controlTemplate)
 			{
 				commandExecutor = new CommandExecutor(this);
-				styleController->SetCommandExecutor(commandExecutor.Obj());
+				controlTemplate->SetCommands(commandExecutor.Obj());
 				SetDateLocale(Locale::UserDefault());
 				SetDate(DateTime::LocalTime());
 
@@ -72,12 +72,12 @@ GuiDatePicker
 
 			const DateTime& GuiDatePicker::GetDate()
 			{
-				return styleController->GetDate();
+				return controlTemplate->GetDate();
 			}
 
 			void GuiDatePicker::SetDate(const DateTime& value)
 			{
-				styleController->SetDate(value);
+				controlTemplate->SetDate(value);
 			}
 
 			const WString& GuiDatePicker::GetDateFormat()
@@ -106,7 +106,7 @@ GuiDatePicker
 				{
 					dateFormat=formats[0];
 				}
-				styleController->SetDateLocale(dateLocale);
+				controlTemplate->SetDateLocale(dateLocale);
 
 				UpdateText();
 				DateFormatChanged.Execute(GetNotifyEventArguments());
@@ -156,7 +156,7 @@ GuiDateComboBox
 			}
 
 			GuiDateComboBox::GuiDateComboBox(ControlTemplateType* _controlTemplate, GuiDatePicker* _datePicker)
-				:GuiComboBoxBase(_styleController)
+				:GuiComboBoxBase(_controlTemplate)
 				,datePicker(_datePicker)
 			{
 				SelectedDateChanged.SetAssociatedComposition(GetBoundsComposition());

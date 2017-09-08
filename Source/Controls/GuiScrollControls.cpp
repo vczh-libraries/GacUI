@@ -64,7 +64,7 @@ GuiScroll
 ***********************************************************************/
 
 			GuiScroll::GuiScroll(ControlTemplateType* _controlTemplate)
-				:GuiControl(_styleController)
+				:GuiControl(_controlTemplate)
 				,controlTemplate(_controlTemplate)
 				,totalSize(100)
 				,pageSize(10)
@@ -79,10 +79,10 @@ GuiScroll
 				BigMoveChanged.SetAssociatedComposition(boundsComposition);
 
 				commandExecutor=new CommandExecutor(this);
-				styleController->SetCommandExecutor(commandExecutor.Obj());
-				styleController->SetPageSize(pageSize);
-				styleController->SetTotalSize(totalSize);
-				styleController->SetPosition(position);
+				controlTemplate->SetCommands(commandExecutor.Obj());
+				controlTemplate->SetPageSize(pageSize);
+				controlTemplate->SetTotalSize(totalSize);
+				controlTemplate->SetPosition(position);
 			}
 
 			GuiScroll::~GuiScroll()
@@ -107,7 +107,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					styleController->SetTotalSize(totalSize);
+					controlTemplate->SetTotalSize(totalSize);
 					TotalSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -126,7 +126,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					styleController->SetPageSize(pageSize);
+					controlTemplate->SetPageSize(pageSize);
 					PageSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -147,7 +147,7 @@ GuiScroll
 				if(position!=newPosition)
 				{
 					position=newPosition;
-					styleController->SetPosition(position);
+					controlTemplate->SetPosition(position);
 					PositionChanged.Execute(GetNotifyEventArguments());
 				}
 			}

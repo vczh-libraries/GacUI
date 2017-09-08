@@ -119,7 +119,7 @@ GuiMenu
 			}
 
 			GuiMenu::GuiMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner)
-				:GuiPopup(_styleController)
+				:GuiPopup(_controlTemplate)
 				,owner(_owner)
 				,parentMenuService(0)
 			{
@@ -178,7 +178,7 @@ GuiMenuBar
 			}
 
 			GuiMenuBar::GuiMenuBar(ControlTemplateType* _controlTemplate)
-				:GuiControl(_styleController)
+				:GuiControl(_controlTemplate)
 			{
 			}
 
@@ -204,7 +204,7 @@ GuiMenuButton
 
 			GuiButton* GuiMenuButton::GetSubMenuHost()
 			{
-				GuiButton* button=styleController->GetSubMenuHost();
+				GuiButton* button=controlTemplate->GetSubMenuHost();
 				return button?button:this;
 			}
 
@@ -255,13 +255,13 @@ GuiMenuButton
 			void GuiMenuButton::OnSubMenuWindowOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				styleController->SetSubMenuOpening(true);
+				controlTemplate->SetSubMenuOpening(true);
 			}
 
 			void GuiMenuButton::OnSubMenuWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				SubMenuOpeningChanged.Execute(GetNotifyEventArguments());
-				styleController->SetSubMenuOpening(false);
+				controlTemplate->SetSubMenuOpening(false);
 			}
 
 			void GuiMenuButton::OnMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -296,7 +296,7 @@ GuiMenuButton
 			}
 
 			GuiMenuButton::GuiMenuButton(ControlTemplateType* _controlTemplate)
-				:GuiSelectableButton(_styleController)
+				:GuiSelectableButton(_controlTemplate)
 				,controlTemplate(_controlTemplate)
 				,subMenu(0)
 				,ownedSubMenu(false)
@@ -329,7 +329,7 @@ GuiMenuButton
 				if(image!=value)
 				{
 					image=value;
-					styleController->SetImage(image);
+					controlTemplate->SetImage(image);
 					ImageChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -344,7 +344,7 @@ GuiMenuButton
 				if(shortcutText!=value)
 				{
 					shortcutText=value;
-					styleController->SetShortcutText(shortcutText);
+					controlTemplate->SetShortcutText(shortcutText);
 					ShortcutTextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -359,11 +359,11 @@ GuiMenuButton
 				return subMenu;
 			}
 
-			GuiMenu* GuiMenuButton::CreateSubMenu(GuiMenu::IStyleController* subMenuStyleController)
+			GuiMenu* GuiMenuButton::CreateSubMenu(templates::GuiMenuTemplate* subMenuTemplate)
 			{
-				if(!subMenu)
+				if (!subMenu)
 				{
-					GuiMenu* newSubMenu=new GuiMenu(subMenuStyleController?subMenuStyleController:styleController->CreateSubMenuStyleController(), this);
+					GuiMenu* newSubMenu = new GuiMenu(subMenuTemplate ? subMenuTemplate : controlTemplate->GetSubMenuTemplate()({}), this);
 					SetSubMenu(newSubMenu, true);
 				}
 				return subMenu;
@@ -385,7 +385,7 @@ GuiMenuButton
 					subMenu->WindowOpened.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowOpened);
 					subMenu->WindowClosed.AttachMethod(this, &GuiMenuButton::OnSubMenuWindowClosed);
 				}
-				styleController->SetSubMenuExisting(subMenu!=0);
+				controlTemplate->SetSubMenuExisting(subMenu!=0);
 			}
 
 			void GuiMenuButton::DestroySubMenu()
@@ -398,7 +398,7 @@ GuiMenuButton
 					}
 					subMenu=0;
 					ownedSubMenu=false;
-					styleController->SetSubMenuExisting(false);
+					controlTemplate->SetSubMenuExisting(false);
 				}
 			}
 

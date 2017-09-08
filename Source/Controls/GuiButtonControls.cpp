@@ -59,7 +59,7 @@ GuiButton
 				if (controlState != newControlState)
 				{
 					controlState = newControlState;
-					styleController->Transfer(controlState);
+					controlTemplate->Transfer(controlState);
 				}
 			}
 
@@ -121,7 +121,7 @@ GuiButton
 			}
 
 			GuiButton::GuiButton(ControlTemplateType* _controlTemplate)
-				:GuiControl(_styleController)
+				:GuiControl(_controlTemplate)
 				,controlTemplate(_controlTemplate)
 				,clickOnMouseUp(true)
 				,mousePressing(false)
@@ -129,7 +129,7 @@ GuiButton
 				,controlState(ButtonState::Normal)
 			{
 				Clicked.SetAssociatedComposition(boundsComposition);
-				styleController->Transfer(ButtonState::Normal);
+				controlTemplate->Transfer(ButtonState::Normal);
 				SetFocusableComposition(boundsComposition);
 
 				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiButton::OnLeftButtonDown);
@@ -220,7 +220,7 @@ GuiSelectableButton
 			}
 
 			GuiSelectableButton::GuiSelectableButton(ControlTemplateType* _controlTemplate)
-				:GuiButton(_styleController)
+				:GuiButton(_controlTemplate)
 				,controlTemplate(_controlTemplate)
 				,groupController(0)
 				,autoSelection(true)
@@ -231,7 +231,7 @@ GuiSelectableButton
 				SelectedChanged.SetAssociatedComposition(boundsComposition);
 
 				Clicked.AttachMethod(this, &GuiSelectableButton::OnClicked);
-				styleController->SetSelected(isSelected);
+				controlTemplate->SetSelected(isSelected);
 			}
 			
 			GuiSelectableButton::~GuiSelectableButton()
@@ -285,7 +285,7 @@ GuiSelectableButton
 				if(isSelected!=value)
 				{
 					isSelected=value;
-					styleController->SetSelected(isSelected);
+					controlTemplate->SetSelected(isSelected);
 					if(groupController)
 					{
 						groupController->OnSelectedChanged(this);

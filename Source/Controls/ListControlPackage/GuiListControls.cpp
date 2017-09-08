@@ -338,8 +338,7 @@ GuiListControl
 #undef DETACH_ITEM_EVENT
 
 			GuiListControl::GuiListControl(ControlTemplateType* _controlTemplate, IItemProvider* _itemProvider, bool acceptFocus)
-				:GuiScrollView(_styleController)
-				, controlTemplate(_controlTemplate)
+				:GuiScrollView(_controlTemplate)
 				, itemProvider(_itemProvider)
 			{
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);
@@ -384,11 +383,6 @@ GuiListControl
 				callback->ClearCache();
 				itemStyleProperty = {};
 				itemArranger = nullptr;
-			}
-
-			GuiListControl::IStyleController*	 GuiListControl::GetListControlStyleController()
-			{
-				return styleController;
 			}
 
 			GuiListControl::IItemProvider* GuiListControl::GetItemProvider()
@@ -586,7 +580,7 @@ GuiSelectableListControl
 			}
 
 			GuiSelectableListControl::GuiSelectableListControl(ControlTemplateType* _controlTemplate, IItemProvider* _itemProvider)
-				:GuiListControl(_styleController, _itemProvider, true)
+				:GuiListControl(_controlTemplate, _itemProvider, true)
 				,multiSelect(false)
 				,selectedItemIndexStart(-1)
 				,selectedItemIndexEnd(-1)

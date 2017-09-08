@@ -166,7 +166,7 @@ GuiControlHost
 
 			void GuiControlHost::Closing(bool& cancel)
 			{
-				GuiRequestEventArgs arguments(GetStyleController()->GetBoundsComposition());
+				GuiRequestEventArgs arguments(controlTemplate);
 				arguments.cancel=cancel;
 				WindowClosing.Execute(arguments);
 				if(!arguments.handled)
@@ -187,21 +187,21 @@ GuiControlHost
 			}
 
 			GuiControlHost::GuiControlHost(ControlTemplateType* _controlTemplate)
-				:GuiControl(_styleController)
+				:GuiControl(_controlTemplate)
 			{
-				GetStyleController()->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				controlTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				
-				WindowGotFocus.SetAssociatedComposition(GetStyleController()->GetBoundsComposition());
-				WindowLostFocus.SetAssociatedComposition(GetStyleController()->GetBoundsComposition());
-				WindowActivated.SetAssociatedComposition(GetStyleController()->GetBoundsComposition());
-				WindowDeactivated.SetAssociatedComposition(GetStyleController()->GetBoundsComposition());
-				WindowOpened.SetAssociatedComposition(GetStyleController()->GetBoundsComposition());
-				WindowClosing.SetAssociatedComposition(GetStyleController()->GetBoundsComposition());
-				WindowClosed.SetAssociatedComposition(GetStyleController()->GetBoundsComposition());
-				WindowDestroying.SetAssociatedComposition(GetStyleController()->GetBoundsComposition());
+				WindowGotFocus.SetAssociatedComposition(controlTemplate);
+				WindowLostFocus.SetAssociatedComposition(controlTemplate);
+				WindowActivated.SetAssociatedComposition(controlTemplate);
+				WindowDeactivated.SetAssociatedComposition(controlTemplate);
+				WindowOpened.SetAssociatedComposition(controlTemplate);
+				WindowClosing.SetAssociatedComposition(controlTemplate);
+				WindowClosed.SetAssociatedComposition(controlTemplate);
+				WindowDestroying.SetAssociatedComposition(controlTemplate);
 
 				host=new GuiGraphicsHost;
-				host->GetMainComposition()->AddChild(GetStyleController()->GetBoundsComposition());
+				host->GetMainComposition()->AddChild(controlTemplate);
 				sharedPtrDestructorProc = 0;
 			}
 
@@ -209,7 +209,6 @@ GuiControlHost
 			{
 				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
-				styleController=0;
 				delete host;
 			}
 
@@ -560,174 +559,18 @@ GuiControlHost
 			}
 
 /***********************************************************************
-GuiWindow::DefaultBehaviorStyleController
-***********************************************************************/
-
-			GuiWindow::DefaultBehaviorStyleController::DefaultBehaviorStyleController()
-				:window(0)
-			{
-			}
-
-			GuiWindow::DefaultBehaviorStyleController::~DefaultBehaviorStyleController()
-			{
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::AttachWindow(GuiWindow* _window)
-			{
-				window=_window;
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::InitializeNativeWindowProperties()
-			{
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::SetSizeState(INativeWindow::WindowSizeState value)
-			{
-			}
-
-			bool GuiWindow::DefaultBehaviorStyleController::GetMaximizedBox()
-			{
-				if(window->GetNativeWindow())
-				{
-					return window->GetNativeWindow()->GetMaximizedBox();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::SetMaximizedBox(bool visible)
-			{
-				if(window->GetNativeWindow())
-				{
-					window->GetNativeWindow()->SetMaximizedBox(visible);
-				}
-			}
-
-			bool GuiWindow::DefaultBehaviorStyleController::GetMinimizedBox()
-			{
-				if(window->GetNativeWindow())
-				{
-					return window->GetNativeWindow()->GetMinimizedBox();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::SetMinimizedBox(bool visible)
-			{
-				if(window->GetNativeWindow())
-				{
-					window->GetNativeWindow()->SetMinimizedBox(visible);
-				}
-			}
-
-			bool GuiWindow::DefaultBehaviorStyleController::GetBorder()
-			{
-				if(window->GetNativeWindow())
-				{
-					return window->GetNativeWindow()->GetBorder();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::SetBorder(bool visible)
-			{
-				if(window->GetNativeWindow())
-				{
-					window->GetNativeWindow()->SetBorder(visible);
-				}
-			}
-
-			bool GuiWindow::DefaultBehaviorStyleController::GetSizeBox()
-			{
-				if(window->GetNativeWindow())
-				{
-					return window->GetNativeWindow()->GetSizeBox();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::SetSizeBox(bool visible)
-			{
-				if(window->GetNativeWindow())
-				{
-					window->GetNativeWindow()->SetSizeBox(visible);
-				}
-			}
-
-			bool GuiWindow::DefaultBehaviorStyleController::GetIconVisible()
-			{
-				if(window->GetNativeWindow())
-				{
-					return window->GetNativeWindow()->GetIconVisible();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::SetIconVisible(bool visible)
-			{
-				if(window->GetNativeWindow())
-				{
-					window->GetNativeWindow()->SetIconVisible(visible);
-				}
-			}
-
-			bool GuiWindow::DefaultBehaviorStyleController::GetTitleBar()
-			{
-				if(window->GetNativeWindow())
-				{
-					return window->GetNativeWindow()->GetTitleBar();
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void GuiWindow::DefaultBehaviorStyleController::SetTitleBar(bool visible)
-			{
-				if(window->GetNativeWindow())
-				{
-					window->GetNativeWindow()->SetTitleBar(visible);
-				}
-			}
-
-			GuiWindow::IStyleController* GuiWindow::DefaultBehaviorStyleController::CreateTooltipStyle()
-			{
-				return 0;
-			}
-
-			GuiLabel::IStyleController* GuiWindow::DefaultBehaviorStyleController::CreateShortcutKeyStyle()
-			{
-				return 0;
-			}
-
-/***********************************************************************
 GuiWindow
 ***********************************************************************/
 
 			void GuiWindow::Moved()
 			{
 				GuiControlHost::Moved();
-				styleController->SetSizeState(GetNativeWindow()->GetSizeState());
+				controlTemplate->SetSizeState(GetNativeWindow()->GetSizeState());
 			}
 
 			void GuiWindow::OnNativeWindowChanged()
 			{
-				styleController->InitializeNativeWindowProperties();
+				controlTemplate->InitializeNativeWindowProperties();
 				GuiControlHost::OnNativeWindowChanged();
 			}
 
@@ -766,12 +609,12 @@ GuiWindow
 			}
 
 			GuiWindow::GuiWindow(ControlTemplateType* _controlTemplate)
-				:GuiControlHost(_styleController)
+				:GuiControlHost(_controlTemplate)
 				,controlTemplate(_controlTemplate)
 				,previousAltHost(0)
 			{
 				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
-				styleController->AttachWindow(this);
+				controlTemplate->AttachWindow(this);
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
 				ClipboardUpdated.SetAssociatedComposition(GetBoundsComposition());
@@ -826,62 +669,62 @@ GuiWindow
 
 			bool GuiWindow::GetMaximizedBox()
 			{
-				return styleController->GetMaximizedBox();
+				return controlTemplate->GetMaximizedBox();
 			}
 
 			void GuiWindow::SetMaximizedBox(bool visible)
 			{
-				styleController->SetMaximizedBox(visible);
+				controlTemplate->SetMaximizedBox(visible);
 			}
 
 			bool GuiWindow::GetMinimizedBox()
 			{
-				return styleController->GetMinimizedBox();
+				return controlTemplate->GetMinimizedBox();
 			}
 
 			void GuiWindow::SetMinimizedBox(bool visible)
 			{
-				styleController->SetMinimizedBox(visible);
+				controlTemplate->SetMinimizedBox(visible);
 			}
 
 			bool GuiWindow::GetBorder()
 			{
-				return styleController->GetBorder();
+				return controlTemplate->GetBorder();
 			}
 
 			void GuiWindow::SetBorder(bool visible)
 			{
-				styleController->SetBorder(visible);
+				controlTemplate->SetBorder(visible);
 			}
 
 			bool GuiWindow::GetSizeBox()
 			{
-				return styleController->GetSizeBox();
+				return controlTemplate->GetSizeBox();
 			}
 
 			void GuiWindow::SetSizeBox(bool visible)
 			{
-				styleController->SetSizeBox(visible);
+				controlTemplate->SetSizeBox(visible);
 			}
 
 			bool GuiWindow::GetIconVisible()
 			{
-				return styleController->GetIconVisible();
+				return controlTemplate->GetIconVisible();
 			}
 
 			void GuiWindow::SetIconVisible(bool visible)
 			{
-				styleController->SetIconVisible(visible);
+				controlTemplate->SetIconVisible(visible);
 			}
 
 			bool GuiWindow::GetTitleBar()
 			{
-				return styleController->GetTitleBar();
+				return controlTemplate->GetTitleBar();
 			}
 
 			void GuiWindow::SetTitleBar(bool visible)
 			{
-				styleController->SetTitleBar(visible);
+				controlTemplate->SetTitleBar(visible);
 			}
 
 			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
@@ -948,7 +791,7 @@ GuiPopup
 			}
 
 			GuiPopup::GuiPopup(ControlTemplateType* _controlTemplate)
-				:GuiWindow(_styleController)
+				:GuiWindow(_controlTemplate)
 			{
 				SetMinimizedBox(false);
 				SetMaximizedBox(false);
@@ -1128,7 +971,7 @@ GuiPopup
 			}
 
 			GuiTooltip::GuiTooltip(ControlTemplateType* _controlTemplate)
-				:GuiPopup(_styleController)
+				:GuiPopup(_controlTemplate)
 				,temporaryContentControl(0)
 			{
 				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);

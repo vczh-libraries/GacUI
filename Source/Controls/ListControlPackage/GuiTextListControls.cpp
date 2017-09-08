@@ -137,10 +137,10 @@ DefaultCheckTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetTextListStyleController()->CreateCheckBulletStyle();
-						if (style) return style;
+						auto style = textList->GetControlTemplate()->GetCheckBulletTemplate();
+						if (style) return style({});
 					}
-					return theme::GetCurrentTheme()->CreateCheckTextListItemStyle();
+					return theme::GetCurrentTheme()->CreateCheckTextListItemStyle()({});
 				}
 
 /***********************************************************************
@@ -151,10 +151,10 @@ DefaultRadioTextListItemTemplate
 				{
 					if (auto textList = dynamic_cast<GuiVirtualTextList*>(listControl))
 					{
-						auto style = textList->GetTextListStyleController()->CreateRadioBulletStyle();
-						if (style) return style;
+						auto style = textList->GetControlTemplate()->GetCheckBulletTemplate();
+						if (style) return style({});
 					}
-					return theme::GetCurrentTheme()->CreateRadioTextListItemStyle();
+					return theme::GetCurrentTheme()->CreateRadioTextListItemStyle()({});
 				}
 
 /***********************************************************************
@@ -295,7 +295,7 @@ GuiTextList
 				GuiSelectableListControl::OnStyleInstalled(itemIndex, style);
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
-					textItemStyle->SetTextColor(styleController->GetTextColor());
+					textItemStyle->SetTextColor(controlTemplate->GetTextColor());
 					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
@@ -309,7 +309,7 @@ GuiTextList
 			}
 
 			GuiVirtualTextList::GuiVirtualTextList(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider)
-				:GuiSelectableListControl(_styleController, _itemProvider)
+				:GuiSelectableListControl(_controlTemplate, _itemProvider)
 				, controlTemplate(_controlTemplate)
 			{
 				ItemTemplateChanged.AttachMethod(this, &GuiVirtualTextList::OnItemTemplateChanged);
@@ -320,11 +320,6 @@ GuiTextList
 
 			GuiVirtualTextList::~GuiVirtualTextList()
 			{
-			}
-
-			GuiVirtualTextList::IStyleController* GuiVirtualTextList::GetTextListStyleController()
-			{
-				return styleController;
 			}
 
 			TextListView GuiVirtualTextList::GetView()
@@ -364,7 +359,7 @@ GuiTextList
 ***********************************************************************/
 
 			GuiTextList::GuiTextList(ControlTemplateType* _controlTemplate)
-				:GuiVirtualTextList(_styleController, new list::TextItemProvider)
+				:GuiVirtualTextList(_controlTemplate, new list::TextItemProvider)
 			{
 				items=dynamic_cast<list::TextItemProvider*>(itemProvider.Obj());
 				items->listControl=this;

@@ -16,11 +16,11 @@ GuiLabel
 ***********************************************************************/
 
 			GuiLabel::GuiLabel(ControlTemplateType* _controlTemplate)
-				:GuiControl(_styleController)
+				:GuiControl(_controlTemplate)
 				,controlTemplate(_controlTemplate)
 			{
-				textColor=styleController->GetDefaultTextColor();
-				styleController->SetTextColor(textColor);
+				textColor=controlTemplate->GetDefaultTextColor();
+				controlTemplate->SetTextColor(textColor);
 			}
 
 			GuiLabel::~GuiLabel()
@@ -37,7 +37,7 @@ GuiLabel
 				if(textColor!=value)
 				{
 					textColor=value;
-					styleController->SetTextColor(textColor);
+					controlTemplate->SetTextColor(textColor);
 				}
 			}
 		}
