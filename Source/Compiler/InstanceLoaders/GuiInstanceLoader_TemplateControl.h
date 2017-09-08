@@ -84,6 +84,18 @@ GuiVrtualTypeInstanceLoader
 					return createStyle;
 				}
 
+				static Ptr<WfExpression> CreateInvokeTemplateFactoryCall(Ptr<WfExpression> templateFactoryExpr)
+				{
+					auto nullExpr = MakePtr<WfLiteralExpression>();
+					nullExpr->value = WfLiteralValue::Null;
+
+					auto callExpr = MakePtr<WfCallExpression>();
+					callExpr->function = templateFactoryExpr;
+					callExpr->arguments.Add(nullExpr);
+
+					return callExpr;
+				}
+
 				static Ptr<WfExpression> CreateStyleMethodArgument(const WString& method, ArgumentMap& arguments)
 				{
 					vint indexControlTemplate = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
@@ -166,13 +178,20 @@ GuiVrtualTypeInstanceLoader
 
 				Ptr<workflow::WfExpression> CreateInstance_ControlTemplate(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)
 				{
-					auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
-					if (index != -1)
+					Ptr<WfExpression> templateFactoryExpr;
 					{
-						auto argument = arguments.GetByIndex(index)[0];
-						return argument.expression;
+						auto index = arguments.Keys().IndexOf(GlobalStringKey::_ControlTemplate);
+						if (index != -1)
+						{
+							auto argument = arguments.GetByIndex(index)[0];
+							templateFactoryExpr = argument.expression;
+						}
+						else
+						{
+							templateFactoryExpr = CreateIThemeCall(styleMethod);
+						}
 					}
-					return CreateIThemeCall(styleMethod);
+					return CreateInvokeTemplateFactoryCall(templateFactoryExpr);
 				}
 
 				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)override

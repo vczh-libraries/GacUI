@@ -135,6 +135,7 @@ GuiControl
 				, boundsComposition(controlTemplate)
 				, eventReceiver(controlTemplate->GetEventReceiver())
 			{
+				controlTemplate->Initialize();
 				boundsComposition->SetAssociatedControl(this);
 				containerComposition = controlTemplate->GetContainerComposition();
 

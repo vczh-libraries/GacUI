@@ -155,7 +155,7 @@ GuiToolstripToolBarInstanceLoader
 			{
 			public:
 				GuiToolstripToolBarInstanceLoader()
-					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripToolBar>::content.typeName, L"CreateToolBarStyle")
+					:GuiToolstripInstanceLoaderBase<BASE_TYPE>(description::TypeInfo<GuiToolstripToolBar>::content.typeName, L"CreateToolstripToolBarStyle")
 				{
 				}
 			};
@@ -173,7 +173,7 @@ GuiToolstripButtonInstanceLoader
 
 			public:
 				GuiToolstripButtonInstanceLoader()
-					:BASE_TYPE(description::TypeInfo<GuiToolstripButton>::content.typeName, L"CreateToolBarButtonStyle")
+					:BASE_TYPE(description::TypeInfo<GuiToolstripButton>::content.typeName, L"CreateToolstripButtonStyle")
 				{
 					_SubMenu = GlobalStringKey::Get(L"SubMenu");
 				}

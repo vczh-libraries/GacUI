@@ -196,10 +196,12 @@ GuiPredefinedInstanceLoadersPlugin
 
 			Ptr<WfExpression> CreateStandardDataPicker(IGuiInstanceLoader::ArgumentMap&)
 			{
+				using TLoader = GuiTemplateControlInstanceLoader<GuiDatePicker>;
+
 				auto controlType = TypeInfoRetriver<GuiDatePicker*>::CreateTypeInfo();
 				auto createControl = MakePtr<WfNewClassExpression>();
 				createControl->type = GetTypeFromTypeInfo(controlType.Obj());
-				createControl->arguments.Add(GuiTemplateControlInstanceLoader<GuiDatePicker>::CreateIThemeCall(L"CreateDatePickerStyle"));
+				createControl->arguments.Add(TLoader::CreateInvokeTemplateFactoryCall(TLoader::CreateIThemeCall(L"CreateDatePickerStyle")));
 
 				return createControl;
 			}
@@ -247,12 +249,6 @@ GuiPredefinedInstanceLoadersPlugin
 	#ifndef VCZH_DEBUG_NO_REFLECTION
 					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
 
-	#define ADD_VIRTUAL_TYPE_LOADER(TYPENAME, LOADER)\
-		manager->CreateVirtualType(\
-			GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-			new LOADER\
-			)
-
 	#define ADD_TEMPLATE_CONTROL(TYPENAME, STYLE_METHOD)\
 		manager->SetLoader(\
 		new GuiTemplateControlInstanceLoader<TYPENAME>(\
@@ -294,14 +290,14 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_TEMPLATE_CONTROL	(							GuiButton,				CreateButtonStyle											);
 					ADD_TEMPLATE_CONTROL	(							GuiTabPage,				CreateCustomControlStyle									);
 					ADD_TEMPLATE_CONTROL	(							GuiTab,					CreateTabStyle												);
-					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		CreateScrollContainerStyle									);
+					ADD_TEMPLATE_CONTROL	(							GuiScrollContainer,		CreateScrollViewStyle										);
 					ADD_TEMPLATE_CONTROL	(							GuiWindow,				CreateWindowStyle											);
 					ADD_TEMPLATE_CONTROL	(							GuiTextList,			CreateTextListStyle											);
 					ADD_TEMPLATE_CONTROL	(							GuiBindableTextList,	CreateTextListStyle											);
 					ADD_TEMPLATE_CONTROL	(							GuiListView,			CreateListViewStyle											);
 					ADD_TEMPLATE_CONTROL	(							GuiBindableListView,	CreateListViewStyle											);
 					ADD_TEMPLATE_CONTROL	(							GuiMultilineTextBox,	CreateMultilineTextBoxStyle									);
-					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	CreateTextBoxStyle											);
+					ADD_TEMPLATE_CONTROL	(							GuiSinglelineTextBox,	CreateSinglelineTextBoxStyle								);
 					ADD_TEMPLATE_CONTROL	(							GuiDatePicker,			CreateDatePickerStyle										);
 					ADD_TEMPLATE_CONTROL_2	(							GuiDateComboBox,		CreateComboBoxStyle,				CreateStandardDataPicker);
 
@@ -309,9 +305,9 @@ GuiPredefinedInstanceLoadersPlugin
 					ADD_VIRTUAL_CONTROL		(MenuSplitter,				GuiControl,				CreateMenuSplitterStyle										);
 					ADD_VIRTUAL_CONTROL		(MenuBarButton,				GuiToolstripButton,		CreateMenuBarButtonStyle									);
 					ADD_VIRTUAL_CONTROL		(MenuItemButton,			GuiToolstripButton,		CreateMenuItemButtonStyle									);
-					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		CreateToolBarDropdownButtonStyle							);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		CreateToolBarSplitButtonStyle								);
-					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				CreateToolBarSplitterStyle									);
+					ADD_VIRTUAL_CONTROL		(ToolstripDropdownButton,	GuiToolstripButton,		CreateToolstripDropdownButtonStyle							);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitButton,		GuiToolstripButton,		CreateToolstripSplitButtonStyle								);
+					ADD_VIRTUAL_CONTROL		(ToolstripSplitter,			GuiControl,				CreateToolstripSplitterStyle								);
 					ADD_VIRTUAL_CONTROL		(CheckBox,					GuiSelectableButton,	CreateCheckBoxStyle											);
 					ADD_VIRTUAL_CONTROL		(RadioButton,				GuiSelectableButton,	CreateRadioButtonStyle										);
 					ADD_VIRTUAL_CONTROL		(HScroll,					GuiScroll,				CreateHScrollStyle											);
@@ -327,7 +323,6 @@ GuiPredefinedInstanceLoadersPlugin
 					LoadCompositions(manager);
 					LoadTemplates(manager);
 
-	#undef ADD_VIRTUAL_TYPE_LOADER
 	#undef ADD_TEMPLATE_CONTROL
 	#undef ADD_TEMPLATE_CONTROL_2
 	#undef ADD_VIRTUAL_CONTROL
