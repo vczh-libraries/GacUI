@@ -75,7 +75,7 @@ Control Template
 				~GuiSinglelineTextBoxTemplate_StyleProvider();
 				
 				void															SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-				void															SetCommandExecutor(controls::ISinglelineTextBoxCommandExecutor* value)override;
+				void															SetCommandExecutor(controls::ITextBoxCommandExecutor* value)override;
 				void															RearrangeTextElement()override;
 				WString															GetEditingText()override;
 				elements::GuiColorizedTextElement*								GetTextElement()override;

@@ -49,7 +49,7 @@ namespace vl
 			};
 
 			/// <summary>A command executor for the combo box to change the control state.</summary>
-			class ISinglelineTextBoxCommandExecutor : public virtual IDescriptable, public Description<ISinglelineTextBoxCommandExecutor>
+			class ITextBoxCommandExecutor : public virtual IDescriptable, public Description<ITextBoxCommandExecutor>
 			{
 			public:
 				/// <summary>Override the text content in the control.</summary>
@@ -285,12 +285,11 @@ Basic Controls
 				~GuiSinglelineTextBoxTemplate();
 
 #define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
-				F(GuiSinglelineTextBoxTemplate, controls::ISinglelineTextBoxCommandExecutor*, Commands)\
+				F(GuiSinglelineTextBoxTemplate, controls::ITextBoxCommandExecutor*, Commands)\
 				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor)\
 				F(GuiSinglelineTextBoxTemplate, Color, CaretColor)\
 
 				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-
 
 				WString										GetEditingText();
 				elements::GuiColorizedTextElement*			GetTextElement();
@@ -499,15 +498,29 @@ Scrollable Controls
 
 			class GuiMultilineTextBoxTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiMultilineTextBoxTemplate>
 			{
+			protected:
+				elements::GuiColorizedTextElement*			textElement;
+				compositions::GuiBoundsComposition*			textComposition;
+
+				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				GuiMultilineTextBoxTemplate();
 				~GuiMultilineTextBoxTemplate();
 
 #define GuiMultilineTextBoxTemplate_PROPERTIES(F)\
+				F(GuiMultilineTextBoxTemplate, controls::ITextBoxCommandExecutor*, Commands)\
 				F(GuiMultilineTextBoxTemplate, elements::text::ColorEntry, TextColor)\
 				F(GuiMultilineTextBoxTemplate, Color, CaretColor)\
 
 				GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+
+				WString										GetEditingText();
+				elements::GuiColorizedTextElement*			GetTextElement();
+				compositions::GuiGraphicsComposition*		GetTextComposition();
+
+				void										Initialize()override;
 			};
 
 			class GuiDocumentViewerTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiDocumentViewerTemplate>

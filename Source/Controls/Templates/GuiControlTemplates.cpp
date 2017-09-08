@@ -627,16 +627,65 @@ GuiScrollViewTemplate
 GuiMultilineTextBoxTemplate
 ***********************************************************************/
 
+			void GuiMultilineTextBoxTemplate::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				Commands_->UnsafeSetText(GetText());
+				textElement->SetCaretBegin(TextPos(0, 0));
+				textElement->SetCaretEnd(TextPos(0, 0));
+			}
+
+			void GuiMultilineTextBoxTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				textElement->SetFont(GetFont());
+			}
+
+			void GuiMultilineTextBoxTemplate::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				textElement->SetVisuallyEnabled(GetVisuallyEnabled());
+			}
+
 			GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
 
 			GuiMultilineTextBoxTemplate::GuiMultilineTextBoxTemplate()
+				:Commands_(nullptr)
 			{
+				TextChanged.AttachMethod(this, &GuiMultilineTextBoxTemplate::OnTextChanged);
+				FontChanged.AttachMethod(this, &GuiMultilineTextBoxTemplate::OnFontChanged);
+				VisuallyEnabledChanged.AttachMethod(this, &GuiMultilineTextBoxTemplate::OnVisuallyEnabledChanged);
 				GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
 			}
 
 			GuiMultilineTextBoxTemplate::~GuiMultilineTextBoxTemplate()
 			{
 				FinalizeAggregation();
+			}
+
+			WString GuiMultilineTextBoxTemplate::GetEditingText()
+			{
+				return textElement->GetLines().GetText();
+			}
+
+			elements::GuiColorizedTextElement* GuiMultilineTextBoxTemplate::GetTextElement()
+			{
+				return textElement;
+			}
+
+			compositions::GuiGraphicsComposition* GuiMultilineTextBoxTemplate::GetTextComposition()
+			{
+				return textComposition;
+			}
+
+			void GuiMultilineTextBoxTemplate::Initialize()
+			{
+				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+				textElement = GuiColorizedTextElement::Create();
+
+				textComposition = new GuiBoundsComposition;
+				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				textComposition->SetOwnedElement(textElement);
+
+				GetInternalContainerComposition()->AddChild(textComposition);
 			}
 
 /***********************************************************************

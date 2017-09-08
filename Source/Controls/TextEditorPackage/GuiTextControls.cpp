@@ -11,101 +11,16 @@ namespace vl
 			using namespace compositions;
 
 /***********************************************************************
-GuiMultilineTextBox::StyleController
-***********************************************************************/
-
-			GuiMultilineTextBox::StyleController::StyleController(GuiScrollView::IStyleProvider* styleProvider)
-				:GuiScrollView::StyleController(styleProvider)
-				,textElement(0)
-				,textComposition(0)
-				,textBox(0)
-			{
-				textElement=GuiColorizedTextElement::Create();
-
-				textComposition=new GuiBoundsComposition;
-				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				textComposition->SetOwnedElement(textElement);
-
-				GetInternalContainerComposition()->AddChild(textComposition);
-			}
-
-			GuiMultilineTextBox::StyleController::~StyleController()
-			{
-			}
-
-			void GuiMultilineTextBox::StyleController::Initialize(GuiMultilineTextBox* control)
-			{
-				textBox=control;
-			}
-
-			elements::GuiColorizedTextElement* GuiMultilineTextBox::StyleController::GetTextElement()
-			{
-				return textElement;
-			}
-
-			compositions::GuiGraphicsComposition* GuiMultilineTextBox::StyleController::GetTextComposition()
-			{
-				return textComposition;
-			}
-
-			void GuiMultilineTextBox::StyleController::SetViewPosition(Point value)
-			{
-				textElement->SetViewPosition(value);
-			}
-
-			void GuiMultilineTextBox::StyleController::SetFocusableComposition(compositions::GuiGraphicsComposition* value)
-			{
-				GuiScrollView::StyleController::SetFocusableComposition(value);
-				textBox->Install(textElement, textComposition, scrollView);
-				if(!textBox->GetCallback())
-				{
-					if(!defaultCallback)
-					{
-						defaultCallback=new TextElementOperatorCallback(dynamic_cast<GuiMultilineTextBox*>(scrollView));
-					}
-					textBox->SetCallback(defaultCallback.Obj());
-				}
-			}
-
-			WString GuiMultilineTextBox::StyleController::GetText()
-			{
-				return textElement->GetLines().GetText();
-			}
-
-			void GuiMultilineTextBox::StyleController::SetText(const WString& value)
-			{
-				if(textBox)
-				{
-					textBox->UnsafeSetText(value);
-				}
-				textElement->SetCaretBegin(TextPos(0, 0));
-				textElement->SetCaretEnd(TextPos(0, 0));
-				GuiScrollView::StyleController::SetText(value);
-			}
-
-			void GuiMultilineTextBox::StyleController::SetFont(const FontProperties& value)
-			{
-				textElement->SetFont(value);
-				GuiScrollView::StyleController::SetFont(value);
-			}
-
-			void GuiMultilineTextBox::StyleController::SetVisuallyEnabled(bool value)
-			{
-				textElement->SetVisuallyEnabled(value);
-				GuiScrollView::StyleController::SetVisuallyEnabled(value);
-			}
-
-/***********************************************************************
 GuiMultilineTextBox::DefaultTextElementOperatorCallback
 ***********************************************************************/
 
 			GuiMultilineTextBox::TextElementOperatorCallback::TextElementOperatorCallback(GuiMultilineTextBox* _textControl)
 				:GuiTextBoxCommonInterface::DefaultCallback(
-					dynamic_cast<StyleController*>(_textControl->GetStyleController())->GetTextElement(),
-					dynamic_cast<StyleController*>(_textControl->GetStyleController())->GetTextComposition()
+					dynamic_cast<IStyleController*>(_textControl->GetStyleController())->GetTextElement(),
+					dynamic_cast<IStyleController*>(_textControl->GetStyleController())->GetTextComposition()
 					)
 				,textControl(_textControl)
-				,textController(dynamic_cast<StyleController*>(_textControl->GetStyleController()))
+				,textController(dynamic_cast<IStyleController*>(_textControl->GetStyleController()))
 			{
 			}
 
@@ -147,6 +62,24 @@ GuiMultilineTextBox::DefaultTextElementOperatorCallback
 			}
 
 /***********************************************************************
+GuiMultilineTextBox::CommandExecutor
+***********************************************************************/
+
+			GuiMultilineTextBox::CommandExecutor::CommandExecutor(GuiMultilineTextBox* _textBox)
+				:textBox(_textBox)
+			{
+			}
+
+			GuiMultilineTextBox::CommandExecutor::~CommandExecutor()
+			{
+			}
+
+			void GuiMultilineTextBox::CommandExecutor::UnsafeSetText(const WString& value)
+			{
+				textBox->UnsafeSetText(value);
+			}
+
+/***********************************************************************
 GuiMultilineTextBox
 ***********************************************************************/
 
@@ -175,7 +108,7 @@ GuiMultilineTextBox
 
 			void GuiMultilineTextBox::UpdateView(Rect viewBounds)
 			{
-				styleController->SetViewPosition(viewBounds.LeftTop()-Size(TextMargin, TextMargin));
+				styleController->GetTextElement()->SetViewPosition(viewBounds.LeftTop()-Size(TextMargin, TextMargin));
 			}
 
 			void GuiMultilineTextBox::OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
@@ -186,12 +119,17 @@ GuiMultilineTextBox
 				}
 			}
 
-			GuiMultilineTextBox::GuiMultilineTextBox(GuiMultilineTextBox::IStyleProvider* styleProvider)
-				:GuiScrollView(new StyleController(styleProvider))
+			GuiMultilineTextBox::GuiMultilineTextBox(IStyleController* _styleController)
+				:GuiScrollView(_styleController)
+				, styleController(_styleController)
 			{
-				styleController=dynamic_cast<StyleController*>(GetStyleController());
-				styleController->Initialize(this);
+				callback = new TextElementOperatorCallback(this);
+				commandExecutor = new CommandExecutor(this);
+
+				styleController->SetCommandExecutor(commandExecutor.Obj());
 				SetFocusableComposition(boundsComposition);
+				Install(styleController->GetTextElement(), styleController->GetTextComposition(), this);
+				SetCallback(callback.Obj());
 
 				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiMultilineTextBox::OnBoundsMouseButtonDown);
 				boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiMultilineTextBox::OnBoundsMouseButtonDown);
@@ -204,13 +142,12 @@ GuiMultilineTextBox
 
 			const WString& GuiMultilineTextBox::GetText()
 			{
-				text=styleController->GetText();
+				text = styleController->GetEditingText();
 				return text;
 			}
 
 			void GuiMultilineTextBox::SetText(const WString& value)
 			{
-				text=styleController->GetText();
 				GuiScrollView::SetText(value);
 				CalculateView();
 			}

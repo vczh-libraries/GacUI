@@ -122,7 +122,7 @@ GuiSinglelineTextBoxTemplate_StyleProvider
 				element->SetCaretColor(controlTemplate->GetCaretColor());
 			}
 
-			void GuiSinglelineTextBoxTemplate_StyleProvider::SetCommandExecutor(ISinglelineTextBoxCommandExecutor* value)
+			void GuiSinglelineTextBoxTemplate_StyleProvider::SetCommandExecutor(ITextBoxCommandExecutor* value)
 			{
 				controlTemplate->SetCommands(value);
 			}

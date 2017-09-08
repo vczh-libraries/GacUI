@@ -40,11 +40,11 @@ Type Declaration
 				ENUM_CLASS_ITEM(Customizable)
 			END_ENUM_ITEM(BoolOption)
 
-			BEGIN_INTERFACE_MEMBER_NOPROXY(ISinglelineTextBoxCommandExecutor)
+			BEGIN_INTERFACE_MEMBER_NOPROXY(ITextBoxCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_METHOD(UnsafeSetText, { L"value" })
-			END_INTERFACE_MEMBER(ISinglelineTextBoxCommandExecutor)
+			END_INTERFACE_MEMBER(ITextBoxCommandExecutor)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IComboBoxCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
@@ -142,6 +142,9 @@ Type Declaration
 				CLASS_MEMBER_CONSTRUCTOR(GuiMultilineTextBoxTemplate*(), NO_PARAMETER)
 
 				GuiMultilineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditingText)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextElement)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextComposition)
 			END_CLASS_MEMBER(GuiMultilineTextBoxTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiDocumentViewerTemplate)

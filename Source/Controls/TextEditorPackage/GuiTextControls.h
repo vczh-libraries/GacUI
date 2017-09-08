@@ -28,28 +28,26 @@ MultilineTextBox
 			public:
 				static const vint							TextMargin=3;
 
-				class StyleController : public GuiScrollView::StyleController, public Description<StyleController>
+				/// <summary>Style controller interface for <see cref="GuiSinglelineTextBox"/>.</summary>
+				class IStyleController : public virtual GuiScrollView::IStyleController, public Description<IStyleController>
+				{
+				public:
+					virtual void									SetCommandExecutor(ITextBoxCommandExecutor* value) = 0;
+					virtual WString									GetEditingText() = 0;
+					virtual elements::GuiColorizedTextElement*		GetTextElement() = 0;
+					virtual compositions::GuiGraphicsComposition*	GetTextComposition() = 0;
+				};
+
+				class CommandExecutor : public Object, public ITextBoxCommandExecutor
 				{
 				protected:
-					elements::GuiColorizedTextElement*			textElement;
-					compositions::GuiBoundsComposition*			textComposition;
-					GuiMultilineTextBox*						textBox;
-					Ptr<GuiTextBoxCommonInterface::ICallback>	defaultCallback;
+					GuiMultilineTextBox*					textBox;
 
 				public:
-					StyleController(GuiScrollView::IStyleProvider* styleProvider);
-					~StyleController();
+					CommandExecutor(GuiMultilineTextBox* _textBox);
+					~CommandExecutor();
 
-					void									Initialize(GuiMultilineTextBox* control);
-					elements::GuiColorizedTextElement*		GetTextElement();
-					compositions::GuiGraphicsComposition*	GetTextComposition();
-					void									SetViewPosition(Point value);
-					void									SetFocusableComposition(compositions::GuiGraphicsComposition* value)override;
-
-					WString									GetText();
-					void									SetText(const WString& value)override;
-					void									SetFont(const FontProperties& value)override;
-					void									SetVisuallyEnabled(bool value)override;
+					void									UnsafeSetText(const WString& value)override;
 				};
 
 			protected:
@@ -57,7 +55,7 @@ MultilineTextBox
 				{
 				protected:
 					GuiMultilineTextBox*					textControl;
-					StyleController*						textController;
+					IStyleController*						textController;
 				public:
 					TextElementOperatorCallback(GuiMultilineTextBox* _textControl);
 
@@ -67,7 +65,9 @@ MultilineTextBox
 				};
 
 			protected:
-				StyleController*							styleController;
+				Ptr<TextElementOperatorCallback>			callback;
+				Ptr<CommandExecutor>						commandExecutor;
+				IStyleController*							styleController;
 
 				void										CalculateViewAndSetScroll();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
@@ -77,7 +77,7 @@ MultilineTextBox
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiMultilineTextBox(GuiMultilineTextBox::IStyleProvider* styleProvider);
+				GuiMultilineTextBox(IStyleController* _styleController);
 				~GuiMultilineTextBox();
 
 				const WString&								GetText()override;
@@ -99,7 +99,7 @@ SinglelineTextBox
 				class IStyleController : public virtual GuiControl::IStyleController, public Description<IStyleController>
 				{
 				public:
-					virtual void									SetCommandExecutor(ISinglelineTextBoxCommandExecutor* value) = 0;
+					virtual void									SetCommandExecutor(ITextBoxCommandExecutor* value) = 0;
 					virtual void									RearrangeTextElement() = 0;
 					virtual WString									GetEditingText() = 0;
 					virtual elements::GuiColorizedTextElement*		GetTextElement() = 0;
@@ -118,7 +118,7 @@ SinglelineTextBox
 					vint									GetTextMargin()override;
 				};
 
-				class CommandExecutor : public Object, public ISinglelineTextBoxCommandExecutor
+				class CommandExecutor : public Object, public ITextBoxCommandExecutor
 				{
 				protected:
 					GuiSinglelineTextBox*					textBox;
