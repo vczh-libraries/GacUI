@@ -430,9 +430,9 @@ GuiBindableDataGrid
 
 			public:
 				/// <summary>Create a bindable Data grid control.</summary>
-				/// <param name="_styleController">The style controller for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_viewModelContext">The view mode context, which will be passed to every visualizers and editors in this grid.</param>
-				GuiBindableDataGrid(IStyleController* _styleController, const description::Value& _viewModelContext = description::Value());
+				GuiBindableDataGrid(ControlTemplateType* _controlTemplate, const description::Value& _viewModelContext = description::Value());
 				~GuiBindableDataGrid();
 
 				/// <summary>Get all data columns indices in columns.</summary>

@@ -295,7 +295,7 @@ GuiToolstripMenu
 				sharedSizeRootComposition->ForceCalculateSizeImmediately();
 			}
 
-			GuiToolstripMenu::GuiToolstripMenu(IStyleController* _styleController, GuiControl* _owner)
+			GuiToolstripMenu::GuiToolstripMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner)
 				:GuiMenu(_styleController, _owner)
 			{
 				sharedSizeRootComposition = new GuiSharedSizeRootComposition();

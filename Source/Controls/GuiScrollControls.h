@@ -27,6 +27,7 @@ Scrolls
 			/// <summary>A scroll control, which represents a one dimension sub range of a whole range.</summary>
 			class GuiScroll : public GuiControl, public Description<GuiScroll>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollTemplate)
 			protected:
 				class CommandExecutor : public Object, public IScrollCommandExecutor
 				{
@@ -46,7 +47,6 @@ Scrolls
 					void								SetPosition(vint value)override;
 				};
 
-				IStyleController*						styleController;
 				Ptr<CommandExecutor>					commandExecutor;
 				vint									totalSize;
 				vint									pageSize;
@@ -55,7 +55,7 @@ Scrolls
 				vint									bigMove;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiScroll(ControlTemplateType* _controlTemplate);
 				~GuiScroll();
 				

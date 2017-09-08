@@ -35,7 +35,7 @@ Tab Control
 				bool											IsAltAvailable()override;
 			public:
 				/// <summary>Create a tab page control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiTabPage(ControlTemplateType* _controlTemplate);
 				~GuiTabPage();
 
@@ -58,6 +58,7 @@ Tab Control
 			/// <summary>Represents a container with multiple named tabs.</summary>
 			class GuiTab : public GuiControl, public Description<GuiTab>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TabTemplate)
 				friend class GuiTabPage;
 				friend class GuiTabPageList;
 			protected:
@@ -73,12 +74,11 @@ Tab Control
 				};
 
 				Ptr<CommandExecutor>							commandExecutor;
-				IStyleController*								styleController = nullptr;
 				GuiTabPageList									tabPages;
 				GuiTabPage*										selectedPage = nullptr;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiTab(ControlTemplateType* _controlTemplate);
 				~GuiTab();
 
@@ -105,6 +105,7 @@ Scroll View
 			/// <summary>A control with a vertical scroll bar and a horizontal scroll bar to perform partial viewing.</summary>
 			class GuiScrollView : public GuiControl, public Description<GuiScrollView>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ScrollViewTemplate)
 			protected:
 				class CommandExecutor : public Object, public IScrollViewCommandExecutor
 				{
@@ -119,7 +120,6 @@ Scroll View
 				};
 
 				Ptr<CommandExecutor>					commandExecutor;
-				IStyleController*						styleController;
 				bool									supressScrolling;
 
 				void									OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -144,7 +144,7 @@ Scroll View
 				
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiScrollView(ControlTemplateType* _controlTemplate);
 				~GuiScrollView();
 
@@ -191,7 +191,7 @@ Scroll View
 				void									UpdateView(Rect viewBounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiScrollContainer(ControlTemplateType* _controlTemplate);
 				~GuiScrollContainer();
 				

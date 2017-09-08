@@ -25,6 +25,7 @@ MultilineTextBox
 			/// <summary>Multiline text box control.</summary>
 			class GuiMultilineTextBox : public GuiScrollView, public GuiTextBoxCommonInterface, public Description<GuiMultilineTextBox>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MultilineTextBoxTemplate)
 			public:
 				static const vint							TextMargin=3;
 
@@ -45,7 +46,6 @@ MultilineTextBox
 				{
 				protected:
 					GuiMultilineTextBox*					textControl;
-					IStyleController*						textController;
 				public:
 					TextElementOperatorCallback(GuiMultilineTextBox* _textControl);
 
@@ -57,7 +57,6 @@ MultilineTextBox
 			protected:
 				Ptr<TextElementOperatorCallback>			callback;
 				Ptr<CommandExecutor>						commandExecutor;
-				IStyleController*							styleController;
 
 				void										CalculateViewAndSetScroll();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
@@ -66,7 +65,7 @@ MultilineTextBox
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiMultilineTextBox(ControlTemplateType* _controlTemplate);
 				~GuiMultilineTextBox();
 
@@ -82,6 +81,7 @@ SinglelineTextBox
 			/// <summary>Single text box control.</summary>
 			class GuiSinglelineTextBox : public GuiControl, public GuiTextBoxCommonInterface, public Description<GuiSinglelineTextBox>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SinglelineTextBoxTemplate)
 			public:
 				static const vint							TextMargin=3;
 				
@@ -111,13 +111,12 @@ SinglelineTextBox
 			protected:
 				Ptr<TextElementOperatorCallback>			callback;
 				Ptr<CommandExecutor>						commandExecutor;
-				IStyleController*							styleController;
 				
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiSinglelineTextBox(ControlTemplateType* _controlTemplate);
 				~GuiSinglelineTextBox();
 

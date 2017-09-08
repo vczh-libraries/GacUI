@@ -676,7 +676,7 @@ GuiVirtualTreeListControl
 				}
 			}
 
-			GuiVirtualTreeListControl::GuiVirtualTreeListControl(IStyleController* _styleController, Ptr<tree::INodeRootProvider> _nodeRootProvider)
+			GuiVirtualTreeListControl::GuiVirtualTreeListControl(ControlTemplateType* _controlTemplate, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiSelectableListControl(_styleController, new tree::NodeItemProvider(_nodeRootProvider))
 			{
 				nodeItemProvider = dynamic_cast<tree::NodeItemProvider*>(GetItemProvider());
@@ -921,7 +921,7 @@ GuiVirtualTreeView
 				}
 			}
 
-			GuiVirtualTreeView::GuiVirtualTreeView(IStyleController* _styleController, Ptr<tree::INodeRootProvider> _nodeRootProvider)
+			GuiVirtualTreeView::GuiVirtualTreeView(ControlTemplateType* _controlTemplate, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiVirtualTreeListControl(_styleController, _nodeRootProvider)
 				, controlTemplate(_controlTemplate)
 			{

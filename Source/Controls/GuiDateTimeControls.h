@@ -26,6 +26,7 @@ DatePicker
 			/// <summary>Date picker control that display a calendar.</summary>
 			class GuiDatePicker : public GuiControl, public Description<GuiDatePicker>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DatePickerTemplate)
 			protected:
 				class CommandExecutor : public Object, public IDatePickerCommandExecutor
 				{
@@ -41,14 +42,13 @@ DatePicker
 				};
 
 				Ptr<CommandExecutor>									commandExecutor;
-				IStyleController*										styleController;
 				WString													dateFormat;
 				Locale													dateLocale;
 
 				void													UpdateText();
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiDatePicker(ControlTemplateType* _controlTemplate);
 				~GuiDatePicker();
 
@@ -104,9 +104,9 @@ DateComboBox
 				void													datePicker_DateSelected(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				/// <param name="_datePicker">The date picker control to show in the popup.</param>
-				GuiDateComboBox(IStyleController* _styleController, GuiDatePicker* _datePicker);
+				GuiDateComboBox(ControlTemplateType* controlTemplate, GuiDatePicker* _datePicker);
 				~GuiDateComboBox();
 				
 				/// <summary>Selected data changed event.</summary>

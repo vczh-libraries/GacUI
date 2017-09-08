@@ -58,7 +58,7 @@ Control Host
 				void											Destroying()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiControlHost(ControlTemplateType* _controlTemplate);
 				~GuiControlHost();
 				
@@ -204,9 +204,9 @@ Window
 			/// </summary>
 			class GuiWindow : public GuiControlHost, protected compositions::IGuiAltActionHost, public AggregatableDescription<GuiWindow>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate)
 				friend class GuiApplication;
 			protected:
-				IStyleController*						styleController;
 				compositions::IGuiAltActionHost*		previousAltHost;
 				
 				void									Moved()override;
@@ -221,7 +221,7 @@ Window
 				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiWindow(ControlTemplateType* _controlTemplate);
 				~GuiWindow();
 
@@ -327,7 +327,7 @@ Window
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiPopup(ControlTemplateType* _controlTemplate);
 				~GuiPopup();
 
@@ -365,7 +365,7 @@ Window
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiTooltip(ControlTemplateType* _controlTemplate);
 				~GuiTooltip();
 

@@ -26,8 +26,8 @@ Buttons
 			/// <summary>A control with 3 phases state transffering when mouse click happens.</summary>
 			class GuiButton : public GuiControl, public Description<GuiButton>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate)
 			protected:
-				IStyleController*						styleController;
 				bool									clickOnMouseUp;
 				bool									mousePressing;
 				bool									mouseHoving;
@@ -42,7 +42,7 @@ Buttons
 				void									OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiButton(ControlTemplateType* _controlTemplate);
 				~GuiButton();
 
@@ -60,6 +60,7 @@ Buttons
 			/// <summary>A <see cref="GuiButton"/> with a selection state.</summary>
 			class GuiSelectableButton : public GuiButton, public Description<GuiSelectableButton>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SelectableButtonTemplate)
 			public:
 				/// <summary>Selection group controller. Control the selection state of all attached button.</summary>
 				class GroupController : public GuiComponent, public Description<GroupController>
@@ -94,7 +95,6 @@ Buttons
 				};
 
 			protected:
-				IStyleController*						styleController;
 				GroupController*						groupController;
 				bool									autoSelection;
 				bool									isSelected;
@@ -102,7 +102,7 @@ Buttons
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiSelectableButton(ControlTemplateType* _controlTemplate);
 				~GuiSelectableButton();
 

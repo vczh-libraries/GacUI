@@ -93,16 +93,14 @@ GuiVirtualDataGrid
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 
 			public:
-
-				GuiListViewBase::IStyleController*						GetListViewStyleController()override;
 				description::Value										GetViewModelContext()override;
 				void													RequestSaveData()override;
 
 			public:
 				/// <summary>Create a data grid control in virtual mode.</summary>
-				/// <param name="_styleController">The style controller for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualDataGrid(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualDataGrid(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualDataGrid();
 
 				/// <summary>Selected cell changed event.</summary>

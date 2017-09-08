@@ -339,13 +339,14 @@ GuiDocumentViewer
 			/// <summary>Scrollable document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentViewer : public GuiScrollContainer, public GuiDocumentCommonInterface, public Description<GuiDocumentViewer>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentViewerTemplate)
 			protected:
 
 				Point										GetDocumentViewPosition()override;
 				void										EnsureRectVisible(Rect bounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiDocumentViewer(ControlTemplateType* _controlTemplate);
 				~GuiDocumentViewer();
 
@@ -360,9 +361,10 @@ GuiDocumentViewer
 			/// <summary>Static document viewer for displaying <see cref="DocumentModel"/>.</summary>
 			class GuiDocumentLabel : public GuiControl, public GuiDocumentCommonInterface, public Description<GuiDocumentLabel>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate)
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiDocumentLabel(ControlTemplateType* _controlTemplate);
 				~GuiDocumentLabel();
 				

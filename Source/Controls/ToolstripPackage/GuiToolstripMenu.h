@@ -148,9 +148,9 @@ Toolstrip Container
 				void										UpdateLayout()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
-				GuiToolstripMenu(IStyleController* _styleController, GuiControl* _owner);
+				GuiToolstripMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner);
 				~GuiToolstripMenu();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
@@ -172,7 +172,7 @@ Toolstrip Container
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiToolstripMenuBar(ControlTemplateType* _controlTemplate);
 				~GuiToolstripMenuBar();
 				
@@ -195,7 +195,7 @@ Toolstrip Container
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiToolstripToolBar(ControlTemplateType* _controlTemplate);
 				~GuiToolstripToolBar();
 				
@@ -224,7 +224,7 @@ Toolstrip Component
 				void											OnCommandDescriptionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiToolstripButton(ControlTemplateType* _controlTemplate);
 				~GuiToolstripButton();
 

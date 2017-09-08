@@ -182,7 +182,7 @@ GuiComboBoxListControl
 				SelectedIndexChanged.Execute(GetNotifyEventArguments());
 			}
 
-			GuiComboBoxListControl::GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl)
+			GuiComboBoxListControl::GuiComboBoxListControl(ControlTemplateType* _controlTemplate, GuiSelectableListControl* _containedListControl)
 				:GuiComboBoxBase(_styleController)
 				, controlTemplate(_controlTemplate)
 				, containedListControl(_containedListControl)

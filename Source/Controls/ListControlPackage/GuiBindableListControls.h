@@ -131,7 +131,7 @@ GuiBindableTextList
 
 			public:
 				/// <summary>Create a bindable Text list control.</summary>
-				/// <param name="_styleController">The style controller for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name = "_bulletFactory">The factory object to create the control styles for bullet before a text item.</param>
 				GuiBindableTextList(ControlTemplateType* _controlTemplate);
 				~GuiBindableTextList();
@@ -244,7 +244,7 @@ GuiBindableListView
 
 			public:
 				/// <summary>Create a bindable List view control.</summary>
-				/// <param name="_styleController">The style controller for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				GuiBindableListView(ControlTemplateType* _controlTemplate);
 				~GuiBindableListView();
 
@@ -375,7 +375,7 @@ GuiBindableTreeView
 
 			public:
 				/// <summary>Create a bindable Tree view control.</summary>
-				/// <param name="_styleController">The style controller for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				GuiBindableTreeView(ControlTemplateType* _controlTemplate);
 				~GuiBindableTreeView();
 				

@@ -337,7 +337,7 @@ GuiListControl
 
 #undef DETACH_ITEM_EVENT
 
-			GuiListControl::GuiListControl(IStyleController* _styleController, IItemProvider* _itemProvider, bool acceptFocus)
+			GuiListControl::GuiListControl(ControlTemplateType* _controlTemplate, IItemProvider* _itemProvider, bool acceptFocus)
 				:GuiScrollView(_styleController)
 				, controlTemplate(_controlTemplate)
 				, itemProvider(_itemProvider)
@@ -585,7 +585,7 @@ GuiSelectableListControl
 				}
 			}
 
-			GuiSelectableListControl::GuiSelectableListControl(IStyleController* _styleController, IItemProvider* _itemProvider)
+			GuiSelectableListControl::GuiSelectableListControl(ControlTemplateType* _controlTemplate, IItemProvider* _itemProvider)
 				:GuiListControl(_styleController, _itemProvider, true)
 				,multiSelect(false)
 				,selectedItemIndexStart(-1)

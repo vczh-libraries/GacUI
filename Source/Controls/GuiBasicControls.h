@@ -76,7 +76,7 @@ Basic Construction
 				using ControlTemplateType = templates::GuiControlTemplate;
 
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiControl(templates::GuiControlTemplate* _controlTemplate);
 				~GuiControl();
 
@@ -221,7 +221,7 @@ Basic Construction
 			{
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiCustomControl(templates::GuiControlTemplate* _controlTemplate);
 				~GuiCustomControl();
 			};

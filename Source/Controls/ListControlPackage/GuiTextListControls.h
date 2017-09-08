@@ -47,7 +47,7 @@ DefaultTextListItemTemplate
 				class DefaultTextListItemTemplate : public templates::GuiTextListItemTemplate
 				{
 				protected:
-					using BulletStyle = GuiSelectableButton::IStyleController;
+					using BulletStyle = templates::GuiSelectableButtonTemplate;
 
 					GuiSelectableButton*					bulletButton = nullptr;
 					elements::GuiSolidLabelElement*			textElement = nullptr;
@@ -162,25 +162,21 @@ GuiVirtualTextList
 			/// <summary>Text list control in virtual mode.</summary>
 			class GuiVirtualTextList : public GuiSelectableListControl, public Description<GuiVirtualTextList>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TextListTemplate)
 			protected:
-				IStyleController*										styleController;
 				TextListView											view = TextListView::Unknown;
 
 				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>
-				/// <param name="_styleController">The style controller for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualTextList(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualTextList(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
 
 				/// <summary>Item checked changed event.</summary>
 				compositions::GuiItemNotifyEvent						ItemChecked;
-				
-				/// <summary>Get the style provider for this control.</summary>
-				/// <returns>The style provider for this control.</returns>
-				IStyleController*										GetTextListStyleController();
 
 				/// <summary>Get the current view.</summary>
 				/// <returns>The current view. After [M:vl.presentation.controls.GuiListControl.SetItemTemplate] is called, the current view is reset to Unknown.</returns>
@@ -201,7 +197,7 @@ GuiTextList
 				list::TextItemProvider*									items;
 			public:
 				/// <summary>Create a Text list control.</summary>
-				/// <param name="_styleController">The style controller for this control.</param>
+				/// <param name="_controlTemplate">The control template for this control.</param>
 				GuiTextList(ControlTemplateType* _controlTemplate);
 				~GuiTextList();
 

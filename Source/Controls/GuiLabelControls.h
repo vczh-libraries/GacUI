@@ -25,12 +25,13 @@ Label
 			/// <summary>A control to display a text.</summary>
 			class GuiLabel : public GuiControl, public Description<GuiLabel>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(LabelTemplate)
 			protected:
 				Color									textColor;
-				IStyleController*						styleController;
+
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiLabel(ControlTemplateType* _controlTemplate);
 				~GuiLabel();
 

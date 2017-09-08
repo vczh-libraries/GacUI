@@ -155,7 +155,7 @@ GuiDateComboBox
 				NotifyUpdateSelectedDate();
 			}
 
-			GuiDateComboBox::GuiDateComboBox(IStyleController* _styleController, GuiDatePicker* _datePicker)
+			GuiDateComboBox::GuiDateComboBox(ControlTemplateType* _controlTemplate, GuiDatePicker* _datePicker)
 				:GuiComboBoxBase(_styleController)
 				,datePicker(_datePicker)
 			{

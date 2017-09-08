@@ -78,6 +78,7 @@ Menu
 			/// <summary>Popup menu.</summary>
 			class GuiMenu : public GuiPopup, private IGuiMenuService, public Description<GuiMenu>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(MenuTemplate)
 			private:
 				IGuiMenuService*						parentMenuService;
 
@@ -95,9 +96,9 @@ Menu
 				void									OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
-				GuiMenu(IStyleController* _styleController, GuiControl* _owner);
+				GuiMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner);
 				~GuiMenu();
 
 				/// <summary>Update the reference to the parent <see cref="IGuiMenuService"/>. This function is not required to call outside the menu or menu item control.</summary>
@@ -115,7 +116,7 @@ Menu
 				bool									IsSubMenuActivatedByMouseDown()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiMenuBar(ControlTemplateType* _controlTemplate);
 				~GuiMenuBar();
 				
@@ -129,8 +130,8 @@ MenuButton
 			/// <summary>Menu item.</summary>
 			class GuiMenuButton : public GuiSelectableButton, public Description<GuiMenuButton>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ToolstripButtonTemplate)
 			protected:
-				IStyleController*						styleController;
 				Ptr<GuiImageData>						image;
 				WString									shortcutText;
 				GuiMenu*								subMenu;
@@ -153,7 +154,7 @@ MenuButton
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiMenuButton(ControlTemplateType* _controlTemplate);
 				~GuiMenuButton();
 

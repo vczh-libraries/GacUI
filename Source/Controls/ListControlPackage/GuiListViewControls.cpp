@@ -50,7 +50,7 @@ GuiListViewColumnHeader
 GuiListViewBase
 ***********************************************************************/
 
-			GuiListViewBase::GuiListViewBase(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider)
+			GuiListViewBase::GuiListViewBase(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_styleController, _itemProvider)
 				, controlTemplate(_controlTemplate)
 			{
@@ -779,7 +779,7 @@ GuiListView
 				view = ListViewView::Unknown;
 			}
 
-			GuiVirtualListView::GuiVirtualListView(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualListView::GuiVirtualListView(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider)
 				:GuiListViewBase(_styleController, _itemProvider)
 			{
 				SetView(ListViewView::Detail);

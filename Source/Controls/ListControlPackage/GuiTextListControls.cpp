@@ -308,7 +308,7 @@ GuiTextList
 				view = TextListView::Unknown;
 			}
 
-			GuiVirtualTextList::GuiVirtualTextList(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualTextList::GuiVirtualTextList(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_styleController, _itemProvider)
 				, controlTemplate(_controlTemplate)
 			{

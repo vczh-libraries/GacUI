@@ -28,6 +28,7 @@ ComboBox Base
 			/// <summary>The base class of combo box control.</summary>
 			class GuiComboBoxBase : public GuiMenuButton, public Description<GuiComboBoxBase>
 			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ComboBoxTemplate)
 			protected:
 
 				class CommandExecutor : public Object, public virtual IComboBoxCommandExecutor
@@ -43,7 +44,6 @@ ComboBox Base
 				};
 
 				Ptr<CommandExecutor>						commandExecutor;
-				IStyleController*							styleController;
 				
 				bool										IsAltAvailable()override;
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
@@ -51,7 +51,7 @@ ComboBox Base
 				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				GuiComboBoxBase(ControlTemplateType* _controlTemplate);
 				~GuiComboBoxBase();
 
@@ -70,7 +70,6 @@ ComboBox with GuiListControl
 				using ItemStyleProperty = TemplateProperty<templates::GuiTemplate>;
 
 			protected:
-				IStyleController*							styleController = nullptr;
 				GuiSelectableListControl*					containedListControl = nullptr;
 				ItemStyleProperty							itemStyleProperty;
 				templates::GuiTemplate*						itemStyleController = nullptr;
@@ -87,9 +86,9 @@ ComboBox with GuiListControl
 				void										OnListControlSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller and a list control that will be put in the popup control to show all items.</summary>
-				/// <param name="_styleController">The style controller.</param>
+				/// <param name="_controlTemplate">The control template.</param>
 				/// <param name="_containedListControl">The list controller.</param>
-				GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl);
+				GuiComboBoxListControl(ControlTemplateType* _controlTemplate, GuiSelectableListControl* _containedListControl);
 				~GuiComboBoxListControl();
 				
 				/// <summary>Style provider changed event.</summary>
