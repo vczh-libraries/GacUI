@@ -32,7 +32,7 @@ Datagrid Interfaces
 				{
 				public:
 					virtual GuiListControl::IItemProvider*				GetItemProvider() = 0;
-					virtual GuiListViewBase::IStyleController*			GetListViewStyleController() = 0;
+					virtual templates::GuiListViewTemplate*				GetListViewControlTemplate() = 0;
 					virtual description::Value							GetViewModelContext() = 0;
 					virtual void										RequestSaveData() = 0;
 				};

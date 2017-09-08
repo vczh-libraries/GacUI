@@ -27,6 +27,7 @@ Interfaces:
 #include "../ListControlPackage/GuiTreeViewControls.h"
 #include "../ListControlPackage/GuiComboControls.h"
 #include "../ListControlPackage/GuiDataGridControls.h"
+#include "../ListControlPackage/GuiDataGridExtensions.h"
 #include "../ListControlPackage/GuiBindableListControls.h"
 #include "../ListControlPackage/GuiBindableDataGrid.h"
 

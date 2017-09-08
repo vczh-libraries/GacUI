@@ -69,7 +69,7 @@ GuiTextBoxAutoCompleteBase
 					GuiTextList*									autoCompleteList;
 
 				public:
-					TextListControlProvider(GuiTextList::IStyleController* styleController = nullptr);
+					TextListControlProvider(templates::GuiTextListTemplate* controlTemplate = nullptr);
 					~TextListControlProvider();
 
 					GuiControl*										GetAutoCompleteControl()override;
