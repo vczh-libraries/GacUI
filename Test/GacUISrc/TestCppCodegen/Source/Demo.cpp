@@ -10087,6 +10087,12 @@ Class (::demo::TextBoxTabPageConstructor)
 			(this->textBoxM = new ::vl::presentation::controls::GuiMultilineTextBox(__vwsn_controlStyle_));
 		}
 		{
+			::vl::__vwsn::This(this->textBoxM)->SetVerticalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
+			::vl::__vwsn::This(this->textBoxM)->SetHorizontalAlwaysVisible(::vl::__vwsn::Parse<bool>(::vl::WString(L"false", false)));
+		}
+		{
 			::vl::__vwsn::This(this->textBoxM)->SetAlt(::vl::WString(L"M", false));
 		}
 		(this->__vwsn_precompile_9 = ::vl::__vwsn::This(this->textBoxM)->GetBoundsComposition());
