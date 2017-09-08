@@ -890,7 +890,7 @@ GuiBindableDataGrid
 ***********************************************************************/
 
 			GuiBindableDataGrid::GuiBindableDataGrid(ControlTemplateType* _controlTemplate, const description::Value& _viewModelContext)
-				:GuiVirtualDataGrid(_styleController, new list::DataProvider(_viewModelContext))
+				:GuiVirtualDataGrid(_controlTemplate, new list::DataProvider(_viewModelContext))
 			{
 				dataProvider = dynamic_cast<list::DataProvider*>(GetItemProvider());
 			}

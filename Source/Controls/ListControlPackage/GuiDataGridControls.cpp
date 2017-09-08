@@ -425,9 +425,9 @@ GuiVirtualDataGrid (Editor)
 GuiVirtualDataGrid (IDataGridContext)
 ***********************************************************************/
 
-			GuiListViewBase::IStyleController* GuiVirtualDataGrid::GetListViewStyleController()
+			templates::GuiListViewTemplate* GuiVirtualDataGrid::GetListViewControlTemplate()
 			{
-				return GuiVirtualListView::GetListViewStyleController();
+				return GetControlTemplate();
 			}
 
 			description::Value GuiVirtualDataGrid::GetViewModelContext()
@@ -492,7 +492,7 @@ GuiVirtualDataGrid
 			}
 
 			GuiVirtualDataGrid::GuiVirtualDataGrid(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider)
-				:GuiVirtualListView(_styleController, _itemProvider)
+				:GuiVirtualListView(_controlTemplate, _itemProvider)
 			{
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));
 				columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(_itemProvider->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));

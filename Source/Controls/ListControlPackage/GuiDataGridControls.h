@@ -93,6 +93,7 @@ GuiVirtualDataGrid
 				void													OnColumnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 
 			public:
+				templates::GuiListViewTemplate*							GetListViewControlTemplate()override;
 				description::Value										GetViewModelContext()override;
 				void													RequestSaveData()override;
 
