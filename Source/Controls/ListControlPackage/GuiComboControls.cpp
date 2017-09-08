@@ -53,6 +53,7 @@ GuiComboBoxBase
 
 			GuiComboBoxBase::GuiComboBoxBase(ControlTemplateType* _controlTemplate)
 				:GuiMenuButton(_controlTemplate)
+				, controlTemplate(_controlTemplate)
 			{
 				commandExecutor=new CommandExecutor(this);
 				controlTemplate->SetCommands(commandExecutor.Obj());

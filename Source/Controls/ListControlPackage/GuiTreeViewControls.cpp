@@ -678,6 +678,7 @@ GuiVirtualTreeListControl
 
 			GuiVirtualTreeListControl::GuiVirtualTreeListControl(ControlTemplateType* _controlTemplate, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiSelectableListControl(_controlTemplate, new tree::NodeItemProvider(_nodeRootProvider))
+				, controlTemplate(_controlTemplate)
 			{
 				nodeItemProvider = dynamic_cast<tree::NodeItemProvider*>(GetItemProvider());
 				nodeItemView = dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(tree::INodeItemView::Identifier));

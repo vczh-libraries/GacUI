@@ -1131,7 +1131,8 @@ GuiDocumentViewer
 
 			GuiDocumentViewer::GuiDocumentViewer(ControlTemplateType* _controlTemplate)
 				:GuiScrollContainer(_controlTemplate)
-				, GuiDocumentCommonInterface(controlTemplate->GetBaselineDocument(), controlTemplate->GetCaretColor())
+				, controlTemplate(_controlTemplate)
+				, GuiDocumentCommonInterface(_controlTemplate->GetBaselineDocument(), _controlTemplate->GetCaretColor())
 			{
 				SetExtendToFullWidth(true);
 				SetHorizontalAlwaysVisible(false);
@@ -1162,7 +1163,8 @@ GuiDocumentLabel
 
 			GuiDocumentLabel::GuiDocumentLabel(ControlTemplateType* _controlTemplate)
 				:GuiControl(_controlTemplate)
-				, GuiDocumentCommonInterface(controlTemplate->GetBaselineDocument(), controlTemplate->GetCaretColor())
+				, controlTemplate(_controlTemplate)
+				, GuiDocumentCommonInterface(_controlTemplate->GetBaselineDocument(), _controlTemplate->GetCaretColor())
 			{
 				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				SetFocusableComposition(GetBoundsComposition());

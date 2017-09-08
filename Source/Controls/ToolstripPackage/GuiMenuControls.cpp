@@ -120,8 +120,9 @@ GuiMenu
 
 			GuiMenu::GuiMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner)
 				:GuiPopup(_controlTemplate)
-				,owner(_owner)
-				,parentMenuService(0)
+				, controlTemplate(_controlTemplate)
+				, owner(_owner)
+				, parentMenuService(0)
 			{
 				GetNativeWindow()->SetAlwaysPassFocusToParent(true);
 				UpdateMenuService();
