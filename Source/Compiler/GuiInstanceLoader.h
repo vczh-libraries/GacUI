@@ -187,24 +187,30 @@ Instance Loader Manager
 		class IGuiInstanceLoaderManager : public IDescriptable, public Description<IGuiInstanceLoaderManager>
 		{
 		public:
-			virtual bool								AddInstanceBinder(Ptr<IGuiInstanceBinder> binder) = 0;
-			virtual IGuiInstanceBinder*					GetInstanceBinder(GlobalStringKey bindingName) = 0;
-			virtual bool								AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder) = 0;
-			virtual IGuiInstanceEventBinder*			GetInstanceEventBinder(GlobalStringKey bindingName) = 0;
-			virtual bool								AddInstanceDeserializer(Ptr<IGuiInstanceDeserializer> deserializer) = 0;
-			virtual IGuiInstanceDeserializer*			GetInstanceDeserializer(description::ITypeInfo* typeInfo) = 0;
+			virtual bool							AddInstanceBinder(Ptr<IGuiInstanceBinder> binder) = 0;
+			virtual IGuiInstanceBinder*				GetInstanceBinder(GlobalStringKey bindingName) = 0;
+			virtual bool							AddInstanceEventBinder(Ptr<IGuiInstanceEventBinder> binder) = 0;
+			virtual IGuiInstanceEventBinder*		GetInstanceEventBinder(GlobalStringKey bindingName) = 0;
+			virtual bool							AddInstanceDeserializer(Ptr<IGuiInstanceDeserializer> deserializer) = 0;
+			virtual IGuiInstanceDeserializer*		GetInstanceDeserializer(description::ITypeInfo* typeInfo) = 0;
 
-			virtual bool								CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader) = 0;
-			virtual bool								SetLoader(Ptr<IGuiInstanceLoader> loader) = 0;
-			virtual IGuiInstanceLoader*					GetLoader(GlobalStringKey typeName) = 0;
-			virtual IGuiInstanceLoader*					GetParentLoader(IGuiInstanceLoader* loader) = 0;
-			virtual Ptr<description::ITypeInfo>			GetTypeInfoForType(GlobalStringKey typeName) = 0;
-			virtual void								GetVirtualTypes(collections::List<GlobalStringKey>& typeNames) = 0;
-			virtual GlobalStringKey						GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
-			virtual void								ClearReflectionCache() = 0;
+			virtual bool							CreateVirtualType(GlobalStringKey parentType, Ptr<IGuiInstanceLoader> loader) = 0;
+			virtual bool							SetLoader(Ptr<IGuiInstanceLoader> loader) = 0;
+			virtual IGuiInstanceLoader*				GetLoader(GlobalStringKey typeName) = 0;
+			virtual IGuiInstanceLoader*				GetParentLoader(IGuiInstanceLoader* loader) = 0;
+			virtual Ptr<description::ITypeInfo>		GetTypeInfoForType(GlobalStringKey typeName) = 0;
+			virtual void							GetVirtualTypes(collections::List<GlobalStringKey>& typeNames) = 0;
+			virtual GlobalStringKey					GetParentTypeForVirtualType(GlobalStringKey virtualType) = 0;
+			virtual void							ClearReflectionCache() = 0;
 		};
 
 		extern IGuiInstanceLoaderManager*			GetInstanceLoaderManager();
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		extern void									SplitBySemicolon(const WString& input, collections::List<WString>& fragments);
 	}
 }
 
