@@ -339,7 +339,7 @@ GuiListControl
 
 			GuiListControl::GuiListControl(IStyleController* _styleController, IItemProvider* _itemProvider, bool acceptFocus)
 				:GuiScrollView(_styleController)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 				, itemProvider(_itemProvider)
 			{
 				FontChanged.AttachMethod(this, &GuiListControl::OnFontChanged);

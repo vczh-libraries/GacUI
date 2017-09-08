@@ -49,7 +49,7 @@ DatePicker
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiDatePicker(IStyleController* _styleController);
+				GuiDatePicker(ControlTemplateType* _controlTemplate);
 				~GuiDatePicker();
 
 				/// <summary>Date changed event.</summary>

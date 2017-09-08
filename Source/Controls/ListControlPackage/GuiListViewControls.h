@@ -28,7 +28,7 @@ namespace vl
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiListViewColumnHeader(IStyleController* _styleController);
+				GuiListViewColumnHeader(ControlTemplateType* _controlTemplate);
 				~GuiListViewColumnHeader();
 
 				bool											IsAltAvailable()override;
@@ -482,7 +482,7 @@ GuiListView
 			public:
 				/// <summary>Create a list view control.</summary>
 				/// <param name="_styleController">The style controller for this control.</param>
-				GuiListView(IStyleController* _styleController);
+				GuiListView(ControlTemplateType* _controlTemplate);
 				~GuiListView();
 				
 				/// <summary>Get all list view items.</summary>

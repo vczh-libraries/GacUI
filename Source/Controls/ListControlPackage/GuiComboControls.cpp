@@ -52,7 +52,7 @@ GuiComboBoxBase
 				SetPreferredMenuClientSize(size);
 			}
 
-			GuiComboBoxBase::GuiComboBoxBase(IStyleController* _styleController)
+			GuiComboBoxBase::GuiComboBoxBase(ControlTemplateType* _controlTemplate)
 				:GuiMenuButton(_styleController)
 			{
 				commandExecutor=new CommandExecutor(this);
@@ -184,7 +184,7 @@ GuiComboBoxListControl
 
 			GuiComboBoxListControl::GuiComboBoxListControl(IStyleController* _styleController, GuiSelectableListControl* _containedListControl)
 				:GuiComboBoxBase(_styleController)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 				, containedListControl(_containedListControl)
 			{
 				styleController->SetTextVisible(true);

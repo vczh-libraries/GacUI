@@ -116,7 +116,7 @@ Menu
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiMenuBar(GuiControl::IStyleController* _styleController);
+				GuiMenuBar(ControlTemplateType* _controlTemplate);
 				~GuiMenuBar();
 				
 				IDescriptable*							QueryService(const WString& identifier)override;
@@ -154,7 +154,7 @@ MenuButton
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiMenuButton(IStyleController* _styleController);
+				GuiMenuButton(ControlTemplateType* _controlTemplate);
 				~GuiMenuButton();
 
 				/// <summary>Sub menu opening changed event.</summary>

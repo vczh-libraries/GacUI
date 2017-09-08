@@ -202,7 +202,7 @@ GuiTextList
 			public:
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_styleController">The style controller for this control.</param>
-				GuiTextList(IStyleController* _styleController);
+				GuiTextList(ControlTemplateType* _controlTemplate);
 				~GuiTextList();
 
 				/// <summary>Get all text items.</summary>

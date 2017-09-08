@@ -177,7 +177,7 @@ GuiMenuBar
 				return true;
 			}
 
-			GuiMenuBar::GuiMenuBar(GuiControl::IStyleController* _styleController)
+			GuiMenuBar::GuiMenuBar(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
 			{
 			}
@@ -295,9 +295,9 @@ GuiMenuButton
 				return ownerMenuService?ownerMenuService->GetPreferredDirection():IGuiMenuService::Horizontal;
 			}
 
-			GuiMenuButton::GuiMenuButton(IStyleController* _styleController)
+			GuiMenuButton::GuiMenuButton(ControlTemplateType* _controlTemplate)
 				:GuiSelectableButton(_styleController)
-				,styleController(_styleController)
+				,controlTemplate(_controlTemplate)
 				,subMenu(0)
 				,ownedSubMenu(false)
 				,ownerMenuService(0)

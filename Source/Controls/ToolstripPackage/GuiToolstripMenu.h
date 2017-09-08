@@ -173,7 +173,7 @@ Toolstrip Container
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiToolstripMenuBar(IStyleController* _styleController);
+				GuiToolstripMenuBar(ControlTemplateType* _controlTemplate);
 				~GuiToolstripMenuBar();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
@@ -196,7 +196,7 @@ Toolstrip Container
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiToolstripToolBar(IStyleController* _styleController);
+				GuiToolstripToolBar(ControlTemplateType* _controlTemplate);
 				~GuiToolstripToolBar();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
@@ -225,7 +225,7 @@ Toolstrip Component
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiToolstripButton(IStyleController* _styleController);
+				GuiToolstripButton(ControlTemplateType* _controlTemplate);
 				~GuiToolstripButton();
 
 				/// <summary>Get the attached <see cref="GuiToolstripCommand"/>.</summary>

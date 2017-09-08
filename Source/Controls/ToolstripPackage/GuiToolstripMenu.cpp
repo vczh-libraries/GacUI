@@ -332,7 +332,7 @@ GuiToolstripMenu
 GuiToolstripMenuBar
 ***********************************************************************/
 			
-			GuiToolstripMenuBar::GuiToolstripMenuBar(IStyleController* _styleController)
+			GuiToolstripMenuBar::GuiToolstripMenuBar(ControlTemplateType* _controlTemplate)
 				:GuiMenuBar(_styleController)
 			{
 				stackComposition=new GuiStackComposition;
@@ -364,7 +364,7 @@ GuiToolstripMenuBar
 GuiToolstripToolBar
 ***********************************************************************/
 				
-			GuiToolstripToolBar::GuiToolstripToolBar(IStyleController* _styleController)
+			GuiToolstripToolBar::GuiToolstripToolBar(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
 			{
 				stackComposition=new GuiStackComposition;
@@ -436,7 +436,7 @@ GuiToolstripButton
 				UpdateCommandContent();
 			}
 
-			GuiToolstripButton::GuiToolstripButton(IStyleController* _styleController)
+			GuiToolstripButton::GuiToolstripButton(ControlTemplateType* _controlTemplate)
 				:GuiMenuButton(_styleController)
 				,command(0)
 			{

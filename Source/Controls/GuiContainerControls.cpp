@@ -25,7 +25,7 @@ GuiTabPage
 				return false;
 			}
 
-			GuiTabPage::GuiTabPage(IStyleController* _styleController)
+			GuiTabPage::GuiTabPage(ControlTemplateType* _controlTemplate)
 				:GuiCustomControl(_styleController)
 			{
 			}
@@ -104,9 +104,9 @@ GuiTab
 				tab->SetSelectedPage(tab->GetPages().Get(index));
 			}
 
-			GuiTab::GuiTab(IStyleController* _styleController)
+			GuiTab::GuiTab(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 				, tabPages(this)
 			{
 				commandExecutor = new CommandExecutor(this);
@@ -228,9 +228,9 @@ GuiScrollView
 				UpdateView(viewBounds);
 			}
 
-			GuiScrollView::GuiScrollView(IStyleController* _styleController)
+			GuiScrollView::GuiScrollView(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 				, supressScrolling(false)
 			{
 				commandExecutor = new CommandExecutor(this);
@@ -361,7 +361,7 @@ GuiScrollContainer
 				containerComposition->SetBounds(Rect(leftTop, Size(0, 0)));
 			}
 
-			GuiScrollContainer::GuiScrollContainer(IStyleController* styleController)
+			GuiScrollContainer::GuiScrollContainer(ControlTemplateType* _controlTemplate)
 				:GuiScrollView(styleController)
 			{
 				containerComposition = new GuiBoundsComposition();

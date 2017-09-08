@@ -310,7 +310,7 @@ GuiTextList
 
 			GuiVirtualTextList::GuiVirtualTextList(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_styleController, _itemProvider)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 			{
 				ItemTemplateChanged.AttachMethod(this, &GuiVirtualTextList::OnItemTemplateChanged);
 				ItemChecked.SetAssociatedComposition(boundsComposition);
@@ -363,7 +363,7 @@ GuiTextList
 GuiTextList
 ***********************************************************************/
 
-			GuiTextList::GuiTextList(IStyleController* _styleController)
+			GuiTextList::GuiTextList(ControlTemplateType* _controlTemplate)
 				:GuiVirtualTextList(_styleController, new list::TextItemProvider)
 			{
 				items=dynamic_cast<list::TextItemProvider*>(itemProvider.Obj());

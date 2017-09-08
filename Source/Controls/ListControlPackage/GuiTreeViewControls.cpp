@@ -923,7 +923,7 @@ GuiVirtualTreeView
 
 			GuiVirtualTreeView::GuiVirtualTreeView(IStyleController* _styleController, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiVirtualTreeListControl(_styleController, _nodeRootProvider)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 			{
 				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
 				SetStyleAndArranger(
@@ -945,7 +945,7 @@ GuiVirtualTreeView
 GuiTreeView
 ***********************************************************************/
 
-			GuiTreeView::GuiTreeView(IStyleController* _styleController)
+			GuiTreeView::GuiTreeView(ControlTemplateType* _controlTemplate)
 				:GuiVirtualTreeView(_styleController, new tree::TreeViewItemRootProvider)
 			{
 				nodes = nodeItemProvider->GetRoot().Cast<tree::TreeViewItemRootProvider>();

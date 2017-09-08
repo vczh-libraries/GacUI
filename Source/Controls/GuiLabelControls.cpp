@@ -15,9 +15,9 @@ namespace vl
 GuiLabel
 ***********************************************************************/
 
-			GuiLabel::GuiLabel(IStyleController* _styleController)
+			GuiLabel::GuiLabel(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
-				,styleController(_styleController)
+				,controlTemplate(_controlTemplate)
 			{
 				textColor=styleController->GetDefaultTextColor();
 				styleController->SetTextColor(textColor);

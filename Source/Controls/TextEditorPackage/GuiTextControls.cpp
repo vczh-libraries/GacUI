@@ -120,9 +120,9 @@ GuiMultilineTextBox
 				}
 			}
 
-			GuiMultilineTextBox::GuiMultilineTextBox(IStyleController* _styleController)
+			GuiMultilineTextBox::GuiMultilineTextBox(ControlTemplateType* _controlTemplate)
 				:GuiScrollView(_styleController)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 			{
 				callback = new TextElementOperatorCallback(this);
 				commandExecutor = new CommandExecutor(this);
@@ -270,9 +270,9 @@ GuiSinglelineTextBox
 				}
 			}
 
-			GuiSinglelineTextBox::GuiSinglelineTextBox(GuiSinglelineTextBox::IStyleController* _styleController)
+			GuiSinglelineTextBox::GuiSinglelineTextBox(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 			{
 				callback = new TextElementOperatorCallback(this);
 				commandExecutor = new CommandExecutor(this);

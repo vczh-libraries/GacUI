@@ -36,7 +36,7 @@ Tab Control
 			public:
 				/// <summary>Create a tab page control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiTabPage(IStyleController* _styleController);
+				GuiTabPage(ControlTemplateType* _controlTemplate);
 				~GuiTabPage();
 
 				GuiTab*											GetOwnerTab();
@@ -79,7 +79,7 @@ Tab Control
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiTab(IStyleController* _styleController);
+				GuiTab(ControlTemplateType* _controlTemplate);
 				~GuiTab();
 
 				/// <summary>Selected page changed event.</summary>
@@ -145,7 +145,7 @@ Scroll View
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiScrollView(IStyleController* _styleController);
+				GuiScrollView(ControlTemplateType* _controlTemplate);
 				~GuiScrollView();
 
 				virtual void							SetFont(const FontProperties& value);
@@ -192,7 +192,7 @@ Scroll View
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiScrollContainer(IStyleController* styleController);
+				GuiScrollContainer(ControlTemplateType* _controlTemplate);
 				~GuiScrollContainer();
 				
 				/// <summary>Test does the content container always extend its width to fill the scroll container.</summary>

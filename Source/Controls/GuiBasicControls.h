@@ -73,6 +73,8 @@ Basic Construction
 				static bool								SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 
 			public:
+				using ControlTemplateType = templates::GuiControlTemplate;
+
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
 				GuiControl(templates::GuiControlTemplate* _controlTemplate);
@@ -239,6 +241,15 @@ Basic Construction
 				{
 				}
 			};
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE) \
+			public: \
+				using ControlTemplateType = templates::Gui##TEMPLATE; \
+			protected: \
+				templates::Gui##TEMPLATE* controlTemplate = nullptr; \
+			public: \
+				templates::Gui##TEMPLATE* GetControlTemplate() { return controlTemplate; } \
+
 		}
 	}
 }

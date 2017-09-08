@@ -346,7 +346,7 @@ GuiDocumentViewer
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiDocumentViewer(IStyleController* styleController);
+				GuiDocumentViewer(ControlTemplateType* _controlTemplate);
 				~GuiDocumentViewer();
 
 				const WString&								GetText()override;
@@ -363,7 +363,7 @@ GuiDocumentViewer
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiDocumentLabel(GuiDocumentLabel::IStyleController* styleController);
+				GuiDocumentLabel(ControlTemplateType* _controlTemplate);
 				~GuiDocumentLabel();
 				
 				const WString&								GetText()override;

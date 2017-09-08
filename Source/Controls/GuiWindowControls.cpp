@@ -186,7 +186,7 @@ GuiControlHost
 				SetNativeWindow(0);
 			}
 
-			GuiControlHost::GuiControlHost(GuiControl::IStyleController* _styleController)
+			GuiControlHost::GuiControlHost(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
 			{
 				GetStyleController()->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
@@ -765,9 +765,9 @@ GuiWindow
 				IGuiAltActionHost::CollectAltActionsFromControl(this, actions);
 			}
 
-			GuiWindow::GuiWindow(IStyleController* _styleController)
+			GuiWindow::GuiWindow(ControlTemplateType* _controlTemplate)
 				:GuiControlHost(_styleController)
-				,styleController(_styleController)
+				,controlTemplate(_controlTemplate)
 				,previousAltHost(0)
 			{
 				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
@@ -947,7 +947,7 @@ GuiPopup
 				}
 			}
 
-			GuiPopup::GuiPopup(IStyleController* _styleController)
+			GuiPopup::GuiPopup(ControlTemplateType* _controlTemplate)
 				:GuiWindow(_styleController)
 			{
 				SetMinimizedBox(false);
@@ -1127,7 +1127,7 @@ GuiPopup
 				SetTemporaryContentControl(0);
 			}
 
-			GuiTooltip::GuiTooltip(IStyleController* _styleController)
+			GuiTooltip::GuiTooltip(ControlTemplateType* _controlTemplate)
 				:GuiPopup(_styleController)
 				,temporaryContentControl(0)
 			{

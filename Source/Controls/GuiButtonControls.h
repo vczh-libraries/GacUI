@@ -43,7 +43,7 @@ Buttons
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiButton(IStyleController* _styleController);
+				GuiButton(ControlTemplateType* _controlTemplate);
 				~GuiButton();
 
 				/// <summary>Mouse click event.</summary>
@@ -103,7 +103,7 @@ Buttons
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiSelectableButton(IStyleController* _styleController);
+				GuiSelectableButton(ControlTemplateType* _controlTemplate);
 				~GuiSelectableButton();
 
 				/// <summary>Group controller changed event.</summary>

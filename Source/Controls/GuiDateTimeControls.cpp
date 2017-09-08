@@ -48,9 +48,9 @@ GuiDatePicker
 				GuiControl::SetText(dateLocale.FormatDate(dateFormat, styleController->GetDate()));
 			}
 
-			GuiDatePicker::GuiDatePicker(IStyleController* _styleController)
+			GuiDatePicker::GuiDatePicker(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 			{
 				commandExecutor = new CommandExecutor(this);
 				styleController->SetCommandExecutor(commandExecutor.Obj());

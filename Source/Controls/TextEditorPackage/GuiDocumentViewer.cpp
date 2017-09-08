@@ -1129,7 +1129,7 @@ GuiDocumentViewer
 				GetVerticalScroll()->SetPosition(viewBounds.y1+offset);
 			}
 
-			GuiDocumentViewer::GuiDocumentViewer(GuiDocumentViewer::IStyleController* styleController)
+			GuiDocumentViewer::GuiDocumentViewer(ControlTemplateType* _controlTemplate)
 				:GuiScrollContainer(styleController)
 				, GuiDocumentCommonInterface(styleController->GetBaselineDocument(), styleController->GetCaretColor())
 			{
@@ -1160,7 +1160,7 @@ GuiDocumentViewer
 GuiDocumentLabel
 ***********************************************************************/
 
-			GuiDocumentLabel::GuiDocumentLabel(GuiDocumentLabel::IStyleController* styleController)
+			GuiDocumentLabel::GuiDocumentLabel(ControlTemplateType* _controlTemplate)
 				:GuiControl(styleController)
 				, GuiDocumentCommonInterface(styleController->GetBaselineDocument(), styleController->GetCaretColor())
 			{

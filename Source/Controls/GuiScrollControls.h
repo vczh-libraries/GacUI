@@ -56,7 +56,7 @@ Scrolls
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiScroll(IStyleController* _styleController);
+				GuiScroll(ControlTemplateType* _controlTemplate);
 				~GuiScroll();
 				
 				/// <summary>Total size changed event.</summary>

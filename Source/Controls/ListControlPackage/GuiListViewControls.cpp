@@ -16,9 +16,9 @@ namespace vl
 GuiListViewColumnHeader
 ***********************************************************************/
 			
-			GuiListViewColumnHeader::GuiListViewColumnHeader(IStyleController* _styleController)
+			GuiListViewColumnHeader::GuiListViewColumnHeader(ControlTemplateType* _controlTemplate)
 				:GuiMenuButton(_styleController)
-				,styleController(_styleController)
+				,controlTemplate(_controlTemplate)
 			{
 				styleController->SetColumnSortingState(columnSortingState);
 			}
@@ -52,7 +52,7 @@ GuiListViewBase
 
 			GuiListViewBase::GuiListViewBase(IStyleController* _styleController, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_styleController, _itemProvider)
-				, styleController(_styleController)
+				, controlTemplate(_controlTemplate)
 			{
 				ColumnClicked.SetAssociatedComposition(boundsComposition);
 			}
@@ -843,7 +843,7 @@ GuiListView
 GuiListView
 ***********************************************************************/
 
-			GuiListView::GuiListView(IStyleController* _styleController)
+			GuiListView::GuiListView(ControlTemplateType* _controlTemplate)
 				:GuiVirtualListView(_styleController, new list::ListViewItemProvider)
 			{
 				items=dynamic_cast<list::ListViewItemProvider*>(itemProvider.Obj());

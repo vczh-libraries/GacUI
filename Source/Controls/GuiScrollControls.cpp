@@ -63,9 +63,9 @@ GuiScroll::CommandExecutor
 GuiScroll
 ***********************************************************************/
 
-			GuiScroll::GuiScroll(IStyleController* _styleController)
+			GuiScroll::GuiScroll(ControlTemplateType* _controlTemplate)
 				:GuiControl(_styleController)
-				,styleController(_styleController)
+				,controlTemplate(_controlTemplate)
 				,totalSize(100)
 				,pageSize(10)
 				,position(0)

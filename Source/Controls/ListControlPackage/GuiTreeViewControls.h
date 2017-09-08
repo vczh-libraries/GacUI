@@ -490,7 +490,7 @@ GuiTreeView
 			public:
 				/// <summary>Create a tree view control.</summary>
 				/// <param name="_styleController">The style controller for this control.</param>
-				GuiTreeView(IStyleController* _styleController);
+				GuiTreeView(ControlTemplateType* _controlTemplate);
 				~GuiTreeView();
 
 				/// <summary>Get the <see cref="tree::TreeViewItemRootProvider"/> as a node root providerl.</summary>

@@ -67,7 +67,7 @@ MultilineTextBox
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiMultilineTextBox(IStyleController* _styleController);
+				GuiMultilineTextBox(ControlTemplateType* _controlTemplate);
 				~GuiMultilineTextBox();
 
 				const WString&								GetText()override;
@@ -118,7 +118,7 @@ SinglelineTextBox
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="styleController">The style controller.</param>
-				GuiSinglelineTextBox(GuiSinglelineTextBox::IStyleController* _styleController);
+				GuiSinglelineTextBox(ControlTemplateType* _controlTemplate);
 				~GuiSinglelineTextBox();
 
 				const WString&								GetText()override;

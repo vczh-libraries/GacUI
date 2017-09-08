@@ -52,7 +52,7 @@ ComboBox Base
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiComboBoxBase(IStyleController* _styleController);
+				GuiComboBoxBase(ControlTemplateType* _controlTemplate);
 				~GuiComboBoxBase();
 
 				/// <summary>Item selected event.</summary>
