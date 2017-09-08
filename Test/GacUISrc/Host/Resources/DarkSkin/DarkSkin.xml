@@ -1042,7 +1042,7 @@
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Right">
           <Button ControlTemplate="darkskin::RightScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallIncrease();"/>
         </SideAligned>
-        <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0">
+        <Bounds ref.Name="handleContainer" AlignmentToParent="left:20 top:0 right:20 bottom:0" MinSizeLimitation="NoLimit">
           <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigDecrease();}">
             <att.AlignmentToParent-bind>{left:0 top:0 right:(handleContainer.Bounds.x2 - handleContainer.Bounds.x1 - handle.Bounds.x1) bottom:0}</att.AlignmentToParent-bind>
           </Bounds>
@@ -1104,7 +1104,7 @@
         <SideAligned MaxLength="20" MaxRatio="0.5" Direction="Bottom">
           <Button ControlTemplate="darkskin::BottomScrollButtonTemplate" ev.Clicked-eval="self.Commands.SmallIncrease();"/>
         </SideAligned>
-        <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20">
+        <Bounds ref.Name="handleContainer" AlignmentToParent="left:0 top:20 right:0 bottom:20" MinSizeLimitation="NoLimit">
           <Bounds ev.leftButtonDown-eval="if (handleContainer.RelatedControl.VisuallyEnabled) {self.Commands.BigDecrease();}">
             <att.AlignmentToParent-bind>{left:0 top:0 right:0 bottom:(handleContainer.Bounds.y2 - handleContainer.Bounds.y1 - handle.Bounds.y1)}</att.AlignmentToParent-bind>
           </Bounds>
