@@ -1131,7 +1131,7 @@ GuiDocumentViewer
 
 			GuiDocumentViewer::GuiDocumentViewer(GuiDocumentViewer::IStyleController* styleController)
 				:GuiScrollContainer(styleController)
-				, GuiDocumentCommonInterface(styleController->GetBaselineDocument(), styleProvider->GetCaretColor())
+				, GuiDocumentCommonInterface(styleController->GetBaselineDocument(), styleController->GetCaretColor())
 			{
 				SetExtendToFullWidth(true);
 				SetHorizontalAlwaysVisible(false);
