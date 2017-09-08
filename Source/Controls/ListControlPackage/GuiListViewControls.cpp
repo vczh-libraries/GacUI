@@ -19,7 +19,7 @@ GuiListViewColumnHeader
 			GuiListViewColumnHeader::GuiListViewColumnHeader(ControlTemplateType* _controlTemplate)
 				:GuiMenuButton(_controlTemplate)
 			{
-				controlTemplate->SetColumnSortingState(columnSortingState);
+				controlTemplate->SetSortingState(columnSortingState);
 			}
 
 			GuiListViewColumnHeader::~GuiListViewColumnHeader()
@@ -41,7 +41,7 @@ GuiListViewColumnHeader
 				if(columnSortingState!=value)
 				{
 					columnSortingState=value;
-					controlTemplate->SetColumnSortingState(columnSortingState);
+					controlTemplate->SetSortingState(columnSortingState);
 				}
 			}
 

@@ -689,6 +689,22 @@ GuiMultilineTextBoxTemplate
 			}
 
 /***********************************************************************
+GuiListControlTemplate
+***********************************************************************/
+
+			GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)
+
+			GuiListControlTemplate::GuiListControlTemplate()
+			{
+				GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)
+			}
+
+			GuiListControlTemplate::~GuiListControlTemplate()
+			{
+				FinalizeAggregation();
+			}
+
+/***********************************************************************
 GuiTextListTemplate
 ***********************************************************************/
 
@@ -1106,7 +1122,7 @@ GuiDatePickerTemplate
 							dayTable->AddChild(cell);
 							cell->SetSite(j + DayRowStart, i, 1, 1);
 
-							GuiSelectableButton* button = new GuiSelectableButton(new GuiSelectableButtonTemplate_StyleProvider(GetDateButtonTemplate()));
+							GuiSelectableButton* button = new GuiSelectableButton(GetDateButtonTemplate()({}));
 							button->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 							button->SetGroupController(dayMutexController);
 							button->SelectedChanged.AttachMethod(this, &GuiDatePickerTemplate::buttonDay_SelectedChanged);

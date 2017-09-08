@@ -214,6 +214,7 @@ Type List (Templates)
 			F(presentation::templates::GuiComboBoxTemplate)\
 			F(presentation::templates::GuiScrollTemplate)\
 			F(presentation::templates::GuiScrollViewTemplate)\
+			F(presentation::templates::GuiListControlTemplate)\
 			F(presentation::templates::GuiTextListTemplate)\
 			F(presentation::templates::GuiListViewTemplate)\
 			F(presentation::templates::GuiTreeViewTemplate)\

@@ -537,7 +537,19 @@ Scrollable Controls
 List Controls
 ***********************************************************************/
 
-			class GuiTextListTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiTextListTemplate>
+			class GuiListControlTemplate : public GuiScrollViewTemplate, public Description<GuiListControlTemplate>
+			{
+			public:
+				GuiListControlTemplate();
+				~GuiListControlTemplate();
+
+#define GuiListControlTemplate_PROPERTIES(F)\
+				F(GuiListControlTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
+
+				GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+			class GuiTextListTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiTextListTemplate>
 			{
 			public:
 				GuiTextListTemplate();
@@ -545,21 +557,19 @@ List Controls
 
 #define GuiTextListTemplate_PROPERTIES(F)\
 				F(GuiTextListTemplate, Color, TextColor)\
-				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
 				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, CheckBulletTemplate)\
 				F(GuiTextListTemplate, TemplateProperty<GuiSelectableButtonTemplate>, RadioBulletTemplate)\
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiListViewTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiListViewTemplate>
+			class GuiListViewTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiListViewTemplate>
 			{
 			public:
 				GuiListViewTemplate();
 				~GuiListViewTemplate();
 
 #define GuiListViewTemplate_PROPERTIES(F)\
-				F(GuiListViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
 				F(GuiListViewTemplate, TemplateProperty<GuiListViewColumnHeaderTemplate>, ColumnHeaderTemplate)\
 				F(GuiListViewTemplate, Color, PrimaryTextColor)\
 				F(GuiListViewTemplate, Color, SecondaryTextColor)\
@@ -568,14 +578,13 @@ List Controls
 				GuiListViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
-			class GuiTreeViewTemplate : public GuiScrollViewTemplate, public AggregatableDescription<GuiTreeViewTemplate>
+			class GuiTreeViewTemplate : public GuiListControlTemplate, public AggregatableDescription<GuiTreeViewTemplate>
 			{
 			public:
 				GuiTreeViewTemplate();
 				~GuiTreeViewTemplate();
 
 #define GuiTreeViewTemplate_PROPERTIES(F)\
-				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, BackgroundTemplate)\
 				F(GuiTreeViewTemplate, TemplateProperty<GuiSelectableButtonTemplate>, ExpandingDecoratorTemplate)\
 				F(GuiTreeViewTemplate, Color, TextColor)\
 

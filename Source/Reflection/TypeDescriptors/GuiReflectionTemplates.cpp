@@ -222,22 +222,29 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(VerticalAlwaysVisible)
 			END_CLASS_MEMBER(GuiScrollViewTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiTextListTemplate)
+			BEGIN_CLASS_MEMBER(GuiListControlTemplate)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate)
+				CLASS_MEMBER_CONSTRUCTOR(GuiListControlTemplate*(), NO_PARAMETER)
+
+				GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
+			END_CLASS_MEMBER(GuiListControlTemplate)
+
+			BEGIN_CLASS_MEMBER(GuiTextListTemplate)
+				CLASS_MEMBER_BASE(GuiListControlTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate*(), NO_PARAMETER)
 
 				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiTextListTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiListViewTemplate)
-				CLASS_MEMBER_BASE(GuiScrollViewTemplate)
+				CLASS_MEMBER_BASE(GuiListControlTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiListViewTemplate*(), NO_PARAMETER)
 
 				GuiListViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiListViewTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiTreeViewTemplate)
-				CLASS_MEMBER_BASE(GuiScrollViewTemplate)
+				CLASS_MEMBER_BASE(GuiListControlTemplate)
 				CLASS_MEMBER_CONSTRUCTOR(GuiTreeViewTemplate*(), NO_PARAMETER)
 
 				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)

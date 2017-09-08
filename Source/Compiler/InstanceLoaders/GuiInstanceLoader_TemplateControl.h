@@ -1,6 +1,5 @@
 #include "../GuiInstanceHelperTypes.h"
 #include "../WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
-#include "../../Controls/Templates/GuiControlTemplateStyles.h"
 
 #ifndef VCZH_PRESENTATION_REFLECTION_INSTANCELOADERS_GUIINSTANCELOADER_TEMPLATECONTROL
 #define VCZH_PRESENTATION_REFLECTION_INSTANCELOADERS_GUIINSTANCELOADER_TEMPLATECONTROL
