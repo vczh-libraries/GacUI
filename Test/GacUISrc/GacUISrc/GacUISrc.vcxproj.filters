@@ -144,9 +144,6 @@
     <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp">
       <Filter>GacUI\Controls\Templates</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Controls\Templates\GuiControlTemplateStyles.cpp">
-      <Filter>GacUI\Controls\Templates</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.cpp">
       <Filter>GacUI\Controls\TextEditorPackage</Filter>
     </ClCompile>
@@ -534,9 +531,6 @@
       <Filter>GacUI\Controls\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplates.h">
-      <Filter>GacUI\Controls\Templates</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Source\Controls\Templates\GuiControlTemplateStyles.h">
       <Filter>GacUI\Controls\Templates</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Source\Controls\TextEditorPackage\GuiDocumentViewer.h">
