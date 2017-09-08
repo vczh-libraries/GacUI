@@ -35,11 +35,11 @@ Basic Construction
 				friend class compositions::GuiGraphicsComposition;
 				typedef collections::List<GuiControl*>		ControlList;
 			protected:
-				Ptr<IStyleController>							styleController;
-				compositions::GuiBoundsComposition*				boundsComposition;
-				compositions::GuiGraphicsComposition*			containerComposition = nullptr;
-				compositions::GuiGraphicsComposition*			focusableComposition = nullptr;
-				compositions::GuiGraphicsEventReceiver*			eventReceiver = nullptr;
+				templates::GuiControlTemplate*			controlTemplate = nullptr;
+				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
+				compositions::GuiGraphicsComposition*	containerComposition = nullptr;
+				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
+				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
 
 				bool									isEnabled = true;
 				bool									isVisuallyEnabled = true;
@@ -75,7 +75,7 @@ Basic Construction
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiControl(IStyleController* _styleController);
+				GuiControl(templates::GuiControlTemplate* _controlTemplate);
 				~GuiControl();
 
 				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
@@ -101,7 +101,7 @@ Basic Construction
 				compositions::GuiEventArgs				GetNotifyEventArguments();
 				/// <summary>Get the associated style controller.</summary>
 				/// <returns>The associated style controller.</returns>
-				IStyleController*						GetStyleController();
+				templates::GuiControlTemplate*			GetControlTemplate();
 				/// <summary>Get the bounds composition for the control. The value is from <see cref="IStyleController::GetBoundsComposition"/>.</summary>
 				/// <returns>The bounds composition.</returns>
 				compositions::GuiBoundsComposition*		GetBoundsComposition();
@@ -220,7 +220,7 @@ Basic Construction
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="_styleController">The style controller.</param>
-				GuiCustomControl(IStyleController* _styleController);
+				GuiCustomControl(templates::GuiControlTemplate* _controlTemplate);
 				~GuiCustomControl();
 			};
 

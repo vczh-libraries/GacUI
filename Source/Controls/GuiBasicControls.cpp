@@ -65,7 +65,7 @@ GuiControl
 				if(isVisuallyEnabled!=newValue)
 				{
 					isVisuallyEnabled=newValue;
-					styleController->SetVisuallyEnabled(isVisuallyEnabled);
+					controlTemplate->SetVisuallyEnabled(isVisuallyEnabled);
 					VisuallyEnabledChanged.Execute(GetNotifyEventArguments());
 
 					for(vint i=0;i<children.Count();i++)
@@ -80,7 +80,7 @@ GuiControl
 				if(focusableComposition!=value)
 				{
 					focusableComposition=value;
-					styleController->SetFocusableComposition(focusableComposition);
+					controlTemplate->SetFocusableComposition(focusableComposition);
 				}
 			}
 
@@ -106,7 +106,7 @@ GuiControl
 
 			compositions::GuiGraphicsComposition* GuiControl::GetAltComposition()
 			{
-				return boundsComposition;
+				return controlTemplate;
 			}
 
 			compositions::IGuiAltActionHost* GuiControl::GetActivatingAltHost()
@@ -130,13 +130,13 @@ GuiControl
 				return true;
 			}
 
-			GuiControl::GuiControl(IStyleController* _styleController)
-				:styleController(_styleController)
-				,boundsComposition(_styleController->GetBoundsComposition())
-				,eventReceiver(_styleController->GetBoundsComposition()->GetEventReceiver())
+			GuiControl::GuiControl(templates::GuiControlTemplate* _controlTemplate)
+				:controlTemplate(_controlTemplate)
+				, boundsComposition(controlTemplate)
+				, eventReceiver(controlTemplate->GetEventReceiver())
 			{
 				boundsComposition->SetAssociatedControl(this);
-				containerComposition = styleController->GetContainerComposition();
+				containerComposition = controlTemplate->GetContainerComposition();
 
 				RenderTargetChanged.SetAssociatedComposition(boundsComposition);
 				VisibleChanged.SetAssociatedComposition(boundsComposition);
@@ -147,51 +147,51 @@ GuiControl
 				FontChanged.SetAssociatedComposition(boundsComposition);
 
 				font=GetCurrentController()->ResourceService()->GetDefaultFont();
-				styleController->SetFont(font);
-				styleController->SetText(text);
-				styleController->SetVisuallyEnabled(isVisuallyEnabled);
+				controlTemplate->SetFont(font);
+				controlTemplate->SetText(text);
+				controlTemplate->SetVisuallyEnabled(isVisuallyEnabled);
 				
 				sharedPtrDestructorProc = &GuiControl::SharedPtrDestructorProc;
 			}
 
 			GuiControl::~GuiControl()
 			{
-				if(tooltipControl)
+				if (tooltipControl)
 				{
 					// the only legal parent is the GuiApplication::sharedTooltipWindow
-					if(tooltipControl->GetBoundsComposition()->GetParent())
+					if (tooltipControl->GetBoundsComposition()->GetParent())
 					{
 						tooltipControl->GetBoundsComposition()->GetParent()->RemoveChild(tooltipControl->GetBoundsComposition());
 					}
 					delete tooltipControl;
 				}
-				if(parent || !styleController)
+				if (parent || !controlTemplate)
 				{
-					for(vint i=0;i<children.Count();i++)
+					for (vint i = 0; i < children.Count(); i++)
 					{
 						delete children[i];
 					}
 				}
 				else
 				{
-					for(vint i=children.Count()-1;i>=0;i--)
+					for (vint i = children.Count() - 1; i >= 0; i--)
 					{
-						GuiControl* child=children[i];
+						GuiControl* child = children[i];
 						child->GetBoundsComposition()->GetParent()->RemoveChild(child->GetBoundsComposition());
 						delete child;
 					}
-					delete boundsComposition;
+					delete controlTemplate;
 				}
 			}
 
 			compositions::GuiEventArgs GuiControl::GetNotifyEventArguments()
 			{
-				return GuiEventArgs(boundsComposition);
+				return GuiEventArgs(controlTemplate);
 			}
 
-			GuiControl::IStyleController* GuiControl::GetStyleController()
+			templates::GuiControlTemplate* GuiControl::GetControlTemplate()
 			{
-				return styleController.Obj();
+				return controlTemplate;
 			}
 
 			compositions::GuiBoundsComposition* GuiControl::GetBoundsComposition()
@@ -310,7 +310,7 @@ GuiControl
 				if(text!=value)
 				{
 					text=value;
-					styleController->SetText(text);
+					controlTemplate->SetText(text);
 					TextChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -325,7 +325,7 @@ GuiControl
 				if(font!=value)
 				{
 					font=value;
-					styleController->SetFont(font);
+					controlTemplate->SetFont(font);
 					FontChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -413,8 +413,8 @@ GuiControl
 GuiCustomControl
 ***********************************************************************/
 
-			GuiCustomControl::GuiCustomControl(IStyleController* _styleController)
-				:GuiControl(_styleController)
+			GuiCustomControl::GuiCustomControl(templates::GuiControlTemplate* _controlTemplate)
+				:GuiControl(_controlTemplate)
 			{
 			}
 
