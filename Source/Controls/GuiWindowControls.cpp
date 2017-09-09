@@ -207,6 +207,7 @@ GuiControlHost
 
 			GuiControlHost::~GuiControlHost()
 			{
+				host->GetMainComposition()->RemoveChild(controlTemplate);
 				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
 				delete host;

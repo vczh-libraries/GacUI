@@ -166,22 +166,22 @@ GuiControl
 					}
 					delete tooltipControl;
 				}
-				if (parent || !controlTemplate)
+
+				for (vint i = 0; i < children.Count(); i++)
 				{
-					for (vint i = 0; i < children.Count(); i++)
-					{
-						delete children[i];
-					}
+					delete children[i];
 				}
-				else
+				children.Clear();
+
+				// let the root control of a control tree delete the whole composition tree
+				if (controlTemplate)
 				{
-					for (vint i = children.Count() - 1; i >= 0; i--)
+					controlTemplate->SetAssociatedControl(nullptr);
+
+					if (!parent)
 					{
-						GuiControl* child = children[i];
-						child->GetBoundsComposition()->GetParent()->RemoveChild(child->GetBoundsComposition());
-						delete child;
+						delete controlTemplate;
 					}
-					delete controlTemplate;
 				}
 			}
 
