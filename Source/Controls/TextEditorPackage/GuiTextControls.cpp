@@ -270,6 +270,7 @@ GuiSinglelineTextBox
 				, controlTemplate(_controlTemplate)
 			{
 				textElement = GuiColorizedTextElement::Create();
+				textElement->SetFont(GetFont());
 				textElement->SetViewPosition(Point(-GuiSinglelineTextBox::TextMargin, -GuiSinglelineTextBox::TextMargin));
 				{
 					Array<text::ColorEntry> colors(1);
@@ -310,7 +311,8 @@ GuiSinglelineTextBox
 
 			const WString& GuiSinglelineTextBox::GetText()
 			{
-				return textElement->GetLines().GetText();
+				text = textElement->GetLines().GetText();
+				return text;
 			}
 
 			void GuiSinglelineTextBox::SetText(const WString& value)
