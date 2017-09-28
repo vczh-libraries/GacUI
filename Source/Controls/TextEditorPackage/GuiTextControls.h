@@ -83,7 +83,7 @@ SinglelineTextBox
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(SinglelineTextBoxTemplate)
 			public:
-				static const vint							TextMargin=3;
+				static const vint							TextMargin=2;
 				
 			protected:
 				class TextElementOperatorCallback : public GuiTextBoxCommonInterface::DefaultCallback, public Description<TextElementOperatorCallback>
@@ -97,22 +97,15 @@ SinglelineTextBox
 					vint									GetTextMargin()override;
 				};
 
-				class CommandExecutor : public Object, public ITextBoxCommandExecutor
-				{
-				protected:
-					GuiSinglelineTextBox*					textBox;
-
-				public:
-					CommandExecutor(GuiSinglelineTextBox* _textBox);
-					~CommandExecutor();
-
-					void									UnsafeSetText(const WString& value)override;
-				};
 			protected:
 				Ptr<TextElementOperatorCallback>			callback;
-				Ptr<CommandExecutor>						commandExecutor;
+				elements::GuiColorizedTextElement*			textElement = nullptr;
+				compositions::GuiTableComposition*			textCompositionTable = nullptr;
+				compositions::GuiCellComposition*			textComposition = nullptr;
 				
+				void										RearrangeTextElement();
 				void										OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
+				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
@@ -121,7 +114,9 @@ SinglelineTextBox
 				~GuiSinglelineTextBox();
 
 				const WString&								GetText()override;
+				void										SetText(const WString& value)override;
 				void										SetFont(const FontProperties& value)override;
+
 				/// <summary>
 				/// Get the password mode displaying character.
 				/// </summary>

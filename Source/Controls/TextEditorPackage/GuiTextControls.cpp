@@ -171,8 +171,8 @@ GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 
 			GuiSinglelineTextBox::TextElementOperatorCallback::TextElementOperatorCallback(GuiSinglelineTextBox* _textControl)
 				:GuiTextBoxCommonInterface::DefaultCallback(
-					_textControl->GetControlTemplate()->GetTextElement(),
-					_textControl->GetControlTemplate()->GetTextComposition()
+					_textControl->textElement,
+					_textControl->textComposition
 					)
 			{
 			}
@@ -234,31 +234,27 @@ GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 			}
 
 /***********************************************************************
-GuiSinglelineTextBox::CommandExecutor
-***********************************************************************/
-
-			GuiSinglelineTextBox::CommandExecutor::CommandExecutor(GuiSinglelineTextBox* _textBox)
-				:textBox(_textBox)
-			{
-			}
-
-			GuiSinglelineTextBox::CommandExecutor::~CommandExecutor()
-			{
-			}
-
-			void GuiSinglelineTextBox::CommandExecutor::UnsafeSetText(const WString& value)
-			{
-				textBox->UnsafeSetText(value);
-			}
-
-/***********************************************************************
 GuiSinglelineTextBox
 ***********************************************************************/
+
+			void GuiSinglelineTextBox::RearrangeTextElement()
+			{
+				textCompositionTable->SetRowOption(
+					1,
+					GuiCellOption::AbsoluteOption(
+						textElement->GetLines().GetRowHeight() + 2 * TextMargin)
+				);
+			}
 
 			void GuiSinglelineTextBox::OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)
 			{
 				GuiControl::OnRenderTargetChanged(renderTarget);
-				controlTemplate->RearrangeTextElement();
+				RearrangeTextElement();
+			}
+
+			void GuiSinglelineTextBox::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			{
+				textElement->SetVisuallyEnabled(GetVisuallyEnabled());
 			}
 
 			void GuiSinglelineTextBox::OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments)
@@ -273,21 +269,36 @@ GuiSinglelineTextBox
 				:GuiControl(_controlTemplate)
 				, controlTemplate(_controlTemplate)
 			{
-				callback = new TextElementOperatorCallback(this);
-				commandExecutor = new CommandExecutor(this);
-
-				controlTemplate->SetCommands(commandExecutor.Obj());
-				SetFocusableComposition(boundsComposition);
+				textElement = GuiColorizedTextElement::Create();
+				textElement->SetViewPosition(Point(-GuiSinglelineTextBox::TextMargin, -GuiSinglelineTextBox::TextMargin));
 				{
-					auto element = controlTemplate->GetTextElement();
 					Array<text::ColorEntry> colors(1);
 					colors[0] = controlTemplate->GetTextColor();
-					element->SetColors(colors);
-					element->SetCaretColor(controlTemplate->GetCaretColor());
+					textElement->SetColors(colors);
+					textElement->SetCaretColor(controlTemplate->GetCaretColor());
 				}
-				Install(controlTemplate->GetTextElement(), controlTemplate->GetTextComposition(), this);
+
+				textCompositionTable = new GuiTableComposition;
+				textCompositionTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				textCompositionTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				textCompositionTable->SetRowsAndColumns(3, 1);
+				textCompositionTable->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+				textCompositionTable->SetRowOption(1, GuiCellOption::AbsoluteOption(0));
+				textCompositionTable->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+				textCompositionTable->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+				GetContainerComposition()->AddChild(textCompositionTable);
+
+				textComposition = new GuiCellComposition;
+				textComposition->SetOwnedElement(textElement);
+				textCompositionTable->AddChild(textComposition);
+				textComposition->SetSite(1, 0, 1, 1);
+
+				callback = new TextElementOperatorCallback(this);
+				SetFocusableComposition(boundsComposition);
+				Install(textElement, textComposition, this);
 				SetCallback(callback.Obj());
 
+				VisuallyEnabledChanged.AttachMethod(this, &GuiSinglelineTextBox::OnVisuallyEnabledChanged);
 				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
 				boundsComposition->GetEventReceiver()->middleButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
 				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiSinglelineTextBox::OnBoundsMouseButtonDown);
@@ -299,24 +310,31 @@ GuiSinglelineTextBox
 
 			const WString& GuiSinglelineTextBox::GetText()
 			{
-				text = controlTemplate->GetEditingText();
-				return text;
+				return textElement->GetLines().GetText();
+			}
+
+			void GuiSinglelineTextBox::SetText(const WString& value)
+			{
+				UnsafeSetText(value);
+				textElement->SetCaretBegin(TextPos(0, 0));
+				textElement->SetCaretEnd(TextPos(0, 0));
 			}
 
 			void GuiSinglelineTextBox::SetFont(const FontProperties& value)
 			{
 				GuiControl::SetFont(value);
-				controlTemplate->RearrangeTextElement();
+				textElement->SetFont(value);
+				RearrangeTextElement();
 			}
 
 			wchar_t GuiSinglelineTextBox::GetPasswordChar()
 			{
-				return controlTemplate->GetTextElement()->GetPasswordChar();
+				return textElement->GetPasswordChar();
 			}
 
 			void GuiSinglelineTextBox::SetPasswordChar(wchar_t value)
 			{
-				controlTemplate->GetTextElement()->SetPasswordChar(value);
+				textElement->SetPasswordChar(value);
 			}
 		}
 	}

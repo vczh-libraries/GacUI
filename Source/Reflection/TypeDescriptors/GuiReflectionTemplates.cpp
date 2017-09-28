@@ -104,38 +104,18 @@ Type Declaration
 				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
 			END_CLASS_MEMBER(GuiTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiControlTemplate)
-				CLASS_MEMBER_BASE(GuiTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiControlTemplate*(), NO_PARAMETER)
+#define GUI_CONTROL_TEMPLATE(NAME, BASE)\
+			BEGIN_CLASS_MEMBER(NAME)\
+				CLASS_MEMBER_BASE(BASE)\
+				CLASS_MEMBER_CONSTRUCTOR(NAME*(), NO_PARAMETER)\
+				NAME ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)\
+				CLASS_MEMBER_METHOD(Initialize, NO_PARAMETER)\
+			END_CLASS_MEMBER(NAME)\
 
-				GuiControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-				CLASS_MEMBER_METHOD(Initialize, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiControlTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiLabelTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiLabelTemplate*(), NO_PARAMETER)
-
-				GuiLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiLabelTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiSinglelineTextBoxTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiSinglelineTextBoxTemplate*(), NO_PARAMETER)
-
-				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(EditingText)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextElement)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextComposition)
-				CLASS_MEMBER_METHOD(RearrangeTextElement, NO_PARAMETER)
-			END_CLASS_MEMBER(GuiSinglelineTextBoxTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiDocumentLabelTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiDocumentLabelTemplate*(), NO_PARAMETER)
-
-				GuiDocumentLabelTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiDocumentLabelTemplate)
+			GUI_CONTROL_TEMPLATE(GuiControlTemplate, GuiTemplate)
+			GUI_CONTROL_TEMPLATE(GuiLabelTemplate, GuiControlTemplate)
+			GUI_CONTROL_TEMPLATE(GuiSinglelineTextBoxTemplate, GuiControlTemplate)
+			GUI_CONTROL_TEMPLATE(GuiDocumentLabelTemplate, GuiControlTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiMultilineTextBoxTemplate)
 				CLASS_MEMBER_BASE(GuiScrollViewTemplate)
@@ -147,66 +127,15 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TextComposition)
 			END_CLASS_MEMBER(GuiMultilineTextBoxTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiDocumentViewerTemplate)
-				CLASS_MEMBER_BASE(GuiScrollViewTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiDocumentViewerTemplate*(), NO_PARAMETER)
-
-				GuiDocumentViewerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiDocumentViewerTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiMenuTemplate)
-				CLASS_MEMBER_BASE(GuiWindowTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiMenuTemplate*(), NO_PARAMETER)
-			END_CLASS_MEMBER(GuiMenuTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiWindowTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiWindowTemplate*(), NO_PARAMETER)
-
-				GuiWindowTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiWindowTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiButtonTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiButtonTemplate*(), NO_PARAMETER)
-
-				GuiButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiButtonTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiSelectableButtonTemplate)
-				CLASS_MEMBER_BASE(GuiButtonTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableButtonTemplate*(), NO_PARAMETER)
-
-				GuiSelectableButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiSelectableButtonTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiToolstripButtonTemplate)
-				CLASS_MEMBER_BASE(GuiSelectableButtonTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiToolstripButtonTemplate*(), NO_PARAMETER)
-
-				GuiToolstripButtonTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiToolstripButtonTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiListViewColumnHeaderTemplate)
-				CLASS_MEMBER_BASE(GuiToolstripButtonTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListViewColumnHeaderTemplate*(), NO_PARAMETER)
-
-				GuiListViewColumnHeaderTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiListViewColumnHeaderTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiComboBoxTemplate)
-				CLASS_MEMBER_BASE(GuiToolstripButtonTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiComboBoxTemplate*(), NO_PARAMETER)
-
-				GuiComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiComboBoxTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiScrollTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiScrollTemplate*(), NO_PARAMETER)
-
-				GuiScrollTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiScrollTemplate)
+			GUI_CONTROL_TEMPLATE(GuiDocumentViewerTemplate, GuiScrollViewTemplate)
+			GUI_CONTROL_TEMPLATE(GuiMenuTemplate, GuiWindowTemplate)
+			GUI_CONTROL_TEMPLATE(GuiWindowTemplate, GuiControlTemplate)
+			GUI_CONTROL_TEMPLATE(GuiButtonTemplate, GuiControlTemplate)
+			GUI_CONTROL_TEMPLATE(GuiSelectableButtonTemplate, GuiButtonTemplate)
+			GUI_CONTROL_TEMPLATE(GuiToolstripButtonTemplate, GuiSelectableButtonTemplate)
+			GUI_CONTROL_TEMPLATE(GuiListViewColumnHeaderTemplate, GuiToolstripButtonTemplate)
+			GUI_CONTROL_TEMPLATE(GuiComboBoxTemplate, GuiToolstripButtonTemplate)
+			GUI_CONTROL_TEMPLATE(GuiScrollTemplate, GuiControlTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiScrollViewTemplate)
 				CLASS_MEMBER_BASE(GuiControlTemplate)
@@ -222,40 +151,11 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(VerticalAlwaysVisible)
 			END_CLASS_MEMBER(GuiScrollViewTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiListControlTemplate)
-				CLASS_MEMBER_BASE(GuiScrollViewTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListControlTemplate*(), NO_PARAMETER)
-
-				GuiListControlTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiListControlTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiTextListTemplate)
-				CLASS_MEMBER_BASE(GuiListControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextListTemplate*(), NO_PARAMETER)
-
-				GuiTextListTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiTextListTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiListViewTemplate)
-				CLASS_MEMBER_BASE(GuiListControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListViewTemplate*(), NO_PARAMETER)
-
-				GuiListViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiListViewTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiTreeViewTemplate)
-				CLASS_MEMBER_BASE(GuiListControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTreeViewTemplate*(), NO_PARAMETER)
-
-				GuiTreeViewTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiTreeViewTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiTabTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTabTemplate*(), NO_PARAMETER)
-
-				GuiTabTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiTabTemplate)
+			GUI_CONTROL_TEMPLATE(GuiListControlTemplate, GuiScrollViewTemplate)
+			GUI_CONTROL_TEMPLATE(GuiTextListTemplate, GuiListControlTemplate)
+			GUI_CONTROL_TEMPLATE(GuiListViewTemplate, GuiListControlTemplate)
+			GUI_CONTROL_TEMPLATE(GuiTreeViewTemplate, GuiListControlTemplate)
+			GUI_CONTROL_TEMPLATE(GuiTabTemplate, GuiControlTemplate)
 
 			BEGIN_CLASS_MEMBER(GuiDatePickerTemplate)
 				CLASS_MEMBER_BASE(GuiControlTemplate)
@@ -266,55 +166,15 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Date)
 			END_CLASS_MEMBER(GuiDatePickerTemplate)
 
-			BEGIN_CLASS_MEMBER(GuiDateComboBoxTemplate)
-				CLASS_MEMBER_BASE(GuiComboBoxTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBoxTemplate*(), NO_PARAMETER)
+			GUI_CONTROL_TEMPLATE(GuiDateComboBoxTemplate, GuiComboBoxTemplate)
+			GUI_CONTROL_TEMPLATE(GuiListItemTemplate, GuiTemplate)
+			GUI_CONTROL_TEMPLATE(GuiTextListItemTemplate, GuiListItemTemplate)
+			GUI_CONTROL_TEMPLATE(GuiTreeItemTemplate, GuiTextListItemTemplate)
+			GUI_CONTROL_TEMPLATE(GuiGridCellTemplate, GuiControlTemplate)
+			GUI_CONTROL_TEMPLATE(GuiGridVisualizerTemplate, GuiGridCellTemplate)
+			GUI_CONTROL_TEMPLATE(GuiGridEditorTemplate, GuiGridCellTemplate)
 
-				GuiDateComboBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiDateComboBoxTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiListItemTemplate)
-				CLASS_MEMBER_BASE(GuiTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListItemTemplate*(), NO_PARAMETER)
-
-				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiListItemTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiTextListItemTemplate)
-				CLASS_MEMBER_BASE(GuiListItemTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextListItemTemplate*(), NO_PARAMETER)
-
-				GuiTextListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiTextListItemTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiTreeItemTemplate)
-				CLASS_MEMBER_BASE(GuiTextListItemTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTreeItemTemplate*(), NO_PARAMETER)
-
-				GuiTreeItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiTreeItemTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiGridCellTemplate)
-				CLASS_MEMBER_BASE(GuiControlTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiGridCellTemplate*(), NO_PARAMETER)
-
-				GuiGridCellTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiGridCellTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiGridVisualizerTemplate)
-				CLASS_MEMBER_BASE(GuiGridCellTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiGridVisualizerTemplate*(), NO_PARAMETER)
-
-				GuiGridVisualizerTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiGridVisualizerTemplate)
-
-			BEGIN_CLASS_MEMBER(GuiGridEditorTemplate)
-				CLASS_MEMBER_BASE(GuiGridCellTemplate)
-				CLASS_MEMBER_CONSTRUCTOR(GuiGridEditorTemplate*(), NO_PARAMETER)
-
-				GuiGridEditorTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_REFLECTION)
-			END_CLASS_MEMBER(GuiGridEditorTemplate)
-
+#undef GUI_CONTROL_TEMPLATE
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION
 #undef _
 

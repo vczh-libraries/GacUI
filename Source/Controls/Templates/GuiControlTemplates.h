@@ -272,31 +272,15 @@ Basic Controls
 
 			class GuiSinglelineTextBoxTemplate : public GuiControlTemplate, public AggregatableDescription<GuiSinglelineTextBoxTemplate>
 			{
-			protected:
-				elements::GuiColorizedTextElement*			textElement = nullptr;
-				compositions::GuiTableComposition*			textCompositionTable = nullptr;
-				compositions::GuiCellComposition*			textComposition = nullptr;
-
-				void										OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				GuiSinglelineTextBoxTemplate();
 				~GuiSinglelineTextBoxTemplate();
 
 #define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
-				F(GuiSinglelineTextBoxTemplate, controls::ITextBoxCommandExecutor*, Commands)\
 				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor)\
 				F(GuiSinglelineTextBoxTemplate, Color, CaretColor)\
 
 				GuiSinglelineTextBoxTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-
-				WString										GetEditingText();
-				elements::GuiColorizedTextElement*			GetTextElement();
-				compositions::GuiGraphicsComposition*		GetTextComposition();
-
-				void										RearrangeTextElement();
-				void										Initialize()override;
 			};
 
 			class GuiDocumentLabelTemplate : public GuiControlTemplate, public AggregatableDescription<GuiDocumentLabelTemplate>
@@ -356,6 +340,10 @@ Window
 			public:
 				GuiMenuTemplate();
 				~GuiMenuTemplate();
+
+#define GuiMenuTemplate_PROPERTIES(F)
+
+				GuiMenuTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 			};
 
 /***********************************************************************
