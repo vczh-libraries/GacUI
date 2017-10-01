@@ -40,11 +40,12 @@ Basic Construction
 
 				using ControlList = collections::List<GuiControl*>;
 				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
-			protected:
+			private:
 				theme::ThemeName						controlThemeName;
 				ControlTemplatePropertyType				controlTemplate;
 				templates::GuiControlTemplate*			controlTemplateObject = nullptr;
 
+			protected:
 				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
 				compositions::GuiBoundsComposition*		containerComposition = nullptr;
 				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
@@ -65,7 +66,9 @@ Basic Construction
 				vint									tooltipWidth = 0;
 
 				virtual void							BeforeControlTemplateUninstalled();
-				virtual void							AfterControlTemplateInstalled();
+				virtual void							AfterControlTemplateInstalled(bool initialize);
+				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
+				virtual void							EnsureControlTemplateExists();
 				virtual void							RebuildControlTemplate();
 				virtual void							OnChildInserted(GuiControl* control);
 				virtual void							OnChildRemoved(GuiControl* control);
@@ -259,13 +262,31 @@ Basic Construction
 				}
 			};
 
-#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE) \
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE) controlTemplateObject ## UNIQUE
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(UNIQUE) GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE)
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(__LINE__)
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, NAME) \
 			public: \
 				using ControlTemplateType = templates::Gui##TEMPLATE; \
 			protected: \
-				templates::Gui##TEMPLATE* controlTemplateObject = nullptr; \
+				templates::Gui##TEMPLATE* NAME = nullptr; \
+				void BeforeControlTemplateUninstalled()override;\
+				void AfterControlTemplateInstalled(bool initialize)override;\
+				void CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)override\
+				{\
+					auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value);\
+					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L".");\
+					NAME = ct;\
+				}\
 			public: \
-				templates::Gui##TEMPLATE* GetControlTemplateObject() { return controlTemplateObject; } \
+				templates::Gui##TEMPLATE* GetControlTemplateObject()\
+				{\
+					EnsureControlTemplateExists();\
+					return NAME;\
+				}\
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
 
 		}
 	}

@@ -21,15 +21,29 @@ GuiControl
 			{
 			}
 
-			void GuiControl::AfterControlTemplateInstalled()
+			void GuiControl::AfterControlTemplateInstalled(bool initialize)
 			{
 				controlTemplateObject->SetText(text);
 				controlTemplateObject->SetFont(font);
 				controlTemplateObject->SetVisuallyEnabled(isVisuallyEnabled);
 			}
 
+			void GuiControl::CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)
+			{
+				controlTemplateObject = value;
+			}
+
+			void GuiControl::EnsureControlTemplateExists()
+			{
+				if (!controlTemplateObject)
+				{
+					RebuildControlTemplate();
+				}
+			}
+
 			void GuiControl::RebuildControlTemplate()
 			{
+				bool initialize = controlTemplateObject == nullptr;
 				if (controlTemplateObject)
 				{
 					BeforeControlTemplateUninstalled();
@@ -41,11 +55,11 @@ GuiControl
 
 				if (controlTemplate)
 				{
-					controlTemplateObject = controlTemplate({});
+					CheckAndStoreControlTemplate(controlTemplate({}));
 				}
 				else
 				{
-					controlTemplateObject = theme::GetCurrentTheme()->CreateStyle(controlThemeName)({});
+					CheckAndStoreControlTemplate(theme::GetCurrentTheme()->CreateStyle(controlThemeName)({}));
 				}
 
 				if (controlTemplateObject)
@@ -54,7 +68,7 @@ GuiControl
 					containerComposition->GetParent()->RemoveChild(containerComposition);
 					boundsComposition->AddChild(controlTemplateObject);
 					controlTemplateObject->GetContainerComposition()->AddChild(containerComposition);
-					AfterControlTemplateInstalled();
+					AfterControlTemplateInstalled(initialize);
 				}
 			}
 
@@ -244,33 +258,25 @@ GuiControl
 
 			templates::GuiControlTemplate* GuiControl::GetControlTemplateObject()
 			{
+				EnsureControlTemplateExists();
 				return controlTemplateObject;
 			}
 
 			compositions::GuiBoundsComposition* GuiControl::GetBoundsComposition()
 			{
-				if (!controlTemplateObject)
-				{
-					RebuildControlTemplate();
-				}
+				EnsureControlTemplateExists();
 				return boundsComposition;
 			}
 
 			compositions::GuiGraphicsComposition* GuiControl::GetContainerComposition()
 			{
-				if (!controlTemplateObject)
-				{
-					RebuildControlTemplate();
-				}
+				EnsureControlTemplateExists();
 				return containerComposition;
 			}
 
 			compositions::GuiGraphicsComposition* GuiControl::GetFocusableComposition()
 			{
-				if (!controlTemplateObject)
-				{
-					RebuildControlTemplate();
-				}
+				EnsureControlTemplateExists();
 				return focusableComposition;
 			}
 
