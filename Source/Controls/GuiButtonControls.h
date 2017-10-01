@@ -43,7 +43,7 @@ Buttons
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiButton(ControlTemplateType* _controlTemplate);
+				GuiButton(theme::ThemeName themeName);
 				~GuiButton();
 
 				/// <summary>Mouse click event.</summary>
@@ -103,7 +103,7 @@ Buttons
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiSelectableButton(ControlTemplateType* _controlTemplate);
+				GuiSelectableButton(theme::ThemeName themeName);
 				~GuiSelectableButton();
 
 				/// <summary>Group controller changed event.</summary>

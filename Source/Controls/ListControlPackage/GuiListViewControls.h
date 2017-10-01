@@ -28,7 +28,7 @@ namespace vl
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiListViewColumnHeader(ControlTemplateType* _controlTemplate);
+				GuiListViewColumnHeader(theme::ThemeName themeName);
 				~GuiListViewColumnHeader();
 
 				bool											IsAltAvailable()override;
@@ -49,7 +49,7 @@ namespace vl
 				/// <summary>Create a list view base control.</summary>
 				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiListViewBase(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider);
+				GuiListViewBase(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiListViewBase();
 
 				/// <summary>Column clicked event.</summary>
@@ -452,7 +452,7 @@ GuiVirtualListView
 				/// <summary>Create a list view control in virtual mode.</summary>
 				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualListView(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualListView(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualListView();
 
 				/// <summary>Get the current view.</summary>
@@ -475,7 +475,7 @@ GuiListView
 			public:
 				/// <summary>Create a list view control.</summary>
 				/// <param name="_controlTemplate">The control template for this control.</param>
-				GuiListView(ControlTemplateType* _controlTemplate);
+				GuiListView(theme::ThemeName themeName);
 				~GuiListView();
 				
 				/// <summary>Get all list view items.</summary>

@@ -119,9 +119,8 @@ GuiMultilineTextBox
 				}
 			}
 
-			GuiMultilineTextBox::GuiMultilineTextBox(ControlTemplateType* _controlTemplate)
-				:GuiScrollView(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiMultilineTextBox::GuiMultilineTextBox(theme::ThemeName themeName)
+				:GuiScrollView(themeName)
 			{
 				callback = new TextElementOperatorCallback(this);
 				commandExecutor = new CommandExecutor(this);
@@ -265,9 +264,8 @@ GuiSinglelineTextBox
 				}
 			}
 
-			GuiSinglelineTextBox::GuiSinglelineTextBox(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiSinglelineTextBox::GuiSinglelineTextBox(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 				textElement = GuiColorizedTextElement::Create();
 				textElement->SetFont(GetFont());

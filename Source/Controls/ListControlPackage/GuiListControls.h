@@ -282,7 +282,7 @@ List Control
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
 				/// <param name="acceptFocus">Set to true if the list control is allowed to have a keyboard focus.</param>
-				GuiListControl(ControlTemplateType* _controlTemplate, IItemProvider* _itemProvider, bool acceptFocus=false);
+				GuiListControl(theme::ThemeName themeName, IItemProvider* _itemProvider, bool acceptFocus=false);
 				~GuiListControl();
 
 				/// <summary>Style provider changed event.</summary>
@@ -387,7 +387,7 @@ Selectable List Control
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
-				GuiSelectableListControl(ControlTemplateType* _controlTemplate, IItemProvider* _itemProvider);
+				GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider);
 				~GuiSelectableListControl();
 
 				/// <summary>Selection changed event.</summary>

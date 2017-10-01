@@ -347,7 +347,7 @@ GuiDocumentViewer
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiDocumentViewer(ControlTemplateType* _controlTemplate);
+				GuiDocumentViewer(theme::ThemeName themeName);
 				~GuiDocumentViewer();
 
 				const WString&								GetText()override;
@@ -365,7 +365,7 @@ GuiDocumentViewer
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiDocumentLabel(ControlTemplateType* _controlTemplate);
+				GuiDocumentLabel(theme::ThemeName themeName);
 				~GuiDocumentLabel();
 				
 				const WString&								GetText()override;

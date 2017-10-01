@@ -120,9 +120,8 @@ GuiButton
 				}
 			}
 
-			GuiButton::GuiButton(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
-				,controlTemplate(_controlTemplate)
+			GuiButton::GuiButton(theme::ThemeName themeName)
+				:GuiControl(themeName)
 				,clickOnMouseUp(true)
 				,mousePressing(false)
 				,mouseHoving(false)
@@ -219,9 +218,8 @@ GuiSelectableButton
 				}
 			}
 
-			GuiSelectableButton::GuiSelectableButton(ControlTemplateType* _controlTemplate)
-				:GuiButton(_controlTemplate)
-				,controlTemplate(_controlTemplate)
+			GuiSelectableButton::GuiSelectableButton(theme::ThemeName themeName)
+				:GuiButton(themeName)
 				,groupController(0)
 				,autoSelection(true)
 				,isSelected(false)

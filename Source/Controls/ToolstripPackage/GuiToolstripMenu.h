@@ -71,7 +71,7 @@ Toolstrip Container
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
-				GuiToolstripMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner);
+				GuiToolstripMenu(theme::ThemeName themeName, GuiControl* _owner);
 				~GuiToolstripMenu();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
@@ -89,7 +89,7 @@ Toolstrip Container
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiToolstripMenuBar(ControlTemplateType* _controlTemplate);
+				GuiToolstripMenuBar(theme::ThemeName themeName);
 				~GuiToolstripMenuBar();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
@@ -107,7 +107,7 @@ Toolstrip Container
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiToolstripToolBar(ControlTemplateType* _controlTemplate);
+				GuiToolstripToolBar(theme::ThemeName themeName);
 				~GuiToolstripToolBar();
 				
 				/// <summary>Get all managed child controls ordered by their positions.</summary>
@@ -132,7 +132,7 @@ Toolstrip Component
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiToolstripButton(ControlTemplateType* _controlTemplate);
+				GuiToolstripButton(theme::ThemeName themeName);
 				~GuiToolstripButton();
 
 				/// <summary>Get the attached <see cref="GuiToolstripCommand"/>.</summary>

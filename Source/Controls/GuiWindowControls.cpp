@@ -186,8 +186,8 @@ GuiControlHost
 				SetNativeWindow(0);
 			}
 
-			GuiControlHost::GuiControlHost(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
+			GuiControlHost::GuiControlHost(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 				controlTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				
@@ -621,9 +621,8 @@ GuiWindow
 				IGuiAltActionHost::CollectAltActionsFromControl(this, actions);
 			}
 
-			GuiWindow::GuiWindow(ControlTemplateType* _controlTemplate)
-				:GuiControlHost(_controlTemplate)
-				,controlTemplate(_controlTemplate)
+			GuiWindow::GuiWindow(theme::ThemeName themeName)
+				:GuiControlHost(themeName)
 				,previousAltHost(0)
 			{
 				INativeWindow* window=GetCurrentController()->WindowService()->CreateNativeWindow();
@@ -802,8 +801,8 @@ GuiPopup
 				}
 			}
 
-			GuiPopup::GuiPopup(ControlTemplateType* _controlTemplate)
-				:GuiWindow(_controlTemplate)
+			GuiPopup::GuiPopup(theme::ThemeName themeName)
+				:GuiWindow(themeName)
 			{
 				SetMinimizedBox(false);
 				SetMaximizedBox(false);
@@ -982,8 +981,8 @@ GuiPopup
 				SetTemporaryContentControl(0);
 			}
 
-			GuiTooltip::GuiTooltip(ControlTemplateType* _controlTemplate)
-				:GuiPopup(_controlTemplate)
+			GuiTooltip::GuiTooltip(theme::ThemeName themeName)
+				:GuiPopup(themeName)
 				,temporaryContentControl(0)
 			{
 				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);

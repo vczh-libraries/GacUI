@@ -56,7 +56,7 @@ Scrolls
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiScroll(ControlTemplateType* _controlTemplate);
+				GuiScroll(theme::ThemeName themeName);
 				~GuiScroll();
 				
 				/// <summary>Total size changed event.</summary>

@@ -49,7 +49,7 @@ DatePicker
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiDatePicker(ControlTemplateType* _controlTemplate);
+				GuiDatePicker(theme::ThemeName themeName);
 				~GuiDatePicker();
 
 				/// <summary>Date changed event.</summary>

@@ -91,7 +91,7 @@ GuiToolstripMenu
 				sharedSizeRootComposition->ForceCalculateSizeImmediately();
 			}
 
-			GuiToolstripMenu::GuiToolstripMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner)
+			GuiToolstripMenu::GuiToolstripMenu(theme::ThemeName themeName, GuiControl* _owner)
 				:GuiMenu(_controlTemplate, _owner)
 			{
 				sharedSizeRootComposition = new GuiSharedSizeRootComposition();
@@ -121,8 +121,8 @@ GuiToolstripMenu
 GuiToolstripMenuBar
 ***********************************************************************/
 			
-			GuiToolstripMenuBar::GuiToolstripMenuBar(ControlTemplateType* _controlTemplate)
-				:GuiMenuBar(_controlTemplate)
+			GuiToolstripMenuBar::GuiToolstripMenuBar(theme::ThemeName themeName)
+				:GuiMenuBar(themeName)
 			{
 				stackComposition=new GuiStackComposition;
 				stackComposition->SetDirection(GuiStackComposition::Horizontal);
@@ -146,8 +146,8 @@ GuiToolstripMenuBar
 GuiToolstripToolBar
 ***********************************************************************/
 				
-			GuiToolstripToolBar::GuiToolstripToolBar(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
+			GuiToolstripToolBar::GuiToolstripToolBar(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 				stackComposition=new GuiStackComposition;
 				stackComposition->SetDirection(GuiStackComposition::Horizontal);
@@ -211,8 +211,8 @@ GuiToolstripButton
 				UpdateCommandContent();
 			}
 
-			GuiToolstripButton::GuiToolstripButton(ControlTemplateType* _controlTemplate)
-				:GuiMenuButton(_controlTemplate)
+			GuiToolstripButton::GuiToolstripButton(theme::ThemeName themeName)
+				:GuiMenuButton(themeName)
 				,command(0)
 			{
 				Clicked.AttachMethod(this, &GuiToolstripButton::OnClicked);

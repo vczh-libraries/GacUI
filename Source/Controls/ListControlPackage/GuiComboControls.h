@@ -52,7 +52,7 @@ ComboBox Base
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiComboBoxBase(ControlTemplateType* _controlTemplate);
+				GuiComboBoxBase(theme::ThemeName themeName);
 				~GuiComboBoxBase();
 
 				/// <summary>Item selected event.</summary>
@@ -88,7 +88,7 @@ ComboBox with GuiListControl
 				/// <summary>Create a control with a specified style controller and a list control that will be put in the popup control to show all items.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_containedListControl">The list controller.</param>
-				GuiComboBoxListControl(ControlTemplateType* _controlTemplate, GuiSelectableListControl* _containedListControl);
+				GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl);
 				~GuiComboBoxListControl();
 				
 				/// <summary>Style provider changed event.</summary>

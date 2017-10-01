@@ -98,7 +98,7 @@ Menu
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
-				GuiMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner);
+				GuiMenu(theme::ThemeName themeName, GuiControl* _owner);
 				~GuiMenu();
 
 				/// <summary>Update the reference to the parent <see cref="IGuiMenuService"/>. This function is not required to call outside the menu or menu item control.</summary>
@@ -117,7 +117,7 @@ Menu
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiMenuBar(ControlTemplateType* _controlTemplate);
+				GuiMenuBar(theme::ThemeName themeName);
 				~GuiMenuBar();
 				
 				IDescriptable*							QueryService(const WString& identifier)override;
@@ -155,7 +155,7 @@ MenuButton
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiMenuButton(ControlTemplateType* _controlTemplate);
+				GuiMenuButton(theme::ThemeName themeName);
 				~GuiMenuButton();
 
 				/// <summary>Sub menu opening changed event.</summary>

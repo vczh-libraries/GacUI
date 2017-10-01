@@ -59,7 +59,7 @@ Control Host
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiControlHost(ControlTemplateType* _controlTemplate);
+				GuiControlHost(theme::ThemeName themeName);
 				~GuiControlHost();
 				
 				/// <summary>Window got focus event.</summary>
@@ -222,7 +222,7 @@ Window
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiWindow(ControlTemplateType* _controlTemplate);
+				GuiWindow(theme::ThemeName themeName);
 				~GuiWindow();
 
 				IDescriptable*							QueryService(const WString& identifier)override;
@@ -328,7 +328,7 @@ Window
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiPopup(ControlTemplateType* _controlTemplate);
+				GuiPopup(theme::ThemeName themeName);
 				~GuiPopup();
 
 				/// <summary>Test will the whole popup window be in the screen if the popup's left-top position is set to a specified value.</summary>
@@ -366,7 +366,7 @@ Window
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiTooltip(ControlTemplateType* _controlTemplate);
+				GuiTooltip(theme::ThemeName themeName);
 				~GuiTooltip();
 
 				/// <summary>Get the preferred content width.</summary>

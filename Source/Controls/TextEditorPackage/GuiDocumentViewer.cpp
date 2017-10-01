@@ -1129,9 +1129,8 @@ GuiDocumentViewer
 				GetVerticalScroll()->SetPosition(viewBounds.y1+offset);
 			}
 
-			GuiDocumentViewer::GuiDocumentViewer(ControlTemplateType* _controlTemplate)
-				:GuiScrollContainer(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiDocumentViewer::GuiDocumentViewer(theme::ThemeName themeName)
+				:GuiScrollContainer(themeName)
 				, GuiDocumentCommonInterface(_controlTemplate->GetBaselineDocument(), _controlTemplate->GetCaretColor())
 			{
 				SetExtendToFullWidth(true);
@@ -1161,9 +1160,8 @@ GuiDocumentViewer
 GuiDocumentLabel
 ***********************************************************************/
 
-			GuiDocumentLabel::GuiDocumentLabel(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiDocumentLabel::GuiDocumentLabel(theme::ThemeName themeName)
+				:GuiControl(themeName)
 				, GuiDocumentCommonInterface(_controlTemplate->GetBaselineDocument(), _controlTemplate->GetCaretColor())
 			{
 				GetContainerComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);

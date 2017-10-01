@@ -676,9 +676,8 @@ GuiVirtualTreeListControl
 				}
 			}
 
-			GuiVirtualTreeListControl::GuiVirtualTreeListControl(ControlTemplateType* _controlTemplate, Ptr<tree::INodeRootProvider> _nodeRootProvider)
+			GuiVirtualTreeListControl::GuiVirtualTreeListControl(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiSelectableListControl(_controlTemplate, new tree::NodeItemProvider(_nodeRootProvider))
-				, controlTemplate(_controlTemplate)
 			{
 				nodeItemProvider = dynamic_cast<tree::NodeItemProvider*>(GetItemProvider());
 				nodeItemView = dynamic_cast<tree::INodeItemView*>(GetItemProvider()->RequestView(tree::INodeItemView::Identifier));
@@ -922,7 +921,7 @@ GuiVirtualTreeView
 				}
 			}
 
-			GuiVirtualTreeView::GuiVirtualTreeView(ControlTemplateType* _controlTemplate, Ptr<tree::INodeRootProvider> _nodeRootProvider)
+			GuiVirtualTreeView::GuiVirtualTreeView(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider)
 				:GuiVirtualTreeListControl(_controlTemplate, _nodeRootProvider)
 			{
 				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
@@ -940,7 +939,7 @@ GuiVirtualTreeView
 GuiTreeView
 ***********************************************************************/
 
-			GuiTreeView::GuiTreeView(ControlTemplateType* _controlTemplate)
+			GuiTreeView::GuiTreeView(theme::ThemeName themeName)
 				:GuiVirtualTreeView(_controlTemplate, new tree::TreeViewItemRootProvider)
 			{
 				nodes = nodeItemProvider->GetRoot().Cast<tree::TreeViewItemRootProvider>();

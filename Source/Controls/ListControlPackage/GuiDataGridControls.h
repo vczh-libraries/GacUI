@@ -101,7 +101,7 @@ GuiVirtualDataGrid
 				/// <summary>Create a data grid control in virtual mode.</summary>
 				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualDataGrid(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualDataGrid();
 
 				/// <summary>Selected cell changed event.</summary>

@@ -66,7 +66,7 @@ MultilineTextBox
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiMultilineTextBox(ControlTemplateType* _controlTemplate);
+				GuiMultilineTextBox(theme::ThemeName themeName);
 				~GuiMultilineTextBox();
 
 				const WString&								GetText()override;
@@ -110,7 +110,7 @@ SinglelineTextBox
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiSinglelineTextBox(ControlTemplateType* _controlTemplate);
+				GuiSinglelineTextBox(theme::ThemeName themeName);
 				~GuiSinglelineTextBox();
 
 				const WString&								GetText()override;

@@ -491,7 +491,7 @@ GuiVirtualDataGrid
 				}
 			}
 
-			GuiVirtualDataGrid::GuiVirtualDataGrid(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualDataGrid::GuiVirtualDataGrid(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
 				:GuiVirtualListView(_controlTemplate, _itemProvider)
 			{
 				listViewItemView = dynamic_cast<IListViewItemView*>(_itemProvider->RequestView(IListViewItemView::Identifier));

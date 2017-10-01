@@ -25,8 +25,8 @@ GuiTabPage
 				return false;
 			}
 
-			GuiTabPage::GuiTabPage(ControlTemplateType* _controlTemplate)
-				:GuiCustomControl(_controlTemplate)
+			GuiTabPage::GuiTabPage(theme::ThemeName themeName)
+				:GuiCustomControl(themeName)
 			{
 			}
 
@@ -104,9 +104,8 @@ GuiTab
 				tab->SetSelectedPage(tab->GetPages().Get(index));
 			}
 
-			GuiTab::GuiTab(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiTab::GuiTab(theme::ThemeName themeName)
+				:GuiControl(themeName)
 				, tabPages(this)
 			{
 				commandExecutor = new CommandExecutor(this);
@@ -228,9 +227,8 @@ GuiScrollView
 				UpdateView(viewBounds);
 			}
 
-			GuiScrollView::GuiScrollView(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
+				:GuiControl(themeName)
 				, supressScrolling(false)
 			{
 				commandExecutor = new CommandExecutor(this);
@@ -361,8 +359,8 @@ GuiScrollContainer
 				containerComposition->SetBounds(Rect(leftTop, Size(0, 0)));
 			}
 
-			GuiScrollContainer::GuiScrollContainer(ControlTemplateType* _controlTemplate)
-				:GuiScrollView(_controlTemplate)
+			GuiScrollContainer::GuiScrollContainer(theme::ThemeName themeName)
+				:GuiScrollView(themeName)
 			{
 				containerComposition = new GuiBoundsComposition();
 				containerComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);

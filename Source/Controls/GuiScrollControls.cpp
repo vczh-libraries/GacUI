@@ -63,9 +63,8 @@ GuiScroll::CommandExecutor
 GuiScroll
 ***********************************************************************/
 
-			GuiScroll::GuiScroll(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
-				,controlTemplate(_controlTemplate)
+			GuiScroll::GuiScroll(theme::ThemeName themeName)
+				:GuiControl(themeName)
 				,totalSize(100)
 				,pageSize(10)
 				,position(0)

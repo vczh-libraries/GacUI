@@ -118,9 +118,8 @@ GuiMenu
 				}
 			}
 
-			GuiMenu::GuiMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner)
-				:GuiPopup(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiMenu::GuiMenu(theme::ThemeName themeName, GuiControl* _owner)
+				:GuiPopup(themeName)
 				, owner(_owner)
 				, parentMenuService(0)
 			{
@@ -178,8 +177,8 @@ GuiMenuBar
 				return true;
 			}
 
-			GuiMenuBar::GuiMenuBar(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
+			GuiMenuBar::GuiMenuBar(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 			}
 
@@ -296,9 +295,8 @@ GuiMenuButton
 				return ownerMenuService?ownerMenuService->GetPreferredDirection():IGuiMenuService::Horizontal;
 			}
 
-			GuiMenuButton::GuiMenuButton(ControlTemplateType* _controlTemplate)
-				:GuiSelectableButton(_controlTemplate)
-				,controlTemplate(_controlTemplate)
+			GuiMenuButton::GuiMenuButton(theme::ThemeName themeName)
+				:GuiSelectableButton(themeName)
 				,subMenu(0)
 				,ownedSubMenu(false)
 				,ownerMenuService(0)

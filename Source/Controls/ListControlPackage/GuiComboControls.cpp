@@ -51,9 +51,8 @@ GuiComboBoxBase
 				SetPreferredMenuClientSize(size);
 			}
 
-			GuiComboBoxBase::GuiComboBoxBase(ControlTemplateType* _controlTemplate)
-				:GuiMenuButton(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiComboBoxBase::GuiComboBoxBase(theme::ThemeName themeName)
+				:GuiMenuButton(themeName)
 			{
 				commandExecutor=new CommandExecutor(this);
 				controlTemplate->SetCommands(commandExecutor.Obj());
@@ -181,8 +180,8 @@ GuiComboBoxListControl
 				SelectedIndexChanged.Execute(GetNotifyEventArguments());
 			}
 
-			GuiComboBoxListControl::GuiComboBoxListControl(ControlTemplateType* _controlTemplate, GuiSelectableListControl* _containedListControl)
-				:GuiComboBoxBase(_controlTemplate)
+			GuiComboBoxListControl::GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl)
+				:GuiComboBoxBase(themeName)
 				, containedListControl(_containedListControl)
 			{
 				controlTemplate->SetTextVisible(true);

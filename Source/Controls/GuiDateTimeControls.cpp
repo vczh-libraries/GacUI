@@ -48,9 +48,8 @@ GuiDatePicker
 				GuiControl::SetText(dateLocale.FormatDate(dateFormat, controlTemplate->GetDate()));
 			}
 
-			GuiDatePicker::GuiDatePicker(ControlTemplateType* _controlTemplate)
-				:GuiControl(_controlTemplate)
-				, controlTemplate(_controlTemplate)
+			GuiDatePicker::GuiDatePicker(theme::ThemeName themeName)
+				:GuiControl(themeName)
 			{
 				commandExecutor = new CommandExecutor(this);
 				controlTemplate->SetCommands(commandExecutor.Obj());
@@ -155,8 +154,8 @@ GuiDateComboBox
 				NotifyUpdateSelectedDate();
 			}
 
-			GuiDateComboBox::GuiDateComboBox(ControlTemplateType* _controlTemplate, GuiDatePicker* _datePicker)
-				:GuiComboBoxBase(_controlTemplate)
+			GuiDateComboBox::GuiDateComboBox(theme::ThemeName themeName, GuiDatePicker* _datePicker)
+				:GuiComboBoxBase(themeName)
 				,datePicker(_datePicker)
 			{
 				SelectedDateChanged.SetAssociatedComposition(GetBoundsComposition());

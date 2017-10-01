@@ -308,9 +308,8 @@ GuiTextList
 				view = TextListView::Unknown;
 			}
 
-			GuiVirtualTextList::GuiVirtualTextList(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider)
+			GuiVirtualTextList::GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider)
 				:GuiSelectableListControl(_controlTemplate, _itemProvider)
-				, controlTemplate(_controlTemplate)
 			{
 				ItemTemplateChanged.AttachMethod(this, &GuiVirtualTextList::OnItemTemplateChanged);
 				ItemChecked.SetAssociatedComposition(boundsComposition);
@@ -358,7 +357,7 @@ GuiTextList
 GuiTextList
 ***********************************************************************/
 
-			GuiTextList::GuiTextList(ControlTemplateType* _controlTemplate)
+			GuiTextList::GuiTextList(theme::ThemeName themeName)
 				:GuiVirtualTextList(_controlTemplate, new list::TextItemProvider)
 			{
 				items=dynamic_cast<list::TextItemProvider*>(itemProvider.Obj());

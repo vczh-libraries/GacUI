@@ -172,7 +172,7 @@ GuiVirtualTextList
 				/// <summary>Create a Text list control in virtual mode.</summary>
 				/// <param name="_controlTemplate">The control template for this control.</param>
 				/// <param name="_itemProvider">The item provider for this control.</param>
-				GuiVirtualTextList(ControlTemplateType* _controlTemplate, GuiListControl::IItemProvider* _itemProvider);
+				GuiVirtualTextList(theme::ThemeName themeName, GuiListControl::IItemProvider* _itemProvider);
 				~GuiVirtualTextList();
 
 				/// <summary>Item checked changed event.</summary>
@@ -198,7 +198,7 @@ GuiTextList
 			public:
 				/// <summary>Create a Text list control.</summary>
 				/// <param name="_controlTemplate">The control template for this control.</param>
-				GuiTextList(ControlTemplateType* _controlTemplate);
+				GuiTextList(theme::ThemeName themeName);
 				~GuiTextList();
 
 				/// <summary>Get all text items.</summary>
