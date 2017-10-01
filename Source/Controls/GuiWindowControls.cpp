@@ -86,14 +86,6 @@ GuiControlHost
 								owner->DisplayTooltip(p);
 								tooltipOpenDelay=0;
 
-								/*
-								When you use VS2010 to compiler this code,
-								you will see there is an error here.
-								This is due to VS2010's bug about processing [this] capture.
-								I don't want to do workaround in my code, but I can tell you how to do that:
-
-								Use a variable to save the value of "this", and capture [theThisValue, owner] instead of [this, owner].
-								*/
 								tooltipCloseDelay=GetApplication()->DelayExecuteInMainThread([this, owner]()
 								{
 									owner->CloseTooltip();
@@ -166,7 +158,7 @@ GuiControlHost
 
 			void GuiControlHost::Closing(bool& cancel)
 			{
-				GuiRequestEventArgs arguments(controlTemplate);
+				GuiRequestEventArgs arguments(boundsComposition);
 				arguments.cancel=cancel;
 				WindowClosing.Execute(arguments);
 				if(!arguments.handled)
@@ -189,25 +181,25 @@ GuiControlHost
 			GuiControlHost::GuiControlHost(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
-				controlTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				boundsComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				
-				WindowGotFocus.SetAssociatedComposition(controlTemplate);
-				WindowLostFocus.SetAssociatedComposition(controlTemplate);
-				WindowActivated.SetAssociatedComposition(controlTemplate);
-				WindowDeactivated.SetAssociatedComposition(controlTemplate);
-				WindowOpened.SetAssociatedComposition(controlTemplate);
-				WindowClosing.SetAssociatedComposition(controlTemplate);
-				WindowClosed.SetAssociatedComposition(controlTemplate);
-				WindowDestroying.SetAssociatedComposition(controlTemplate);
+				WindowGotFocus.SetAssociatedComposition(boundsComposition);
+				WindowLostFocus.SetAssociatedComposition(boundsComposition);
+				WindowActivated.SetAssociatedComposition(boundsComposition);
+				WindowDeactivated.SetAssociatedComposition(boundsComposition);
+				WindowOpened.SetAssociatedComposition(boundsComposition);
+				WindowClosing.SetAssociatedComposition(boundsComposition);
+				WindowClosed.SetAssociatedComposition(boundsComposition);
+				WindowDestroying.SetAssociatedComposition(boundsComposition);
 
 				host=new GuiGraphicsHost;
-				host->GetMainComposition()->AddChild(controlTemplate);
+				host->GetMainComposition()->AddChild(boundsComposition);
 				sharedPtrDestructorProc = 0;
 			}
 
 			GuiControlHost::~GuiControlHost()
 			{
-				host->GetMainComposition()->RemoveChild(controlTemplate);
+				host->GetMainComposition()->RemoveChild(boundsComposition);
 				FinalizeInstanceRecursively(this);
 				OnBeforeReleaseGraphicsHost();
 				delete host;
@@ -563,17 +555,47 @@ GuiControlHost
 GuiWindow
 ***********************************************************************/
 
-			void GuiWindow::Moved()
+			void GuiWindow::BeforeControlTemplateUninstalled()
 			{
-				GuiControlHost::Moved();
-				controlTemplate->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 			}
 
-			void GuiWindow::OnNativeWindowChanged()
+			void GuiWindow::AfterControlTemplateInstalled(bool initialized)
+			{
+				auto ct = GetControlTemplateObject();
+#define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
+				switch (ct->Get ## NAME ## Option()) \
+				{ \
+				case templates::BoolOption::AlwaysTrue: \
+					VARIABLE = true; \
+					break; \
+				case templates::BoolOption::AlwaysFalse: \
+					VARIABLE = false; \
+					break; \
+				} \
+
+				FIX_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox)
+				FIX_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox)
+				FIX_WINDOW_PROPERTY(hasBorder, Border)
+				FIX_WINDOW_PROPERTY(hasSizeBox, SizeBox)
+				FIX_WINDOW_PROPERTY(isIconVisible, IconVisible)
+				FIX_WINDOW_PROPERTY(hasTitleBar, TitleBar)
+
+#undef FIX_WINDOW_PROPERTY
+				ct->SetMaximizedBox(hasMaximizedBox);
+				ct->SetMinimizedBox(hasMinimizedBox);
+				ct->SetBorder(hasBorder);
+				ct->SetSizeBox(hasSizeBox);
+				ct->SetIconVisible(isIconVisible);
+				ct->SetTitleBar(hasTitleBar);
+				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+				SyncNativeWindowProperties();
+			}
+
+			void GuiWindow::SyncNativeWindowProperties()
 			{
 				if (auto window = GetNativeWindow())
 				{
-					if (controlTemplate->GetCustomFrameEnabled())
+					if (GetControlTemplateObject()->GetCustomFrameEnabled())
 					{
 						window->EnableCustomFrameMode();
 						window->SetBorder(false);
@@ -583,7 +605,25 @@ GuiWindow
 						window->DisableCustomFrameMode();
 						window->SetBorder(true);
 					}
+
+					window->SetMaximizedBox(hasMaximizedBox);
+					window->SetMinimizedBox(hasMinimizedBox);
+					window->SetBorder(hasBorder);
+					window->SetSizeBox(hasSizeBox);
+					window->SetIconVisible(isIconVisible);
+					window->SetTitleBar(hasTitleBar);
 				}
+			}
+
+			void GuiWindow::Moved()
+			{
+				GuiControlHost::Moved();
+				GetControlTemplateObject()->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+			}
+
+			void GuiWindow::OnNativeWindowChanged()
+			{
+				SyncNativeWindowProperties();
 				GuiControlHost::OnNativeWindowChanged();
 			}
 
@@ -678,65 +718,33 @@ GuiWindow
 				}
 			}
 
-			bool GuiWindow::GetMaximizedBox()
-			{
-				return controlTemplate->GetMaximizedBox();
-			}
+#define IMPL_WINDOW_PROPERTY(VARIABLE, NAME) \
+			bool GuiWindow::Get ## NAME() \
+			{ \
+				return VARIABLE; \
+			} \
+			void GuiWindow::Set ## NAME(bool visible) \
+			{ \
+				auto ct = GetControlTemplateObject(); \
+				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
+				{ \
+					VARIABLE = visible; \
+					GetControlTemplateObject()->Set ## NAME(visible); \
+					if (auto window = GetNativeWindow()) \
+					{ \
+						window->Set ## NAME(visible); \
+					} \
+				} \
+			} \
 
-			void GuiWindow::SetMaximizedBox(bool visible)
-			{
-				controlTemplate->SetMaximizedBox(visible);
-			}
+			IMPL_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox)
+			IMPL_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox)
+			IMPL_WINDOW_PROPERTY(hasBorder, Border)
+			IMPL_WINDOW_PROPERTY(hasSizeBox, SizeBox)
+			IMPL_WINDOW_PROPERTY(isIconVisible, IconVisible)
+			IMPL_WINDOW_PROPERTY(hasTitleBar, TitleBar)
 
-			bool GuiWindow::GetMinimizedBox()
-			{
-				return controlTemplate->GetMinimizedBox();
-			}
-
-			void GuiWindow::SetMinimizedBox(bool visible)
-			{
-				controlTemplate->SetMinimizedBox(visible);
-			}
-
-			bool GuiWindow::GetBorder()
-			{
-				return controlTemplate->GetBorder();
-			}
-
-			void GuiWindow::SetBorder(bool visible)
-			{
-				controlTemplate->SetBorder(visible);
-			}
-
-			bool GuiWindow::GetSizeBox()
-			{
-				return controlTemplate->GetSizeBox();
-			}
-
-			void GuiWindow::SetSizeBox(bool visible)
-			{
-				controlTemplate->SetSizeBox(visible);
-			}
-
-			bool GuiWindow::GetIconVisible()
-			{
-				return controlTemplate->GetIconVisible();
-			}
-
-			void GuiWindow::SetIconVisible(bool visible)
-			{
-				controlTemplate->SetIconVisible(visible);
-			}
-
-			bool GuiWindow::GetTitleBar()
-			{
-				return controlTemplate->GetTitleBar();
-			}
-
-			void GuiWindow::SetTitleBar(bool visible)
-			{
-				controlTemplate->SetTitleBar(visible);
-			}
+#undef IMPL_WINDOW_PROPERTY
 
 			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
 			{

@@ -17,16 +17,20 @@ GuiLabel
 
 			void GuiLabel::BeforeControlTemplateUninstalled()
 			{
+				textColorConsisted = (textColor == GetControlTemplateObject()->GetDefaultTextColor());
 			}
 
 			void GuiLabel::AfterControlTemplateInstalled(bool initialize)
 			{
 				auto ct = GetControlTemplateObject();
-				if (initialize)
+				if (initialize || textColorConsisted)
 				{
-					textColor = ct->GetDefaultTextColor();
+					SetTextColor(ct->GetDefaultTextColor());
 				}
-				ct->SetTextColor(textColor);
+				else
+				{
+					ct->SetTextColor(textColor);
+				}
 			}
 
 			GuiLabel::GuiLabel(theme::ThemeName themeName)

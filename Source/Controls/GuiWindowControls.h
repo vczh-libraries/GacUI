@@ -208,7 +208,14 @@ Window
 				friend class GuiApplication;
 			protected:
 				compositions::IGuiAltActionHost*		previousAltHost;
+				bool									hasMaximizedBox = true;
+				bool									hasMinimizedBox = true;
+				bool									hasBorder = true;
+				bool									hasSizeBox = true;
+				bool									isIconVisible = true;
+				bool									hasTitleBar = true;
 				
+				void									SyncNativeWindowProperties();
 				void									Moved()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;

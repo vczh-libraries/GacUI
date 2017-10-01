@@ -28,6 +28,7 @@ Label
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(LabelTemplate)
 			protected:
 				Color									textColor;
+				bool									textColorConsisted = true;
 
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>

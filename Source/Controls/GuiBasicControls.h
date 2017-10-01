@@ -271,20 +271,21 @@ Basic Construction
 				using ControlTemplateType = templates::Gui##TEMPLATE; \
 			protected: \
 				templates::Gui##TEMPLATE* NAME = nullptr; \
-				void BeforeControlTemplateUninstalled()override;\
-				void AfterControlTemplateInstalled(bool initialize)override;\
-				void CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)override\
-				{\
-					auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value);\
-					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L".");\
+				void BeforeControlTemplateUninstalled()override; \
+				void AfterControlTemplateInstalled(bool initialize)override; \
+				void CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)override \
+				{ \
+					auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value); \
+					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L"."); \
 					NAME = ct;\
-				}\
+				} \
 			public: \
-				templates::Gui##TEMPLATE* GetControlTemplateObject()\
-				{\
-					EnsureControlTemplateExists();\
-					return NAME;\
-				}\
+				templates::Gui##TEMPLATE* GetControlTemplateObject() \
+				{ \
+					EnsureControlTemplateExists(); \
+					return NAME; \
+				} \
+			private: \
 
 #define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
 

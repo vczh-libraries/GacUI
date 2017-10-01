@@ -63,13 +63,22 @@ GuiScroll::CommandExecutor
 GuiScroll
 ***********************************************************************/
 
+			void GuiScroll::BeforeControlTemplateUninstalled()
+			{
+				GetControlTemplateObject()->SetCommands(nullptr);
+			}
+
+			void GuiScroll::AfterControlTemplateInstalled(bool initialized)
+			{
+				auto ct = GetControlTemplateObject();
+				ct->SetCommands(commandExecutor.Obj());
+				ct->SetPageSize(pageSize);
+				ct->SetTotalSize(totalSize);
+				ct->SetPosition(position);
+			}
+
 			GuiScroll::GuiScroll(theme::ThemeName themeName)
 				:GuiControl(themeName)
-				,totalSize(100)
-				,pageSize(10)
-				,position(0)
-				,smallMove(1)
-				,bigMove(10)
 			{
 				TotalSizeChanged.SetAssociatedComposition(boundsComposition);
 				PageSizeChanged.SetAssociatedComposition(boundsComposition);
@@ -77,11 +86,7 @@ GuiScroll
 				SmallMoveChanged.SetAssociatedComposition(boundsComposition);
 				BigMoveChanged.SetAssociatedComposition(boundsComposition);
 
-				commandExecutor=new CommandExecutor(this);
-				controlTemplate->SetCommands(commandExecutor.Obj());
-				controlTemplate->SetPageSize(pageSize);
-				controlTemplate->SetTotalSize(totalSize);
-				controlTemplate->SetPosition(position);
+				commandExecutor = new CommandExecutor(this);
 			}
 
 			GuiScroll::~GuiScroll()
@@ -106,7 +111,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					controlTemplate->SetTotalSize(totalSize);
+					GetControlTemplateObject()->SetTotalSize(totalSize);
 					TotalSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -125,7 +130,7 @@ GuiScroll
 					{
 						SetPosition(GetMaxPosition());
 					}
-					controlTemplate->SetPageSize(pageSize);
+					GetControlTemplateObject()->SetPageSize(pageSize);
 					PageSizeChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -146,7 +151,7 @@ GuiScroll
 				if(position!=newPosition)
 				{
 					position=newPosition;
-					controlTemplate->SetPosition(position);
+					GetControlTemplateObject()->SetPosition(position);
 					PositionChanged.Execute(GetNotifyEventArguments());
 				}
 			}

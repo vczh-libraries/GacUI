@@ -28,10 +28,10 @@ Buttons
 			{
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(ButtonTemplate)
 			protected:
-				bool									clickOnMouseUp;
-				bool									mousePressing;
-				bool									mouseHoving;
-				ButtonState								controlState;
+				bool									clickOnMouseUp = true;
+				bool									mousePressing = false;
+				bool									mouseHoving = false;
+				ButtonState								controlState = ButtonState::Normal;
 
 				void									OnParentLineChanged()override;
 				void									OnActiveAlt()override;
@@ -95,9 +95,9 @@ Buttons
 				};
 
 			protected:
-				GroupController*						groupController;
-				bool									autoSelection;
-				bool									isSelected;
+				GroupController*						groupController = nullptr;
+				bool									autoSelection = true;
+				bool									isSelected = false;
 
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:

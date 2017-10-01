@@ -48,11 +48,11 @@ Scrolls
 				};
 
 				Ptr<CommandExecutor>					commandExecutor;
-				vint									totalSize;
-				vint									pageSize;
-				vint									position;
-				vint									smallMove;
-				vint									bigMove;
+				vint									totalSize = 100;
+				vint									pageSize = 10;
+				vint									position = 0;
+				vint									smallMove = 1;
+				vint									bigMove = 10;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
