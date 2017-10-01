@@ -823,7 +823,6 @@ GuiPopup
 				SetSizeBox(false);
 				SetTitleBar(false);
 				SetShowInTaskBar(false);
-				GetBoundsComposition()->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 				WindowOpened.AttachMethod(this, &GuiPopup::PopupOpened);
 				WindowClosed.AttachMethod(this, &GuiPopup::PopupClosed);
