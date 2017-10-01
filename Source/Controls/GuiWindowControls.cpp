@@ -603,12 +603,11 @@ GuiWindow
 					else
 					{
 						window->DisableCustomFrameMode();
-						window->SetBorder(true);
+						window->SetBorder(hasBorder);
 					}
 
 					window->SetMaximizedBox(hasMaximizedBox);
 					window->SetMinimizedBox(hasMinimizedBox);
-					window->SetBorder(hasBorder);
 					window->SetSizeBox(hasSizeBox);
 					window->SetIconVisible(isIconVisible);
 					window->SetTitleBar(hasTitleBar);
@@ -718,7 +717,7 @@ GuiWindow
 				}
 			}
 
-#define IMPL_WINDOW_PROPERTY(VARIABLE, NAME) \
+#define IMPL_WINDOW_PROPERTY(VARIABLE, NAME, CONDITION_BREAK) \
 			bool GuiWindow::Get ## NAME() \
 			{ \
 				return VARIABLE; \
@@ -729,21 +728,28 @@ GuiWindow
 				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
 				{ \
 					VARIABLE = visible; \
-					GetControlTemplateObject()->Set ## NAME(visible); \
+					auto ct = GetControlTemplateObject(); \
+					ct->Set ## NAME(visible); \
 					if (auto window = GetNativeWindow()) \
 					{ \
+						CONDITION_BREAK \
 						window->Set ## NAME(visible); \
 					} \
 				} \
 			} \
 
-			IMPL_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox)
-			IMPL_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox)
-			IMPL_WINDOW_PROPERTY(hasBorder, Border)
-			IMPL_WINDOW_PROPERTY(hasSizeBox, SizeBox)
-			IMPL_WINDOW_PROPERTY(isIconVisible, IconVisible)
-			IMPL_WINDOW_PROPERTY(hasTitleBar, TitleBar)
+#define IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
+#define IMPL_WINDOW_PROPERTY_BORDER_CONDITION if (ct->GetCustomFrameEnabled()) return;
 
+			IMPL_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+			IMPL_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+			IMPL_WINDOW_PROPERTY(hasBorder, Border, IMPL_WINDOW_PROPERTY_BORDER_CONDITION)
+			IMPL_WINDOW_PROPERTY(hasSizeBox, SizeBox, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+			IMPL_WINDOW_PROPERTY(isIconVisible, IconVisible, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+			IMPL_WINDOW_PROPERTY(hasTitleBar, TitleBar, IMPL_WINDOW_PROPERTY_EMPTY_CONDITION)
+
+#undef IMPL_WINDOW_PROPERTY_BORDER_CONDITION
+#undef IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
 #undef IMPL_WINDOW_PROPERTY
 
 			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
