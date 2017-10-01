@@ -49,14 +49,18 @@ Type Declaration
 				CLASS_MEMBER_METHOD(DelayExecuteInMainThread, {L"proc" _ L"milliseconds"})
 			END_CLASS_MEMBER(GuiApplication)
 
+			BEGIN_ENUM_ITEM(ThemeName)
+#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) ENUM_CLASS_ITEM(CONTROL)
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
+#undef GUI_DEFINE_THEME_NAME
+			END_ENUM_ITEM(ThemeName)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITheme)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentTheme, NO_PARAMETER, ITheme*(*)(), vl::presentation::theme::GetCurrentTheme)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RegisterTheme, {L"name" _ L"theme"}, bool(*)(const WString&, Ptr<ThemeTemplates>), vl::presentation::theme::RegisterTheme)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(UnrgisterTheme, {L"name"}, Ptr<ThemeTemplates>(*)(const WString&), vl::presentation::theme::UnregisterTheme)
 
-#define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) CLASS_MEMBER_METHOD(Create##CONTROL##Style, NO_PARAMETER)
-				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
-#undef GUI_DEFINE_ITEM_PROPERTY
+				CLASS_MEMBER_METHOD(CreateStyle, {L"themeName"})
 			END_INTERFACE_MEMBER(ITheme)
 
 			BEGIN_CLASS_MEMBER(ThemeTemplates)

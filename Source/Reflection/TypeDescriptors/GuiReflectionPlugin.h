@@ -234,6 +234,7 @@ Type List (Controls)
 
 #define GUIREFLECTIONCONTROLS_TYPELIST(F)\
 			F(presentation::controls::GuiApplication)\
+			F(presentation::theme::ThemeName)\
 			F(presentation::theme::ITheme)\
 			F(presentation::theme::ThemeTemplates)\
 			F(presentation::controls::GuiDialogBase)\

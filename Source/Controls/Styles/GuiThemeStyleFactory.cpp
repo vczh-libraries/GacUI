@@ -71,23 +71,31 @@ namespace vl
 					return themeTemplates;
 				}
 
+				TemplateProperty<templates::GuiControlTemplate> CreateStyle(ThemeName themeName)override
+				{
+					switch (themeName)
+					{
 #define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) \
-				TemplateProperty<templates::Gui##TEMPLATE> Create##CONTROL##Style()override\
-				{\
-					auto current = last;\
-					while (current) \
-					{\
-						if (current->CONTROL)\
+					case ThemeName::CONTROL:\
 						{\
-							return current->CONTROL; \
+							auto current = last;\
+							while (current) \
+							{\
+								if (current->CONTROL)\
+								{\
+									return current->CONTROL; \
+								}\
+								current = current->previous;\
+							}\
+							throw Exception(L"Control template for \"" L ## #CONTROL L"\" is not defined.");\
 						}\
-						current = current->previous;\
-					}\
-					throw Exception(L"Control template for \"" L ## #CONTROL L"\" is not defined.");\
-				}\
 
-				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
+						GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
 #undef GUI_DEFINE_ITEM_PROPERTY
+					default:
+						CHECK_FAIL(L"vl::presentation::theme::ITheme::CreateStyle(ThemeName)#Unknown theme name.");
+					}
+				}
 			};
 
 			ThemeTemplates::~ThemeTemplates()

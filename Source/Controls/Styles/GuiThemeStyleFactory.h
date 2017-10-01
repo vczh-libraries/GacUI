@@ -82,14 +82,18 @@ namespace vl
 			F(ScrollTemplate,				VTracker) \
 			F(ScrollTemplate,				ProgressBar) \
 
+			enum class ThemeName
+			{
+#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
+#undef GUI_DEFINE_THEME_NAME
+			};
+
 			/// <summary>Theme interface. A theme creates appropriate style controllers or style providers for default controls. Call [M:vl.presentation.theme.GetCurrentTheme] to access this interface.</summary>
 			class ITheme : public virtual IDescriptable, public Description<ITheme>
 			{
 			public:
-
-#define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) virtual TemplateProperty<templates::Gui##TEMPLATE> Create##CONTROL##Style() = 0;
-				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
-#undef GUI_DEFINE_ITEM_PROPERTY
+				virtual TemplateProperty<templates::GuiControlTemplate>				CreateStyle(ThemeName themeName) = 0;
 			};
 
 			class Theme;
