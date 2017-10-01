@@ -279,7 +279,7 @@ List Control
 				void											DetachItemEvents(ItemStyle* style);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
 				/// <param name="acceptFocus">Set to true if the list control is allowed to have a keyboard focus.</param>
 				GuiListControl(ControlTemplateType* _controlTemplate, IItemProvider* _itemProvider, bool acceptFocus=false);
@@ -385,7 +385,7 @@ Selectable List Control
 				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_itemProvider">The item provider as a data source.</param>
 				GuiSelectableListControl(ControlTemplateType* _controlTemplate, IItemProvider* _itemProvider);
 				~GuiSelectableListControl();

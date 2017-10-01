@@ -22,9 +22,26 @@ Type Declaration
 
 #define _ ,
 
+#define CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(CONTROL)\
+	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(ThemeName), {L"themeName"})\
+
 #define CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(CONTROL)\
-	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(CONTROL::ControlTemplateType*), {L"controlTemplate"})\
-	CLASS_MEMBER_PROPERTY_READONLY_FAST(ControlTemplate)\
+	CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(CONTROL)\
+	CLASS_MEMBER_PROPERTY_READONLY_FAST(ControlTemplateObject)\
+
+#define CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(CONTROL, TYPE2, PARAM2)\
+	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(ThemeName, TYPE2), {L"themeName" _ L ## #PARAM2 })\
+
+#define CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(CONTROL, TYPE2, PARAM2)\
+	CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(CONTROL, TYPE2, PARAM2)\
+	CLASS_MEMBER_PROPERTY_READONLY_FAST(ControlTemplateObject)\
+
+#define CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_3(CONTROL, TYPE2, PARAM2, TYPE3, PARAM3)\
+	CLASS_MEMBER_CONSTRUCTOR(CONTROL*(ThemeName, TYPE2, TYPE3), {L"themeName" _ L ## #PARAM2 _ L ## #PARAM3})\
+
+#define CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_3(CONTROL, TYPE2, PARAM2, TYPE3, PARAM3)\
+	CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_3(CONTROL, TYPE2, PARAM2, TYPE3, PARAM3)\
+	CLASS_MEMBER_PROPERTY_READONLY_FAST(ControlTemplateObject)\
 
 #define INTERFACE_IDENTIFIER(INTERFACE)\
 	CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetIdentifier, NO_PARAMETER, WString(*)(), vl::reflection::description::Interface_GetIdentifier<::INTERFACE>)
@@ -144,9 +161,10 @@ Type Declaration
 			END_CLASS_MEMBER(GuiSaveFileDialog)
 
 			BEGIN_CLASS_MEMBER(GuiControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiControl*(GuiControl::ControlTemplateType*), {L"controlTemplate"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiControl)
 
 				CLASS_MEMBER_GUIEVENT(RenderTargetChanged)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ControlTemplate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(BoundsComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainerComposition)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(FocusableComposition)
@@ -345,7 +363,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiListControl)
 				CLASS_MEMBER_BASE(GuiScrollView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListControl*(GuiListControl::ControlTemplateType* _ GuiListControl::IItemProvider* _ bool), {L"controlTemplate" _ L"itemProvider" _ L"acceptFocus"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_3(GuiListControl, GuiListControl::IItemProvider*, itemProvider, bool, acceptFocus)
 
 				CLASS_MEMBER_GUIEVENT(AdoptedSizeInvalidated)
 				CLASS_MEMBER_GUIEVENT(ItemLeftButtonDown)
@@ -423,7 +441,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiSelectableListControl)
 				CLASS_MEMBER_BASE(GuiListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiSelectableListControl*(GuiSelectableListControl::ControlTemplateType* _ GuiSelectableListControl::IItemProvider*), {L"controlTemplate" _ L"itemProvider"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiSelectableListControl, GuiListControl::IItemProvider*, itemProvider)
 
 				CLASS_MEMBER_GUIEVENT(SelectionChanged)
 
@@ -487,7 +505,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTextList)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTextList*(GuiVirtualTextList::ControlTemplateType* _ GuiListControl::IItemProvider*), {L"controlTemplate" _ L"itemProvider"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiVirtualTextList, GuiListControl::IItemProvider*, L"itemProvider")
 
 				CLASS_MEMBER_GUIEVENT(ItemChecked)
 				CLASS_MEMBER_PROPERTY_FAST(View)
@@ -495,7 +513,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiTextList*(GuiVirtualTextList::ControlTemplateType*), { L"controlTemplate" })
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(GuiVirtualTextList)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Items)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedItem, SelectionChanged)
@@ -510,7 +528,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiListViewBase)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiListViewBase*(GuiListViewBase::ControlTemplateType* _ GuiListControl::IItemProvider*), {L"controlTemplate" _ L"itemProvider"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiListViewBase, GuiListControl::IItemProvider*, itemProvider)
 
 				CLASS_MEMBER_GUIEVENT(ColumnClicked)
 			END_CLASS_MEMBER(GuiListViewBase)
@@ -584,7 +602,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualListView)
 				CLASS_MEMBER_BASE(GuiListViewBase)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualListView*(GuiVirtualListView::ControlTemplateType*, GuiListControl::IItemProvider*), { L"controlTemplate" _ L"itemProvider" })
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualListView, GuiListControl::IItemProvider*, itemProvider)
 
 				CLASS_MEMBER_PROPERTY_FAST(View)
 			END_CLASS_MEMBER(GuiVirtualListView)
@@ -620,7 +638,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiMenu)
 				CLASS_MEMBER_BASE(GuiPopup)
-				CLASS_MEMBER_CONSTRUCTOR(GuiMenu*(GuiMenu::ControlTemplateType* _ GuiControl*), {L"controlTemplate" _ L"owner"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiMenu, GuiControl*, owner)
 
 				CLASS_MEMBER_METHOD(UpdateMenuService, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(QueryService, {L"identifier"})
@@ -720,7 +738,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTreeListControl)
 				CLASS_MEMBER_BASE(GuiSelectableListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTreeListControl*(GuiVirtualTreeListControl::ControlTemplateType* _ Ptr<INodeRootProvider>), {L"controlTemplate" _ L"rootNodeProvider"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_2(GuiVirtualTreeListControl, Ptr<INodeRootProvider>, rootNodeProvider)
 
 				CLASS_MEMBER_GUIEVENT(NodeLeftButtonDown)
 				CLASS_MEMBER_GUIEVENT(NodeLeftButtonUp)
@@ -767,13 +785,13 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeListControl)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualTreeView*(GuiVirtualTreeView::ControlTemplateType* _ Ptr<INodeRootProvider>), {L"controlTemplate" _ L"rootNodeProvider"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualTreeView, Ptr<INodeRootProvider>, rootNodeProvider)
 
 			END_CLASS_MEMBER(GuiVirtualTreeView)
 
 			BEGIN_CLASS_MEMBER(GuiTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView)
-				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiTreeView)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(GuiTreeView)
 
 				CLASS_MEMBER_METHOD_RENAME(GetNodes, Nodes, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Nodes, GetNodes)
@@ -789,7 +807,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiComboBoxListControl)
 				CLASS_MEMBER_BASE(GuiComboBoxBase)
-				CLASS_MEMBER_CONSTRUCTOR(GuiComboBoxListControl*(GuiComboBoxListControl::ControlTemplateType* _ GuiSelectableListControl*), {L"controlTemplate" _ L"containedListControl"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiComboBoxListControl*, GuiSelectableListControl*, containedListControl)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ContainedListControl)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(ItemTemplate)
@@ -815,7 +833,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiToolstripMenu)
 				CLASS_MEMBER_BASE(GuiMenu)
-				CLASS_MEMBER_CONSTRUCTOR(GuiToolstripMenu*(GuiToolstripMenu::ControlTemplateType* _ GuiControl*), {L"controlTemplate" _ L"owner"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiToolstripMenu, GuiControl*, owner)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ToolstripItems)
 			END_CLASS_MEMBER(GuiToolstripMenu)
@@ -1039,7 +1057,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiVirtualDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiVirtualDataGrid*(GuiVirtualListView::ControlTemplateType* _ GuiListControl::IItemProvider*), {L"controlTemplate" _ L"itemProvider"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiVirtualDataGrid, GuiListControl::IItemProvider*, itemProvider)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedCell)
 
@@ -1100,7 +1118,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiDateComboBox)
 				CLASS_MEMBER_BASE(GuiComboBoxBase)
-				CLASS_MEMBER_CONSTRUCTOR(GuiDateComboBox*(GuiDateComboBox::ControlTemplateType* _ GuiDatePicker*), {L"controlTemplate" _ L"datePicker"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiDateComboBox, GuiDatePicker, datePicker)
 
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SelectedDate)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DatePicker)
@@ -1108,7 +1126,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableTextList)
 				CLASS_MEMBER_BASE(GuiVirtualTextList)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTextList*(GuiBindableTextList::ControlTemplateType*), {L"controlTemplate"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(GuiBindableTextList)
 
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
@@ -1118,7 +1136,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableListView)
 				CLASS_MEMBER_BASE(GuiVirtualListView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableListView*(GuiBindableListView::ControlTemplateType*), {L"controlTemplate"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(GuiBindableListView)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)
@@ -1130,7 +1148,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableTreeView)
 				CLASS_MEMBER_BASE(GuiVirtualTreeView)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableTreeView*(GuiBindableTreeView::ControlTemplateType*), {L"controlTemplate"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE(GuiBindableTreeView)
 				
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(TextProperty)
@@ -1236,7 +1254,7 @@ Type Declaration
 
 			BEGIN_CLASS_MEMBER(GuiBindableDataGrid)
 				CLASS_MEMBER_BASE(GuiVirtualDataGrid)
-				CLASS_MEMBER_CONSTRUCTOR(GuiBindableDataGrid*(GuiBindableDataGrid::ControlTemplateType*, const Value&), {L"controlTemplate" _ L"viewModelContext"})
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiBindableDataGrid, const Value&, viewModelContext)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(DataColumns)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Columns)

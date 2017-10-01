@@ -42,7 +42,7 @@ Buttons
 				void									OnMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiButton(ControlTemplateType* _controlTemplate);
 				~GuiButton();
 
@@ -102,7 +102,7 @@ Buttons
 				void									OnClicked(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiSelectableButton(ControlTemplateType* _controlTemplate);
 				~GuiSelectableButton();
 

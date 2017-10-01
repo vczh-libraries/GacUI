@@ -58,7 +58,7 @@ Control Host
 				void											Destroying()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiControlHost(ControlTemplateType* _controlTemplate);
 				~GuiControlHost();
 				
@@ -221,7 +221,7 @@ Window
 				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiWindow(ControlTemplateType* _controlTemplate);
 				~GuiWindow();
 
@@ -327,7 +327,7 @@ Window
 				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiPopup(ControlTemplateType* _controlTemplate);
 				~GuiPopup();
 
@@ -365,7 +365,7 @@ Window
 				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTooltip(ControlTemplateType* _controlTemplate);
 				~GuiTooltip();
 

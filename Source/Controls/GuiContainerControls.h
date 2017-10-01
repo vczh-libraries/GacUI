@@ -35,7 +35,7 @@ Tab Control
 				bool											IsAltAvailable()override;
 			public:
 				/// <summary>Create a tab page control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTabPage(ControlTemplateType* _controlTemplate);
 				~GuiTabPage();
 
@@ -78,7 +78,7 @@ Tab Control
 				GuiTabPage*										selectedPage = nullptr;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiTab(ControlTemplateType* _controlTemplate);
 				~GuiTab();
 
@@ -144,7 +144,7 @@ Scroll View
 				
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiScrollView(ControlTemplateType* _controlTemplate);
 				~GuiScrollView();
 
@@ -191,7 +191,7 @@ Scroll View
 				void									UpdateView(Rect viewBounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiScrollContainer(ControlTemplateType* _controlTemplate);
 				~GuiScrollContainer();
 				

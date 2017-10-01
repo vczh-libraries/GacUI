@@ -65,7 +65,7 @@ MultilineTextBox
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiMultilineTextBox(ControlTemplateType* _controlTemplate);
 				~GuiMultilineTextBox();
 
@@ -109,7 +109,7 @@ SinglelineTextBox
 				void										OnBoundsMouseButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiSinglelineTextBox(ControlTemplateType* _controlTemplate);
 				~GuiSinglelineTextBox();
 

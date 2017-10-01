@@ -55,7 +55,7 @@ Scrolls
 				vint									bigMove;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiScroll(ControlTemplateType* _controlTemplate);
 				~GuiScroll();
 				

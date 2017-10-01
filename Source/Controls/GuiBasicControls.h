@@ -16,6 +16,10 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace theme
+		{
+			enum class ThemeName;
+		}
 
 		namespace controls
 		{
@@ -33,11 +37,16 @@ Basic Construction
 			class GuiControl : public Object, protected compositions::IGuiAltAction, public Description<GuiControl>
 			{
 				friend class compositions::GuiGraphicsComposition;
-				typedef collections::List<GuiControl*>		ControlList;
+
+				using ControlList = collections::List<GuiControl*>;
+				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
 			protected:
-				templates::GuiControlTemplate*			controlTemplate = nullptr;
+				theme::ThemeName						controlThemeName;
+				ControlTemplatePropertyType				controlTemplate;
+				templates::GuiControlTemplate*			controlTemplateObject = nullptr;
+
 				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
-				compositions::GuiGraphicsComposition*	containerComposition = nullptr;
+				compositions::GuiBoundsComposition*		containerComposition = nullptr;
 				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
 				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
 
@@ -55,6 +64,9 @@ Basic Construction
 				GuiControl*								tooltipControl = nullptr;
 				vint									tooltipWidth = 0;
 
+				virtual void							BeforeControlTemplateUninstalled();
+				virtual void							AfterControlTemplateInstalled();
+				virtual void							RebuildControlTemplate();
 				virtual void							OnChildInserted(GuiControl* control);
 				virtual void							OnChildRemoved(GuiControl* control);
 				virtual void							OnParentChanged(GuiControl* oldParent, GuiControl* newParent);
@@ -76,10 +88,12 @@ Basic Construction
 				using ControlTemplateType = templates::GuiControlTemplate;
 
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
-				GuiControl(templates::GuiControlTemplate* _controlTemplate);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiControl(theme::ThemeName themeName);
 				~GuiControl();
 
+				/// <summary>Control template changed event. This event will be raised when the control template is changed.</summary>
+				compositions::GuiNotifyEvent			ControlTemplateChanged;
 				/// <summary>Render target changed event. This event will be raised when the render target of the control is changed.</summary>
 				compositions::GuiNotifyEvent			RenderTargetChanged;
 				/// <summary>Visible event. This event will be raised when the visibility state of the control is changed.</summary>
@@ -101,9 +115,15 @@ Basic Construction
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
 				compositions::GuiEventArgs				GetNotifyEventArguments();
+				/// <summary>Get the associated control template.</summary>
+				/// <returns>The control template.</returns>
+				ControlTemplatePropertyType				GetControlTemplate();
+				/// <summary>Set the associated control template.</summary>
+				/// <param name="value">The control template.</param>
+				void									SetControlTemplate(const ControlTemplatePropertyType& value);
 				/// <summary>Get the associated style controller.</summary>
 				/// <returns>The associated style controller.</returns>
-				templates::GuiControlTemplate*			GetControlTemplate();
+				templates::GuiControlTemplate*			GetControlTemplateObject();
 				/// <summary>Get the bounds composition for the control. The value is from <see cref="IStyleController::GetBoundsComposition"/>.</summary>
 				/// <returns>The bounds composition.</returns>
 				compositions::GuiBoundsComposition*		GetBoundsComposition();
@@ -113,9 +133,6 @@ Basic Construction
 				/// <summary>Get the focusable composition for the control. A focusable composition is the composition to be focused when the control is focused.</summary>
 				/// <returns>The focusable composition.</returns>
 				compositions::GuiGraphicsComposition*	GetFocusableComposition();
-				/// <summary>Get the event receiver from the bounds composition.</summary>
-				/// <returns>The event receiver.</returns>
-				compositions::GuiGraphicsEventReceiver*	GetEventReceiver();
 				/// <summary>Get the parent control.</summary>
 				/// <returns>The parent control.</returns>
 				GuiControl*								GetParent();
@@ -221,8 +238,8 @@ Basic Construction
 			{
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
-				GuiCustomControl(templates::GuiControlTemplate* _controlTemplate);
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiCustomControl(theme::ThemeName themeName);
 				~GuiCustomControl();
 			};
 
@@ -246,9 +263,9 @@ Basic Construction
 			public: \
 				using ControlTemplateType = templates::Gui##TEMPLATE; \
 			protected: \
-				templates::Gui##TEMPLATE* controlTemplate = nullptr; \
+				templates::Gui##TEMPLATE* controlTemplateObject = nullptr; \
 			public: \
-				templates::Gui##TEMPLATE* GetControlTemplate() { return controlTemplate; } \
+				templates::Gui##TEMPLATE* GetControlTemplateObject() { return controlTemplateObject; } \
 
 		}
 	}

@@ -346,7 +346,7 @@ GuiDocumentViewer
 				void										EnsureRectVisible(Rect bounds)override;
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiDocumentViewer(ControlTemplateType* _controlTemplate);
 				~GuiDocumentViewer();
 
@@ -364,7 +364,7 @@ GuiDocumentViewer
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(DocumentLabelTemplate)
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiDocumentLabel(ControlTemplateType* _controlTemplate);
 				~GuiDocumentLabel();
 				

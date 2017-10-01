@@ -48,7 +48,7 @@ DatePicker
 				void													UpdateText();
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiDatePicker(ControlTemplateType* _controlTemplate);
 				~GuiDatePicker();
 
@@ -104,7 +104,7 @@ DateComboBox
 				void													datePicker_DateSelected(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_datePicker">The date picker control to show in the popup.</param>
 				GuiDateComboBox(ControlTemplateType* controlTemplate, GuiDatePicker* _datePicker);
 				~GuiDateComboBox();

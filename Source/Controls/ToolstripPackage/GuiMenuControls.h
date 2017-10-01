@@ -96,7 +96,7 @@ Menu
 				void									OnWindowClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				/// <param name="_owner">The owner menu item of the parent menu.</param>
 				GuiMenu(ControlTemplateType* _controlTemplate, GuiControl* _owner);
 				~GuiMenu();
@@ -116,7 +116,7 @@ Menu
 				bool									IsSubMenuActivatedByMouseDown()override;
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiMenuBar(ControlTemplateType* _controlTemplate);
 				~GuiMenuBar();
 				
@@ -154,7 +154,7 @@ MenuButton
 				virtual IGuiMenuService::Direction		GetSubMenuDirection();
 			public:
 				/// <summary>Create a control with a specified style controller.</summary>
-				/// <param name="_controlTemplate">The control template.</param>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
 				GuiMenuButton(ControlTemplateType* _controlTemplate);
 				~GuiMenuButton();
 
